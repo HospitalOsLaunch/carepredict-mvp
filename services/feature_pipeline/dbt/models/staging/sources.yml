@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: canonical
+    schema: canonical
+    tables:
+      - name: admissions
+      - name: discharges
+      - name: staffing
+      - name: care_load
+      - name: services

@@ -1,0 +1,4 @@
+service_id,hospital_id,service_name,specialty,bed_count,patient_profile
+urg-001,hosp-001,Urgences,emergency,32,acute_unscheduled
+med-001,hosp-001,Medecine interne,internal_medicine,28,medical
+chir-001,hosp-002,Chirurgie digestive,digestive_surgery,24,surgical

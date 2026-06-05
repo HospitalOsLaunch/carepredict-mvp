@@ -1,0 +1,15 @@
+project: carepredict
+registry: /app/services/feature_pipeline/feast/registry.db
+provider: local
+offline_store:
+  type: postgres
+  host: timescaledb
+  port: 5432
+  database: carepredict
+  db_schema: marts
+  user: carepredict
+  password: carepredict_dev_password
+online_store:
+  type: redis
+  connection_string: redis:6379
+entity_key_serialization_version: 3

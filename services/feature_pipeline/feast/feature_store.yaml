@@ -1,0 +1,15 @@
+project: carepredict
+registry: registry.db
+provider: local
+offline_store:
+  type: postgres
+  host: localhost
+  port: 5432
+  database: carepredict
+  db_schema: marts
+  user: carepredict
+  password: carepredict_dev_password
+online_store:
+  type: redis
+  connection_string: localhost:6379
+entity_key_serialization_version: 3

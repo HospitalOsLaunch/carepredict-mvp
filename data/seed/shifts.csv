@@ -1,0 +1,4 @@
+shift_id,shift_label,start_time,end_time
+morning,Matin,07:00,14:00
+afternoon,Apres-midi,14:00,21:00
+night,Nuit,21:00,07:00

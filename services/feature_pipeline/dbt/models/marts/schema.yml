@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: mart_care_load_features
+    columns:
+      - name: hospital_id
+        tests: [not_null]
+      - name: service_id
+        tests: [not_null]
+      - name: event_hour
+        tests: [not_null]
+  - name: mart_occupancy_features
+    columns:
+      - name: hospital_id
+        tests: [not_null]
+      - name: service_id
+        tests: [not_null]
+      - name: occupancy_rate
+        tests: [not_null]
+  - name: mart_staffing_features
+    columns:
+      - name: hospital_id
+        tests: [not_null]
+      - name: service_id
+        tests: [not_null]
+  - name: mart_temporal_features
+    columns:
+      - name: hospital_id
+        tests: [not_null]
+      - name: service_id
+        tests: [not_null]
+      - name: is_weekend
+        tests:
+          - accepted_values:
+              values: [true, false]
+              quote: false

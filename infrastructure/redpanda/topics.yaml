@@ -1,0 +1,13 @@
+topics:
+  - name: sih.raw
+    partitions: 3
+    replication_factor: 1
+  - name: fhir.raw
+    partitions: 3
+    replication_factor: 1
+  - name: csv.raw
+    partitions: 3
+    replication_factor: 1
+  - name: canonical.events
+    partitions: 3
+    replication_factor: 1
