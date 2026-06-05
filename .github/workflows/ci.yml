@@ -27,7 +27,7 @@ jobs:
         run: mypy --strict services orchestration data tests
 
       - name: Tests
-        run: pytest --cov=services/connectors --cov=services/feature_pipeline --cov-report=xml
+        run: pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov-report=xml
 
       - name: Docker compose config
         run: docker compose config

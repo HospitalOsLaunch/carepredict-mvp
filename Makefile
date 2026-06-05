@@ -18,7 +18,7 @@ features:
 	feast -c services/feature_pipeline/feast apply
 
 test:
-	pytest --cov=services/connectors --cov=services/feature_pipeline --cov-report=term-missing
+	pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov-report=term-missing
 
 logs:
 	$(COMPOSE) logs -f --tail=200

@@ -70,3 +70,7 @@ Interventions futures connues :
 ## Souverainete
 
 Aucun service cloud managé n'est requis. La stack locale utilise Redpanda, TimescaleDB, Redis, Feast, dbt, Dagster et MLflow en conteneurs avec tags explicites.
+
+## Passe 2 - Encoder Hybride
+
+Le premier composant ML est `HybridStateEncoder`, disponible dans `services/ml/encoders/hybrid_encoder.py`. Il encode 24 pas horaires de features temporelles et les features statiques service/hopital en un vecteur d'etat 512D reutilisable par les modeles de forecasting.
