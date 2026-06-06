@@ -1,5 +1,6 @@
 .env
 .venv/
+node_modules/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -13,6 +14,7 @@ dbt_packages/
 logs/
 .dagster/
 data/generated/
+dist/
 data/synthetic/synthea/
 mlruns/
 *.db
