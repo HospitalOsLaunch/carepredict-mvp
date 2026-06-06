@@ -44,6 +44,7 @@ dev = [
 ]
 
 foundation = [
+  "pytorch-forecasting>=1.0.0,<2.0.0",
   "uni2ts>=1.2.0",
 ]
 

@@ -6,6 +6,20 @@ from services.ml.models.moirai_wrapper import (
     MoiraiConfig,
     MoiraiWrapper,
 )
+from services.ml.models.tft_model import (
+    CarePredictTFT,
+    FutureIntervention,
+    TFTConfig,
+    TFTForecast,
+)
 
-__all__ = ["FineTuneResult", "ForecastResult", "MoiraiConfig", "MoiraiWrapper"]
-
+__all__ = [
+    "CarePredictTFT",
+    "FineTuneResult",
+    "ForecastResult",
+    "FutureIntervention",
+    "MoiraiConfig",
+    "MoiraiWrapper",
+    "TFTConfig",
+    "TFTForecast",
+]
