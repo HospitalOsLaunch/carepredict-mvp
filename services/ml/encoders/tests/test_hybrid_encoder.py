@@ -29,6 +29,16 @@ def test_hybrid_encoder_output_shape() -> None:
     assert output.shape == (8, 512)
 
 
+def test_hybrid_encoder_accepts_direct_feature_dimensions() -> None:
+    model = HybridStateEncoder(temporal_features=20, static_features=10)
+    temporal = torch.randn(1, 24, 20)
+    static = torch.randn(1, 10)
+
+    output = model(temporal, static)
+
+    assert output.shape == (1, 512)
+
+
 def test_hybrid_encoder_backpropagates_gradients() -> None:
     model = _build_encoder()
     temporal = torch.randn(4, 24, 14, requires_grad=True)

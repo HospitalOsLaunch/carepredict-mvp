@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from services.ml.encoders.tests.test_hybrid_encoder import (
+    test_hybrid_encoder_accepts_direct_feature_dimensions,
     test_hybrid_encoder_backpropagates_gradients,
     test_hybrid_encoder_forward_p99_latency_under_20ms_cpu,
     test_hybrid_encoder_output_shape,
@@ -11,6 +12,7 @@ from services.ml.encoders.tests.test_hybrid_encoder import (
 )
 
 __all__ = [
+    "test_hybrid_encoder_accepts_direct_feature_dimensions",
     "test_hybrid_encoder_backpropagates_gradients",
     "test_hybrid_encoder_forward_p99_latency_under_20ms_cpu",
     "test_hybrid_encoder_output_shape",

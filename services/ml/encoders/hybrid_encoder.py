@@ -61,8 +61,44 @@ class HybridStateEncoderConfig:
 class HybridStateEncoder(nn.Module):
     """Encode temporal and static care-service context into a 512D state vector."""
 
-    def __init__(self, config: HybridStateEncoderConfig) -> None:
+    def __init__(
+        self,
+        config: HybridStateEncoderConfig | None = None,
+        *,
+        temporal_features: int | None = None,
+        static_features: int | None = None,
+        sequence_length: int = 24,
+        gru_hidden_size: int = 256,
+        gru_layers: int = 2,
+        gru_dropout: float = 0.1,
+        static_hidden_size: int = 256,
+        static_embedding_size: int = 128,
+        static_dropout: float = 0.1,
+        state_size: int = 512,
+        fusion_dropout: float = 0.1,
+    ) -> None:
         super().__init__()
+        if config is None:
+            if temporal_features is None or static_features is None:
+                raise ValueError(
+                    "Either config or both temporal_features and static_features must be provided"
+                )
+            config = HybridStateEncoderConfig(
+                temporal_features=temporal_features,
+                static_features=static_features,
+                sequence_length=sequence_length,
+                gru_hidden_size=gru_hidden_size,
+                gru_layers=gru_layers,
+                gru_dropout=gru_dropout,
+                static_hidden_size=static_hidden_size,
+                static_embedding_size=static_embedding_size,
+                static_dropout=static_dropout,
+                state_size=state_size,
+                fusion_dropout=fusion_dropout,
+            )
+        elif temporal_features is not None or static_features is not None:
+            raise ValueError("Do not pass temporal_features/static_features when config is provided")
+
         self.config = config
 
         gru_dropout = config.gru_dropout if config.gru_layers > 1 else 0.0
