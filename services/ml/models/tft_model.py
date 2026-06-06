@@ -496,17 +496,21 @@ class CarePredictTFT:
         else:
             combined = frame.copy()
 
-        combined[self.config.time_column] = pd.to_datetime(combined[self.config.time_column])
-        combined = combined.sort_values([self.config.service_column, self.config.time_column])
+        col = self.config.time_column
+        combined[col] = pd.to_datetime(combined[col], utc=True)
+        combined = combined.sort_values([self.config.service_column, col])
 
         predictions: list[float] = []
-        frame_timestamps = pd.to_datetime(frame[self.config.time_column]).values
+        frame_timestamps = pd.to_datetime(frame[col], utc=True).values
         frame_services = frame[self.config.service_column].astype(str).values
 
         for ts, service in zip(frame_timestamps, frame_services, strict=True):
+            ts_pd = pd.Timestamp(ts)
+            if ts_pd.tzinfo is None:
+                ts_pd = ts_pd.tz_localize("UTC")
             sub = combined[
                 (combined[self.config.service_column].astype(str) == str(service))
-                & (combined[self.config.time_column] < ts)
+                & (combined[col] < ts_pd)
             ].tail(self.config.max_encoder_length * 2)
             if sub.empty or len(sub) < self.config.max_encoder_length // 2:
                 last_value = float(
@@ -524,7 +528,7 @@ class CarePredictTFT:
                 forecast = self._backend.predict(
                     sub,
                     build_future_covariates(
-                        timestamp=pd.Timestamp(ts) - pd.Timedelta(hours=1),
+                        timestamp=ts_pd - pd.Timedelta(hours=1),
                         interventions=[],
                         config=self.config,
                     ),
