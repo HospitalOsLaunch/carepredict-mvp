@@ -10,7 +10,10 @@ down:
 	$(COMPOSE) down
 
 seed:
-	$(PYTHON) data/synthetic/siips_generator.py --output data/generated/siips.csv
+	$(PYTHON) data/synthetic/siips_generator.py
+	bash data/synthetic/generate_synthea.sh
+	$(PYTHON) data/synthetic/load_synthea_to_db.py
+	$(PYTHON) data/synthetic/mimic_loader.py
 
 features:
 	dbt --project-dir services/feature_pipeline/dbt --profiles-dir services/feature_pipeline/dbt run
