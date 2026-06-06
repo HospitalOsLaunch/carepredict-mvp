@@ -74,3 +74,15 @@ Aucun service cloud managé n'est requis. La stack locale utilise Redpanda, Time
 ## Passe 2 - Encoder Hybride
 
 Le premier composant ML est `HybridStateEncoder`, disponible dans `services/ml/encoders/hybrid_encoder.py`. Il encode 24 pas horaires de features temporelles et les features statiques service/hopital en un vecteur d'etat 512D reutilisable par les modeles de forecasting.
+
+## Passe 2 - Moirai Cold Start
+
+`MoiraiWrapper` expose `predict(history: pd.Series, horizon: int = 12)` et `fine_tune(dataset, epochs)` dans `services/ml/models/moirai_wrapper.py`.
+
+Par defaut, le wrapper reste air-gapped : il ne telecharge aucun poids et utilise un fallback seasonal-naive deterministe si `uni2ts` ou un checkpoint local Moirai ne sont pas disponibles. Pour activer le backend foundation model dans un environnement prepare :
+
+```bash
+pip install -e ".[foundation]"
+```
+
+Puis configurer `MoiraiConfig(local_checkpoint_path=Path("..."))` avec un checkpoint local deja provisionne.

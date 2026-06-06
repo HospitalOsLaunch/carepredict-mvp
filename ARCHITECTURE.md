@@ -29,3 +29,5 @@
 - La branche temporelle conserve la specification produit : GRU 2 couches, hidden size 256, dropout 0.1 et dernier etat temporel.
 - La branche statique projette les attributs service/hopital en 128 dimensions, puis la fusion produit un vecteur d'etat 512D normalise par `LayerNorm`.
 - Le test de latence p99 CPU cible moins de 20 ms sur batch 1, avec un marker pytest `performance` pour rendre ce contrat explicite en CI.
+- Le wrapper Moirai est concu en mode souverainete stricte : il ne declenche aucun telechargement de poids et bascule explicitement sur un baseline seasonal-naive si `uni2ts` ou les checkpoints locaux ne sont pas disponibles.
+- `uni2ts` est expose comme extra optionnel `foundation` pour eviter de casser les tests air-gapped tout en gardant le point d'integration Moirai dans le code.
