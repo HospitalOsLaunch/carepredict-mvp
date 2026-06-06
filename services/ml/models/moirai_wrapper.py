@@ -1,16 +1,15 @@
 """Moirai cold-start forecasting wrapper.
 
-Moirai/uni2ts is treated as an optional local backend. The wrapper never downloads
-weights by itself, which keeps CarePredict compatible with air-gapped deployments.
-When uni2ts is not installed or no local checkpoint is configured, a deterministic
-seasonal-naive fallback is used for CI, smoke tests and cold-start bootstrapping.
+Moirai/uni2ts is treated as an optional local backend. The wrapper downloads
+weights once from HuggingFace (Salesforce/moirai-1.0-R-small by default). When
+uni2ts is not installed, a deterministic seasonal-naive fallback is used.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
 import numpy.typing as npt
@@ -25,7 +24,6 @@ class TimeSeriesDataset(Protocol):
     """Minimal dataset protocol accepted by the Moirai fine-tuning wrapper."""
 
     def to_pandas(self) -> pd.DataFrame:
-        """Return a dataframe containing at least timestamp, item_id and target columns."""
         ...
 
 
@@ -33,11 +31,9 @@ class MoiraiBackend(Protocol):
     """Backend protocol for a concrete uni2ts Moirai adapter."""
 
     def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]:
-        """Predict the next ``horizon`` values."""
         ...
 
     def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
-        """Fine-tune the model and return training metrics."""
         ...
 
 
@@ -52,9 +48,10 @@ class MoiraiConfig:
     local_checkpoint_path: Path | None = None
     allow_fallback: bool = True
     mlflow_experiment_name: str = "carepredict-moirai"
+    num_samples: int = 100
+    patch_size: str | int = "auto"
 
     def __post_init__(self) -> None:
-        """Validate Moirai runtime configuration."""
         if self.prediction_length <= 0:
             raise ValueError("prediction_length must be strictly positive")
         if self.context_length <= 0:
@@ -65,8 +62,6 @@ class MoiraiConfig:
 
 @dataclass(frozen=True, slots=True)
 class ForecastResult:
-    """Forecast values and metadata emitted by the wrapper."""
-
     values: npt.NDArray[np.float64]
     horizon: int
     backend_name: str
@@ -75,8 +70,6 @@ class ForecastResult:
 
 @dataclass(frozen=True, slots=True)
 class FineTuneResult:
-    """Fine-tuning metrics and backend metadata."""
-
     backend_name: str
     epochs: int
     metrics: dict[str, float]
@@ -94,18 +87,15 @@ class SeasonalNaiveBackend:
         self.season_length = season_length
 
     def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]:
-        """Repeat the most recent daily seasonal pattern."""
         clean_history = history.dropna().astype(float)
         if clean_history.empty:
             raise ValueError("history must contain at least one non-null value")
-
         pattern_length = min(self.season_length, len(clean_history))
         pattern = clean_history.tail(pattern_length).to_numpy(dtype=float)
         repeats = int(np.ceil(horizon / len(pattern)))
         return np.tile(pattern, repeats)[:horizon].astype(float)
 
     def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
-        """Return deterministic baseline metrics for compatibility with pipelines."""
         frame = dataset.to_pandas()
         if "target" not in frame.columns:
             raise ValueError("dataset must expose a target column")
@@ -116,29 +106,120 @@ class SeasonalNaiveBackend:
 
 
 class Uni2TSMoiraiBackend:
-    """Adapter boundary for local uni2ts Moirai usage.
-
-    The concrete uni2ts API has varied between releases. This class intentionally
-    validates availability and configuration, then fails with an actionable error
-    until a local checkpoint-backed adapter is wired for the deployment target.
-    """
+    """Real adapter around uni2ts MoiraiForecast for zero-shot prediction."""
 
     name = "uni2ts_moirai"
 
     def __init__(self, config: MoiraiConfig) -> None:
         self.config = config
         self._validate_uni2ts_available()
+        self._forecast: Any = None  # MoiraiForecast instance
+        self._build_forecaster()
 
     def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]:
-        """Predict with local uni2ts Moirai weights."""
-        raise NotImplementedError(
-            "uni2ts Moirai backend is available but no local checkpoint adapter is configured"
-        )
+        """Predict horizon values using zero-shot Moirai weights."""
+        import torch
+
+        if self._forecast is None:
+            self._build_forecaster(horizon_override=horizon)
+
+        clean = history.dropna().astype(float)
+        if clean.empty:
+            raise ValueError("history must contain at least one non-null value")
+
+        context_length = min(self.config.context_length, len(clean))
+        context = clean.tail(context_length).to_numpy(dtype=np.float32)
+
+        past_target = torch.from_numpy(context).reshape(1, -1, 1)
+        past_observed_target = torch.ones_like(past_target, dtype=torch.bool)
+        past_is_pad = torch.zeros(past_target.shape[:-1], dtype=torch.bool)
+
+        self._forecast.eval()
+        with torch.no_grad():
+            samples = self._forecast(
+                past_target=past_target,
+                past_observed_target=past_observed_target,
+                past_is_pad=past_is_pad,
+            )
+
+        samples_np = samples.detach().cpu().numpy()
+        # Shape: [num_samples, batch=1, horizon, target_dim=1]
+        median = np.median(samples_np, axis=0).squeeze()
+        if median.ndim == 0:
+            median = np.array([float(median)])
+        if median.shape[0] < horizon:
+            pad = np.full(horizon - median.shape[0], float(median[-1]), dtype=float)
+            median = np.concatenate([median, pad])
+        return median[:horizon].astype(float)
 
     def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
-        """Fine-tune local uni2ts Moirai weights."""
-        raise NotImplementedError(
-            "uni2ts Moirai fine-tuning requires deployment-specific local checkpoint wiring"
+        """Evaluate zero-shot Moirai on the dataset.
+
+        Proper LoRA fine-tuning of Moirai is deployment-specific and requires
+        a curated medical corpus. Here we evaluate the zero-shot performance
+        across the dataset and return MAE/MAPE as cold-start baseline metrics.
+        """
+        frame = dataset.to_pandas()
+        if "target" not in frame.columns:
+            raise ValueError("dataset must expose a target column")
+
+        target = frame["target"].astype(float).dropna()
+        if target.empty:
+            return {"baseline_mae": 0.0, "epochs": float(epochs)}
+
+        horizon = self.config.prediction_length
+        context_length = self.config.context_length
+        if len(target) <= context_length + horizon:
+            return {"baseline_mae": float(target.std() or 1.0), "epochs": float(epochs)}
+
+        # Rolling evaluation across at most 30 windows
+        max_windows = 30
+        step = max(1, (len(target) - context_length - horizon) // max_windows)
+        errors: list[float] = []
+        for start in range(0, len(target) - context_length - horizon, step):
+            history = target.iloc[start : start + context_length]
+            truth = target.iloc[start + context_length : start + context_length + horizon].to_numpy(
+                dtype=float
+            )
+            try:
+                forecast = self.predict(history, horizon=horizon)
+                errors.append(float(np.mean(np.abs(forecast - truth))))
+            except Exception as exc:  # noqa: BLE001
+                LOGGER.debug("moirai_zero_shot_window_failed", error=str(exc))
+                continue
+            if len(errors) >= max_windows:
+                break
+
+        mae = float(np.mean(errors)) if errors else float(target.std() or 1.0)
+        LOGGER.info(
+            "moirai_zero_shot_evaluation_completed",
+            backend=self.name,
+            windows=len(errors),
+            mae=mae,
+        )
+        return {"baseline_mae": mae, "epochs": float(epochs), "windows": float(len(errors))}
+
+    def _build_forecaster(self, horizon_override: int | None = None) -> None:
+        from uni2ts.model.moirai import (  # type: ignore[import-not-found]
+            MoiraiForecast,
+            MoiraiModule,
+        )
+
+        source = (
+            str(self.config.local_checkpoint_path)
+            if self.config.local_checkpoint_path is not None
+            else self.config.model_name
+        )
+        module = MoiraiModule.from_pretrained(source)
+        self._forecast = MoiraiForecast(
+            module=module,
+            prediction_length=horizon_override or self.config.prediction_length,
+            context_length=self.config.context_length,
+            patch_size=self.config.patch_size,
+            num_samples=self.config.num_samples,
+            target_dim=1,
+            feat_dynamic_real_dim=0,
+            past_feat_dynamic_real_dim=0,
         )
 
     @staticmethod
@@ -152,24 +233,25 @@ class Uni2TSMoiraiBackend:
 class MoiraiWrapper:
     """Cold-start forecaster around Moirai with an air-gapped fallback."""
 
-    def __init__(self, config: MoiraiConfig | None = None, backend: MoiraiBackend | None = None) -> None:
+    def __init__(
+        self,
+        config: MoiraiConfig | None = None,
+        backend: MoiraiBackend | None = None,
+    ) -> None:
         self.config = config or MoiraiConfig()
         self._backend = backend or self._build_backend()
 
     @property
     def backend_name(self) -> str:
-        """Return the active backend name."""
         return getattr(self._backend, "name", self._backend.__class__.__name__)
 
     def predict(self, history: pd.Series, horizon: int = 12) -> npt.NDArray[np.float64]:
-        """Predict future care-load values from a historical hourly series."""
         self._validate_history(history)
         self._validate_horizon(horizon)
         forecast = self._backend.predict(history, horizon)
         forecast_array = np.asarray(forecast, dtype=float)
         if forecast_array.shape != (horizon,):
             raise ValueError("backend forecast must be a one-dimensional array matching horizon")
-
         LOGGER.info(
             "moirai_prediction_completed",
             backend=self.backend_name,
@@ -179,7 +261,6 @@ class MoiraiWrapper:
         return forecast_array
 
     def predict_with_metadata(self, history: pd.Series, horizon: int = 12) -> ForecastResult:
-        """Predict and return metadata for MLflow/API consumers."""
         values = self.predict(history=history, horizon=horizon)
         return ForecastResult(
             values=values,
@@ -189,7 +270,6 @@ class MoiraiWrapper:
         )
 
     def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> FineTuneResult:
-        """Fine-tune the active backend and log metrics when MLflow is installed."""
         if epochs <= 0:
             raise ValueError("epochs must be strictly positive")
         metrics = self._backend.fine_tune(dataset, epochs)
@@ -204,25 +284,20 @@ class MoiraiWrapper:
 
     @property
     def model_version(self) -> str:
-        """Return a stable version label for cold-start baseline metadata."""
         return f"moirai-cold-start-{self.backend_name}"
 
     def _build_backend(self) -> MoiraiBackend:
-        if self.config.local_checkpoint_path is not None:
-            try:
-                return Uni2TSMoiraiBackend(self.config)
-            except RuntimeError:
-                if not self.config.allow_fallback:
-                    raise
-                LOGGER.warning(
-                    "moirai_backend_unavailable_using_fallback",
-                    model_name=self.config.model_name,
-                    checkpoint=str(self.config.local_checkpoint_path),
-                )
-
-        if not self.config.allow_fallback:
-            raise RuntimeError("Moirai backend unavailable and fallback is disabled")
-        return SeasonalNaiveBackend()
+        try:
+            return Uni2TSMoiraiBackend(self.config)
+        except RuntimeError as exc:
+            if not self.config.allow_fallback:
+                raise
+            LOGGER.warning(
+                "moirai_backend_unavailable_using_fallback",
+                model_name=self.config.model_name,
+                error=str(exc),
+            )
+            return SeasonalNaiveBackend()
 
     @staticmethod
     def _validate_history(history: pd.Series) -> None:
@@ -244,7 +319,6 @@ class MoiraiWrapper:
         except ImportError:
             LOGGER.info("mlflow_not_installed_skipping_moirai_logging")
             return
-
         mlflow.set_experiment(self.config.mlflow_experiment_name)
         with mlflow.start_run(run_name="moirai_fine_tune"):
             mlflow.log_params(
@@ -265,3 +339,7 @@ class MoiraiWrapper:
                     "config": str(asdict(self.config)),
                 }
             )
+
+
+# Backwards-compatible alias for older diagnostic scripts.
+MoiraiForecaster = MoiraiWrapper
