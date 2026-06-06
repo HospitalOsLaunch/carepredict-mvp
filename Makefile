@@ -17,6 +17,9 @@ features:
 	dbt --project-dir services/feature_pipeline/dbt --profiles-dir services/feature_pipeline/dbt test
 	feast -c services/feature_pipeline/feast apply
 
+train:
+	$(PYTHON) -m services.ml.training.train_tft
+
 test:
 	pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov-report=term-missing
 
