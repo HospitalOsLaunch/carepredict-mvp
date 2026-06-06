@@ -31,3 +31,7 @@
 - Le test de latence p99 CPU cible moins de 20 ms sur batch 1, avec un marker pytest `performance` pour rendre ce contrat explicite en CI.
 - Le wrapper Moirai est concu en mode souverainete stricte : il ne declenche aucun telechargement de poids et bascule explicitement sur un baseline seasonal-naive si `uni2ts` ou les checkpoints locaux ne sont pas disponibles.
 - `uni2ts` est expose comme extra optionnel `foundation` pour eviter de casser les tests air-gapped tout en gardant le point d'integration Moirai dans le code.
+- Le TFT est expose via `CarePredictTFT`, avec un backend `pytorch-forecasting` optionnel et un fallback interpretable pour les tests, l'API et les environnements sans checkpoint local.
+- La calibration conforme est stockable comme artefact JSON et applique un intervalle symetrique base sur le quantile de residus de validation.
+- L'API FastAPI garde le fetch Feast et le chargement MLflow derriere des dependances injectables pour pouvoir mocker les tests et remplacer les fallbacks sans changer les routes.
+- Le dashboard React reste une page operationnelle unique, optimisee pour le scan quotidien d'un cadre de sante.

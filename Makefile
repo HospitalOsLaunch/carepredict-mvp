@@ -26,8 +26,13 @@ api:
 dashboard:
 	npm --prefix services/dashboard run dev
 
+frontend-test:
+	npm --prefix services/dashboard run build
+	npm --prefix services/dashboard run test
+
 demo: up train
-	$(MAKE) api
+	@echo "API: http://localhost:8000/docs"
+	@echo "Dashboard: http://localhost:5173/dashboard"
 
 test:
 	pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=term-missing

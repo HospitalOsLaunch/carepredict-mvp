@@ -169,10 +169,48 @@ services:
     networks:
       - carepredict
 
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/api/Dockerfile
+    env_file:
+      - .env.example
+    environment:
+      PYTHONPATH: /app
+    command: ["uvicorn", "services.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+    networks:
+      - carepredict
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: services/dashboard/Dockerfile
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./services/dashboard:/app
+      - dashboard-node-modules:/app/node_modules
+    depends_on:
+      - api
+    networks:
+      - carepredict
+
 volumes:
   timescaledb-data:
   dagster-postgres-data:
   mlflow-data:
+  dashboard-node-modules:
 
 networks:
   carepredict:

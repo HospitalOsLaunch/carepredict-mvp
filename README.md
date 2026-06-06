@@ -15,6 +15,8 @@ make test
 Services locaux :
 
 - Dagster UI : <http://localhost:3000>
+- API prediction : <http://localhost:8000/docs>
+- Dashboard cadre : <http://localhost:5173/dashboard>
 - MLflow : <http://localhost:5000>
 - Redpanda Kafka API : `localhost:19092`
 - TimescaleDB : `localhost:5432`
@@ -86,3 +88,22 @@ pip install -e ".[foundation]"
 ```
 
 Puis configurer `MoiraiConfig(local_checkpoint_path=Path("..."))` avec un checkpoint local deja provisionne.
+
+## Passe 2 - Training
+
+```bash
+make train
+```
+
+Le workflow entraîne le wrapper TFT, calibre les intervalles conformes a 90%, journalise les métriques dans MLflow si disponible, puis génère `reports/backtesting/carepredict_backtest.html`.
+
+Métriques suivies sur données synthétiques : MAE, MAPE, CRPS, coverage 90% et ECE. Les gates bloquantes sont codées dans `services/ml/training/backtesting.py`.
+
+## Dashboard
+
+```bash
+make api
+make dashboard
+```
+
+Le dashboard affiche la charge actuelle, la prédiction J+12h, la bande de confiance 90% et les trois variables les plus influentes. La bande de confiance est calibrée pour contenir la charge réelle attendue dans 9 cas sur 10.
