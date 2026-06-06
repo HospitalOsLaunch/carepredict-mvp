@@ -20,8 +20,11 @@ features:
 train:
 	$(PYTHON) -m services.ml.training.train_tft
 
+api:
+	uvicorn services.api.main:app --host 0.0.0.0 --port 8000
+
 test:
-	pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov-report=term-missing
+	pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=term-missing
 
 logs:
 	$(COMPOSE) logs -f --tail=200
