@@ -9,6 +9,7 @@ description = "CarePredict v0 pass 1: sovereign data ingestion, feature engineer
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  "cloudpickle>=3.0,<4.0",
   "confluent-kafka>=2.4.0,<3.0.0",
   "dbt-core>=1.7.0,<1.8.0",
   "dbt-postgres>=1.7.0,<1.8.0",
