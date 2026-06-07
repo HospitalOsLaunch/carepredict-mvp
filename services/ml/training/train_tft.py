@@ -8,7 +8,7 @@ import pandas as pd
 import structlog
 import typer
 
-from services.ml.models.tft_model import CarePredictTFT
+from services.ml.models.tft_model import CarePredictTFT, PytorchForecastingTFTBackend
 from services.ml.registry.mlflow_client import MLflowModelRegistry
 from services.ml.training.backtesting import (
     assert_metric_targets,
@@ -25,11 +25,14 @@ from services.ml.uq.conformal import ConformalForecaster
 LOGGER = structlog.get_logger(__name__)
 app = typer.Typer(no_args_is_help=False)
 
+BUNDLE_PATH = Path("/app/checkpoints/model_bundle.pkl")
+
 
 @app.command()
 def main(
     data_path: Path | None = None,
     report_path: Path = Path("reports/backtesting/carepredict_backtest.html"),
+    bundle_path: Path = BUNDLE_PATH,
     enforce_targets: bool = False,
 ) -> None:
     """Train TFT, calibrate conformal intervals on real model predictions and log MLflow."""
@@ -47,7 +50,18 @@ def main(
     train_metrics = model.fit(split.train)
     LOGGER.info("training_finished", backend=model.backend_name, metrics=train_metrics)
 
-    # Use the trained model for validation predictions, then calibrate conformal.
+    if isinstance(model._backend, PytorchForecastingTFTBackend):
+        try:
+            model._backend.save_bundle(bundle_path)
+            LOGGER.info("serving_bundle_persisted", path=str(bundle_path))
+        except Exception as exc:  # noqa: BLE001
+            LOGGER.warning("serving_bundle_save_failed", error=str(exc))
+    else:
+        LOGGER.info(
+            "serving_bundle_skipped_non_torch_backend",
+            backend=model.backend_name,
+        )
+
     validation_pred = model.predict_dataframe(
         split.validation,
         history_buffer=split.train.tail(model.config.max_encoder_length * 4),
@@ -58,7 +72,6 @@ def main(
         validation_pred.astype(float),
     )
 
-    # Use the trained model for test predictions, then compute final metrics.
     test_pred = model.predict_dataframe(
         split.test,
         history_buffer=pd.concat(
@@ -90,7 +103,8 @@ def main(
         tags={"candidate_stage": "shadow"},
     )
     typer.echo(
-        f"trained {model.config.model_version}; backend={model.backend_name}; report={report}"
+        f"trained {model.config.model_version}; backend={model.backend_name}; "
+        f"report={report}; bundle={bundle_path if bundle_path.exists() else 'not_saved'}"
     )
 
 

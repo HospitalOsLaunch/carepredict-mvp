@@ -8,14 +8,18 @@ same future intervention covariates.
 
 from __future__ import annotations
 
+import logging
+import warnings
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Protocol
+from pathlib import Path
+from typing import Any, Protocol, cast
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
 import structlog
+import torch
 
 LOGGER = structlog.get_logger(__name__)
 
@@ -39,7 +43,7 @@ class FutureIntervention:
 class TFTConfig:
     """Configuration for the TFT forecasting wrapper."""
 
-    horizon: int = 12
+    horizon: int = 168
     step_hours: int = 1
     target_column: str = "siips_score"
     service_column: str = "service_id"
@@ -54,7 +58,7 @@ class TFTConfig:
         "scheduled_admissions",
         "planned_procedures",
     )
-    max_encoder_length: int = 24
+    max_encoder_length: int = 336
     allow_fallback: bool = True
     model_version: str = "tft-moirai-ft-v1.0"
     # Real-backend training hyperparameters (CPU-friendly defaults)
@@ -101,7 +105,12 @@ class TFTBackend(Protocol):
         """Predict a 12h care-load forecast."""
         ...
 
-    def fit(self, dataset: pd.DataFrame, config: TFTConfig) -> dict[str, float]:
+    def fit(
+        self,
+        dataset: pd.DataFrame,
+        config: TFTConfig,
+        validation_dataset: pd.DataFrame | None = None,
+    ) -> dict[str, float]:
         """Fit the backend and return training metrics."""
         ...
 
@@ -117,23 +126,80 @@ class PytorchForecastingTFTBackend:
         self._training_dataset: Any = None
         self._last_config: TFTConfig | None = None
 
-    def fit(self, dataset: pd.DataFrame, config: TFTConfig) -> dict[str, float]:
+    @classmethod
+    def from_artifacts(
+        cls,
+        *,
+        checkpoint_path: Path,
+        training_dataset_path: Path,
+    ) -> PytorchForecastingTFTBackend:
+        """Load a trained TFT checkpoint and its dataset encoders once for serving."""
+        import pickle
+
+        backend = cls()
+        backend.load_checkpoint(checkpoint_path)
+        with training_dataset_path.open("rb") as handle:
+            backend._training_dataset = pickle.load(handle)
+        return backend
+
+    def load_checkpoint(self, checkpoint_path: Path) -> None:
+        """Load model + training dataset from pickle bundle.
+
+        Restores self._model, self._training_dataset, and self._last_config
+        so that predict() can run without re-training.
+        Raises FileNotFoundError if the bundle is missing.
+        """
+        import cloudpickle
+
+        if not checkpoint_path.exists():
+            raise FileNotFoundError(
+                f"Model bundle not found at {checkpoint_path}. "
+                "Run train_tft.py to generate it."
+            )
+
+        with checkpoint_path.open("rb") as handle:
+            bundle = cloudpickle.load(handle)
+
+        self._model = bundle["model"]
+        self._training_dataset = bundle["training_dataset"]
+        self._last_config = bundle.get("config")
+        if hasattr(self._model, "eval"):
+            self._model.eval()
+        LOGGER.info(
+            "tft_bundle_loaded",
+            path=str(checkpoint_path),
+            has_config=self._last_config is not None,
+        )
+
+    def fit(
+        self,
+        dataset: pd.DataFrame,
+        config: TFTConfig,
+        validation_dataset: pd.DataFrame | None = None,
+    ) -> dict[str, float]:
         """Fit a pytorch-forecasting TFT model on the provided dataset."""
-        import lightning as L  # type: ignore[import-not-found]
-        import torch
-        from lightning.pytorch.callbacks import EarlyStopping  # type: ignore[import-not-found]
-        from pytorch_forecasting import (  # type: ignore[import-not-found]
+        import lightning as L
+        from lightning.pytorch.callbacks import EarlyStopping
+        from pytorch_forecasting import (
             TemporalFusionTransformer,
             TimeSeriesDataSet,
         )
-        from pytorch_forecasting.data import GroupNormalizer  # type: ignore[import-not-found]
-        from pytorch_forecasting.metrics import QuantileLoss  # type: ignore[import-not-found]
+        from pytorch_forecasting.data import GroupNormalizer  # type: ignore[import-untyped]
+        from pytorch_forecasting.metrics import QuantileLoss  # type: ignore[import-untyped]
 
-        prepared = self._prepare_dataframe(dataset, config)
+        self._configure_lightning_logging()
+        train_frame, validation_frame = self._resolve_fit_frames(
+            dataset=dataset,
+            validation_dataset=validation_dataset,
+            config=config,
+        )
+        prepared = self._prepare_dataframe(train_frame, config)
         max_prediction_length = config.horizon
         max_encoder_length = config.max_encoder_length
 
         training_cutoff = prepared["time_idx"].max() - max_prediction_length
+        if training_cutoff < max_encoder_length // 2:
+            raise ValueError("training dataset is too short for TFT encoder and horizon")
 
         training = TimeSeriesDataSet(
             prepared[prepared["time_idx"] <= training_cutoff],
@@ -157,18 +223,29 @@ class PytorchForecastingTFTBackend:
             allow_missing_timesteps=True,
         )
 
+        validation_prepared, min_prediction_idx = self._prepare_validation_dataframe(
+            train_frame=train_frame,
+            validation_frame=validation_frame,
+            config=config,
+        )
         validation = TimeSeriesDataSet.from_dataset(
             training,
-            prepared,
-            predict=True,
+            validation_prepared,
+            min_prediction_idx=min_prediction_idx,
+            predict=False,
             stop_randomization=True,
         )
+        if len(validation) < 2:
+            raise ValueError("validation dataset produced fewer than two TFT samples")
 
         train_loader = training.to_dataloader(
             train=True, batch_size=config.batch_size, num_workers=0
         )
         val_loader = validation.to_dataloader(
-            train=False, batch_size=config.batch_size * 2, num_workers=0
+            train=False,
+            batch_size=config.batch_size * 2,
+            num_workers=0,
+            shuffle=False,
         )
 
         tft = TemporalFusionTransformer.from_dataset(
@@ -197,11 +274,14 @@ class PytorchForecastingTFTBackend:
             accelerator="cpu",
             gradient_clip_val=config.gradient_clip_val,
             callbacks=[early_stop],
+            enable_checkpointing=False,
             enable_progress_bar=False,
             enable_model_summary=False,
+            inference_mode=True,
             logger=False,
             limit_train_batches=config.limit_train_batches,
             limit_val_batches=config.limit_val_batches,
+            num_sanity_val_steps=0,
         )
 
         LOGGER.info(
@@ -218,27 +298,51 @@ class PytorchForecastingTFTBackend:
         self._training_dataset = training
         self._last_config = config
 
-        with torch.no_grad():
-            raw = tft.predict(train_loader, mode="raw", return_y=True)
-            preds = raw.output.prediction[..., 3]  # median quantile
-            actuals = raw.y[0] if isinstance(raw.y, (list, tuple)) else raw.y
-            preds_t = preds.float().reshape(-1)
-            actuals_t = actuals.float().reshape(-1)
-            min_len = min(preds_t.numel(), actuals_t.numel())
-            preds_t = preds_t[:min_len]
-            actuals_t = actuals_t[:min_len]
-            mae = float(torch.mean(torch.abs(preds_t - actuals_t)).item())
-            denom = torch.clamp(torch.abs(actuals_t), min=1.0)
-            mape = float(torch.mean(torch.abs((preds_t - actuals_t) / denom)).item())
+        train_metrics = self._evaluate_loader(tft, train_loader)
+        validation_metrics = self._evaluate_loader(tft, val_loader)
 
         LOGGER.info(
             "tft_training_completed",
             backend=self.name,
-            train_mae=mae,
-            train_mape=mape,
+            train_mae=train_metrics["mae"],
+            train_mape=train_metrics["mape"],
+            validation_mae=validation_metrics["mae"],
+            validation_mape=validation_metrics["mape"],
         )
 
-        return {"train_mae": mae, "train_mape": mape}
+        return {
+            "train_mae": train_metrics["mae"],
+            "train_mape": train_metrics["mape"],
+            "validation_mae": validation_metrics["mae"],
+            "validation_mape": validation_metrics["mape"],
+        }
+
+    def save_bundle(self, bundle_path: Path) -> None:
+        """Save model + training dataset as pickle bundle for serving.
+
+        This is the serving-ready artifact: model weights + the TimeSeriesDataSet
+        template needed by pytorch-forecasting to interpret incoming dataframes.
+        Lightning .ckpt files alone are insufficient because the dataset schema
+        is not embedded reliably across pytorch-forecasting versions.
+        """
+        import cloudpickle
+
+        if self._model is None or self._training_dataset is None:
+            raise RuntimeError("Cannot save bundle: model not trained")
+
+        bundle = {
+            "model": self._model,
+            "training_dataset": self._training_dataset,
+            "config": self._last_config,
+        }
+        bundle_path.parent.mkdir(parents=True, exist_ok=True)
+        with bundle_path.open("wb") as handle:
+            cloudpickle.dump(bundle, handle)
+        LOGGER.info(
+            "tft_bundle_saved",
+            path=str(bundle_path),
+            size_mb=round(bundle_path.stat().st_size / 1e6, 2),
+        )
 
     def predict(
         self,
@@ -247,31 +351,101 @@ class PytorchForecastingTFTBackend:
         config: TFTConfig,
     ) -> TFTForecast:
         """Predict with the trained TFT model."""
-        import torch
-        from pytorch_forecasting import TimeSeriesDataSet  # type: ignore[import-not-found]
+        try:
+            return self.predict_fast(history, future_covariates, config)
+        except Exception as exc:  # noqa: BLE001
+            LOGGER.warning("tft_fast_path_failed_using_dataloader", error=str(exc))
+            return self._predict_with_dataloader(history, future_covariates, config)
 
-        if self._model is None or self._training_dataset is None:
+    @torch.inference_mode()
+    def predict_fast(
+        self,
+        history: pd.DataFrame,
+        future_covariates: pd.DataFrame,
+        config: TFTConfig,
+    ) -> TFTForecast:
+        """Run a single forecast without Lightning ``Trainer`` or DataLoader setup."""
+        from pytorch_forecasting import TimeSeriesDataSet
+
+        if self._model is None:
+            raise RuntimeError("model must be trained before predict()")
+
+        model = self._model
+        model.eval()
+        prepared = self._prepare_dataframe(history, config, future_covariates)
+        if self._training_dataset is not None:
+            predict_ds = TimeSeriesDataSet.from_dataset(
+                self._training_dataset,
+                prepared,
+                predict=True,
+                stop_randomization=True,
+            )
+        else:
+            dataset_parameters = self._checkpoint_dataset_parameters(model)
+            if dataset_parameters is None:
+                raise RuntimeError("trained TFT has no dataset parameters for serving")
+            predict_ds = TimeSeriesDataSet.from_parameters(
+                dataset_parameters,
+                prepared,
+                predict=True,
+                stop_randomization=True,
+            )
+        sample_x, _sample_y = predict_ds[0]
+        batch_x = self._batch_timeseries_sample(sample_x, self._model_device(model))
+        raw = model(batch_x)
+
+        prediction_tensor = self._prediction_tensor(raw)
+        forecast_array = self._median_forecast(prediction_tensor, config)
+
+        return TFTForecast(
+            value=float(forecast_array[-1]),
+            horizon_values=forecast_array,
+            top_features=list(config.known_future_reals[:3]),
+            model_version=config.model_version,
+        )
+
+    def _predict_with_dataloader(
+        self,
+        history: pd.DataFrame,
+        future_covariates: pd.DataFrame,
+        config: TFTConfig,
+    ) -> TFTForecast:
+        """Compatibility prediction path for unusual pytorch-forecasting releases."""
+        from pytorch_forecasting import TimeSeriesDataSet
+
+        if self._model is None:
             raise RuntimeError("model must be trained before predict()")
 
         prepared = self._prepare_dataframe(history, config, future_covariates)
-        predict_ds = TimeSeriesDataSet.from_dataset(
-            self._training_dataset,
-            prepared,
-            predict=True,
-            stop_randomization=True,
+        if self._training_dataset is not None:
+            predict_ds = TimeSeriesDataSet.from_dataset(
+                self._training_dataset,
+                prepared,
+                predict=True,
+                stop_randomization=True,
+            )
+        else:
+            dataset_parameters = self._checkpoint_dataset_parameters(self._model)
+            if dataset_parameters is None:
+                raise RuntimeError("trained TFT has no dataset parameters for serving")
+            predict_ds = TimeSeriesDataSet.from_parameters(
+                dataset_parameters,
+                prepared,
+                predict=True,
+                stop_randomization=True,
+            )
+        predict_loader = predict_ds.to_dataloader(
+            train=False,
+            batch_size=64,
+            num_workers=0,
+            shuffle=False,
         )
-        predict_loader = predict_ds.to_dataloader(train=False, batch_size=64, num_workers=0)
 
         with torch.no_grad():
             raw = self._model.predict(predict_loader, mode="raw", return_x=True)
 
         prediction_tensor = raw.output.prediction[..., 3]
-        forecast_array = prediction_tensor[-1].detach().cpu().numpy().astype(float)
-        if forecast_array.shape[0] < config.horizon:
-            pad_value = float(forecast_array[-1]) if forecast_array.size else 0.0
-            padding = np.full(config.horizon - forecast_array.shape[0], pad_value, dtype=float)
-            forecast_array = np.concatenate([forecast_array, padding])
-        forecast_array = forecast_array[: config.horizon]
+        forecast_array = self._median_forecast(prediction_tensor, config)
 
         top_features = self._extract_top_features(self._model, raw, config)
 
@@ -281,6 +455,106 @@ class PytorchForecastingTFTBackend:
             top_features=top_features,
             model_version=config.model_version,
         )
+
+    @staticmethod
+    def _checkpoint_dataset_parameters(model: Any) -> dict[str, Any] | None:
+        parameters = getattr(model, "dataset_parameters", None)
+        if isinstance(parameters, dict):
+            return parameters
+        hparams = getattr(model, "hparams", None)
+        if hparams is None:
+            return None
+        hparams_parameters = getattr(hparams, "dataset_parameters", None)
+        if isinstance(hparams_parameters, dict):
+            return hparams_parameters
+        if isinstance(hparams, dict):
+            raw_parameters = hparams.get("dataset_parameters")
+            if isinstance(raw_parameters, dict):
+                return raw_parameters
+        return None
+
+    @staticmethod
+    def _model_device(model: Any) -> torch.device:
+        try:
+            return cast(torch.device, next(model.parameters()).device)
+        except StopIteration:
+            return torch.device("cpu")
+
+    @classmethod
+    def _batch_timeseries_sample(
+        cls,
+        sample: dict[str, Any],
+        device: torch.device,
+    ) -> dict[str, torch.Tensor]:
+        encoder_length = int(sample["encoder_length"])
+        decoder_length = int(sample["decoder_length"])
+        x_cat = cls._as_tensor(sample["x_cat"], device=device, dtype=torch.long)
+        x_cont = cls._as_tensor(sample["x_cont"], device=device, dtype=torch.float32)
+        encoder_target = cls._as_tensor(
+            sample["encoder_target"],
+            device=device,
+            dtype=torch.float32,
+        )
+        groups = cls._as_tensor(sample["groups"], device=device, dtype=torch.long)
+        target_scale = cls._as_tensor(sample["target_scale"], device=device, dtype=torch.float32)
+        time_idx_start = int(cls._as_tensor(sample["encoder_time_idx_start"], device=device).item())
+        decoder_time_idx = torch.arange(
+            time_idx_start + encoder_length,
+            time_idx_start + encoder_length + decoder_length,
+            device=device,
+            dtype=torch.long,
+        )
+
+        return {
+            "encoder_cat": x_cat[:encoder_length].unsqueeze(0),
+            "encoder_cont": x_cont[:encoder_length].unsqueeze(0),
+            "encoder_target": encoder_target[:encoder_length].unsqueeze(0),
+            "encoder_lengths": torch.tensor([encoder_length], device=device, dtype=torch.long),
+            "decoder_cat": x_cat[encoder_length : encoder_length + decoder_length].unsqueeze(0),
+            "decoder_cont": x_cont[encoder_length : encoder_length + decoder_length].unsqueeze(0),
+            "decoder_target": torch.zeros((1, decoder_length), device=device, dtype=torch.float32),
+            "decoder_lengths": torch.tensor([decoder_length], device=device, dtype=torch.long),
+            "decoder_time_idx": decoder_time_idx.unsqueeze(0),
+            "groups": groups.reshape(1, -1),
+            "target_scale": target_scale.reshape(1, -1),
+        }
+
+    @staticmethod
+    def _as_tensor(
+        value: Any,
+        *,
+        device: torch.device,
+        dtype: torch.dtype | None = None,
+    ) -> torch.Tensor:
+        tensor = value if isinstance(value, torch.Tensor) else torch.as_tensor(value)
+        if dtype is not None:
+            tensor = tensor.to(dtype=dtype)
+        return tensor.to(device)
+
+    @staticmethod
+    def _prediction_tensor(raw: Any) -> torch.Tensor:
+        prediction = raw["prediction"] if isinstance(raw, dict) else raw.prediction
+        if not isinstance(prediction, torch.Tensor):
+            raise TypeError("TFT forward output did not contain a prediction tensor")
+        return prediction
+
+    @staticmethod
+    def _median_forecast(
+        prediction_tensor: torch.Tensor,
+        config: TFTConfig,
+    ) -> npt.NDArray[np.float64]:
+        if prediction_tensor.ndim == 3:
+            median_tensor = prediction_tensor[..., 3]
+        elif prediction_tensor.ndim == 2:
+            median_tensor = prediction_tensor
+        else:
+            median_tensor = prediction_tensor.reshape(1, -1)
+        forecast_array = median_tensor[-1].detach().cpu().numpy().astype(float)
+        if forecast_array.shape[0] < config.horizon:
+            pad_value = float(forecast_array[-1]) if forecast_array.size else 0.0
+            padding = np.full(config.horizon - forecast_array.shape[0], pad_value, dtype=float)
+            forecast_array = np.concatenate([forecast_array, padding])
+        return forecast_array[: config.horizon]
 
     def _prepare_dataframe(
         self,
@@ -328,6 +602,126 @@ class PytorchForecastingTFTBackend:
             prepared.groupby(config.service_column).cumcount().astype(int)
         )
         return prepared.reset_index(drop=True)
+
+    def _resolve_fit_frames(
+        self,
+        *,
+        dataset: pd.DataFrame,
+        validation_dataset: pd.DataFrame | None,
+        config: TFTConfig,
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """Return explicit train/validation frames, deriving a holdout when needed."""
+        if validation_dataset is not None:
+            if validation_dataset.empty:
+                raise ValueError("validation_dataset must not be empty")
+            return dataset.reset_index(drop=True), validation_dataset.reset_index(drop=True)
+
+        ordered = dataset.sort_values(config.time_column).reset_index(drop=True)
+        minimum_validation_rows = max(config.horizon * 2, config.max_encoder_length)
+        if len(ordered) <= minimum_validation_rows + config.max_encoder_length:
+            validation_frame = ordered.tail(minimum_validation_rows).reset_index(drop=True)
+            train_frame = ordered.iloc[: -len(validation_frame)].reset_index(drop=True)
+        else:
+            validation_start = max(
+                int(len(ordered) * 0.85),
+                len(ordered) - minimum_validation_rows,
+            )
+            validation_frame = ordered.iloc[validation_start:].reset_index(drop=True)
+            train_frame = ordered.iloc[:validation_start].reset_index(drop=True)
+        if train_frame.empty:
+            raise ValueError("dataset is too short to derive an internal validation split")
+        return train_frame, validation_frame
+
+    def _prepare_validation_dataframe(
+        self,
+        *,
+        train_frame: pd.DataFrame,
+        validation_frame: pd.DataFrame,
+        config: TFTConfig,
+    ) -> tuple[pd.DataFrame, int]:
+        """Append encoder history to validation data and return its first target index."""
+        history = (
+            train_frame.sort_values([config.service_column, config.time_column])
+            .groupby(config.service_column, group_keys=False)
+            .tail(config.max_encoder_length)
+            .copy()
+        )
+        history["_carepredict_split"] = "history"
+        validation = validation_frame.copy()
+        validation["_carepredict_split"] = "validation"
+        combined = pd.concat([history, validation], ignore_index=True)
+        prepared = self._prepare_dataframe(combined, config)
+        validation_rows = prepared[prepared["_carepredict_split"] == "validation"]
+        if validation_rows.empty:
+            raise ValueError("validation frame did not survive TFT preparation")
+        return prepared, int(validation_rows["time_idx"].min())
+
+    @torch.inference_mode()
+    def _evaluate_loader(self, model: Any, dataloader: Any) -> dict[str, float]:
+        """Evaluate MAE/MAPE without constructing a Lightning prediction loop."""
+        device = self._model_device(model)
+        errors: list[torch.Tensor] = []
+        percentage_errors: list[torch.Tensor] = []
+        model.eval()
+
+        for batch_x, batch_y in dataloader:
+            moved_x = self._move_tensor_tree(batch_x, device)
+            target = self._target_tensor(batch_y).to(device=device, dtype=torch.float32)
+            raw = model(moved_x)
+            prediction = self._prediction_tensor(raw)
+            if prediction.ndim == 3:
+                prediction = prediction[..., 3]
+            preds_t = prediction.float().reshape(-1)
+            actuals_t = target.reshape(-1)
+            min_len = min(preds_t.numel(), actuals_t.numel())
+            preds_t = preds_t[:min_len]
+            actuals_t = actuals_t[:min_len]
+            batch_errors = torch.abs(preds_t - actuals_t)
+            errors.append(batch_errors.detach().cpu())
+            percentage_errors.append(
+                (batch_errors / torch.clamp(torch.abs(actuals_t), min=1.0)).detach().cpu()
+            )
+
+        if not errors:
+            raise ValueError("cannot evaluate an empty dataloader")
+        return {
+            "mae": float(torch.mean(torch.cat(errors)).item()),
+            "mape": float(torch.mean(torch.cat(percentage_errors)).item()),
+        }
+
+    @classmethod
+    def _move_tensor_tree(cls, value: Any, device: torch.device) -> Any:
+        if isinstance(value, torch.Tensor):
+            return value.to(device)
+        if isinstance(value, dict):
+            return {key: cls._move_tensor_tree(item, device) for key, item in value.items()}
+        if isinstance(value, list):
+            return [cls._move_tensor_tree(item, device) for item in value]
+        if isinstance(value, tuple):
+            return tuple(cls._move_tensor_tree(item, device) for item in value)
+        return value
+
+    @staticmethod
+    def _target_tensor(batch_y: Any) -> torch.Tensor:
+        target = batch_y[0] if isinstance(batch_y, (list, tuple)) else batch_y
+        if not isinstance(target, torch.Tensor):
+            raise TypeError("TFT dataloader target is not a tensor")
+        return target
+
+    @staticmethod
+    def _configure_lightning_logging() -> None:
+        for logger_name in ("lightning", "lightning.pytorch", "pytorch_lightning"):
+            logging.getLogger(logger_name).setLevel(logging.WARNING)
+        warnings.filterwarnings(
+            "ignore",
+            message=".*does not have many workers.*",
+            module="lightning.*",
+        )
+        warnings.filterwarnings(
+            "ignore",
+            message="Attribute '.*' is an instance of `nn.Module`.*",
+            module="lightning.*",
+        )
 
     @staticmethod
     def _extract_top_features(model: Any, raw: Any, config: TFTConfig) -> list[str]:
@@ -424,12 +818,30 @@ class InterpretableTFTFallback:
             model_version=config.model_version,
         )
 
-    def fit(self, dataset: pd.DataFrame, config: TFTConfig) -> dict[str, float]:
+    def fit(
+        self,
+        dataset: pd.DataFrame,
+        config: TFTConfig,
+        validation_dataset: pd.DataFrame | None = None,
+    ) -> dict[str, float]:
         target = dataset[config.target_column].astype(float)
         shifted = target.shift(config.horizon).fillna(target.expanding().mean())
         mae = float((target - shifted).abs().mean())
         mape = float(((target - shifted).abs() / target.clip(lower=1.0)).mean())
-        return {"train_mae": mae, "train_mape": mape}
+        metrics = {"train_mae": mae, "train_mape": mape}
+        if validation_dataset is not None:
+            validation_target = validation_dataset[config.target_column].astype(float)
+            validation_shifted = validation_target.shift(config.horizon).fillna(
+                validation_target.expanding().mean()
+            )
+            metrics["validation_mae"] = float((validation_target - validation_shifted).abs().mean())
+            metrics["validation_mape"] = float(
+                (
+                    (validation_target - validation_shifted).abs()
+                    / validation_target.clip(lower=1.0)
+                ).mean()
+            )
+        return metrics
 
     @staticmethod
     def _recent_hourly_trend(target: pd.Series) -> float:
@@ -474,9 +886,31 @@ class CarePredictTFT:
         )
         return forecast
 
-    def fit(self, dataset: pd.DataFrame) -> dict[str, float]:
+    def fit(
+        self,
+        dataset: pd.DataFrame,
+        validation_dataset: pd.DataFrame | None = None,
+    ) -> dict[str, float]:
         self._validate_history(dataset)
-        return self._backend.fit(dataset, self.config)
+        if validation_dataset is not None:
+            self._validate_history(validation_dataset)
+        return self._backend.fit(dataset, self.config, validation_dataset)
+
+    def load_checkpoint(self, checkpoint_path: Path) -> None:
+        """Load a serving TFT checkpoint and activate the real backend.
+
+        ``checkpoint_path`` must point to a pytorch-lightning ``.ckpt`` created
+        from ``pytorch_forecasting.TemporalFusionTransformer``. If the facade was
+        initially using the fallback because optional dependencies were missing,
+        this method attempts to instantiate the real backend before loading.
+        """
+        backend = (
+            self._backend
+            if isinstance(self._backend, PytorchForecastingTFTBackend)
+            else PytorchForecastingTFTBackend()
+        )
+        backend.load_checkpoint(checkpoint_path)
+        self._backend = backend
 
     def predict_dataframe(
         self,
@@ -581,6 +1015,10 @@ def build_future_covariates(
     """Build hourly known-future covariates from planned interventions."""
     rows: list[dict[str, object]] = []
     base_timestamp = pd.Timestamp(timestamp)
+    if base_timestamp.tzinfo is None:
+        base_timestamp = base_timestamp.tz_localize("UTC")
+    else:
+        base_timestamp = base_timestamp.tz_convert("UTC")
     for step in range(1, config.horizon + 1):
         bucket_start = base_timestamp + pd.Timedelta(hours=step * config.step_hours)
         row: dict[str, object] = {
@@ -589,10 +1027,16 @@ def build_future_covariates(
         }
         for intervention in interventions:
             scheduled_at = pd.Timestamp(intervention.scheduled_at)
+            if scheduled_at.tzinfo is None:
+                scheduled_at = scheduled_at.tz_localize("UTC")
+            else:
+                scheduled_at = scheduled_at.tz_convert("UTC")
             if scheduled_at.floor("h") == bucket_start.floor("h"):
                 feature_name = _intervention_to_feature(intervention.intervention_type)
                 if feature_name in row:
-                    row[feature_name] = int(row[feature_name]) + intervention.count
+                    current_count = row.get(feature_name, 0)
+                    safe_count = current_count if isinstance(current_count, int) else 0
+                    row[feature_name] = safe_count + intervention.count
         rows.append(row)
     return pd.DataFrame(rows)
 
