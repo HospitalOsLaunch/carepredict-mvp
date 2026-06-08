@@ -23,20 +23,20 @@ def test_daily_peak_exceeds_night_mean() -> None:
     assert statistics.mean(morning_values) > statistics.mean(night_values) + 5.0
 
 
-def test_monday_tuesday_weekly_cycle_is_detectable() -> None:
-    dataset = generate_dataset(months=1, services=[DEFAULT_SERVICES[2]], seed=456)
-    monday_tuesday = [
+def test_weekday_siips_exceeds_weekend_siips() -> None:
+    dataset = generate_dataset(months=1, services=[DEFAULT_SERVICES[0]], seed=456)
+    weekday_values = [
         record.siips_score
         for record in dataset.care_load
-        if record.measured_at.weekday() in (0, 1)
+        if record.measured_at.weekday() in (0, 1, 2, 3, 4)
     ]
-    other_weekdays = [
+    weekend_values = [
         record.siips_score
         for record in dataset.care_load
-        if record.measured_at.weekday() in (2, 3, 4)
+        if record.measured_at.weekday() in (5, 6)
     ]
 
-    assert statistics.mean(monday_tuesday) > statistics.mean(other_weekdays) + 1.0
+    assert statistics.mean(weekday_values) > statistics.mean(weekend_values) + 5.0
 
 
 def test_default_volume_exceeds_acceptance_thresholds() -> None:
