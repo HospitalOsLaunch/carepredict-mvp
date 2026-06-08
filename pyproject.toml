@@ -77,9 +77,10 @@ disallow_subclassing_any = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"
-addopts = "--strict-markers --strict-config"
+addopts = "--strict-markers --strict-config -m 'not integration'"
 testpaths = ["tests", "data/synthetic/tests"]
 pythonpath = ["."]
 markers = [
   "performance: latency and throughput checks that run on CPU by default",
+  "integration: tests requiring external services (postgres/redis/kafka); skipped by default; run with `pytest -m integration` or `pytest -m 'integration or not integration'` for full suite",
 ]

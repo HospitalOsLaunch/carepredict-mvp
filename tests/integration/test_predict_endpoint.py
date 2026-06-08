@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from services.api.main import app
 
 
+@pytest.mark.integration
 def test_predict_endpoint_response_shape() -> None:
     client = TestClient(app)
 
