@@ -31,3 +31,28 @@ services/feature_pipeline/dbt/.user.yml
 
 # MLflow local artifacts
 mlruns/
+
+# Python build artifacts
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Virtual environment
+.venv/
+
+# Coverage
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# ML artifacts (à committer séparément ou via DVC/LFS)
+mlruns/
+artifacts/
+*.pkl
+*.pt
+*.ckpt

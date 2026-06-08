@@ -5,14 +5,22 @@ from __future__ import annotations
 import argparse
 import csv
 import os
-from dataclasses import dataclass
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Iterable, Sequence
 from uuid import uuid4
 
 import numpy as np
 import numpy.typing as npt
+
+from data.synthetic.causal_model import (
+    ADMISSION_RATES_PER_DAY,
+    CAUSAL_EVENT_EFFECTS,
+    PatientTrajectory,
+    aggregate_care_load_from_patients,
+    build_patient_trajectory,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,27 +107,14 @@ class SyntheticDataset:
 
 DEFAULT_SERVICES: tuple[ServiceProfile, ...] = (
     ServiceProfile(
-        service_id="card-001",
-        hospital_id="hosp-001",
-        service_name="Cardiologie",
-        specialty="cardiology",
-        bed_count=34,
-        patient_profile="medical_high_acuity",
-        baseline_patients=25,
-        daily_admission_rate=5.5,
-        acuity_factor=1.28,
-        nurse_day_ratio=7.0,
-        aide_day_ratio=10.0,
-    ),
-    ServiceProfile(
         service_id="urg-001",
         hospital_id="hosp-001",
         service_name="Urgences",
         specialty="emergency",
         bed_count=42,
         patient_profile="acute_unscheduled",
-        baseline_patients=31,
-        daily_admission_rate=19.0,
+        baseline_patients=9,
+        daily_admission_rate=ADMISSION_RATES_PER_DAY["urg-001"],
         acuity_factor=1.42,
         nurse_day_ratio=5.8,
         aide_day_ratio=8.0,
@@ -131,8 +126,8 @@ DEFAULT_SERVICES: tuple[ServiceProfile, ...] = (
         specialty="internal_medicine",
         bed_count=38,
         patient_profile="medical_mixed",
-        baseline_patients=29,
-        daily_admission_rate=7.5,
+        baseline_patients=14,
+        daily_admission_rate=ADMISSION_RATES_PER_DAY["med-001"],
         acuity_factor=1.18,
         nurse_day_ratio=7.5,
         aide_day_ratio=9.5,
@@ -144,24 +139,37 @@ DEFAULT_SERVICES: tuple[ServiceProfile, ...] = (
         specialty="surgery",
         bed_count=32,
         patient_profile="scheduled_surgical",
-        baseline_patients=23,
-        daily_admission_rate=6.8,
+        baseline_patients=10,
+        daily_admission_rate=ADMISSION_RATES_PER_DAY["chir-001"],
         acuity_factor=1.22,
         nurse_day_ratio=6.8,
         aide_day_ratio=9.0,
     ),
     ServiceProfile(
-        service_id="ped-001",
+        service_id="rea-001",
         hospital_id="hosp-001",
-        service_name="Pédiatrie",
-        specialty="pediatrics",
-        bed_count=28,
-        patient_profile="pediatric_winter_sensitive",
-        baseline_patients=18,
-        daily_admission_rate=4.5,
-        acuity_factor=1.12,
-        nurse_day_ratio=6.5,
-        aide_day_ratio=10.5,
+        service_name="Réanimation",
+        specialty="intensive_care",
+        bed_count=16,
+        patient_profile="critical_care",
+        baseline_patients=3,
+        daily_admission_rate=ADMISSION_RATES_PER_DAY["rea-001"],
+        acuity_factor=2.8,
+        nurse_day_ratio=2.5,
+        aide_day_ratio=5.5,
+    ),
+    ServiceProfile(
+        service_id="ssr-001",
+        hospital_id="hosp-001",
+        service_name="SSR gériatrique",
+        specialty="geriatric_rehab",
+        bed_count=44,
+        patient_profile="geriatric_rehabilitation",
+        baseline_patients=8,
+        daily_admission_rate=ADMISSION_RATES_PER_DAY["ssr-001"],
+        acuity_factor=1.5,
+        nurse_day_ratio=8.0,
+        aide_day_ratio=7.0,
     ),
 )
 
@@ -204,17 +212,26 @@ def selected_services(service_names: Sequence[str] | None) -> list[ServiceProfil
     return services
 
 
+def with_hospital_id(services: Sequence[ServiceProfile], hospital_id: str) -> list[ServiceProfile]:
+    """Return service profiles attached to the requested hospital id."""
+    return [replace(service, hospital_id=hospital_id) for service in services]
+
+
 def generate_dataset(
     *,
     months: int = 24,
     services: Sequence[ServiceProfile] | None = None,
-    seed: int = 20260606,
+    seed: int = 42,
     start: datetime = datetime(2024, 1, 1, tzinfo=UTC),
+    end: datetime | None = None,
 ) -> SyntheticDataset:
     """Generate admissions, discharges, staffing and hourly care load."""
     rng = np.random.default_rng(seed)
     service_profiles = list(services or DEFAULT_SERVICES)
-    days = months_to_days(months)
+    if end is not None:
+        days = max(1, int((end - start).total_seconds() // 86_400))
+    else:
+        days = months_to_days(months)
     hours = days * 24
     admissions: list[AdmissionRecord] = []
     discharges: list[DischargeRecord] = []
@@ -253,9 +270,20 @@ def _generate_service_dataset(
     rng: np.random.Generator,
     service_index: int,
 ) -> SyntheticDataset:
-    admissions = _generate_admissions(service, start, days, rng, service_index)
-    discharges = _generate_discharges(service, admissions, start, hours, rng)
-    occupancy = _occupancy_curve(service, admissions, discharges, start, hours)
+    admissions, discharges, patients = _generate_patient_flow(
+        service,
+        start,
+        days,
+        hours,
+        rng,
+        service_index,
+    )
+    causal_load, occupancy = aggregate_care_load_from_patients(
+        patients,
+        start=start,
+        hours=hours,
+        rng=rng,
+    )
     admissions_hourly = _event_counts_by_hour(admissions, start, hours, "admission_time")
     discharges_hourly = _event_counts_by_hour(discharges, start, hours, "discharge_time")
 
@@ -270,8 +298,9 @@ def _generate_service_dataset(
             measured_at=measured_at,
             patient_count=patient_count,
             staffing=staffing_record,
-            admissions_last_6h=float(admissions_hourly[max(0, hour_index - 5) : hour_index + 1].sum()),
-            discharges_last_6h=float(discharges_hourly[max(0, hour_index - 5) : hour_index + 1].sum()),
+            causal_siips=float(causal_load[hour_index]),
+            admissions_this_hour=float(admissions_hourly[hour_index]),
+            discharges_this_hour=float(discharges_hourly[hour_index]),
             rng=rng,
         )
         staffing.append(staffing_record)
@@ -286,6 +315,156 @@ def _generate_service_dataset(
     )
 
 
+def _generate_patient_flow(
+    service: ServiceProfile,
+    start: datetime,
+    days: int,
+    hours: int,
+    rng: np.random.Generator,
+    service_index: int,
+) -> tuple[list[AdmissionRecord], list[DischargeRecord], list[PatientTrajectory]]:
+    admissions: list[AdmissionRecord] = []
+    discharges: list[DischargeRecord] = []
+    patients: list[PatientTrajectory] = []
+    patient_counter = service_index * 1_000_000
+    end = start + timedelta(hours=hours)
+
+    for _ in range(service.baseline_patients):
+        patient_counter += 1
+        encounter_id = f"{service.service_id}-enc-{patient_counter}"
+        patient_id = f"{service.service_id}-pat-{patient_counter}"
+        patient = _sample_initial_patient(
+            service=service,
+            patient_id=patient_id,
+            encounter_id=encounter_id,
+            start=start,
+            rng=rng,
+        )
+        patient = replace(
+            patient,
+            los_hours=_aligned_los_hours(patient.admission_time, patient.los_hours, rng),
+        )
+        admission = AdmissionRecord(
+            patient_id=patient_id,
+            encounter_id=encounter_id,
+            hospital_id=service.hospital_id,
+            service_id=service.service_id,
+            admission_time=patient.admission_time,
+            admission_type=_admission_type(service, rng),
+            source_system=SOURCE_SYSTEM,
+        )
+        discharge_time = patient.admission_time + timedelta(hours=patient.los_hours)
+        admissions.append(admission)
+        patients.append(patient)
+        if start <= discharge_time < end:
+            discharges.append(
+                DischargeRecord(
+                    patient_id=patient_id,
+                    encounter_id=encounter_id,
+                    hospital_id=service.hospital_id,
+                    service_id=service.service_id,
+                    discharge_time=discharge_time,
+                    discharge_disposition=_discharge_disposition(rng),
+                    source_system=SOURCE_SYSTEM,
+                )
+            )
+
+    for day_index in range(days):
+        day = start + timedelta(days=day_index)
+        rate = (
+            service.daily_admission_rate
+            * _weekly_multiplier(day)
+            * _winter_multiplier(day, service)
+        )
+        daily_count = int(rng.poisson(rate))
+        for _ in range(daily_count):
+            hour = _sample_admission_hour(service, rng)
+            minute = int(rng.integers(0, 60))
+            admission_time = day + timedelta(hours=hour, minutes=minute)
+            patient_counter += 1
+            encounter_id = f"{service.service_id}-enc-{patient_counter}"
+            patient_id = f"{service.service_id}-pat-{patient_counter}"
+            admission = AdmissionRecord(
+                patient_id=patient_id,
+                encounter_id=encounter_id,
+                hospital_id=service.hospital_id,
+                service_id=service.service_id,
+                admission_time=admission_time,
+                admission_type=_admission_type(service, rng),
+                source_system=SOURCE_SYSTEM,
+            )
+            patient = build_patient_trajectory(
+                patient_id=patient_id,
+                encounter_id=encounter_id,
+                service_id=service.service_id,
+                admission_time=admission_time,
+                rng=rng,
+            )
+            patient = replace(
+                patient,
+                los_hours=_aligned_los_hours(admission_time, patient.los_hours, rng),
+            )
+            discharge_time = admission_time + timedelta(hours=patient.los_hours)
+            admissions.append(admission)
+            patients.append(patient)
+            if discharge_time < end:
+                discharges.append(
+                    DischargeRecord(
+                        patient_id=patient_id,
+                        encounter_id=encounter_id,
+                        hospital_id=service.hospital_id,
+                        service_id=service.service_id,
+                        discharge_time=discharge_time,
+                        discharge_disposition=_discharge_disposition(rng),
+                        source_system=SOURCE_SYSTEM,
+                    )
+                )
+
+    return admissions, discharges, patients
+
+
+def _sample_initial_patient(
+    *,
+    service: ServiceProfile,
+    patient_id: str,
+    encounter_id: str,
+    start: datetime,
+    rng: np.random.Generator,
+) -> PatientTrajectory:
+    for _ in range(50):
+        lookback_hours = int(rng.integers(1, max(24, service.baseline_patients * 24 + 1)))
+        admission_time = start - timedelta(hours=lookback_hours)
+        patient = build_patient_trajectory(
+            patient_id=patient_id,
+            encounter_id=encounter_id,
+            service_id=service.service_id,
+            admission_time=admission_time,
+            rng=rng,
+        )
+        if patient.admission_time + timedelta(hours=patient.los_hours) > start:
+            return patient
+    return build_patient_trajectory(
+        patient_id=patient_id,
+        encounter_id=encounter_id,
+        service_id=service.service_id,
+        admission_time=start - timedelta(hours=12),
+        rng=rng,
+    )
+
+
+def _aligned_los_hours(
+    admission_time: datetime,
+    los_hours: int,
+    rng: np.random.Generator,
+) -> int:
+    raw_discharge = admission_time + timedelta(hours=los_hours)
+    discharge_hour = int(rng.choice(np.array([10, 11, 14]), p=np.array([0.45, 0.35, 0.20])))
+    aligned = raw_discharge.replace(hour=discharge_hour, minute=0, second=0, microsecond=0)
+    if aligned <= admission_time + timedelta(hours=24):
+        aligned += timedelta(days=1)
+    return max(24, int((aligned - admission_time).total_seconds() // 3600))
+
+
 def _generate_admissions(
     service: ServiceProfile,
     start: datetime,
@@ -297,7 +476,11 @@ def _generate_admissions(
     patient_counter = service_index * 1_000_000
     for day_index in range(days):
         day = start + timedelta(days=day_index)
-        rate = service.daily_admission_rate * _weekly_multiplier(day) * _winter_multiplier(day, service)
+        rate = (
+            service.daily_admission_rate
+            * _weekly_multiplier(day)
+            * _winter_multiplier(day, service)
+        )
         daily_count = int(rng.poisson(rate))
         for _ in range(daily_count):
             hour = _sample_admission_hour(service, rng)
@@ -404,7 +587,10 @@ def _staffing_for_hour(
 
     weekday_pressure = 0.95 if measured_at.weekday() in (0, 1) else 1.0
     winter_pressure = 0.92 if measured_at.month in (12, 1, 2) else 1.0
-    nurse_count = max(1.0, round(patient_count / nurse_ratio * weekday_pressure * winter_pressure, 2))
+    nurse_count = max(
+        1.0,
+        round(patient_count / nurse_ratio * weekday_pressure * winter_pressure, 2),
+    )
     aide_count = max(1.0, round(patient_count / aide_ratio * weekday_pressure, 2))
     expected_nurses = patient_count / service.nurse_day_ratio
     staffing_gap = max(0.0, expected_nurses - nurse_count)
@@ -429,24 +615,30 @@ def _siips_for_hour(
     measured_at: datetime,
     patient_count: int,
     staffing: StaffingRecord,
-    admissions_last_6h: float,
-    discharges_last_6h: float,
+    causal_siips: float,
+    admissions_this_hour: float,
+    discharges_this_hour: float,
     rng: np.random.Generator,
 ) -> CareLoadRecord:
     daily = _daily_cycle(measured_at.hour)
-    weekly = 3.8 if measured_at.weekday() in (0, 1) else 0.0
+    weekly = 5.0 if measured_at.weekday() in (0, 1) else 0.0
     seasonal = _winter_pressure(measured_at, service)
-    staffing_pressure = max(0.0, patient_count / max(staffing.nurse_count, 1.0) - service.nurse_day_ratio)
-    flow_pressure = admissions_last_6h * 0.55 + discharges_last_6h * 0.25
-    noise = float(rng.normal(0.0, 2.2))
+    staffing_pressure = max(
+        0.0,
+        patient_count / max(staffing.nurse_count, 1.0) - service.nurse_day_ratio,
+    )
+    noise = float(rng.normal(0.0, 1.4))
+    event_effect = (
+        admissions_this_hour * CAUSAL_EVENT_EFFECTS["admission_siips_bonus"]
+        - discharges_this_hour * CAUSAL_EVENT_EFFECTS["discharge_siips_relief"]
+    )
     siips = (
-        18.0
-        + patient_count * service.acuity_factor
+        causal_siips
         + daily
         + weekly
         + seasonal
         + staffing_pressure * 1.6
-        + flow_pressure
+        + event_effect
         + noise
     )
     aas = siips * 0.42 + patient_count * 0.12 + float(rng.normal(0.0, 0.8))
@@ -501,7 +693,34 @@ def _sample_admission_hour(service: ServiceProfile, rng: np.random.Generator) ->
         weights = np.array([0.08, 0.18, 0.2, 0.14, 0.08, 0.12, 0.12, 0.08])
     elif service.specialty == "emergency":
         hours = np.arange(24)
-        weights = np.array([0.025, 0.02, 0.018, 0.018, 0.02, 0.025, 0.035, 0.045, 0.055, 0.06, 0.06, 0.055, 0.05, 0.05, 0.055, 0.06, 0.065, 0.065, 0.06, 0.055, 0.05, 0.045, 0.035, 0.03])
+        weights = np.array(
+            [
+                0.025,
+                0.02,
+                0.018,
+                0.018,
+                0.02,
+                0.025,
+                0.035,
+                0.045,
+                0.055,
+                0.06,
+                0.06,
+                0.055,
+                0.05,
+                0.05,
+                0.055,
+                0.06,
+                0.065,
+                0.065,
+                0.06,
+                0.055,
+                0.05,
+                0.045,
+                0.035,
+                0.03,
+            ]
+        )
         weights = weights / weights.sum()
     else:
         hours = np.array([8, 9, 10, 11, 14, 15, 16, 17])
@@ -545,6 +764,13 @@ def _hour_index(value: datetime, start: datetime) -> int:
     return int((value - start).total_seconds() // 3600)
 
 
+def _parse_date(value: str) -> datetime:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
 def write_care_load_csv(path: Path, records: Sequence[CareLoadRecord]) -> None:
     """Optionally export generated care-load rows to CSV for inspection."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -582,10 +808,22 @@ def load_dataset_to_db(dataset: SyntheticDataset) -> None:
     psycopg2 = _psycopg2()
     with psycopg2.connect(**config) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM canonical.admissions WHERE source_system = %s", (SOURCE_SYSTEM,))
-            cursor.execute("DELETE FROM canonical.discharges WHERE source_system = %s", (SOURCE_SYSTEM,))
-            cursor.execute("DELETE FROM canonical.staffing WHERE source_system = %s", (SOURCE_SYSTEM,))
-            cursor.execute("DELETE FROM canonical.care_load WHERE source_system = %s", (SOURCE_SYSTEM,))
+            cursor.execute(
+                "DELETE FROM canonical.admissions WHERE source_system = %s",
+                (SOURCE_SYSTEM,),
+            )
+            cursor.execute(
+                "DELETE FROM canonical.discharges WHERE source_system = %s",
+                (SOURCE_SYSTEM,),
+            )
+            cursor.execute(
+                "DELETE FROM canonical.staffing WHERE source_system = %s",
+                (SOURCE_SYSTEM,),
+            )
+            cursor.execute(
+                "DELETE FROM canonical.care_load WHERE source_system = %s",
+                (SOURCE_SYSTEM,),
+            )
             _insert_services(cursor, dataset.services)
             _insert_admissions(cursor, dataset.admissions)
             _insert_discharges(cursor, dataset.discharges)
@@ -774,14 +1012,27 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("data/generated/siips.csv"))
     parser.add_argument("--months", type=int, default=int(os.getenv("SYNTHETIC_MONTHS", "24")))
     parser.add_argument("--services", type=str, default=None)
-    parser.add_argument("--seed", type=int, default=20260606)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--hospital-id", type=str, default=os.getenv("HOSPITAL_ID", "hosp-001"))
+    parser.add_argument("--start-date", type=str, default="2024-01-01")
+    parser.add_argument("--end-date", type=str, default=None)
+    parser.add_argument("--output-format", choices=("csv", "db", "both"), default="both")
     parser.add_argument("--skip-db", action="store_true")
     args = parser.parse_args()
 
-    services = selected_services(_parse_services(args.services))
-    dataset = generate_dataset(months=args.months, services=services, seed=args.seed)
-    write_care_load_csv(args.output, dataset.care_load)
-    if not args.skip_db:
+    services = with_hospital_id(selected_services(_parse_services(args.services)), args.hospital_id)
+    start = _parse_date(args.start_date)
+    end = _parse_date(args.end_date) if args.end_date else None
+    dataset = generate_dataset(
+        months=args.months,
+        services=services,
+        seed=args.seed,
+        start=start,
+        end=end,
+    )
+    if args.output_format in {"csv", "both"}:
+        write_care_load_csv(args.output, dataset.care_load)
+    if not args.skip_db and args.output_format in {"db", "both"}:
         load_dataset_to_db(dataset)
     print(f"SIIPS synthetic generation complete: {_summary(dataset)}")
 
