@@ -1,4 +1,4 @@
-"""Diagnostics and expert-mode panel for HospitalOS Command."""
+"""Diagnostics and expert-mode panel for Hospitalos."""
 
 from __future__ import annotations
 
@@ -10,39 +10,18 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
-from dashboards.api_client import WorldModelClient
-
 LOGGER = logging.getLogger(__name__)
 
 
-def render(client: WorldModelClient | None = None) -> None:
-    """Render expert diagnostics without loading model objects directly."""
-    st.markdown('<div class="hos-section-title">Diagnostics expert</div>', unsafe_allow_html=True)
-    render_runtime_status(client)
+def render(client: object | None = None) -> None:
+    """Render expert diagnostics and reproducibility guidance."""
+    _ = client
+    st.markdown("### Diagnostics modèle")
     render_training_curves()
     render_model_card()
     render_conformal_coverage(Path("artifacts/conformal_residuals.npz"))
     render_limitations()
-
-
-def render_runtime_status(client: WorldModelClient | None) -> None:
-    """Show API and artifact availability for expert review."""
-    api_health = client.health_check() if client is not None else False
-    artifact_paths = {
-        "RSSM checkpoint": Path("artifacts/rssm_checkpoint.pt"),
-        "Scaler": Path("artifacts/siips_scaler.npz"),
-        "Conformal residuals": Path("artifacts/conformal_residuals.npz"),
-        "Training curves": Path("artifacts/training_curves.png"),
-    }
-    rows = [
-        {"Signal": "API health", "Statut": "LIVE" if api_health else "Indisponible"},
-        {"Signal": "Fallback mode", "Statut": "Actif si API ou bundle indisponible"},
-    ]
-    rows.extend(
-        {"Signal": label, "Statut": "Disponible" if path.exists() else "Manquant"}
-        for label, path in artifact_paths.items()
-    )
-    st.dataframe(rows, use_container_width=True, hide_index=True)
+    render_reproducibility()
 
 
 def render_training_curves() -> None:
@@ -54,40 +33,56 @@ def render_training_curves() -> None:
     else:
         st.markdown(
             '<div class="hos-empty-state">Courbes d’entraînement non disponibles '
-            'dans ce checkout.<br><code>python scripts/train_rssm_synthetic.py --plot</code></div>',
+            "dans ce checkout.<br><code>python scripts/train_rssm_synthetic.py --plot</code></div>",
             unsafe_allow_html=True,
         )
 
 
 def render_model_card() -> None:
-    """Render the operational model card with file-derived metadata."""
-    checkpoint_path = Path("artifacts/rssm_checkpoint.pt")
-    checkpoint_status = "disponible" if checkpoint_path.exists() else "manquant"
-    residual_path = Path("artifacts/conformal_residuals.npz")
-    residual_status = "disponible" if residual_path.exists() else "manquant"
+    """Render the operational model card with checkpoint-derived metadata."""
+    metadata = load_checkpoint_metadata(Path("artifacts/rssm_checkpoint.pt"))
+    steps = metadata.get("step", "inconnu")
     st.markdown(
         f"""
 #### Model card
 
-- Model backend: RSSM Hospital World Model via FastAPI `/simulate/hospital-world`.
-- Bundle status: checkpoint {checkpoint_status}; résidus conformal {residual_status}.
-- Architecture: RSSM DreamerV3-style, état déterministe `h_t` + latent gaussien `z_t`.
-- Calibration: split-conformal alpha = 0.1.
-- Critical threshold: p95 de la charge SIIPS du service.
-- Référence: Hafner et al. 2023, "Mastering Diverse Domains through World Models".
+**Architecture** : RSSM DreamerV3-style (état déterministe h_t via GRU
++ état stochastique z_t gaussien diagonal)
+
+**Calibration** : split-conformal au niveau α=0.10 (IC 90%)
+
+**Entraînement actuel** : {steps} steps sur SIIPS synthétique calibré
+
+**Référence** : Hafner et al. 2023, "Mastering Diverse Domains
+through World Models" (DreamerV3)
 """
     )
 
 
+def load_checkpoint_metadata(checkpoint_path: Path) -> dict[str, Any]:
+    """Load checkpoint metadata without assuming artifact availability."""
+    if not checkpoint_path.exists():
+        return {}
+    try:
+        import torch
+
+        payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        if isinstance(payload, dict):
+            return payload
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.warning("rssm_checkpoint_metadata_load_failed", exc_info=exc)
+    return {}
+
+
 def render_conformal_coverage(residual_path: Path) -> None:
     """Display residual histograms per horizon step when residuals are available."""
-    st.markdown("#### Couverture conformal")
+    st.markdown("#### Couverture conformelle")
     if not residual_path.exists():
-        st.info("Résidus conformal non disponibles.")
+        st.info("Résidus conformels non disponibles.")
         return
     residuals = load_residuals(residual_path)
     if residuals.size == 0:
-        st.info("Le fichier de résidus conformal est vide ou illisible.")
+        st.info("Le fichier de résidus conformels est vide ou illisible.")
         return
     figure = go.Figure()
     max_steps = min(8, residuals.shape[0])
@@ -95,7 +90,7 @@ def render_conformal_coverage(residual_path: Path) -> None:
         figure.add_trace(
             go.Histogram(
                 x=residuals[step_index, :],
-                name=f"T+{step_index + 1}H",
+                name=f"T+{step_index + 1}h",
                 opacity=0.48,
             )
         )
@@ -132,9 +127,24 @@ def render_limitations() -> None:
         """
 #### Limites
 
-- Données SIIPS synthétiques uniquement à ce stade.
-- Périmètre single-service, single-hospital pour la démonstration.
-- Federated learning conçu mais non validé opérationnellement.
-- Aucune validation clinique; ce n’est pas un dispositif médical.
+- Modèle entraîné uniquement sur données synthétiques
+- Périmètre actuel : un service, un établissement
+- Federated learning conçu mais non validé empiriquement
+- Sans validation clinique : non utilisable comme dispositif médical
+"""
+    )
+
+
+def render_reproducibility() -> None:
+    """Render reproducibility commands for the local demo."""
+    st.markdown(
+        """
+#### Reproductibilité
+
+```bash
+python scripts/train_rssm_synthetic.py --plot
+uvicorn services.api.main:app --port 8000
+bash docs/demo/run_demo.sh
+```
 """
     )

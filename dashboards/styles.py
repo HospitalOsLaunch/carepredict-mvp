@@ -1,4 +1,4 @@
-"""Shared visual styling for the HospitalOS Streamlit dashboard."""
+"""Shared visual styling for the Hospitalos Streamlit dashboard."""
 
 from __future__ import annotations
 
@@ -6,25 +6,23 @@ import streamlit as st
 
 BLUE = "#1f4e79"
 RED = "#c0392b"
-ORANGE = "#e67e22"
-AMBER = "#f2c94c"
-GREEN = "#2e7d32"
+ORANGE = "#d97706"
+GRAY = "#6b7280"
 INK = "#102033"
-MUTED = "#667085"
+MUTED = GRAY
 BORDER = "#e6e8ec"
 SURFACE = "#ffffff"
 BACKGROUND = "#f7f6f2"
 
-RISK_COLORS = {
-    "Critique": RED,
-    "Élevé": ORANGE,
-    "Sous surveillance": AMBER,
-    "Normal": GREEN,
+STATUS_COLORS = {
+    "critical": RED,
+    "watch": ORANGE,
+    "normal": BLUE,
 }
 
 
 def inject_css() -> None:
-    """Inject a restrained HospitalOS command-center visual system."""
+    """Inject the restrained Hospitalos visual system."""
     st.markdown(
         f"""
 <style>
@@ -85,6 +83,18 @@ def inject_css() -> None:
     padding: 16px;
     margin-bottom: 14px;
 }}
+.hos-synthesis {{
+    border: 1px solid {BORDER};
+    border-left: 5px solid {BLUE};
+    border-radius: 18px;
+    background: #ffffff;
+    color: {INK};
+    box-shadow: 0 10px 24px rgba(16, 32, 51, 0.045);
+    padding: 15px 17px;
+    margin: 12px 0 18px;
+    font-size: 15px;
+    line-height: 1.45;
+}}
 .hos-section-title {{
     font-size: 15px;
     font-weight: 800;
@@ -116,16 +126,8 @@ def inject_css() -> None:
     border-radius: 999px;
     display: inline-block;
 }}
-.hos-service-card {{
-    border-left: 5px solid var(--risk-color);
-}}
 .hos-alert-card {{
     border-left: 5px solid var(--risk-color);
-}}
-.hos-kpi-grid {{
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
 }}
 .hos-kpi-card {{
     border: 1px solid {BORDER};
@@ -133,6 +135,7 @@ def inject_css() -> None:
     background: #ffffff;
     box-shadow: 0 10px 24px rgba(16, 32, 51, 0.045);
     padding: 15px;
+    min-height: 116px;
 }}
 .hos-kpi-value {{
     font-size: 28px;
@@ -155,9 +158,6 @@ def inject_css() -> None:
     background: #fffdf8;
     color: {MUTED};
     padding: 18px;
-}}
-@media (max-width: 1100px) {{
-    .hos-kpi-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
 }}
 </style>
 """,
