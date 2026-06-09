@@ -1,0 +1,10 @@
+{
+  "hospital_id": "hosp-001",
+  "service_id": "urg-001",
+  "history_siips": [72.4, 75.1, 78.9, 80.2, 82.1, 79.8, 77.3, 75.9, 73.4, 71.2, 69.8, 70.5, 73.1, 76.4, 79.2, 81.5, 83.8, 85.1, 84.3, 82.7, 80.4, 78.1, 75.6, 73.9],
+  "actions": [
+    {"scheduled_admissions": 4, "scheduled_discharges": 2, "scheduled_surgeries": 1, "expected_transfers": 0, "staff_redeployments": 0},
+    {"scheduled_admissions": 1, "scheduled_discharges": 5, "scheduled_surgeries": 0, "expected_transfers": 2, "staff_redeployments": 1},
+    {"scheduled_admissions": 3, "scheduled_discharges": 3, "scheduled_surgeries": 2, "expected_transfers": 1, "staff_redeployments": 0}
+  ]
+}
