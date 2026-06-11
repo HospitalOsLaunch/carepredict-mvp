@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from hospitalos.data.synthetic_adapter import SyntheticDatasetConfig, build_synthetic_dataset
 from hospitalos.encoders.ts_jepa.config import JEPAConfig
 from hospitalos.encoders.ts_jepa.jepa_module import JEPALightningModule
-from hospitalos.encoders.ts_jepa.probes import embedding_std, offdiag_cov_ratio
+from hospitalos.encoders.ts_jepa.probes import embedding_std, mean_offdiag_corr
 
 
 def parse_args() -> argparse.Namespace:
@@ -88,7 +88,7 @@ def compute_final_probes(
         embeddings = model.target_encoder(tokens, pos_idx)
     return {
         "probe/emb_std": embedding_std(embeddings.detach().cpu()),
-        "probe/offdiag_ratio": offdiag_cov_ratio(embeddings.detach().cpu()),
+        "probe/offdiag_corr": mean_offdiag_corr(embeddings.detach().cpu()),
     }
 
 
@@ -97,11 +97,11 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
     rows = read_metrics(metrics_path)
     losses = metric_values(rows, ("jepa/loss", "jepa/loss_step", "jepa/loss_epoch"))
     emb_std = metric_values(rows, ("probe/emb_std",))
-    offdiag = metric_values(rows, ("probe/offdiag_ratio",))
+    offdiag = metric_values(rows, ("probe/offdiag_corr",))
     if not emb_std:
         emb_std = [probe_metrics["probe/emb_std"]]
     if not offdiag:
-        offdiag = [probe_metrics["probe/offdiag_ratio"]]
+        offdiag = [probe_metrics["probe/offdiag_corr"]]
     reasons: list[str] = []
     loss_pass = False
     if len(losses) >= 10:
@@ -122,7 +122,7 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
         reasons.append(f"embedding std criterion not met: final={final_emb}")
 
     final_offdiag = float(offdiag[-1]) if offdiag else float("nan")
-    offdiag_pass = bool(offdiag and final_offdiag < 0.8 and not is_monotone_increasing(offdiag[len(offdiag) // 2 :]))
+    offdiag_pass = bool(offdiag and final_offdiag < 0.5 and not is_monotone_increasing(offdiag[len(offdiag) // 2 :]))
     if not offdiag_pass:
         reasons.append(f"offdiag criterion not met: final={final_offdiag}")
 

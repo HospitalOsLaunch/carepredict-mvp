@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import torch
 
-from hospitalos.encoders.ts_jepa.probes import embedding_std, offdiag_cov_ratio
+from hospitalos.encoders.ts_jepa.probes import embedding_std, mean_offdiag_corr
 
 
 def test_embedding_std_constant_is_zero() -> None:
@@ -24,18 +24,18 @@ def test_embedding_std_random_is_near_one() -> None:
     assert abs(embedding_std(z) - 1.0) <= 0.1
 
 
-def test_offdiag_cov_ratio_independent_small() -> None:
-    """Independent dimensions have low off-diagonal covariance ratio."""
+def test_mean_offdiag_corr_independent_small() -> None:
+    """Independent dimensions have low mean off-diagonal correlation."""
     torch.manual_seed(0)
     np.random.seed(0)
-    z = torch.randn(256, 8, 8, dtype=torch.float32)
-    assert offdiag_cov_ratio(z) < 0.2
+    z = torch.randn(256, 16, 16, dtype=torch.float32)
+    assert mean_offdiag_corr(z) < 0.1
 
 
-def test_offdiag_cov_ratio_duplicated_large() -> None:
-    """Duplicated dimensions have high off-diagonal covariance ratio."""
+def test_mean_offdiag_corr_duplicated_large() -> None:
+    """Duplicated dimensions have high mean off-diagonal correlation."""
     torch.manual_seed(0)
     np.random.seed(0)
-    base = torch.randn(256, 8, 1, dtype=torch.float32)
-    z = base.repeat(1, 1, 8)
-    assert offdiag_cov_ratio(z) > 0.9
+    base = torch.randn(256, 16, 1, dtype=torch.float32)
+    z = base.repeat(1, 1, 16)
+    assert mean_offdiag_corr(z) > 0.9

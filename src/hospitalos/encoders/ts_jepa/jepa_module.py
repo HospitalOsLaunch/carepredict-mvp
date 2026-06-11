@@ -18,7 +18,7 @@ from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.masking import block_mask
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
 from hospitalos.encoders.ts_jepa.predictor import Predictor
-from hospitalos.encoders.ts_jepa.probes import embedding_std, offdiag_cov_ratio
+from hospitalos.encoders.ts_jepa.probes import embedding_std, mean_offdiag_corr
 
 
 class JEPALightningModule(L.LightningModule):
@@ -76,8 +76,8 @@ class JEPALightningModule(L.LightningModule):
         if self.cfg.probe_every_n_steps > 0 and int(self.global_step) % self.cfg.probe_every_n_steps == 0:
             self.log("probe/emb_std", embedding_std(tgt.detach()), on_step=True, on_epoch=False)
             self.log(
-                "probe/offdiag_ratio",
-                offdiag_cov_ratio(tgt.detach()),
+                "probe/offdiag_corr",
+                mean_offdiag_corr(tgt.detach()),
                 on_step=True,
                 on_epoch=False,
             )
