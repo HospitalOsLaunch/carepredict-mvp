@@ -52,6 +52,7 @@ htmlcov/
 
 # ML artifacts (à committer séparément ou via DVC/LFS)
 mlruns/
+runs/smoke/
 artifacts/
 *.pkl
 *.pt
