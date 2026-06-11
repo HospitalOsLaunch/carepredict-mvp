@@ -25,6 +25,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--n-days", type=int, default=60)
+    parser.add_argument("--window-days", type=int, default=7)
     parser.add_argument("--out", type=Path, default=Path("runs/smoke"))
     return parser.parse_args()
 
@@ -34,7 +36,9 @@ def main() -> int:
     args = parse_args()
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    dataset = build_synthetic_dataset(SyntheticDatasetConfig(seed=args.seed))
+    dataset = build_synthetic_dataset(
+        SyntheticDatasetConfig(n_days=args.n_days, window_days=args.window_days, seed=args.seed)
+    )
     generator = torch.Generator().manual_seed(args.seed)
     dataloader = DataLoader(
         dataset,
