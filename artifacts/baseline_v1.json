@@ -1,0 +1,65 @@
+{
+  "artifact_paths": {
+    "checkpoint": "artifacts/rssm_checkpoint.pt",
+    "conformal_residuals": "artifacts/conformal_residuals.npz",
+    "scaler": "artifacts/siips_scaler.npz"
+  },
+  "generated_at": "2026-06-11T18:38:03.272522+00:00",
+  "horizons": {
+    "24": {
+      "model": {
+        "mae": 487.4796701639695,
+        "mae_ci_95": [
+          457.05987250319924,
+          518.6641152556297
+        ],
+        "mapie_coverage_90": 0.17582417582417584,
+        "mean_interval_width": 526.8898795521594,
+        "n_samples": 182,
+        "rmse": 534.3310803046598
+      },
+      "seasonal_naive": {
+        "mae": 197.96406593406593,
+        "mae_ci_95": [
+          177.55366208791207,
+          218.57739697802197
+        ],
+        "n_samples": 182,
+        "rmse": 246.56373173845174
+      }
+    },
+    "48": {
+      "model": {
+        "mae": 533.9132675320175,
+        "mae_ci_95": [
+          499.8030533488682,
+          569.8797505359702
+        ],
+        "mapie_coverage_90": 0.0055248618784530384,
+        "mean_interval_width": 135.49096437691057,
+        "n_samples": 181,
+        "rmse": 582.737388569229
+      },
+      "seasonal_naive": {
+        "mae": 197.14430939226517,
+        "mae_ci_95": [
+          176.19409116022098,
+          219.98002900552484
+        ],
+        "n_samples": 181,
+        "rmse": 245.9000519862711
+      }
+    }
+  },
+  "model_artifact_sha256": {
+    "checkpoint": "a42879660ae782dd63c8e47826529b8e5be14aac90358f71bdedba8f3cea3351",
+    "conformal_residuals": "c1bd11addd5eaeb980987f84ac9f5d798a9f1809cd10286f588f4c2b66b72219",
+    "scaler": "c4dfd5a846b0ce7ed71afcd032798771f2f09f308d8f03b8c352e82803e3ec84"
+  },
+  "model_version": "rssm-synthetic-v1",
+  "open_loop": true,
+  "origin_stride_hours": 24,
+  "primary_scope": "urg-001",
+  "provenance": "existing_clean_pre_train_end",
+  "train_end": "2025-07-01T00:00:00+00:00"
+}
