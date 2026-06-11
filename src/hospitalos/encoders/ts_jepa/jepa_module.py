@@ -83,6 +83,33 @@ class JEPALightningModule(L.LightningModule):
             )
         return loss
 
+    def validation_step(self, batch: dict[str, Tensor] | Tensor, batch_idx: int) -> Tensor:
+        """Run one JEPA validation reconstruction step without updating EMA state."""
+        series = self._extract_series(batch)
+        tokens = self.patcher(series.float())
+        _batch_size, n_patches, _emb = tokens.shape
+
+        generator = torch.Generator(device="cpu")
+        generator.manual_seed(int(self.global_step) + int(batch_idx))
+        ctx_idx_cpu, tgt_idx_cpu = block_mask(
+            n_patches=n_patches,
+            mask_ratio=self.cfg.mask_ratio,
+            n_target_blocks=self.cfg.n_target_blocks,
+            generator=generator,
+        )
+        ctx_idx = ctx_idx_cpu.to(device=tokens.device, dtype=torch.long)
+        tgt_idx = tgt_idx_cpu.to(device=tokens.device, dtype=torch.long)
+        all_idx = torch.arange(n_patches, device=tokens.device, dtype=torch.long)
+
+        ctx = self.context_encoder(tokens[:, ctx_idx], ctx_idx)
+        with torch.no_grad():
+            full_tgt = self.target_encoder(tokens, all_idx)
+            tgt = full_tgt[:, tgt_idx]
+        pred = self.predictor(ctx, ctx_idx, tgt_idx)
+        loss = F.smooth_l1_loss(pred, tgt)
+        self.log("jepa/val_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+        return loss
+
     def on_train_batch_end(self, outputs: Any, batch: Any, batch_idx: int) -> None:
         """Update the target encoder with a cosine-scheduled EMA."""
         del outputs, batch, batch_idx

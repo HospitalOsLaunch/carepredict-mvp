@@ -36,8 +36,24 @@ def main() -> int:
     args = parse_args()
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
+    dataset_cfg = SyntheticDatasetConfig(n_days=args.n_days, window_days=args.window_days, seed=args.seed)
     dataset = build_synthetic_dataset(
-        SyntheticDatasetConfig(n_days=args.n_days, window_days=args.window_days, seed=args.seed)
+        SyntheticDatasetConfig(
+            n_days=dataset_cfg.n_days,
+            window_days=dataset_cfg.window_days,
+            seed=dataset_cfg.seed,
+            split="train",
+            val_frac=dataset_cfg.val_frac,
+        )
+    )
+    val_dataset = build_synthetic_dataset(
+        SyntheticDatasetConfig(
+            n_days=dataset_cfg.n_days,
+            window_days=dataset_cfg.window_days,
+            seed=dataset_cfg.seed,
+            split="val",
+            val_frac=dataset_cfg.val_frac,
+        )
     )
     generator = torch.Generator().manual_seed(args.seed)
     dataloader = DataLoader(
@@ -46,6 +62,12 @@ def main() -> int:
         shuffle=True,
         num_workers=0,
         generator=generator,
+    )
+    val_dataloader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=0,
     )
     sample = dataset[0]["series"]
     cfg = JEPAConfig(
@@ -61,8 +83,11 @@ def main() -> int:
         enable_checkpointing=False,
         accelerator="auto",
         log_every_n_steps=10,
+        check_val_every_n_epoch=None,
+        val_check_interval=50,
+        num_sanity_val_steps=0,
     )
-    trainer.fit(model, dataloader)
+    trainer.fit(model, dataloader, val_dataloader)
     args.out.mkdir(parents=True, exist_ok=True)
     encoder_path = args.out / "encoder_smoke.pt"
     torch.save(
@@ -100,6 +125,7 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
     """Read CSVLogger metrics and compute smoke verdict criteria."""
     rows = read_metrics(metrics_path)
     losses = metric_values(rows, ("jepa/loss", "jepa/loss_step", "jepa/loss_epoch"))
+    val_losses = metric_values(rows, ("jepa/val_loss",))
     emb_std = metric_values(rows, ("probe/emb_std",))
     offdiag = metric_values(rows, ("probe/offdiag_corr",))
     if not emb_std:
@@ -130,10 +156,16 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
     if not offdiag_pass:
         reasons.append(f"offdiag criterion not met: final={final_offdiag}")
 
+    final_val = float(val_losses[-1]) if val_losses else float("nan")
+    val_pass = bool(val_losses and final_val < 2.5 * last)
+    if not val_pass:
+        reasons.append(f"val gap criterion not met: train={last} val={final_val}")
+
     return {
-        "pass": loss_pass and emb_pass and offdiag_pass,
+        "pass": loss_pass and emb_pass and offdiag_pass and val_pass,
         "first_loss": first,
         "last_loss": last,
+        "final_val_loss": final_val,
         "final_emb_std": final_emb,
         "final_offdiag": final_offdiag,
         "reasons": reasons,
@@ -184,6 +216,7 @@ def print_verdict(verdict: dict[str, object], encoder_path: Path) -> None:
     print("======================================")
     print(f"first_decile_loss: {verdict['first_loss']}")
     print(f"last_decile_loss:  {verdict['last_loss']}")
+    print(f"final_val_loss:    {verdict['final_val_loss']}")
     print(f"final_emb_std:     {verdict['final_emb_std']}")
     print(f"final_offdiag:     {verdict['final_offdiag']}")
     print(f"encoder_path:      {encoder_path}")

@@ -37,6 +37,8 @@ class SyntheticDatasetConfig:
     n_days: int = 60
     window_days: int = 7
     seed: int = 0
+    split: str = "train"
+    val_frac: float = 0.2
     channels: list[str] | None = None
 
 
@@ -49,6 +51,10 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
             raise ValueError("n_days must be strictly positive")
         if cfg.window_days <= 0:
             raise ValueError("window_days must be strictly positive")
+        if cfg.split not in {"train", "val"}:
+            raise ValueError("split must be 'train' or 'val'")
+        if not 0.0 < cfg.val_frac < 1.0:
+            raise ValueError("val_frac must be in (0, 1)")
         self.cfg = cfg
         self.channels = tuple(cfg.channels or DEFAULT_CHANNELS)
         self.window_hours = cfg.window_days * 24
@@ -64,6 +70,12 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
             end=start + timedelta(days=cfg.n_days),
         )
         series, siips = self._materialize(dataset)
+        split_day = min(max(int(round(cfg.n_days * (1.0 - cfg.val_frac))), 1), cfg.n_days - 1)
+        split_hour = split_day * 24
+        if cfg.split == "train":
+            series, siips = series[:split_hour], siips[:split_hour]
+        else:
+            series, siips = series[split_hour:], siips[split_hour:]
         if not np.isfinite(series).all() or not np.isfinite(siips).all():
             raise AssertionError("synthetic tensors must not contain NaN or Inf")
         self.series = torch.tensor(series, dtype=torch.float32)
@@ -71,7 +83,7 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
 
     def __len__(self) -> int:
         """Return the number of complete non-overlapping windows."""
-        return int(self.cfg.n_days // self.cfg.window_days)
+        return int(self.series.shape[0] // self.window_hours)
 
     def __getitem__(self, index: int) -> dict[str, Tensor]:
         """Return one non-overlapping window with aligned SIIPS targets."""
