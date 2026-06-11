@@ -152,9 +152,10 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
         reasons.append(f"embedding std criterion not met: final={final_emb}")
 
     final_offdiag = float(offdiag[-1]) if offdiag else float("nan")
-    offdiag_pass = bool(offdiag and final_offdiag < 0.5 and not is_monotone_increasing(offdiag[len(offdiag) // 2 :]))
+    offdiag_slope = linear_fit_slope(offdiag[len(offdiag) // 2 :])
+    offdiag_pass = bool(offdiag and final_offdiag < 0.5 and offdiag_slope < 0.05)
     if not offdiag_pass:
-        reasons.append(f"offdiag criterion not met: final={final_offdiag}")
+        reasons.append(f"offdiag criterion not met: final={final_offdiag} slope={offdiag_slope}")
 
     final_val = float(val_losses[-1]) if val_losses else float("nan")
     val_pass = bool(val_losses and final_val < 2.5 * last)
@@ -168,6 +169,7 @@ def evaluate_metrics(metrics_path: Path, probe_metrics: dict[str, float]) -> dic
         "final_val_loss": final_val,
         "final_emb_std": final_emb,
         "final_offdiag": final_offdiag,
+        "final_offdiag_slope": offdiag_slope,
         "reasons": reasons,
     }
 
@@ -200,11 +202,13 @@ def read_metrics(metrics_path: Path) -> list[dict[str, float | None]]:
         return rows
 
 
-def is_monotone_increasing(values: list[float]) -> bool:
-    """Return whether values are monotonically non-decreasing."""
-    if len(values) < 3:
-        return False
-    return all(right >= left for left, right in zip(values, values[1:], strict=False))
+def linear_fit_slope(values: list[float]) -> float:
+    """Return the linear-fit slope per logged step for a metric series."""
+    if len(values) < 2:
+        return 0.0
+    x = np.arange(len(values), dtype=np.float32)
+    y = np.asarray(values, dtype=np.float32)
+    return float(np.polyfit(x, y, deg=1)[0])
 
 
 def print_verdict(verdict: dict[str, object], encoder_path: Path) -> None:
@@ -219,6 +223,7 @@ def print_verdict(verdict: dict[str, object], encoder_path: Path) -> None:
     print(f"final_val_loss:    {verdict['final_val_loss']}")
     print(f"final_emb_std:     {verdict['final_emb_std']}")
     print(f"final_offdiag:     {verdict['final_offdiag']}")
+    print(f"offdiag_slope:     {verdict['final_offdiag_slope']}")
     print(f"encoder_path:      {encoder_path}")
     print("======================================")
 

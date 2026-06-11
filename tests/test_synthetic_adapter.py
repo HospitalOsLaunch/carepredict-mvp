@@ -45,8 +45,15 @@ def test_synthetic_adapter_sanity() -> None:
 
 
 def test_synthetic_adapter_non_overlapping_window_count() -> None:
-    """Dataset length is n_days divided by window_days."""
+    """Dataset length follows D4 temporal split window counts."""
     torch.manual_seed(0)
     np.random.seed(0)
-    dataset = build_synthetic_dataset(SyntheticDatasetConfig(n_days=21, window_days=7, seed=0))
-    assert len(dataset) == 3
+    train_cfg = SyntheticDatasetConfig(n_days=21, window_days=7, seed=0)
+    train_dataset = build_synthetic_dataset(train_cfg)
+    expected_train = int(np.floor((train_cfg.n_days * (1.0 - train_cfg.val_frac)) / train_cfg.window_days))
+    assert len(train_dataset) == expected_train
+
+    val_cfg = SyntheticDatasetConfig(n_days=21, window_days=7, seed=0, split="val")
+    val_dataset = build_synthetic_dataset(val_cfg)
+    expected_val = int(np.floor((val_cfg.n_days * val_cfg.val_frac) / val_cfg.window_days))
+    assert len(val_dataset) == expected_val
