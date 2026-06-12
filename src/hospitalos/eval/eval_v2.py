@@ -44,6 +44,8 @@ from hospitalos.training.train_v2_forecast import (
 DEFAULT_ARTIFACT_DIR = Path("artifacts/v2_forecast")
 DEFAULT_OUT = DEFAULT_ARTIFACT_DIR / "eval_v2.json"
 BASELINE_PATH = Path("artifacts/baseline_v1_full.json")
+DIAGNOSTIC_HORIZONS = (1, 24, 48)
+
 FROZEN_FLOORS = {
     "24": {
         "seasonal_naive_mae": 197.96406593406593,
@@ -191,8 +193,10 @@ def evaluate_v2(
         feature_rows=feature_rows,
         train_end=train_end,
         stride_hours=stride_hours,
+        horizons=DIAGNOSTIC_HORIZONS,
     )
     calibration = calibration_diagnostics(artifacts)
+    test_diagnostics = test_residual_diagnostics(records, calibration=calibration)
     horizons = {
         str(horizon): metric_block(
             [record for record in records if record.horizon == horizon],
@@ -239,6 +243,7 @@ def evaluate_v2(
             "coverage_noisy": True,
         },
         "calibration_diagnostics": calibration,
+        "test_diagnostics": test_diagnostics,
         "comparison": {
             "baseline_v1_full": baseline["horizons"],
             "frozen_floors": FROZEN_FLOORS,
@@ -253,8 +258,9 @@ def collect_v2_records(
     feature_rows: dict[datetime, np.ndarray],
     train_end: datetime,
     stride_hours: int,
+    horizons: tuple[int, ...] = DEFAULT_HORIZONS,
 ) -> list[V2Record]:
-    """Collect h24 and h48 forecast records from v2 direct forecast outputs."""
+    """Collect forecast records from v2 direct forecast outputs."""
     by_time = {point.measured_at: point for point in points}
     origins = [
         point.measured_at
@@ -271,7 +277,7 @@ def collect_v2_records(
         if history is None:
             continue
         forecast = predict_from_history(artifacts.model, history, origin)
-        for horizon in DEFAULT_HORIZONS:
+        for horizon in horizons:
             target = by_time.get(origin + timedelta(hours=horizon))
             if target is None or target.siips <= 0.0:
                 continue
@@ -350,7 +356,23 @@ def predict_from_history(model: JepaRSSM, history: Tensor, origin: datetime) -> 
 
 
 def calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
-    """Recompute calibration-set residual diagnostics without changing artifacts."""
+    """Return calibration residual diagnostics from saved artifacts when available."""
+    q = np.load(artifacts.artifact_paths["conformal_q"])
+    if "residual_mean" in q and "n_residuals" in q:
+        residual_mean = np.asarray(q["residual_mean"], dtype=np.float64)
+        n_residuals = np.asarray(q["n_residuals"], dtype=np.int64)
+        return {
+            "source": "saved_conformal_residual_metadata",
+            "n_per_horizon": int(n_residuals[0])
+            if len(set(n_residuals.tolist())) == 1
+            else n_residuals.tolist(),
+            "selected_horizons": selected_residual_horizons(residual_mean, n_residuals),
+        }
+    return recompute_calibration_diagnostics(artifacts)
+
+
+def recompute_calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
+    """Recompute calibration residual diagnostics for legacy artifacts."""
     train_cfg = artifacts.train_config
     train_base = TimescaleHospitalDataset(
         TimescaleDatasetConfig(
@@ -367,30 +389,95 @@ def calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
     loader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=0)
     residuals: list[list[float]] = [[] for _ in range(48)]
     forecaster = FrozenForecastModel(artifacts.model.eval())
+    patch_len = int(artifacts.model.patcher.patch_len)
     for batch in loader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()
-        origin_start = artifacts.model.cfg.forecast_horizon
+        origin_start = 1 if patch_len == 24 else artifacts.model.cfg.forecast_horizon
         for origin_offset in range(pred.shape[1]):
             origin = origin_start + origin_offset
+            target_start = (origin + 1) * 24 if patch_len == 24 else origin + 1
             for step in range(artifacts.model.cfg.forecast_horizon):
                 for batch_index in range(truth.shape[0]):
-                    target = float(truth[batch_index, origin + step + 1])
+                    target = float(truth[batch_index, target_start + step])
                     predicted = float(pred[batch_index, origin_offset, step])
                     residuals[step].append(target - predicted)
-    counts = [len(values) for values in residuals]
-    selected = {
-        str(step): {
-            "n_residuals": counts[step - 1],
-            "mean_residual_y_true_minus_pred": safe_mean(np.asarray(residuals[step - 1])),
-        }
-        for step in (1, 24, 48)
-    }
+    counts = np.asarray([len(values) for values in residuals], dtype=np.int64)
+    means = np.asarray([safe_mean(np.asarray(values)) for values in residuals], dtype=np.float64)
     return {
         "source": "recomputed_from_calibration_split_artifact_alignment",
-        "n_per_horizon": counts[0] if len(set(counts)) == 1 else counts,
-        "selected_horizons": selected,
+        "n_per_horizon": int(counts[0]) if len(set(counts.tolist())) == 1 else counts.tolist(),
+        "selected_horizons": selected_residual_horizons(means, counts),
     }
+
+
+def selected_residual_horizons(means: np.ndarray, counts: np.ndarray) -> dict[str, Any]:
+    """Return h1/h24/h48 residual diagnostic payload."""
+    return {
+        str(step): {
+            "n_residuals": int(counts[step - 1]),
+            "mean_residual_y_true_minus_pred": float(means[step - 1]),
+        }
+        for step in DIAGNOSTIC_HORIZONS
+    }
+
+
+def test_residual_diagnostics(
+    records: list[V2Record],
+    *,
+    calibration: dict[str, Any],
+) -> dict[str, Any]:
+    """Compare test-set residual bias and early/late test MAE."""
+    mean_residuals = {}
+    for horizon in DIAGNOSTIC_HORIZONS:
+        subset = [record for record in records if record.horizon == horizon]
+        residuals = np.asarray(
+            [record.y_true - record.y_pred for record in subset],
+            dtype=np.float64,
+        )
+        mean_residuals[str(horizon)] = {
+            "n_samples": int(len(subset)),
+            "test_mean_residual_y_true_minus_pred": safe_mean(residuals),
+            "calibration_mean_residual_y_true_minus_pred": calibration["selected_horizons"][
+                str(horizon)
+            ]["mean_residual_y_true_minus_pred"],
+        }
+    return {
+        "selected_horizons": mean_residuals,
+        "first_8_test_weeks_vs_last_8_test_weeks": first_last_eight_week_mae(records),
+    }
+
+
+def first_last_eight_week_mae(records: list[V2Record]) -> dict[str, Any]:
+    """Return MAE on first and last eight evaluated test weeks for h24/h48."""
+    origins = sorted({record.origin for record in records})
+    first = set(origins[: 8 * 7])
+    last = set(origins[-8 * 7 :])
+    payload: dict[str, Any] = {}
+    for horizon in DEFAULT_HORIZONS:
+        first_errors = np.asarray(
+            [
+                abs(record.y_true - record.y_pred)
+                for record in records
+                if record.horizon == horizon and record.origin in first
+            ],
+            dtype=np.float64,
+        )
+        last_errors = np.asarray(
+            [
+                abs(record.y_true - record.y_pred)
+                for record in records
+                if record.horizon == horizon and record.origin in last
+            ],
+            dtype=np.float64,
+        )
+        payload[str(horizon)] = {
+            "first_8_weeks_mae": safe_mean(first_errors),
+            "first_8_weeks_n": int(len(first_errors)),
+            "last_8_weeks_mae": safe_mean(last_errors),
+            "last_8_weeks_n": int(len(last_errors)),
+        }
+    return payload
 
 
 def metric_block(records: list[V2Record], *, seed: int) -> dict[str, Any]:
@@ -462,14 +549,14 @@ def write_json(result: dict[str, Any], out_path: Path) -> None:
 
 
 def print_table(result: dict[str, Any]) -> None:
-    """Print v2-daily vs v2-hourly and frozen floors side by side."""
-    hourly = load_hourly_eval_summary()
-    print(
-        "horizon | model | mae | mae_ci_95 | coverage_90 | mean_interval_width"
-    )
+    """Print v2 5k vs 500-step variants and frozen floors side by side."""
+    daily_500 = load_eval_summary(Path("artifacts/v2_forecast_daily/eval_v2.json"))
+    hourly = load_eval_summary(Path("artifacts/v2_forecast/eval_v2.json"))
+    print("horizon | model | mae | mae_ci_95 | coverage_90 | mean_interval_width")
     for horizon in ("24", "48"):
-        daily = result["metrics"]["horizons"][horizon]
-        print_metric_row(horizon, "v2-daily", daily)
+        print_metric_row(horizon, "v2-daily-5k", result["metrics"]["horizons"][horizon])
+        if daily_500 is not None:
+            print_metric_row(horizon, "v2-daily-500", daily_500["metrics"]["horizons"][horizon])
         if hourly is not None:
             print_metric_row(horizon, "v2-hourly", hourly["metrics"]["horizons"][horizon])
         floors = result["comparison"]["frozen_floors"][horizon]
@@ -477,9 +564,8 @@ def print_table(result: dict[str, Any]) -> None:
         print_floor_row(horizon, "constant mean", floors["constant_mean_mae"])
 
 
-def load_hourly_eval_summary() -> dict[str, Any] | None:
-    """Load the previously generated hourly v2 evaluation JSON when available."""
-    path = Path("artifacts/v2_forecast/eval_v2.json")
+def load_eval_summary(path: Path) -> dict[str, Any] | None:
+    """Load a previously generated v2 evaluation JSON when available."""
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
