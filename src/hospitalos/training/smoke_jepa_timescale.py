@@ -18,15 +18,16 @@ from hospitalos.encoders.ts_jepa.jepa_module import JEPALightningModule
 from hospitalos.training.smoke_jepa import compute_final_probes, evaluate_metrics
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse Timescale smoke-run arguments."""
     parser = argparse.ArgumentParser(description="Run a canonical Timescale TS-JEPA smoke train.")
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--train-end", type=str, default="2025-07-01")
+    parser.add_argument("--patch-len", type=int, default=JEPAConfig.patch_len)
     parser.add_argument("--out", type=Path, default=Path("runs/smoke_timescale"))
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def main() -> int:
@@ -59,6 +60,7 @@ def main() -> int:
     sample = train_dataset[0]["series"]
     cfg = JEPAConfig(
         in_channels=int(sample.shape[1]),
+        patch_len=int(args.patch_len),
         max_steps=args.steps,
         probe_every_n_steps=50,
     )
