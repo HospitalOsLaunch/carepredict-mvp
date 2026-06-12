@@ -47,8 +47,8 @@ def db_available() -> None:
 def test_v2_training_smoke_50_steps(tmp_path: Path, db_available: None) -> None:
     """Train v2 for 50 steps and persist all forecast artifacts."""
     del db_available
-    encoder_ckpt = tmp_path / "hourly_encoder.pt"
-    write_hourly_encoder_checkpoint(encoder_ckpt, in_channels=7, emb_dim=32)
+    encoder_ckpt = tmp_path / "daily_encoder.pt"
+    write_daily_encoder_checkpoint(encoder_ckpt, in_channels=7, emb_dim=32)
     out_dir = tmp_path / "v2_forecast"
 
     summary = main(
@@ -75,10 +75,10 @@ def test_v2_training_smoke_50_steps(tmp_path: Path, db_available: None) -> None:
     assert summary["n_calibration_windows"] > 0
 
 
-def write_hourly_encoder_checkpoint(path: Path, *, in_channels: int, emb_dim: int) -> None:
-    """Write a minimal hourly JEPA encoder checkpoint compatible with the trainer."""
+def write_daily_encoder_checkpoint(path: Path, *, in_channels: int, emb_dim: int) -> None:
+    """Write a minimal daily JEPA encoder checkpoint compatible with the trainer."""
     torch.manual_seed(0)
-    patcher = Patchifier(in_channels=in_channels, patch_len=1, emb_dim=emb_dim)
+    patcher = Patchifier(in_channels=in_channels, patch_len=24, emb_dim=emb_dim)
     encoder = TransformerEncoder(emb_dim=emb_dim, depth=1, n_heads=8)
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(

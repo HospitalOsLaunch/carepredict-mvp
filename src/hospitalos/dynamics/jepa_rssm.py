@@ -82,7 +82,7 @@ class JepaRSSM(L.LightningModule):
         self.latent_decoder = self._mlp(cfg.deter + stoch_dim, cfg.hidden, cfg.emb_dim)
         self.siips_head = self._mlp(cfg.deter + stoch_dim, cfg.hidden, 1)
         self.forecast_head = self._mlp(
-            cfg.deter + stoch_dim + 4,
+            cfg.deter + stoch_dim + 2,
             cfg.hidden,
             cfg.forecast_horizon,
         )
@@ -222,52 +222,76 @@ class JepaRSSM(L.LightningModule):
         return self.forecast_head(head_input)
 
     def forecast_loss(self, features: Tensor, siips: Tensor | None, cal: Tensor | None) -> Tensor:
-        """Predict future SIIPS vectors from posterior states without future actions."""
+        """Predict the next 48 hourly SIIPS values from daily posterior states."""
         if siips is None:
             return torch.zeros((), device=features.device, dtype=features.dtype)
         target = symlog(siips.to(device=features.device, dtype=features.dtype))
         if target.ndim != 2:
             raise ValueError("siips must have shape [batch, time]")
         horizon = self.cfg.forecast_horizon
-        steps = min(int(features.shape[1]), int(target.shape[1]))
-        valid = max(steps - 2 * horizon, 0)
-        if valid == 0:
+        if horizon != 48:
+            raise ValueError("daily-patch forecast head expects forecast_horizon=48")
+        steps = int(features.shape[1])
+        required_hours = steps * 24
+        if target.shape[1] < required_hours:
+            if cal is None:
+                return torch.zeros((), device=features.device, dtype=features.dtype)
+            raise ValueError("siips target must contain complete 24h blocks for every daily state")
+        origin_slice = self._forecast_origin_slice(steps)
+        if origin_slice.stop <= origin_slice.start:
             return torch.zeros((), device=features.device, dtype=features.dtype)
-        states = {"features": features[:, :steps, :]}
-        calendar = cal if cal is not None else self._zero_calendar(features[:, :steps, :])
-        pred = self.forecast(states, calendar)[:, :valid, :]
-        windows = target.unfold(dimension=1, size=horizon, step=1)[
-            :,
-            horizon + 1 : horizon + 1 + valid,
-            :,
+        states = {"features": features}
+        calendar = cal if cal is not None else self._zero_calendar(features)
+        pred = self.forecast(states, calendar)
+        windows = [
+            target[:, (origin + 1) * 24 : (origin + 3) * 24]
+            for origin in range(origin_slice.start, origin_slice.stop)
         ]
-        return F.smooth_l1_loss(pred, windows)
+        target_windows = torch.stack(windows, dim=1)
+        return F.smooth_l1_loss(pred, target_windows)
 
     def _prepare_calendar(self, cal: Tensor, features: Tensor) -> Tensor:
-        """Broadcast or validate calendar encodings against RSSM feature steps."""
+        """Return day-of-week encodings for each daily RSSM feature step."""
         calendar = cal.to(device=features.device, dtype=features.dtype)
         if calendar.ndim == 2:
-            calendar = calendar[:, None, :].expand(-1, features.shape[1], -1)
-        if calendar.ndim != 3 or calendar.shape[0] != features.shape[0] or calendar.shape[2] != 4:
-            raise ValueError("cal must have shape [batch, 4] or [batch, time, 4]")
-        if calendar.shape[1] < features.shape[1]:
-            raise ValueError("cal time dimension must cover all RSSM feature steps")
-        return calendar[:, : features.shape[1], :]
+            if calendar.shape[1] not in {2, 4}:
+                raise ValueError("cal must have 2 day features or 4 hour/day features")
+            daily = calendar[:, -2:][:, None, :].expand(-1, features.shape[1], -1)
+            return daily.contiguous()
+        valid_shape = (
+            calendar.ndim == 3
+            and calendar.shape[0] == features.shape[0]
+            and calendar.shape[2] in {2, 4}
+        )
+        if not valid_shape:
+            raise ValueError("cal must have shape [batch, 2|4] or [batch, time, 2|4]")
+        if calendar.shape[1] >= features.shape[1] * 24:
+            indices = torch.arange(
+                features.shape[1],
+                device=features.device,
+                dtype=torch.long,
+            )
+            indices = torch.clamp((indices + 1) * 24, max=calendar.shape[1] - 1)
+            calendar = calendar.index_select(dim=1, index=indices)
+        elif calendar.shape[1] < features.shape[1]:
+            raise ValueError("cal time dimension must cover all daily RSSM feature steps")
+        else:
+            calendar = calendar[:, : features.shape[1], :]
+        return calendar[:, :, -2:]
 
     def _zero_calendar(self, features: Tensor) -> Tensor:
-        """Return neutral calendar encodings for backward-compatible batches."""
+        """Return neutral day-of-week encodings for backward-compatible batches."""
         return torch.zeros(
             features.shape[0],
             features.shape[1],
-            4,
+            2,
             device=features.device,
             dtype=features.dtype,
         )
 
     def _forecast_origin_slice(self, steps: int) -> slice:
-        """Return valid origin indices with context and target room for direct forecasts."""
-        horizon = self.cfg.forecast_horizon
-        return slice(horizon, max(horizon, steps - horizon))
+        """Return day-boundary origins with two observed days and two target days."""
+        return slice(1, max(1, steps - 2))
 
     def configure_optimizers(self) -> AdamW:
         """Configure AdamW; Trainer owns gradient clipping via grad_clip config."""

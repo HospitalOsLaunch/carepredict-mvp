@@ -23,7 +23,7 @@ from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, calendar_encodin
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
 
-DEFAULT_ENCODER_CKPT = Path("runs/jepa_pretrain_hourly/encoder_smoke_timescale.pt")
+DEFAULT_ENCODER_CKPT = Path("runs/jepa_pretrain_long/encoder_smoke_timescale.pt")
 DEFAULT_OUT = Path("artifacts/v2_forecast")
 CALIBRATION_FRAC = 0.1
 DEFAULT_BATCH_SIZE = 8
@@ -109,8 +109,8 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         Path(args.encoder_ckpt),
         in_channels=int(sample.shape[1]),
     )
-    if int(encoder_meta["patch_len"]) != 1:
-        raise ValueError("v2 forecast training requires an hourly JEPA checkpoint with patch_len=1")
+    if int(encoder_meta["patch_len"]) != 24:
+        raise ValueError("v2 forecast training requires a daily JEPA checkpoint with patch_len=24")
     cfg = RSSMConfig(emb_dim=emb_dim, forecast_horizon=48)
     model = JepaRSSM(cfg, encoder, patcher)
 
@@ -359,7 +359,9 @@ def build_train_config(
                 calibration_indices[-1]
             ].isoformat(),
         },
-        "encoder": encoder_meta,
+        "encoder": {**encoder_meta, "checkpoint_sha256": sha256_file(Path(args.encoder_ckpt))},
+        "granularity": "daily_patch_24",
+        "design_decision": "F4_option_B",
         "rssm_config": asdict(cfg),
         "git_hash": git_hash(),
         "training_constants": {
@@ -367,6 +369,17 @@ def build_train_config(
             "num_workers": DEFAULT_NUM_WORKERS,
         },
     }
+
+
+def sha256_file(path: Path) -> str:
+    """Return the SHA-256 digest for a file."""
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def git_hash() -> str:
