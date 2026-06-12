@@ -18,7 +18,11 @@ from lightning.pytorch.loggers import CSVLogger
 from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 
-from hospitalos.data.timescale_adapter import TimescaleDatasetConfig, TimescaleHospitalDataset
+from hospitalos.data.timescale_adapter import (
+    CHANNEL_NAMES,
+    TimescaleDatasetConfig,
+    TimescaleHospitalDataset,
+)
 from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, calendar_encoding, symexp
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
@@ -26,6 +30,7 @@ from hospitalos.encoders.ts_jepa.patcher import Patchifier
 DEFAULT_ENCODER_CKPT = Path("runs/jepa_pretrain_long/encoder_smoke_timescale.pt")
 DEFAULT_OUT = Path("artifacts/v2_forecast")
 CALIBRATION_FRAC = 0.1
+CALIBRATION_WINDOW_STRIDE_DAYS = 1
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_NUM_WORKERS = 0
 
@@ -52,6 +57,54 @@ class CalendarWindowDataset(Dataset[dict[str, Tensor]]):
             "siips": item["siips"],
             "calendar": build_calendar_features(self.base.window_starts[base_index], length),
         }
+
+
+class OverlappingCalibrationDataset(Dataset[dict[str, Tensor]]):
+    """Overlapping calibration windows over a fixed period with day stride."""
+
+    def __init__(
+        self,
+        base: TimescaleHospitalDataset,
+        *,
+        start: datetime,
+        end: datetime,
+        stride_days: int,
+    ) -> None:
+        """Build complete 7-day calibration windows from canonical hourly rows."""
+        if stride_days <= 0:
+            raise ValueError("stride_days must be strictly positive")
+        self.base = base
+        self.start = start
+        self.end = end
+        self.stride_days = stride_days
+        self._windows = build_overlapping_calibration_windows(
+            base,
+            start=start,
+            end=end,
+            stride_days=stride_days,
+        )
+        if not self._windows:
+            raise ValueError("no complete overlapping calibration windows available")
+
+    def __len__(self) -> int:
+        """Return overlapping calibration window count."""
+        return len(self._windows)
+
+    def __getitem__(self, index: int) -> dict[str, Tensor]:
+        """Return one overlapping calibration window with calendar features."""
+        if index < 0 or index >= len(self):
+            raise IndexError(index)
+        start, series, siips = self._windows[index]
+        return {
+            "series": torch.tensor(series, dtype=torch.float32),
+            "siips": torch.tensor(siips, dtype=torch.float32),
+            "calendar": build_calendar_features(start, int(series.shape[0])),
+        }
+
+    @property
+    def window_starts(self) -> list[datetime]:
+        """Return deterministic overlapping calibration window starts."""
+        return [start for start, _series, _siips in self._windows]
 
 
 class FrozenForecastModel:
@@ -102,7 +155,17 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
     if not train_indices or not calibration_indices:
         raise ValueError("training and calibration subsets must both be non-empty")
     train_dataset = CalendarWindowDataset(train_base, train_indices)
-    calibration_dataset = CalendarWindowDataset(train_base, calibration_indices)
+    calibration_start, calibration_end = calibration_period(
+        train_base,
+        calibration_indices,
+        stride_days=CALIBRATION_WINDOW_STRIDE_DAYS,
+    )
+    calibration_dataset = OverlappingCalibrationDataset(
+        train_base,
+        start=calibration_start,
+        end=calibration_end,
+        stride_days=CALIBRATION_WINDOW_STRIDE_DAYS,
+    )
 
     sample = train_dataset[0]["series"]
     patcher, encoder, emb_dim, encoder_meta = load_frozen_encoder(
@@ -160,6 +223,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         train_base=train_base,
         train_indices=train_indices,
         calibration_indices=calibration_indices,
+        calibration_dataset=calibration_dataset,
         encoder_meta=encoder_meta,
         cfg=cfg,
     )
@@ -174,7 +238,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         "train_config": str(config_path),
         "final_metrics": final_metrics(logger.log_dir),
         "n_train_windows": len(train_indices),
-        "n_calibration_windows": len(calibration_indices),
+        "n_calibration_windows": len(calibration_dataset),
     }
     print(json.dumps(summary, indent=2, sort_keys=True))
     return summary
@@ -210,6 +274,117 @@ def split_train_calibration_indices(
     if len(ordered) <= n_calibration:
         raise ValueError("not enough windows to reserve a calibration slice")
     return ordered[:-n_calibration], ordered[-n_calibration:]
+
+
+def calibration_period(
+    base: TimescaleHospitalDataset,
+    calibration_indices: list[int],
+    *,
+    stride_days: int,
+) -> tuple[datetime, datetime]:
+    """Return the contiguous tail period used for overlapping calibration."""
+    del stride_days
+    duration = timedelta(hours=len(calibration_indices) * base.window_hours)
+    return base.train_end - duration, base.train_end
+
+
+def overlapping_window_starts(
+    *,
+    start: datetime,
+    end: datetime,
+    window_hours: int,
+    stride_days: int,
+) -> list[datetime]:
+    """Return deterministic overlapping 7-day starts with day stride."""
+    if stride_days <= 0:
+        raise ValueError("stride_days must be strictly positive")
+    starts: list[datetime] = []
+    current = start
+    step = timedelta(days=stride_days)
+    window = timedelta(hours=window_hours)
+    while current + window <= end:
+        starts.append(current)
+        current += step
+    return starts
+
+
+def build_overlapping_calibration_windows(
+    base: TimescaleHospitalDataset,
+    *,
+    start: datetime,
+    end: datetime,
+    stride_days: int,
+) -> list[tuple[datetime, np.ndarray, np.ndarray]]:
+    """Build complete overlapping calibration windows from canonical hourly rows."""
+    rows = base._fetch_rows()  # noqa: SLF001 - calibration uses adapter SQL read-only.
+    by_service: dict[str, dict[datetime, dict[str, Any]]] = {}
+    wanted = set(base.service_ids)
+    for row in rows:
+        service_id = str(row["service_id"])
+        if service_id not in wanted:
+            continue
+        by_service.setdefault(service_id, {})[row["measured_at"]] = row
+
+    windows: list[tuple[datetime, np.ndarray, np.ndarray]] = []
+    for service_id in sorted(by_service):
+        service_rows = by_service[service_id]
+        for window_start in overlapping_window_starts(
+            start=start,
+            end=end,
+            window_hours=base.window_hours,
+            stride_days=stride_days,
+        ):
+            hours = [window_start + timedelta(hours=offset) for offset in range(base.window_hours)]
+            if any(hour not in service_rows for hour in hours):
+                continue
+            series = np.asarray(
+                [
+                    [_float_or_nan(service_rows[hour][channel]) for channel in CHANNEL_NAMES]
+                    for hour in hours
+                ],
+                dtype=np.float32,
+            )
+            siips = np.asarray(
+                [_float_or_nan(service_rows[hour]["siips"]) for hour in hours],
+                dtype=np.float32,
+            )
+            series = _forward_fill_limit(series, limit=3)
+            siips = _forward_fill_limit(siips[:, None], limit=3)[:, 0]
+            if _finite_window(series, siips):
+                windows.append((window_start, series.copy(), siips.copy()))
+    return windows
+
+
+def _float_or_nan(value: Any) -> float:
+    """Coerce optional DB values to float with NaN for gaps."""
+    if value is None:
+        return float("nan")
+    return float(value)
+
+
+def _forward_fill_limit(values: np.ndarray, *, limit: int) -> np.ndarray:
+    """Forward fill NaNs for up to ``limit`` consecutive rows."""
+    out = values.copy()
+    if out.ndim == 1:
+        out = out[:, None]
+    for col in range(out.shape[1]):
+        last = np.nan
+        run = 0
+        for row in range(out.shape[0]):
+            if np.isfinite(out[row, col]):
+                last = out[row, col]
+                run = 0
+            else:
+                run += 1
+                if np.isfinite(last) and run <= limit:
+                    out[row, col] = last
+    return out.reshape(values.shape)
+
+
+def _finite_window(series: np.ndarray, siips: np.ndarray) -> bool:
+    """Return whether a calibration window is finite and clinically usable."""
+    finite = np.isfinite(series).all() and np.isfinite(siips).all()
+    return bool(finite and np.all(siips > 0.0))
 
 
 def build_calendar_features(start: datetime, length: int) -> Tensor:
@@ -273,29 +448,35 @@ def save_conformal_quantiles(
     """Save per-horizon one-sided raw-space 90% residual quantiles."""
     lower_residuals: list[list[float]] = [[] for _ in range(horizon)]
     upper_residuals: list[list[float]] = [[] for _ in range(horizon)]
+    signed_residuals: list[list[float]] = [[] for _ in range(horizon)]
+    patch_len = int(forecaster.model.patcher.patch_len)
     for batch in dataloader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()
-        origin_start = horizon
-        valid_origins = pred.shape[1]
-        for origin_offset in range(valid_origins):
+        origin_start = 1 if patch_len == 24 else horizon
+        for origin_offset in range(pred.shape[1]):
             origin = origin_start + origin_offset
+            target_start = (origin + 1) * 24 if patch_len == 24 else origin + 1
             for step in range(horizon):
-                target = float(truth[:, origin + step + 1][0]) if truth.shape[0] == 1 else None
-                if target is not None:
-                    predicted = float(pred[0, origin_offset, step])
-                    lower_residuals[step].append(max(predicted - target, 0.0))
-                    upper_residuals[step].append(max(target - predicted, 0.0))
-                else:
-                    for batch_index in range(truth.shape[0]):
-                        predicted = float(pred[batch_index, origin_offset, step])
-                        target_value = float(truth[batch_index, origin + step + 1])
-                        lower_residuals[step].append(max(predicted - target_value, 0.0))
-                        upper_residuals[step].append(max(target_value - predicted, 0.0))
+                for batch_index in range(truth.shape[0]):
+                    predicted = float(pred[batch_index, origin_offset, step])
+                    target_value = float(truth[batch_index, target_start + step])
+                    signed = target_value - predicted
+                    signed_residuals[step].append(signed)
+                    lower_residuals[step].append(max(-signed, 0.0))
+                    upper_residuals[step].append(max(signed, 0.0))
     q90_lo = np.asarray([np.quantile(values, 0.9) for values in lower_residuals], dtype=np.float64)
     q90_hi = np.asarray([np.quantile(values, 0.9) for values in upper_residuals], dtype=np.float64)
+    residual_mean = np.asarray([np.mean(values) for values in signed_residuals], dtype=np.float64)
+    n_residuals = np.asarray([len(values) for values in signed_residuals], dtype=np.int64)
     path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(path, q90_lo=q90_lo, q90_hi=q90_hi)
+    np.savez(
+        path,
+        q90_lo=q90_lo,
+        q90_hi=q90_hi,
+        residual_mean=residual_mean,
+        n_residuals=n_residuals,
+    )
     return path
 
 
@@ -330,6 +511,7 @@ def build_train_config(
     train_base: TimescaleHospitalDataset,
     train_indices: list[int],
     calibration_indices: list[int],
+    calibration_dataset: OverlappingCalibrationDataset,
     encoder_meta: dict[str, int],
     cfg: RSSMConfig,
 ) -> dict[str, Any]:
@@ -347,17 +529,15 @@ def build_train_config(
             "services": services,
             "n_total_train_split_windows": len(train_base),
             "n_train_windows": len(train_indices),
-            "n_calibration_windows": len(calibration_indices),
+            "n_calibration_windows": len(calibration_dataset),
             "n_rejected_windows": train_base.n_rejected_windows,
             "calibration_frac": CALIBRATION_FRAC,
+            "calibration_window_stride_days": CALIBRATION_WINDOW_STRIDE_DAYS,
+            "calibration_residuals_correlated": True,
             "train_window_start_min": train_base.window_starts[train_indices[0]].isoformat(),
             "train_window_start_max": train_base.window_starts[train_indices[-1]].isoformat(),
-            "calibration_window_start_min": train_base.window_starts[
-                calibration_indices[0]
-            ].isoformat(),
-            "calibration_window_start_max": train_base.window_starts[
-                calibration_indices[-1]
-            ].isoformat(),
+            "calibration_window_start_min": calibration_dataset.window_starts[0].isoformat(),
+            "calibration_window_start_max": calibration_dataset.window_starts[-1].isoformat(),
         },
         "encoder": {**encoder_meta, "checkpoint_sha256": sha256_file(Path(args.encoder_ckpt))},
         "granularity": "daily_patch_24",

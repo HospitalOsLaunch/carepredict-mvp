@@ -11,7 +11,11 @@ import torch
 from data.synthetic.siips_generator import db_config_from_env
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
-from hospitalos.training.train_v2_forecast import main, split_train_calibration_indices
+from hospitalos.training.train_v2_forecast import (
+    main,
+    overlapping_window_starts,
+    split_train_calibration_indices,
+)
 
 
 def test_split_train_calibration_indices_excludes_calibration_tail() -> None:
@@ -25,6 +29,25 @@ def test_split_train_calibration_indices_excludes_calibration_tail() -> None:
     latest_train = max(starts[index] for index in train_indices)
     earliest_calibration = min(starts[index] for index in calibration_indices)
     assert latest_train < earliest_calibration
+
+
+def test_overlapping_calibration_window_count_and_residual_density() -> None:
+    """A 42-day calibration period yields 36 daily-stride windows and 144 residuals."""
+    start = datetime(2025, 5, 20, tzinfo=UTC)
+    end = start + timedelta(days=42)
+
+    starts = overlapping_window_starts(
+        start=start,
+        end=end,
+        window_hours=7 * 24,
+        stride_days=1,
+    )
+
+    assert len(starts) == 36
+    assert starts[0] == start
+    assert starts[1] - starts[0] == timedelta(days=1)
+    assert starts[-1] + timedelta(days=7) == end
+    assert len(starts) * 4 == 144
 
 
 @pytest.fixture(scope="module")
