@@ -27,6 +27,8 @@ class RSSMConfig:
     lr: float = 3e-4
     grad_clip: float = 1000.0
     siips_weight: float = 1.0
+    forecast_horizon: int = 48
+    forecast_weight: float = 1.0
 
 
 def symlog(x: Tensor) -> Tensor:
@@ -37,6 +39,24 @@ def symlog(x: Tensor) -> Tensor:
 def symexp(y: Tensor) -> Tensor:
     """Apply the inverse Dreamer symlog transform."""
     return torch.sign(y) * (torch.exp(torch.abs(y)) - 1.0)
+
+
+def calendar_encoding(hour_of_day: Tensor, day_of_week: Tensor) -> Tensor:
+    """Return deterministic sine/cosine calendar features for origin timestamps."""
+    hour = hour_of_day.to(dtype=torch.float32)
+    day = day_of_week.to(device=hour.device, dtype=torch.float32)
+    two_pi = torch.tensor(2.0 * torch.pi, device=hour.device, dtype=torch.float32)
+    hour_angle = two_pi * hour / 24.0
+    day_angle = two_pi * day / 7.0
+    return torch.stack(
+        [
+            torch.sin(hour_angle),
+            torch.cos(hour_angle),
+            torch.sin(day_angle),
+            torch.cos(day_angle),
+        ],
+        dim=-1,
+    )
 
 
 class JepaRSSM(L.LightningModule):
@@ -61,6 +81,11 @@ class JepaRSSM(L.LightningModule):
         )
         self.latent_decoder = self._mlp(cfg.deter + stoch_dim, cfg.hidden, cfg.emb_dim)
         self.siips_head = self._mlp(cfg.deter + stoch_dim, cfg.hidden, 1)
+        self.forecast_head = self._mlp(
+            cfg.deter + stoch_dim + 4,
+            cfg.hidden,
+            cfg.forecast_horizon,
+        )
 
     def training_step(self, batch: dict[str, Tensor], batch_idx: int) -> Tensor:
         """Compute RSSM reconstruction, KL, and optional SIIPS losses."""
@@ -74,10 +99,21 @@ class JepaRSSM(L.LightningModule):
         recon = self.reconstruction_loss(states["features"], z)
         kl = self.balanced_kl(states["post_logits"], states["prior_logits"])
         siips_loss = self.siips_loss(states["features"], batch.get("siips"))
-        loss = recon + kl + self.cfg.siips_weight * siips_loss
+        forecast_loss = self.forecast_loss(
+            states["features"],
+            batch.get("siips"),
+            batch.get("calendar"),
+        )
+        loss = (
+            recon
+            + kl
+            + self.cfg.siips_weight * siips_loss
+            + self.cfg.forecast_weight * forecast_loss
+        )
         self.log("rssm/recon", recon, on_step=True, on_epoch=True)
         self.log("rssm/kl", kl, on_step=True, on_epoch=True)
         self.log("rssm/siips", siips_loss, on_step=True, on_epoch=True)
+        self.log("rssm/forecast", forecast_loss, on_step=True, on_epoch=True)
         self.log("rssm/loss", loss, on_step=True, on_epoch=True)
         return loss
 
@@ -168,6 +204,70 @@ class JepaRSSM(L.LightningModule):
         pred = self.siips_head(features).squeeze(-1)
         horizon = min(pred.shape[1], target.shape[1])
         return F.smooth_l1_loss(pred[:, :horizon], target[:, :horizon])
+
+    def forecast(self, states: dict[str, Any], cal: Tensor) -> Tensor:
+        """Return direct multi-horizon symlog SIIPS forecasts for valid posterior origins."""
+        features = states["features"]
+        origin_slice = self._forecast_origin_slice(int(features.shape[1]))
+        if origin_slice.stop <= origin_slice.start:
+            return torch.empty(
+                features.shape[0],
+                0,
+                self.cfg.forecast_horizon,
+                device=features.device,
+                dtype=features.dtype,
+            )
+        calendar = self._prepare_calendar(cal, features)[:, origin_slice, :]
+        head_input = torch.cat([features[:, origin_slice, :], calendar], dim=-1)
+        return self.forecast_head(head_input)
+
+    def forecast_loss(self, features: Tensor, siips: Tensor | None, cal: Tensor | None) -> Tensor:
+        """Predict future SIIPS vectors from posterior states without future actions."""
+        if siips is None:
+            return torch.zeros((), device=features.device, dtype=features.dtype)
+        target = symlog(siips.to(device=features.device, dtype=features.dtype))
+        if target.ndim != 2:
+            raise ValueError("siips must have shape [batch, time]")
+        horizon = self.cfg.forecast_horizon
+        steps = min(int(features.shape[1]), int(target.shape[1]))
+        valid = max(steps - 2 * horizon, 0)
+        if valid == 0:
+            return torch.zeros((), device=features.device, dtype=features.dtype)
+        states = {"features": features[:, :steps, :]}
+        calendar = cal if cal is not None else self._zero_calendar(features[:, :steps, :])
+        pred = self.forecast(states, calendar)[:, :valid, :]
+        windows = target.unfold(dimension=1, size=horizon, step=1)[
+            :,
+            horizon + 1 : horizon + 1 + valid,
+            :,
+        ]
+        return F.smooth_l1_loss(pred, windows)
+
+    def _prepare_calendar(self, cal: Tensor, features: Tensor) -> Tensor:
+        """Broadcast or validate calendar encodings against RSSM feature steps."""
+        calendar = cal.to(device=features.device, dtype=features.dtype)
+        if calendar.ndim == 2:
+            calendar = calendar[:, None, :].expand(-1, features.shape[1], -1)
+        if calendar.ndim != 3 or calendar.shape[0] != features.shape[0] or calendar.shape[2] != 4:
+            raise ValueError("cal must have shape [batch, 4] or [batch, time, 4]")
+        if calendar.shape[1] < features.shape[1]:
+            raise ValueError("cal time dimension must cover all RSSM feature steps")
+        return calendar[:, : features.shape[1], :]
+
+    def _zero_calendar(self, features: Tensor) -> Tensor:
+        """Return neutral calendar encodings for backward-compatible batches."""
+        return torch.zeros(
+            features.shape[0],
+            features.shape[1],
+            4,
+            device=features.device,
+            dtype=features.dtype,
+        )
+
+    def _forecast_origin_slice(self, steps: int) -> slice:
+        """Return valid origin indices with context and target room for direct forecasts."""
+        horizon = self.cfg.forecast_horizon
+        return slice(horizon, max(horizon, steps - horizon))
 
     def configure_optimizers(self) -> AdamW:
         """Configure AdamW; Trainer owns gradient clipping via grad_clip config."""
