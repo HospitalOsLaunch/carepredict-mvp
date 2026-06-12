@@ -11,6 +11,7 @@ import torch
 from hospitalos.eval.eval_v2 import (
     V2Artifacts,
     V2Record,
+    eval_history_length,
     history_frame,
     metric_block,
     validate_critical_checks,
@@ -85,3 +86,16 @@ def test_validate_critical_checks_accepts_f2_artifact_metadata() -> None:
     )
 
     validate_critical_checks(artifacts=artifacts, expected_git_hash="abc")
+
+
+def test_eval_history_length_matches_training_origin_range() -> None:
+    """Daily eval history extracts d=4, the last supervised training origin."""
+    artifacts = V2Artifacts(
+        model=type("Model", (), {"cfg": type("Cfg", (), {"forecast_horizon": 48})()})(),  # type: ignore[arg-type]
+        train_config={"encoder": {"patch_len": 24}, "git_hash": "abc"},
+        q90_lo=np.zeros(48, dtype=np.float64),
+        q90_hi=np.zeros(48, dtype=np.float64),
+        artifact_paths={"checkpoint": Path("checkpoint.pt")},
+    )
+
+    assert eval_history_length(artifacts) == 120

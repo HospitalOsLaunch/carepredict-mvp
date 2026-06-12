@@ -19,7 +19,13 @@ from hospitalos.data.timescale_adapter import (
     TimescaleDatasetConfig,
     TimescaleHospitalDataset,
 )
-from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, calendar_encoding, symexp
+from hospitalos.dynamics.jepa_rssm import (
+    JepaRSSM,
+    RSSMConfig,
+    calendar_encoding,
+    forecast_origin_slice,
+    symexp,
+)
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
 from hospitalos.eval.baseline_v1 import (
@@ -273,7 +279,11 @@ def collect_v2_records(
     records: list[V2Record] = []
     for origin in origins:
         history_origin = history_window_origin(artifacts, origin)
-        history = history_frame(feature_rows, origin=history_origin, length=168)
+        history = history_frame(
+            feature_rows,
+            origin=history_origin,
+            length=eval_history_length(artifacts),
+        )
         if history is None:
             continue
         forecast = predict_from_history(artifacts.model, history, origin)
@@ -337,6 +347,18 @@ def history_window_origin(artifacts: V2Artifacts, origin: datetime) -> datetime:
     return origin
 
 
+def eval_history_length(artifacts: V2Artifacts) -> int:
+    """Return history length that extracts the shared supervised origin state."""
+    patch_len = int(artifacts.train_config["encoder"]["patch_len"])
+    nominal_steps = 168 // patch_len
+    origin_slice = forecast_origin_slice(
+        steps=nominal_steps,
+        patch_len=patch_len,
+        forecast_horizon=int(artifacts.model.cfg.forecast_horizon),
+    )
+    return int(origin_slice.stop * patch_len)
+
+
 @torch.inference_mode()
 def predict_from_history(model: JepaRSSM, history: Tensor, origin: datetime) -> Tensor:
     """Return a 48h raw-space direct forecast for the requested origin."""
@@ -393,10 +415,14 @@ def recompute_calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
     for batch in loader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()
-        origin_start = 1 if patch_len == 24 else artifacts.model.cfg.forecast_horizon
+        origin_slice = forecast_origin_slice(
+            steps=int(truth.shape[1] // patch_len),
+            patch_len=patch_len,
+            forecast_horizon=int(artifacts.model.cfg.forecast_horizon),
+        )
         for origin_offset in range(pred.shape[1]):
-            origin = origin_start + origin_offset
-            target_start = (origin + 1) * 24 if patch_len == 24 else origin + 1
+            origin = origin_slice.start + origin_offset
+            target_start = (origin + 1) * patch_len
             for step in range(artifacts.model.cfg.forecast_horizon):
                 for batch_index in range(truth.shape[0]):
                     target = float(truth[batch_index, target_start + step])

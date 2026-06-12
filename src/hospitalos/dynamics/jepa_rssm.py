@@ -59,6 +59,27 @@ def calendar_encoding(hour_of_day: Tensor, day_of_week: Tensor) -> Tensor:
     )
 
 
+def forecast_origin_slice(
+    *,
+    steps: int,
+    patch_len: int,
+    forecast_horizon: int,
+) -> slice:
+    """Return supervised forecast-origin token indices for a sequence."""
+    if steps <= 0:
+        return slice(0, 0)
+    if patch_len <= 0:
+        raise ValueError("patch_len must be strictly positive")
+    if forecast_horizon <= 0:
+        raise ValueError("forecast_horizon must be strictly positive")
+    if patch_len == 24:
+        return slice(1, max(1, steps - 2))
+    if patch_len == 1:
+        return slice(forecast_horizon, max(forecast_horizon, steps - forecast_horizon))
+    target_steps = int(torch.ceil(torch.tensor(float(forecast_horizon) / float(patch_len))).item())
+    return slice(1, max(1, steps - target_steps))
+
+
 class JepaRSSM(L.LightningModule):
     """RSSM trained on frozen JEPA embeddings with categorical stochastic state."""
 
@@ -208,7 +229,11 @@ class JepaRSSM(L.LightningModule):
     def forecast(self, states: dict[str, Any], cal: Tensor) -> Tensor:
         """Return direct multi-horizon symlog SIIPS forecasts for valid posterior origins."""
         features = states["features"]
-        origin_slice = self._forecast_origin_slice(int(features.shape[1]))
+        origin_slice = forecast_origin_slice(
+            steps=int(features.shape[1]),
+            patch_len=int(getattr(self.patcher, "patch_len", 24)),
+            forecast_horizon=int(self.cfg.forecast_horizon),
+        )
         if origin_slice.stop <= origin_slice.start:
             return torch.empty(
                 features.shape[0],
@@ -237,7 +262,11 @@ class JepaRSSM(L.LightningModule):
             if cal is None:
                 return torch.zeros((), device=features.device, dtype=features.dtype)
             raise ValueError("siips target must contain complete 24h blocks for every daily state")
-        origin_slice = self._forecast_origin_slice(steps)
+        origin_slice = forecast_origin_slice(
+            steps=steps,
+            patch_len=int(getattr(self.patcher, "patch_len", 24)),
+            forecast_horizon=horizon,
+        )
         if origin_slice.stop <= origin_slice.start:
             return torch.zeros((), device=features.device, dtype=features.dtype)
         states = {"features": features}
@@ -288,10 +317,6 @@ class JepaRSSM(L.LightningModule):
             device=features.device,
             dtype=features.dtype,
         )
-
-    def _forecast_origin_slice(self, steps: int) -> slice:
-        """Return day-boundary origins with two observed days and two target days."""
-        return slice(1, max(1, steps - 2))
 
     def configure_optimizers(self) -> AdamW:
         """Configure AdamW; Trainer owns gradient clipping via grad_clip config."""

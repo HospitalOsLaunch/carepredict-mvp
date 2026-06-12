@@ -11,6 +11,7 @@ from hospitalos.dynamics.jepa_rssm import (
     JepaRSSM,
     RSSMConfig,
     calendar_encoding,
+    forecast_origin_slice,
     symexp,
     symlog,
 )
@@ -76,6 +77,15 @@ def test_forecast_head_output_shape_daily_origins() -> None:
     assert out.shape == (2, 4, 48)
     assert torch.isfinite(out).all()
     assert model.forecast_head[0].in_features == model.cfg.deter + 16 + 2
+
+
+def test_shared_forecast_origin_slice_daily_window() -> None:
+    """The shared daily origin slice is d=1..4 for a 7-day window."""
+    origin_slice = forecast_origin_slice(steps=7, patch_len=24, forecast_horizon=48)
+
+    assert origin_slice.start == 1
+    assert origin_slice.stop == 5
+    assert list(range(origin_slice.start, origin_slice.stop)) == [1, 2, 3, 4]
 
 
 def test_forecast_loss_finite_and_backward() -> None:

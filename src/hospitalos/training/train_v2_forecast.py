@@ -6,7 +6,7 @@ import argparse
 import json
 import random
 import subprocess
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -23,16 +23,26 @@ from hospitalos.data.timescale_adapter import (
     TimescaleDatasetConfig,
     TimescaleHospitalDataset,
 )
-from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, calendar_encoding, symexp
+from hospitalos.dynamics.jepa_rssm import (
+    JepaRSSM,
+    RSSMConfig,
+    calendar_encoding,
+    forecast_origin_slice,
+    symexp,
+)
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
 
 DEFAULT_ENCODER_CKPT = Path("runs/jepa_pretrain_long/encoder_smoke_timescale.pt")
 DEFAULT_OUT = Path("artifacts/v2_forecast")
+DEFAULT_TRAIN_SERVICES = "urg-001,med-001,chir-001,rea-001,ssr-001"
+DEFAULT_CALIBRATION_SERVICE = "urg-001"
 CALIBRATION_FRAC = 0.1
 CALIBRATION_WINDOW_STRIDE_DAYS = 1
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_NUM_WORKERS = 0
+EARLY_STOP_CHECK_EVERY_STEPS = 250
+EARLY_STOP_PATIENCE_STEPS = 1000
 
 
 class CalendarWindowDataset(Dataset[dict[str, Tensor]]):
@@ -125,12 +135,88 @@ class FrozenForecastModel:
         return symexp(self.model.forecast(states, calendar)).detach().cpu()
 
 
+@dataclass
+class EarlyStoppingState:
+    """Calibration early-stopping state persisted into train_config."""
+
+    monitor: str = "calibration_forecast_loss"
+    check_every_steps: int = EARLY_STOP_CHECK_EVERY_STEPS
+    patience_steps: int = EARLY_STOP_PATIENCE_STEPS
+    best_step: int = 0
+    best_score: float = float("inf")
+    stopped_step: int | None = None
+    restored_best: bool = False
+
+
+class CalibrationForecastEarlyStopping(L.Callback):
+    """Evaluate calibration forecast loss every N steps and restore the best model."""
+
+    def __init__(
+        self,
+        dataloader: DataLoader[dict[str, Tensor]],
+        *,
+        check_every_steps: int = EARLY_STOP_CHECK_EVERY_STEPS,
+        patience_steps: int = EARLY_STOP_PATIENCE_STEPS,
+        seed: int = 0,
+    ) -> None:
+        """Create the early-stopping callback."""
+        super().__init__()
+        self.dataloader = dataloader
+        self.check_every_steps = check_every_steps
+        self.patience_steps = patience_steps
+        self.seed = seed
+        self.state = EarlyStoppingState(
+            check_every_steps=check_every_steps,
+            patience_steps=patience_steps,
+        )
+        self._best_state_dict: dict[str, Tensor] | None = None
+
+    def on_train_batch_end(
+        self,
+        trainer: L.Trainer,
+        pl_module: L.LightningModule,
+        outputs: Any,
+        batch: Any,
+        batch_idx: int,
+    ) -> None:
+        """Check calibration forecast loss and request stop after patience expires."""
+        del outputs, batch, batch_idx
+        step = int(trainer.global_step)
+        if step == 0 or step % self.check_every_steps != 0:
+            return
+        if not isinstance(pl_module, JepaRSSM):
+            raise TypeError("CalibrationForecastEarlyStopping expects JepaRSSM")
+        score = calibration_forecast_loss(pl_module, self.dataloader, seed=self.seed)
+        if trainer.logger is not None:
+            trainer.logger.log_metrics({"calibration/forecast_loss": score}, step=step)
+        if score < self.state.best_score:
+            self.state.best_score = score
+            self.state.best_step = step
+            self._best_state_dict = {
+                key: value.detach().cpu().clone()
+                for key, value in pl_module.state_dict().items()
+            }
+            return
+        if step - self.state.best_step >= self.patience_steps:
+            self.state.stopped_step = step
+            trainer.should_stop = True
+
+    def on_fit_end(self, trainer: L.Trainer, pl_module: L.LightningModule) -> None:
+        """Restore the best model weights before artifact persistence."""
+        del trainer
+        if self._best_state_dict is None:
+            return
+        pl_module.load_state_dict(self._best_state_dict)
+        self.state.restored_best = True
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse v2 forecast training arguments."""
     parser = argparse.ArgumentParser(description="Train v2 direct RSSM SIIPS forecast head.")
     parser.add_argument("--steps", type=int, default=500)
     parser.add_argument("--train-end", type=str, default="2025-07-01")
-    parser.add_argument("--services", type=str, default="urg-001")
+    parser.add_argument("--services", type=str, default=DEFAULT_TRAIN_SERVICES)
+    parser.add_argument("--calibration-service", type=str, default=DEFAULT_CALIBRATION_SERVICE)
     parser.add_argument("--encoder-ckpt", type=Path, default=DEFAULT_ENCODER_CKPT)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--seed", type=int, default=0)
@@ -144,6 +230,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
     services = parse_services(str(args.services))
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    calibration_service = str(args.calibration_service)
 
     train_base = TimescaleHospitalDataset(
         TimescaleDatasetConfig(split="train", train_end=str(args.train_end), services=services)
@@ -160,8 +247,15 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         calibration_indices,
         stride_days=CALIBRATION_WINDOW_STRIDE_DAYS,
     )
+    calibration_base = TimescaleHospitalDataset(
+        TimescaleDatasetConfig(
+            split="train",
+            train_end=str(args.train_end),
+            services=[calibration_service],
+        )
+    )
     calibration_dataset = OverlappingCalibrationDataset(
-        train_base,
+        calibration_base,
         start=calibration_start,
         end=calibration_end,
         stride_days=CALIBRATION_WINDOW_STRIDE_DAYS,
@@ -185,6 +279,18 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         num_workers=DEFAULT_NUM_WORKERS,
         generator=generator,
     )
+    calibration_loader = DataLoader(
+        calibration_dataset,
+        batch_size=DEFAULT_BATCH_SIZE,
+        shuffle=False,
+        num_workers=DEFAULT_NUM_WORKERS,
+    )
+    early_stopping = CalibrationForecastEarlyStopping(
+        calibration_loader,
+        check_every_steps=EARLY_STOP_CHECK_EVERY_STEPS,
+        patience_steps=EARLY_STOP_PATIENCE_STEPS,
+        seed=int(args.seed),
+    )
     logger = CSVLogger(save_dir=str(out_dir), name="lightning_logs")
     trainer = L.Trainer(
         max_steps=int(args.steps),
@@ -194,15 +300,10 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         log_every_n_steps=10,
         gradient_clip_val=cfg.grad_clip,
         gradient_clip_algorithm="norm",
+        callbacks=[early_stopping],
     )
     trainer.fit(model, train_loader)
 
-    calibration_loader = DataLoader(
-        calibration_dataset,
-        batch_size=DEFAULT_BATCH_SIZE,
-        shuffle=False,
-        num_workers=DEFAULT_NUM_WORKERS,
-    )
     conformal_path = save_conformal_quantiles(
         out_dir / "conformal_q.npz",
         FrozenForecastModel(model.eval()),
@@ -224,8 +325,10 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         train_indices=train_indices,
         calibration_indices=calibration_indices,
         calibration_dataset=calibration_dataset,
+        calibration_service=calibration_service,
         encoder_meta=encoder_meta,
         cfg=cfg,
+        early_stopping=early_stopping.state,
     )
     config_path = out_dir / "train_config.json"
     config_path.write_text(
@@ -237,6 +340,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
         "conformal_q": str(conformal_path),
         "train_config": str(config_path),
         "final_metrics": final_metrics(logger.log_dir),
+        "early_stopping": asdict(early_stopping.state),
         "n_train_windows": len(train_indices),
         "n_calibration_windows": len(calibration_dataset),
     }
@@ -269,11 +373,22 @@ def split_train_calibration_indices(
     """Split windows by date, reserving the last fraction for calibration."""
     if not 0.0 < cal_frac < 1.0:
         raise ValueError("cal_frac must be in (0, 1)")
-    ordered = sorted(range(len(window_starts)), key=lambda index: window_starts[index])
-    n_calibration = max(1, int(np.ceil(len(ordered) * cal_frac)))
-    if len(ordered) <= n_calibration:
+    unique_dates = sorted(set(window_starts))
+    n_calibration_dates = max(1, int(np.ceil(len(unique_dates) * cal_frac)))
+    if len(unique_dates) <= n_calibration_dates:
         raise ValueError("not enough windows to reserve a calibration slice")
-    return ordered[:-n_calibration], ordered[-n_calibration:]
+    calibration_dates = set(unique_dates[-n_calibration_dates:])
+    train_indices = [
+        index
+        for index, start in sorted(enumerate(window_starts), key=lambda item: (item[1], item[0]))
+        if start not in calibration_dates
+    ]
+    calibration_indices = [
+        index
+        for index, start in sorted(enumerate(window_starts), key=lambda item: (item[1], item[0]))
+        if start in calibration_dates
+    ]
+    return train_indices, calibration_indices
 
 
 def calibration_period(
@@ -284,8 +399,7 @@ def calibration_period(
 ) -> tuple[datetime, datetime]:
     """Return the contiguous tail period used for overlapping calibration."""
     del stride_days
-    duration = timedelta(hours=len(calibration_indices) * base.window_hours)
-    return base.train_end - duration, base.train_end
+    return min(base.window_starts[index] for index in calibration_indices), base.train_end
 
 
 def overlapping_window_starts(
@@ -453,10 +567,14 @@ def save_conformal_quantiles(
     for batch in dataloader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()
-        origin_start = 1 if patch_len == 24 else horizon
+        origin_slice = forecast_origin_slice(
+            steps=int(truth.shape[1] // patch_len),
+            patch_len=patch_len,
+            forecast_horizon=horizon,
+        )
         for origin_offset in range(pred.shape[1]):
-            origin = origin_start + origin_offset
-            target_start = (origin + 1) * 24 if patch_len == 24 else origin + 1
+            origin = origin_slice.start + origin_offset
+            target_start = (origin + 1) * patch_len
             for step in range(horizon):
                 for batch_index in range(truth.shape[0]):
                     predicted = float(pred[batch_index, origin_offset, step])
@@ -512,8 +630,10 @@ def build_train_config(
     train_indices: list[int],
     calibration_indices: list[int],
     calibration_dataset: OverlappingCalibrationDataset,
+    calibration_service: str,
     encoder_meta: dict[str, int],
     cfg: RSSMConfig,
+    early_stopping: EarlyStoppingState,
 ) -> dict[str, Any]:
     """Build the persisted v2 train config JSON payload."""
     return {
@@ -524,9 +644,11 @@ def build_train_config(
             "encoder_ckpt": str(args.encoder_ckpt),
             "out": str(args.out),
             "seed": int(args.seed),
+            "calibration_service": str(args.calibration_service),
         },
         "dataset": {
             "services": services,
+            "calibration_service": calibration_service,
             "n_total_train_split_windows": len(train_base),
             "n_train_windows": len(train_indices),
             "n_calibration_windows": len(calibration_dataset),
@@ -548,7 +670,42 @@ def build_train_config(
             "batch_size": DEFAULT_BATCH_SIZE,
             "num_workers": DEFAULT_NUM_WORKERS,
         },
+        "early_stopping": asdict(early_stopping),
+        "protocol_changes": {
+            "training_services": "all_five",
+            "evaluation_scope": "urg-001_primary_unchanged",
+            "calibration_distribution": "urg-001_only",
+            "origin_slice_shared": True,
+        },
     }
+
+
+@torch.inference_mode()
+def calibration_forecast_loss(
+    model: JepaRSSM,
+    dataloader: DataLoader[dict[str, Tensor]],
+    *,
+    seed: int,
+) -> float:
+    """Return mean symlog forecast loss on calibration windows."""
+    was_training = model.training
+    model.eval()
+    torch.manual_seed(seed)
+    losses: list[float] = []
+    weights: list[int] = []
+    for batch in dataloader:
+        device = next(model.parameters()).device
+        series = batch["series"].to(device=device, dtype=torch.float32)
+        siips = batch["siips"].to(device=device, dtype=torch.float32)
+        calendar = batch["calendar"].to(device=device, dtype=torch.float32)
+        z = model.encode_series(series)
+        states = model.unroll(z)
+        loss = model.forecast_loss(states["features"], siips, calendar)
+        losses.append(float(loss.detach().cpu()))
+        weights.append(int(series.shape[0]))
+    if was_training:
+        model.train()
+    return float(np.average(np.asarray(losses, dtype=np.float64), weights=weights))
 
 
 def sha256_file(path: Path) -> str:
