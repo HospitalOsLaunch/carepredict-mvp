@@ -14,7 +14,7 @@ import math
 import random
 from collections.abc import Sequence
 from dataclasses import asdict, replace
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -40,6 +40,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         description="Train the CarePredict Hospital RSSM on synthetic SIIPS data."
     )
     parser.add_argument("--months", type=int, default=6, help="Synthetic data months to generate.")
+    parser.add_argument("--end-date", type=str, default=None, help="Exclusive ISO end date for generated data.")
     parser.add_argument(
         "--service-index",
         type=int,
@@ -494,12 +495,23 @@ def build_training_dataset(
             f"service-index must be between 0 and {len(DEFAULT_SERVICES) - 1}, "
             f"got {args.service_index}"
         )
+    end_date = (
+        datetime.fromisoformat(str(args.end_date)).replace(tzinfo=UTC)
+        if args.end_date is not None
+        else None
+    )
     dataset = generate_dataset(
         months=int(args.months),
         services=[DEFAULT_SERVICES[int(args.service_index)]],
         seed=int(args.seed),
+        end=end_date,
     )
     timestamps, siips = extract_siips_series(dataset)
+    if end_date is not None:
+        # generate_dataset uses whole days from start to exclusive end, so the last hour is < end.
+        if not timestamps[-1] < end_date:
+            raise AssertionError("last generated care_load timestamp must be before --end-date")
+        LOGGER.info("rssm_synthetic_end_date_exclusive end_date=%s last_hour=%s", end_date, timestamps[-1])
     minimum_length = int(args.history_length) + int(args.horizon) + 100
     if siips.shape[0] < minimum_length:
         raise ValueError(
