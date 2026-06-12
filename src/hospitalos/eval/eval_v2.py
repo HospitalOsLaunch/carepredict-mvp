@@ -575,12 +575,13 @@ def write_json(result: dict[str, Any], out_path: Path) -> None:
 
 
 def print_table(result: dict[str, Any]) -> None:
-    """Print v2 5k vs 500-step variants and frozen floors side by side."""
+    """Print selected v2 variants and frozen floors side by side."""
     daily_500 = load_eval_summary(Path("artifacts/v2_forecast_daily/eval_v2.json"))
     hourly = load_eval_summary(Path("artifacts/v2_forecast/eval_v2.json"))
+    current_label = artifact_dir_label(result)
     print("horizon | model | mae | mae_ci_95 | coverage_90 | mean_interval_width")
     for horizon in ("24", "48"):
-        print_metric_row(horizon, "v2-daily-5k", result["metrics"]["horizons"][horizon])
+        print_metric_row(horizon, current_label, result["metrics"]["horizons"][horizon])
         if daily_500 is not None:
             print_metric_row(horizon, "v2-daily-500", daily_500["metrics"]["horizons"][horizon])
         if hourly is not None:
@@ -595,6 +596,15 @@ def load_eval_summary(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def artifact_dir_label(result: dict[str, Any]) -> str:
+    """Return a compact model label derived from the evaluated artifact directory."""
+    checkpoint_path = Path(str(result["artifacts"]["checkpoint"]))
+    name = checkpoint_path.parent.name
+    if name.startswith("v2_forecast_"):
+        return "v2-" + name.removeprefix("v2_forecast_").replace("_", "-")
+    return name.replace("_", "-")
 
 
 def print_metric_row(horizon: str, label: str, metrics: dict[str, Any]) -> None:
