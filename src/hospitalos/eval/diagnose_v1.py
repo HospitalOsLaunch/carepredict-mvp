@@ -6,6 +6,7 @@ import argparse
 import inspect
 import json
 from dataclasses import dataclass
+from types import SimpleNamespace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -24,8 +25,11 @@ from hospitalos.eval.baseline_v1 import (
     fetch_care_load_points,
     history_until,
     parse_utc,
+    to_utc,
     zero_actions,
 )
+from data.synthetic.siips_generator import db_config_from_env
+from scripts.train_rssm_synthetic import build_action_matrix
 
 ARTIFACTS = {
     "checkpoint": Path("artifacts/v1_full/rssm_checkpoint.pt"),
@@ -37,7 +41,17 @@ DEFAULT_STRIDE_HOURS = 24
 DEFAULT_SEED = 42
 DEFAULT_TRAJECTORY_COUNT = 5
 DEFAULT_OUTPUT_DIR = Path("runs/diagnose_v1")
+WEEKLY_LAG_HOURS = 168
 
+
+
+
+@dataclass(frozen=True)
+class ActionEvent:
+    """Canonical event timestamp compatible with train_rssm_synthetic action derivation."""
+
+    admission_time: datetime | None = None
+    discharge_time: datetime | None = None
 
 @dataclass(frozen=True)
 class TargetRecord:
@@ -95,6 +109,25 @@ def main(argv: list[str] | None = None) -> int:
         horizon=48,
         stride_hours=int(args.stride_hours),
     )
+    timestamps = [point.measured_at for point in service_points]
+    canonical_events = fetch_canonical_action_events(service_id=PRIMARY_SCOPE)
+    lagged_actions = build_action_matrix(canonical_events, timestamps, action_dim=service.rssm_config.action_dim)
+    lagged_h24_records = collect_lagged_action_records(
+        service=service,
+        points=service_points,
+        actions=lagged_actions,
+        train_end=train_end,
+        horizon=24,
+        stride_hours=int(args.stride_hours),
+    )
+    lagged_h48_records = collect_lagged_action_records(
+        service=service,
+        points=service_points,
+        actions=lagged_actions,
+        train_end=train_end,
+        horizon=48,
+        stride_hours=int(args.stride_hours),
+    )
     train_mean = train_window_mean(service_points=service_points, train_end=train_end)
     origin_targets_24 = target_records(h24_records)
     trajectory_path = write_trajectory_dump(
@@ -121,6 +154,18 @@ def main(argv: list[str] | None = None) -> int:
             "reference_model_mae": {
                 "h24": mae_from_records(h24_records),
                 "h48": mae_from_records(h48_records),
+            },
+        },
+        "weekly_lag_action_variant": {
+            "description": "Future action_sequence uses canonical action vectors observed at the same hours one week earlier; history actions remain internal to WorldModelService.",
+            "action_derivation_code_path": action_derivation_evidence(),
+            "zero_action": {
+                "h24": metric_summary(records=h24_records),
+                "h48": metric_summary(records=h48_records),
+            },
+            "weekly_lag_actions": {
+                "h24": metric_summary(records=lagged_h24_records),
+                "h48": metric_summary(records=lagged_h48_records),
             },
         },
         "trajectory_dump": {
@@ -178,6 +223,152 @@ def prediction_variance(records: list[TargetRecord]) -> dict[str, Any]:
         "near_constant_flag_pred_std_lt_20pct_true_std": bool(np.isfinite(ratio) and ratio < 0.2),
     }
 
+
+
+def fetch_canonical_action_events(*, service_id: str) -> SimpleNamespace:
+    """Fetch canonical admissions/discharges and expose the training action API shape."""
+    config = db_config_from_env()
+    import psycopg2
+
+    with psycopg2.connect(**config) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT admission_time
+                FROM canonical.admissions
+                WHERE service_id = %s
+                ORDER BY admission_time ASC
+                """,
+                (service_id,),
+            )
+            admissions = [
+                ActionEvent(admission_time=to_utc(admission_time))
+                for (admission_time,) in cursor.fetchall()
+            ]
+            cursor.execute(
+                """
+                SELECT discharge_time
+                FROM canonical.discharges
+                WHERE service_id = %s
+                ORDER BY discharge_time ASC
+                """,
+                (service_id,),
+            )
+            discharges = [
+                ActionEvent(discharge_time=to_utc(discharge_time))
+                for (discharge_time,) in cursor.fetchall()
+            ]
+    return SimpleNamespace(admissions=admissions, discharges=discharges)
+
+
+def collect_lagged_action_records(
+    *,
+    service: WorldModelService,
+    points: list[CareLoadPoint],
+    actions: np.ndarray,
+    train_end: datetime,
+    horizon: int,
+    stride_hours: int,
+) -> list[ForecastRecord]:
+    """Collect forecasts using future actions copied from the same hours one week earlier."""
+    by_time = {point.measured_at: point for point in points}
+    time_to_index = {point.measured_at: index for index, point in enumerate(points)}
+    origins = [
+        point.measured_at
+        for point in points
+        if point.measured_at >= train_end
+        and point.measured_at.hour == 0
+        and int((point.measured_at - train_end).total_seconds() // 3600) % stride_hours == 0
+        and point.siips > 0.0
+    ]
+    records: list[ForecastRecord] = []
+    for origin in origins:
+        target_time = origin + timedelta(hours=horizon)
+        naive_time = target_time - timedelta(hours=WEEKLY_LAG_HOURS)
+        target = by_time.get(target_time)
+        naive = by_time.get(naive_time)
+        if target is None or naive is None or target.siips <= 0.0 or naive.siips <= 0.0:
+            continue
+        action_sequence = lagged_action_sequence(
+            origin=origin,
+            horizon=horizon,
+            actions=actions,
+            time_to_index=time_to_index,
+        )
+        if action_sequence is None:
+            continue
+        history = history_until(points, origin)
+        if not history:
+            continue
+        forecast = service.simulate(history, action_sequence)
+        step = forecast[horizon - 1]
+        records.append(
+            ForecastRecord(
+                origin=origin,
+                horizon=horizon,
+                y_true=float(target.siips),
+                y_pred=float(step["predicted_siips"]),
+                lower=float(step["lower_bound"]),
+                upper=float(step["upper_bound"]),
+                seasonal_naive=float(naive.siips),
+            )
+        )
+    return records
+
+
+def lagged_action_sequence(
+    *,
+    origin: datetime,
+    horizon: int,
+    actions: np.ndarray,
+    time_to_index: dict[datetime, int],
+) -> list[list[float]] | None:
+    """Return action vectors from matching future hours shifted back by one week."""
+    sequence: list[list[float]] = []
+    for hour in range(1, horizon + 1):
+        lagged_time = origin + timedelta(hours=hour - WEEKLY_LAG_HOURS)
+        index = time_to_index.get(lagged_time)
+        if index is None:
+            return None
+        sequence.append([float(value) for value in actions[index].tolist()])
+    return sequence
+
+
+def metric_summary(*, records: list[ForecastRecord]) -> dict[str, Any]:
+    """Return MAE/RMSE and h-target prediction variance for diagnostic comparisons."""
+    truth = np.asarray([record.y_true for record in records], dtype=np.float64)
+    pred = np.asarray([record.y_pred for record in records], dtype=np.float64)
+    errors = np.abs(truth - pred)
+    pred_std = float(np.std(pred)) if pred.size else float("nan")
+    true_std = float(np.std(truth)) if truth.size else float("nan")
+    return {
+        "mae": float(np.mean(errors)) if errors.size else float("nan"),
+        "rmse": float(np.sqrt(np.mean(np.square(truth - pred)))) if truth.size else float("nan"),
+        "n_samples": int(len(records)),
+        "pred_std": pred_std,
+        "true_std": true_std,
+        "pred_std_to_true_std_ratio": pred_std / true_std if true_std > 0.0 else float("nan"),
+    }
+
+
+def action_derivation_evidence() -> dict[str, Any]:
+    """Return source-line evidence for the imported training action builder."""
+    source_lines, line_start = inspect.getsourcelines(build_action_matrix)
+    return {
+        "file": inspect.getsourcefile(build_action_matrix),
+        "function": "build_action_matrix",
+        "line_start": line_start,
+        "relevant_lines": relevant_lines(
+            source_lines,
+            line_start,
+            includes=(
+                "The action order",
+                "actions = np.zeros",
+                "actions[index, 0]",
+                "actions[index, 1]",
+            ),
+        ),
+    }
 
 def train_window_mean(*, service_points: list[CareLoadPoint], train_end: datetime) -> float:
     """Return the pre-train-end mean SIIPS, excluding non-positive artifacts."""
