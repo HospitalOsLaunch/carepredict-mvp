@@ -1,0 +1,82 @@
+{
+  "artifact_paths": {
+    "checkpoint": "artifacts/v1_full/rssm_checkpoint.pt",
+    "conformal_residuals": "artifacts/v1_full/conformal_residuals.npz",
+    "scaler": "artifacts/v1_full/siips_scaler.npz"
+  },
+  "generated_at": "2026-06-12T06:34:26.470950+00:00",
+  "horizons": {
+    "24": {
+      "model": {
+        "mae": 485.4670844912561,
+        "mae_ci_95": [
+          456.63525164109416,
+          515.4798578956346
+        ],
+        "mapie_coverage_90": 0.06043956043956044,
+        "mean_interval_width": 383.24397789439274,
+        "n_samples": 182,
+        "rmse": 529.8748261450671
+      },
+      "seasonal_naive": {
+        "mae": 197.96406593406593,
+        "mae_ci_95": [
+          177.55366208791207,
+          218.57739697802197
+        ],
+        "n_samples": 182,
+        "rmse": 246.56373173845174
+      }
+    },
+    "48": {
+      "model": {
+        "mae": 577.3904914856164,
+        "mae_ci_95": [
+          543.4266310906886,
+          613.5332312850285
+        ],
+        "mapie_coverage_90": 0.0055248618784530384,
+        "mean_interval_width": 181.79329889967812,
+        "n_samples": 181,
+        "rmse": 622.5793109243799
+      },
+      "seasonal_naive": {
+        "mae": 197.14430939226517,
+        "mae_ci_95": [
+          176.19409116022098,
+          219.98002900552484
+        ],
+        "n_samples": 181,
+        "rmse": 245.9000519862711
+      }
+    }
+  },
+  "model_artifact_sha256": {
+    "checkpoint": "9149493f49e2284ebf6409d9210635a9e0cfdcc3011ddb5c572b85739d84a55c",
+    "conformal_residuals": "b3eb94b242cc2b170b2a63962e9533833d342b304a6a14b2dcecee110496c827",
+    "scaler": "fe94547b3891b8e2ae2d7bec0ead7faf5da9ebcfccdbc2b6730daa4efc77ff9a"
+  },
+  "model_version": "rssm-synthetic-v1",
+  "open_loop": true,
+  "origin_stride_hours": 24,
+  "original_run_steps": "500",
+  "primary_scope": "urg-001",
+  "provenance": "regenerated_full_train_window",
+  "provenance_training_args": {
+    "batch_size": 16,
+    "device": "cpu",
+    "end_date": "2025-07-01",
+    "history_length": 48,
+    "horizon": 24,
+    "log_every": 10,
+    "lr": 0.0003,
+    "months": 6,
+    "output_dir": "artifacts/v1_full",
+    "plot": false,
+    "seed": 42,
+    "service_index": 0,
+    "steps": 500,
+    "use_mlflow": false
+  },
+  "train_end": "2025-07-01T00:00:00+00:00"
+}
