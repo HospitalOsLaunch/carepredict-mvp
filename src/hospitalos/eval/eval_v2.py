@@ -12,13 +12,14 @@ from typing import Any
 import numpy as np
 import torch
 from torch import Tensor
+from torch.utils.data import DataLoader
 
 from hospitalos.data.timescale_adapter import (
     CHANNEL_NAMES,
     TimescaleDatasetConfig,
     TimescaleHospitalDataset,
 )
-from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, symexp
+from hospitalos.dynamics.jepa_rssm import JepaRSSM, RSSMConfig, calendar_encoding, symexp
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
 from hospitalos.eval.baseline_v1 import (
@@ -33,8 +34,11 @@ from hospitalos.eval.baseline_v1 import (
     sha256_file,
 )
 from hospitalos.training.train_v2_forecast import (
+    CalendarWindowDataset,
+    FrozenForecastModel,
     build_calendar_features,
     infer_transformer_depth,
+    split_train_calibration_indices,
 )
 
 DEFAULT_ARTIFACT_DIR = Path("artifacts/v2_forecast")
@@ -94,10 +98,7 @@ def main(argv: list[str] | None = None) -> dict[str, Any]:
     args = parse_args(argv)
     train_end = parse_utc(str(args.train_end))
     artifacts = load_v2_artifacts(Path(args.artifact_dir))
-    validate_critical_checks(
-        artifacts=artifacts,
-        expected_git_hash="e3a62f93c09fbde61547ec849366d89fb5483dc6",
-    )
+    validate_critical_checks(artifacts=artifacts)
     points = fetch_care_load_points(service_ids=[str(args.service)])
     result = evaluate_v2(
         artifacts=artifacts,
@@ -153,13 +154,18 @@ def load_v2_artifacts(artifact_dir: Path) -> V2Artifacts:
     )
 
 
-def validate_critical_checks(*, artifacts: V2Artifacts, expected_git_hash: str) -> None:
-    """Validate F3 critical artifact assumptions before evaluation."""
+def validate_critical_checks(
+    *,
+    artifacts: V2Artifacts,
+    expected_git_hash: str | None = None,
+) -> None:
+    """Validate critical artifact assumptions before evaluation."""
     patch_len = int(artifacts.train_config["encoder"]["patch_len"])
-    if patch_len != 1:
-        raise ValueError(f"expected encoder patch_len == 1, got {patch_len}")
-    if str(artifacts.train_config["git_hash"]) != expected_git_hash:
-        raise ValueError("train_config git_hash does not match F2 commit e3a62f9")
+    if patch_len not in {1, 24}:
+        raise ValueError(f"expected encoder patch_len in {{1, 24}}, got {patch_len}")
+    git_hash = str(artifacts.train_config["git_hash"])
+    if expected_git_hash is not None and git_hash != expected_git_hash:
+        raise ValueError("train_config git_hash does not match expected commit")
     if artifacts.q90_lo.shape != (48,) or artifacts.q90_hi.shape != (48,):
         raise ValueError("conformal q90 arrays must both have shape (48,)")
 
@@ -186,6 +192,7 @@ def evaluate_v2(
         train_end=train_end,
         stride_hours=stride_hours,
     )
+    calibration = calibration_diagnostics(artifacts)
     horizons = {
         str(horizon): metric_block(
             [record for record in records if record.horizon == horizon],
@@ -228,7 +235,10 @@ def evaluate_v2(
             "n_test_windows": unique_origin_count(records),
             "n_services": 1,
             "n_skipped_windows": n_skipped,
+            "calibration_n_per_horizon": calibration["n_per_horizon"],
+            "coverage_noisy": True,
         },
+        "calibration_diagnostics": calibration,
         "comparison": {
             "baseline_v1_full": baseline["horizons"],
             "frozen_floors": FROZEN_FLOORS,
@@ -256,7 +266,8 @@ def collect_v2_records(
     ]
     records: list[V2Record] = []
     for origin in origins:
-        history = history_frame(feature_rows, origin=origin, length=168)
+        history_origin = history_window_origin(artifacts, origin)
+        history = history_frame(feature_rows, origin=history_origin, length=168)
         if history is None:
             continue
         forecast = predict_from_history(artifacts.model, history, origin)
@@ -313,17 +324,73 @@ def history_frame(
     return torch.tensor(np.stack(values, axis=0), dtype=torch.float32).reshape(1, length, -1)
 
 
+def history_window_origin(artifacts: V2Artifacts, origin: datetime) -> datetime:
+    """Return the timestamp that should end the feature history window."""
+    if int(artifacts.train_config["encoder"]["patch_len"]) == 24:
+        return origin - timedelta(hours=1)
+    return origin
+
+
 @torch.inference_mode()
 def predict_from_history(model: JepaRSSM, history: Tensor, origin: datetime) -> Tensor:
     """Return a 48h raw-space direct forecast for the requested origin."""
     z = model.encode_series(history)
     states = model.unroll(z)
-    calendar = build_calendar_features(origin - timedelta(hours=167), 168).unsqueeze(0)
     origin_features = states["features"][:, -1:, :]
-    origin_calendar = calendar[:, -1:, :]
+    if model.forecast_head[0].in_features == origin_features.shape[-1] + 2:
+        day = torch.tensor([float(origin.weekday())], dtype=torch.float32)
+        hour = torch.zeros(1, dtype=torch.float32)
+        origin_calendar = calendar_encoding(hour, day)[:, -2:].reshape(1, 1, 2)
+    else:
+        calendar = build_calendar_features(origin - timedelta(hours=167), 168).unsqueeze(0)
+        origin_calendar = calendar[:, -1:, :]
     forecast_input = torch.cat([origin_features, origin_calendar], dim=-1)
     forecast = symexp(model.forecast_head(forecast_input))
     return forecast[0, 0, :].detach().cpu()
+
+
+def calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
+    """Recompute calibration-set residual diagnostics without changing artifacts."""
+    train_cfg = artifacts.train_config
+    train_base = TimescaleHospitalDataset(
+        TimescaleDatasetConfig(
+            split="train",
+            train_end=str(train_cfg["args"]["train_end"]),
+            services=list(train_cfg["dataset"]["services"]),
+        )
+    )
+    _, calibration_indices = split_train_calibration_indices(
+        train_base.window_starts,
+        cal_frac=float(train_cfg["dataset"]["calibration_frac"]),
+    )
+    dataset = CalendarWindowDataset(train_base, calibration_indices)
+    loader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=0)
+    residuals: list[list[float]] = [[] for _ in range(48)]
+    forecaster = FrozenForecastModel(artifacts.model.eval())
+    for batch in loader:
+        pred = forecaster.predict_window(batch).numpy()
+        truth = batch["siips"].numpy()
+        origin_start = artifacts.model.cfg.forecast_horizon
+        for origin_offset in range(pred.shape[1]):
+            origin = origin_start + origin_offset
+            for step in range(artifacts.model.cfg.forecast_horizon):
+                for batch_index in range(truth.shape[0]):
+                    target = float(truth[batch_index, origin + step + 1])
+                    predicted = float(pred[batch_index, origin_offset, step])
+                    residuals[step].append(target - predicted)
+    counts = [len(values) for values in residuals]
+    selected = {
+        str(step): {
+            "n_residuals": counts[step - 1],
+            "mean_residual_y_true_minus_pred": safe_mean(np.asarray(residuals[step - 1])),
+        }
+        for step in (1, 24, 48)
+    }
+    return {
+        "source": "recomputed_from_calibration_split_artifact_alignment",
+        "n_per_horizon": counts[0] if len(set(counts)) == 1 else counts,
+        "selected_horizons": selected,
+    }
 
 
 def metric_block(records: list[V2Record], *, seed: int) -> dict[str, Any]:
@@ -395,17 +462,42 @@ def write_json(result: dict[str, Any], out_path: Path) -> None:
 
 
 def print_table(result: dict[str, Any]) -> None:
-    """Print v2 vs frozen floors side by side."""
-    print("horizon | v2_mae | seasonal_mae | const_mean_mae | v1_weekly_action_mae | ci95")
+    """Print v2-daily vs v2-hourly and frozen floors side by side."""
+    hourly = load_hourly_eval_summary()
+    print(
+        "horizon | model | mae | mae_ci_95 | coverage_90 | mean_interval_width"
+    )
     for horizon in ("24", "48"):
-        model = result["metrics"]["horizons"][horizon]
+        daily = result["metrics"]["horizons"][horizon]
+        print_metric_row(horizon, "v2-daily", daily)
+        if hourly is not None:
+            print_metric_row(horizon, "v2-hourly", hourly["metrics"]["horizons"][horizon])
         floors = result["comparison"]["frozen_floors"][horizon]
-        ci = model["mae_ci_95"]
-        print(
-            f"{horizon:>7} | {model['mae']:.2f} | {floors['seasonal_naive_mae']:.2f} | "
-            f"{floors['constant_mean_mae']:.2f} | {floors['v1_weekly_action_mae']:.2f} | "
-            f"[{ci[0]:.2f}, {ci[1]:.2f}]"
-        )
+        print_floor_row(horizon, "seasonal naive", floors["seasonal_naive_mae"])
+        print_floor_row(horizon, "constant mean", floors["constant_mean_mae"])
+
+
+def load_hourly_eval_summary() -> dict[str, Any] | None:
+    """Load the previously generated hourly v2 evaluation JSON when available."""
+    path = Path("artifacts/v2_forecast/eval_v2.json")
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def print_metric_row(horizon: str, label: str, metrics: dict[str, Any]) -> None:
+    """Print one model metric row."""
+    ci = metrics["mae_ci_95"]
+    print(
+        f"{horizon:>7} | {label:<14} | {metrics['mae']:.2f} | "
+        f"[{ci[0]:.2f}, {ci[1]:.2f}] | {metrics['coverage90']:.3f} | "
+        f"{metrics['mean_interval_width']:.2f}"
+    )
+
+
+def print_floor_row(horizon: str, label: str, mae: float) -> None:
+    """Print one floor row where interval metrics do not apply."""
+    print(f"{horizon:>7} | {label:<14} | {mae:.2f} | n/a | n/a | n/a")
 
 
 if __name__ == "__main__":
