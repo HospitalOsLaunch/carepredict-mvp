@@ -1,10 +1,13 @@
 # HospitalOS / CarePredict MVP
 
-HospitalOS / CarePredict is a local engineering MVP for forecasting and
-simulating hospital nursing workload from SIIPS-style operational time series.
-The current repo contains a synthetic-data pipeline, FastAPI serving surfaces,
-and a v2 forecasting stack built from a TS-JEPA encoder, RSSM dynamics, and a
-direct multi-horizon forecast head.
+HospitalOS is building a hospital operations world model: an AI system that learns how hospital pressure evolves across care workload, staffing, beds, patient flow, and capacity.
+
+The current MVP, CarePredict, validates the first wedge of this vision by forecasting nursing workload from SIIPS-style operational time series. It includes a synthetic-data pipeline, FastAPI serving layer, and a v2 forecasting stack combining a TS-JEPA encoder, RSSM dynamics, and direct multi-horizon prediction.
+
+This architecture is designed to move beyond dashboards and static forecasting. The long-term goal is to create a predictive and simulation-based operating layer for hospitals: a system that can anticipate future bottlenecks, explain the drivers of pressure, simulate resource decisions, and recommend the best actions across staff, beds, and care operations.
+
+CarePredict is therefore not the final product, but the technical foundation of HospitalOS: a step toward AI-native hospital resource orchestration.
+
 
 This README is written for technical and due-diligence reviewers. It explains
 what is in the repo, how to run the main paths, and where the authoritative
