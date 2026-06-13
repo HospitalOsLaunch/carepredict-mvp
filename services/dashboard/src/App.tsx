@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Bell, Building2, ChevronDown, Search } from "lucide-react";
 import { NavLink, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import { navigationItems } from "./app/navigation";
+import { legacyNavigationItem, navigationItems } from "./app/navigation";
 import { LegacyDashboard } from "./legacy/LegacyDashboard";
 import { ActionEngine } from "./routes/ActionEngine";
 import { Beds } from "./routes/Beds";
@@ -17,52 +18,53 @@ import { Staffing } from "./routes/Staffing";
 const queryClient = new QueryClient();
 
 function AppShell() {
+  const LegacyIcon = legacyNavigationItem.icon;
+
   return (
     <div className="min-h-screen bg-bg-app text-text-body">
       <aside className="fixed inset-y-0 left-0 flex w-[230px] flex-col bg-brand-navy text-white" aria-label="Primary">
         <div className="border-b border-white/10 px-6 py-6">
-          <div className="text-sm font-semibold uppercase tracking-wide text-brand-primary">HospitalOS</div>
+          <div className="text-card-label text-brand-primary">HospitalOS</div>
           <div className="mt-1 text-lg font-bold text-white">Command</div>
         </div>
         <nav className="flex-1 px-3 py-4" aria-label="HospitalOS screens">
-          {navigationItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/"}
-              className={({ isActive }) =>
-                [
-                  "mb-1 flex items-center gap-3 rounded-xl border-l-4 px-3 py-3 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary",
-                  isActive
-                    ? "border-brand-primary bg-white/10 text-white"
-                    : "border-transparent text-white/70 hover:bg-white/5 hover:text-white"
-                ].join(" ")
-              }
-            >
-              <span aria-hidden="true" className="w-5 text-center text-brand-primary">
-                {item.icon}
-              </span>
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === "/"}
+                className={({ isActive }) =>
+                  [
+                    "mb-1 flex items-center gap-3 rounded-xl border-l-4 px-3 py-3 text-[13px] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary",
+                    isActive
+                      ? "border-brand-primary bg-white/10 text-white"
+                      : "border-transparent text-white/70 hover:bg-white/5 hover:text-white"
+                  ].join(" ")
+                }
+              >
+                <Icon aria-hidden="true" className="h-[18px] w-[18px] text-brand-primary" strokeWidth={2.2} />
+                <span>{item.label}</span>
+              </NavLink>
+            );
+          })}
           <NavLink
-            to="/legacy"
+            to={legacyNavigationItem.path}
             className={({ isActive }) =>
               [
-                "mt-4 flex items-center gap-3 rounded-xl border-l-4 px-3 py-3 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary",
+                "mt-4 flex items-center gap-3 rounded-xl border-l-4 px-3 py-3 text-[13px] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary",
                 isActive
                   ? "border-brand-primary bg-white/10 text-white"
                   : "border-transparent text-white/60 hover:bg-white/5 hover:text-white"
               ].join(" ")
             }
           >
-            <span aria-hidden="true" className="w-5 text-center text-brand-primary">
-              ↩
-            </span>
-            <span>Legacy TFT</span>
+            <LegacyIcon aria-hidden="true" className="h-[18px] w-[18px] text-brand-primary" strokeWidth={2.2} />
+            <span>{legacyNavigationItem.label}</span>
           </NavLink>
         </nav>
-        <div className="m-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
+        <div className="m-4 rounded-card border border-white/10 bg-white/5 p-4 text-[12.5px] leading-[1.35] text-white/70">
           <div className="flex items-center gap-2 font-semibold text-white">
             <span className="h-2 w-2 rounded-full bg-status-good" aria-hidden="true" />
             All systems operational
@@ -76,26 +78,31 @@ function AppShell() {
 
       <div className="ml-[230px] min-h-screen">
         <header className="flex h-20 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
-          <button className="rounded-full border border-border-subtle bg-bg-card px-4 py-2 text-sm font-medium text-text-strong shadow-sm">
-            Cityview Medical Center ▾
+          <button className="flex items-center gap-2 rounded-full border border-border-subtle bg-bg-card px-4 py-2 text-[13px] font-medium text-text-strong shadow-sm">
+            <Building2 className="h-4 w-4 text-brand-primary" aria-hidden="true" />
+            Cityview Medical Center
+            <ChevronDown className="h-4 w-4 text-text-muted" aria-hidden="true" />
           </button>
           <label className="sr-only" htmlFor="global-search">
             Search
           </label>
-          <input
-            id="global-search"
-            className="h-11 w-[420px] rounded-full border border-border-subtle bg-bg-app px-5 text-sm text-text-body outline-none focus:border-brand-primary"
-            placeholder="Search units, actions, reports..."
-            type="search"
-          />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" aria-hidden="true" />
+            <input
+              id="global-search"
+              className="h-11 w-[420px] rounded-full border border-border-subtle bg-bg-app px-11 text-[13px] text-text-body outline-none focus:border-brand-primary"
+              placeholder="Search units, actions, reports..."
+              type="search"
+            />
+          </div>
           <div className="flex items-center gap-4">
-            <time className="text-sm text-text-muted">Today · Live operations</time>
-            <button className="relative rounded-full border border-border-subtle p-2" aria-label="Notifications">
-              Bell
-              <span className="absolute -right-1 -top-1 rounded-full bg-status-critical px-1.5 text-[10px] font-bold text-white">3</span>
+            <time className="text-caption">Today · Live operations</time>
+            <button className="relative rounded-full border border-border-subtle p-2 text-text-body" aria-label="Notifications">
+              <Bell className="h-5 w-5" aria-hidden="true" />
+              <span className="numeric-tabular absolute -right-1 -top-1 rounded-full bg-status-critical px-1.5 text-[10px] font-bold text-white">3</span>
             </button>
-            <div className="rounded-full border border-border-subtle px-4 py-2 text-sm">
-              <strong className="text-text-strong">Sarah Johnson</strong>
+            <div className="rounded-full border border-border-subtle px-4 py-2 text-[13px]">
+              <strong className="font-semibold text-text-strong">Sarah Johnson</strong>
               <span className="ml-2 text-text-muted">COO</span>
             </div>
           </div>

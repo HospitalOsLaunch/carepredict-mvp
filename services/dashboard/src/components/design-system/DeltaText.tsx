@@ -11,7 +11,7 @@ export function DeltaText({ value, unit = "pts", inverted = false }: DeltaTextPr
   const className = isGood ? "text-status-good" : "text-status-critical";
 
   return (
-    <span className={`inline-flex items-center gap-1 text-sm font-semibold ${className}`}>
+    <span className={`numeric-tabular inline-flex items-center gap-1 text-control ${className}`}>
       <span aria-hidden="true">{arrow}</span>
       <span>
         {Math.abs(value).toLocaleString("en-US", { maximumFractionDigits: 0 })} {unit}

@@ -22,13 +22,13 @@ export function HeatmapGrid({ units, hours, cells }: HeatmapGridProps) {
       <div className="grid gap-2" style={{ gridTemplateColumns: `120px repeat(${hours.length}, minmax(28px, 1fr))` }}>
         <div />
         {hours.map((hour) => (
-          <div key={hour} className="text-center text-xs font-semibold text-text-muted">
+          <div key={hour} className="text-badge numeric-tabular text-center text-text-muted">
             {hour}
           </div>
         ))}
         {units.map((unit) => (
           <div key={unit} className="contents">
-            <div className="py-1 text-sm font-semibold text-text-body">{unit}</div>
+            <div className="text-body-strong py-1">{unit}</div>
             {hours.map((hour) => {
               const cell = byKey.get(`${unit}-${hour}`);
               return (

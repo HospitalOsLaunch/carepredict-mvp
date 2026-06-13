@@ -54,13 +54,13 @@ export const statusStrokeClass: Record<StatusVariant, string> = {
   optimal: "stroke-status-optimal"
 };
 
-export const statusFillClass: Record<StatusVariant, string> = {
-  neutral: "fill-text-muted/15",
-  critical: "fill-status-critical/15",
-  high: "fill-status-high/15",
-  elevated: "fill-status-elevated/20",
-  good: "fill-status-good/15",
-  optimal: "fill-status-optimal/15"
+export const statusFillTextClass: Record<StatusVariant, string> = {
+  neutral: "text-text-muted",
+  critical: "text-status-critical",
+  high: "text-status-high",
+  elevated: "text-status-elevated",
+  good: "text-status-good",
+  optimal: "text-status-optimal"
 };
 
 export function statusFromScore(score: number): StatusVariant {

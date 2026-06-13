@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 import {
   DataTable,
@@ -29,12 +29,12 @@ export function ComponentGallery() {
   const [horizon, setHorizon] = useState<HorizonOption>("24H");
 
   return (
-    <div className="mx-auto max-w-[1180px] space-y-10">
+    <div className="mx-auto max-w-[1180px] space-y-7">
       <header className="flex items-end justify-between gap-6">
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-wide text-brand-primary">Design-system gate</p>
-          <h1 className="mt-2 text-[28px] font-bold leading-tight text-text-strong">HospitalOS component gallery</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+          <p className="text-card-label text-brand-primary">Design-system gate</p>
+          <h1 className="text-screen mt-2 text-text-strong">HospitalOS component gallery</h1>
+          <p className="text-caption mt-2 max-w-3xl">
             Every reusable dashboard primitive is shown on deterministic mock data before any operational screen is assembled.
           </p>
         </div>
@@ -42,15 +42,15 @@ export function ComponentGallery() {
       </header>
 
       <GallerySection title="1. StatCard variants" description="Label, icon, hero number, unit, sub-caption and status-tinted sparkline.">
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           {statVariants.map((item) => (
-            <StatCard key={item.variant} {...item} sparkline={item.variant === "good" ? calmSparkline : sparkline} />
+            <StatCard key={item.label} {...item} sparkline={item.variant === "good" ? calmSparkline : sparkline} />
           ))}
         </div>
       </GallerySection>
 
       <GallerySection title="2. GaugeCard" description="Semicircular pressure gauge with band color, center score and trend context.">
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-3 gap-4">
           <GaugeCard title="Hospital Pressure Score" value={72} label="High" variant="high" trend={sparkline} yesterday={58} sevenDayAverage={54} />
           <GaugeCard title="ICU Pressure Score" value={91} label="Very High" variant="critical" trend={sparkline} yesterday={79} sevenDayAverage={74} />
           <GaugeCard title="Pediatrics Pressure Score" value={44} label="Optimal" variant="optimal" trend={calmSparkline} yesterday={47} sevenDayAverage={49} />
@@ -96,17 +96,17 @@ export function ComponentGallery() {
       </GallerySection>
 
       <GallerySection title="9. Primitives" description="Sparkline, MiniBar and DeltaText compose the denser components.">
-        <div className="grid grid-cols-3 gap-5 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+        <div className="grid grid-cols-3 gap-4 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
           <div>
-            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">Sparkline</p>
+            <p className="text-card-label mb-3">Sparkline</p>
             <Sparkline data={sparkline} variant="high" label="High pressure primitive trend" />
           </div>
           <div>
-            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">MiniBar</p>
+            <p className="text-card-label mb-3">MiniBar</p>
             <MiniBar value={82} label="Bed saturation" />
           </div>
           <div>
-            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">DeltaText</p>
+            <p className="text-card-label mb-3">DeltaText</p>
             <div className="flex gap-4">
               <DeltaText value={18} unit="pts" inverted />
               <DeltaText value={-12} unit="pts" inverted />
@@ -121,17 +121,17 @@ export function ComponentGallery() {
 interface GallerySectionProps {
   title: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 function GallerySection({ title, description, children }: GallerySectionProps) {
   return (
     <section className="space-y-4" aria-labelledby={slug(title)}>
       <div>
-        <h2 id={slug(title)} className="text-[17px] font-semibold text-text-strong">
+        <h2 id={slug(title)} className="text-section text-text-strong">
           {title}
         </h2>
-        <p className="mt-1 text-sm text-text-muted">{description}</p>
+        <p className="text-caption mt-1">{description}</p>
       </div>
       {children}
     </section>

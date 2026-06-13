@@ -32,11 +32,11 @@ interface DataTableProps {
 export function DataTable({ columns, rows, footerLink }: DataTableProps) {
   return (
     <div className="overflow-hidden rounded-card border border-border-subtle bg-bg-card shadow-card">
-      <table className="w-full border-collapse text-sm">
-        <thead className="bg-bg-app text-[13px] uppercase tracking-wide text-text-muted">
+      <table className="w-full border-collapse text-body-copy">
+        <thead className="bg-bg-app">
           <tr>
             {columns.map((column) => (
-              <th key={column.key} scope="col" className={`px-4 py-3 font-semibold ${column.align === "right" ? "text-right" : "text-left"}`}>
+              <th key={column.key} scope="col" className={`text-card-label px-4 py-3 ${column.align === "right" ? "text-right" : "text-left"}`}>
                 {column.header}
               </th>
             ))}
@@ -55,7 +55,7 @@ export function DataTable({ columns, rows, footerLink }: DataTableProps) {
         </tbody>
       </table>
       {footerLink ? (
-        <a href="#view-all" className="block border-t border-border-subtle px-4 py-3 text-sm font-semibold text-brand-primary hover:bg-bg-app">
+        <a href="#view-all" className="block border-t border-border-subtle px-4 py-3 text-control text-brand-primary hover:bg-bg-app">
           {footerLink} →
         </a>
       ) : null}
@@ -68,14 +68,14 @@ function CellRenderer({ cell }: { cell?: DataTableCell }) {
   if (cell.type === "text") {
     return (
       <span>
-        <span className="block font-semibold text-text-strong">{cell.value}</span>
-        {cell.muted ? <span className="text-xs text-text-muted">{cell.muted}</span> : null}
+        <span className="text-body-strong block">{cell.value}</span>
+        {cell.muted ? <span className="text-caption">{cell.muted}</span> : null}
       </span>
     );
   }
   if (cell.type === "status") return <PressureBadge status={cell.status} label={cell.label} score={cell.score} />;
   if (cell.type === "miniBar") return <MiniBar value={cell.value} label={cell.label} />;
-  if (cell.type === "sparkline") return <Sparkline data={cell.data} variant={cell.variant} height={32} />;
+  if (cell.type === "sparkline") return <Sparkline data={cell.data} variant={cell.variant} height={30} />;
   if (cell.type === "delta") return <DeltaText value={cell.value} unit={cell.unit} inverted={cell.inverted} />;
-  return <button className="font-semibold text-brand-primary hover:underline">{cell.label}</button>;
+  return <button className="text-control text-brand-primary hover:underline">{cell.label}</button>;
 }

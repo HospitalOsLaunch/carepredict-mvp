@@ -1,3 +1,5 @@
+import { Activity, Bed, Clock, Unlock, Users, Euro } from "lucide-react";
+
 import type { DataTableColumn, DataTableRow, HeatmapCell, SparklinePoint, StatusVariant } from "../components/design-system";
 
 export const sparkline: SparklinePoint[] = [
@@ -20,12 +22,13 @@ export const calmSparkline: SparklinePoint[] = [
   { label: "20:00", value: 46 }
 ];
 
-export const statVariants: Array<{ variant: StatusVariant; label: string; metric: string; unit: string; caption: string; icon: string }> = [
-  { variant: "neutral", label: "Care load", metric: "72", unit: "score", caption: "vs. 7d average, peak at 2 PM", icon: "∿" },
-  { variant: "critical", label: "Beds at risk", metric: "43", unit: "beds", caption: "critical pressure in 4 units", icon: "▦" },
-  { variant: "high", label: "Staffing gap", metric: "18", unit: "FTE", caption: "night shift variance increasing", icon: "◌" },
-  { variant: "elevated", label: "Delayed discharges", metric: "31", unit: "pts", caption: "expected to peak by 16:00", icon: "→" },
-  { variant: "good", label: "Capacity unlock", metric: "26", unit: "beds", caption: "if playbook is executed by noon", icon: "✓" }
+export const statVariants = [
+  { variant: "neutral" as const, label: "Care load", metric: "72", unit: "score", caption: "vs. 7d average, peak at 2 PM", icon: Activity },
+  { variant: "critical" as const, label: "Beds at risk", metric: "43", unit: "beds", caption: "critical pressure in 4 units", icon: Bed },
+  { variant: "high" as const, label: "Staffing gap", metric: "18", unit: "FTE", caption: "night shift variance increasing", icon: Users },
+  { variant: "elevated" as const, label: "Delayed discharges", metric: "31", unit: "pts", caption: "expected to peak by 16:00", icon: Clock },
+  { variant: "good" as const, label: "Capacity unlock", metric: "26", unit: "beds", caption: "if playbook is executed by noon", icon: Unlock },
+  { variant: "good" as const, label: "Overtime exposure", metric: "€42k", unit: "risk", caption: "avoidable with early redeployment", icon: Euro }
 ];
 
 export const tableColumns: DataTableColumn[] = [
