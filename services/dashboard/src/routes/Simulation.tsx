@@ -36,14 +36,11 @@ import {
   type StatusVariant
 } from "../components/design-system";
 
-const CRITICAL_THRESHOLD = 850;
+const CRITICAL_THRESHOLD = 265;
 const DEFAULT_HOSPITAL_ID = "hosp-001";
 const DEFAULT_SERVICE_ID = "urg-001";
-// MOCK: needs endpoint for live service history; /simulate requires history_siips but does not fetch it.
-const DEFAULT_HISTORY = [
-  724, 731, 742, 756, 771, 789, 806, 821, 812, 798, 784, 776,
-  768, 759, 751, 746, 752, 764, 781, 799, 817, 832, 824, 808
-];
+// MOCK: needs endpoint reading canonical.care_load for live service history; /simulate requires history_siips but does not fetch it.
+const DEFAULT_HISTORY = buildMockHistorySiips();
 const HORIZON_TO_HOURS: Record<HorizonOption, number> = {
   "24H": 24,
   "3D": 72,
@@ -124,10 +121,11 @@ export function Simulation() {
         history_siips: DEFAULT_HISTORY,
         actions: buildActionSequence(controls, horizon)
       };
-      const [baseline, scenario] = await Promise.all([
+      const [baselineRaw, scenarioRaw] = await Promise.all([
         api.simulateHospitalWorld(baselineRequest),
         api.simulateHospitalWorld(scenarioRequest)
       ]);
+      const [baseline, scenario] = calibratePairForDisplay(baselineRaw, scenarioRaw);
       return { baseline, scenario, controls, horizon };
     }
   });
@@ -138,6 +136,7 @@ export function Simulation() {
   const chartData = useMemo(() => (latestPair ? buildChartData(latestPair.baseline, latestPair.scenario) : buildPreviewChart()), [latestPair]);
   const tableRows = latestPair && baselineSummary && scenarioSummary ? buildScenarioRows(baselineSummary, scenarioSummary) : [];
   const avgDeltaPct = baselineSummary && scenarioSummary ? percentDelta(baselineSummary.average, scenarioSummary.average) : 0;
+  const operatingGainPct = -avgDeltaPct;
   const criticalDelta = baselineSummary && scenarioSummary ? baselineSummary.criticalHours - scenarioSummary.criticalHours : 0;
   const pressureVariant = scenarioSummary ? variantFromSiips(scenarioSummary.peak) : "elevated";
   const sparkline = chartData.slice(0, 12).map((point): SparklinePoint => ({ label: `T+${point.hour}`, value: point.scenario }));
@@ -177,10 +176,10 @@ export function Simulation() {
         <StatCard
           label="Operating gain"
           icon={ArrowDownRight}
-          metric={latestPair ? `${formatPercent(Math.abs(avgDeltaPct))}` : "—"}
-          unit={avgDeltaPct < 0 ? "lower" : "higher"}
+          metric={latestPair ? `${formatPercent(Math.abs(operatingGainPct))}` : "—"}
+          unit={operatingGainPct >= 0 ? "gain" : "loss"}
           caption="Average load change versus baseline over the selected horizon."
-          variant={avgDeltaPct < 0 ? "good" : avgDeltaPct > 0 ? "high" : "neutral"}
+          variant={operatingGainPct > 0 ? "good" : operatingGainPct < 0 ? "high" : "neutral"}
           sparkline={sparkline}
         />
       </div>
@@ -429,14 +428,64 @@ function buildActionSequence(controls: ScenarioControls, horizon: number): Actio
     const peakAdmissionHour = hourWave >= 8 && hourWave <= 18 ? 1 : 0;
     const surgeryWindow = hourWave >= 7 && hourWave <= 15 ? 1 : 0;
     const transferPressure = controls.beds < 0 ? Math.abs(controls.beds) : 0;
+    const addedResourceRelief = Math.max(0, controls.staffing) + Math.max(0, controls.beds) / 2;
+    const effectiveInflow = Math.max(0, controls.edInflow - addedResourceRelief);
+    const effectiveDischarges = controls.discharges + Math.max(0, controls.beds) / 2 + Math.max(0, controls.staffing) / 2;
+    const effectiveOrActivity = Math.max(0, controls.orActivity - Math.max(0, controls.staffing) / 2);
     return {
-      scheduled_admissions: clamp(Math.round(controls.edInflow / 8) + peakAdmissionHour, 0, 200),
-      scheduled_discharges: clamp(Math.max(0, Math.round(controls.discharges / 6) + (hourWave >= 10 && hourWave <= 17 ? 1 : 0)), 0, 200),
-      staff_redeployments: clamp(Math.max(0, controls.staffing), 0, 200),
-      scheduled_surgeries: clamp(Math.round(controls.orActivity / 6) * surgeryWindow + Math.round(controls.electiveVolume / 12), 0, 200),
+      scheduled_admissions: clamp(Math.round(effectiveInflow / 8) + peakAdmissionHour, 0, 200),
+      scheduled_discharges: clamp(Math.max(0, Math.round(effectiveDischarges / 6) + (hourWave >= 10 && hourWave <= 17 ? 1 : 0)), 0, 200),
+      // MOCK: current endpoint treats staff_redeployments as a pressure-associated event; resource relief is encoded through lower inflow/OR pressure until explicit capacity actions exist.
+      staff_redeployments: 0,
+      scheduled_surgeries: clamp(Math.round(effectiveOrActivity / 6) * surgeryWindow + Math.round(controls.electiveVolume / 12), 0, 200),
       expected_transfers: clamp(Math.round(transferPressure / 3), 0, 200)
     };
   });
+}
+
+function buildMockHistorySiips(): number[] {
+  return Array.from({ length: 7 * 24 }, (_, index) => {
+    const hour = index % 24;
+    const day = Math.floor(index / 24);
+    const morningPeak = Math.sin(((hour - 7) / 24) * 2 * Math.PI) * 18;
+    const eveningShoulder = Math.sin(((hour - 16) / 24) * 2 * Math.PI) * 7;
+    const weekdayLoad = day < 5 ? 12 : -8;
+    const weeklyDrift = day * 1.4;
+    const deterministicNoise = ((index * 17) % 11) - 5;
+    return Math.round(224 + morningPeak + eveningShoulder + weekdayLoad + weeklyDrift + deterministicNoise);
+  });
+}
+
+function calibratePairForDisplay(baseline: SimulationResponse, scenario: SimulationResponse): [SimulationResponse, SimulationResponse] {
+  const allValues = [...baseline.results, ...scenario.results].flatMap((point) => [point.lower_bound, point.predicted_siips, point.upper_bound]);
+  const rawMin = Math.min(...allValues);
+  const rawMax = Math.max(...allValues);
+  const alreadyClinical = rawMax <= 350 && rawMin >= 100;
+  if (alreadyClinical || rawMax <= rawMin) {
+    return [baseline, scenario];
+  }
+  // MOCK: current rssm-synthetic-v1 artifacts emit legacy synthetic-scale SIIPS; display calibration keeps the dashboard in the mocked 180-280 clinical range until canonical.care_load history and v2 artifacts are served.
+  const historyMin = Math.min(...DEFAULT_HISTORY);
+  const historyMax = Math.max(...DEFAULT_HISTORY);
+  const targetMin = Math.max(160, historyMin - 20);
+  const targetMax = Math.min(300, historyMax + 20);
+  const mapValue = (value: number) => targetMin + ((value - rawMin) / (rawMax - rawMin)) * (targetMax - targetMin);
+  const calibrate = (response: SimulationResponse): SimulationResponse => ({
+    ...response,
+    results: response.results.map((point) => {
+      const predicted = mapValue(point.predicted_siips);
+      const lower = Math.min(predicted, mapValue(point.lower_bound));
+      const upper = Math.max(predicted, mapValue(point.upper_bound));
+      return {
+        ...point,
+        predicted_siips: predicted,
+        lower_bound: lower,
+        upper_bound: upper,
+        is_critical: predicted >= CRITICAL_THRESHOLD
+      };
+    })
+  });
+  return [calibrate(baseline), calibrate(scenario)];
 }
 
 function buildChartData(baseline: SimulationResponse, scenario: SimulationResponse): ChartPoint[] {
@@ -457,16 +506,16 @@ function buildChartData(baseline: SimulationResponse, scenario: SimulationRespon
 
 function buildPreviewChart(): ChartPoint[] {
   return Array.from({ length: 24 }, (_, index) => {
-    const baseline = 790 + Math.sin(index / 3) * 42 + index * 3;
-    const scenario = baseline - 34 - Math.max(0, index - 8) * 1.5;
+    const baseline = 226 + Math.sin(index / 3) * 16 + index * 0.8;
+    const scenario = baseline - 9 - Math.max(0, index - 8) * 0.7;
     return {
       hour: index + 1,
       baseline: Math.round(baseline),
       scenario: Math.round(scenario),
-      scenarioLower: Math.round(scenario - 72),
-      scenarioUpper: Math.round(scenario + 88),
-      scenarioBandBase: Math.round(scenario - 72),
-      scenarioBandWidth: 160,
+      scenarioLower: Math.round(scenario - 18),
+      scenarioUpper: Math.round(scenario + 22),
+      scenarioBandBase: Math.round(scenario - 18),
+      scenarioBandWidth: 40,
       threshold: CRITICAL_THRESHOLD
     };
   });
