@@ -28,11 +28,11 @@ export function GaugeCard({ title, value, label, variant, trend, yesterday, seve
         <p className="text-card-label">{title}</p>
         <span className={`text-badge ${statusTextClass[variant]}`}>{statusCopy[variant]}</span>
       </div>
-      <div className="relative mx-auto mt-3 h-[126px] w-[220px]">
-        <svg viewBox="0 0 220 132" role="img" aria-label={`${title}: ${value} ${label}`}>
-          <path d="M 38 106 A 72 72 0 0 1 182 106" className="stroke-gauge-track" fill="none" strokeWidth="14" strokeLinecap="round" />
+      <div className="relative mx-auto mt-2 h-[118px] w-[220px]">
+        <svg className="absolute inset-0" viewBox="0 0 220 126" role="img" aria-label={`${title}: ${value} ${label}`}>
+          <path d="M 38 100 A 72 72 0 0 1 182 100" className="stroke-gauge-track" fill="none" strokeWidth="14" strokeLinecap="round" />
           <path
-            d="M 38 106 A 72 72 0 0 1 182 106"
+            d="M 38 100 A 72 72 0 0 1 182 100"
             className={statusStrokeClass[variant]}
             fill="none"
             strokeWidth="14"
@@ -41,22 +41,22 @@ export function GaugeCard({ title, value, label, variant, trend, yesterday, seve
           />
           <line
             x1="110"
-            y1="106"
+            y1="100"
             x2="110"
-            y2="50"
+            y2="62"
             className="stroke-text-strong"
             strokeWidth="2"
             strokeLinecap="round"
-            transform={`rotate(${needleAngle} 110 106)`}
+            transform={`rotate(${needleAngle} 110 100)`}
           />
-          <circle cx="110" cy="106" r="5" className="fill-text-strong" />
+          <circle cx="110" cy="100" r="5" className="fill-text-strong" />
         </svg>
-        <div className="numeric-tabular absolute inset-x-0 bottom-1 flex items-baseline justify-center gap-1 text-center">
+        <div className="numeric-tabular absolute inset-x-0 top-[70px] z-10 mx-auto flex max-w-[170px] items-baseline justify-center gap-1 rounded-full bg-bg-card/90 px-3 py-1 text-center backdrop-blur-sm">
           <strong className="text-gauge-number text-text-strong">{Math.round(value)}</strong>
-          <span className="text-unit">/ {label}</span>
+          <span className="text-unit whitespace-nowrap">/ {label}</span>
         </div>
       </div>
-      <div className="mt-2 h-8">
+      <div className="mt-1 h-8">
         <Sparkline data={trend} variant={variant} height={32} label={`${title} trend`} />
       </div>
       <p className="text-caption mt-2 numeric-tabular">

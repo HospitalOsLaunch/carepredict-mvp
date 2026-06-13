@@ -4,7 +4,15 @@
 
 @layer base {
   :root {
-    font-family: "Inter", -apple-system, system-ui, sans-serif;
+    --brand-primary: theme("colors.brand.primary");
+    --status-critical: theme("colors.status.critical");
+    --status-high: theme("colors.status.high");
+    --bg-card: theme("colors.bg.card");
+    --border-subtle: theme("colors.border.subtle");
+    --text-body: theme("colors.text.body");
+    --text-muted: theme("colors.text.muted");
+    --shadow-card: theme("boxShadow.card");
+    font-family: "Geist", -apple-system, system-ui, sans-serif;
     color: theme("colors.text.body");
     background: theme("colors.bg.app");
     font-synthesis: none;
@@ -26,21 +34,21 @@
 
 @layer components {
   .text-hero {
-    font-size: 34px;
+    font-size: 32px;
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1;
   }
 
   .text-screen {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.015em;
     line-height: 1.1;
   }
 
   .text-section {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.2;
@@ -48,7 +56,7 @@
 
   .text-card-label {
     color: theme("colors.text.muted");
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1.2;
@@ -57,7 +65,7 @@
 
   .text-unit {
     color: theme("colors.text.muted");
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     letter-spacing: 0;
     line-height: 1;
@@ -65,59 +73,75 @@
 
   .text-caption {
     color: theme("colors.text.muted");
-    font-size: 12.5px;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 1.35;
+    line-height: 1.4;
   }
 
   .text-body-copy {
     color: theme("colors.text.body");
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.4;
   }
 
   .text-badge {
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.02em;
     line-height: 1.2;
   }
 
-
   .text-body-strong {
     color: theme("colors.text.strong");
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0;
     line-height: 1.4;
   }
 
   .text-control {
-    font-size: 12.5px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0;
     line-height: 1;
   }
 
   .text-gauge-number {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 800;
     letter-spacing: -0.02em;
     line-height: 1;
   }
 
   .text-rank {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1;
   }
 
   .numeric-tabular {
-    font-feature-settings: "tnum" 1, "cv01" 1;
+    font-feature-settings: "tnum" 1;
     font-variant-numeric: tabular-nums;
+  }
+
+  .chart-tooltip {
+    border-radius: 10px;
+    border: 1px solid theme("colors.border.subtle");
+    background: theme("colors.bg.card");
+    box-shadow: theme("boxShadow.card");
+    color: theme("colors.text.body");
+    --brand-primary: theme("colors.brand.primary");
+    --status-critical: theme("colors.status.critical");
+    --status-high: theme("colors.status.high");
+    --bg-card: theme("colors.bg.card");
+    --border-subtle: theme("colors.border.subtle");
+    font-family: "Geist", -apple-system, system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 1.3;
+    padding: 8px 10px;
   }
 }

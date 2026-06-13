@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import {
   DataTable,
@@ -24,6 +25,16 @@ import {
   tableColumns,
   tableRows
 } from "../dev/galleryData";
+
+const largeChartData = [
+  { hour: "08", pressure: 58, careLoad: 52 },
+  { hour: "10", pressure: 63, careLoad: 57 },
+  { hour: "12", pressure: 71, careLoad: 66 },
+  { hour: "14", pressure: 82, careLoad: 74 },
+  { hour: "16", pressure: 88, careLoad: 78 },
+  { hour: "18", pressure: 84, careLoad: 75 },
+  { hour: "20", pressure: 76, careLoad: 69 }
+];
 
 export function ComponentGallery() {
   const [horizon, setHorizon] = useState<HorizonOption>("24H");
@@ -57,7 +68,33 @@ export function ComponentGallery() {
         </div>
       </GallerySection>
 
-      <GallerySection title="3. SegmentedToggle and 4. PressureBadge" description="Keyboard-accessible horizon selector and non-color-only pressure badges.">
+      <GallerySection title="3. Interactive large chart" description="Large charts use Recharts tooltips, active points and crosshair. Decorative sparklines remain static SVGs.">
+        <div className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={largeChartData} margin={{ top: 10, right: 16, bottom: 0, left: -16 }}>
+              <defs>
+                <linearGradient id="pressureFill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="var(--status-high)" stopOpacity={0.18} />
+                  <stop offset="100%" stopColor="var(--status-high)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="var(--border-subtle)" strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="hour" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
+              <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--text-muted)" }} />
+              <Tooltip
+                cursor={{ stroke: "var(--brand-primary)", strokeWidth: 1, strokeDasharray: "3 3" }}
+                contentStyle={{ borderRadius: 10, borderColor: "var(--border-subtle)", boxShadow: "var(--shadow-card)", fontFamily: "Geist", fontSize: 11 }}
+                itemStyle={{ color: "var(--text-body)", fontWeight: 600 }}
+                labelStyle={{ color: "var(--text-muted)", fontWeight: 500 }}
+              />
+              <Area type="monotone" dataKey="pressure" name="Pressure" stroke="var(--status-high)" strokeWidth={2} fill="url(#pressureFill)" activeDot={{ r: 5 }} />
+              <Line type="monotone" dataKey="careLoad" name="Care Load" stroke="var(--brand-primary)" strokeWidth={2} dot={false} activeDot={{ r: 5 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </GallerySection>
+
+      <GallerySection title="4. SegmentedToggle and PressureBadge" description="Keyboard-accessible horizon selector and non-color-only pressure badges.">
         <div className="flex flex-wrap items-center gap-4 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
           <SegmentedToggle value={horizon} onChange={setHorizon} />
           <PressureBadge status="critical" score={91} />
@@ -80,7 +117,7 @@ export function ComponentGallery() {
         </div>
       </GallerySection>
 
-      <GallerySection title="7. HeatmapGrid" description="Unit-by-hour risk grid with semantic status scale cells.">
+      <GallerySection title="7. HeatmapGrid" description="Unit-by-hour risk grid with keyboard and hover tooltips.">
         <HeatmapGrid units={heatmapUnits} hours={heatmapHours} cells={heatmapCells} />
       </GallerySection>
 

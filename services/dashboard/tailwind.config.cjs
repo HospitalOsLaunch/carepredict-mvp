@@ -38,7 +38,7 @@ module.exports = {
         card: "14px"
       },
       fontFamily: {
-        sans: ["Inter", "-apple-system", "system-ui", "sans-serif"]
+        sans: ["Geist", "-apple-system", "system-ui", "sans-serif"]
       }
     }
   },

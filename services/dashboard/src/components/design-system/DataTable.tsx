@@ -75,7 +75,13 @@ function CellRenderer({ cell }: { cell?: DataTableCell }) {
   }
   if (cell.type === "status") return <PressureBadge status={cell.status} label={cell.label} score={cell.score} />;
   if (cell.type === "miniBar") return <MiniBar value={cell.value} label={cell.label} />;
-  if (cell.type === "sparkline") return <Sparkline data={cell.data} variant={cell.variant} height={30} />;
+  if (cell.type === "sparkline") {
+    return (
+      <div className="max-w-[150px] overflow-hidden rounded-lg px-3 py-1.5">
+        <Sparkline data={cell.data} variant={cell.variant} height={28} />
+      </div>
+    );
+  }
   if (cell.type === "delta") return <DeltaText value={cell.value} unit={cell.unit} inverted={cell.inverted} />;
   return <button className="text-control text-brand-primary hover:underline">{cell.label}</button>;
 }
