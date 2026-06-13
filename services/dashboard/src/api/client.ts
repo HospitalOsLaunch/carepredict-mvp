@@ -1,19 +1,27 @@
-import type { ChargePredictionRequest, ChargePredictionResponse } from "./types";
+import type {
+  ChargePredictionRequest,
+  ChargePredictionResponse,
+  HospitalApiClient
+} from "./contracts";
+import { MockHospitalApiClient } from "./mock/client";
+import { RealHospitalApiClient } from "./real/client";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+let apiClient: HospitalApiClient | undefined;
+
+export function createApiClient(): HospitalApiClient {
+  if (import.meta.env.VITE_USE_MOCK === "true") {
+    return new MockHospitalApiClient();
+  }
+  return new RealHospitalApiClient();
+}
+
+export function getApiClient(): HospitalApiClient {
+  apiClient ??= createApiClient();
+  return apiClient;
+}
 
 export async function fetchChargePrediction(
   request: ChargePredictionRequest
 ): Promise<ChargePredictionResponse> {
-  const response = await fetch(`${API_BASE_URL}/predict/charge`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Prediction request failed with status ${response.status}`);
-  }
-
-  return (await response.json()) as ChargePredictionResponse;
+  return getApiClient().fetchChargePrediction(request);
 }
