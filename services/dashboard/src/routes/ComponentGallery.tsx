@@ -1,11 +1,143 @@
+import { useState } from "react";
+
+import {
+  DataTable,
+  DeltaText,
+  ExecutiveSummaryBand,
+  GaugeCard,
+  HeatmapGrid,
+  MiniBar,
+  PressureBadge,
+  RecommendedActionCard,
+  SegmentedToggle,
+  Sparkline,
+  StatCard,
+  type HorizonOption
+} from "../components/design-system";
+import {
+  calmSparkline,
+  heatmapCells,
+  heatmapHours,
+  heatmapUnits,
+  sparkline,
+  statVariants,
+  tableColumns,
+  tableRows
+} from "../dev/galleryData";
+
 export function ComponentGallery() {
+  const [horizon, setHorizon] = useState<HorizonOption>("24H");
+
   return (
-    <section className="rounded-card border border-border-subtle bg-bg-card p-8 shadow-card">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand-primary">UI-1 target</p>
-      <h1 className="text-[28px] font-bold text-text-strong">Component Gallery</h1>
-      <p className="mt-2 text-sm text-text-muted">
-        The visual contract for StatCard, GaugeCard, DataTable, HeatmapGrid and related primitives will be built here in UI-1.
-      </p>
+    <div className="mx-auto max-w-[1180px] space-y-10">
+      <header className="flex items-end justify-between gap-6">
+        <div>
+          <p className="text-[13px] font-semibold uppercase tracking-wide text-brand-primary">Design-system gate</p>
+          <h1 className="mt-2 text-[28px] font-bold leading-tight text-text-strong">HospitalOS component gallery</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+            Every reusable dashboard primitive is shown on deterministic mock data before any operational screen is assembled.
+          </p>
+        </div>
+        <SegmentedToggle value={horizon} onChange={setHorizon} />
+      </header>
+
+      <GallerySection title="1. StatCard variants" description="Label, icon, hero number, unit, sub-caption and status-tinted sparkline.">
+        <div className="grid grid-cols-5 gap-4">
+          {statVariants.map((item) => (
+            <StatCard key={item.variant} {...item} sparkline={item.variant === "good" ? calmSparkline : sparkline} />
+          ))}
+        </div>
+      </GallerySection>
+
+      <GallerySection title="2. GaugeCard" description="Semicircular pressure gauge with band color, center score and trend context.">
+        <div className="grid grid-cols-3 gap-5">
+          <GaugeCard title="Hospital Pressure Score" value={72} label="High" variant="high" trend={sparkline} yesterday={58} sevenDayAverage={54} />
+          <GaugeCard title="ICU Pressure Score" value={91} label="Very High" variant="critical" trend={sparkline} yesterday={79} sevenDayAverage={74} />
+          <GaugeCard title="Pediatrics Pressure Score" value={44} label="Optimal" variant="optimal" trend={calmSparkline} yesterday={47} sevenDayAverage={49} />
+        </div>
+      </GallerySection>
+
+      <GallerySection title="3. SegmentedToggle and 4. PressureBadge" description="Keyboard-accessible horizon selector and non-color-only pressure badges.">
+        <div className="flex flex-wrap items-center gap-4 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+          <SegmentedToggle value={horizon} onChange={setHorizon} />
+          <PressureBadge status="critical" score={91} />
+          <PressureBadge status="high" score={76} />
+          <PressureBadge status="elevated" score={63} />
+          <PressureBadge status="optimal" score={42} />
+          <PressureBadge status="good" label="Improving" />
+        </div>
+      </GallerySection>
+
+      <GallerySection title="5. DataTable" description="Dense table with status badges, mini bars, sparklines, deltas, action affordances and footer link.">
+        <DataTable columns={tableColumns} rows={tableRows} footerLink="View all units" />
+      </GallerySection>
+
+      <GallerySection title="6. RecommendedActionCard" description="Numbered action cards with operational and financial metric pairs.">
+        <div className="grid grid-cols-3 gap-4">
+          <RecommendedActionCard rank={1} title="Open discharge lounge overflow" subtitle="Emergency Department · before 11:00" pressureDelta="↓ 18 pts" financialImpact="€12.4k" />
+          <RecommendedActionCard rank={2} title="Redeploy two float nurses" subtitle="ICU and Cardiology · next shift" pressureDelta="↓ 11 pts" financialImpact="€7.8k" />
+          <RecommendedActionCard rank={3} title="Advance confirmed transports" subtitle="Surgery · by 15:00" pressureDelta="↓ 8 pts" financialImpact="€5.2k" />
+        </div>
+      </GallerySection>
+
+      <GallerySection title="7. HeatmapGrid" description="Unit-by-hour risk grid with semantic status scale cells.">
+        <HeatmapGrid units={heatmapUnits} hours={heatmapHours} cells={heatmapCells} />
+      </GallerySection>
+
+      <GallerySection title="8. ExecutiveSummaryBand" description="Executive paragraph plus Where / Why / What-to-do mini-columns.">
+        <ExecutiveSummaryBand
+          summary="Pressure is expected to concentrate in the Emergency Department and ICU between 14:00 and 20:00, driven by admission inflow and delayed discharges. The strongest near-term lever is discharge acceleration before the afternoon peak."
+          columns={[
+            { label: "Where", value: "Emergency Department, ICU and Cardiology show the highest near-term pressure." },
+            { label: "Why", value: "Admission inflow exceeds discharge velocity while night staffing coverage tightens." },
+            { label: "What to do", value: "Simulate discharge acceleration and float-pool redeployment before 11:00." }
+          ]}
+        />
+      </GallerySection>
+
+      <GallerySection title="9. Primitives" description="Sparkline, MiniBar and DeltaText compose the denser components.">
+        <div className="grid grid-cols-3 gap-5 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+          <div>
+            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">Sparkline</p>
+            <Sparkline data={sparkline} variant="high" label="High pressure primitive trend" />
+          </div>
+          <div>
+            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">MiniBar</p>
+            <MiniBar value={82} label="Bed saturation" />
+          </div>
+          <div>
+            <p className="mb-3 text-[13px] font-semibold uppercase tracking-wide text-text-muted">DeltaText</p>
+            <div className="flex gap-4">
+              <DeltaText value={18} unit="pts" inverted />
+              <DeltaText value={-12} unit="pts" inverted />
+            </div>
+          </div>
+        </div>
+      </GallerySection>
+    </div>
+  );
+}
+
+interface GallerySectionProps {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
+
+function GallerySection({ title, description, children }: GallerySectionProps) {
+  return (
+    <section className="space-y-4" aria-labelledby={slug(title)}>
+      <div>
+        <h2 id={slug(title)} className="text-[17px] font-semibold text-text-strong">
+          {title}
+        </h2>
+        <p className="mt-1 text-sm text-text-muted">{description}</p>
+      </div>
+      {children}
     </section>
   );
+}
+
+function slug(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
