@@ -61,3 +61,4 @@ artifacts/
 # Local pyproject backups (kept outside git)
 pyproject.toml.backup
 pyproject.toml.before_*
+runs/
