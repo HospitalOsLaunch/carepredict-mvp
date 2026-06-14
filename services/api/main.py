@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from services.api.dependencies.feature_fetcher import FeastFeatureFetcher
 from services.api.dependencies.model_loader import load_prediction_model_bundle
 from services.api.middleware.prometheus import PrometheusMiddleware, metrics_response
-from services.api.routers import forecast, health, predict, simulate
+from services.api.routers import forecast, health, history, predict, simulate
 from services.api.runtime import configure_torch_runtime
 
 structlog.configure(
@@ -42,6 +42,7 @@ app.include_router(health.router)
 app.include_router(predict.router)
 app.include_router(simulate.router)
 app.include_router(forecast.router)
+app.include_router(history.router)
 
 
 @app.get("/metrics", include_in_schema=False)
