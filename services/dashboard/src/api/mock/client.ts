@@ -1,6 +1,10 @@
 import type {
   ChargePredictionRequest,
   ChargePredictionResponse,
+  FeatureWindowParams,
+  FeatureWindowResponse,
+  ForecastRequest,
+  ForecastResponse,
   HealthResponse,
   HospitalApiClient,
   SimulationRequest,
@@ -53,6 +57,44 @@ export class MockHospitalApiClient implements HospitalApiClient {
       crps: 0.342,
       model_version: "mock-legacy-tft",
       attention_weights: { top_features: ["siips_score", "patient_count", "hour"] }
+    };
+  }
+
+  async getFeatureWindow(params: FeatureWindowParams): Promise<FeatureWindowResponse> {
+    // MOCK: needs GET /history/feature-window from canonical.care_load and staffing when VITE_USE_MOCK is true.
+    return {
+      service_id: params.service_id,
+      hospital_id: params.hospital_id,
+      origin_timestamp: params.origin_timestamp,
+      length: params.length ?? 120,
+      channels: ["admissions_h", "discharges_h", "nurse_count", "aide_count", "overtime_hours", "patient_count", "occupancy_rate"],
+      history: Array.from({ length: params.length ?? 120 }, (_, index) => {
+        const hour = index % 24;
+        const load = 41 + Math.sin((hour / 24) * Math.PI * 2) * 5;
+        return [hour >= 8 && hour <= 18 ? 1 : 0, hour >= 11 && hour <= 17 ? 1 : 0, 5, 4, 0.8, load, load / 42];
+      })
+    };
+  }
+
+  async getForecast(request: ForecastRequest): Promise<ForecastResponse> {
+    // MOCK: needs POST /forecast/charge when VITE_USE_MOCK is true.
+    const baseline = 920 + (request.service_id.length % 5) * 12;
+    const results = Array.from({ length: request.horizon }, (_, index) => {
+      const predicted = baseline + Math.sin(index / 5) * 85 + index * 3;
+      return {
+        step_index: index + 1,
+        predicted_siips: predicted,
+        lower_90: predicted - 120,
+        upper_90: predicted + 145
+      };
+    });
+    return {
+      status: "ok",
+      hospital_id: request.hospital_id,
+      service_id: request.service_id,
+      model_version: "mock-v2-forecast",
+      granularity: "daily_patch_24",
+      results
     };
   }
 }

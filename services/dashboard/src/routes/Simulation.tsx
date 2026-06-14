@@ -43,6 +43,7 @@ const DEFAULT_SERVICE_ID = "urg-001";
 const DEFAULT_HISTORY = buildMockHistorySiips();
 const HORIZON_TO_HOURS: Record<HorizonOption, number> = {
   "24H": 24,
+  "48H": 48,
   "3D": 72,
   "7D": 168,
   "14D": 168

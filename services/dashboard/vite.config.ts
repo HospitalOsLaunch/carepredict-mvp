@@ -6,6 +6,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/predict": "http://localhost:8000",
+      "/forecast": "http://localhost:8000",
+      "/history": "http://localhost:8000",
       "/simulate": "http://localhost:8000",
       "/health": "http://localhost:8000",
       "/ready": "http://localhost:8000",

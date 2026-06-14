@@ -1,6 +1,10 @@
 import type {
   ChargePredictionRequest,
   ChargePredictionResponse,
+  FeatureWindowParams,
+  FeatureWindowResponse,
+  ForecastRequest,
+  ForecastResponse,
   HealthResponse,
   HospitalApiClient,
   SimulationRequest,
@@ -30,6 +34,20 @@ export class RealHospitalApiClient implements HospitalApiClient {
 
   fetchChargePrediction(request: ChargePredictionRequest): Promise<ChargePredictionResponse> {
     return this.postJson<ChargePredictionRequest, ChargePredictionResponse>("/predict/charge", request);
+  }
+
+  getFeatureWindow(params: FeatureWindowParams): Promise<FeatureWindowResponse> {
+    const query = new URLSearchParams({
+      hospital_id: params.hospital_id,
+      service_id: params.service_id,
+      origin_timestamp: params.origin_timestamp,
+      length: String(params.length ?? 120)
+    });
+    return this.getJson<FeatureWindowResponse>(`/history/feature-window?${query.toString()}`);
+  }
+
+  getForecast(request: ForecastRequest): Promise<ForecastResponse> {
+    return this.postJson<ForecastRequest, ForecastResponse>("/forecast/charge", request);
   }
 
   private async getJson<TResponse>(path: string): Promise<TResponse> {

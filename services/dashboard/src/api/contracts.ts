@@ -69,9 +69,61 @@ export interface SimulationResponse {
   results: SimulationStepResult[];
 }
 
+export interface FeatureWindowParams {
+  hospital_id: string;
+  service_id: string;
+  origin_timestamp: string;
+  length?: number;
+}
+
+export interface FeatureWindowResponse {
+  service_id: string;
+  hospital_id: string;
+  origin_timestamp: string;
+  length: number;
+  channels: string[];
+  history: number[][];
+}
+
+export interface ForecastFeatureStep {
+  admissions_h: number;
+  discharges_h: number;
+  nurse_count: number;
+  aide_count: number;
+  overtime_hours: number;
+  patient_count: number;
+  occupancy_rate: number;
+}
+
+export interface ForecastRequest {
+  hospital_id: string;
+  service_id: string;
+  origin_timestamp: string;
+  history: ForecastFeatureStep[];
+  horizon: number;
+}
+
+export interface ForecastStep {
+  step_index: number;
+  predicted_siips: number;
+  lower_90: number;
+  upper_90: number;
+}
+
+export interface ForecastResponse {
+  status: string;
+  hospital_id: string;
+  service_id: string;
+  model_version: string;
+  granularity: string;
+  results: ForecastStep[];
+}
+
 export interface HospitalApiClient {
   getHealth(): Promise<HealthResponse>;
   getReady(): Promise<HealthResponse>;
   simulateHospitalWorld(request: SimulationRequest): Promise<SimulationResponse>;
   fetchChargePrediction(request: ChargePredictionRequest): Promise<ChargePredictionResponse>;
+  getFeatureWindow(params: FeatureWindowParams): Promise<FeatureWindowResponse>;
+  getForecast(request: ForecastRequest): Promise<ForecastResponse>;
 }

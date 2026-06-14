@@ -1,4 +1,4 @@
-export type HorizonOption = "24H" | "3D" | "7D" | "14D";
+export type HorizonOption = "24H" | "48H" | "3D" | "7D" | "14D";
 
 interface SegmentedToggleProps {
   value: HorizonOption;
