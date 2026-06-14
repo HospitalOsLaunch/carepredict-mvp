@@ -8,12 +8,14 @@ interface GaugeCardProps {
   label: string;
   variant: StatusVariant;
   trend: SparklinePoint[];
-  yesterday: number;
-  sevenDayAverage: number;
+  yesterday?: number;
+  sevenDayAverage?: number;
+  context?: string;
+  compact?: boolean;
   polarity?: "pressure" | "positive";
 }
 
-export function GaugeCard({ title, value, label, variant, trend, yesterday, sevenDayAverage, polarity = "pressure" }: GaugeCardProps) {
+export function GaugeCard({ title, value, label, variant, trend, yesterday, sevenDayAverage, context, compact = false, polarity = "pressure" }: GaugeCardProps) {
   const clamped = Math.max(0, Math.min(100, value));
   const radius = 64;
   const circumference = Math.PI * radius;
@@ -23,12 +25,12 @@ export function GaugeCard({ title, value, label, variant, trend, yesterday, seve
   const arrowClass = trendUpIsGood ? "text-status-good" : "text-status-critical";
 
   return (
-    <article className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+    <article className={`rounded-card border border-border-subtle bg-bg-card shadow-card ${compact ? "p-4" : "p-5"}`}>
       <div className="flex items-start justify-between gap-4">
         <p className="text-card-label">{title}</p>
         <span className={`text-badge ${statusTextClass[variant]}`}>{statusCopy[variant]}</span>
       </div>
-      <div className="relative mx-auto mt-2 h-[118px] w-[220px]">
+      <div className={`relative mx-auto mt-2 w-[220px] ${compact ? "h-[108px]" : "h-[118px]"}`}>
         <svg className="absolute inset-0" viewBox="0 0 220 126" role="img" aria-label={`${title}: ${value} ${label}`}>
           <path d="M 38 100 A 72 72 0 0 1 182 100" className="stroke-gauge-track" fill="none" strokeWidth="14" strokeLinecap="round" />
           <path
@@ -56,13 +58,13 @@ export function GaugeCard({ title, value, label, variant, trend, yesterday, seve
           <span className="text-unit whitespace-nowrap">/ {label}</span>
         </div>
       </div>
-      <div className="mt-1 h-8">
-        <Sparkline data={trend} variant={variant} height={32} label={`${title} trend`} />
-      </div>
-      <p className="text-caption mt-2 numeric-tabular">
-        Yesterday: <span className="text-text-body">{yesterday}</span> <span className={arrowClass}>↑</span> / 7d avg:{" "}
-        <span className="text-text-body">{sevenDayAverage}</span>
-      </p>
+      {!compact ? <div className="mt-1 h-8"><Sparkline data={trend} variant={variant} height={32} label={`${title} trend`} /></div> : null}
+      {yesterday !== undefined && sevenDayAverage !== undefined ? (
+        <p className="text-caption mt-2 numeric-tabular">
+          Yesterday: <span className="text-text-body">{yesterday}</span> <span className={arrowClass}>↑</span> / 7d avg:{" "}
+          <span className="text-text-body">{sevenDayAverage}</span>
+        </p>
+      ) : context ? <p className="text-caption mt-2">{context}</p> : null}
     </article>
   );
 }
