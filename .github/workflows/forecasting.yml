@@ -1,0 +1,133 @@
+name: forecasting-ci
+
+# Tests rapides à chaque push/PR touchant le module forecasting ;
+# suite complète (tests d'entraînement) en nightly et en déclenchement manuel.
+on:
+  push:
+    branches: [main, master, "v3-*"]
+    paths:
+      - "src/forecasting/**"
+      - "tests/test_mts_jepa_federated.py"
+      - "conftest.py"
+      - "requirements-forecasting.txt"
+      - ".github/workflows/forecasting.yml"
+  pull_request:
+    paths:
+      - "src/forecasting/**"
+      - "tests/test_mts_jepa_federated.py"
+      - "conftest.py"
+      - "requirements-forecasting.txt"
+      - ".github/workflows/forecasting.yml"
+  schedule:
+    # nightly à 03:17 UTC (heure creuse, évite la congestion de minuit)
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      run_slow:
+        description: "Exécuter aussi les tests lents (entraînement)"
+        type: boolean
+        default: true
+
+# annule les runs obsolètes sur une même branche/PR
+concurrency:
+  group: forecasting-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1 — tests rapides : à chaque push et PR. Doit rester < ~3 min.
+  # Exclut les tests d'entraînement (marqués 'slow' par conftest.py).
+  # ---------------------------------------------------------------------------
+  fast-tests:
+    name: Tests rapides (PR)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-forecasting.txt
+
+      - name: Installer PyTorch CPU (évite la roue CUDA)
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Installer les dépendances forecasting
+        run: pip install -r requirements-forecasting.txt
+
+      - name: Vérifier que les scripts parsent
+        run: |
+          python -c "import ast; ast.parse(open('src/forecasting/mts_jepa_federated.py').read())"
+          python -c "import ast; ast.parse(open('src/forecasting/make_figures.py').read())"
+
+      - name: Tests rapides (exclut 'slow')
+        env:
+          MPLBACKEND: Agg
+          OMP_NUM_THREADS: "2"
+        run: pytest tests/test_mts_jepa_federated.py -m "not slow" -v --durations=10
+
+  # ---------------------------------------------------------------------------
+  # Job 2 — suite complète : nightly + manuel. Inclut l'entraînement fédéré
+  # et la génération effective des 6 figures.
+  # ---------------------------------------------------------------------------
+  full-suite:
+    name: Suite complète (nightly)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # tourne en nightly, en manuel (si run_slow), et jamais sur PR ordinaire
+    if: >
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_slow)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurer Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-forecasting.txt
+
+      - name: Installer PyTorch CPU
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Installer les dépendances forecasting
+        run: pip install -r requirements-forecasting.txt
+
+      - name: Suite complète (tous les tests, y compris 'slow')
+        env:
+          MPLBACKEND: Agg
+          OMP_NUM_THREADS: "2"
+        run: pytest tests/test_mts_jepa_federated.py -v --durations=15
+
+      - name: Générer les 6 figures de diagnostic
+        env:
+          MPLBACKEND: Agg
+          OMP_NUM_THREADS: "2"
+        run: |
+          python -m src.forecasting.make_figures --outdir ci_figures
+          echo "Figures générées :"
+          ls -la ci_figures/
+          # garde-fou : exactement 6 PNG attendus
+          count=$(ls ci_figures/*.png 2>/dev/null | wc -l)
+          if [ "$count" -ne 6 ]; then
+            echo "::error::Attendu 6 figures, obtenu $count"
+            exit 1
+          fi
+
+      - name: Archiver les figures (artefact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-figures-${{ github.run_number }}
+          path: ci_figures/*.png
+          retention-days: 14
