@@ -6,21 +6,19 @@ import argparse
 import inspect
 import json
 from dataclasses import dataclass
-from types import SimpleNamespace
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
 import torch
 
-from services.ml.world_model.config import ServingConfig
-from services.ml.world_model.inference import WorldModelService
-from services.ml.world_model.rssm import RSSMState
+from data.synthetic.siips_generator import db_config_from_env
 from hospitalos.eval.baseline_v1 import (
+    PRIMARY_SCOPE,
     CareLoadPoint,
     ForecastRecord,
-    PRIMARY_SCOPE,
     collect_forecast_records,
     fetch_care_load_points,
     history_until,
@@ -28,8 +26,10 @@ from hospitalos.eval.baseline_v1 import (
     to_utc,
     zero_actions,
 )
-from data.synthetic.siips_generator import db_config_from_env
 from scripts.train_rssm_synthetic import build_action_matrix
+from services.ml.world_model.config import ServingConfig
+from services.ml.world_model.inference import WorldModelService
+from services.ml.world_model.rssm import RSSMState
 
 ARTIFACTS = {
     "checkpoint": Path("artifacts/v1_full/rssm_checkpoint.pt"),
@@ -44,14 +44,13 @@ DEFAULT_OUTPUT_DIR = Path("runs/diagnose_v1")
 WEEKLY_LAG_HOURS = 168
 
 
-
-
 @dataclass(frozen=True)
 class ActionEvent:
     """Canonical event timestamp compatible with train_rssm_synthetic action derivation."""
 
     admission_time: datetime | None = None
     discharge_time: datetime | None = None
+
 
 @dataclass(frozen=True)
 class TargetRecord:
@@ -111,7 +110,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     timestamps = [point.measured_at for point in service_points]
     canonical_events = fetch_canonical_action_events(service_id=PRIMARY_SCOPE)
-    lagged_actions = build_action_matrix(canonical_events, timestamps, action_dim=service.rssm_config.action_dim)
+    lagged_actions = build_action_matrix(
+        canonical_events, timestamps, action_dim=service.rssm_config.action_dim
+    )
     lagged_h24_records = collect_lagged_action_records(
         service=service,
         points=service_points,
@@ -137,7 +138,9 @@ def main(argv: list[str] | None = None) -> int:
         seed=int(args.seed),
         out_dir=Path(args.out_dir),
     )
-    scaler_trace = scaler_sanity_trace(service=service, points=service_points, origin=h24_records[0].origin)
+    scaler_trace = scaler_sanity_trace(
+        service=service, points=service_points, origin=h24_records[0].origin
+    )
 
     report = {
         "scope": {
@@ -208,7 +211,9 @@ def prediction_variance(records: list[TargetRecord]) -> dict[str, Any]:
     """Report predicted and true SIIPS variability for h+24 targets."""
     pred = np.asarray([record.y_pred for record in records], dtype=np.float64)
     truth = np.asarray([record.y_true for record in records], dtype=np.float64)
-    ratio = float(np.std(pred) / np.std(truth)) if truth.size and np.std(truth) > 0.0 else float("nan")
+    ratio = (
+        float(np.std(pred) / np.std(truth)) if truth.size and np.std(truth) > 0.0 else float("nan")
+    )
     return {
         "n_origins": int(len(records)),
         "pred_std": float(np.std(pred)) if pred.size else float("nan"),
@@ -224,40 +229,38 @@ def prediction_variance(records: list[TargetRecord]) -> dict[str, Any]:
     }
 
 
-
 def fetch_canonical_action_events(*, service_id: str) -> SimpleNamespace:
     """Fetch canonical admissions/discharges and expose the training action API shape."""
     config = db_config_from_env()
     import psycopg2
 
-    with psycopg2.connect(**config) as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
+    with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+        cursor.execute(
+            """
                 SELECT admission_time
                 FROM canonical.admissions
                 WHERE service_id = %s
                 ORDER BY admission_time ASC
                 """,
-                (service_id,),
-            )
-            admissions = [
-                ActionEvent(admission_time=to_utc(admission_time))
-                for (admission_time,) in cursor.fetchall()
-            ]
-            cursor.execute(
-                """
+            (service_id,),
+        )
+        admissions = [
+            ActionEvent(admission_time=to_utc(admission_time))
+            for (admission_time,) in cursor.fetchall()
+        ]
+        cursor.execute(
+            """
                 SELECT discharge_time
                 FROM canonical.discharges
                 WHERE service_id = %s
                 ORDER BY discharge_time ASC
                 """,
-                (service_id,),
-            )
-            discharges = [
-                ActionEvent(discharge_time=to_utc(discharge_time))
-                for (discharge_time,) in cursor.fetchall()
-            ]
+            (service_id,),
+        )
+        discharges = [
+            ActionEvent(discharge_time=to_utc(discharge_time))
+            for (discharge_time,) in cursor.fetchall()
+        ]
     return SimpleNamespace(admissions=admissions, discharges=discharges)
 
 
@@ -370,15 +373,22 @@ def action_derivation_evidence() -> dict[str, Any]:
         ),
     }
 
+
 def train_window_mean(*, service_points: list[CareLoadPoint], train_end: datetime) -> float:
     """Return the pre-train-end mean SIIPS, excluding non-positive artifacts."""
-    values = [point.siips for point in service_points if point.measured_at < train_end and point.siips > 0.0]
+    values = [
+        point.siips
+        for point in service_points
+        if point.measured_at < train_end and point.siips > 0.0
+    ]
     if not values:
         raise ValueError("No positive train-window SIIPS values found")
     return float(np.mean(np.asarray(values, dtype=np.float64)))
 
 
-def constant_mean_metrics(*, records: list[ForecastRecord], train_mean: float) -> dict[str, float | int]:
+def constant_mean_metrics(
+    *, records: list[ForecastRecord], train_mean: float
+) -> dict[str, float | int]:
     """Compute the constant train-mean MAE/RMSE on the same target pairs."""
     truth = np.asarray([record.y_true for record in records], dtype=np.float64)
     pred = np.full(shape=truth.shape, fill_value=float(train_mean), dtype=np.float64)
@@ -409,7 +419,9 @@ def write_trajectory_dump(
     if len(records) < DEFAULT_TRAJECTORY_COUNT:
         raise ValueError("Not enough records to sample trajectory origins")
     rng = np.random.default_rng(seed)
-    selected = sorted(rng.choice(len(records), size=DEFAULT_TRAJECTORY_COUNT, replace=False).tolist())
+    selected = sorted(
+        rng.choice(len(records), size=DEFAULT_TRAJECTORY_COUNT, replace=False).tolist()
+    )
     by_time = {point.measured_at: point for point in points}
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "trajectories.txt"
@@ -446,7 +458,11 @@ def action_feed_evidence() -> dict[str, Any]:
             "relevant_lines": relevant_lines(
                 simulate_start,
                 simulate_line,
-                includes=("history_actions = torch.zeros", "future_actions = torch.tensor", "imagine_step"),
+                includes=(
+                    "history_actions = torch.zeros",
+                    "future_actions = torch.tensor",
+                    "imagine_step",
+                ),
             ),
         },
         "baseline_collect_forecast_records": {
@@ -466,7 +482,9 @@ def action_feed_evidence() -> dict[str, Any]:
     }
 
 
-def relevant_lines(source_lines: list[str], line_start: int, *, includes: tuple[str, ...]) -> list[dict[str, str | int]]:
+def relevant_lines(
+    source_lines: list[str], line_start: int, *, includes: tuple[str, ...]
+) -> list[dict[str, str | int]]:
     """Extract source lines containing any requested snippet."""
     matches: list[dict[str, str | int]] = []
     for offset, line in enumerate(source_lines):
@@ -475,7 +493,9 @@ def relevant_lines(source_lines: list[str], line_start: int, *, includes: tuple[
     return matches
 
 
-def scaler_sanity_trace(*, service: WorldModelService, points: list[CareLoadPoint], origin: datetime) -> ScalerTrace:
+def scaler_sanity_trace(
+    *, service: WorldModelService, points: list[CareLoadPoint], origin: datetime
+) -> ScalerTrace:
     """Trace one origin through normalization, model decode and inverse scaling."""
     history = history_until(points, origin)
     if not history:
@@ -498,12 +518,16 @@ def scaler_sanity_trace(*, service: WorldModelService, points: list[CareLoadPoin
     with torch.inference_mode():
         states, _priors, _posteriors = service.model.observe_sequence(history_obs, history_actions)
         state: RSSMState = {"h": states["h"][-1], "z": states["z"][-1]}
-        zero_action = torch.zeros(1, service.rssm_config.action_dim, device=service.device, dtype=dtype)
+        zero_action = torch.zeros(
+            1, service.rssm_config.action_dim, device=service.device, dtype=dtype
+        )
         state, _prior = service.model.imagine_step(state, zero_action)
         normalized_pred, _reward = service.model.decode(state)
     normalized_value = float(normalized_pred.reshape(-1)[0].detach().cpu().item())
     unscaled = normalized_value * service.scaler.std + service.scaler.mean
-    simulate_prediction = float(service.simulate(history, zero_actions(horizon=1, action_dim=5))[0]["predicted_siips"])
+    simulate_prediction = float(
+        service.simulate(history, zero_actions(horizon=1, action_dim=5))[0]["predicted_siips"]
+    )
     return ScalerTrace(
         origin=origin.isoformat(),
         raw_last_history_siips=float(history_array[-1]),

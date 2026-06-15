@@ -50,7 +50,9 @@ def test_synthetic_adapter_non_overlapping_window_count() -> None:
     np.random.seed(0)
     train_cfg = SyntheticDatasetConfig(n_days=21, window_days=7, seed=0)
     train_dataset = build_synthetic_dataset(train_cfg)
-    expected_train = int(np.floor((train_cfg.n_days * (1.0 - train_cfg.val_frac)) / train_cfg.window_days))
+    expected_train = int(
+        np.floor((train_cfg.n_days * (1.0 - train_cfg.val_frac)) / train_cfg.window_days)
+    )
     assert len(train_dataset) == expected_train
 
     val_cfg = SyntheticDatasetConfig(n_days=21, window_days=7, seed=0, split="val")

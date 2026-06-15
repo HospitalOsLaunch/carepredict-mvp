@@ -28,10 +28,9 @@ def db_overrides() -> dict[str, Any]:
     config = db_config_from_env()
     config["connect_timeout"] = 1
     try:
-        with psycopg2.connect(**config) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT 1")
-                cursor.fetchone()
+        with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
     except Exception as exc:  # noqa: BLE001
         pytest.skip(f"TimescaleDB unavailable: {exc}")
     return {"connect_timeout": 1}

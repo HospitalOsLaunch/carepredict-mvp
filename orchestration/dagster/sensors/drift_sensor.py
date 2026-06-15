@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 from dagster import RunRequest, SensorEvaluationContext, SkipReason, sensor
-
 from jobs.retraining_pipeline import retraining_pipeline
 
 DRIFT_REPORT_PATH = Path("reports/evidently/drift_metrics.json")

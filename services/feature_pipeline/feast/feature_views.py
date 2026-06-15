@@ -7,11 +7,9 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+from entities import service
 from feast import FeatureView, Field, PostgresSource
 from feast.types import Float32, Int32
-
-from entities import service
-
 
 care_load_source = PostgresSource(
     name="mart_care_load_features_source",

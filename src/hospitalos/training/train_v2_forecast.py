@@ -193,8 +193,7 @@ class CalibrationForecastEarlyStopping(L.Callback):
             self.state.best_score = score
             self.state.best_step = step
             self._best_state_dict = {
-                key: value.detach().cpu().clone()
-                for key, value in pl_module.state_dict().items()
+                key: value.detach().cpu().clone() for key, value in pl_module.state_dict().items()
             }
             return
         if step - self.state.best_step >= self.patience_steps:

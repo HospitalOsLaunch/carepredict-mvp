@@ -46,7 +46,9 @@ def test_predictor_output_shape_matches_targets() -> None:
     module = JEPALightningModule(cfg)
     series = torch.randn(2, 96, 5, dtype=torch.float32)
     tokens = module.patcher(series)
-    ctx_idx, tgt_idx = block_mask(tokens.shape[1], cfg.mask_ratio, cfg.n_target_blocks, torch.Generator().manual_seed(0))
+    ctx_idx, tgt_idx = block_mask(
+        tokens.shape[1], cfg.mask_ratio, cfg.n_target_blocks, torch.Generator().manual_seed(0)
+    )
     ctx = module.context_encoder(tokens[:, ctx_idx], ctx_idx)
     pred = module.predictor(ctx, ctx_idx, tgt_idx)
     assert pred.shape == (2, len(tgt_idx), 256)

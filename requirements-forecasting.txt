@@ -1,0 +1,14 @@
+# Dépendances du module forecasting (MTS-JEPA fédéré + conformal).
+#
+# NB : torch est installé SÉPARÉMENT en version CPU par la CI
+# (pip install torch --index-url https://download.pytorch.org/whl/cpu)
+# pour éviter de tirer la roue CUDA, lourde et inutile sur runner GitHub.
+# En local avec GPU, installer torch normalement avant ce fichier.
+
+numpy>=1.24
+matplotlib>=3.7
+pytest>=7.4
+
+# torch : non épinglé ici volontairement (cf. note CPU ci-dessus).
+# Décommenter la ligne suivante pour une install locale standard :
+# torch>=2.0

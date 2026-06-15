@@ -633,13 +633,7 @@ def _siips_for_hour(
         - discharges_this_hour * CAUSAL_EVENT_EFFECTS["discharge_siips_relief"]
     )
     siips = (
-        causal_siips
-        + daily
-        + weekly
-        + seasonal
-        + staffing_pressure * 1.6
-        + event_effect
-        + noise
+        causal_siips + daily + weekly + seasonal + staffing_pressure * 1.6 + event_effect + noise
     )
     aas = siips * 0.42 + patient_count * 0.12 + float(rng.normal(0.0, 0.8))
     return CareLoadRecord(

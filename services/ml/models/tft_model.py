@@ -153,8 +153,7 @@ class PytorchForecastingTFTBackend:
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
-                f"Model bundle not found at {checkpoint_path}. "
-                "Run train_tft.py to generate it."
+                f"Model bundle not found at {checkpoint_path}. Run train_tft.py to generate it."
             )
 
         with checkpoint_path.open("rb") as handle:
@@ -598,9 +597,7 @@ class PytorchForecastingTFTBackend:
             prepared = pd.concat(blocks, ignore_index=True)
             prepared = prepared.sort_values([config.service_column, config.time_column])
 
-        prepared["time_idx"] = (
-            prepared.groupby(config.service_column).cumcount().astype(int)
-        )
+        prepared["time_idx"] = prepared.groupby(config.service_column).cumcount().astype(int)
         return prepared.reset_index(drop=True)
 
     def _resolve_fit_frames(
