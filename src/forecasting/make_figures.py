@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Génère les six figures de diagnostic du pipeline MTS-JEPA fédéré."""
 
 from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import matplotlib
 
@@ -16,12 +16,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from .mts_jepa_federated import (
+    REGIMES,
     ACICalibrator,
     Config,
     DtACICalibrator,
-    REGIMES,
     SplitConformalTrajectory,
-    bootstrap_diff,
     collect_predictions,
     interval_efficiency,
     run_federated,
@@ -77,7 +76,9 @@ def get_model_and_data(full: bool):
     return model, test_ds, history, cfg
 
 
-def instrumented_global_aci(eval_rows, cfg: Config, use_dtaci: bool = True) -> dict[str, np.ndarray]:
+def instrumented_global_aci(
+    eval_rows, cfg: Config, use_dtaci: bool = True
+) -> dict[str, np.ndarray]:
     """Exécute l'ACI globale et capture alpha, couverture et largeur dans le temps."""
     calibrator = (DtACICalibrator if use_dtaci else ACICalibrator)(cfg.target_coverage)
     hits: list[float] = []
@@ -85,7 +86,7 @@ def instrumented_global_aci(eval_rows, cfg: Config, use_dtaci: bool = True) -> d
     widths: list[float] = []
     regimes: list[str] = []
     for row in sorted(eval_rows, key=lambda value: value["start"]):
-        for truth, pred, regime in zip(row["true"], row["pred"], row["regime"]):
+        for truth, pred, regime in zip(row["true"], row["pred"], row["regime"], strict=False):
             interval = calibrator.predict_interval(float(pred))
             score = abs(float(truth) - float(pred))
             covered = False
@@ -214,7 +215,8 @@ def fig4_federation(history):
     axes[1].set_title("Écart-type des embeddings")
     axes[1].set_xlabel("Round")
     axes[1].legend(frameon=False)
-    axes[2].plot(rounds, [row.get("client_drift", 0.0) for row in history], color="#d97706", marker="o")
+    drift_values = [row.get("client_drift", 0.0) for row in history]
+    axes[2].plot(rounds, drift_values, color="#d97706", marker="o")
     axes[2].set_title("Dérive client")
     axes[2].set_xlabel("Round")
     fig.suptitle("Convergence de la fédération et garde anti-collapse")
@@ -237,8 +239,10 @@ def fig5_validity_sweep(cfg: Config):
     fig, ax = plt.subplots(figsize=(5.5, 5.5))
     ax.plot([0.75, 1.0], [0.75, 1.0], color="#111827", linestyle="--", label="Diagonale")
     ax.scatter(targets, empirical, color="#2563eb", s=60, label="Empirique")
-    for target, observed in zip(targets, empirical):
-        ax.annotate(f"{observed:.3f}", (target, observed), xytext=(5, 5), textcoords="offset points")
+    for target, observed in zip(targets, empirical, strict=False):
+        ax.annotate(
+            f"{observed:.3f}", (target, observed), xytext=(5, 5), textcoords="offset points"
+        )
     ax.set_xlim(0.75, 1.0)
     ax.set_ylim(0.75, 1.0)
     ax.set_xlabel("Couverture nominale")
@@ -260,7 +264,8 @@ def fig6_efficiency(eval_rows, cfg: Config):
         coverages, widths = [], []
         for level in levels:
             radius = SplitConformalTrajectory(float(level)).calibrate(residuals)
-            coverage = float(np.mean([np.max(np.abs(row["true"] - row[key])) <= radius for row in evaluation]))
+            hits = [np.max(np.abs(row["true"] - row[key])) <= radius for row in evaluation]
+            coverage = float(np.mean(hits))
             metric = interval_efficiency(coverage, 2.0 * radius, scale)
             coverages.append(metric["coverage"])
             widths.append(metric["normalized_width"])
@@ -304,9 +309,14 @@ def _load_history(path: Path) -> list[dict[str, Any]]:
 def main() -> None:
     """Génère les six figures PNG dans le répertoire demandé."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--history", type=Path, default=None, help="Historique JSON d'un entraînement existant")
+    parser.add_argument(
+        "--history", type=Path, default=None,
+        help="Historique JSON d'un entraînement existant",
+    )
     parser.add_argument("--full", action="store_true", help="Utiliser la configuration complète")
-    parser.add_argument("--no-dtaci", action="store_true", help="Utiliser ACI simple au lieu de DtACI")
+    parser.add_argument(
+        "--no-dtaci", action="store_true", help="Utiliser ACI simple au lieu de DtACI"
+    )
     parser.add_argument("--outdir", type=Path, default=Path("figures"), help="Répertoire de sortie")
     args = parser.parse_args()
 

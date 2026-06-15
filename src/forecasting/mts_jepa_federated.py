@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Forecaster JEPA multi-échelle + fédération (FedProx) + conformal sous régimes
 =============================================================================
@@ -117,13 +116,13 @@ import argparse
 import copy
 import json
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
 
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
+
 
 # ---------------------------------------------------------------------------
 # 0. Configuration reproductible
@@ -151,7 +150,7 @@ class Config:
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
     # échelles : h horaire, d journalier, a bi-journalier (bloc de 24 h)
-    future_lens: Dict[str, int] = field(
+    future_lens: dict[str, int] = field(
         default_factory=lambda: {"h": 48, "d": 2, "a": 1}
     )
 
@@ -197,7 +196,7 @@ class HospitalSeries(Dataset):
         self.series, self.occ = self._generate_series()
         self.starts = list(range(0, self.T_total - self.win + 1, stride))[:n_windows]
 
-    def _generate_series(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _generate_series(self) -> tuple[np.ndarray, np.ndarray]:
         T = self.T_total
         t = np.arange(T)
         hour = t % 24
@@ -227,7 +226,7 @@ class HospitalSeries(Dataset):
         data = np.stack([admissions, occ], axis=-1)  # (T, 2)
         return data.astype(np.float32), occ.astype(np.float32)
 
-    def _regime_seq(self, sl: slice) -> List[str]:
+    def _regime_seq(self, sl: slice) -> list[str]:
         t = np.arange(sl.start, sl.stop)
         is_weekend = ((t // 24) % 7) >= 5
         return [get_regime(self.occ[i], bool(is_weekend[k]))
@@ -284,7 +283,7 @@ class MultiScalePatchifier(nn.Module):
         assert T % 24 == 0, f"T={T} non multiple de 24"
         return x.view(B, T // 24, 24, C).mean(dim=2)  # (B, T/24, C)
 
-    def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
         h = self.proj_h(x)                              # (B, T, d)
         x_d = self._daily_mean(x)                       # (B, T/24, 2)
         d = self.proj_d(x_d)                            # (B, T/24, d)
@@ -318,7 +317,7 @@ class TransformerEncoder(nn.Module):
 # positionnels appris ; la prédiction est parallèle (PatchTST-like). Aucune
 # dépendance auto-régressive, donc aucun masque causal n'a de sens ici.
 class TemporalPredictor(nn.Module):
-    def __init__(self, d_model, nhead, num_layers, future_lens: Dict[str, int]):
+    def __init__(self, d_model, nhead, num_layers, future_lens: dict[str, int]):
         super().__init__()
         self.future_lens = future_lens
         self.query_embed = nn.ModuleDict(
@@ -332,7 +331,7 @@ class TemporalPredictor(nn.Module):
         self.register_buffer("_scale_ids",
                              torch.tensor([SCALE_IDX[s] for s in future_lens]))
 
-    def forward(self, memory_list, scales: List[str]) -> Dict[str, torch.Tensor]:
+    def forward(self, memory_list, scales: list[str]) -> dict[str, torch.Tensor]:
         memory = self.pos(torch.cat(memory_list, dim=1))
         out = {}
         for s in scales:
@@ -507,10 +506,10 @@ class ACICalibrator:
         self.window = window
         self.warmup = warmup
         self.min_scores = min_scores
-        self.scores: List[float] = []
+        self.scores: list[float] = []
         self.idx = 0
         self.warmed_up = False
-        self.alpha_history: List[float] = []
+        self.alpha_history: list[float] = []
 
     def _push(self, score):
         self.scores.append(score)
@@ -554,11 +553,11 @@ class DtACICalibrator:
                                       min_scores) for eta in etas]
         self.w = np.ones(len(etas)) / len(etas)
         self.gamma = gamma
-        self.scores: List[float] = []
+        self.scores: list[float] = []
         self.window = window
         self.min_scores = min_scores
         self.warmed_up = False
-        self.alpha_history: List[float] = []
+        self.alpha_history: list[float] = []
 
     def _push(self, score):
         self.scores.append(score)
@@ -594,7 +593,7 @@ class DtACICalibrator:
             e.update(score, covered)
         # repondération exponentielle sur la pinball-loss de chaque expert
         losses = np.array([self._pinball(e.alpha, score, q)
-                           for e, q in zip(self.experts, qs)])
+                           for e, q in zip(self.experts, qs, strict=False)])
         self.w *= np.power(self.gamma, losses)
         self.w /= max(self.w.sum(), 1e-12)
         self.alpha_history.append(self.alpha)
@@ -611,7 +610,7 @@ def _flatten_params(module: nn.Module) -> torch.Tensor:
 
 
 def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
-                 global_trainable_snapshot: Dict[str, torch.Tensor]):
+                 global_trainable_snapshot: dict[str, torch.Tensor]):
     """FIX point 6 : terme proximal FedProx (mu/2)||w - w_global||² réellement
     ajouté. global_trainable_snapshot : dict {name: tensor} des params globaux.
     Retourne loss totale + composantes pour diagnostic (FIX point 8).
@@ -655,9 +654,12 @@ def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
                 emb_std = torch.cat(
                     [z.reshape(-1, z.size(-1)).std(dim=0) for z in ctx_enc.values()]
                 ).mean().item()
-            agg["total"] += loss.item();   agg["jepa"] += l_jepa.item()
-            agg["recon"] += l_recon.item(); agg["vic"] += l_vic.item()
-            agg["scale"] += float(l_scale.detach()); agg["prox"] += float(prox.detach())
+            agg["total"] += loss.item()
+            agg["jepa"] += l_jepa.item()
+            agg["recon"] += l_recon.item()
+            agg["vic"] += l_vic.item()
+            agg["scale"] += float(l_scale.detach())
+            agg["prox"] += float(prox.detach())
             agg["emb_std"] += emb_std
             n_batches += 1
 
@@ -669,7 +671,7 @@ def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
 # ---------------------------------------------------------------------------
 # 10. Agrégation fédérée
 # ---------------------------------------------------------------------------
-def average_state_dicts(state_dicts: List[Dict[str, torch.Tensor]]):
+def average_state_dicts(state_dicts: list[dict[str, torch.Tensor]]):
     avg = {}
     for key in state_dicts[0]:
         avg[key] = torch.stack([sd[key].float() for sd in state_dicts], 0).mean(0)
@@ -693,7 +695,7 @@ SITE_PARAMS = [
 ]
 
 
-def trainable_snapshot(model: nn.Module, device) -> Dict[str, torch.Tensor]:
+def trainable_snapshot(model: nn.Module, device) -> dict[str, torch.Tensor]:
     return {n: p.detach().clone().to(device)
             for n, p in model.named_parameters() if p.requires_grad}
 
@@ -712,13 +714,14 @@ def run_federated(cfg: Config, verbose=True):
     history = []
 
     if verbose:
-        print("=== Entraînement fédéré (FedProx, mu=%.3g) ===" % cfg.mu_prox)
+        print(f"=== Entraînement fédéré (FedProx, mu={cfg.mu_prox:.3g}) ===")
     for rnd in range(cfg.fed_rounds):
         # snapshot global (entraînable) pour le terme proximal
         global_snap = trainable_snapshot(global_model, dev)
         local_students, drift_norms = [], []
-        round_agg = {k: 0.0 for k in
-                     ["total", "jepa", "recon", "vic", "scale", "prox", "emb_std"]}
+        round_agg = dict.fromkeys(
+            ["total", "jepa", "recon", "vic", "scale", "prox", "emb_std"], 0.0
+        )
 
         for cid in range(cfg.num_clients):
             model = copy.deepcopy(global_model).to(dev)
@@ -775,7 +778,7 @@ def run_federated(cfg: Config, verbose=True):
 # 12bis. Métriques rigoureuses : efficacité + bootstrap (AJOUTS RÉVISION)
 # ---------------------------------------------------------------------------
 def interval_efficiency(coverage: float, mean_width: float,
-                        scale: float) -> Dict[str, float]:
+                        scale: float) -> dict[str, float]:
     """Une couverture seule est ininterprétable. On rapporte :
       - normalized_width : largeur / échelle des données (sans dimension)
       - efficiency : couverture / largeur normalisée (plus haut = mieux à
@@ -787,7 +790,7 @@ def interval_efficiency(coverage: float, mean_width: float,
 
 
 def bootstrap_diff(errors_a: np.ndarray, errors_b: np.ndarray,
-                   n_boot: int = 1000, seed: int = 0) -> Dict[str, float]:
+                   n_boot: int = 1000, seed: int = 0) -> dict[str, float]:
     """IC bootstrap sur la différence d'erreur moyenne (a - b). Si l'IC à 95 %
     exclut 0, la différence est significative. Sans ça, comparer deux MAE n'est
     pas un résultat (Efron & Tibshirani 1993)."""
@@ -803,35 +806,6 @@ def bootstrap_diff(errors_a: np.ndarray, errors_b: np.ndarray,
     return {"mean_diff": float(a.mean() - b.mean()),
             "ci95_low": float(lo), "ci95_high": float(hi),
             "significant": bool(lo > 0 or hi < 0)}
-
-
-
-    """Retourne, par client, des trajectoires ORDONNÉES par temps absolu.
-    Structure : list[ dict(true, pred, base, regime, start) ] trié par start.
-    Chaque entrée = une trajectoire de longueur horizon (axe temps cohérent).
-    """
-    model.eval()
-    dev = cfg.device
-    per_client = []
-    for cid in range(cfg.num_clients):
-        loader = DataLoader(test_ds[cid], batch_size=cfg.batch_size, shuffle=False)
-        rows = []
-        with torch.no_grad():
-            for context, target, regimes, starts in loader:
-                context = context.to(dev)
-                sig = model(context)["h"][:, :, 0].cpu().numpy()   # admissions
-                true = target[:, :, 0].numpy()
-                base = seasonal_baseline(context, cfg.future_h)[:, :, 0].cpu().numpy()
-                # regimes : list de listes (time-major par item du batch)
-                reg_arr = np.array(regimes, dtype=object).T  # (B, horizon)
-                for b in range(sig.shape[0]):
-                    rows.append({
-                        "true": true[b], "pred": sig[b], "base": base[b],
-                        "regime": list(reg_arr[b]), "start": int(starts[b]),
-                    })
-        rows.sort(key=lambda r: r["start"])  # ordre temporel réel
-        per_client.append(rows)
-    return per_client
 
 
 def collect_predictions(model, test_ds, cfg):
@@ -979,15 +953,20 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
                 w = s["w"] / s["n"]
                 print(f"{reg:<10} {s['cov']/s['n']:>8.3f} {w:>9.2f} "
                       f"{w/data_scale:>10.3f} {s['n']:>7d}")
-        print(f"\n[3. Bootstrap MAE modèle vs baseline (1000 rééch.)]")
+        print("\n[3. Bootstrap MAE modèle vs baseline (1000 rééch.)]")
         print(f"  Δ MAE (mod-base) = {boot['mean_diff']:+.3f}  "
               f"IC95=[{boot['ci95_low']:+.3f}, {boot['ci95_high']:+.3f}]  "
               f"significatif={boot['significant']}")
         if drift_cov is not None:
-            print(f"\n[4. Test de dérive — conformal statique calibré hors-crise]")
+            print("\n[4. Test de dérive — conformal statique calibré hors-crise]")
             print(f"  Couverture sur strate 'crise' = {drift_cov:.3f} "
                   f"(cible {cfg.target_coverage:.2f})")
-            print(f"  -> {'sous-couverture confirmée (justifie ACI)' if drift_cov < cfg.target_coverage - 0.05 else 'pas de dérive marquée sur ce run'}")
+            verdict = (
+                "sous-couverture confirmée (justifie ACI)"
+                if drift_cov < cfg.target_coverage - 0.05
+                else "pas de dérive marquée sur ce run"
+            )
+            print(f"  -> {verdict}")
         print("\nNotes de validité :")
         print("  - Garantie 1-α : couverture MARGINALE au niveau trajectoire "
               "(bande uniforme).")
@@ -1021,10 +1000,14 @@ def main():
     args = parser.parse_args()
 
     cfg = Config()
-    if args.rounds is not None:  cfg.fed_rounds = args.rounds
-    if args.epochs is not None:  cfg.epochs = args.epochs
-    if args.clients is not None: cfg.num_clients = args.clients
-    if args.seed is not None:    cfg.seed = args.seed
+    if args.rounds is not None:
+        cfg.fed_rounds = args.rounds
+    if args.epochs is not None:
+        cfg.epochs = args.epochs
+    if args.clients is not None:
+        cfg.num_clients = args.clients
+    if args.seed is not None:
+        cfg.seed = args.seed
     verbose = not args.quiet
 
     print(f"Device: {cfg.device}")
