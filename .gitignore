@@ -64,3 +64,6 @@ pyproject.toml.before_*
 runs/
 pyproject.toml.bak
 *.bak
+
+# Sauvegardes temporaires
+*.bak
