@@ -66,11 +66,21 @@ class FakeFetcher:
         return FakeWindow(history=[[code, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] for _ in range(length)])
 
 
+class StaticThresholdProvider:
+    """Hermetic threshold provider fixture."""
+
+    def __init__(self, threshold: float) -> None:
+        self.threshold = threshold
+
+    def threshold_for(self, *, hospital_id: str, service_id: str) -> float:
+        return self.threshold
+
+
 def test_engine_scores_only_at_risk_services_and_ranks_actions() -> None:
     engine = RecommendationEngine(
         forecast_service=FakeForecastService(),
         feature_fetcher=FakeFetcher(),
-        threshold=1600.0,
+        threshold_provider=StaticThresholdProvider(1600.0),
     )
 
     result = engine.recommend(
@@ -97,7 +107,7 @@ def test_engine_returns_empty_opportunity_without_risk() -> None:
     engine = RecommendationEngine(
         forecast_service=FakeForecastService(),
         feature_fetcher=FakeFetcher(),
-        threshold=2000.0,
+        threshold_provider=StaticThresholdProvider(2000.0),
     )
 
     result = engine.recommend(
@@ -118,7 +128,7 @@ def test_actions_recommend_route_contract() -> None:
     engine = RecommendationEngine(
         forecast_service=FakeForecastService(),
         feature_fetcher=FakeFetcher(),
-        threshold=1600.0,
+        threshold_provider=StaticThresholdProvider(1600.0),
     )
     app = FastAPI()
     app.include_router(router)

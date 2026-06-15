@@ -9,10 +9,13 @@ from typing import Protocol
 from services.api.dependencies.feature_window_fetcher import TimescaleFeatureWindowFetcher
 from services.api.recommend.levers import candidate_levers
 from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, ScoredAction
+from services.api.recommend.thresholds import (
+    DEFAULT_RISK_THRESHOLD,
+    ServiceThresholdProvider,
+    TimescaleP90ThresholdProvider,
+)
 from services.api.schemas.actions import OpportunityKPIs, Recommendation, RiskWindow
 from services.ml.forecasting.v2_service import V2ForecastService
-
-DEFAULT_RISK_THRESHOLD = 1600.0
 
 
 class ForecastServiceLike(Protocol):
@@ -62,13 +65,13 @@ class RecommendationEngine:
         forecast_service: ForecastServiceLike,
         feature_fetcher: FeatureWindowFetcherLike | None = None,
         scorer: RuleBasedScorer | None = None,
-        threshold: float = DEFAULT_RISK_THRESHOLD,
+        threshold_provider: ServiceThresholdProvider | None = None,
         history_length: int | None = None,
     ) -> None:
         self.forecast_service = forecast_service
         self.feature_fetcher = feature_fetcher or TimescaleFeatureWindowFetcher()
         self.scorer = scorer or RuleBasedScorer()
-        self.threshold = threshold
+        self.threshold_provider = threshold_provider or TimescaleP90ThresholdProvider()
         self.history_length = history_length or getattr(forecast_service, "history_length", 120)
 
     def recommend(
@@ -95,10 +98,14 @@ class RecommendationEngine:
                 origin_timestamp=origin,
                 horizon=horizon_h,
             )
+            threshold = self.threshold_provider.threshold_for(
+                hospital_id=facility_id,
+                service_id=service_id,
+            )
             ctx = forecast_context(
                 service_id=service_id,
                 horizon_h=horizon_h,
-                threshold=self.threshold,
+                threshold=threshold,
                 raw_forecast=raw_forecast,
             )
             if ctx.hours_above_threshold <= 0:
