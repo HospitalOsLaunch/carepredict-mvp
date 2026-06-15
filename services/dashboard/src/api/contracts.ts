@@ -119,6 +119,53 @@ export interface ForecastResponse {
   results: ForecastStep[];
 }
 
+export type ActionStatus = "proposed" | "approved" | "in_progress" | "done" | "dismissed";
+export type ActionSeverity = "critical" | "high" | "elevated" | "normal";
+export type ActionLever =
+  | "move_staff"
+  | "open_beds"
+  | "close_beds"
+  | "prioritize_discharge"
+  | "rebalance_workload";
+
+export interface ActionRecommendRequest {
+  facility_id: string;
+  horizon_h: number;
+  services: string[];
+  origin: string;
+}
+
+export interface RiskWindow {
+  start: string | null;
+  end: string | null;
+}
+
+export interface OpportunityKPIs {
+  total_projected_impact_siips: number;
+  critical_actions_count: number;
+  services_at_risk: number;
+  risk_window: RiskWindow;
+}
+
+export interface Recommendation {
+  id: string;
+  service_id: string;
+  lever: ActionLever;
+  title: string;
+  severity: ActionSeverity;
+  score: number;
+  projected_impact_siips: number;
+  feasibility: number;
+  rationale: string;
+  horizon_h: number;
+  status: ActionStatus;
+}
+
+export interface ActionRecommendResponse {
+  opportunity: OpportunityKPIs;
+  recommendations: Recommendation[];
+}
+
 export interface HospitalApiClient {
   getHealth(): Promise<HealthResponse>;
   getReady(): Promise<HealthResponse>;
@@ -126,4 +173,5 @@ export interface HospitalApiClient {
   fetchChargePrediction(request: ChargePredictionRequest): Promise<ChargePredictionResponse>;
   getFeatureWindow(params: FeatureWindowParams): Promise<FeatureWindowResponse>;
   getForecast(request: ForecastRequest): Promise<ForecastResponse>;
+  getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse>;
 }

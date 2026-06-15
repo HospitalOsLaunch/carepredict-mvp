@@ -1,4 +1,6 @@
 import type {
+  ActionRecommendRequest,
+  ActionRecommendResponse,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -95,6 +97,49 @@ export class MockHospitalApiClient implements HospitalApiClient {
       model_version: "mock-v2-forecast",
       granularity: "daily_patch_24",
       results
+    };
+  }
+
+  async getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse> {
+    // MOCK: needs POST /actions/recommend when VITE_USE_MOCK is true; real mode uses the backend.
+    return {
+      opportunity: {
+        total_projected_impact_siips: 42.7,
+        critical_actions_count: 3,
+        services_at_risk: 2,
+        risk_window: {
+          start: request.origin,
+          end: new Date(new Date(request.origin).getTime() + 14 * 60 * 60 * 1000).toISOString()
+        }
+      },
+      recommendations: [
+        {
+          id: "rec_mock_staff",
+          service_id: "rea-001",
+          lever: "move_staff",
+          title: "Réallouer 2 IDE vers Réanimation",
+          severity: "critical",
+          score: 0.87,
+          projected_impact_siips: -18.3,
+          feasibility: 0.8,
+          rationale: "Mock recommendation pending real mode.",
+          horizon_h: request.horizon_h,
+          status: "proposed"
+        },
+        {
+          id: "rec_mock_discharge",
+          service_id: "urg-001",
+          lever: "prioritize_discharge",
+          title: "Prioriser les sorties confirmées en Urgences",
+          severity: "high",
+          score: 0.71,
+          projected_impact_siips: -12.4,
+          feasibility: 0.86,
+          rationale: "Mock recommendation pending real mode.",
+          horizon_h: request.horizon_h,
+          status: "proposed"
+        }
+      ]
     };
   }
 }

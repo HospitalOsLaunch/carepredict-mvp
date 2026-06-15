@@ -1,4 +1,6 @@
 import type {
+  ActionRecommendRequest,
+  ActionRecommendResponse,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -48,6 +50,10 @@ export class RealHospitalApiClient implements HospitalApiClient {
 
   getForecast(request: ForecastRequest): Promise<ForecastResponse> {
     return this.postJson<ForecastRequest, ForecastResponse>("/forecast/charge", request);
+  }
+
+  getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse> {
+    return this.postJson<ActionRecommendRequest, ActionRecommendResponse>("/actions/recommend", request);
   }
 
   private async getJson<TResponse>(path: string): Promise<TResponse> {

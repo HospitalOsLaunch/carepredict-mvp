@@ -1,4 +1,9 @@
 export type {
+  ActionLever,
+  ActionRecommendRequest,
+  ActionRecommendResponse,
+  ActionSeverity,
+  ActionStatus,
   ActionStep,
   ChargePredictionRequest,
   ChargePredictionResponse,
@@ -11,7 +16,10 @@ export type {
   HealthResponse,
   HospitalApiClient,
   InterventionType,
+  OpportunityKPIs,
   PlannedIntervention,
+  Recommendation,
+  RiskWindow,
   SimulationRequest,
   SimulationResponse,
   SimulationStepResult
