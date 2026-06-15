@@ -10,9 +10,8 @@ from services.api.dependencies.feature_window_fetcher import TimescaleFeatureWin
 from services.api.recommend.levers import candidate_levers
 from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, ScoredAction
 from services.api.recommend.thresholds import (
-    DEFAULT_RISK_THRESHOLD,
+    ForecastP75ThresholdProvider,
     ServiceThresholdProvider,
-    TimescaleP90ThresholdProvider,
 )
 from services.api.schemas.actions import OpportunityKPIs, Recommendation, RiskWindow
 from services.ml.forecasting.v2_service import V2ForecastService
@@ -71,7 +70,10 @@ class RecommendationEngine:
         self.forecast_service = forecast_service
         self.feature_fetcher = feature_fetcher or TimescaleFeatureWindowFetcher()
         self.scorer = scorer or RuleBasedScorer()
-        self.threshold_provider = threshold_provider or TimescaleP90ThresholdProvider()
+        self.threshold_provider = threshold_provider or ForecastP75ThresholdProvider(
+            forecast_service=forecast_service,
+            feature_fetcher=self.feature_fetcher,
+        )
         self.history_length = history_length or getattr(forecast_service, "history_length", 120)
 
     def recommend(
