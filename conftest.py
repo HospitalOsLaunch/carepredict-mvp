@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Configuration pytest partagée.
 
@@ -18,18 +17,17 @@ import pytest
 #   - 'ema_update_is_no_grad' est léger (init seule) -> on évite 'ema_update' nu
 #   - on cible 'single_ema' (qui lance run_federated), pas 'ema' tout court
 _SLOW_NAME_PATTERNS = (
-    "fedprox",        # test_fedprox_reduces_drift_vs_fedavg
-    "single_ema",     # test_single_ema_update
-    "collapse",       # test_no_collapse_short_run
-    "reproducib",     # test_reproducibility
+    "fedprox",  # test_fedprox_reduces_drift_vs_fedavg
+    "single_ema",  # test_single_ema_update
+    "collapse",  # test_no_collapse_short_run
+    "reproducib",  # test_reproducibility
 )
 
 
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
-        "slow: test coûteux (entraînement fédéré), exclu des CI de PR, "
-        "exécuté en nightly.",
+        "slow: test coûteux (entraînement fédéré), exclu des CI de PR, exécuté en nightly.",
     )
 
 

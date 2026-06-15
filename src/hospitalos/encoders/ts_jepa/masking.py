@@ -47,9 +47,7 @@ def block_mask(
                 break
         if success:
             target = sorted(
-                patch_idx
-                for start, end in intervals
-                for patch_idx in range(start, end)
+                patch_idx for start, end in intervals for patch_idx in range(start, end)
             )
             target_set = set(target)
             context = [idx for idx in range(n_patches) if idx not in target_set]

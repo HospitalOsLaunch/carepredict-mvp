@@ -57,7 +57,9 @@ def load_synthetic_training_frame(csv_path: Path | None = None, days: int = 45) 
     )
 
 
-def temporal_split(frame: pd.DataFrame, train_ratio: float = 0.70, val_ratio: float = 0.15) -> TrainingSplit:
+def temporal_split(
+    frame: pd.DataFrame, train_ratio: float = 0.70, val_ratio: float = 0.15
+) -> TrainingSplit:
     """Split a frame in temporal order: 70% train, 15% validation, 15% test."""
     if frame.empty:
         raise ValueError("frame must not be empty")

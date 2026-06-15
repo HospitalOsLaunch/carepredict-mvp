@@ -23,18 +23,15 @@ LOGGER = structlog.get_logger(__name__)
 class TimeSeriesDataset(Protocol):
     """Minimal dataset protocol accepted by the Moirai fine-tuning wrapper."""
 
-    def to_pandas(self) -> pd.DataFrame:
-        ...
+    def to_pandas(self) -> pd.DataFrame: ...
 
 
 class MoiraiBackend(Protocol):
     """Backend protocol for a concrete uni2ts Moirai adapter."""
 
-    def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]:
-        ...
+    def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]: ...
 
-    def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
-        ...
+    def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]: ...
 
 
 @dataclass(frozen=True, slots=True)

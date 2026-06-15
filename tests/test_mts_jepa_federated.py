@@ -57,9 +57,7 @@ def test_conformal_validity_under_exchangeability() -> None:
     """La bande trajectoire atteint 90 % sous échangeabilité."""
     coverages = []
     for seed in range(30):
-        radius = SplitConformalTrajectory(0.90).calibrate(
-            exchangeable_residuals(seed, 500)
-        )
+        radius = SplitConformalTrajectory(0.90).calibrate(exchangeable_residuals(seed, 500))
         test = exchangeable_residuals(seed + 10_000, 2000)
         coverages.append(float(np.mean(test.max(axis=1) <= radius)))
     assert 0.88 <= float(np.mean(coverages)) <= 0.92
@@ -70,9 +68,7 @@ def test_conformal_validity_multilevel(target: float) -> None:
     """La correction de finitude reste valide à plusieurs niveaux."""
     coverages = []
     for seed in range(30):
-        radius = SplitConformalTrajectory(target).calibrate(
-            exchangeable_residuals(seed, 500)
-        )
+        radius = SplitConformalTrajectory(target).calibrate(exchangeable_residuals(seed, 500))
         test = exchangeable_residuals(seed + 20_000, 2000)
         coverages.append(float(np.mean(test.max(axis=1) <= radius)))
     assert abs(float(np.mean(coverages)) - target) < 0.02

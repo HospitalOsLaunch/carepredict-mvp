@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carepredict-mvp"
+version = "0.1.0"
+description = "CarePredict v0 pass 1: sovereign data ingestion, feature engineering, and feature store."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "cloudpickle>=3.0,<4.0",
+  "confluent-kafka>=2.4.0,<3.0.0",
+  "dbt-core>=1.7.0,<1.8.0",
+  "dbt-postgres>=1.7.0,<1.8.0",
+  "dagster>=1.7.0,<1.8.0",
+  "dagster-dbt>=0.23.0,<0.24.0",
+  "dagster-postgres>=0.23.0,<0.24.0",
+  "dagster-webserver>=1.7.0,<1.8.0",
+  "feast[redis,postgres]>=0.40.0,<0.41.0",
+  "fastapi>=0.111.0,<1.0.0",
+  "fhir.resources>=7.1.0,<8.0.0",
+  "great-expectations>=0.18.0,<0.19.0",
+  "hl7>=0.4.5,<0.5.0",
+  "lightning>=2.3.0,<3.0.0",
+  "mlflow>=2.14.0,<3.0.0",
+  "mapie>=0.8.0,<1.0.0",
+  "numpy>=1.26.0,<3.0.0",
+  "pandas>=2.2.0,<3.0.0",
+  "properscoring>=0.1,<1.0",
+  "prometheus-client>=0.20.0,<1.0.0",
+  "psycopg[binary,pool]>=3.1.0,<4.0.0",
+  "psycopg2-binary>=2.9.9,<3.0.0",
+  "pydantic>=2.7.0,<3.0.0",
+  "pytorch-forecasting>=1.0.0,<2.0.0",
+  "pyyaml>=6.0.0,<7.0.0",
+  "structlog>=24.1.0,<25.0.0",
+  "torch>=2.3.1,<2.5.0",
+  "typer>=0.12.0,<1.0.0",
+  "uni2ts @ git+https://github.com/SalesforceAIResearch/uni2ts@main",
+  "uvicorn[standard]>=0.30.0,<1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.10.0,<2.0.0",
+  "pytest>=8.2.0,<9.0.0",
+  "pytest-cov>=5.0.0,<6.0.0",
+  "pytest-docker>=3.1.0,<4.0.0",
+  "ruff>=0.4.0,<1.0.0",
+  "testcontainers[kafka,postgres,redis]>=4.5.0,<5.0.0",
+  "types-PyYAML>=6.0.12,<7.0.0",
+]
+
+foundation = [
+  "pytorch-forecasting>=1.0.0,<2.0.0",
+  "uni2ts>=1.2.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["services*", "orchestration*", "data*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "--strict-markers --strict-config -m 'not integration'"
+testpaths = ["tests", "data/synthetic/tests"]
+pythonpath = ["."]
+markers = [
+  "performance: latency and throughput checks that run on CPU by default",
+  "integration: tests requiring external services (postgres/redis/kafka); skipped by default; run with `pytest -m integration` or `pytest -m 'integration or not integration'` for full suite",
+]

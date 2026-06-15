@@ -97,7 +97,9 @@ class HybridStateEncoder(nn.Module):
                 fusion_dropout=fusion_dropout,
             )
         elif temporal_features is not None or static_features is not None:
-            raise ValueError("Do not pass temporal_features/static_features when config is provided")
+            raise ValueError(
+                "Do not pass temporal_features/static_features when config is provided"
+            )
 
         self.config = config
 
@@ -151,13 +153,9 @@ class HybridStateEncoder(nn.Module):
         if temporal_input.shape[0] != static_input.shape[0]:
             raise ValueError("temporal_input and static_input batch sizes must match")
         if temporal_input.shape[1] != self.config.sequence_length:
-            raise ValueError(
-                "temporal_input sequence length does not match encoder configuration"
-            )
+            raise ValueError("temporal_input sequence length does not match encoder configuration")
         if temporal_input.shape[2] != self.config.temporal_features:
-            raise ValueError(
-                "temporal_input feature count does not match encoder configuration"
-            )
+            raise ValueError("temporal_input feature count does not match encoder configuration")
         if static_input.shape[1] != self.config.static_features:
             raise ValueError("static_input feature count does not match encoder configuration")
 

@@ -144,13 +144,9 @@ def impact_sentence(summary: pd.DataFrame) -> str:
     total_a = float(summary["Plan A (SIIPS)"].sum())
     total_delta = float(summary["Différence"].sum())
     pct = (total_delta / total_a * 100.0) if total_a else 0.0
-    critical_reduction = int(
-        ((~summary["Critique?"]) & (summary["Plan A (SIIPS)"] >= 850.0)).sum()
-    )
+    critical_reduction = int(((~summary["Critique?"]) & (summary["Plan A (SIIPS)"] >= 850.0)).sum())
     if total_delta <= 0:
         direction = f"Plan B réduit la charge totale de {format_float(abs(pct))}% sur 48h."
     else:
         direction = f"Plan B augmente la charge totale de {format_float(abs(pct))}% sur 48h."
-    return (
-        f"{direction} {critical_reduction} créneaux critiques en moins que le Plan A."
-    )
+    return f"{direction} {critical_reduction} créneaux critiques en moins que le Plan A."

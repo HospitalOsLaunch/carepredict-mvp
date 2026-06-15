@@ -310,7 +310,9 @@ def main() -> None:
     """Génère les six figures PNG dans le répertoire demandé."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--history", type=Path, default=None,
+        "--history",
+        type=Path,
+        default=None,
         help="Historique JSON d'un entraînement existant",
     )
     parser.add_argument("--full", action="store_true", help="Utiliser la configuration complète")

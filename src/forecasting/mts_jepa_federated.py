@@ -131,28 +131,26 @@ from torch.utils.data import DataLoader, Dataset
 class Config:
     seed: int = 42
     batch_size: int = 32
-    seq_len_h: int = 168          # contexte : 7 jours horaires
-    future_h: int = 48            # horizon : 2 jours
+    seq_len_h: int = 168  # contexte : 7 jours horaires
+    future_h: int = 48  # horizon : 2 jours
     d_model: int = 64
     n_heads: int = 4
     n_layers: int = 2
-    tau_ema: float = 0.996        # EMA teacher (global)
+    tau_ema: float = 0.996  # EMA teacher (global)
     lr: float = 1e-3
     epochs: int = 5
     fed_rounds: int = 10
     num_clients: int = 5
-    mu_prox: float = 0.01         # coefficient proximal FedProx
+    mu_prox: float = 0.01  # coefficient proximal FedProx
     w_recon: float = 0.5
-    w_vic: float = 0.05           # relevé vs 0.01 : collapse-guard actif
+    w_vic: float = 0.05  # relevé vs 0.01 : collapse-guard actif
     w_scale: float = 0.1
     target_coverage: float = 0.9
     aci_eta: float = 0.02
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
     # échelles : h horaire, d journalier, a bi-journalier (bloc de 24 h)
-    future_lens: dict[str, int] = field(
-        default_factory=lambda: {"h": 48, "d": 2, "a": 1}
-    )
+    future_lens: dict[str, int] = field(default_factory=lambda: {"h": 48, "d": 2, "a": 1})
 
 
 REGIMES = ["routine", "weekend", "tension", "crise"]
@@ -184,8 +182,9 @@ def get_regime(occupancy: float, is_weekend: bool) -> str:
 # chronologie, ce qui rend (a) le split conformal par trajectoire valide et
 # (b) l'ACI online interprétable comme un vrai flux temporel.
 class HospitalSeries(Dataset):
-    def __init__(self, n_windows: int, cfg: Config, site_params: dict,
-                 seed_offset: int = 0, stride: int = 12):
+    def __init__(
+        self, n_windows: int, cfg: Config, site_params: dict, seed_offset: int = 0, stride: int = 12
+    ):
         self.cfg = cfg
         self.win = cfg.seq_len_h + cfg.future_h
         self.stride = stride
@@ -214,7 +213,7 @@ class HospitalSeries(Dataset):
         for _ in range(n_crises):
             start = self.rng.integers(0, max(1, T - 24))
             length = self.rng.integers(6, 24)
-            admissions[start:start + length] *= self.p["crisis_mult"]
+            admissions[start : start + length] *= self.p["crisis_mult"]
 
         rng_min, rng_max = admissions.min(), admissions.max()
         occ = 0.5 + 0.3 * (admissions - rng_min) / (rng_max - rng_min + 1e-5)
@@ -229,8 +228,10 @@ class HospitalSeries(Dataset):
     def _regime_seq(self, sl: slice) -> list[str]:
         t = np.arange(sl.start, sl.stop)
         is_weekend = ((t // 24) % 7) >= 5
-        return [get_regime(self.occ[i], bool(is_weekend[k]))
-                for k, i in enumerate(range(sl.start, sl.stop))]
+        return [
+            get_regime(self.occ[i], bool(is_weekend[k]))
+            for k, i in enumerate(range(sl.start, sl.stop))
+        ]
 
     def __len__(self) -> int:
         return len(self.starts)
@@ -271,6 +272,7 @@ class MultiScalePatchifier(nn.Module):
     cela donne 7 jours -> on garde le dernier bloc de 24 h moyenné pour rester
     aligné avec la cible. Les tailles sont cohérentes par construction.
     """
+
     def __init__(self, d_model: int):
         super().__init__()
         self.proj_h = nn.Linear(2, d_model)
@@ -284,9 +286,9 @@ class MultiScalePatchifier(nn.Module):
         return x.view(B, T // 24, 24, C).mean(dim=2)  # (B, T/24, C)
 
     def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
-        h = self.proj_h(x)                              # (B, T, d)
-        x_d = self._daily_mean(x)                       # (B, T/24, 2)
-        d = self.proj_d(x_d)                            # (B, T/24, d)
+        h = self.proj_h(x)  # (B, T, d)
+        x_d = self._daily_mean(x)  # (B, T/24, 2)
+        d = self.proj_d(x_d)  # (B, T/24, d)
         # 'a' : moyenne par paire de jours -> blocs bi-journaliers
         nd = x_d.size(1)
         if nd >= 2:
@@ -294,15 +296,14 @@ class MultiScalePatchifier(nn.Module):
             x_a = x_d[:, :pair, :].view(x_d.size(0), pair // 2, 2, 2).mean(dim=2)
         else:
             x_a = x_d
-        a = self.proj_a(x_a)                            # (B, ceil(T/48), d)
+        a = self.proj_a(x_a)  # (B, ceil(T/48), d)
         return {"h": h, "d": d, "a": a}
 
 
 class TransformerEncoder(nn.Module):
     def __init__(self, d_model, nhead, num_layers):
         super().__init__()
-        layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=nhead,
-                                           batch_first=True)
+        layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=nhead, batch_first=True)
         self.transformer = nn.TransformerEncoder(layer, num_layers=num_layers)
         self.pos = PositionalEncoding(d_model)
 
@@ -324,12 +325,10 @@ class TemporalPredictor(nn.Module):
             {s: nn.Embedding(L, d_model) for s, L in future_lens.items()}
         )
         self.scale_embed = nn.Embedding(len(future_lens), d_model)
-        layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead,
-                                           batch_first=True)
+        layer = nn.TransformerDecoderLayer(d_model=d_model, nhead=nhead, batch_first=True)
         self.decoder = nn.TransformerDecoder(layer, num_layers=num_layers)
         self.pos = PositionalEncoding(d_model)
-        self.register_buffer("_scale_ids",
-                             torch.tensor([SCALE_IDX[s] for s in future_lens]))
+        self.register_buffer("_scale_ids", torch.tensor([SCALE_IDX[s] for s in future_lens]))
 
     def forward(self, memory_list, scales: list[str]) -> dict[str, torch.Tensor]:
         memory = self.pos(torch.cat(memory_list, dim=1))
@@ -349,7 +348,8 @@ class ForecastDecoder(nn.Module):
     def __init__(self, d_model, out_features=2):
         super().__init__()
         self.mlp = nn.Sequential(
-            nn.Linear(d_model, d_model), nn.ReLU(),
+            nn.Linear(d_model, d_model),
+            nn.ReLU(),
             nn.Linear(d_model, out_features),
         )
 
@@ -413,8 +413,7 @@ class MTS_JEPA_Forecaster(nn.Module):
 # 5. Pertes
 # ---------------------------------------------------------------------------
 def jepa_loss(pred, target):
-    return (1 - (F.normalize(pred, dim=-1) * F.normalize(target, dim=-1))
-            .sum(dim=-1)).mean()
+    return (1 - (F.normalize(pred, dim=-1) * F.normalize(target, dim=-1)).sum(dim=-1)).mean()
 
 
 def reconstruction_loss(pred_signal, target_signal):
@@ -440,8 +439,8 @@ def inter_scale_loss(decoder, pred_latents):
     """
     if "h" not in pred_latents or "d" not in pred_latents:
         return torch.zeros((), device=pred_latents["h"].device)
-    sig_h = decoder(pred_latents["h"])         # (B, 48, 2)
-    sig_d = decoder(pred_latents["d"])         # (B, 2, 2)
+    sig_h = decoder(pred_latents["h"])  # (B, 48, 2)
+    sig_d = decoder(pred_latents["d"])  # (B, 2, 2)
     B, T, C = sig_h.shape
     if T % sig_d.size(1) != 0:
         return torch.zeros((), device=sig_h.device)
@@ -457,7 +456,7 @@ def seasonal_baseline(context: torch.Tensor, horizon: int) -> torch.Tensor:
     """Répète les dernières 24 h du contexte pour couvrir l'horizon, ce qui
     aligne la phase horaire (lag journalier). Honnête vs l'ancien context[:, :48].
     """
-    last_day = context[:, -24:, :]                     # (B, 24, 2)
+    last_day = context[:, -24:, :]  # (B, 24, 2)
     reps = (horizon + 23) // 24
     tiled = last_day.repeat(1, reps, 1)[:, :horizon, :]
     return tiled
@@ -479,7 +478,7 @@ class SplitConformalTrajectory:
 
     def calibrate(self, residual_matrix: np.ndarray):
         # residual_matrix : (n_traj, horizon) résidus absolus
-        traj_scores = residual_matrix.max(axis=1)          # norme-sup par traj
+        traj_scores = residual_matrix.max(axis=1)  # norme-sup par traj
         n = len(traj_scores)
         # quantile conforme avec correction de finitude (Vovk et al.)
         q_level = min(1.0, np.ceil((n + 1) * (1 - self.alpha)) / n)
@@ -498,8 +497,7 @@ class SplitConformalTrajectory:
 # que le buffer de scores < min_scores, on signale 'non disponible' au lieu
 # d'inventer un rayon.
 class ACICalibrator:
-    def __init__(self, target_coverage=0.9, eta=0.02, window=500,
-                 warmup=50, min_scores=2):
+    def __init__(self, target_coverage=0.9, eta=0.02, window=500, warmup=50, min_scores=2):
         self.target = target_coverage
         self.eta = eta
         self.alpha = 1.0 - target_coverage
@@ -545,12 +543,20 @@ class DtACICalibrator:
     transition sans réglage manuel de eta. La garantie reste asymptotique
     (couverture marginale de long terme), pas conditionnelle en échantillon fini.
     """
-    def __init__(self, target_coverage=0.9,
-                 etas=(0.005, 0.02, 0.08, 0.16),
-                 gamma=0.99, window=500, warmup=50, min_scores=2):
+
+    def __init__(
+        self,
+        target_coverage=0.9,
+        etas=(0.005, 0.02, 0.08, 0.16),
+        gamma=0.99,
+        window=500,
+        warmup=50,
+        min_scores=2,
+    ):
         self.target = target_coverage
-        self.experts = [ACICalibrator(target_coverage, eta, window, warmup,
-                                      min_scores) for eta in etas]
+        self.experts = [
+            ACICalibrator(target_coverage, eta, window, warmup, min_scores) for eta in etas
+        ]
         self.w = np.ones(len(etas)) / len(etas)
         self.gamma = gamma
         self.scores: list[float] = []
@@ -586,14 +592,14 @@ class DtACICalibrator:
         qs = []
         for e in self.experts:
             if len(e.scores) >= e.min_scores:
-                qs.append(float(np.quantile(e.scores,
-                          np.clip(1.0 - e.alpha, 0, 1))))
+                qs.append(float(np.quantile(e.scores, np.clip(1.0 - e.alpha, 0, 1))))
             else:
                 qs.append(0.0)
             e.update(score, covered)
         # repondération exponentielle sur la pinball-loss de chaque expert
-        losses = np.array([self._pinball(e.alpha, score, q)
-                           for e, q in zip(self.experts, qs, strict=False)])
+        losses = np.array(
+            [self._pinball(e.alpha, score, q) for e, q in zip(self.experts, qs, strict=False)]
+        )
         self.w *= np.power(self.gamma, losses)
         self.w /= max(self.w.sum(), 1e-12)
         self.alpha_history.append(self.alpha)
@@ -609,16 +615,28 @@ def _flatten_params(module: nn.Module) -> torch.Tensor:
     return torch.cat([p.reshape(-1) for p in module.parameters() if p.requires_grad])
 
 
-def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
-                 global_trainable_snapshot: dict[str, torch.Tensor]):
+def train_client(
+    model: MTS_JEPA_Forecaster,
+    loader,
+    optimizer,
+    cfg: Config,
+    global_trainable_snapshot: dict[str, torch.Tensor],
+):
     """FIX point 6 : terme proximal FedProx (mu/2)||w - w_global||² réellement
     ajouté. global_trainable_snapshot : dict {name: tensor} des params globaux.
     Retourne loss totale + composantes pour diagnostic (FIX point 8).
     """
     model.train()
     device = cfg.device
-    agg = {"total": 0.0, "jepa": 0.0, "recon": 0.0, "vic": 0.0,
-           "scale": 0.0, "prox": 0.0, "emb_std": 0.0}
+    agg = {
+        "total": 0.0,
+        "jepa": 0.0,
+        "recon": 0.0,
+        "vic": 0.0,
+        "scale": 0.0,
+        "prox": 0.0,
+        "emb_std": 0.0,
+    }
     n_batches = 0
 
     for _ in range(cfg.epochs):
@@ -631,11 +649,13 @@ def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
             pred = model.predict_latents(ctx_enc)
             sig_h = model.decoder(pred["h"])
 
-            l_jepa = sum(jepa_loss(pred[s], tgt_enc[s])
-                         for s in pred if s in tgt_enc) / max(len(pred), 1)
+            l_jepa = sum(jepa_loss(pred[s], tgt_enc[s]) for s in pred if s in tgt_enc) / max(
+                len(pred), 1
+            )
             l_recon = reconstruction_loss(sig_h, target)
-            l_vic = (sum(vicreg_loss(z) for z in ctx_enc.values())
-                     + sum(vicreg_loss(z) for z in pred.values()))
+            l_vic = sum(vicreg_loss(z) for z in ctx_enc.values()) + sum(
+                vicreg_loss(z) for z in pred.values()
+            )
             l_scale = inter_scale_loss(model.decoder, pred)
 
             # FedProx : terme proximal sur les paramètres entraînables
@@ -645,15 +665,16 @@ def train_client(model: MTS_JEPA_Forecaster, loader, optimizer, cfg: Config,
                     prox = prox + ((p - global_trainable_snapshot[name]) ** 2).sum()
             prox = 0.5 * cfg.mu_prox * prox
 
-            loss = (l_jepa + cfg.w_recon * l_recon + cfg.w_vic * l_vic
-                    + cfg.w_scale * l_scale + prox)
+            loss = l_jepa + cfg.w_recon * l_recon + cfg.w_vic * l_vic + cfg.w_scale * l_scale + prox
             loss.backward()
             optimizer.step()
 
             with torch.no_grad():
-                emb_std = torch.cat(
-                    [z.reshape(-1, z.size(-1)).std(dim=0) for z in ctx_enc.values()]
-                ).mean().item()
+                emb_std = (
+                    torch.cat([z.reshape(-1, z.size(-1)).std(dim=0) for z in ctx_enc.values()])
+                    .mean()
+                    .item()
+                )
             agg["total"] += loss.item()
             agg["jepa"] += l_jepa.item()
             agg["recon"] += l_recon.item()
@@ -682,22 +703,53 @@ def average_state_dicts(state_dicts: list[dict[str, torch.Tensor]]):
 # 11. Simulation fédérée — EMA cohérente + diagnostic de dérive
 # ---------------------------------------------------------------------------
 SITE_PARAMS = [
-    {"base_amplitude": 5.0, "weekend_factor": 0.80, "trend": 0.010,
-     "noise_std": 2.0, "crisis_prob": 0.10, "crisis_mult": 2.5},
-    {"base_amplitude": 7.0, "weekend_factor": 0.70, "trend": 0.020,
-     "noise_std": 1.5, "crisis_prob": 0.20, "crisis_mult": 3.0},
-    {"base_amplitude": 4.0, "weekend_factor": 0.90, "trend": 0.005,
-     "noise_std": 3.0, "crisis_prob": 0.05, "crisis_mult": 2.0},
-    {"base_amplitude": 6.0, "weekend_factor": 0.75, "trend": 0.015,
-     "noise_std": 2.5, "crisis_prob": 0.15, "crisis_mult": 2.8},
-    {"base_amplitude": 5.5, "weekend_factor": 0.85, "trend": 0.010,
-     "noise_std": 2.2, "crisis_prob": 0.12, "crisis_mult": 2.6},
+    {
+        "base_amplitude": 5.0,
+        "weekend_factor": 0.80,
+        "trend": 0.010,
+        "noise_std": 2.0,
+        "crisis_prob": 0.10,
+        "crisis_mult": 2.5,
+    },
+    {
+        "base_amplitude": 7.0,
+        "weekend_factor": 0.70,
+        "trend": 0.020,
+        "noise_std": 1.5,
+        "crisis_prob": 0.20,
+        "crisis_mult": 3.0,
+    },
+    {
+        "base_amplitude": 4.0,
+        "weekend_factor": 0.90,
+        "trend": 0.005,
+        "noise_std": 3.0,
+        "crisis_prob": 0.05,
+        "crisis_mult": 2.0,
+    },
+    {
+        "base_amplitude": 6.0,
+        "weekend_factor": 0.75,
+        "trend": 0.015,
+        "noise_std": 2.5,
+        "crisis_prob": 0.15,
+        "crisis_mult": 2.8,
+    },
+    {
+        "base_amplitude": 5.5,
+        "weekend_factor": 0.85,
+        "trend": 0.010,
+        "noise_std": 2.2,
+        "crisis_prob": 0.12,
+        "crisis_mult": 2.6,
+    },
 ]
 
 
 def trainable_snapshot(model: nn.Module, device) -> dict[str, torch.Tensor]:
-    return {n: p.detach().clone().to(device)
-            for n, p in model.named_parameters() if p.requires_grad}
+    return {
+        n: p.detach().clone().to(device) for n, p in model.named_parameters() if p.requires_grad
+    }
 
 
 def run_federated(cfg: Config, verbose=True):
@@ -726,26 +778,28 @@ def run_federated(cfg: Config, verbose=True):
         for cid in range(cfg.num_clients):
             model = copy.deepcopy(global_model).to(dev)
             optimizer = torch.optim.Adam(
-                (p for p in model.parameters() if p.requires_grad), lr=cfg.lr)
-            loader = DataLoader(train_ds[cid], batch_size=cfg.batch_size,
-                                shuffle=True)
+                (p for p in model.parameters() if p.requires_grad), lr=cfg.lr
+            )
+            loader = DataLoader(train_ds[cid], batch_size=cfg.batch_size, shuffle=True)
             agg = train_client(model, loader, optimizer, cfg, global_snap)
             for k in round_agg:
                 round_agg[k] += agg[k] / cfg.num_clients
 
             # diagnostic de dérive student-vs-global (FIX point 6, honnêteté)
             local_snap = trainable_snapshot(model, dev)
-            drift = torch.sqrt(sum(
-                ((local_snap[n] - global_snap[n]) ** 2).sum()
-                for n in global_snap)).item()
+            drift = torch.sqrt(
+                sum(((local_snap[n] - global_snap[n]) ** 2).sum() for n in global_snap)
+            ).item()
             drift_norms.append(drift)
 
-            local_students.append({
-                "context_encoder": model.context_encoder.state_dict(),
-                "predictor": model.predictor.state_dict(),
-                "decoder": model.decoder.state_dict(),
-                "patchifier": model.patchifier.state_dict(),
-            })
+            local_students.append(
+                {
+                    "context_encoder": model.context_encoder.state_dict(),
+                    "predictor": model.predictor.state_dict(),
+                    "decoder": model.decoder.state_dict(),
+                    "patchifier": model.patchifier.state_dict(),
+                }
+            )
 
         # FedAvg des students
         for comp in ["context_encoder", "predictor", "decoder", "patchifier"]:
@@ -756,18 +810,24 @@ def run_federated(cfg: Config, verbose=True):
         global_model.ema_update_from(
             global_model.context_encoder.state_dict(),
             global_model.patchifier.state_dict(),
-            tau=cfg.tau_ema)
+            tau=cfg.tau_ema,
+        )
 
-        rec = {"round": rnd + 1,
-               "drift_mean": float(np.mean(drift_norms)),
-               "drift_std": float(np.std(drift_norms)), **round_agg}
+        rec = {
+            "round": rnd + 1,
+            "drift_mean": float(np.mean(drift_norms)),
+            "drift_std": float(np.std(drift_norms)),
+            **round_agg,
+        }
         history.append(rec)
         if verbose:
-            print(f"  R{rnd+1:02d} | total {rec['total']:.4f} "
-                  f"jepa {rec['jepa']:.4f} recon {rec['recon']:.4f} "
-                  f"vic {rec['vic']:.4f} prox {rec['prox']:.4f} | "
-                  f"emb_std {rec['emb_std']:.3f} "
-                  f"drift {rec['drift_mean']:.3f}±{rec['drift_std']:.3f}")
+            print(
+                f"  R{rnd + 1:02d} | total {rec['total']:.4f} "
+                f"jepa {rec['jepa']:.4f} recon {rec['recon']:.4f} "
+                f"vic {rec['vic']:.4f} prox {rec['prox']:.4f} | "
+                f"emb_std {rec['emb_std']:.3f} "
+                f"drift {rec['drift_mean']:.3f}±{rec['drift_std']:.3f}"
+            )
             if rec["emb_std"] < 1e-2:
                 print("  [ALERTE] emb_std très faible -> risque de collapse.")
 
@@ -777,20 +837,24 @@ def run_federated(cfg: Config, verbose=True):
 # ---------------------------------------------------------------------------
 # 12bis. Métriques rigoureuses : efficacité + bootstrap (AJOUTS RÉVISION)
 # ---------------------------------------------------------------------------
-def interval_efficiency(coverage: float, mean_width: float,
-                        scale: float) -> dict[str, float]:
+def interval_efficiency(coverage: float, mean_width: float, scale: float) -> dict[str, float]:
     """Une couverture seule est ininterprétable. On rapporte :
-      - normalized_width : largeur / échelle des données (sans dimension)
-      - efficiency : couverture / largeur normalisée (plus haut = mieux à
-        couverture égale). Pénalise les intervalles inutilement larges.
+    - normalized_width : largeur / échelle des données (sans dimension)
+    - efficiency : couverture / largeur normalisée (plus haut = mieux à
+      couverture égale). Pénalise les intervalles inutilement larges.
     """
     nw = mean_width / (scale + 1e-9)
-    return {"coverage": coverage, "mean_width": mean_width,
-            "normalized_width": nw, "efficiency": coverage / (nw + 1e-9)}
+    return {
+        "coverage": coverage,
+        "mean_width": mean_width,
+        "normalized_width": nw,
+        "efficiency": coverage / (nw + 1e-9),
+    }
 
 
-def bootstrap_diff(errors_a: np.ndarray, errors_b: np.ndarray,
-                   n_boot: int = 1000, seed: int = 0) -> dict[str, float]:
+def bootstrap_diff(
+    errors_a: np.ndarray, errors_b: np.ndarray, n_boot: int = 1000, seed: int = 0
+) -> dict[str, float]:
     """IC bootstrap sur la différence d'erreur moyenne (a - b). Si l'IC à 95 %
     exclut 0, la différence est significative. Sans ça, comparer deux MAE n'est
     pas un résultat (Efron & Tibshirani 1993)."""
@@ -803,9 +867,12 @@ def bootstrap_diff(errors_a: np.ndarray, errors_b: np.ndarray,
         idx = rng.integers(0, n, n)
         diffs[i] = a[idx].mean() - b[idx].mean()
     lo, hi = np.percentile(diffs, [2.5, 97.5])
-    return {"mean_diff": float(a.mean() - b.mean()),
-            "ci95_low": float(lo), "ci95_high": float(hi),
-            "significant": bool(lo > 0 or hi < 0)}
+    return {
+        "mean_diff": float(a.mean() - b.mean()),
+        "ci95_low": float(lo),
+        "ci95_high": float(hi),
+        "significant": bool(lo > 0 or hi < 0),
+    }
 
 
 def collect_predictions(model, test_ds, cfg):
@@ -822,20 +889,24 @@ def collect_predictions(model, test_ds, cfg):
         with torch.no_grad():
             for context, target, regimes, starts in loader:
                 context = context.to(dev)
-                sig = model(context)["h"][:, :, 0].cpu().numpy()   # admissions
+                sig = model(context)["h"][:, :, 0].cpu().numpy()  # admissions
                 true = target[:, :, 0].numpy()
                 base = seasonal_baseline(context, cfg.future_h)[:, :, 0].cpu().numpy()
                 # regimes : list de listes (time-major par item du batch)
                 reg_arr = np.array(regimes, dtype=object).T  # (B, horizon)
                 for b in range(sig.shape[0]):
-                    rows.append({
-                        "true": true[b], "pred": sig[b], "base": base[b],
-                        "regime": list(reg_arr[b]), "start": int(starts[b]),
-                    })
+                    rows.append(
+                        {
+                            "true": true[b],
+                            "pred": sig[b],
+                            "base": base[b],
+                            "regime": list(reg_arr[b]),
+                            "start": int(starts[b]),
+                        }
+                    )
         rows.sort(key=lambda r: r["start"])  # ordre temporel réel
         per_client.append(rows)
     return per_client
-
 
 
 def split_traj(rows, frac_cal=0.5):
@@ -848,16 +919,15 @@ def split_traj(rows, frac_cal=0.5):
 
 def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
     """Évaluation rigoureuse :
-      1. Split-conformal trajectoire (garantie marginale) + efficacité.
-      2. ACI/DtACI Mondrian par régime (couverture marginale PAR STRATE).
-      3. Bootstrap modèle vs baseline (significativité).
-      4. Test de dérive explicite : couverture statique sur strate 'crise'.
+    1. Split-conformal trajectoire (garantie marginale) + efficacité.
+    2. ACI/DtACI Mondrian par régime (couverture marginale PAR STRATE).
+    3. Bootstrap modèle vs baseline (significativité).
+    4. Test de dérive explicite : couverture statique sur strate 'crise'.
     """
     per_client = collect_predictions(model, test_ds, cfg)
 
     # échelle des données pour normaliser les largeurs (écart-type global y)
-    all_true_flat = np.concatenate(
-        [r["true"] for rows in per_client for r in rows])
+    all_true_flat = np.concatenate([r["true"] for rows in per_client for r in rows])
     data_scale = float(all_true_flat.std() + 1e-9)
 
     # ---- 1. Conformal par trajectoire (garantie marginale) ----
@@ -875,10 +945,12 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
     r_mod = cc_mod.calibrate(np.stack(cal_resid_mod))
     r_base = cc_base.calibrate(np.stack(cal_resid_base))
 
-    cov_traj_mod = float(np.mean([
-        bool(np.all(np.abs(r["true"] - r["pred"]) <= r_mod)) for r in eval_rows]))
-    cov_traj_base = float(np.mean([
-        bool(np.all(np.abs(r["true"] - r["base"]) <= r_base)) for r in eval_rows]))
+    cov_traj_mod = float(
+        np.mean([bool(np.all(np.abs(r["true"] - r["pred"]) <= r_mod)) for r in eval_rows])
+    )
+    cov_traj_base = float(
+        np.mean([bool(np.all(np.abs(r["true"] - r["base"]) <= r_base)) for r in eval_rows])
+    )
 
     eff_mod = interval_efficiency(cov_traj_mod, 2 * r_mod, data_scale)
     eff_base = interval_efficiency(cov_traj_base, 2 * r_base, data_scale)
@@ -903,15 +975,13 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
                 if cal.warmed_up:
                     stats[reg]["cov"] += int(covered)
                     stats[reg]["n"] += 1
-                    stats[reg]["w"] += (ub - lb)
+                    stats[reg]["w"] += ub - lb
             else:
                 cal.update(score, False)
 
     # ---- 3. Bootstrap modèle vs baseline (MAE pointwise) ----
-    err_mod = np.concatenate(
-        [np.abs(r["true"] - r["pred"]) for r in eval_rows])
-    err_base = np.concatenate(
-        [np.abs(r["true"] - r["base"]) for r in eval_rows])
+    err_mod = np.concatenate([np.abs(r["true"] - r["pred"]) for r in eval_rows])
+    err_base = np.concatenate([np.abs(r["true"] - r["base"]) for r in eval_rows])
     boot = bootstrap_diff(err_mod, err_base)  # mod - base ; <0 => modèle meilleur
 
     # ---- 4. Test de dérive : conformal STATIQUE calibré hors-crise ----
@@ -927,22 +997,23 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
     drift_cov = None
     if len(calm_resid) > 10 and len(crise_resid) > 10:
         q = float(np.quantile(calm_resid, cfg.target_coverage))
-        drift_cov = float(np.mean([
-            abs(tv - pv) <= q for _, tv, pv in crise_resid]))
+        drift_cov = float(np.mean([abs(tv - pv) <= q for _, tv, pv in crise_resid]))
 
     if verbose:
-        print("\n=== Couverture conformale (cible %.0f%%) ===" %
-              (100 * cfg.target_coverage))
+        print("\n=== Couverture conformale (cible %.0f%%) ===" % (100 * cfg.target_coverage))
         print("[1. Split-conformal TRAJECTOIRE — garantie marginale]")
-        print(f"  Modèle   : cov={eff_mod['coverage']:.3f}  "
-              f"larg_norm={eff_mod['normalized_width']:.3f}  "
-              f"effic={eff_mod['efficiency']:.3f}")
-        print(f"  Baseline : cov={eff_base['coverage']:.3f}  "
-              f"larg_norm={eff_base['normalized_width']:.3f}  "
-              f"effic={eff_base['efficiency']:.3f}")
+        print(
+            f"  Modèle   : cov={eff_mod['coverage']:.3f}  "
+            f"larg_norm={eff_mod['normalized_width']:.3f}  "
+            f"effic={eff_mod['efficiency']:.3f}"
+        )
+        print(
+            f"  Baseline : cov={eff_base['coverage']:.3f}  "
+            f"larg_norm={eff_base['normalized_width']:.3f}  "
+            f"effic={eff_base['efficiency']:.3f}"
+        )
         cal_name = "DtACI" if use_dtaci else "ACI"
-        print(f"\n[2. {cal_name} Mondrian par régime — couverture MARGINALE "
-              f"PAR STRATE]")
+        print(f"\n[2. {cal_name} Mondrian par régime — couverture MARGINALE PAR STRATE]")
         print(f"{'Régime':<10} {'cov':>8} {'larg':>9} {'larg_norm':>10} {'n':>7}")
         print("-" * 48)
         for reg in REGIMES:
@@ -951,16 +1022,22 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
                 print(f"{reg:<10} {'n/a':>8} {'n/a':>9} {'n/a':>10} {0:>7}")
             else:
                 w = s["w"] / s["n"]
-                print(f"{reg:<10} {s['cov']/s['n']:>8.3f} {w:>9.2f} "
-                      f"{w/data_scale:>10.3f} {s['n']:>7d}")
+                print(
+                    f"{reg:<10} {s['cov'] / s['n']:>8.3f} {w:>9.2f} "
+                    f"{w / data_scale:>10.3f} {s['n']:>7d}"
+                )
         print("\n[3. Bootstrap MAE modèle vs baseline (1000 rééch.)]")
-        print(f"  Δ MAE (mod-base) = {boot['mean_diff']:+.3f}  "
-              f"IC95=[{boot['ci95_low']:+.3f}, {boot['ci95_high']:+.3f}]  "
-              f"significatif={boot['significant']}")
+        print(
+            f"  Δ MAE (mod-base) = {boot['mean_diff']:+.3f}  "
+            f"IC95=[{boot['ci95_low']:+.3f}, {boot['ci95_high']:+.3f}]  "
+            f"significatif={boot['significant']}"
+        )
         if drift_cov is not None:
             print("\n[4. Test de dérive — conformal statique calibré hors-crise]")
-            print(f"  Couverture sur strate 'crise' = {drift_cov:.3f} "
-                  f"(cible {cfg.target_coverage:.2f})")
+            print(
+                f"  Couverture sur strate 'crise' = {drift_cov:.3f} "
+                f"(cible {cfg.target_coverage:.2f})"
+            )
             verdict = (
                 "sous-couverture confirmée (justifie ACI)"
                 if drift_cov < cfg.target_coverage - 0.05
@@ -968,18 +1045,24 @@ def evaluate(model, test_ds, cfg, verbose=True, use_dtaci=True):
             )
             print(f"  -> {verdict}")
         print("\nNotes de validité :")
-        print("  - Garantie 1-α : couverture MARGINALE au niveau trajectoire "
-              "(bande uniforme).")
-        print("  - ACI/DtACI par régime : couverture marginale DANS chaque "
-              "strate, PAS conditionnelle.")
-        print("  - Efficacité = cov / largeur_normalisée : compare à couverture "
-              "égale (une couverture sans largeur est ininterprétable).")
+        print("  - Garantie 1-α : couverture MARGINALE au niveau trajectoire (bande uniforme).")
+        print(
+            "  - ACI/DtACI par régime : couverture marginale DANS chaque "
+            "strate, PAS conditionnelle."
+        )
+        print(
+            "  - Efficacité = cov / largeur_normalisée : compare à couverture "
+            "égale (une couverture sans largeur est ininterprétable)."
+        )
 
     return {
-        "traj_mod": eff_mod, "traj_base": eff_base,
-        "radius_mod": r_mod, "radius_base": r_base,
+        "traj_mod": eff_mod,
+        "traj_base": eff_base,
+        "radius_mod": r_mod,
+        "radius_base": r_base,
         "regime_stats": {reg: stats[reg] for reg in REGIMES},
-        "bootstrap_mae": boot, "drift_static_coverage": drift_cov,
+        "bootstrap_mae": boot,
+        "drift_static_coverage": drift_cov,
         "data_scale": data_scale,
     }
 
@@ -995,8 +1078,9 @@ def main():
     parser.add_argument("--save", type=str, default="mts_jepa_federated_final.pt")
     parser.add_argument("--history", type=str, default="training_history.json")
     parser.add_argument("--quiet", action="store_true")
-    parser.add_argument("--no-dtaci", action="store_true",
-                        help="Utiliser ACI simple au lieu de DtACI adaptatif")
+    parser.add_argument(
+        "--no-dtaci", action="store_true", help="Utiliser ACI simple au lieu de DtACI adaptatif"
+    )
     args = parser.parse_args()
 
     cfg = Config()
@@ -1012,11 +1096,9 @@ def main():
 
     print(f"Device: {cfg.device}")
     model, test_ds, history = run_federated(cfg, verbose=verbose)
-    metrics = evaluate(model, test_ds, cfg, verbose=verbose,
-                       use_dtaci=not args.no_dtaci)
+    metrics = evaluate(model, test_ds, cfg, verbose=verbose, use_dtaci=not args.no_dtaci)
 
-    torch.save({"state_dict": model.state_dict(),
-                "config": cfg.__dict__}, args.save)
+    torch.save({"state_dict": model.state_dict(), "config": cfg.__dict__}, args.save)
     with open(args.history, "w") as f:
         json.dump({"history": history, "metrics": metrics}, f, indent=2)
     if verbose:

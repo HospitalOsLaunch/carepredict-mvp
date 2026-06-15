@@ -36,7 +36,9 @@ def main() -> int:
     args = parse_args()
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    dataset_cfg = SyntheticDatasetConfig(n_days=args.n_days, window_days=args.window_days, seed=args.seed)
+    dataset_cfg = SyntheticDatasetConfig(
+        n_days=args.n_days, window_days=args.window_days, seed=args.seed
+    )
     dataset = build_synthetic_dataset(
         SyntheticDatasetConfig(
             n_days=dataset_cfg.n_days,

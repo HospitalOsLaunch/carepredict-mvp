@@ -40,7 +40,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         description="Train the CarePredict Hospital RSSM on synthetic SIIPS data."
     )
     parser.add_argument("--months", type=int, default=6, help="Synthetic data months to generate.")
-    parser.add_argument("--end-date", type=str, default=None, help="Exclusive ISO end date for generated data.")
+    parser.add_argument(
+        "--end-date", type=str, default=None, help="Exclusive ISO end date for generated data."
+    )
     parser.add_argument(
         "--service-index",
         type=int,
@@ -201,10 +203,7 @@ def sample_batch(
         axis=0,
     )
     future_actions_np = np.stack(
-        [
-            actions[start + history_length : start + history_length + horizon]
-            for start in starts
-        ],
+        [actions[start + history_length : start + history_length + horizon] for start in starts],
         axis=0,
     )
     future_targets_np = np.stack(
@@ -511,7 +510,9 @@ def build_training_dataset(
         # generate_dataset uses whole days from start to exclusive end, so the last hour is < end.
         if not timestamps[-1] < end_date:
             raise AssertionError("last generated care_load timestamp must be before --end-date")
-        LOGGER.info("rssm_synthetic_end_date_exclusive end_date=%s last_hour=%s", end_date, timestamps[-1])
+        LOGGER.info(
+            "rssm_synthetic_end_date_exclusive end_date=%s last_hour=%s", end_date, timestamps[-1]
+        )
     minimum_length = int(args.history_length) + int(args.horizon) + 100
     if siips.shape[0] < minimum_length:
         raise ValueError(
