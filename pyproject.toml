@@ -61,7 +61,8 @@ foundation = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["services*", "orchestration*", "data*", "rs_jepa*"]
+where = [".", "src"]
+include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
 [tool.ruff]
 target-version = "py311"
