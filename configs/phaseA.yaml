@@ -10,6 +10,10 @@ stage1:
   encoder_max_steps: 512
   rssm_deter_dim: 256
   rssm_stoch_dim: 32
+  rssm_min_std: 0.1
+  rssm_layer_norm: true
+  predictor_hidden_dim: 256
+  predictor_depth: 2
   context_steps: 168
   horizons: [6, 24, 72, 168]
   batch_size: 64

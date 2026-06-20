@@ -20,6 +20,10 @@ class Stage1Config:
     encoder_max_steps: int = 512
     rssm_deter_dim: int = 256
     rssm_stoch_dim: int = 32
+    rssm_min_std: float = 0.1
+    rssm_layer_norm: bool = True
+    predictor_hidden_dim: int = 256
+    predictor_depth: int = 2
     context_steps: int = 168
     horizons: tuple[int, ...] = (6, 24, 72, 168)
     batch_size: int = 64

@@ -87,4 +87,5 @@ pythonpath = ["."]
 markers = [
   "performance: latency and throughput checks that run on CPU by default",
   "integration: tests requiring external services (postgres/redis/kafka); skipped by default; run with `pytest -m integration` or `pytest -m 'integration or not integration'` for full suite",
+  "rs_jepa: fast RS-JEPA unit and simulator contract tests",
 ]
