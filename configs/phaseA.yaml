@@ -2,6 +2,12 @@ seed: 42
 phase: A
 stage1:
   latent_dim: 128
+  encoder_model_dim: 128
+  encoder_depth: 2
+  encoder_heads: 4
+  encoder_ff_dim: 256
+  encoder_dropout: 0.0
+  encoder_max_steps: 512
   rssm_deter_dim: 256
   rssm_stoch_dim: 32
   context_steps: 168
@@ -12,6 +18,7 @@ stage1:
   grad_clip: 1.0
   ema_start: 0.996
   ema_end: 0.9999
+  ema_ramp_steps: 10000
   mixed_precision: true
   deterministic: true
   w_pred: 1.0

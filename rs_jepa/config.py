@@ -12,6 +12,12 @@ import yaml
 @dataclass(frozen=True)
 class Stage1Config:
     latent_dim: int = 128
+    encoder_model_dim: int = 128
+    encoder_depth: int = 2
+    encoder_heads: int = 4
+    encoder_ff_dim: int = 256
+    encoder_dropout: float = 0.0
+    encoder_max_steps: int = 512
     rssm_deter_dim: int = 256
     rssm_stoch_dim: int = 32
     context_steps: int = 168
@@ -22,6 +28,7 @@ class Stage1Config:
     grad_clip: float = 1.0
     ema_start: float = 0.996
     ema_end: float = 0.9999
+    ema_ramp_steps: int = 10_000
     mixed_precision: bool = True
     deterministic: bool = True
     w_pred: float = 1.0
