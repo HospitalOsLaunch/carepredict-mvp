@@ -82,9 +82,12 @@ class SyntheticConfig:
 
 @dataclass(frozen=True)
 class TrainingConfig:
-    max_epochs: int = 20
+    max_epochs: int = 3
+    steps_per_epoch: int = 8
     probe_every_epochs: int = 1
     early_collapse_rank_threshold: float = 4.0
+    probe_stride: int = 24
+    probe_max_samples: int = 2_000
 
 
 @dataclass(frozen=True)

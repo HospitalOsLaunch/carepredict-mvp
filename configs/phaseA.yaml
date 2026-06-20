@@ -60,6 +60,9 @@ synthetic:
   surge_max_duration_h: 96
   noise_std: 0.06
 training:
-  max_epochs: 20
+  max_epochs: 3
+  steps_per_epoch: 8
   probe_every_epochs: 1
   early_collapse_rank_threshold: 4.0
+  probe_stride: 24
+  probe_max_samples: 2000
