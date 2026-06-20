@@ -1,0 +1,54 @@
+seed: 42
+phase: A
+stage1:
+  latent_dim: 128
+  rssm_deter_dim: 256
+  rssm_stoch_dim: 32
+  context_steps: 168
+  horizons: [6, 24, 72, 168]
+  batch_size: 64
+  lr: 0.0003
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  ema_start: 0.996
+  ema_end: 0.9999
+  mixed_precision: true
+  deterministic: true
+  w_pred: 1.0
+  w_var: 1.0
+  w_cov: 0.04
+  aux_decoder_enabled: false
+  aux_decoder_weight: 0.1
+  block_mask_min_frac: 0.15
+  block_mask_max_frac: 0.40
+  channel_mask_prob: 0.20
+stage2:
+  k_levels: 4
+  freeze_backbone: true
+  light_finetune: false
+  siips_calibration_enabled: false
+split:
+  temporal_holdout_weeks: 8
+  cross_site_val_fraction: 0.20
+  seed: 42
+synthetic:
+  n_sites: 24
+  total_days: 180
+  step_hours: 1
+  seed: 42
+  min_capacity: 80
+  max_capacity: 520
+  min_base_saturation: 0.55
+  max_base_saturation: 0.92
+  min_case_mix: 0.7
+  max_case_mix: 1.4
+  min_staffing_ratio: 0.78
+  max_staffing_ratio: 1.18
+  surge_event_rate_per_30d: 1.25
+  surge_min_duration_h: 18
+  surge_max_duration_h: 96
+  noise_std: 0.06
+training:
+  max_epochs: 20
+  probe_every_epochs: 1
+  early_collapse_rank_threshold: 4.0
