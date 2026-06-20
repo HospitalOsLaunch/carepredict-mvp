@@ -41,6 +41,9 @@ dependencies = [
   "uvicorn[standard]>=0.30.0,<1.0.0",
 ]
 
+[project.scripts]
+train = "rs_jepa.cli:main"
+
 [project.optional-dependencies]
 dev = [
   "mypy>=1.10.0,<2.0.0",
@@ -58,7 +61,7 @@ foundation = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["services*", "orchestration*", "data*"]
+include = ["services*", "orchestration*", "data*", "rs_jepa*"]
 
 [tool.ruff]
 target-version = "py311"
