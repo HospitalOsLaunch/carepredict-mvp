@@ -27,6 +27,7 @@ from data.synthetic.siips_generator import (
     SyntheticDataset,
     generate_dataset,
 )
+from services.ml.world_model.action_channels import ACTION_CHANNEL_INDEX, ACTION_CHANNELS
 from services.ml.world_model.config import RewardConfig, RSSMConfig, TrainConfig
 from services.ml.world_model.rssm import HospitalRSSM, RSSMState
 from services.ml.world_model.train import WorldModelTrainer
@@ -144,23 +145,24 @@ def build_action_matrix(
 ) -> npt.NDArray[np.float32]:
     """Build hourly action counts aligned with the care-load grid.
 
-    The action order is ``[admissions, discharges, surgeries, transfers_in,
-    transfers_out]``. The synthetic generator exposes admission and discharge
+    The action order is derived from ``ACTION_CHANNELS`` and must match the
+    trained RSSM checkpoint: admissions, discharges, surgeries, transfers_in,
+    transfers_out. The synthetic generator exposes admission and discharge
     events directly; other components are zero-filled because they are not
     materialized as explicit event records in the current synthetic dataset.
     """
-    if action_dim != 5:
-        raise ValueError(f"Expected RSSM action_dim=5, got {action_dim}")
+    if action_dim != len(ACTION_CHANNELS):
+        raise ValueError(f"Expected RSSM action_dim={len(ACTION_CHANNELS)}, got {action_dim}")
     hour_to_index = {hour_bucket(timestamp): index for index, timestamp in enumerate(timestamps)}
     actions = np.zeros((len(timestamps), action_dim), dtype=np.float32)
     for admission in dataset.admissions:
         index = hour_to_index.get(hour_bucket(admission.admission_time))
         if index is not None:
-            actions[index, 0] += np.float32(1.0)
+            actions[index, ACTION_CHANNEL_INDEX["admissions"]] += np.float32(1.0)
     for discharge in dataset.discharges:
         index = hour_to_index.get(hour_bucket(discharge.discharge_time))
         if index is not None:
-            actions[index, 1] += np.float32(1.0)
+            actions[index, ACTION_CHANNEL_INDEX["discharges"]] += np.float32(1.0)
     return actions
 
 

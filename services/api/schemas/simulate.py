@@ -7,27 +7,40 @@ from typing import Annotated, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from services.ml.world_model.action_channels import ACTION_CHANNELS, ActionChannel
+
 
 class ActionStep(BaseModel):
-    """Known intervention vector for one future hourly step."""
+    """Known intervention vector for one future hourly step.
+
+    ``to_vector`` emits the trained RSSM order:
+    admissions, discharges, surgeries, transfers_in, transfers_out.
+    ``staff_redeployments`` is accepted only as ignored metadata because the
+    current checkpoint has no staffing action channel. The legacy
+    ``expected_transfers`` field maps to transfers_in; transfers_out remains
+    zero unless ``expected_transfers_out`` is supplied.
+    """
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
     scheduled_admissions: Annotated[int, Field(ge=0, le=200)]
     scheduled_discharges: Annotated[int, Field(ge=0, le=200)]
-    staff_redeployments: Annotated[int, Field(ge=0, le=200)]
     scheduled_surgeries: Annotated[int, Field(ge=0, le=200)]
-    expected_transfers: Annotated[int, Field(ge=0, le=200)]
+    expected_transfers_in: Annotated[int, Field(ge=0, le=200)] = 0
+    expected_transfers_out: Annotated[int, Field(ge=0, le=200)] = 0
+    expected_transfers: Annotated[int, Field(ge=0, le=200)] = 0
+    staff_redeployments: Annotated[int, Field(ge=0, le=200)] = 0
 
     def to_vector(self) -> list[float]:
         """Return the action step as a float vector in model action order."""
-        return [
-            float(self.scheduled_admissions),
-            float(self.scheduled_discharges),
-            float(self.staff_redeployments),
-            float(self.scheduled_surgeries),
-            float(self.expected_transfers),
-        ]
+        values: dict[ActionChannel, float] = {
+            "admissions": float(self.scheduled_admissions),
+            "discharges": float(self.scheduled_discharges),
+            "surgeries": float(self.scheduled_surgeries),
+            "transfers_in": float(self.expected_transfers_in or self.expected_transfers),
+            "transfers_out": float(self.expected_transfers_out),
+        }
+        return [values[channel] for channel in ACTION_CHANNELS]
 
 
 class SimulationRequest(BaseModel):
