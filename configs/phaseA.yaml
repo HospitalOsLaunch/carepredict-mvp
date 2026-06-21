@@ -64,5 +64,7 @@ training:
   steps_per_epoch: 8
   probe_every_epochs: 1
   early_collapse_rank_threshold: 4.0
+  probe_rank_threshold: 4.0
   probe_stride: 24
   probe_max_samples: 2000
+  checkpoint_path: runs/phaseA/encoder.pt

@@ -13,6 +13,8 @@ from rs_jepa.synthetic import (
     assert_criticality_is_unitless,
 )
 
+pytestmark = pytest.mark.rs_jepa
+
 
 def small_cfg(seed: int = 7) -> SyntheticConfig:
     return SyntheticConfig(n_sites=6, total_days=21, seed=seed)

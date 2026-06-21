@@ -86,8 +86,10 @@ class TrainingConfig:
     steps_per_epoch: int = 8
     probe_every_epochs: int = 1
     early_collapse_rank_threshold: float = 4.0
+    probe_rank_threshold: float = 4.0
     probe_stride: int = 24
     probe_max_samples: int = 2_000
+    checkpoint_path: str = "runs/phaseA/encoder.pt"
 
 
 @dataclass(frozen=True)
@@ -117,11 +119,9 @@ def _coerce_dataclass(cls: type[Any], value: dict[str, Any] | None) -> Any:
     return cls(**kwargs)
 
 
-def load_config(path: str | Path) -> RSJEPAConfig:
-    """Charge une configuration YAML et valide les clés déclarées."""
+def config_from_dict(raw: dict[str, Any]) -> RSJEPAConfig:
+    """Build a typed config from a raw mapping."""
 
-    with Path(path).open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle) or {}
     if not isinstance(raw, dict):
         raise ValueError("La configuration doit être un mapping YAML.")
     nested = {
@@ -136,3 +136,11 @@ def load_config(path: str | Path) -> RSJEPAConfig:
         if name in raw:
             raw[name] = _coerce_dataclass(cls, raw[name])
     return _coerce_dataclass(RSJEPAConfig, raw)
+
+
+def load_config(path: str | Path) -> RSJEPAConfig:
+    """Charge une configuration YAML et valide les clés déclarées."""
+
+    with Path(path).open("r", encoding="utf-8") as handle:
+        raw = yaml.safe_load(handle) or {}
+    return config_from_dict(raw)

@@ -5,7 +5,15 @@ import pytest
 
 from rs_jepa.config import load_config
 from rs_jepa.seed import set_global_seed
-from rs_jepa.splits import CROSS_SITE_VAL, TEMPORAL_VAL, TRAIN, add_validation_splits, require_monotonic_by_site
+from rs_jepa.splits import (
+    CROSS_SITE_VAL,
+    TEMPORAL_VAL,
+    TRAIN,
+    add_validation_splits,
+    require_monotonic_by_site,
+)
+
+pytestmark = pytest.mark.rs_jepa
 
 
 def test_phase_a_config_loads_expected_horizons():
@@ -24,9 +32,12 @@ def test_split_is_cross_site_and_temporal():
     cfg = load_config("configs/phaseA.yaml").split
     split_frame, summary = add_validation_splits(frame, cfg)
     assert set(summary.train_sites).isdisjoint(summary.cross_site_val_sites)
-    assert set(split_frame.loc[split_frame["split"] == CROSS_SITE_VAL, "site_id"]) == set(summary.cross_site_val_sites)
-    assert (split_frame.loc[split_frame["split"] == TRAIN, "timestamp"] < summary.temporal_holdout_start).all()
-    assert (split_frame.loc[split_frame["split"] == TEMPORAL_VAL, "timestamp"] >= summary.temporal_holdout_start).all()
+    cross_site_sites = set(split_frame.loc[split_frame["split"] == CROSS_SITE_VAL, "site_id"])
+    assert cross_site_sites == set(summary.cross_site_val_sites)
+    train_ts = split_frame.loc[split_frame["split"] == TRAIN, "timestamp"]
+    temporal_val_ts = split_frame.loc[split_frame["split"] == TEMPORAL_VAL, "timestamp"]
+    assert (train_ts < summary.temporal_holdout_start).all()
+    assert (temporal_val_ts >= summary.temporal_holdout_start).all()
 
 
 def test_split_guard_rejects_shuffled_site_history():

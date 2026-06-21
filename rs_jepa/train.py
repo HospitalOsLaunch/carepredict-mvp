@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 import numpy as np
 import torch
 from torch import nn
 
-from rs_jepa.config import RSJEPAConfig
+from rs_jepa.config import RSJEPAConfig, config_from_dict
 from rs_jepa.diagnostics import run_diagnostic_for_seed as run_honesty_diagnostic
 from rs_jepa.diagnostics import summarize_rows
 from rs_jepa.diagnostics_latent import latent_batch_stats
@@ -17,7 +18,7 @@ from rs_jepa.encoder import ObservableEncoder
 from rs_jepa.loss import latent_jepa_loss
 from rs_jepa.masking import apply_stage1_masks
 from rs_jepa.predictor import LatentPredictor
-from rs_jepa.probe import ProbeResult, run_frozen_latent_probes
+from rs_jepa.probe import ProbeResult, interpret_static_ablation, run_frozen_latent_probes
 from rs_jepa.rssm import RSSM
 from rs_jepa.seed import set_global_seed
 from rs_jepa.splits import (
@@ -49,6 +50,14 @@ class Stage1Artifacts:
     initial_target_distance: float
     final_target_distance: float
     target_update_distance: float
+
+
+@dataclass(frozen=True)
+class LoadedEncoder:
+    encoder: ObservableEncoder
+    cfg: RSJEPAConfig
+    n_obs: int
+    n_static: int
 
 
 def build_phase_a_sites(
@@ -142,6 +151,70 @@ def _target_snapshot_distance(target: EMATargetEncoder, snapshot: list[torch.Ten
 def _mean_metrics(metrics: list[dict[str, float]]) -> dict[str, float]:
     keys = metrics[0].keys()
     return {key: float(np.mean([row[key] for row in metrics])) for key in keys}
+
+
+def save_encoder_checkpoint(
+    path: str | Path,
+    encoder: ObservableEncoder,
+    cfg: RSJEPAConfig,
+    *,
+    n_obs: int,
+    n_static: int,
+) -> None:
+    target_path = Path(path)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(
+        {
+            "encoder_state_dict": encoder.state_dict(),
+            "config": asdict(cfg),
+            "n_obs": int(n_obs),
+            "n_static": int(n_static),
+        },
+        target_path,
+    )
+
+
+def load_encoder_checkpoint(
+    path: str | Path,
+    *,
+    device: torch.device | None = None,
+) -> LoadedEncoder:
+    load_device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    payload = torch.load(Path(path), map_location=load_device, weights_only=False)
+    cfg = config_from_dict(payload["config"])
+    encoder = ObservableEncoder(
+        n_obs=int(payload["n_obs"]),
+        n_static=int(payload["n_static"]),
+        cfg=cfg.stage1,
+    ).to(load_device)
+    encoder.load_state_dict(payload["encoder_state_dict"])
+    encoder.eval()
+    return LoadedEncoder(
+        encoder=encoder,
+        cfg=cfg,
+        n_obs=int(payload["n_obs"]),
+        n_static=int(payload["n_static"]),
+    )
+
+
+def run_checkpoint_probe(path: str | Path, *, log: bool = True) -> dict[str, ProbeResult]:
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    loaded = load_encoder_checkpoint(path, device=device)
+    _sites, train_sites, cross_site_sites = build_phase_a_sites(loaded.cfg)
+    ceiling_rows = [run_honesty_diagnostic(loaded.cfg, seed) for seed in range(5)]
+    ceiling = 1.0 - float(np.mean([row["hidden_share"] for row in ceiling_rows]))
+    probes = run_frozen_latent_probes(
+        loaded.encoder,
+        train_sites,
+        cross_site_sites,
+        loaded.cfg,
+        ceiling_r2=ceiling,
+        device=device,
+    )
+    if log:
+        for result in probes.values():
+            print(interpret_static_ablation(result, loaded.cfg.training.probe_rank_threshold))
+    return probes
 
 
 def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifacts:
@@ -239,12 +312,18 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
         device=device,
     )
     if log:
-        for name, result in probes.items():
-            print(
-                f"probe[{name}] latent_r2={result.latent_r2:.3f} "
-                f"raw_r2={result.raw_r2:.3f} mean_r2={result.mean_baseline_r2:.3f} "
-                f"ceiling_r2={result.ceiling_r2:.3f} n_eval={result.n_eval}"
-            )
+        for result in probes.values():
+            print(interpret_static_ablation(result, cfg.training.probe_rank_threshold))
+    if cfg.training.checkpoint_path:
+        save_encoder_checkpoint(
+            cfg.training.checkpoint_path,
+            encoder,
+            cfg,
+            n_obs=n_obs,
+            n_static=n_static,
+        )
+        if log:
+            print(f"encoder_checkpoint_saved={cfg.training.checkpoint_path}")
     return Stage1Artifacts(
         encoder=encoder,
         ema_target=ema_target,
