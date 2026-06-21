@@ -12,8 +12,10 @@ from services.api.dependencies.feature_fetcher import DB_DSN
 from services.api.schemas.history import FEATURE_WINDOW_CHANNELS
 from services.ml.forecasting.v2_forecast import (
     V2ForecastArtifacts,
-    history_window_origin,
     v2_forecast_history_length,
+)
+from services.ml.forecasting.v2_forecast import (
+    history_window_origin as _model_history_window_origin,
 )
 
 
@@ -33,6 +35,31 @@ class FeatureWindowNotFoundError(ValueError):
     """Raised when canonical data cannot provide the requested feature window."""
 
 
+def history_window_origin(
+    artifacts: V2ForecastArtifacts,
+    origin: datetime,
+    *,
+    strict: bool = False,
+) -> datetime:
+    """Return the feature-history end timestamp on the model's day-boundary grid.
+
+    The daily-patch v2 forecast model was trained on midnight-aligned origin
+    states. Serving requests may arrive at arbitrary hours; by default they are
+    floored to 00:00 UTC for that date, then the model-specific origin logic is
+    applied. With ``strict=True``, non-midnight origins raise instead of being
+    floored.
+    """
+
+    origin_utc = _to_utc(origin)
+    aligned = origin_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    if strict and origin_utc != aligned:
+        raise FeatureWindowNotFoundError(
+            "origin_timestamp must be aligned to 00:00:00 UTC for strict v2 "
+            f"feature-window fetching; received {origin_utc.isoformat()}"
+        )
+    return _model_history_window_origin(artifacts, aligned)
+
+
 class TimescaleFeatureWindowFetcher:
     """Fetch v2 forecast feature windows from canonical TimescaleDB tables."""
 
@@ -44,6 +71,7 @@ class TimescaleFeatureWindowFetcher:
         origin_timestamp: datetime,
         length: int,
         artifacts: V2ForecastArtifacts,
+        strict_alignment: bool = False,
     ) -> FeatureWindow:
         """Fetch an exactly aligned 7-channel feature window."""
         expected_length = v2_forecast_history_length(artifacts)
@@ -52,7 +80,7 @@ class TimescaleFeatureWindowFetcher:
                 f"length must be {expected_length} for the loaded v2 forecast artifacts"
             )
         origin = _to_utc(origin_timestamp)
-        history_end = history_window_origin(artifacts, origin)
+        history_end = history_window_origin(artifacts, origin, strict=strict_alignment)
         history_start = history_end - timedelta(hours=length - 1)
 
         with psycopg.connect(DB_DSN) as conn, conn.cursor() as cur:

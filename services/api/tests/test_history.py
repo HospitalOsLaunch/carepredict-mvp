@@ -6,6 +6,7 @@ from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import psycopg
 import pytest
 from fastapi import FastAPI
@@ -22,6 +23,7 @@ from services.api.routers.forecast import (
 )
 from services.api.routers.history import router as history_router
 from services.api.schemas.history import FEATURE_WINDOW_CHANNELS
+from services.ml.forecasting.v2_forecast import history_window_origin as model_history_window_origin
 from services.ml.forecasting.v2_service import V2ForecastService
 
 ARTIFACT_DIR = Path("artifacts/v2_forecast_multi")
@@ -116,6 +118,70 @@ def test_feature_window_matches_realism_check_exactly(
     ]
 
     assert payload["history"] == expected_rows
+
+
+def _forecast_max_from_history(
+    client: TestClient,
+    payload: dict,
+    *,
+    origin: str,
+) -> float:
+    channels = payload["channels"]
+    forecast_history = [
+        dict(zip(channels, row, strict=True))
+        for row in payload["history"]
+    ]
+    response = client.post(
+        "/forecast/charge",
+        json={
+            "hospital_id": payload["hospital_id"],
+            "service_id": payload["service_id"],
+            "origin_timestamp": origin,
+            "history": forecast_history,
+            "horizon": 48,
+        },
+    )
+    assert response.status_code == 200
+    return max(step["predicted_siips"] for step in response.json()["results"])
+
+
+def test_feature_window_and_forecast_are_invariant_across_same_day_origin_hours(
+    client: TestClient,
+) -> None:
+    origins = [
+        f"2025-07-08T{hour:02d}:00:00Z"
+        for hour in (0, 3, 9, 14, 18, 23)
+    ]
+    payloads = []
+    fc_maxes = []
+    for origin in origins:
+        response = client.get("/history/feature-window", params=_history_params(origin=origin))
+        assert response.status_code == 200
+        payload = response.json()
+        payloads.append(payload)
+        fc_maxes.append(_forecast_max_from_history(client, payload, origin=origin))
+
+    reference = np.asarray(payloads[0]["history"], dtype=float)
+    for payload in payloads[1:]:
+        assert np.allclose(np.asarray(payload["history"], dtype=float), reference)
+    assert np.allclose(fc_maxes, fc_maxes[0])
+
+
+def test_midnight_origin_is_noop_against_model_origin_logic(v2_service: V2ForecastService) -> None:
+    origin = datetime(2025, 7, 8, tzinfo=UTC)
+    assert window_fetcher_module.history_window_origin(v2_service.artifacts, origin) == (
+        model_history_window_origin(v2_service.artifacts, origin)
+    )
+
+
+def test_strict_alignment_rejects_non_midnight_origin(v2_service: V2ForecastService) -> None:
+    origin = datetime(2025, 7, 8, 9, tzinfo=UTC)
+    with pytest.raises(window_fetcher_module.FeatureWindowNotFoundError, match="00:00:00 UTC"):
+        window_fetcher_module.history_window_origin(
+            v2_service.artifacts,
+            origin,
+            strict=True,
+        )
 
 
 def test_unknown_service_returns_422(client: TestClient) -> None:
