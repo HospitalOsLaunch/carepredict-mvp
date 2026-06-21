@@ -1,6 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { Activity, AlertTriangle, CheckCircle2, Euro, Target, Zap } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import type { ActionSeverity, Recommendation } from "../api/contracts";
+import type { ActionSeverity, ActionSimulationDelta, Recommendation } from "../api/contracts";
 import {
   DataTable,
   StatCard,
@@ -9,10 +11,10 @@ import {
   type SparklinePoint,
   type StatusVariant
 } from "../components/design-system";
-import { useRecommendations } from "../hooks/useActions";
+import { useActionSimulation, useRecommendations } from "../hooks/useActions";
 
 const FACILITY_ID = "hosp-001";
-const ORIGIN = "2025-07-08T00:00:00Z";
+const ORIGIN = "2025-09-10T00:00:00Z";
 const HORIZON_H = 48;
 const SERVICES = ["urg-001", "med-001", "chir-001", "rea-001", "ssr-001"];
 
@@ -26,11 +28,25 @@ const columns: DataTableColumn[] = [
   { key: "status", header: "Status" }
 ];
 
+type ActionSimulationQuery = ReturnType<typeof useActionSimulation>;
+
 export function ActionEngine() {
   const query = useRecommendations(FACILITY_ID, HORIZON_H, SERVICES, ORIGIN);
   const opportunity = query.data?.opportunity;
   const recommendations = [...(query.data?.recommendations ?? [])].sort((left, right) => right.score - left.score);
+  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const selectedRecommendation = useMemo(
+    () => recommendations.find((recommendation) => recommendation.id === selectedId) ?? recommendations[0],
+    [recommendations, selectedId]
+  );
+  const simulationQuery = useActionSimulation(selectedRecommendation, FACILITY_ID, ORIGIN);
   const sparkline = recommendationSparkline(recommendations);
+
+  useEffect(() => {
+    if (!selectedId && recommendations[0]) {
+      setSelectedId(recommendations[0].id);
+    }
+  }, [recommendations, selectedId]);
 
   return (
     <section className="space-y-7" aria-labelledby="action-engine-title">
@@ -53,7 +69,7 @@ export function ActionEngine() {
           icon={Activity}
           metric={opportunity ? formatSigned(opportunity.total_projected_impact_siips) : "—"}
           unit="SIIPS"
-          caption="Heuristic Gate A impact; simulate-based counterfactual comes in Gate B."
+          caption="Gate A opportunity total; drawer uses Gate B counterfactual where supported."
           variant={opportunity && opportunity.total_projected_impact_siips > 0 ? "good" : "neutral"}
           sparkline={sparkline}
         />
@@ -108,11 +124,12 @@ export function ActionEngine() {
         </section>
 
         <aside className="space-y-4">
-          {/* MOCK: selected-action drawer is Gate B; it needs persisted action detail and approval endpoints. */}
-          <MockPanel
-            title="Selected Action"
-            badge="MOCK · Gate B"
-            body="Drawer content remains illustrative: expected gains, risks if no action, and approval controls need live workflow endpoints."
+          <ActionSimulationDrawer
+            recommendation={selectedRecommendation}
+            recommendations={recommendations}
+            selectedId={selectedRecommendation?.id}
+            onSelect={setSelectedId}
+            simulation={simulationQuery}
           />
           {/* MOCK: execution pipeline is Gate C; no action status persistence exists yet. */}
           <MockPanel
@@ -207,6 +224,139 @@ function emptyRows(isLoading: boolean): DataTableRow[] {
   ];
 }
 
+function ActionSimulationDrawer({
+  recommendation,
+  recommendations,
+  selectedId,
+  onSelect,
+  simulation
+}: {
+  recommendation: Recommendation | undefined;
+  recommendations: Recommendation[];
+  selectedId: string | undefined;
+  onSelect: (id: string) => void;
+  simulation: ActionSimulationQuery;
+}) {
+  const data = simulation.data;
+  const chartData = data?.mode === "counterfactual" ? actionSimulationChartData(data) : [];
+  const modeLabel = data?.mode === "counterfactual" ? "COUNTERFACTUAL" : data?.mode === "heuristic" ? "HEURISTIC" : "GATE B";
+  const modeClass =
+    data?.mode === "counterfactual"
+      ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
+      : "border-status-elevated/30 bg-status-elevated/10 text-status-high";
+
+  if (!recommendation) {
+    return (
+      <article className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+        <span className="text-badge inline-flex rounded-full border border-border-subtle bg-bg-app px-2 py-0.5 text-text-muted">
+          GATE B
+        </span>
+        <h2 className="text-section mt-3 text-text-strong">Selected Action</h2>
+        <p className="text-caption mt-2">No recommendation is available for simulation.</p>
+      </article>
+    );
+  }
+
+  return (
+    <article className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <span className={`text-badge inline-flex rounded-full border px-2 py-0.5 ${modeClass}`}>{modeLabel}</span>
+          <h2 className="text-section mt-3 text-text-strong">Selected Action</h2>
+          <p className="text-caption mt-1">{recommendation.title}</p>
+        </div>
+        <span className="text-badge rounded-full bg-bg-app px-2 py-0.5 text-text-muted">{recommendation.service_id}</span>
+      </div>
+
+      {recommendations.length > 1 ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {recommendations.slice(0, 5).map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={`rounded-full border px-3 py-1 text-badge transition ${
+                selectedId === item.id
+                  ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                  : "border-border-subtle bg-bg-app text-text-muted hover:text-text-body"
+              }`}
+            >
+              {item.service_id} · {item.lever}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {simulation.error ? (
+        <div className="mt-4 rounded-card border border-status-critical/30 bg-status-critical/10 p-3 text-caption text-status-critical">
+          <span className="block">Action simulation unavailable.</span>
+          <span className="mt-1 block">{simulation.error instanceof Error ? simulation.error.message : "Unknown error"}</span>
+          <button type="button" className="text-control mt-2 text-brand-primary hover:underline" onClick={() => void simulation.refetch()}>
+            Retry simulation
+          </button>
+        </div>
+      ) : null}
+
+      {simulation.isLoading ? (
+        <div className="mt-5 h-56 animate-pulse rounded-card bg-bg-app" aria-label="Loading action simulation" />
+      ) : null}
+
+      {!simulation.isLoading && data?.mode === "heuristic" ? (
+        <div className="mt-5 rounded-card border border-status-elevated/30 bg-status-elevated/10 p-4">
+          <p className="text-badge text-status-high">Estimation heuristique (pas de contrefactuel modèle)</p>
+          <p className="text-caption mt-2 text-text-body">{data.summary.rationale}</p>
+          <p className="text-hero mt-3 text-text-strong">
+            {formatSigned(data.summary.delta_siips)}
+            <span className="text-unit ml-1">SIIPS</span>
+          </p>
+        </div>
+      ) : null}
+
+      {!simulation.isLoading && data?.mode === "counterfactual" ? (
+        <div className="mt-5">
+          <div className="grid grid-cols-3 gap-3">
+            <MetricChip label="Peak before" value={formatPeak(data.summary.peak_before)} />
+            <MetricChip label="Peak after" value={formatPeak(data.summary.peak_after)} />
+            <MetricChip label="Delta" value={formatSigned(data.summary.delta_siips)} tone={data.summary.delta_siips < 0 ? "good" : "bad"} />
+          </div>
+          <div className="mt-4 h-64 rounded-card border border-border-subtle bg-bg-app/60 p-3">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData} margin={{ top: 12, right: 10, bottom: 0, left: -20 }}>
+                <CartesianGrid stroke="var(--border-subtle)" strokeDasharray="3 3" />
+                <XAxis dataKey="step" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} domain={["auto", "auto"]} />
+                <Tooltip
+                  contentStyle={{
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: 12,
+                    boxShadow: "var(--shadow-card)",
+                    fontSize: 11
+                  }}
+                />
+                <Area type="monotone" dataKey="upper" stroke="none" fill="var(--brand-primary)" fillOpacity={0.12} activeDot={false} />
+                <Area type="monotone" dataKey="lower" stroke="none" fill="var(--bg-app)" fillOpacity={1} activeDot={false} />
+                <Line type="monotone" dataKey="baseline" stroke="var(--text-muted)" strokeWidth={1.8} dot={false} name="baseline" />
+                <Line type="monotone" dataKey="after" stroke="var(--brand-primary)" strokeWidth={2.2} dot={false} name="after" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-caption mt-3">{data.summary.rationale}</p>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function MetricChip({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "neutral" | "good" | "bad" }) {
+  const toneClass = tone === "good" ? "text-status-good" : tone === "bad" ? "text-status-critical" : "text-text-strong";
+  return (
+    <div className="rounded-card border border-border-subtle bg-bg-card p-3">
+      <p className="text-card-label">{label}</p>
+      <p className={`text-section mt-1 ${toneClass}`}>{value}</p>
+    </div>
+  );
+}
+
 function MockPanel({ title, badge, body }: { title: string; badge: string; body: string }) {
   return (
     <article className="rounded-card border border-border-subtle bg-bg-card p-5 opacity-80 shadow-card">
@@ -250,4 +400,22 @@ function severityVariant(severity: ActionSeverity): StatusVariant {
 
 function formatSigned(value: number): string {
   return value.toLocaleString("en-US", { maximumFractionDigits: 1 });
+}
+
+function formatPeak(value: number | null): string {
+  if (value === null) return "—";
+  return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
+function actionSimulationChartData(data: ActionSimulationDelta) {
+  return data.baseline.map((point, index) => {
+    const after = data.after[index];
+    return {
+      step: `T+${point.step_index + 1}`,
+      baseline: point.predicted_siips,
+      after: after?.predicted_siips,
+      lower: after?.lower_bound,
+      upper: after?.upper_bound
+    };
+  });
 }

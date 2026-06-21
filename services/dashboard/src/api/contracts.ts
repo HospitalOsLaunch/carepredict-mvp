@@ -166,6 +166,42 @@ export interface ActionRecommendResponse {
   recommendations: Recommendation[];
 }
 
+export type ActionSimulationMode = "counterfactual" | "heuristic";
+
+export interface ActionSimulateRequest {
+  facility_id: string;
+  service_id: string;
+  lever: ActionLever;
+  origin: string;
+  horizon_h: number;
+  projected_impact_siips?: number;
+}
+
+export interface ActionSimulationPoint {
+  step_index: number;
+  predicted_siips: number;
+  lower_bound: number;
+  upper_bound: number;
+  is_critical: boolean;
+}
+
+export interface ActionSimulationSummary {
+  peak_before: number | null;
+  peak_after: number | null;
+  delta_siips: number;
+  rationale: string;
+}
+
+export interface ActionSimulationDelta {
+  mode: ActionSimulationMode;
+  recommendation_id: string;
+  service_id: string;
+  lever: ActionLever;
+  baseline: ActionSimulationPoint[];
+  after: ActionSimulationPoint[];
+  summary: ActionSimulationSummary;
+}
+
 export interface HospitalApiClient {
   getHealth(): Promise<HealthResponse>;
   getReady(): Promise<HealthResponse>;
@@ -174,4 +210,5 @@ export interface HospitalApiClient {
   getFeatureWindow(params: FeatureWindowParams): Promise<FeatureWindowResponse>;
   getForecast(request: ForecastRequest): Promise<ForecastResponse>;
   getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse>;
+  simulateAction(recommendationId: string, request: ActionSimulateRequest): Promise<ActionSimulationDelta>;
 }

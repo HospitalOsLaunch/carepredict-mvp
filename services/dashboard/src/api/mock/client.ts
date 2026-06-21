@@ -1,6 +1,8 @@
 import type {
   ActionRecommendRequest,
   ActionRecommendResponse,
+  ActionSimulateRequest,
+  ActionSimulationDelta,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -140,6 +142,63 @@ export class MockHospitalApiClient implements HospitalApiClient {
           status: "proposed"
         }
       ]
+    };
+  }
+
+  async simulateAction(recommendationId: string, request: ActionSimulateRequest): Promise<ActionSimulationDelta> {
+    // MOCK: mirrors POST /actions/{id}/simulate shape when VITE_USE_MOCK is true.
+    if (request.lever !== "prioritize_discharge") {
+      return {
+        mode: "heuristic",
+        recommendation_id: recommendationId,
+        service_id: request.service_id,
+        lever: request.lever,
+        baseline: [],
+        after: [],
+        summary: {
+          peak_before: null,
+          peak_after: null,
+          delta_siips: request.projected_impact_siips ?? -8,
+          rationale: "Mock heuristic response for a lever without a model counterfactual channel."
+        }
+      };
+    }
+    const baseline = Array.from({ length: request.horizon_h }, (_, index) => {
+      const predicted = 940 + Math.sin(index / 5) * 60 + index * 1.4;
+      return {
+        step_index: index,
+        predicted_siips: predicted,
+        lower_bound: predicted - 95,
+        upper_bound: predicted + 110,
+        is_critical: predicted > 980
+      };
+    });
+    const after = baseline.map((point, index) => {
+      const reduction = Math.min(index + 1, 16) * 3;
+      const predicted = point.predicted_siips - reduction;
+      return {
+        ...point,
+        predicted_siips: predicted,
+        lower_bound: predicted - 90,
+        upper_bound: predicted + 104,
+        is_critical: predicted > 980
+      };
+    });
+    const peakBefore = Math.max(...baseline.map((point) => point.predicted_siips));
+    const peakAfter = Math.max(...after.map((point) => point.predicted_siips));
+    return {
+      mode: "counterfactual",
+      recommendation_id: recommendationId,
+      service_id: request.service_id,
+      lever: request.lever,
+      baseline,
+      after,
+      summary: {
+        peak_before: peakBefore,
+        peak_after: peakAfter,
+        delta_siips: peakAfter - peakBefore,
+        rationale: "Mock discharge counterfactual; real mode calls the world model."
+      }
     };
   }
 }
