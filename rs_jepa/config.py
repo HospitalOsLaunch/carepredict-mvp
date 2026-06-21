@@ -48,6 +48,13 @@ class Stage1Config:
 @dataclass(frozen=True)
 class Stage2Config:
     k_levels: int = 4
+    head_hidden_dim: int = 64
+    head_depth: int = 2
+    dropout: float = 0.0
+    lr: float = 1e-3
+    weight_decay: float = 1e-4
+    max_epochs: int = 3
+    batch_size: int = 256
     freeze_backbone: bool = True
     light_finetune: bool = False
     siips_calibration_enabled: bool = False

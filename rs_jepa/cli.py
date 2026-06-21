@@ -11,6 +11,7 @@ from rs_jepa.seed import set_global_seed
 from rs_jepa.splits import add_validation_splits
 from rs_jepa.synthetic import SyntheticHospitalSimulator
 from rs_jepa.train import run_checkpoint_probe, run_stage1_training
+from rs_jepa.train_stage2 import run_stage2_training
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -81,7 +82,8 @@ def main(argv: list[str] | None = None) -> int:
             f"mean_baseline={artifacts.probes['cross_site'].mean_baseline_r2:.3f}"
         )
     else:
-        print("Stage 2 heads are scaffolded conceptually and train only after the Stage-1 gate.")
+        checkpoint = args.checkpoint or Path(cfg.training.checkpoint_path)
+        run_stage2_training(checkpoint, cfg, log=True)
     return 0
 
 
