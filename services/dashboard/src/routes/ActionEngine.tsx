@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, AlertTriangle, CheckCircle2, Euro, Target, Zap } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Euro, History, Target, Zap } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import type { ActionSeverity, ActionSimulationDelta, Recommendation } from "../api/contracts";
+import type { ActionEvent, ActionSeverity, ActionSimulationDelta, ActionStatus, Recommendation } from "../api/contracts";
 import {
   DataTable,
   StatCard,
@@ -11,12 +11,20 @@ import {
   type SparklinePoint,
   type StatusVariant
 } from "../components/design-system";
-import { useActionSimulation, useRecommendations } from "../hooks/useActions";
+import { useActionEvents, useActionSimulation, useActionTransition, useRecommendations } from "../hooks/useActions";
 
 const FACILITY_ID = "hosp-001";
 const ORIGIN = "2025-09-10T00:00:00Z";
 const HORIZON_H = 48;
 const SERVICES = ["urg-001", "med-001", "chir-001", "rea-001", "ssr-001"];
+const STATUS_COLUMNS: ActionStatus[] = ["proposed", "approved", "in_progress", "done", "dismissed"];
+const NEXT_STATUSES: Record<ActionStatus, ActionStatus[]> = {
+  proposed: ["approved", "dismissed"],
+  approved: ["in_progress", "dismissed"],
+  in_progress: ["done", "dismissed"],
+  done: [],
+  dismissed: []
+};
 
 const columns: DataTableColumn[] = [
   { key: "action", header: "Recommended action" },
@@ -40,6 +48,8 @@ export function ActionEngine() {
     [recommendations, selectedId]
   );
   const simulationQuery = useActionSimulation(selectedRecommendation, FACILITY_ID, ORIGIN);
+  const eventsQuery = useActionEvents(selectedRecommendation?.id);
+  const transition = useActionTransition();
   const sparkline = recommendationSparkline(recommendations);
 
   useEffect(() => {
@@ -131,17 +141,25 @@ export function ActionEngine() {
             onSelect={setSelectedId}
             simulation={simulationQuery}
           />
-          {/* MOCK: execution pipeline is Gate C; no action status persistence exists yet. */}
-          <MockPanel
-            title="Execution Pipeline"
-            badge="MOCK · Gate C"
-            body="Kanban states are not wired in Gate A. Backend persistence and status transitions come later."
+          <ActionKanban
+            recommendations={recommendations}
+            selectedId={selectedRecommendation?.id}
+            onSelect={setSelectedId}
+            onTransition={(recommendation, toStatus) =>
+              transition.mutate({
+                recommendationId: recommendation.id,
+                toStatus,
+                actor: "sarah.johnson",
+                reason: `Kanban transition to ${toStatus}`
+              })
+            }
+            isTransitioning={transition.isPending}
           />
-          {/* MOCK: playbook timeline is Gate C; no scheduling endpoint exists yet. */}
-          <MockPanel
-            title="Today's Playbook"
-            badge="MOCK · Gate C"
-            body="Timeline remains sample copy until action execution and scheduling data are available."
+          <ActionTimeline
+            events={eventsQuery.data?.events ?? []}
+            isLoading={eventsQuery.isLoading}
+            error={eventsQuery.error}
+            onRetry={() => void eventsQuery.refetch()}
           />
         </aside>
       </div>
@@ -160,7 +178,7 @@ function ScreenHeader() {
           <CheckCircle2 className="h-5 w-5 text-brand-primary" aria-hidden="true" />
         </div>
         <p className="text-caption mt-2 max-w-3xl">
-          Gate A wires live Opportunity KPIs and the Recommendation table to POST /actions/recommend. Drawer, kanban and playbook remain explicitly mocked.
+          Live recommendations, model counterfactual drawer, and traced decision workflow. This page records approvals and status changes only; it does not execute work in hospital systems.
         </p>
       </div>
       <span className="rounded-full border border-border-subtle bg-bg-card px-4 py-2 text-badge text-text-muted shadow-card">
@@ -357,14 +375,142 @@ function MetricChip({ label, value, tone = "neutral" }: { label: string; value: 
   );
 }
 
-function MockPanel({ title, badge, body }: { title: string; badge: string; body: string }) {
+function ActionKanban({
+  recommendations,
+  selectedId,
+  onSelect,
+  onTransition,
+  isTransitioning
+}: {
+  recommendations: Recommendation[];
+  selectedId: string | undefined;
+  onSelect: (id: string) => void;
+  onTransition: (recommendation: Recommendation, toStatus: ActionStatus) => void;
+  isTransitioning: boolean;
+}) {
+  const [draggedId, setDraggedId] = useState<string | undefined>();
   return (
-    <article className="rounded-card border border-border-subtle bg-bg-card p-5 opacity-80 shadow-card">
-      <span className="text-badge inline-flex rounded-full border border-status-elevated/30 bg-status-elevated/10 px-2 py-0.5 text-status-high">
-        {badge}
-      </span>
-      <h2 className="text-section mt-3 text-text-strong">{title}</h2>
-      <p className="text-caption mt-2">{body}</p>
+    <article className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-card-label text-brand-primary">Live workflow</p>
+          <h2 className="text-section mt-1 text-text-strong">Execution Pipeline</h2>
+        </div>
+        <span className="text-badge rounded-full bg-bg-app px-2 py-0.5 text-text-muted">decision only</span>
+      </div>
+      <div className="grid grid-cols-1 gap-3">
+        {STATUS_COLUMNS.map((status) => {
+          const items = recommendations.filter((recommendation) => recommendation.status === status);
+          return (
+            <div
+              key={status}
+              className="rounded-card border border-border-subtle bg-bg-app/70 p-3"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={() => {
+                const recommendation = recommendations.find((item) => item.id === draggedId);
+                if (recommendation && NEXT_STATUSES[recommendation.status].includes(status)) {
+                  onTransition(recommendation, status);
+                }
+                setDraggedId(undefined);
+              }}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-card-label">{statusLabel(status)}</span>
+                <span className="text-badge text-text-muted">{items.length}</span>
+              </div>
+              <div className="space-y-2">
+                {items.length === 0 ? <p className="text-caption">No actions</p> : null}
+                {items.slice(0, 3).map((recommendation) => (
+                  <button
+                    key={recommendation.id}
+                    type="button"
+                    draggable
+                    onDragStart={() => setDraggedId(recommendation.id)}
+                    onClick={() => onSelect(recommendation.id)}
+                    className={`w-full rounded-card border p-3 text-left transition ${
+                      selectedId === recommendation.id
+                        ? "border-brand-primary bg-brand-primary/10"
+                        : "border-border-subtle bg-bg-card hover:border-brand-primary/40"
+                    }`}
+                  >
+                    <span className="text-badge text-text-muted">{recommendation.service_id}</span>
+                    <span className="text-body-copy mt-1 block text-text-strong">{recommendation.lever}</span>
+                    <span className="text-caption mt-1 block">{formatSigned(recommendation.projected_impact_siips)} SIIPS</span>
+                  </button>
+                ))}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {selectedId && recommendations.find((item) => item.id === selectedId)?.status !== status
+                  ? null
+                  : NEXT_STATUSES[status].map((next) => {
+                      const selected = recommendations.find((item) => item.id === selectedId && item.status === status);
+                      return selected ? (
+                        <button
+                          key={next}
+                          type="button"
+                          disabled={isTransitioning}
+                          onClick={() => onTransition(selected, next)}
+                          className="rounded-full border border-border-subtle bg-bg-card px-2 py-1 text-badge text-text-muted hover:text-brand-primary disabled:opacity-50"
+                        >
+                          {statusLabel(next)}
+                        </button>
+                      ) : null;
+                    })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </article>
+  );
+}
+
+function ActionTimeline({
+  events,
+  isLoading,
+  error,
+  onRetry
+}: {
+  events: ActionEvent[];
+  isLoading: boolean;
+  error: Error | null;
+  onRetry: () => void;
+}) {
+  return (
+    <article className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-card-label text-brand-primary">Audit trail</p>
+          <h2 className="text-section mt-1 text-text-strong">Action Timeline</h2>
+        </div>
+        <History className="h-5 w-5 text-brand-primary" aria-hidden="true" />
+      </div>
+      {isLoading ? <div className="h-24 animate-pulse rounded-card bg-bg-app" /> : null}
+      {error ? (
+        <div className="rounded-card border border-status-critical/30 bg-status-critical/10 p-3 text-caption text-status-critical">
+          <span className="block">Audit trail unavailable.</span>
+          <button type="button" className="text-control mt-2 text-brand-primary hover:underline" onClick={onRetry}>
+            Retry timeline
+          </button>
+        </div>
+      ) : null}
+      {!isLoading && !error ? (
+        <ol className="space-y-3">
+          {events.length === 0 ? <li className="text-caption">No audit events yet.</li> : null}
+          {events.map((event) => (
+            <li key={event.event_id} className="rounded-card border border-border-subtle bg-bg-app/70 p-3">
+              <p className="text-body-copy text-text-strong">
+                {event.from_status ? `${statusLabel(event.from_status)} → ` : ""}
+                {statusLabel(event.to_status)}
+              </p>
+              <p className="text-caption mt-1">
+                {event.actor} · {formatDateTime(event.occurred_at)}
+              </p>
+              {event.reason ? <p className="text-caption mt-1 text-text-body">{event.reason}</p> : null}
+            </li>
+          ))}
+        </ol>
+      ) : null}
     </article>
   );
 }
@@ -400,6 +546,19 @@ function severityVariant(severity: ActionSeverity): StatusVariant {
 
 function formatSigned(value: number): string {
   return value.toLocaleString("en-US", { maximumFractionDigits: 1 });
+}
+
+function statusLabel(status: ActionStatus): string {
+  return status.replace("_", " ");
+}
+
+function formatDateTime(value: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(new Date(value));
 }
 
 function formatPeak(value: number | null): string {

@@ -3,6 +3,9 @@ import type {
   ActionRecommendResponse,
   ActionSimulateRequest,
   ActionSimulationDelta,
+  ActionEventsResponse,
+  ActionTransitionRequest,
+  ActionTransitionResponse,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -63,6 +66,17 @@ export class RealHospitalApiClient implements HospitalApiClient {
       `/actions/${encodeURIComponent(recommendationId)}/simulate`,
       request
     );
+  }
+
+  transitionAction(recommendationId: string, request: ActionTransitionRequest): Promise<ActionTransitionResponse> {
+    return this.postJson<ActionTransitionRequest, ActionTransitionResponse>(
+      `/actions/${encodeURIComponent(recommendationId)}/transition`,
+      request
+    );
+  }
+
+  getActionEvents(recommendationId: string): Promise<ActionEventsResponse> {
+    return this.getJson<ActionEventsResponse>(`/actions/${encodeURIComponent(recommendationId)}/events`);
   }
 
   private async getJson<TResponse>(path: string): Promise<TResponse> {

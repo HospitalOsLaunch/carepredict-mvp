@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from services.api.recommend.engine import RecommendationEngine
-from services.api.routers.actions import get_recommendation_engine, router
+from services.api.routers.actions import get_action_store, get_recommendation_engine, router
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,6 +76,18 @@ class StaticThresholdProvider:
         return self.threshold
 
 
+class NoopActionStore:
+    """Hermetic action store fixture."""
+
+    def persist_recommendations(
+        self,
+        *,
+        hospital_id: str,
+        recommendations: list[object],
+    ) -> dict[str, str]:
+        return {}
+
+
 def test_engine_scores_only_at_risk_services_and_ranks_actions() -> None:
     engine = RecommendationEngine(
         forecast_service=FakeForecastService(),
@@ -133,6 +145,7 @@ def test_actions_recommend_route_contract() -> None:
     app = FastAPI()
     app.include_router(router)
     app.dependency_overrides[get_recommendation_engine] = lambda: engine
+    app.dependency_overrides[get_action_store] = lambda: NoopActionStore()
 
     with TestClient(app) as client:
         response = client.post(

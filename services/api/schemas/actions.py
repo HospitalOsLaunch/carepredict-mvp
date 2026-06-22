@@ -74,3 +74,62 @@ class ActionRecommendResponse(BaseModel):
 
     opportunity: OpportunityKPIs
     recommendations: list[Recommendation]
+
+
+class ActionTransitionRequest(BaseModel):
+    """Request body for a traced decision-state transition."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    to_status: ActionStatus
+    actor: Annotated[str, Field(min_length=1, max_length=120)]
+    reason: Annotated[str | None, Field(max_length=500)] = None
+
+
+class ActionEvent(BaseModel):
+    """One immutable Action Engine audit event."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    event_id: str
+    recommendation_id: str
+    from_status: ActionStatus | None
+    to_status: ActionStatus
+    actor: str
+    reason: str | None
+    occurred_at: datetime
+
+
+class StoredRecommendation(BaseModel):
+    """Persisted recommendation state."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    recommendation_id: str
+    hospital_id: str
+    service_id: str
+    lever: ActionLever
+    severity: ActionSeverity
+    score: float
+    projected_impact_siips: float
+    status: ActionStatus
+    created_at: datetime
+    updated_at: datetime
+
+
+class ActionTransitionResponse(BaseModel):
+    """Transition response containing updated state and appended audit event."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    recommendation: StoredRecommendation
+    event: ActionEvent
+
+
+class ActionEventsResponse(BaseModel):
+    """Ordered audit trail response."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    recommendation_id: str
+    events: list[ActionEvent]

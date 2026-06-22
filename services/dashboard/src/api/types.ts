@@ -2,6 +2,8 @@ export type {
   ActionLever,
   ActionRecommendRequest,
   ActionRecommendResponse,
+  ActionEvent,
+  ActionEventsResponse,
   ActionSeverity,
   ActionSimulateRequest,
   ActionSimulationDelta,
@@ -10,6 +12,8 @@ export type {
   ActionSimulationSummary,
   ActionStatus,
   ActionStep,
+  ActionTransitionRequest,
+  ActionTransitionResponse,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -27,7 +31,8 @@ export type {
   RiskWindow,
   SimulationRequest,
   SimulationResponse,
-  SimulationStepResult
+  SimulationStepResult,
+  StoredRecommendation
 } from "./contracts";
 
 export interface ServiceOption {

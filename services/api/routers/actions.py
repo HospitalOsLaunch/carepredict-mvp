@@ -17,9 +17,21 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from services.api.dependencies.feature_fetcher import DB_DSN
 from services.api.recommend.engine import RecommendationEngine, build_recommendation_engine
 from services.api.recommend.simulate_mapping import action_plan_for_lever, zero_action_steps
+from services.api.recommend.state_machine import InvalidActionTransition, validate_transition
 from services.api.routers.forecast import V2ForecastServiceDep
 from services.api.routers.simulate import WorldModelServiceDep
-from services.api.schemas.actions import ActionLever, ActionRecommendRequest, ActionRecommendResponse
+from services.api.schemas.actions import (
+    ActionEvent,
+    ActionEventsResponse,
+    ActionLever,
+    ActionRecommendRequest,
+    ActionRecommendResponse,
+    ActionStatus,
+    ActionTransitionRequest,
+    ActionTransitionResponse,
+    Recommendation,
+    StoredRecommendation,
+)
 from services.api.schemas.simulate import ActionStep
 
 LOGGER = structlog.get_logger(__name__)
@@ -27,7 +39,10 @@ router = APIRouter(prefix="/actions", tags=["actions"])
 RequestIdHeader = Annotated[str | None, Header(alias="X-Request-ID")]
 
 
-def get_recommendation_engine(request: Request, service: V2ForecastServiceDep) -> RecommendationEngine:
+def get_recommendation_engine(
+    request: Request,
+    service: V2ForecastServiceDep,
+) -> RecommendationEngine:
     """Return the app-scoped recommendation engine for the loaded v2 service."""
     engine = getattr(request.app.state, "recommendation_engine", None)
     if isinstance(engine, RecommendationEngine) and engine.forecast_service is service:
@@ -139,10 +154,220 @@ def get_siips_history_fetcher(request: Request) -> SiipsHistoryFetcher:
 SiipsHistoryFetcherDep = Annotated[SiipsHistoryFetcher, Depends(get_siips_history_fetcher)]
 
 
+class ActionNotFoundError(ValueError):
+    """Raised when a persisted recommendation cannot be found."""
+
+
+@dataclass(frozen=True, slots=True)
+class ActionStore:
+    """Transactional store for recommendation state and immutable audit events."""
+
+    def persist_recommendations(
+        self,
+        *,
+        hospital_id: str,
+        recommendations: list[Recommendation],
+    ) -> dict[str, ActionStatus]:
+        """Persist current recommendation rows without resetting workflow status."""
+        with psycopg.connect(DB_DSN) as conn, conn.cursor() as cur:
+            for recommendation in recommendations:
+                cur.execute(
+                    """
+                    INSERT INTO actions.recommendations (
+                        recommendation_id,
+                        hospital_id,
+                        service_id,
+                        lever,
+                        severity,
+                        score,
+                        projected_impact_siips,
+                        status
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, 'proposed')
+                    ON CONFLICT (recommendation_id) DO NOTHING
+                    """,
+                    (
+                        recommendation.id,
+                        hospital_id,
+                        recommendation.service_id,
+                        recommendation.lever,
+                        recommendation.severity,
+                        recommendation.score,
+                        recommendation.projected_impact_siips,
+                    ),
+                )
+                inserted = cur.rowcount == 1
+                if inserted:
+                    cur.execute(
+                        """
+                        INSERT INTO actions.action_events (
+                            recommendation_id,
+                            from_status,
+                            to_status,
+                            actor,
+                            reason
+                        )
+                        VALUES (%s, NULL, 'proposed', 'system', 'recommendation created')
+                        """,
+                        (recommendation.id,),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        UPDATE actions.recommendations
+                        SET hospital_id = %s,
+                            service_id = %s,
+                            lever = %s,
+                            severity = %s,
+                            score = %s,
+                            projected_impact_siips = %s,
+                            updated_at = now()
+                        WHERE recommendation_id = %s
+                        """,
+                        (
+                            hospital_id,
+                            recommendation.service_id,
+                            recommendation.lever,
+                            recommendation.severity,
+                            recommendation.score,
+                            recommendation.projected_impact_siips,
+                            recommendation.id,
+                        ),
+                    )
+            if not recommendations:
+                return {}
+            cur.execute(
+                """
+                SELECT recommendation_id, status
+                FROM actions.recommendations
+                WHERE recommendation_id = ANY(%s)
+                """,
+                ([recommendation.id for recommendation in recommendations],),
+            )
+            return {str(row[0]): row[1] for row in cur.fetchall()}
+
+    def transition(
+        self,
+        *,
+        recommendation_id: str,
+        to_status: str,
+        actor: str,
+        reason: str | None,
+    ) -> ActionTransitionResponse:
+        """Atomically update current state and append one audit event."""
+        with psycopg.connect(DB_DSN) as conn, conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT status
+                FROM actions.recommendations
+                WHERE recommendation_id = %s
+                FOR UPDATE
+                """,
+                (recommendation_id,),
+            )
+            row = cur.fetchone()
+            if row is None:
+                raise ActionNotFoundError(f"unknown recommendation_id: {recommendation_id}")
+            from_status = str(row[0])
+            validate_transition(from_status, to_status)  # type: ignore[arg-type]
+            cur.execute(
+                """
+                UPDATE actions.recommendations
+                SET status = %s,
+                    updated_at = now()
+                WHERE recommendation_id = %s
+                RETURNING
+                    recommendation_id,
+                    hospital_id,
+                    service_id,
+                    lever,
+                    severity,
+                    score::float,
+                    projected_impact_siips::float,
+                    status,
+                    created_at,
+                    updated_at
+                """,
+                (to_status, recommendation_id),
+            )
+            recommendation_row = cur.fetchone()
+            cur.execute(
+                """
+                INSERT INTO actions.action_events (
+                    recommendation_id,
+                    from_status,
+                    to_status,
+                    actor,
+                    reason
+                )
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING
+                    event_id::text,
+                    recommendation_id,
+                    from_status,
+                    to_status,
+                    actor,
+                    reason,
+                    occurred_at
+                """,
+                (recommendation_id, from_status, to_status, actor, reason),
+            )
+            event_row = cur.fetchone()
+        return ActionTransitionResponse(
+            recommendation=_stored_recommendation_from_row(recommendation_row),
+            event=_event_from_row(event_row),
+        )
+
+    def events(self, *, recommendation_id: str) -> list[ActionEvent]:
+        """Return ordered audit events for one recommendation."""
+        with psycopg.connect(DB_DSN) as conn, conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT 1
+                FROM actions.recommendations
+                WHERE recommendation_id = %s
+                """,
+                (recommendation_id,),
+            )
+            if cur.fetchone() is None:
+                raise ActionNotFoundError(f"unknown recommendation_id: {recommendation_id}")
+            cur.execute(
+                """
+                SELECT
+                    event_id::text,
+                    recommendation_id,
+                    from_status,
+                    to_status,
+                    actor,
+                    reason,
+                    occurred_at
+                FROM actions.action_events
+                WHERE recommendation_id = %s
+                ORDER BY occurred_at ASC, event_id ASC
+                """,
+                (recommendation_id,),
+            )
+            return [_event_from_row(row) for row in cur.fetchall()]
+
+
+def get_action_store(request: Request) -> ActionStore:
+    """Return the app-scoped Action Engine store."""
+    store = getattr(request.app.state, "action_store", None)
+    if isinstance(store, ActionStore):
+        return store
+    store = ActionStore()
+    request.app.state.action_store = store
+    return store
+
+
+ActionStoreDep = Annotated[ActionStore, Depends(get_action_store)]
+
+
 @router.post("/recommend", response_model=ActionRecommendResponse)
 async def recommend_actions(
     payload: ActionRecommendRequest,
     engine: RecommendationEngineDep,
+    store: ActionStoreDep,
     x_request_id: RequestIdHeader = None,
 ) -> ActionRecommendResponse:
     """Return ranked operational action opportunities."""
@@ -163,6 +388,18 @@ async def recommend_actions(
             horizon_h=payload.horizon_h,
         )
         result = await anyio.to_thread.run_sync(recommend_call)
+        persist_call = partial(
+            store.persist_recommendations,
+            hospital_id=payload.facility_id,
+            recommendations=result.recommendations,
+        )
+        statuses = await anyio.to_thread.run_sync(persist_call)
+        recommendations = [
+            recommendation.model_copy(
+                update={"status": statuses.get(recommendation.id, recommendation.status)}
+            )
+            for recommendation in result.recommendations
+        ]
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except ValueError as exc:
@@ -182,8 +419,69 @@ async def recommend_actions(
 
     return ActionRecommendResponse(
         opportunity=result.opportunity,
-        recommendations=result.recommendations,
+        recommendations=recommendations,
     )
+
+
+@router.post("/{recommendation_id}/transition", response_model=ActionTransitionResponse)
+async def transition_action(
+    recommendation_id: str,
+    payload: ActionTransitionRequest,
+    store: ActionStoreDep,
+    x_request_id: RequestIdHeader = None,
+) -> ActionTransitionResponse:
+    """Trace a decision workflow transition; this does not execute hospital work."""
+    request_id = x_request_id or str(uuid4())
+    LOGGER.info(
+        "actions_transition_requested",
+        recommendation_id=recommendation_id,
+        to_status=payload.to_status,
+        actor=payload.actor,
+        request_id=request_id,
+    )
+    try:
+        transition_call = partial(
+            store.transition,
+            recommendation_id=recommendation_id,
+            to_status=payload.to_status,
+            actor=payload.actor,
+            reason=payload.reason,
+        )
+        return await anyio.to_thread.run_sync(transition_call)
+    except ActionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except InvalidActionTransition as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except psycopg.Error as exc:
+        LOGGER.warning("actions_transition_db_unavailable", request_id=request_id, error=str(exc))
+        raise HTTPException(status_code=503, detail="TimescaleDB is not available") from exc
+    except Exception as exc:
+        LOGGER.exception("actions_transition_failed", request_id=request_id)
+        raise HTTPException(status_code=500, detail="Action transition failed") from exc
+
+
+@router.get("/{recommendation_id}/events", response_model=ActionEventsResponse)
+async def get_action_events(
+    recommendation_id: str,
+    store: ActionStoreDep,
+    x_request_id: RequestIdHeader = None,
+) -> ActionEventsResponse:
+    """Return the ordered immutable audit trail for one recommendation."""
+    request_id = x_request_id or str(uuid4())
+    try:
+        events_call = partial(store.events, recommendation_id=recommendation_id)
+        events = await anyio.to_thread.run_sync(events_call)
+    except ActionNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except psycopg.Error as exc:
+        LOGGER.warning("actions_events_db_unavailable", request_id=request_id, error=str(exc))
+        raise HTTPException(status_code=503, detail="TimescaleDB is not available") from exc
+    except Exception as exc:
+        LOGGER.exception("actions_events_failed", request_id=request_id)
+        raise HTTPException(status_code=500, detail="Action events fetch failed") from exc
+    return ActionEventsResponse(recommendation_id=recommendation_id, events=events)
 
 
 @router.post("/{recommendation_id}/simulate", response_model=ActionSimulationDelta)
@@ -293,3 +591,36 @@ def _to_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value.replace(tzinfo=UTC)
     return value.astimezone(UTC)
+
+
+def _stored_recommendation_from_row(row: object) -> StoredRecommendation:
+    if row is None:
+        raise ActionNotFoundError("recommendation update returned no row")
+    values = tuple(row)  # type: ignore[arg-type]
+    return StoredRecommendation(
+        recommendation_id=str(values[0]),
+        hospital_id=str(values[1]),
+        service_id=str(values[2]),
+        lever=values[3],
+        severity=values[4],
+        score=float(values[5]),
+        projected_impact_siips=float(values[6]),
+        status=values[7],
+        created_at=values[8],
+        updated_at=values[9],
+    )
+
+
+def _event_from_row(row: object) -> ActionEvent:
+    if row is None:
+        raise ActionNotFoundError("action event insert returned no row")
+    values = tuple(row)  # type: ignore[arg-type]
+    return ActionEvent(
+        event_id=str(values[0]),
+        recommendation_id=str(values[1]),
+        from_status=values[2],
+        to_status=values[3],
+        actor=str(values[4]),
+        reason=values[5],
+        occurred_at=values[6],
+    )

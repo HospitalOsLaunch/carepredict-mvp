@@ -1,8 +1,13 @@
 import type {
   ActionRecommendRequest,
   ActionRecommendResponse,
+  ActionEvent,
+  ActionEventsResponse,
   ActionSimulateRequest,
   ActionSimulationDelta,
+  ActionStatus,
+  ActionTransitionRequest,
+  ActionTransitionResponse,
   ChargePredictionRequest,
   ChargePredictionResponse,
   FeatureWindowParams,
@@ -16,6 +21,9 @@ import type {
 } from "../contracts";
 
 export class MockHospitalApiClient implements HospitalApiClient {
+  private statuses = new Map<string, ActionStatus>();
+  private events = new Map<string, ActionEvent[]>();
+
   async getHealth(): Promise<HealthResponse> {
     return { status: "ok" };
   }
@@ -104,6 +112,37 @@ export class MockHospitalApiClient implements HospitalApiClient {
 
   async getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse> {
     // MOCK: needs POST /actions/recommend when VITE_USE_MOCK is true; real mode uses the backend.
+    const recommendations: ActionRecommendResponse["recommendations"] = [
+      {
+        id: "rec_mock_staff",
+        service_id: "rea-001",
+        lever: "move_staff",
+        title: "Réallouer 2 IDE vers Réanimation",
+        severity: "critical",
+        score: 0.87,
+        projected_impact_siips: -18.3,
+        feasibility: 0.8,
+        rationale: "Mock recommendation pending real mode.",
+        horizon_h: request.horizon_h,
+        status: this.statuses.get("rec_mock_staff") ?? "proposed"
+      },
+      {
+        id: "rec_mock_discharge",
+        service_id: "urg-001",
+        lever: "prioritize_discharge",
+        title: "Prioriser les sorties confirmées en Urgences",
+        severity: "high",
+        score: 0.71,
+        projected_impact_siips: -12.4,
+        feasibility: 0.86,
+        rationale: "Mock recommendation pending real mode.",
+        horizon_h: request.horizon_h,
+        status: this.statuses.get("rec_mock_discharge") ?? "proposed"
+      }
+    ];
+    for (const recommendation of recommendations) {
+      this.ensureInitialEvent(recommendation.id, recommendation.status);
+    }
     return {
       opportunity: {
         total_projected_impact_siips: 42.7,
@@ -114,34 +153,7 @@ export class MockHospitalApiClient implements HospitalApiClient {
           end: new Date(new Date(request.origin).getTime() + 14 * 60 * 60 * 1000).toISOString()
         }
       },
-      recommendations: [
-        {
-          id: "rec_mock_staff",
-          service_id: "rea-001",
-          lever: "move_staff",
-          title: "Réallouer 2 IDE vers Réanimation",
-          severity: "critical",
-          score: 0.87,
-          projected_impact_siips: -18.3,
-          feasibility: 0.8,
-          rationale: "Mock recommendation pending real mode.",
-          horizon_h: request.horizon_h,
-          status: "proposed"
-        },
-        {
-          id: "rec_mock_discharge",
-          service_id: "urg-001",
-          lever: "prioritize_discharge",
-          title: "Prioriser les sorties confirmées en Urgences",
-          severity: "high",
-          score: 0.71,
-          projected_impact_siips: -12.4,
-          feasibility: 0.86,
-          rationale: "Mock recommendation pending real mode.",
-          horizon_h: request.horizon_h,
-          status: "proposed"
-        }
-      ]
+      recommendations
     };
   }
 
@@ -199,6 +211,60 @@ export class MockHospitalApiClient implements HospitalApiClient {
         delta_siips: peakAfter - peakBefore,
         rationale: "Mock discharge counterfactual; real mode calls the world model."
       }
+    };
+  }
+
+  async transitionAction(recommendationId: string, request: ActionTransitionRequest): Promise<ActionTransitionResponse> {
+    const from = this.statuses.get(recommendationId) ?? "proposed";
+    this.statuses.set(recommendationId, request.to_status);
+    const event = this.makeEvent(recommendationId, from, request.to_status, request.actor, request.reason ?? null);
+    this.events.set(recommendationId, [...(this.events.get(recommendationId) ?? []), event]);
+    return {
+      recommendation: {
+        recommendation_id: recommendationId,
+        hospital_id: "hosp-001",
+        service_id: recommendationId.includes("staff") ? "rea-001" : "urg-001",
+        lever: recommendationId.includes("staff") ? "move_staff" : "prioritize_discharge",
+        severity: recommendationId.includes("staff") ? "critical" : "high",
+        score: recommendationId.includes("staff") ? 0.87 : 0.71,
+        projected_impact_siips: recommendationId.includes("staff") ? -18.3 : -12.4,
+        status: request.to_status,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      event
+    };
+  }
+
+  async getActionEvents(recommendationId: string): Promise<ActionEventsResponse> {
+    this.ensureInitialEvent(recommendationId, this.statuses.get(recommendationId) ?? "proposed");
+    return {
+      recommendation_id: recommendationId,
+      events: this.events.get(recommendationId) ?? []
+    };
+  }
+
+  private ensureInitialEvent(recommendationId: string, status: ActionStatus) {
+    if (this.events.has(recommendationId)) return;
+    this.statuses.set(recommendationId, status);
+    this.events.set(recommendationId, [this.makeEvent(recommendationId, null, status, "system", "recommendation created")]);
+  }
+
+  private makeEvent(
+    recommendationId: string,
+    fromStatus: ActionStatus | null,
+    toStatus: ActionStatus,
+    actor: string,
+    reason: string | null
+  ): ActionEvent {
+    return {
+      event_id: `evt_${recommendationId}_${Date.now()}`,
+      recommendation_id: recommendationId,
+      from_status: fromStatus,
+      to_status: toStatus,
+      actor,
+      reason,
+      occurred_at: new Date().toISOString()
     };
   }
 }

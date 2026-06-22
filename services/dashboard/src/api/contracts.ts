@@ -166,6 +166,45 @@ export interface ActionRecommendResponse {
   recommendations: Recommendation[];
 }
 
+export interface ActionTransitionRequest {
+  to_status: ActionStatus;
+  actor: string;
+  reason?: string | null;
+}
+
+export interface ActionEvent {
+  event_id: string;
+  recommendation_id: string;
+  from_status: ActionStatus | null;
+  to_status: ActionStatus;
+  actor: string;
+  reason: string | null;
+  occurred_at: string;
+}
+
+export interface StoredRecommendation {
+  recommendation_id: string;
+  hospital_id: string;
+  service_id: string;
+  lever: ActionLever;
+  severity: ActionSeverity;
+  score: number;
+  projected_impact_siips: number;
+  status: ActionStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ActionTransitionResponse {
+  recommendation: StoredRecommendation;
+  event: ActionEvent;
+}
+
+export interface ActionEventsResponse {
+  recommendation_id: string;
+  events: ActionEvent[];
+}
+
 export type ActionSimulationMode = "counterfactual" | "heuristic";
 
 export interface ActionSimulateRequest {
@@ -211,4 +250,6 @@ export interface HospitalApiClient {
   getForecast(request: ForecastRequest): Promise<ForecastResponse>;
   getRecommendations(request: ActionRecommendRequest): Promise<ActionRecommendResponse>;
   simulateAction(recommendationId: string, request: ActionSimulateRequest): Promise<ActionSimulationDelta>;
+  transitionAction(recommendationId: string, request: ActionTransitionRequest): Promise<ActionTransitionResponse>;
+  getActionEvents(recommendationId: string): Promise<ActionEventsResponse>;
 }
