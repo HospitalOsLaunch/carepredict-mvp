@@ -26,11 +26,15 @@ class RSSM(nn.Module):
         self.latent_dim = int(cfg.latent_dim)
         self.deter_dim = int(cfg.rssm_deter_dim)
         self.stoch_dim = int(cfg.rssm_stoch_dim)
+        self.action_dim = int(cfg.action_dim)
         self.state_dim = self.deter_dim + self.stoch_dim
         self.min_std = float(cfg.rssm_min_std)
         self.n_static = int(n_static)
         self.static_to_h = nn.Linear(self.n_static, self.deter_dim) if self.n_static > 0 else None
-        self.gru = nn.GRUCell(self.latent_dim + self.stoch_dim, self.deter_dim)
+        self.gru = nn.GRUCell(
+            self.latent_dim + self.stoch_dim + self.action_dim,
+            self.deter_dim,
+        )
         self.prior = nn.Linear(self.deter_dim, 2 * self.stoch_dim)
         self.posterior = nn.Linear(self.deter_dim + self.latent_dim, 2 * self.stoch_dim)
         self.state_norm = nn.LayerNorm(self.state_dim) if cfg.rssm_layer_norm else nn.Identity()
@@ -63,19 +67,60 @@ class RSSM(nn.Module):
     def _state(self, h: torch.Tensor, s: torch.Tensor) -> torch.Tensor:
         return self.state_norm(torch.cat([h, s], dim=-1))
 
+    def _actions(
+        self,
+        actions: torch.Tensor | None,
+        *,
+        batch_size: int,
+        steps: int,
+        device: torch.device,
+        dtype: torch.dtype,
+        name: str,
+    ) -> torch.Tensor:
+        if actions is None:
+            return torch.zeros(batch_size, steps, self.action_dim, device=device, dtype=dtype)
+        if self.action_dim == 0:
+            if actions.ndim == 3 and actions.shape == (batch_size, steps, 0):
+                return actions.to(device=device, dtype=dtype)
+            raise ValueError(f"{name} doit être None quand action_dim=0.")
+        if actions.ndim != 3 or actions.shape != (batch_size, steps, self.action_dim):
+            raise ValueError(
+                f"{name} doit avoir la forme [{batch_size}, {steps}, {self.action_dim}], "
+                f"reçu={tuple(actions.shape)}."
+            )
+        return actions.to(device=device, dtype=dtype)
+
     def observe_context(
         self,
         z_context: torch.Tensor,
+        actions_context: torch.Tensor | None = None,
         static: torch.Tensor | None = None,
     ) -> torch.Tensor:
         if z_context.ndim != 3 or z_context.shape[-1] != self.latent_dim:
             raise ValueError("z_context doit avoir la forme [B, C, latent_dim].")
         batch_size, context_steps, _ = z_context.shape
+        if (
+            static is None
+            and actions_context is not None
+            and actions_context.ndim == 2
+            and actions_context.shape[0] == batch_size
+        ):
+            static = actions_context
+            actions_context = None
+        actions = self._actions(
+            actions_context,
+            batch_size=batch_size,
+            steps=context_steps,
+            device=z_context.device,
+            dtype=z_context.dtype,
+            name="actions_context",
+        )
         h, s = self.initial_state(batch_size, static, z_context.device)
         states = []
         for step in range(context_steps):
             z_t = z_context[:, step]
-            h = self.gru(torch.cat([z_t, s], dim=-1), h)
+            a_t = actions[:, step]
+            h = self.gru(torch.cat([z_t, s, a_t], dim=-1), h)
             post_mean, _post_std = self._stats(self.posterior, torch.cat([h, z_t], dim=-1))
             s = post_mean
             states.append(self._state(h, s))
@@ -86,6 +131,8 @@ class RSSM(nn.Module):
         z_context: torch.Tensor,
         horizon: int,
         static: torch.Tensor | None = None,
+        actions_context: torch.Tensor | None = None,
+        actions_future: torch.Tensor | None = None,
     ) -> RSSMOutput:
         """Roll target states with the prior only; target observations are not read."""
 
@@ -94,10 +141,27 @@ class RSSM(nn.Module):
         if z_context.ndim != 3 or z_context.shape[-1] != self.latent_dim:
             raise ValueError("z_context doit avoir la forme [B, C, latent_dim].")
         batch_size, context_steps, _ = z_context.shape
+        context_actions = self._actions(
+            actions_context,
+            batch_size=batch_size,
+            steps=context_steps,
+            device=z_context.device,
+            dtype=z_context.dtype,
+            name="actions_context",
+        )
+        future_actions = self._actions(
+            actions_future,
+            batch_size=batch_size,
+            steps=horizon,
+            device=z_context.device,
+            dtype=z_context.dtype,
+            name="actions_future",
+        )
         h, s = self.initial_state(batch_size, static, z_context.device)
         for step in range(context_steps):
             z_t = z_context[:, step]
-            h = self.gru(torch.cat([z_t, s], dim=-1), h)
+            a_t = context_actions[:, step]
+            h = self.gru(torch.cat([z_t, s, a_t], dim=-1), h)
             post_mean, _post_std = self._stats(self.posterior, torch.cat([h, z_t], dim=-1))
             s = post_mean
 
@@ -110,8 +174,9 @@ class RSSM(nn.Module):
         states = []
         prior_means = []
         prior_stds = []
-        for _step in range(horizon):
-            h = self.gru(torch.cat([zero_z, s], dim=-1), h)
+        for step in range(horizon):
+            a_t = future_actions[:, step]
+            h = self.gru(torch.cat([zero_z, s, a_t], dim=-1), h)
             prior_mean, prior_std = self._stats(self.prior, h)
             s = prior_mean
             states.append(self._state(h, s))

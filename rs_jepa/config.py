@@ -22,6 +22,7 @@ class Stage1Config:
     rssm_stoch_dim: int = 32
     rssm_min_std: float = 0.1
     rssm_layer_norm: bool = True
+    action_dim: int = 2
     predictor_hidden_dim: int = 256
     predictor_depth: int = 2
     context_steps: int = 168
