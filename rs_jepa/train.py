@@ -36,6 +36,7 @@ class PhaseASite:
     features: np.ndarray
     static: np.ndarray
     criticality: np.ndarray
+    actions: np.ndarray
     split: np.ndarray
 
 
@@ -80,6 +81,7 @@ def build_phase_a_sites(
                 features=group.loc[:, data.temporal_feature_columns].to_numpy(dtype=np.float32),
                 static=site_static.loc[list(data.static_feature_columns)].to_numpy(dtype=np.float32),
                 criticality=group["criticality"].to_numpy(dtype=np.float32),
+                actions=group.loc[:, data.action_columns].to_numpy(dtype=np.float32),
                 split=group["split"].to_numpy(dtype=str),
             )
         )
@@ -93,7 +95,7 @@ def _sample_windows(
     cfg: RSJEPAConfig,
     *,
     generator: torch.Generator,
-) -> tuple[torch.Tensor, torch.Tensor, int]:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, int]:
     horizon = int(
         torch.tensor(cfg.stage1.horizons)[
             torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item()
@@ -101,6 +103,7 @@ def _sample_windows(
     )
     window_len = cfg.stage1.context_steps + horizon
     chosen = []
+    chosen_actions = []
     statics = []
     for _idx in range(cfg.stage1.batch_size):
         for _attempt in range(100):
@@ -115,6 +118,7 @@ def _sample_windows(
             end = start + window_len
             if np.all(site.split[start:end] == TRAIN):
                 chosen.append(site.features[start:end])
+                chosen_actions.append(site.actions[start:end])
                 statics.append(site.static)
                 break
         else:
@@ -122,6 +126,7 @@ def _sample_windows(
     return (
         torch.as_tensor(np.asarray(chosen, dtype=np.float32)),
         torch.as_tensor(np.asarray(statics, dtype=np.float32)),
+        torch.as_tensor(np.asarray(chosen_actions, dtype=np.float32)),
         horizon,
     )
 
@@ -242,7 +247,11 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
     for epoch in range(cfg.training.max_epochs):
         epoch_metrics = []
         for _step in range(cfg.training.steps_per_epoch):
-            x_window, static, horizon = _sample_windows(train_sites, cfg, generator=generator)
+            x_window, static, _action_window, horizon = _sample_windows(
+                train_sites,
+                cfg,
+                generator=generator,
+            )
             x_window = x_window.to(device)
             static = static.to(device)
             masked = apply_stage1_masks(x_window, cfg.stage1, horizon=horizon, generator=generator)

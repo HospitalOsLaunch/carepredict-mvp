@@ -85,6 +85,10 @@ class SyntheticConfig:
     surge_min_duration_h: int = 18
     surge_max_duration_h: int = 96
     noise_std: float = 0.06
+    interventions_enabled: bool = False
+    p_intervention: float = 0.12
+    max_staffing_delta: float = 0.16
+    max_discharge_delta_per_capacity: float = 0.025
 
 
 @dataclass(frozen=True)

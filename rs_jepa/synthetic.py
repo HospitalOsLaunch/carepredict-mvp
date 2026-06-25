@@ -39,6 +39,7 @@ INSTANTANEOUS_OBSERVABLE_COLUMNS = (
     "dow_sin",
     "dow_cos",
 )
+ACTION_COLUMNS = ("staffing_delta", "discharge_delta")
 
 
 @dataclass(frozen=True)
@@ -47,6 +48,7 @@ class SyntheticHospitalData:
     static: pd.DataFrame
     temporal_feature_columns: tuple[str, ...]
     static_feature_columns: tuple[str, ...]
+    action_columns: tuple[str, ...] = ACTION_COLUMNS
     criticality_column: str = "criticality"
     criticality_inputs: tuple[str, ...] = CRITICALITY_INPUTS
 
@@ -243,19 +245,29 @@ class SyntheticHospitalSimulator:
             0.45,
             1.35,
         )
+        staffing_delta, discharge_delta = self._exogenous_actions(n, rng)
+        effective_staffing_ratio = np.clip(staffing_ratio + staffing_delta, 0.45, 1.45)
         occupancy = np.empty(n, dtype=float)
         discharges = np.empty(n, dtype=float)
         occupancy[0] = capacity * base_saturation
         for t in range(n - 1):
             pressure_slowdown = np.clip(1.15 - occupancy[t] / capacity, 0.45, 1.15)
-            discharges[t] = discharge_rate * occupancy[t] * pressure_slowdown * rng.uniform(0.88, 1.12)
-            occupancy[t + 1] = np.clip(occupancy[t] + inflow[t] - discharges[t], 0.0, capacity * 1.35)
-        discharges[-1] = discharge_rate * occupancy[-1]
+            baseline_discharges = (
+                discharge_rate * occupancy[t] * pressure_slowdown * rng.uniform(0.88, 1.12)
+            )
+            forced_discharges = discharge_delta[t] * capacity
+            discharges[t] = baseline_discharges + forced_discharges
+            occupancy[t + 1] = np.clip(
+                occupancy[t] + inflow[t] - discharges[t],
+                0.0,
+                capacity * 1.35,
+            )
+        discharges[-1] = discharge_rate * occupancy[-1] + discharge_delta[-1] * capacity
 
         occupancy_ratio = occupancy / capacity
         expected_inflow = max(base_inflow * case_mix, 1e-6)
         inflow_surge = inflow / expected_inflow
-        patients_per_staff_ratio = np.clip(occupancy_ratio / staffing_ratio, 0.0, 3.0)
+        patients_per_staff_ratio = np.clip(occupancy_ratio / effective_staffing_ratio, 0.0, 3.0)
         criticality = sigmoid(
             1.60 * (occupancy_ratio - 0.90)
             + 4.80 * (inflow_surge - 1.0)
@@ -275,8 +287,10 @@ class SyntheticHospitalSimulator:
                 "inflow_per_capacity": inflow / capacity,
                 "discharges_per_capacity": discharges / capacity,
                 "occupancy_ratio": occupancy_ratio,
-                "staffing_ratio": staffing_ratio,
+                "staffing_ratio": effective_staffing_ratio,
                 "inflow_surge": inflow_surge,
+                "staffing_delta": staffing_delta,
+                "discharge_delta": discharge_delta,
                 "hour_sin": np.sin(2 * np.pi * hours / 24),
                 "hour_cos": np.cos(2 * np.pi * hours / 24),
                 "dow_sin": np.sin(2 * np.pi * dow / 7),
@@ -285,6 +299,27 @@ class SyntheticHospitalSimulator:
                 "criticality_level": levels.astype(int),
             }
         )
+
+    def _exogenous_actions(self, n: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+        """Draw state-independent action deltas for causal simulator diagnostics."""
+        staffing_delta = np.zeros(n, dtype=float)
+        discharge_delta = np.zeros(n, dtype=float)
+        if not self.cfg.interventions_enabled:
+            return staffing_delta, discharge_delta
+
+        staff_mask = rng.random(n) < self.cfg.p_intervention
+        discharge_mask = rng.random(n) < self.cfg.p_intervention
+        staff_sign = rng.choice(np.array([-1.0, 1.0]), size=n)
+        staffing_delta = (
+            staff_mask
+            * staff_sign
+            * rng.uniform(0.04, self.cfg.max_staffing_delta, size=n)
+        )
+        discharge_delta = (
+            discharge_mask
+            * rng.uniform(0.004, self.cfg.max_discharge_delta_per_capacity, size=n)
+        )
+        return staffing_delta.astype(float), discharge_delta.astype(float)
 
     def _surge_process(self, n: int, rng: np.random.Generator) -> np.ndarray:
         surge = np.zeros(n, dtype=float)
