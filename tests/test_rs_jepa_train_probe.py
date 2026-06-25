@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 import pytest
 import torch
@@ -63,6 +65,21 @@ def test_stage1_training_loop_runs_without_nan_and_logs_rank():
     for key in ["loss", "pred", "var", "cov", "effective_rank", "per_dim_std_mean"]:
         assert np.isfinite(row[key])
     assert row["effective_rank"] > 1.0
+
+
+def test_stage1_training_with_interventions_drives_action_gru_gradients():
+    cfg = tiny_cfg()
+    cfg = replace(
+        cfg,
+        synthetic=replace(
+            cfg.synthetic,
+            interventions_enabled=True,
+            p_intervention=1.0,
+        ),
+    )
+    artifacts = run_stage1_training(cfg, log=False)
+    assert len(artifacts.history) == 1
+    assert artifacts.history[0]["action_grad_norm"] > 0.0
 
 
 def test_ema_target_moves_during_training():

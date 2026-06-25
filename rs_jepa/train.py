@@ -158,6 +158,15 @@ def _mean_metrics(metrics: list[dict[str, float]]) -> dict[str, float]:
     return {key: float(np.mean([row[key] for row in metrics])) for key in keys}
 
 
+def _action_grad_norm(rssm: RSSM, cfg: RSJEPAConfig) -> float:
+    grad = rssm.gru.weight_ih.grad
+    if grad is None or cfg.stage1.action_dim <= 0:
+        return 0.0
+    action_start = cfg.stage1.latent_dim + cfg.stage1.rssm_stoch_dim
+    action_grad = grad[:, action_start : action_start + cfg.stage1.action_dim]
+    return float(torch.linalg.vector_norm(action_grad.detach()).cpu().item())
+
+
 def save_encoder_checkpoint(
     path: str | Path,
     encoder: ObservableEncoder,
@@ -247,24 +256,36 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
     for epoch in range(cfg.training.max_epochs):
         epoch_metrics = []
         for _step in range(cfg.training.steps_per_epoch):
-            x_window, static, _action_window, horizon = _sample_windows(
+            x_window, static, action_window, horizon = _sample_windows(
                 train_sites,
                 cfg,
                 generator=generator,
             )
             x_window = x_window.to(device)
             static = static.to(device)
+            action_window = action_window.to(device)
             masked = apply_stage1_masks(x_window, cfg.stage1, horizon=horizon, generator=generator)
             x_context = masked["context"].to(device)
             x_target = masked["target"].to(device)
+            context_idx = masked["context_idx"].to(device)
+            target_idx = masked["target_idx"].to(device)
+            actions_context = action_window[:, context_idx] if cfg.stage1.action_dim > 0 else None
+            actions_future = action_window[:, target_idx] if cfg.stage1.action_dim > 0 else None
             z_context = encoder(x_context, static)
-            states = rssm.rollout(z_context, horizon=x_target.shape[1], static=static).states
+            states = rssm.rollout(
+                z_context,
+                horizon=x_target.shape[1],
+                static=static,
+                actions_context=actions_context,
+                actions_future=actions_future,
+            ).states
             pred_latents = predictor(states)
             target_latents = ema_target(x_target, static)
             loss, components = latent_jepa_loss(pred_latents, target_latents, cfg.stage1)
 
             optimizer.zero_grad(set_to_none=True)
             loss.backward()
+            action_grad_norm = _action_grad_norm(rssm, cfg)
             torch.nn.utils.clip_grad_norm_(params, cfg.stage1.grad_clip)
             optimizer.step()
             scheduler.step()
@@ -287,6 +308,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
                     "effective_rank": latent_stats["effective_rank"],
                     "per_dim_std_min": latent_stats["per_dim_std_min"],
                     "per_dim_std_mean": latent_stats["per_dim_std_mean"],
+                    "action_grad_norm": action_grad_norm,
                     "tau": float(tau),
                 }
             )
@@ -299,7 +321,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
                 "epoch={epoch:.0f} loss={loss:.4f} pred={pred:.4f} "
                 "var={var:.4f} cov={cov:.4f} rank={effective_rank:.2f} "
                 "std_min={per_dim_std_min:.3f} std_mean={per_dim_std_mean:.3f} "
-                "tau={tau:.5f}".format(**mean)
+                "action_grad={action_grad_norm:.6f} tau={tau:.5f}".format(**mean)
             )
             if mean["effective_rank"] < cfg.training.early_collapse_rank_threshold:
                 print(
