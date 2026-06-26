@@ -15,7 +15,13 @@ from rs_jepa.probe import (
     r2_score,
 )
 from rs_jepa.splits import TEMPORAL_VAL, TRAIN
-from rs_jepa.train import build_phase_a_sites, load_encoder_checkpoint, run_stage1_training
+from rs_jepa.train import (
+    build_phase_a_sites,
+    load_encoder_checkpoint,
+    load_stage1_checkpoint,
+    run_stage1_training,
+    save_encoder_checkpoint,
+)
 
 pytestmark = pytest.mark.rs_jepa
 
@@ -199,6 +205,50 @@ def test_encoder_checkpoint_roundtrip(tmp_path):
     assert len(old_params) == len(new_params)
     for old_param, new_param in zip(old_params, new_params, strict=True):
         assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
+
+
+def test_full_stage1_checkpoint_roundtrip_includes_dynamic_chain(tmp_path):
+    checkpoint = tmp_path / "stage1_full.pt"
+    artifacts = run_stage1_training(tiny_cfg(checkpoint_path=str(checkpoint)), log=False)
+    loaded = load_stage1_checkpoint(checkpoint, device=torch.device("cpu"))
+
+    assert loaded.n_obs == artifacts.encoder.n_obs
+    assert loaded.n_static == artifacts.encoder.n_static
+    for old_param, new_param in zip(
+        artifacts.encoder.parameters(),
+        loaded.encoder.parameters(),
+        strict=True,
+    ):
+        assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
+    for old_param, new_param in zip(
+        artifacts.rssm.parameters(),
+        loaded.rssm.parameters(),
+        strict=True,
+    ):
+        assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
+    for old_param, new_param in zip(
+        artifacts.predictor.parameters(),
+        loaded.predictor.parameters(),
+        strict=True,
+    ):
+        assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
+
+
+def test_old_encoder_only_checkpoint_reports_missing_dynamic_chain(tmp_path):
+    checkpoint = tmp_path / "encoder_only.pt"
+    artifacts = run_stage1_training(tiny_cfg(), log=False)
+    save_encoder_checkpoint(
+        checkpoint,
+        artifacts.encoder,
+        tiny_cfg(),
+        n_obs=artifacts.encoder.n_obs,
+        n_static=artifacts.encoder.n_static,
+    )
+
+    loaded = load_encoder_checkpoint(checkpoint, device=torch.device("cpu"))
+    assert loaded.n_obs == artifacts.encoder.n_obs
+    with pytest.raises(ValueError, match="Checkpoint Stage 1 incomplet"):
+        load_stage1_checkpoint(checkpoint, device=torch.device("cpu"))
 
 
 def test_probe_r2_metric_sanity_beats_trivial_mean_on_linear_signal():

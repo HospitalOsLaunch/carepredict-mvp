@@ -61,6 +61,16 @@ class LoadedEncoder:
     n_static: int
 
 
+@dataclass(frozen=True)
+class LoadedStage1Chain:
+    encoder: ObservableEncoder
+    rssm: RSSM
+    predictor: LatentPredictor
+    cfg: RSJEPAConfig
+    n_obs: int
+    n_static: int
+
+
 def build_phase_a_sites(
     cfg: RSJEPAConfig,
 ) -> tuple[list[PhaseASite], list[PhaseASite], list[PhaseASite]]:
@@ -174,18 +184,22 @@ def save_encoder_checkpoint(
     *,
     n_obs: int,
     n_static: int,
+    rssm: RSSM | None = None,
+    predictor: LatentPredictor | None = None,
 ) -> None:
     target_path = Path(path)
     target_path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save(
-        {
-            "encoder_state_dict": encoder.state_dict(),
-            "config": asdict(cfg),
-            "n_obs": int(n_obs),
-            "n_static": int(n_static),
-        },
-        target_path,
-    )
+    payload = {
+        "encoder_state_dict": encoder.state_dict(),
+        "config": asdict(cfg),
+        "n_obs": int(n_obs),
+        "n_static": int(n_static),
+    }
+    if rssm is not None:
+        payload["rssm_state_dict"] = rssm.state_dict()
+    if predictor is not None:
+        payload["predictor_state_dict"] = predictor.state_dict()
+    torch.save(payload, target_path)
 
 
 def load_encoder_checkpoint(
@@ -208,6 +222,49 @@ def load_encoder_checkpoint(
         cfg=cfg,
         n_obs=int(payload["n_obs"]),
         n_static=int(payload["n_static"]),
+    )
+
+
+def load_stage1_checkpoint(
+    path: str | Path,
+    *,
+    device: torch.device | None = None,
+) -> LoadedStage1Chain:
+    """Load the full Stage-1 chain required for action-conditioned rollouts."""
+
+    load_device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    payload = torch.load(Path(path), map_location=load_device, weights_only=False)
+    missing = [
+        key
+        for key in ("rssm_state_dict", "predictor_state_dict")
+        if key not in payload
+    ]
+    if missing:
+        raise ValueError(
+            "Checkpoint Stage 1 incomplet: "
+            f"{Path(path)} ne contient pas {missing}. "
+            "Les anciens checkpoints encodeur-seul restent valides pour Stage 2, "
+            "mais pas pour un rollout RSSM actionné."
+        )
+    cfg = config_from_dict(payload["config"])
+    n_obs = int(payload["n_obs"])
+    n_static = int(payload["n_static"])
+    encoder = ObservableEncoder(n_obs=n_obs, n_static=n_static, cfg=cfg.stage1).to(load_device)
+    encoder.load_state_dict(payload["encoder_state_dict"])
+    encoder.eval()
+    rssm = RSSM(cfg.stage1, n_static=n_static).to(load_device)
+    rssm.load_state_dict(payload["rssm_state_dict"])
+    rssm.eval()
+    predictor = LatentPredictor(cfg.stage1).to(load_device)
+    predictor.load_state_dict(payload["predictor_state_dict"])
+    predictor.eval()
+    return LoadedStage1Chain(
+        encoder=encoder,
+        rssm=rssm,
+        predictor=predictor,
+        cfg=cfg,
+        n_obs=n_obs,
+        n_static=n_static,
     )
 
 
@@ -352,6 +409,8 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
             cfg,
             n_obs=n_obs,
             n_static=n_static,
+            rssm=rssm,
+            predictor=predictor,
         )
         if log:
             print(f"encoder_checkpoint_saved={cfg.training.checkpoint_path}")
