@@ -8,7 +8,7 @@ import pandas as pd
 import structlog
 import typer
 
-from services.ml.models.tft_model import CarePredictTFT, PytorchForecastingTFTBackend
+from services.ml.models.tft_model import CarePredictTFT, PytorchForecastingTFTBackend, TFTConfig
 from services.ml.registry.mlflow_client import MLflowModelRegistry
 from services.ml.training.backtesting import (
     assert_metric_targets,
@@ -34,10 +34,12 @@ def main(
     report_path: Path = Path("reports/backtesting/carepredict_backtest.html"),
     bundle_path: Path = BUNDLE_PATH,
     enforce_targets: bool = False,
+    target_column: str = "siips_score",
 ) -> None:
     """Train TFT, calibrate conformal intervals on real model predictions and log MLflow."""
     frame = load_synthetic_training_frame(data_path)
     split = temporal_split(frame)
+    config = TFTConfig(target_column=target_column)
 
     LOGGER.info(
         "training_started",
@@ -46,7 +48,7 @@ def main(
         test_rows=len(split.test),
     )
 
-    model = CarePredictTFT()
+    model = CarePredictTFT(config=config)
     train_metrics = model.fit(split.train)
     LOGGER.info("training_finished", backend=model.backend_name, metrics=train_metrics)
 
@@ -68,7 +70,7 @@ def main(
     )
     conformal = ConformalForecaster()
     conformal.calibrate(
-        split.validation["siips_score"].astype(float),
+        split.validation[model.config.target_column].astype(float),
         validation_pred.astype(float),
     )
 
@@ -81,7 +83,7 @@ def main(
     )
     intervals = conformal.predict_intervals(test_pred.astype(float))
     metrics = calculate_metrics(
-        split.test["siips_score"].astype(float),
+        split.test[model.config.target_column].astype(float),
         test_pred.astype(float),
         [interval.lower for interval in intervals],
         [interval.upper for interval in intervals],
@@ -97,6 +99,7 @@ def main(
             "model_version": model.config.model_version,
             "dataset_hash": frame_dataset_hash(frame),
             "backend": model.backend_name,
+            "target_column": model.config.target_column,
         },
         metrics={**train_metrics, **metrics.as_dict()},
         artifacts=[report],
