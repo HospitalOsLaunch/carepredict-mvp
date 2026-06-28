@@ -37,6 +37,7 @@ class PhaseASite:
     static: np.ndarray
     criticality: np.ndarray
     actions: np.ndarray
+    action_deltas: np.ndarray
     split: np.ndarray
 
 
@@ -92,6 +93,7 @@ def build_phase_a_sites(
                 static=site_static.loc[list(data.static_feature_columns)].to_numpy(dtype=np.float32),
                 criticality=group["criticality"].to_numpy(dtype=np.float32),
                 actions=group.loc[:, data.action_columns].to_numpy(dtype=np.float32),
+                action_deltas=group.loc[:, data.action_delta_columns].to_numpy(dtype=np.float32),
                 split=group["split"].to_numpy(dtype=str),
             )
         )
@@ -105,7 +107,7 @@ def _sample_windows(
     cfg: RSJEPAConfig,
     *,
     generator: torch.Generator,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, int]:
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int]:
     horizon = int(
         torch.tensor(cfg.stage1.horizons)[
             torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item()
@@ -114,6 +116,7 @@ def _sample_windows(
     window_len = cfg.stage1.context_steps + horizon
     chosen = []
     chosen_actions = []
+    chosen_action_deltas = []
     statics = []
     for _idx in range(cfg.stage1.batch_size):
         for _attempt in range(100):
@@ -129,6 +132,7 @@ def _sample_windows(
             if np.all(site.split[start:end] == TRAIN):
                 chosen.append(site.features[start:end])
                 chosen_actions.append(site.actions[start:end])
+                chosen_action_deltas.append(site.action_deltas[start:end])
                 statics.append(site.static)
                 break
         else:
@@ -137,6 +141,7 @@ def _sample_windows(
         torch.as_tensor(np.asarray(chosen, dtype=np.float32)),
         torch.as_tensor(np.asarray(statics, dtype=np.float32)),
         torch.as_tensor(np.asarray(chosen_actions, dtype=np.float32)),
+        torch.as_tensor(np.asarray(chosen_action_deltas, dtype=np.float32)),
         horizon,
     )
 
@@ -313,7 +318,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
     for epoch in range(cfg.training.max_epochs):
         epoch_metrics = []
         for _step in range(cfg.training.steps_per_epoch):
-            x_window, static, action_window, horizon = _sample_windows(
+            x_window, static, action_window, _action_delta_window, horizon = _sample_windows(
                 train_sites,
                 cfg,
                 generator=generator,

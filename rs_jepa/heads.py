@@ -95,6 +95,47 @@ class CriticalityReadout(nn.Module):
         }
 
 
+class ActionDeltaHead(nn.Module):
+    """Interventional readout: true criticality delta from paired rollout latents."""
+
+    def __init__(self, latent_dim: int, cfg: Stage2Config, *, n_channels: int = 2) -> None:
+        super().__init__()
+        self.n_channels = int(n_channels)
+        self.channel_embed = nn.Embedding(self.n_channels, 4)
+        input_dim = latent_dim * 3 + 4
+        self.net = _mlp(input_dim, cfg.head_hidden_dim, 1, cfg.head_depth, cfg.dropout)
+
+    def forward(
+        self,
+        z0: torch.Tensor,
+        z_action: torch.Tensor,
+        channel_id: torch.Tensor | int,
+    ) -> torch.Tensor:
+        if z0.shape != z_action.shape:
+            raise ValueError("z0 et z_action doivent avoir la même forme.")
+        if z0.ndim != 3:
+            raise ValueError("z0 et z_action doivent avoir la forme [B, H, Z].")
+        batch, horizon, _latent = z0.shape
+        if isinstance(channel_id, int):
+            channels = torch.full(
+                (batch, horizon),
+                int(channel_id),
+                dtype=torch.long,
+                device=z0.device,
+            )
+        else:
+            channels = channel_id.to(device=z0.device, dtype=torch.long)
+            if channels.ndim == 0:
+                channels = channels.expand(batch, horizon)
+            elif channels.ndim == 1:
+                channels = channels[:, None].expand(batch, horizon)
+        if channels.shape != (batch, horizon):
+            raise ValueError(f"channel_id doit être scalaire, [B], ou [B,H], reçu={tuple(channels.shape)}.")
+        channel_features = self.channel_embed(channels)
+        features = torch.cat([z0, z_action, z_action - z0, channel_features], dim=-1)
+        return self.net(features).squeeze(-1)
+
+
 def coral_targets(levels: torch.Tensor, k_levels: int) -> torch.Tensor:
     """Encode levels as cumulative binary labels y > threshold_k."""
 
