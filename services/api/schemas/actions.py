@@ -49,6 +49,42 @@ class OpportunityKPIs(BaseModel):
     risk_window: RiskWindow
 
 
+class RiskExplanation(BaseModel):
+    """Readable decomposition of why a forecast is risky."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    excess_pts: float
+    excess_ratio: float
+    duration_h: int
+    severity_reason: str
+    peak_timing: str
+    summary: str
+
+
+class PriorityExplanation(BaseModel):
+    """Readable decomposition of why an action is prioritized."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    excess_anchor: float
+    feasibility: float
+    cost: float
+    raw_score: float
+    score_component: float
+    summary: str
+
+
+class RecommendationExplanation(BaseModel):
+    """Explanation attached to a recommendation."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    risk: RiskExplanation
+    priority: PriorityExplanation
+    scope_note: str
+
+
 class Recommendation(BaseModel):
     """One proposed operational action."""
 
@@ -65,6 +101,7 @@ class Recommendation(BaseModel):
     rationale: str
     horizon_h: int
     status: ActionStatus = "proposed"
+    explanation: RecommendationExplanation | None = None
 
 
 class ActionRecommendResponse(BaseModel):

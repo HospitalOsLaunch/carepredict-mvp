@@ -51,6 +51,8 @@ class ScoredAction:
     score: float
     projected_impact_siips: float
     feasibility: float
+    cost: float
+    raw_score: float
     rationale: str
     horizon_h: int
     status: str = "proposed"
@@ -90,6 +92,8 @@ class RuleBasedScorer:
             score=round(normalized, 4),
             projected_impact_siips=projected_impact,
             feasibility=candidate.feasibility,
+            cost=candidate.cost,
+            raw_score=round(raw_score, 4),
             rationale=(
                 f"Pic de charge prévu T+{ctx.peak_step}h dépassant le seuil de "
                 f"{excess_anchor:.1f} pts sur {ctx.hours_above_threshold}h."

@@ -147,6 +147,30 @@ export interface OpportunityKPIs {
   risk_window: RiskWindow;
 }
 
+export interface RiskExplanation {
+  excess_pts: number;
+  excess_ratio: number;
+  duration_h: number;
+  severity_reason: string;
+  peak_timing: string;
+  summary: string;
+}
+
+export interface PriorityExplanation {
+  excess_anchor: number;
+  feasibility: number;
+  cost: number;
+  raw_score: number;
+  score_component: number;
+  summary: string;
+}
+
+export interface RecommendationExplanation {
+  risk: RiskExplanation;
+  priority: PriorityExplanation;
+  scope_note: string;
+}
+
 export interface Recommendation {
   id: string;
   service_id: string;
@@ -159,6 +183,7 @@ export interface Recommendation {
   rationale: string;
   horizon_h: number;
   status: ActionStatus;
+  explanation?: RecommendationExplanation | null;
 }
 
 export interface ActionRecommendResponse {

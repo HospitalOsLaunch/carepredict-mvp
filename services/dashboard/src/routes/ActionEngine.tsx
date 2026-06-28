@@ -131,6 +131,7 @@ export function ActionEngine() {
             rows={recommendations.length > 0 ? buildRows(recommendations) : emptyRows(query.isLoading)}
             footerLink="View all proposed actions"
           />
+          <RecommendationDrivers recommendation={selectedRecommendation} />
         </section>
 
         <aside className="space-y-4">
@@ -365,6 +366,54 @@ function ActionSimulationDrawer({
   );
 }
 
+function RecommendationDrivers({ recommendation }: { recommendation: Recommendation | undefined }) {
+  if (!recommendation) {
+    return null;
+  }
+  const explanation = recommendation.explanation;
+  return (
+    <article className="mt-4 rounded-card border border-border-subtle bg-bg-card p-5 shadow-card">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-card-label text-brand-primary">Explainable drivers</p>
+          <h3 className="text-section mt-1 text-text-strong">{recommendation.service_id} · forecast load risk</h3>
+        </div>
+        <span className="text-badge rounded-full bg-bg-app px-2 py-0.5 text-text-muted">{recommendation.severity}</span>
+      </div>
+
+      {explanation ? (
+        <>
+          <div className="mt-4 grid grid-cols-4 gap-3">
+            <MetricChip label="Excess" value={`+${formatNumber(explanation.risk.excess_pts)} pts`} />
+            <MetricChip label="Relative" value={`${Math.round(explanation.risk.excess_ratio * 100)}%`} />
+            <MetricChip label="Duration" value={`${explanation.risk.duration_h}h`} />
+            <MetricChip label="Peak" value={explanation.risk.peak_timing} />
+          </div>
+          <div className="mt-4 rounded-card border border-border-subtle bg-bg-app/70 p-4">
+            <p className="text-body-copy text-text-strong">{explanation.risk.summary}</p>
+            <p className="text-caption mt-2 text-text-body">{explanation.risk.severity_reason}</p>
+          </div>
+          <div className="mt-3 rounded-card border border-border-subtle bg-bg-app/70 p-4">
+            <p className="text-body-copy text-text-strong">{explanation.priority.summary}</p>
+            <p className="text-caption mt-2 text-text-body">
+              Score {explanation.priority.score_component.toFixed(2)} · faisabilité{" "}
+              {Math.round(explanation.priority.feasibility * 100)}% · coût relatif {explanation.priority.cost.toFixed(2)}
+            </p>
+          </div>
+          <p className="text-caption mt-3 text-text-muted">{explanation.scope_note}</p>
+        </>
+      ) : (
+        <div className="mt-4 rounded-card border border-border-subtle bg-bg-app/70 p-4">
+          <p className="text-body-copy text-text-strong">{recommendation.rationale}</p>
+          <p className="text-caption mt-2 text-text-muted">
+            Explanation detail is unavailable for this response. Scope remains forecast-load only; downstream flow drivers need a later endpoint.
+          </p>
+        </div>
+      )}
+    </article>
+  );
+}
+
 function MetricChip({ label, value, tone = "neutral" }: { label: string; value: string; tone?: "neutral" | "good" | "bad" }) {
   const toneClass = tone === "good" ? "text-status-good" : tone === "bad" ? "text-status-critical" : "text-text-strong";
   return (
@@ -546,6 +595,10 @@ function severityVariant(severity: ActionSeverity): StatusVariant {
 
 function formatSigned(value: number): string {
   return value.toLocaleString("en-US", { maximumFractionDigits: 1 });
+}
+
+function formatNumber(value: number): string {
+  return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
 }
 
 function statusLabel(status: ActionStatus): string {

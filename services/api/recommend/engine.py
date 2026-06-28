@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Protocol
 
 from services.api.dependencies.feature_window_fetcher import TimescaleFeatureWindowFetcher
+from services.api.recommend.drivers import recommendation_explanation
 from services.api.recommend.levers import candidate_levers
 from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, ScoredAction
 from services.api.recommend.thresholds import (
@@ -85,7 +86,7 @@ class RecommendationEngine:
         horizon_h: int,
     ) -> RecommendationResult:
         """Return ranked recommendations for at-risk services."""
-        scored: list[ScoredAction] = []
+        scored: list[tuple[ScoredAction, ForecastContext]] = []
         contexts: list[ForecastContext] = []
         for service_id in services:
             window = self.feature_fetcher.fetch(
@@ -114,10 +115,10 @@ class RecommendationEngine:
                 continue
             contexts.append(ctx)
             for candidate in candidate_levers(service_id):
-                scored.append(self.scorer.score(candidate, ctx))
+                scored.append((self.scorer.score(candidate, ctx), ctx))
 
-        ranked = sorted(scored, key=lambda action: action.score, reverse=True)
-        recommendations = [Recommendation(**asdict(action)) for action in ranked]
+        ranked = sorted(scored, key=lambda item: item[0].score, reverse=True)
+        recommendations = [_recommendation_from_scored(action, ctx) for action, ctx in ranked]
         return RecommendationResult(
             opportunity=opportunity_from_actions(
                 actions=recommendations,
@@ -126,6 +127,14 @@ class RecommendationEngine:
             ),
             recommendations=recommendations,
         )
+
+
+def _recommendation_from_scored(action: ScoredAction, ctx: ForecastContext) -> Recommendation:
+    payload = asdict(action)
+    payload.pop("cost")
+    payload.pop("raw_score")
+    payload["explanation"] = asdict(recommendation_explanation(action, ctx))
+    return Recommendation(**payload)
 
 
 def forecast_context(
