@@ -1,0 +1,42 @@
+{
+  "created_at_utc": "2026-06-29T21:27:09.993199+00:00",
+  "embedding_dim": 32,
+  "max_length": 1024,
+  "model": "toy",
+  "n_unique_admissions": 196,
+  "seed": 42,
+  "serialization_stats": {
+    "structured": {
+      "device": "cpu",
+      "dtype": "float16-output",
+      "embedding_dim": 32,
+      "max_length": 1024,
+      "n_encoded_unique": 196,
+      "n_truncated": 0,
+      "poolings": [
+        "mean",
+        "last"
+      ],
+      "token_length_mean": 55.474489795918366,
+      "token_length_p50": 55.5,
+      "token_length_p95": 63.0,
+      "token_length_p99": 64.05000000000001,
+      "truncation_rate": 0.0
+    }
+  },
+  "union_id_checksum_sha256": "a1b48669071503cebccf8e9f51bee1ecbee0dacca01e25afda1a24b3cd2b3863",
+  "variants": [
+    "structured_mean",
+    "structured_last"
+  ],
+  "view_stats": {
+    "hard_case_matched": {
+      "id_checksum_sha256": "9b62dfa06db14c88ac49896d51392f476f2caefad3fa7147df17adc8a9f88ad3",
+      "n_admissions": 100
+    },
+    "hard_case_stratified": {
+      "id_checksum_sha256": "1f2ee559e807ac422a9750feed4d325a8a17f1eba674afea5c506d2f8461d420",
+      "n_admissions": 100
+    }
+  }
+}
