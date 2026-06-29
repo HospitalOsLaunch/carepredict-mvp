@@ -1,0 +1,97 @@
+{
+  "active_configuration": "no_apr",
+  "active_features": [
+    "age_group",
+    "gender",
+    "race",
+    "ethnicity",
+    "apr_drg",
+    "apr_medsurg",
+    "ccsr_diagnosis",
+    "type_admission",
+    "ed_indicator",
+    "health_service_area",
+    "payment_typology"
+  ],
+  "apr_fields_excluded_by_default": [
+    "apr_severity",
+    "apr_risk_mortality"
+  ],
+  "configurations": {
+    "no_apr": [
+      "age_group",
+      "gender",
+      "race",
+      "ethnicity",
+      "apr_drg",
+      "apr_medsurg",
+      "ccsr_diagnosis",
+      "type_admission",
+      "ed_indicator",
+      "health_service_area",
+      "payment_typology"
+    ],
+    "with_apr": [
+      "age_group",
+      "gender",
+      "race",
+      "ethnicity",
+      "apr_drg",
+      "apr_medsurg",
+      "ccsr_diagnosis",
+      "type_admission",
+      "ed_indicator",
+      "health_service_area",
+      "payment_typology",
+      "apr_severity",
+      "apr_risk_mortality"
+    ]
+  },
+  "excluded_source_columns": [
+    {
+      "reason": "post-stay outcome",
+      "source_column": "length_of_stay"
+    },
+    {
+      "reason": "prediction target only",
+      "source_column": "patient_disposition"
+    },
+    {
+      "reason": "post-stay financial outcome",
+      "source_column": "total_charges"
+    },
+    {
+      "reason": "post-stay financial outcome",
+      "source_column": "total_costs"
+    }
+  ],
+  "leak_blacklist": {
+    "discharge_date": "discharge-dependent field",
+    "discharge_status": "discharge-dependent field",
+    "discharge_year": "discharge-dependent field",
+    "length_of_stay": "post-stay outcome",
+    "patient_disposition": "prediction target only",
+    "total_charges": "post-stay financial outcome",
+    "total_costs": "post-stay financial outcome"
+  },
+  "source_columns": [
+    "health_service_area",
+    "age_group",
+    "gender",
+    "race",
+    "ethnicity",
+    "length_of_stay",
+    "type_of_admission",
+    "patient_disposition",
+    "ccsr_diagnosis_description",
+    "apr_drg_description",
+    "apr_severity_of_illness",
+    "apr_risk_of_mortality",
+    "apr_medical_surgical",
+    "payment_typology_1",
+    "emergency_department_indicator",
+    "total_charges",
+    "total_costs"
+  ],
+  "source_rows": 100000
+}

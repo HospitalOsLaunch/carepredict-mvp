@@ -1,0 +1,18 @@
+{
+  "aval_institu_rate": 0.1337128659461738,
+  "baseline_auprc_prevalence": 0.1337128659461738,
+  "class_counts": {
+    "autre": 161470,
+    "aval_institu": 293732,
+    "domicile": 1741535
+  },
+  "class_rates": {
+    "autre": 0.07350447504639836,
+    "aval_institu": 0.1337128659461738,
+    "domicile": 0.7927826590074278
+  },
+  "mapped_count": 2196737,
+  "total_count": 2196737,
+  "unmapped_count": 0,
+  "warning": null
+}

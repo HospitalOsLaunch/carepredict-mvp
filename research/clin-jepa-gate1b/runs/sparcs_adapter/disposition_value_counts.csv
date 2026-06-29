@@ -1,0 +1,20 @@
+patient_disposition,count,prevalence,mapped,mapped_class
+Home or Self Care,1441830,0.6563507602412123,True,domicile
+Home w/ Home Health Services,299705,0.13643189876621553,True,domicile
+Skilled Nursing Home,211258,0.096168999748263,True,aval_institu
+Left Against Medical Advice,57701,0.02626668554314877,True,autre
+Expired,54460,0.02479131548291853,True,autre
+Short-term Hospital,38487,0.017520076367812807,True,autre
+Inpatient Rehabilitation Facility,35860,0.016324211774099495,True,aval_institu
+Hospice - Home,11241,0.0051171350962814395,True,aval_institu
+Psychiatric Hospital or Unit of Hosp,9954,0.004531266146106703,True,aval_institu
+Hospice - Medical Facility,9856,0.004486654524415075,True,aval_institu
+Facility w/ Custodial/Supportive Care,6528,0.0029716802694177776,True,aval_institu
+Another Type Not Listed,5732,0.002609324648330683,True,autre
+Court/Law Enforcement,4108,0.00187004634601229,True,autre
+Medicare Cert Long Term Care Hospital,3066,0.0013957064500666216,True,aval_institu
+Medicaid Cert Nursing Facility,2238,0.0010187837688353225,True,aval_institu
+Cancer Center or Childrens Hospital,1873,0.0008526282390654867,True,aval_institu
+Hosp Basd Medicare Approved Swing Bed,1858,0.0008457999296228907,True,aval_institu
+Federal Health Care Facility,745,0.0003391393689822678,True,autre
+Critical Access Hospital,237,0.00010788728919301673,True,autre
