@@ -89,6 +89,12 @@ LEAK_PRONE_COLUMNS: dict[str, str] = {
     "total_costs": "post-stay financial outcome",
     "discharge_year": "discharge-dependent field",
     "patient_disposition": "prediction target only",
+    "disposition_raw": "prediction target only",
+    "target_disposition": "derived prediction target only",
+    "aval_institu": "derived prediction target only",
+    "target": "derived prediction target only",
+    "label": "derived prediction target only",
+    "mapped_class": "derived prediction target only",
     "discharge_date": "discharge-dependent field",
     "discharge_status": "discharge-dependent field",
 }
