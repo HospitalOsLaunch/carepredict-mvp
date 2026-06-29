@@ -1,0 +1,25 @@
+{
+  "baseline_prevalence": 0.13401,
+  "blocking_warning": null,
+  "confound_control_view": "hard_case_matched",
+  "decision_locked_before_encoding": true,
+  "drg_rule_floor": 0.1859600653687466,
+  "hard_case_loss_rate_rule": {
+    "continue_if_positive_loss_rate_lte": 0.5,
+    "stop_and_review_if_positive_loss_rate_gt": 0.5
+  },
+  "matched_metric_rule": "on matched view, recompute ALL baselines and drg floor at matched prevalence; verdict is delta, never absolute AUPRC compared across prevalences",
+  "min_per_class_selected": 5,
+  "no_drg_view": "no_drg_structured",
+  "primary_lift_view": "hard_case_stratified",
+  "sanity_view": "full_structured",
+  "stratified_metric_caveat": "stratified applies no within-stratum downsampling, but eligibility filtering may shift prevalence; report a floor recomputed on the stratified view alongside the natural-population floor",
+  "style_ablation": "fluent",
+  "style_primary": "structured",
+  "view_roles": {
+    "full_structured": "upper_bound_only",
+    "hard_case_matched": "confound_control_delta_at_matched_prevalence",
+    "hard_case_stratified": "primary_lift_reading_natural_prevalence",
+    "no_drg_structured": "lower_bound_only"
+  }
+}

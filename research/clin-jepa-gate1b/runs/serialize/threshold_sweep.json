@@ -1,0 +1,43 @@
+{
+  "blocking_warning": null,
+  "min_per_class_selected": 5,
+  "selection_rule": "smallest threshold with loss_rate_positive <= 0.50; fallback to 5 with blocking warning",
+  "thresholds": [
+    {
+      "class_counts_after": {
+        "aval_institu": 12535,
+        "non_aval": 57036
+      },
+      "loss_rate_negative": 0.3413780759593067,
+      "loss_rate_positive": 0.06462204313110964,
+      "min_per_class": 5,
+      "n_after": 69571,
+      "n_strata_after": 332,
+      "positive_prevalence_after": 0.18017564789926838
+    },
+    {
+      "class_counts_after": {
+        "aval_institu": 11737,
+        "non_aval": 50609
+      },
+      "loss_rate_negative": 0.41559371355327424,
+      "loss_rate_positive": 0.12416983807178572,
+      "min_per_class": 10,
+      "n_after": 62346,
+      "n_strata_after": 209,
+      "positive_prevalence_after": 0.18825586244506465
+    },
+    {
+      "class_counts_after": {
+        "aval_institu": 10590,
+        "non_aval": 34397
+      },
+      "loss_rate_negative": 0.6028014180302312,
+      "loss_rate_positive": 0.20976046563689277,
+      "min_per_class": 20,
+      "n_after": 44987,
+      "n_strata_after": 127,
+      "positive_prevalence_after": 0.2354013381643586
+    }
+  ]
+}

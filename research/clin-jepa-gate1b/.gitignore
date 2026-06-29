@@ -7,3 +7,8 @@ runs/serialize/*
 !runs/serialize/serialize_manifest.json
 !runs/serialize/proxy_audit.json
 !runs/serialize/proxy_audit.md
+!runs/serialize/threshold_sweep.json
+!runs/serialize/hard_case_stratified_index.json
+!runs/serialize/hard_case_matched_index.json
+!runs/serialize/hard_case_audit.md
+!runs/serialize/eval_preregistration.json
