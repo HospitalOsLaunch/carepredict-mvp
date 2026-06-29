@@ -1,0 +1,129 @@
+{
+  "ablation_style": "fluent",
+  "apr_default": "excluded",
+  "decision_locked_before_results": true,
+  "leak_blacklist": [
+    "aval_institu",
+    "discharge_date",
+    "discharge_status",
+    "discharge_year",
+    "disposition_raw",
+    "label",
+    "length_of_stay",
+    "mapped_class",
+    "patient_disposition",
+    "target",
+    "target_disposition",
+    "total_charges",
+    "total_costs"
+  ],
+  "primary_style": "structured",
+  "sample_audit": {
+    "class_counts": {
+      "aval_institu": 5,
+      "domicile": 5
+    },
+    "records": [
+      {
+        "line_index": 0,
+        "patient_disposition": "Home w/ Home Health Services",
+        "source_row": 50495,
+        "stay_id": 50495,
+        "target_class": "domicile"
+      },
+      {
+        "line_index": 1,
+        "patient_disposition": "Inpatient Rehabilitation Facility",
+        "source_row": 80702,
+        "stay_id": 80702,
+        "target_class": "aval_institu"
+      },
+      {
+        "line_index": 2,
+        "patient_disposition": "Skilled Nursing Home",
+        "source_row": 50176,
+        "stay_id": 50176,
+        "target_class": "aval_institu"
+      },
+      {
+        "line_index": 3,
+        "patient_disposition": "Skilled Nursing Home",
+        "source_row": 70682,
+        "stay_id": 70682,
+        "target_class": "aval_institu"
+      },
+      {
+        "line_index": 4,
+        "patient_disposition": "Skilled Nursing Home",
+        "source_row": 14648,
+        "stay_id": 14648,
+        "target_class": "aval_institu"
+      },
+      {
+        "line_index": 5,
+        "patient_disposition": "Home or Self Care",
+        "source_row": 97387,
+        "stay_id": 97387,
+        "target_class": "domicile"
+      },
+      {
+        "line_index": 6,
+        "patient_disposition": "Skilled Nursing Home",
+        "source_row": 50664,
+        "stay_id": 50664,
+        "target_class": "aval_institu"
+      },
+      {
+        "line_index": 7,
+        "patient_disposition": "Home or Self Care",
+        "source_row": 74629,
+        "stay_id": 74629,
+        "target_class": "domicile"
+      },
+      {
+        "line_index": 8,
+        "patient_disposition": "Home or Self Care",
+        "source_row": 8116,
+        "stay_id": 8116,
+        "target_class": "domicile"
+      },
+      {
+        "line_index": 9,
+        "patient_disposition": "Home or Self Care",
+        "source_row": 71962,
+        "stay_id": 71962,
+        "target_class": "domicile"
+      }
+    ],
+    "samples_per_class": 5,
+    "seed": 42
+  },
+  "serialized_fields": {
+    "no_apr": [
+      "age_group",
+      "gender",
+      "type_admission",
+      "ed_indicator",
+      "apr_drg",
+      "apr_medsurg",
+      "ccsr_diagnosis",
+      "health_service_area",
+      "payment_typology"
+    ]
+  },
+  "target_columns_excluded": [
+    "Patient Disposition",
+    "patient_disposition",
+    "disposition_raw",
+    "target_disposition",
+    "aval_institu",
+    "target",
+    "label",
+    "mapped_class"
+  ],
+  "temporal_assumption": {
+    "apr_fields": "excluded_by_default_due_to_possible_post_stay_coding",
+    "drg_and_diagnosis_group": "included_by_preregistration_but_temporal_availability_must_be_audited_before_interpreting_product_feasibility",
+    "prediction_time": "admission_or_early_stay"
+  }
+}
