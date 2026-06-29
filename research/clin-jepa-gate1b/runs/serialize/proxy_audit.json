@@ -1,0 +1,573 @@
+{
+  "age_proxy": {
+    "distribution": [
+      {
+        "aval_count": 8832,
+        "aval_rate": 0.2803898536461475,
+        "count": 31499,
+        "group": "70 or Older"
+      },
+      {
+        "aval_count": 3453,
+        "aval_rate": 0.12688788446698268,
+        "count": 27213,
+        "group": "50-69"
+      },
+      {
+        "aval_count": 761,
+        "aval_rate": 0.037787377724812554,
+        "count": 20139,
+        "group": "30-49"
+      },
+      {
+        "aval_count": 140,
+        "aval_rate": 0.011365481409319695,
+        "count": 12318,
+        "group": "0-17"
+      },
+      {
+        "aval_count": 215,
+        "aval_rate": 0.024346053674555543,
+        "count": 8831,
+        "group": "18-29"
+      }
+    ],
+    "other_ages": {
+      "aval_count": 4569,
+      "aval_rate": 0.06669975620793857,
+      "count": 68501
+    },
+    "rate_gap": 0.21369009743820894,
+    "seventy_plus": {
+      "aval_count": 8832,
+      "aval_rate": 0.2803898536461475,
+      "count": 31499
+    }
+  },
+  "baseline_prevalence": 0.13401,
+  "diagnosis_proxies": {
+    "apr_drg": {
+      "group_column": "apr_drg",
+      "group_count": 335,
+      "top10_positive_count": 4472,
+      "top10_positive_volume_share": 0.333706439817924,
+      "top20_by_positive_volume": [
+        {
+          "aval_count": 1349,
+          "aval_rate": 0.24935304990757856,
+          "count": 5410,
+          "group": "SEPTICEMIA AND DISSEMINATED INFECTIONS"
+        },
+        {
+          "aval_count": 480,
+          "aval_rate": 0.17744916820702403,
+          "count": 2705,
+          "group": "HEART FAILURE"
+        },
+        {
+          "aval_count": 451,
+          "aval_rate": 0.3455938697318008,
+          "count": 1305,
+          "group": "CVA AND PRECEREBRAL OCCLUSION WITH INFARCTION"
+        },
+        {
+          "aval_count": 410,
+          "aval_rate": 0.6902356902356902,
+          "count": 594,
+          "group": "HIP AND FEMUR FRACTURE REPAIR"
+        },
+        {
+          "aval_count": 378,
+          "aval_rate": 0.2557510148849797,
+          "count": 1478,
+          "group": "KIDNEY AND URINARY TRACT INFECTIONS"
+        },
+        {
+          "aval_count": 340,
+          "aval_rate": 0.24944974321349964,
+          "count": 1363,
+          "group": "MAJOR RESPIRATORY INFECTIONS AND INFLAMMATIONS"
+        },
+        {
+          "aval_count": 299,
+          "aval_rate": 0.5264084507042254,
+          "count": 568,
+          "group": "DEGENERATIVE NERVOUS SYSTEM DISORDERS EXCEPT MULTIPLE SCLEROSIS"
+        },
+        {
+          "aval_count": 286,
+          "aval_rate": 0.22698412698412698,
+          "count": 1260,
+          "group": "ACUTE KIDNEY INJURY"
+        },
+        {
+          "aval_count": 246,
+          "aval_rate": 0.6275510204081632,
+          "count": 392,
+          "group": "NON-ELECTIVE OR COMPLEX HIP JOINT REPLACEMENT"
+        },
+        {
+          "aval_count": 233,
+          "aval_rate": 0.2841463414634146,
+          "count": 820,
+          "group": "MALFUNCTION, REACTION, COMPLICATION OF GENITOURINARY DEVICE OR PROCEDURE"
+        },
+        {
+          "aval_count": 228,
+          "aval_rate": 0.30278884462151395,
+          "count": 753,
+          "group": "INFECTIOUS AND PARASITIC DISEASES INCLUDING HIV WITH O.R. PROCEDURE"
+        },
+        {
+          "aval_count": 227,
+          "aval_rate": 0.24487594390507011,
+          "count": 927,
+          "group": "OTHER DISORDERS OF NERVOUS SYSTEM"
+        },
+        {
+          "aval_count": 221,
+          "aval_rate": 0.15751960085531005,
+          "count": 1403,
+          "group": "OTHER PNEUMONIA"
+        },
+        {
+          "aval_count": 201,
+          "aval_rate": 0.29300291545189505,
+          "count": 686,
+          "group": "OTHER MUSCULOSKELETAL SYSTEM AND CONNECTIVE TISSUE DIAGNOSES"
+        },
+        {
+          "aval_count": 193,
+          "aval_rate": 0.2937595129375951,
+          "count": 657,
+          "group": "OTHER BACK AND NECK DISORDERS, FRACTURES AND INJURIES"
+        },
+        {
+          "aval_count": 172,
+          "aval_rate": 0.21994884910485935,
+          "count": 782,
+          "group": "ELECTIVE KNEE JOINT REPLACEMENT"
+        },
+        {
+          "aval_count": 161,
+          "aval_rate": 0.15707317073170732,
+          "count": 1025,
+          "group": "RESPIRATORY FAILURE"
+        },
+        {
+          "aval_count": 155,
+          "aval_rate": 0.12185534591194969,
+          "count": 1272,
+          "group": "CELLULITIS AND OTHER SKIN INFECTIONS"
+        },
+        {
+          "aval_count": 154,
+          "aval_rate": 0.3524027459954233,
+          "count": 437,
+          "group": "ALTERATION IN CONSCIOUSNESS"
+        },
+        {
+          "aval_count": 152,
+          "aval_rate": 0.49836065573770494,
+          "count": 305,
+          "group": "FRACTURES AND DISLOCATIONS EXCEPT FEMUR, PELVIS AND BACK"
+        }
+      ],
+      "top20_by_rate": [
+        {
+          "aval_count": 1,
+          "aval_rate": 1.0,
+          "count": 1,
+          "group": "EXTENSIVE THIRD DEGREE BURNS WITH SKIN GRAFT"
+        },
+        {
+          "aval_count": 91,
+          "aval_rate": 0.7165354330708661,
+          "count": 127,
+          "group": "FRACTURE OF PELVIS OR DISLOCATION OF HIP"
+        },
+        {
+          "aval_count": 410,
+          "aval_rate": 0.6902356902356902,
+          "count": 594,
+          "group": "HIP AND FEMUR FRACTURE REPAIR"
+        },
+        {
+          "aval_count": 4,
+          "aval_rate": 0.6666666666666666,
+          "count": 6,
+          "group": "RADIOTHERAPY"
+        },
+        {
+          "aval_count": 61,
+          "aval_rate": 0.6354166666666666,
+          "count": 96,
+          "group": "FRACTURE OF FEMUR"
+        },
+        {
+          "aval_count": 246,
+          "aval_rate": 0.6275510204081632,
+          "count": 392,
+          "group": "NON-ELECTIVE OR COMPLEX HIP JOINT REPLACEMENT"
+        },
+        {
+          "aval_count": 79,
+          "aval_rate": 0.6076923076923076,
+          "count": 130,
+          "group": "TRACHEOSTOMY WITH MV >96 HOURS WITHOUT EXTENSIVE PROCEDURE"
+        },
+        {
+          "aval_count": 73,
+          "aval_rate": 0.584,
+          "count": 125,
+          "group": "TRACHEOSTOMY WITH MV >96 HOURS WITH EXTENSIVE PROCEDURE"
+        },
+        {
+          "aval_count": 133,
+          "aval_rate": 0.5450819672131147,
+          "count": 244,
+          "group": "INTENTIONAL SELF-HARM AND ATTEMPTED SUICIDE"
+        },
+        {
+          "aval_count": 299,
+          "aval_rate": 0.5264084507042254,
+          "count": 568,
+          "group": "DEGENERATIVE NERVOUS SYSTEM DISORDERS EXCEPT MULTIPLE SCLEROSIS"
+        },
+        {
+          "aval_count": 78,
+          "aval_rate": 0.5165562913907285,
+          "count": 151,
+          "group": "MUSCULOSKELETAL AND OTHER PROCEDURES FOR MULTIPLE SIGNIFICANT TRAUMA"
+        },
+        {
+          "aval_count": 4,
+          "aval_rate": 0.5,
+          "count": 8,
+          "group": "NEONATE BIRTH WEIGHT < 1500 GRAMS WITH MAJOR PROCEDURE"
+        },
+        {
+          "aval_count": 152,
+          "aval_rate": 0.49836065573770494,
+          "count": 305,
+          "group": "FRACTURES AND DISLOCATIONS EXCEPT FEMUR, PELVIS AND BACK"
+        },
+        {
+          "aval_count": 7,
+          "aval_rate": 0.4666666666666667,
+          "count": 15,
+          "group": "ANOXIC AND OTHER SEVERE BRAIN DAMAGE"
+        },
+        {
+          "aval_count": 96,
+          "aval_rate": 0.4266666666666667,
+          "count": 225,
+          "group": "AMPUTATION OF LOWER LIMB EXCEPT TOES"
+        },
+        {
+          "aval_count": 27,
+          "aval_rate": 0.421875,
+          "count": 64,
+          "group": "OPEN CRANIOTOMY FOR TRAUMA"
+        },
+        {
+          "aval_count": 97,
+          "aval_rate": 0.3911290322580645,
+          "count": 248,
+          "group": "INTRACRANIAL HEMORRHAGE"
+        },
+        {
+          "aval_count": 9,
+          "aval_rate": 0.36,
+          "count": 25,
+          "group": "HEART AND/OR LUNG TRANSPLANT"
+        },
+        {
+          "aval_count": 15,
+          "aval_rate": 0.35714285714285715,
+          "count": 42,
+          "group": "SPINAL DISORDERS AND INJURIES"
+        },
+        {
+          "aval_count": 5,
+          "aval_rate": 0.35714285714285715,
+          "count": 14,
+          "group": "IMPLANTABLE HEART ASSIST SYSTEMS"
+        }
+      ]
+    },
+    "ccsr_diagnosis": {
+      "group_column": "ccsr_diagnosis",
+      "group_count": 444,
+      "top10_positive_count": 5090,
+      "top10_positive_volume_share": 0.37982240131333483,
+      "top20_by_positive_volume": [
+        {
+          "aval_count": 1664,
+          "aval_rate": 0.25854568054692356,
+          "count": 6436,
+          "group": "SEPTICEMIA"
+        },
+        {
+          "aval_count": 567,
+          "aval_rate": 0.7096370463078848,
+          "count": 799,
+          "group": "FRACTURE OF THE NECK OF THE FEMUR (HIP), INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 553,
+          "aval_rate": 0.366710875331565,
+          "count": 1508,
+          "group": "CEREBRAL INFARCTION"
+        },
+        {
+          "aval_count": 481,
+          "aval_rate": 0.1721546170365068,
+          "count": 2794,
+          "group": "HEART FAILURE"
+        },
+        {
+          "aval_count": 388,
+          "aval_rate": 0.25276872964169383,
+          "count": 1535,
+          "group": "URINARY TRACT INFECTIONS"
+        },
+        {
+          "aval_count": 297,
+          "aval_rate": 0.14431486880466474,
+          "count": 2058,
+          "group": "DIABETES MELLITUS WITH COMPLICATION"
+        },
+        {
+          "aval_count": 296,
+          "aval_rate": 0.4560862865947612,
+          "count": 649,
+          "group": "FRACTURE OF THE LOWER LIMB (EXCEPT HIP), INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 294,
+          "aval_rate": 0.22528735632183908,
+          "count": 1305,
+          "group": "ACUTE AND UNSPECIFIED RENAL FAILURE"
+        },
+        {
+          "aval_count": 290,
+          "aval_rate": 0.22103658536585366,
+          "count": 1312,
+          "group": "OSTEOARTHRITIS"
+        },
+        {
+          "aval_count": 260,
+          "aval_rate": 0.15873015873015872,
+          "count": 1638,
+          "group": "PNEUMONIA (EXCEPT THAT CAUSED BY TUBERCULOSIS)"
+        },
+        {
+          "aval_count": 226,
+          "aval_rate": 0.3383233532934132,
+          "count": 668,
+          "group": "COMPLICATION OF GENITOURINARY DEVICE, IMPLANT OR GRAFT, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 212,
+          "aval_rate": 0.15565345080763582,
+          "count": 1362,
+          "group": "SPONDYLOPATHIES/SPONDYLOARTHROPATHY (INCLUDING INFECTIVE)"
+        },
+        {
+          "aval_count": 211,
+          "aval_rate": 0.3528428093645485,
+          "count": 598,
+          "group": "TRAUMATIC BRAIN INJURY (TBI); CONCUSSION, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 209,
+          "aval_rate": 0.5694822888283378,
+          "count": 367,
+          "group": "NEUROCOGNITIVE DISORDERS"
+        },
+        {
+          "aval_count": 208,
+          "aval_rate": 0.3018867924528302,
+          "count": 689,
+          "group": "OTHER NERVOUS SYSTEM DISORDERS (NEITHER HEREDITARY NOR DEGENERATIVE)"
+        },
+        {
+          "aval_count": 208,
+          "aval_rate": 0.16720257234726688,
+          "count": 1244,
+          "group": "FLUID AND ELECTROLYTE DISORDERS"
+        },
+        {
+          "aval_count": 197,
+          "aval_rate": 0.168808911739503,
+          "count": 1167,
+          "group": "RESPIRATORY FAILURE; INSUFFICIENCY; ARREST"
+        },
+        {
+          "aval_count": 191,
+          "aval_rate": 0.2284688995215311,
+          "count": 836,
+          "group": "CORONAVIRUS DISEASE 2019 (COVID-19)"
+        },
+        {
+          "aval_count": 181,
+          "aval_rate": 0.43614457831325304,
+          "count": 415,
+          "group": "FRACTURE OF TORSO, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 170,
+          "aval_rate": 0.08937960042060988,
+          "count": 1902,
+          "group": "ALCOHOL-RELATED DISORDERS"
+        }
+      ],
+      "top20_by_rate": [
+        {
+          "aval_count": 1,
+          "aval_rate": 1.0,
+          "count": 1,
+          "group": "ATYPICAL FRACTURE, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 1,
+          "aval_rate": 1.0,
+          "count": 1,
+          "group": "SEQUELA OF SPECIFIED INFECTIOUS DISEASE CONDITIONS"
+        },
+        {
+          "aval_count": 1,
+          "aval_rate": 1.0,
+          "count": 1,
+          "group": "SKIN CANCERS - ALL OTHER TYPES"
+        },
+        {
+          "aval_count": 1,
+          "aval_rate": 1.0,
+          "count": 1,
+          "group": "SUPERFICIAL INJURY; CONTUSION, SUBSEQUENT ENCOUNTER"
+        },
+        {
+          "aval_count": 567,
+          "aval_rate": 0.7096370463078848,
+          "count": 799,
+          "group": "FRACTURE OF THE NECK OF THE FEMUR (HIP), INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 5,
+          "aval_rate": 0.625,
+          "count": 8,
+          "group": "SYMPTOMS OF MENTAL AND SUBSTANCE USE CONDITIONS"
+        },
+        {
+          "aval_count": 3,
+          "aval_rate": 0.6,
+          "count": 5,
+          "group": "OTHER SPECIFIED CNS INFECTION AND POLIOMYELITIS"
+        },
+        {
+          "aval_count": 77,
+          "aval_rate": 0.5789473684210527,
+          "count": 133,
+          "group": "OSTEOPOROSIS"
+        },
+        {
+          "aval_count": 4,
+          "aval_rate": 0.5714285714285714,
+          "count": 7,
+          "group": "ACQUIRED FOOT DEFORMITIES"
+        },
+        {
+          "aval_count": 209,
+          "aval_rate": 0.5694822888283378,
+          "count": 367,
+          "group": "NEUROCOGNITIVE DISORDERS"
+        },
+        {
+          "aval_count": 141,
+          "aval_rate": 0.5183823529411765,
+          "count": 272,
+          "group": "SUICIDAL IDEATION/ATTEMPT/INTENTIONAL SELF-HARM"
+        },
+        {
+          "aval_count": 46,
+          "aval_rate": 0.5168539325842697,
+          "count": 89,
+          "group": "OTHER SPECIFIED INJURY"
+        },
+        {
+          "aval_count": 123,
+          "aval_rate": 0.5146443514644351,
+          "count": 239,
+          "group": "FRACTURE OF THE SPINE AND BACK, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 2,
+          "aval_rate": 0.5,
+          "count": 4,
+          "group": "NERVOUS SYSTEM CANCERS - ALL OTHER TYPES"
+        },
+        {
+          "aval_count": 15,
+          "aval_rate": 0.4838709677419355,
+          "count": 31,
+          "group": "SPINAL CORD INJURY (SCI), INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 39,
+          "aval_rate": 0.48148148148148145,
+          "count": 81,
+          "group": "PRESSURE ULCER OF SKIN"
+        },
+        {
+          "aval_count": 27,
+          "aval_rate": 0.46551724137931033,
+          "count": 58,
+          "group": "STRESS FRACTURE, INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 61,
+          "aval_rate": 0.4621212121212121,
+          "count": 132,
+          "group": "PARKINSON`S DISEASE"
+        },
+        {
+          "aval_count": 296,
+          "aval_rate": 0.4560862865947612,
+          "count": 649,
+          "group": "FRACTURE OF THE LOWER LIMB (EXCEPT HIP), INITIAL ENCOUNTER"
+        },
+        {
+          "aval_count": 181,
+          "aval_rate": 0.43614457831325304,
+          "count": 415,
+          "group": "FRACTURE OF TORSO, INITIAL ENCOUNTER"
+        }
+      ]
+    }
+  },
+  "drg_rule": {
+    "auprc": 0.1859600653687466,
+    "definition": "predict aval_institu when empirical APR-DRG aval rate > 0.5",
+    "false_negative": 11926,
+    "false_positive": 959,
+    "precision": 0.6059983566146261,
+    "predicted_positive_count": 2434,
+    "rate_threshold": 0.5,
+    "recall": 0.11006641295425715,
+    "true_positive": 1475
+  },
+  "drg_rule_auprc_floor": 0.1859600653687466,
+  "interpretation_policy": {
+    "gate_question": "Does the embedding add lift beyond obvious age and diagnosis proxies?",
+    "hard_case_evaluation_required": true,
+    "reason": "Age and diagnosis are admissible source fields, but can be quasi-deterministic proxies for discharge destination.",
+    "technical_leak": false
+  },
+  "positive_count": 13401,
+  "schema_version": 1,
+  "source_rows": 100000,
+  "target_class": "aval_institu",
+  "top10_drg_positive_share": 0.333706439817924
+}

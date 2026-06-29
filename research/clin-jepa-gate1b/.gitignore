@@ -5,3 +5,5 @@ runs/serialize/*
 !runs/serialize/sample_structured.txt
 !runs/serialize/sample_fluent.txt
 !runs/serialize/serialize_manifest.json
+!runs/serialize/proxy_audit.json
+!runs/serialize/proxy_audit.md
