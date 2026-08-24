@@ -87,7 +87,7 @@ class ConformalRiskScoring:
             recommended_level=_level(risk),
             rationale=(
                 f"surge={int(ctx.surge_flag)}, borne haute conforme={hi:.1f}, "
-                f"référence={ref:.1f} → niveau { _level(risk) }."
+                f"référence={ref:.1f} → niveau {_level(risk)}."
             ),
             uncertainty_aware=True,
         )
@@ -122,8 +122,12 @@ def assert_scoring_invariants() -> None:
     high = ActionContext(load_pred=90, interval_lo=80, interval_hi=140, threshold=120)
     assert scorer.score(high).risk_score >= scorer.score(base).risk_score
 
-    normal = scorer.score(ActionContext(load_pred=90, interval_lo=80, interval_hi=110, threshold=120))
-    surge = scorer.score(ActionContext(load_pred=90, interval_lo=60, interval_hi=140, threshold=120, surge_flag=1))
+    normal = scorer.score(
+        ActionContext(load_pred=90, interval_lo=80, interval_hi=110, threshold=120)
+    )
+    surge = scorer.score(
+        ActionContext(load_pred=90, interval_lo=60, interval_hi=140, threshold=120, surge_flag=1)
+    )
     assert surge.recommended_level >= normal.recommended_level
 
     lo, hi = 60.0, 140.0

@@ -5,7 +5,6 @@ Implementation is completed in pass 1 step 3.
 
 from __future__ import annotations
 
-
 SUPPORTED_MESSAGE_TYPES: set[str] = {"ADT^A01", "ADT^A03", "ORM^O01", "ORU^R01"}
 
 

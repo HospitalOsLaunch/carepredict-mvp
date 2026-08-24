@@ -90,7 +90,9 @@ class SyntheticHospitalSimulator:
         frames: list[pd.DataFrame] = []
         static_rows: list[dict[str, float | str]] = []
         total_steps = int(self.cfg.total_days * 24 / self.cfg.step_hours)
-        timestamps = pd.date_range("2024-01-01", periods=total_steps, freq=f"{self.cfg.step_hours}h")
+        timestamps = pd.date_range(
+            "2024-01-01", periods=total_steps, freq=f"{self.cfg.step_hours}h"
+        )
         max_capacity = float(self.cfg.max_capacity)
         bulk_signatures = []
         for support_idx in range(self.cfg.n_sites):
@@ -98,7 +100,9 @@ class SyntheticHospitalSimulator:
             if support_id in self.reserved_site_ids:
                 continue
             support_rng = np.random.default_rng(self.cfg.seed + 1009 * (support_idx + 1))
-            support_capacity = int(support_rng.integers(self.cfg.min_capacity, int(self.cfg.max_capacity * 0.82)))
+            support_capacity = int(
+                support_rng.integers(self.cfg.min_capacity, int(self.cfg.max_capacity * 0.82))
+            )
             support_case_mix = float(support_rng.uniform(self.cfg.min_case_mix, 1.14))
             support_base_saturation = float(support_rng.uniform(self.cfg.min_base_saturation, 0.84))
             support_staffing_base = float(support_rng.uniform(0.92, self.cfg.max_staffing_ratio))
@@ -124,10 +128,18 @@ class SyntheticHospitalSimulator:
                 best_candidate = None
                 best_gap = float("inf")
                 for _ in range(200):
-                    candidate_capacity = int(site_rng.integers(self.cfg.min_capacity, self.cfg.max_capacity + 1))
-                    candidate_case_mix = float(site_rng.uniform(self.cfg.min_case_mix, self.cfg.max_case_mix))
-                    candidate_base_saturation = float(site_rng.uniform(self.cfg.min_base_saturation, self.cfg.max_base_saturation))
-                    candidate_staffing_base = float(site_rng.uniform(self.cfg.min_staffing_ratio, self.cfg.max_staffing_ratio))
+                    candidate_capacity = int(
+                        site_rng.integers(self.cfg.min_capacity, self.cfg.max_capacity + 1)
+                    )
+                    candidate_case_mix = float(
+                        site_rng.uniform(self.cfg.min_case_mix, self.cfg.max_case_mix)
+                    )
+                    candidate_base_saturation = float(
+                        site_rng.uniform(self.cfg.min_base_saturation, self.cfg.max_base_saturation)
+                    )
+                    candidate_staffing_base = float(
+                        site_rng.uniform(self.cfg.min_staffing_ratio, self.cfg.max_staffing_ratio)
+                    )
                     candidate_seasonality_strength = float(site_rng.uniform(0.05, 0.24))
                     signature = np.asarray(
                         [
@@ -139,8 +151,13 @@ class SyntheticHospitalSimulator:
                         ],
                         dtype=float,
                     )
-                    ratio = float(np.min(np.linalg.norm(bulk_signatures_arr - signature[None, :], axis=1)) / bulk_intra_median)
-                    gap = 0.0 if 0.35 <= ratio <= 0.50 else min(abs(ratio - 0.35), abs(ratio - 0.50))
+                    ratio = float(
+                        np.min(np.linalg.norm(bulk_signatures_arr - signature[None, :], axis=1))
+                        / bulk_intra_median
+                    )
+                    gap = (
+                        0.0 if 0.35 <= ratio <= 0.50 else min(abs(ratio - 0.35), abs(ratio - 0.50))
+                    )
                     if gap < best_gap:
                         best_candidate = (
                             candidate_capacity,
@@ -153,9 +170,13 @@ class SyntheticHospitalSimulator:
                         best_gap = gap
                     if 0.35 <= ratio <= 0.50:
                         break
-                capacity, case_mix, base_saturation, staffing_base, seasonality_strength, ratio = best_candidate
+                capacity, case_mix, base_saturation, staffing_base, seasonality_strength, ratio = (
+                    best_candidate
+                )
                 if not (0.35 <= ratio <= 0.50):
-                    anchor = bulk_signatures_arr[int(site_rng.integers(0, len(bulk_signatures_arr)))]
+                    anchor = bulk_signatures_arr[
+                        int(site_rng.integers(0, len(bulk_signatures_arr)))
+                    ]
                     target_ratio = float(site_rng.uniform(0.38, 0.47))
                     capacity = int(
                         np.clip(
@@ -164,12 +185,34 @@ class SyntheticHospitalSimulator:
                             self.cfg.max_capacity,
                         )
                     )
-                    staffing_base = float(np.clip(anchor[1] + site_rng.normal(0.0, 0.015), self.cfg.min_staffing_ratio, self.cfg.max_staffing_ratio))
-                    case_mix = float(np.clip(anchor[2] + site_rng.normal(0.0, 0.025), self.cfg.min_case_mix, self.cfg.max_case_mix))
-                    base_saturation = float(np.clip(anchor[3] + site_rng.normal(0.0, 0.020), self.cfg.min_base_saturation, self.cfg.max_base_saturation))
-                    seasonality_strength = float(np.clip(anchor[4] + site_rng.normal(0.0, 0.015), 0.05, 0.24))
+                    staffing_base = float(
+                        np.clip(
+                            anchor[1] + site_rng.normal(0.0, 0.015),
+                            self.cfg.min_staffing_ratio,
+                            self.cfg.max_staffing_ratio,
+                        )
+                    )
+                    case_mix = float(
+                        np.clip(
+                            anchor[2] + site_rng.normal(0.0, 0.025),
+                            self.cfg.min_case_mix,
+                            self.cfg.max_case_mix,
+                        )
+                    )
+                    base_saturation = float(
+                        np.clip(
+                            anchor[3] + site_rng.normal(0.0, 0.020),
+                            self.cfg.min_base_saturation,
+                            self.cfg.max_base_saturation,
+                        )
+                    )
+                    seasonality_strength = float(
+                        np.clip(anchor[4] + site_rng.normal(0.0, 0.015), 0.05, 0.24)
+                    )
             else:
-                capacity = int(site_rng.integers(self.cfg.min_capacity, int(self.cfg.max_capacity * 0.82)))
+                capacity = int(
+                    site_rng.integers(self.cfg.min_capacity, int(self.cfg.max_capacity * 0.82))
+                )
                 case_mix = float(site_rng.uniform(self.cfg.min_case_mix, 1.14))
                 base_saturation = float(site_rng.uniform(self.cfg.min_base_saturation, 0.84))
                 staffing_base = float(site_rng.uniform(0.92, self.cfg.max_staffing_ratio))
@@ -271,7 +314,7 @@ class SyntheticHospitalSimulator:
         occupancy_ratio = occupancy / capacity
         expected_inflow = max(base_inflow * case_mix, 1e-6)
         inflow_surge = inflow / expected_inflow
-        patients_per_staff_ratio = np.clip(occupancy_ratio / effective_staffing_ratio, 0.0, 3.0)
+        _ = np.clip(occupancy_ratio / effective_staffing_ratio, 0.0, 3.0)
         criticality = self._criticality(
             occupancy_ratio,
             inflow_surge,
@@ -376,14 +419,11 @@ class SyntheticHospitalSimulator:
         staff_sign = rng.choice(np.array([-1.0, 1.0]), size=n)
         if self.cfg.max_staffing_delta > 0:
             staffing_delta = (
-                staff_mask
-                * staff_sign
-                * rng.uniform(0.04, self.cfg.max_staffing_delta, size=n)
+                staff_mask * staff_sign * rng.uniform(0.04, self.cfg.max_staffing_delta, size=n)
             )
         if self.cfg.max_discharge_delta_per_capacity > 0:
-            discharge_delta = (
-                discharge_mask
-                * rng.uniform(0.004, self.cfg.max_discharge_delta_per_capacity, size=n)
+            discharge_delta = discharge_mask * rng.uniform(
+                0.004, self.cfg.max_discharge_delta_per_capacity, size=n
             )
         return staffing_delta.astype(float), discharge_delta.astype(float)
 
@@ -447,7 +487,9 @@ def generate_sites(cfg) -> list[SyntheticSiteDiagnostics]:
                 util=group["occupancy_ratio"].to_numpy(dtype=float),
                 rise=group["inflow_surge"].to_numpy(dtype=float),
                 kappa=group["criticality"].to_numpy(dtype=float),
-                observable_instantaneous=group.loc[:, INSTANTANEOUS_OBSERVABLE_COLUMNS].to_numpy(dtype=float),
+                observable_instantaneous=group.loc[:, INSTANTANEOUS_OBSERVABLE_COLUMNS].to_numpy(
+                    dtype=float
+                ),
                 capacity=float(group["capacity"].iloc[0]),
                 nurse_ratio_target=float(group["staffing_ratio"].median()),
                 casemix=np.array(

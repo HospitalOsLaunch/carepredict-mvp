@@ -37,8 +37,7 @@ GLOSSARY: Final[dict[str, str]] = {
         "Marquée par un losange orange sur le graphique."
     ),
     "Créneau critique": (
-        "Heure pour laquelle la prédiction médiane dépasse le seuil "
-        "critique du service."
+        "Heure pour laquelle la prédiction médiane dépasse le seuil critique du service."
     ),
     "Horizon de prédiction": (
         "Nombre d'heures dans le futur pour lesquelles le modèle "

@@ -10,7 +10,9 @@ from carepredict_cqr import run_pipeline
 def main() -> None:
     """Lance le pipeline complet et affiche le tableau de couverture."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--synthetic", action="store_true", help="utiliser le générateur hors-ligne")
+    parser.add_argument(
+        "--synthetic", action="store_true", help="utiliser le générateur hors-ligne"
+    )
     parser.add_argument("--dep", nargs="*", default=None, help="codes départements à garder")
     parser.add_argument("--surge-weight", type=float, default=12.0)
     args = parser.parse_args()

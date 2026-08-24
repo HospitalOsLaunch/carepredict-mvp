@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -38,7 +38,9 @@ def require_monotonic_by_site(frame: pd.DataFrame) -> None:
             )
 
 
-def choose_cross_site_validation_sites(site_ids: Iterable[str], cfg: SplitConfig) -> tuple[str, ...]:
+def choose_cross_site_validation_sites(
+    site_ids: Iterable[str], cfg: SplitConfig
+) -> tuple[str, ...]:
     sites = np.array(sorted(set(site_ids)))
     if len(sites) < 2:
         raise ValueError("Le split cross-site exige au moins deux sites.")
@@ -48,7 +50,9 @@ def choose_cross_site_validation_sites(site_ids: Iterable[str], cfg: SplitConfig
     return tuple(sorted(sites[order[:n_val]].tolist()))
 
 
-def add_validation_splits(frame: pd.DataFrame, cfg: SplitConfig) -> tuple[pd.DataFrame, SplitSummary]:
+def add_validation_splits(
+    frame: pd.DataFrame, cfg: SplitConfig
+) -> tuple[pd.DataFrame, SplitSummary]:
     """Attach train / temporal hold-out / unseen-site labels without row shuffling."""
 
     require_monotonic_by_site(frame)
@@ -83,7 +87,10 @@ def validate_split_frame(frame: pd.DataFrame, summary: SplitSummary) -> None:
     if not train_rows.empty and (train_rows["timestamp"] >= summary.temporal_holdout_start).any():
         raise ValueError("Fuite temporelle: des lignes train tombent dans le hold-out.")
     temporal_rows = frame[frame["split"] == TEMPORAL_VAL]
-    if not temporal_rows.empty and (temporal_rows["timestamp"] < summary.temporal_holdout_start).any():
+    if (
+        not temporal_rows.empty
+        and (temporal_rows["timestamp"] < summary.temporal_holdout_start).any()
+    ):
         raise ValueError("Hold-out temporel invalide: lignes trop anciennes en validation.")
     cross_rows = frame[frame["split"] == CROSS_SITE_VAL]
     if set(cross_rows["site_id"].unique()) - cross_site_set:

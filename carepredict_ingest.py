@@ -46,7 +46,7 @@ def load_drees(url: str = DREES_CSV_URL) -> pd.DataFrame:
     """Charge le CSV DREES depuis data.gouv.fr. Réseau requis."""
     import urllib.request
 
-    print(f"[load] téléchargement DREES …", file=sys.stderr)
+    print("[load] téléchargement DREES …", file=sys.stderr)
     with urllib.request.urlopen(url, timeout=120) as resp:
         raw = resp.read()
     # Le fichier est en UTF-8, séparateur ';' (standard data.gouv.fr FR). On tente les deux.
@@ -61,9 +61,10 @@ def load_drees(url: str = DREES_CSV_URL) -> pd.DataFrame:
     raise RuntimeError("Schéma DREES inattendu — vérifier la source.")
 
 
-def make_synthetic(n_deps: int = 5, start="2017-01-01", end="2023-12-31",
-                   seed: int = 7) -> pd.DataFrame:
-    """Fallback hors-ligne : séries SIIPS-like avec saisonnalité + surges hivernales/caniculaires."""
+def make_synthetic(
+    n_deps: int = 5, start="2017-01-01", end="2023-12-31", seed: int = 7
+) -> pd.DataFrame:
+    """Fallback hors-ligne avec saisonnalité et surges hivernales/caniculaires."""
     rng = np.random.default_rng(seed)
     dates = pd.date_range(start, end, freq="D")
     doy = dates.dayofyear.values
@@ -71,8 +72,8 @@ def make_synthetic(n_deps: int = 5, start="2017-01-01", end="2023-12-31",
     for k in range(n_deps):
         base = 200 + 80 * k
         # saisonnalité annuelle : pic hivernal (épidémies) + bosse estivale (canicule/trauma)
-        winter = 40 * np.cos(2 * np.pi * (doy - 15) / 365)           # max début janvier
-        summer = 18 * np.exp(-((doy - 200) ** 2) / (2 * 12 ** 2))     # bosse mi-juillet (canicule)
+        winter = 40 * np.cos(2 * np.pi * (doy - 15) / 365)  # max début janvier
+        summer = 18 * np.exp(-((doy - 200) ** 2) / (2 * 12**2))  # bosse mi-juillet (canicule)
         weekly = 25 * (np.isin(dates.weekday, [0, 6])).astype(float)  # lundi/dimanche plus chargés
         noise = rng.normal(0, 12, len(dates))
         # surges épidémiques : quelques hivers avec pics marqués
@@ -87,12 +88,16 @@ def make_synthetic(n_deps: int = 5, start="2017-01-01", end="2023-12-31",
                 xs = np.arange(lo, hi)
                 surge[lo:hi] += amp * np.exp(-((xs - idx) ** 2) / (2 * (width / 2) ** 2))
         val = np.clip(base + winter + summer + weekly + surge + noise, 0, None)
-        frames.append(pd.DataFrame({
-            "date": dates.strftime("%d/%m/%Y"),
-            "dep": f"{90 + k:02d}",
-            "libelle_dep": f"SYNTH-{k}",
-            "nb_passages": val.round(1),
-        }))
+        frames.append(
+            pd.DataFrame(
+                {
+                    "date": dates.strftime("%d/%m/%Y"),
+                    "dep": f"{90 + k:02d}",
+                    "libelle_dep": f"SYNTH-{k}",
+                    "nb_passages": val.round(1),
+                }
+            )
+        )
     print(f"[load] SYNTHÉTIQUE — {n_deps} deps", file=sys.stderr)
     return pd.concat(frames, ignore_index=True)
 
@@ -100,9 +105,10 @@ def make_synthetic(n_deps: int = 5, start="2017-01-01", end="2023-12-31",
 # --------------------------------------------------------------------------- #
 # 2. CANONICALISATION → schéma CarePredict
 # --------------------------------------------------------------------------- #
-def to_canonical(df: pd.DataFrame, deps: list[str] | None = None,
-                 drop_partial: bool = True) -> pd.DataFrame:
-    """Mappe le schéma DREES vers le schéma canonique CarePredict (site, ts, load_proxy, covariables)."""
+def to_canonical(
+    df: pd.DataFrame, deps: list[str] | None = None, drop_partial: bool = True
+) -> pd.DataFrame:
+    """Mappe DREES vers le schéma CarePredict (site, ts, load_proxy, covariables)."""
     df = df.copy()
     raw_dates = df["date"].astype(str).str.strip()
     date_sample = raw_dates.dropna().head(100)
@@ -120,10 +126,7 @@ def to_canonical(df: pd.DataFrame, deps: list[str] | None = None,
         )
     if df["load_proxy"].isna().mean() > 0.50:
         sample = df["nb_passages"].astype(str).head(3).tolist()
-        raise ValueError(
-            "Parsing nb_passages massif échoué dans to_canonical "
-            f"(exemples={sample})"
-        )
+        raise ValueError(f"Parsing nb_passages massif échoué dans to_canonical (exemples={sample})")
     df = df.dropna(subset=["ts", "load_proxy"])
 
     if drop_partial:
@@ -143,16 +146,27 @@ def to_canonical(df: pd.DataFrame, deps: list[str] | None = None,
     df["dow_sin"] = np.sin(2 * np.pi * df["dow"] / 7)
     df["dow_cos"] = np.cos(2 * np.pi * df["dow"] / 7)
 
-    cols = ["site_id", "ts", "load_proxy", "dow", "doy", "week", "month",
-            "is_weekend", "doy_sin", "doy_cos", "dow_sin", "dow_cos"]
+    cols = [
+        "site_id",
+        "ts",
+        "load_proxy",
+        "dow",
+        "doy",
+        "week",
+        "month",
+        "is_weekend",
+        "doy_sin",
+        "doy_cos",
+        "dow_sin",
+        "dow_cos",
+    ]
     return df[cols].sort_values(["site_id", "ts"]).reset_index(drop=True)
 
 
 # --------------------------------------------------------------------------- #
 # 3. SURGE FLAG — régime de forte charge, défini par site et saison
 # --------------------------------------------------------------------------- #
-def add_surge_flag(df: pd.DataFrame, q: float = 0.90,
-                   by_season: bool = True) -> pd.DataFrame:
+def add_surge_flag(df: pd.DataFrame, q: float = 0.90, by_season: bool = True) -> pd.DataFrame:
     """
     surge_flag = charge au-dessus d'un seuil haut, calculé PAR SITE.
     by_season=True : seuil relatif au mois (sinon un hiver entier serait 'surge', ce qui
@@ -166,14 +180,13 @@ def add_surge_flag(df: pd.DataFrame, q: float = 0.90,
 
     if by_season:
         # seuil par (site, mois) : capture le pic anormal RELATIF à la saison
-        thr_seas = df.groupby(["site_id", "month"])["load_proxy"].transform(
-            lambda s: s.quantile(q))
+        thr_seas = df.groupby(["site_id", "month"])["load_proxy"].transform(lambda s: s.quantile(q))
         df["surge_flag"] = (df["load_proxy"] >= thr_seas).astype(int)
     else:
         df["surge_flag"] = df["surge_flag_abs"]
 
     rate = df["surge_flag"].mean()
-    print(f"[surge] taux surge global = {rate:.1%} (cible ≈ {1-q:.0%})", file=sys.stderr)
+    print(f"[surge] taux surge global = {rate:.1%} (cible ≈ {1 - q:.0%})", file=sys.stderr)
     return df
 
 
@@ -188,17 +201,23 @@ class Split:
 
     def summary(self) -> str:
         def rng(d):
-            return f"{d['ts'].min().date()} → {d['ts'].max().date()}  ({len(d):,} obs, surge {d['surge_flag'].mean():.1%})"
-        return (f"  train : {rng(self.train)}\n"
-                f"  calib : {rng(self.calib)}\n"
-                f"  test  : {rng(self.test)}")
+            return (
+                f"{d['ts'].min().date()} → {d['ts'].max().date()}  "
+                f"({len(d):,} obs, surge {d['surge_flag'].mean():.1%})"
+            )
+
+        return (
+            f"  train : {rng(self.train)}\n  calib : {rng(self.calib)}\n  test  : {rng(self.test)}"
+        )
 
 
-def temporal_split(df: pd.DataFrame, train_frac=0.70, calib_frac=0.15,
-                   require_surge_in_test=True) -> Split:
+def temporal_split(
+    df: pd.DataFrame, train_frac=0.70, calib_frac=0.15, require_surge_in_test=True
+) -> Split:
     """
     Découpe TEMPORELLE (jamais aléatoire — fuite garantie sinon sur série temporelle).
-    train → fit du modèle ; calib → calcul des scores de non-conformité ; test → évaluation couverture.
+    train → fit du modèle ; calib → scores de non-conformité ; test → évaluation
+    de la couverture.
     require_surge_in_test : vérifie que le test contient des épisodes de surge (sinon le test
     de couverture sous surge n'a aucun sens).
     """
@@ -218,8 +237,9 @@ def temporal_split(df: pd.DataFrame, train_frac=0.70, calib_frac=0.15,
 # --------------------------------------------------------------------------- #
 # 5. CONFORMAL — split classique + Mondrian (stratifié surge)
 # --------------------------------------------------------------------------- #
-def conformal_intervals(y_calib, yhat_calib, yhat_test, alpha=0.10,
-                        surge_calib=None, surge_test=None):
+def conformal_intervals(
+    y_calib, yhat_calib, yhat_test, alpha=0.10, surge_calib=None, surge_test=None
+):
     """
     Retourne des intervalles à (1-alpha) par deux méthodes :
       - 'split'   : un seul quantile de non-conformité global (l'actuel, ~0.70 en surge)
@@ -252,8 +272,12 @@ def conformal_intervals(y_calib, yhat_calib, yhat_test, alpha=0.10,
             else:
                 qmap[regime] = q_split  # repli si trop peu d'exemples
         q_test = np.where(surge_test, qmap[True], qmap[False])
-        out["mondrian"] = {"lo": yhat_test - q_test, "hi": yhat_test + q_test,
-                           "q_normal": qmap[False], "q_surge": qmap[True]}
+        out["mondrian"] = {
+            "lo": yhat_test - q_test,
+            "hi": yhat_test + q_test,
+            "q_normal": qmap[False],
+            "q_surge": qmap[True],
+        }
     return out
 
 
@@ -265,13 +289,15 @@ def coverage_report(y_test, intervals, surge_test):
     for method, iv in intervals.items():
         covered = (y >= iv["lo"]) & (y <= iv["hi"])
         width = np.mean(iv["hi"] - iv["lo"])
-        rows.append({
-            "method": method,
-            "cov_global": covered.mean(),
-            "cov_normal": covered[~surge].mean() if (~surge).any() else np.nan,
-            "cov_surge": covered[surge].mean() if surge.any() else np.nan,
-            "width_mean": width,
-        })
+        rows.append(
+            {
+                "method": method,
+                "cov_global": covered.mean(),
+                "cov_normal": covered[~surge].mean() if (~surge).any() else np.nan,
+                "cov_surge": covered[surge].mean() if surge.any() else np.nan,
+                "width_mean": width,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -314,14 +340,16 @@ def main():
     canon = to_canonical(raw, deps=args.dep)
     canon = add_surge_flag(canon, q=0.90, by_season=True)
 
-    print(f"\n[canonical] {len(canon):,} obs · {canon['site_id'].nunique()} sites · "
-          f"{canon['ts'].min().date()} → {canon['ts'].max().date()}")
+    print(
+        f"\n[canonical] {len(canon):,} obs · {canon['site_id'].nunique()} sites · "
+        f"{canon['ts'].min().date()} → {canon['ts'].max().date()}"
+    )
 
     split = temporal_split(canon)
     print("\n[split temporel]")
     print(split.summary())
 
-    # --- Brique A : la baseline contre elle-même (sanity check ; remplacer yhat_model par le RSSM) ---
+    # --- Brique A : baseline contre elle-même (remplacer yhat_model par le RSSM) ---
     yhat_base_test = seasonal_baseline(split.train, split.test)
     yhat_base_cal = seasonal_baseline(split.train, split.calib)
 
@@ -330,23 +358,28 @@ def main():
     rng = np.random.default_rng(0)
     yhat_model_test = yhat_base_test + rng.normal(0, 5, len(yhat_base_test))
 
-    ss, mae_m, mae_b = skill_score(split.test["load_proxy"].values,
-                                   yhat_model_test, yhat_base_test)
-    print(f"\n[Brique A] MAE modèle={mae_m:.1f} · MAE baseline={mae_b:.1f} · "
-          f"skill score={ss:+.3f}  ({'BAT la baseline' if ss > 0 else 'ne bat PAS la baseline'})")
+    ss, mae_m, mae_b = skill_score(split.test["load_proxy"].values, yhat_model_test, yhat_base_test)
+    print(
+        f"\n[Brique A] MAE modèle={mae_m:.1f} · MAE baseline={mae_b:.1f} · "
+        f"skill score={ss:+.3f}  ({'BAT la baseline' if ss > 0 else 'ne bat PAS la baseline'})"
+    )
 
     # --- Test 2 : conformal split vs Mondrian, couverture par régime ---
     iv = conformal_intervals(
-        y_calib=split.calib["load_proxy"].values, yhat_calib=yhat_base_cal,
-        yhat_test=yhat_base_test, alpha=0.10,
+        y_calib=split.calib["load_proxy"].values,
+        yhat_calib=yhat_base_cal,
+        yhat_test=yhat_base_test,
+        alpha=0.10,
         surge_calib=split.calib["surge_flag"].values,
         surge_test=split.test["surge_flag"].values,
     )
     rep = coverage_report(split.test["load_proxy"].values, iv, split.test["surge_flag"].values)
     print("\n[Test 2 — couverture conforme (cible 0.90)]")
     print(rep.to_string(index=False, float_format=lambda x: f"{x:.3f}"))
-    print("\n→ Lecture : 'split' chute typiquement sous 0.90 en cov_surge ; "
-          "'mondrian' restaure la couverture surge au prix d'intervalles plus larges en surge.")
+    print(
+        "\n→ Lecture : 'split' chute typiquement sous 0.90 en cov_surge ; "
+        "'mondrian' restaure la couverture surge au prix d'intervalles plus larges en surge."
+    )
 
     canon.to_parquet(args.out, index=False)
     print(f"\n[out] schéma canonique écrit → {args.out}")

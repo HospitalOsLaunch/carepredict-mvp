@@ -93,6 +93,5 @@ def test_phase_a_honesty_gates_hold_across_five_seeds(phase_a_honesty_rows):
     assert summary["all_gates"]
     assert summary["min_t2"] >= 0.10
     print(
-        "T3b gains are reported, not gated: "
-        + ", ".join(f"{row['t3b_gain']:.3f}" for row in rows)
+        "T3b gains are reported, not gated: " + ", ".join(f"{row['t3b_gain']:.3f}" for row in rows)
     )

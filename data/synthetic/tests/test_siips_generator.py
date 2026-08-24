@@ -10,14 +10,10 @@ from data.synthetic.siips_generator import DEFAULT_SERVICES, generate_dataset
 def test_daily_peak_exceeds_night_mean() -> None:
     dataset = generate_dataset(months=1, services=[DEFAULT_SERVICES[1]], seed=123)
     morning_values = [
-        record.siips_score
-        for record in dataset.care_load
-        if 8 <= record.measured_at.hour <= 11
+        record.siips_score for record in dataset.care_load if 8 <= record.measured_at.hour <= 11
     ]
     night_values = [
-        record.siips_score
-        for record in dataset.care_load
-        if 0 <= record.measured_at.hour <= 5
+        record.siips_score for record in dataset.care_load if 0 <= record.measured_at.hour <= 5
     ]
 
     assert statistics.mean(morning_values) > statistics.mean(night_values) + 5.0
@@ -31,9 +27,7 @@ def test_weekday_siips_exceeds_weekend_siips() -> None:
         if record.measured_at.weekday() in (0, 1, 2, 3, 4)
     ]
     weekend_values = [
-        record.siips_score
-        for record in dataset.care_load
-        if record.measured_at.weekday() in (5, 6)
+        record.siips_score for record in dataset.care_load if record.measured_at.weekday() in (5, 6)
     ]
 
     assert statistics.mean(weekday_values) > statistics.mean(weekend_values) + 5.0

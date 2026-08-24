@@ -67,7 +67,9 @@ def action_plan_for_lever(lever: ActionLever, horizon_h: int) -> LeverSimulation
     return LeverSimulationPlan(
         mode="heuristic",
         actions=[],
-        rationale=f"{lever} has no clean ActionStep channel in Gate B; returning Gate A heuristic impact.",
+        rationale=(
+            f"{lever} has no clean ActionStep channel in Gate B; returning Gate A heuristic impact."
+        ),
     )
 
 

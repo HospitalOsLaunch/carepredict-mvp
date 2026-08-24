@@ -77,7 +77,9 @@ def build_stage2_sites(
             Stage2Site(
                 site_id=site_id,
                 features=group.loc[:, data.temporal_feature_columns].to_numpy(dtype=np.float32),
-                static=site_static.loc[list(data.static_feature_columns)].to_numpy(dtype=np.float32),
+                static=site_static.loc[list(data.static_feature_columns)].to_numpy(
+                    dtype=np.float32
+                ),
                 criticality=group["criticality"].to_numpy(dtype=np.float32),
                 levels=group["criticality_level"].to_numpy(dtype=np.int64),
                 split=group["split"].to_numpy(dtype=str),

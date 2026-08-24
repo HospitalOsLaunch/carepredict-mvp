@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from carepredict_cqr import (
@@ -22,7 +21,6 @@ from carepredict_ingest import (
     to_canonical,
 )
 from carepredict_quantile import fit_quantile_head
-
 
 # Alpha conforme différencié par régime — choix de conception à coût asymétrique.
 # En surge, le coût clinique de sous-couvrir (sous-dimensionner la charge de soins)
@@ -125,6 +123,12 @@ def main() -> None:
     cqr_mondrian_surge = float(values.loc["cqr_mondrian", "cov_surge"])
     cqr_mondrian_width_surge = float(values.loc["cqr_mondrian", "width_surge"])
     cqr_mondrian_width_normal = float(values.loc["cqr_mondrian", "width_normal"])
+    surge_rate = float(canon["surge_flag"].mean())
+    surge_status = verdict(0.07 <= surge_rate <= 0.13, 0.05 <= surge_rate <= 0.20)
+    crossing_status = verdict(
+        pred_calib.crossing_rate <= 0.01 and pred_test.crossing_rate <= 0.01,
+        warn=True,
+    )
 
     lines = [
         "# Rapport diagnostic — run DREES complet",
@@ -143,8 +147,7 @@ def main() -> None:
         "",
         "## CP2 — Surge flag (réel)",
         "",
-        f"- Taux surge global : {canon['surge_flag'].mean():.3%}. Attendu ≈ 10 %. "
-        f"VERDICT : {verdict(0.07 <= canon['surge_flag'].mean() <= 0.13, 0.05 <= canon['surge_flag'].mean() <= 0.20)}.",
+        f"- Taux surge global : {surge_rate:.3%}. Attendu ≈ 10 %. VERDICT : {surge_status}.",
         f"- Points surge calib : {calib_surge_count}. Points surge test : {test_surge_count}.",
         "- Comptage surge par mois :",
         "",
@@ -158,7 +161,8 @@ def main() -> None:
         "",
         "## CP-TROUS — Continuité temporelle",
         "",
-        f"- Grille pleine théorique : {canon['site_id'].nunique()} sites × {full_days} jours = {full_grid:,}.",
+        f"- Grille pleine théorique : {canon['site_id'].nunique()} sites × "
+        f"{full_days} jours = {full_grid:,}.",
         f"- Lignes canoniques : {len(canon):,}. Jours manquants calculés : {missing_total}.",
         "- Top départements par jours manquants :",
         "",
@@ -175,7 +179,7 @@ def main() -> None:
         "",
         "## CP3 — Brique A (skill score réel)",
         "",
-        f"- yhat_model : vraie tête quantile HGBR, médiane `q_med`.",
+        "- yhat_model : vraie tête quantile HGBR, médiane `q_med`.",
         f"- skill_score : {ss:+.3f}.",
         f"- MAE modèle : {mae_model:.3f}. MAE baseline saisonnière : {mae_base:.3f}.",
         f"- VERDICT : {verdict(ss > 0, warn=True)}.",
@@ -213,7 +217,7 @@ def main() -> None:
         "",
         f"- Taux crossing calib avant réordonnancement : {pred_calib.crossing_rate:.3%}.",
         f"- Taux crossing test avant réordonnancement : {pred_test.crossing_rate:.3%}.",
-        f"- VERDICT : {verdict(pred_calib.crossing_rate <= 0.01 and pred_test.crossing_rate <= 0.01, warn=True)}.",
+        f"- VERDICT : {crossing_status}.",
         "",
         "## Décisions à valider",
         "",
@@ -223,8 +227,10 @@ def main() -> None:
         "borné, ou exclusion de fenêtres).",
         "2. Ajouter un diagnostic de stabilité calib→test par régime surge : distributions de "
         "résidus CQR calib vs test, par mois et par site. Justification : `q_surge` peut être "
-        "calibré correctement sur calib mais ne pas transférer si les épisodes test sont plus extrêmes.",
-        "3. Tester une définition de surge non seulement site×mois mais aussi épidémie/hiver global "
+        "calibré correctement sur calib mais ne pas transférer si les épisodes test sont plus "
+        "extrêmes.",
+        "3. Tester une définition de surge non seulement site×mois mais aussi épidémie/hiver "
+        "global "
         "pour la lecture clinique. Justification : le flag saisonnier uniformise mécaniquement le "
         "taux par mois, ce qui masque les pics hivernaux attendus dans CP2.",
         "4. Ne pas modifier la calibration CQR avant d'avoir arbitré les points 1–3 : le tableau "

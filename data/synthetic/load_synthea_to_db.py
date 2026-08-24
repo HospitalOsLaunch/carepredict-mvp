@@ -6,12 +6,11 @@ import argparse
 import csv
 import logging
 import os
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable, Sequence
 from uuid import uuid4
-
 
 LOGGER = logging.getLogger("carepredict.synthea_loader")
 SOURCE_SYSTEM = "synthea"
@@ -207,8 +206,12 @@ def insert_dataset(dataset: SyntheaDataset) -> None:
     psycopg2 = _psycopg2()
     with psycopg2.connect(**db_config_from_env()) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM canonical.admissions WHERE source_system = %s", (SOURCE_SYSTEM,))
-            cursor.execute("DELETE FROM canonical.discharges WHERE source_system = %s", (SOURCE_SYSTEM,))
+            cursor.execute(
+                "DELETE FROM canonical.admissions WHERE source_system = %s", (SOURCE_SYSTEM,)
+            )
+            cursor.execute(
+                "DELETE FROM canonical.discharges WHERE source_system = %s", (SOURCE_SYSTEM,)
+            )
             insert_services(cursor, dataset.services)
             insert_admissions(cursor, dataset.admissions)
             insert_discharges(cursor, dataset.discharges)

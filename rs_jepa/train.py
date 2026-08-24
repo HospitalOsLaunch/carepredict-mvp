@@ -90,7 +90,9 @@ def build_phase_a_sites(
             PhaseASite(
                 site_id=site_id,
                 features=group.loc[:, data.temporal_feature_columns].to_numpy(dtype=np.float32),
-                static=site_static.loc[list(data.static_feature_columns)].to_numpy(dtype=np.float32),
+                static=site_static.loc[list(data.static_feature_columns)].to_numpy(
+                    dtype=np.float32
+                ),
                 criticality=group["criticality"].to_numpy(dtype=np.float32),
                 actions=group.loc[:, data.action_columns].to_numpy(dtype=np.float32),
                 action_deltas=group.loc[:, data.action_delta_columns].to_numpy(dtype=np.float32),
@@ -239,11 +241,7 @@ def load_stage1_checkpoint(
 
     load_device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     payload = torch.load(Path(path), map_location=load_device, weights_only=False)
-    missing = [
-        key
-        for key in ("rssm_state_dict", "predictor_state_dict")
-        if key not in payload
-    ]
+    missing = [key for key in ("rssm_state_dict", "predictor_state_dict") if key not in payload]
     if missing:
         raise ValueError(
             "Checkpoint Stage 1 incomplet: "
@@ -392,9 +390,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
                 )
 
     ceiling_rows = [run_honesty_diagnostic(cfg, seed) for seed in range(5)]
-    ceiling = 1.0 - float(
-        np.mean([row["hidden_share"] for row in ceiling_rows])
-    )
+    ceiling = 1.0 - float(np.mean([row["hidden_share"] for row in ceiling_rows]))
     _summary = summarize_rows(ceiling_rows)
     probes = run_frozen_latent_probes(
         encoder,

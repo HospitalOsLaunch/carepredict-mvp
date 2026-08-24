@@ -130,7 +130,9 @@ class ActionDeltaHead(nn.Module):
             elif channels.ndim == 1:
                 channels = channels[:, None].expand(batch, horizon)
         if channels.shape != (batch, horizon):
-            raise ValueError(f"channel_id doit être scalaire, [B], ou [B,H], reçu={tuple(channels.shape)}.")
+            raise ValueError(
+                f"channel_id doit être scalaire, [B], ou [B,H], reçu={tuple(channels.shape)}."
+            )
         channel_features = self.channel_embed(channels)
         features = torch.cat([z0, z_action, z_action - z0, channel_features], dim=-1)
         return self.net(features).squeeze(-1)

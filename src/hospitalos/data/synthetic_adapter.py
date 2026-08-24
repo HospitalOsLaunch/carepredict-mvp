@@ -157,7 +157,9 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
                 raise AssertionError("synthetic series must have hourly granularity")
 
     @staticmethod
-    def _event_counts(timestamps: Sequence[datetime], event_times: Sequence[datetime]) -> np.ndarray:
+    def _event_counts(
+        timestamps: Sequence[datetime], event_times: Sequence[datetime]
+    ) -> np.ndarray:
         """Count events in each hourly bucket aligned to ``timestamps``."""
         hour_to_index = {timestamp: index for index, timestamp in enumerate(timestamps)}
         counts = np.zeros(len(timestamps), dtype=np.float32)

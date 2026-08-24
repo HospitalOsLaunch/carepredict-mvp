@@ -194,7 +194,9 @@ def collect_forecast_records(
     return records
 
 
-def history_until(points: list[CareLoadPoint], origin: datetime, *, max_length: int = 720) -> list[float]:
+def history_until(
+    points: list[CareLoadPoint], origin: datetime, *, max_length: int = 720
+) -> list[float]:
     """Return bounded SIIPS history using only observations at or before origin."""
     history = [
         float(point.siips)
@@ -279,18 +281,17 @@ def fetch_care_load_points(*, service_ids: list[str]) -> list[CareLoadPoint]:
     """Fetch canonical care_load SIIPS points with deterministic ordering."""
     config = db_config_from_env()
     psycopg2 = _psycopg2()
-    with psycopg2.connect(**config) as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
+    with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+        cursor.execute(
+            """
                 SELECT service_id, measured_at, siips_score::DOUBLE PRECISION
                 FROM canonical.care_load
                 WHERE service_id = ANY(%s)
                 ORDER BY service_id ASC, measured_at ASC
                 """,
-                (service_ids,),
-            )
-            rows = cursor.fetchall()
+            (service_ids,),
+        )
+        rows = cursor.fetchall()
     return [
         CareLoadPoint(
             service_id=str(service_id),

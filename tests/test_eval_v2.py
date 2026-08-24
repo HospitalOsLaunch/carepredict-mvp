@@ -68,8 +68,7 @@ def test_history_frame_returns_none_for_missing_hour() -> None:
     origin = datetime(2025, 7, 8, tzinfo=UTC)
     start = origin - timedelta(hours=167)
     rows = {
-        start + timedelta(hours=offset): np.full(7, 1.0, dtype=np.float32)
-        for offset in range(167)
+        start + timedelta(hours=offset): np.full(7, 1.0, dtype=np.float32) for offset in range(167)
     }
 
     assert history_frame(rows, origin=origin, length=168) is None

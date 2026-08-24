@@ -115,9 +115,7 @@ class ForecastP75ThresholdProvider:
                 continue
 
             if raw_forecast:
-                forecast_maxima.append(
-                    max(float(item["predicted_siips"]) for item in raw_forecast)
-                )
+                forecast_maxima.append(max(float(item["predicted_siips"]) for item in raw_forecast))
 
         if len(forecast_maxima) < self.min_valid:
             raise RuntimeError(

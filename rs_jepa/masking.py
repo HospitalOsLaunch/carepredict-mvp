@@ -73,9 +73,7 @@ def block_temporal_mask(
             generator=_rng(generator),
             device="cpu",
         )
-        span_len = int(
-            span_draw.item()
-        )
+        span_len = int(span_draw.item())
         start_draw = torch.randint(
             0,
             steps - span_len + 1,
@@ -83,9 +81,7 @@ def block_temporal_mask(
             generator=_rng(generator),
             device="cpu",
         )
-        start = int(
-            start_draw.item()
-        )
+        start = int(start_draw.item())
         mask[b_idx, start : start + span_len] = True
     masked[mask] = 0
     return masked, mask

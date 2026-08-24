@@ -322,21 +322,15 @@ def evaluate_probe(
     return ProbeResult(
         split=split,
         latent_r2_with_static=float(r2_score(eval_matrices.y_last, latent_pred)),
-        latent_r2_without_static=float(
-            r2_score(eval_no_static.y_last, latent_no_static_pred)
-        ),
+        latent_r2_without_static=float(r2_score(eval_no_static.y_last, latent_no_static_pred)),
         raw_r2=float(r2_score(eval_matrices.y_last, raw_pred)),
         mean_baseline_r2=float(r2_score(eval_matrices.y_last, mean_pred)),
-        per_timestep_r2_with_static=float(
-            r2_score(eval_matrices.y_full, per_timestep_pred)
-        ),
+        per_timestep_r2_with_static=float(r2_score(eval_matrices.y_full, per_timestep_pred)),
         per_timestep_r2_without_static=float(
             r2_score(eval_no_static.y_full, per_timestep_no_static_pred)
         ),
         per_timestep_raw_r2=float(r2_score(eval_matrices.y_full, per_timestep_raw_pred)),
-        per_timestep_mean_baseline_r2=float(
-            r2_score(eval_matrices.y_full, per_timestep_mean_pred)
-        ),
+        per_timestep_mean_baseline_r2=float(r2_score(eval_matrices.y_full, per_timestep_mean_pred)),
         ceiling_r2=float(ceiling_r2),
         effective_rank_with_static=numpy_effective_rank(eval_matrices.full_latents),
         effective_rank_without_static=numpy_effective_rank(eval_no_static.full_latents),
@@ -395,8 +389,7 @@ def interpret_static_ablation(result: ProbeResult, rank_threshold: float = 4.0) 
     min_rank = min(result.effective_rank_with_static, result.effective_rank_without_static)
     if min_rank < rank_threshold:
         return (
-            f"{base} -> LATENT COLLAPSED (rank={min_rank:.2f}) — "
-            "probe ablation NOT interpretable"
+            f"{base} -> LATENT COLLAPSED (rank={min_rank:.2f}) — probe ablation NOT interpretable"
         )
 
     anomaly = ""
@@ -407,8 +400,7 @@ def interpret_static_ablation(result: ProbeResult, rank_threshold: float = 4.0) 
         )
     if result.per_timestep_r2_without_static > result.per_timestep_r2_with_static:
         anomaly += (
-            " | PER-TIMESTEP ANOMALY: without_static exceeds with_static; report, "
-            "do not hide"
+            " | PER-TIMESTEP ANOMALY: without_static exceeds with_static; report, do not hide"
         )
     if result.per_timestep_static_delta >= -1e-9:
         reading = (

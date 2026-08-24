@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import replace
-from typing import Callable, Iterable
 
 import numpy as np
 
@@ -85,7 +85,11 @@ def static_features(site, n_rows: int) -> np.ndarray:
 def stack_instantaneous_with_static(site_list):
     X, y = [], []
     for site in site_list:
-        X.append(np.concatenate([site.observable_instantaneous, static_features(site, len(site.kappa))], axis=1))
+        X.append(
+            np.concatenate(
+                [site.observable_instantaneous, static_features(site, len(site.kappa))], axis=1
+            )
+        )
         y.append(site.kappa)
     return np.concatenate(X), np.concatenate(y)
 
@@ -131,7 +135,10 @@ def run_diagnostic_for_seed(
         log("[T2] pas assez de paires appariées — augmente l'échantillon")
     else:
         mean_dkappa = float(np.abs(kappa[i] - kappa[j])[mask].mean())
-        log(f"[T2] |Δκ| sur paires (util~égal, rise différent): {mean_dkappa:.3f}  (besoin >0.10)  n_pairs={mask.sum()}")
+        log(
+            f"[T2] |Δκ| sur paires (util~égal, rise différent): {mean_dkappa:.3f}  "
+            f"(besoin >0.10)  n_pairs={mask.sum()}"
+        )
 
     train_sites = [site for site in sites if site.split == "train"]
     unseen_sites = [site for site in sites if site.split == "unseen"]
@@ -158,7 +165,10 @@ def run_diagnostic_for_seed(
     mean_intra_r2 = float(intra_r2.mean())
     min_intra_r2 = float(intra_r2.min())
     hidden_share = 1.0 - mean_intra_r2
-    log(f"[T3a] R² OLS instantané INTRA-SITE temporal: mean={mean_intra_r2:.3f} min={min_intra_r2:.3f}  (mean cible [0.55,0.88], min>0.40)")
+    log(
+        f"[T3a] R² OLS instantané INTRA-SITE temporal: mean={mean_intra_r2:.3f} "
+        f"min={min_intra_r2:.3f}  (mean cible [0.55,0.88], min>0.40)"
+    )
     log(f"[★] Part de variance cachée = {hidden_share:.3f}  (cible [0.12,0.45])")
 
     var_p10 = float(np.quantile([row["holdout_var"] for row in site_readability], 0.10))
@@ -180,11 +190,17 @@ def run_diagnostic_for_seed(
             tagged = dict(row)
             tagged["tag"] = tag
             low_site_rows.append(tagged)
-            log(f"  {row['site_id']} | {row['r2']:.3f} | {row['holdout_var']:.6f} | {row['baseline_mae']:.3f} | {int(row['n_holdout'])} | {tag}")
+            log(
+                f"  {row['site_id']} | {row['r2']:.3f} | {row['holdout_var']:.6f} | "
+                f"{row['baseline_mae']:.3f} | {int(row['n_holdout'])} | {tag}"
+            )
     else:
         log("[T3a-low-sites] none")
     bulk_fraction = 1.0 - len(low_sites) / len(site_readability)
-    log(f"[T3a-tail] bulk_R2>=0.40={bulk_fraction:.2%} sub_count={len(low_sites)} mae_cap={mae_cap:.3f} low_mae_ok={low_mae_ok}")
+    log(
+        f"[T3a-tail] bulk_R2>=0.40={bulk_fraction:.2%} sub_count={len(low_sites)} "
+        f"mae_cap={mae_cap:.3f} low_mae_ok={low_mae_ok}"
+    )
 
     Xtr, ytr = stack_instantaneous(train_sites)
     Xte, yte = stack_instantaneous(unseen_sites)
@@ -195,7 +211,12 @@ def run_diagnostic_for_seed(
     r2_naive = max(r2_naive_raw, -1.0)
     r2_cond = max(r2_cond_raw, -1.0)
     static_gain = r2_cond - r2_naive
-    log(f"[T3b] OOD transfer Ridge(alpha={ridge_alpha:g}): R²_naive_raw={r2_naive_raw:.3f} clipped={r2_naive:.3f} R²_cond_raw={r2_cond_raw:.3f} clipped={r2_cond:.3f} gain_clipped={static_gain:.3f}")
+    log(
+        f"[T3b] OOD transfer Ridge(alpha={ridge_alpha:g}): "
+        f"R²_naive_raw={r2_naive_raw:.3f} clipped={r2_naive:.3f} "
+        f"R²_cond_raw={r2_cond_raw:.3f} clipped={r2_cond:.3f} "
+        f"gain_clipped={static_gain:.3f}"
+    )
 
     tr_sig = np.array([site_signature(site) for site in train_sites])
     un_sig = np.array([site_signature(site) for site in unseen_sites])
@@ -205,8 +226,15 @@ def run_diagnostic_for_seed(
     struct_dist = float(d.mean())
     struct_intra = float(np.median(intra))
     struct_ratio = struct_dist / max(struct_intra, 1e-12)
-    log(f"[STRUCT] dist min unseen→train: {struct_dist:.2f} | étalement intra-train médian: {struct_intra:.2f}")
-    log("  -> si dist unseen ≈ étalement intra-train, les sites sont bien tirés du même processus hétérogène (OK). Si dist ≈ 0, ils sont des copies → diversité cosmétique (PROBLÈME).")
+    log(
+        f"[STRUCT] dist min unseen→train: {struct_dist:.2f} | "
+        f"étalement intra-train médian: {struct_intra:.2f}"
+    )
+    log(
+        "  -> si dist unseen ≈ étalement intra-train, les sites sont bien tirés du même "
+        "processus hétérogène (OK). Si dist ≈ 0, ils sont des copies → diversité "
+        "cosmétique (PROBLÈME)."
+    )
 
     t1_pass = frac_ok >= 0.80
     t2_pass = bool(np.isfinite(mean_dkappa) and mean_dkappa > 0.10)
@@ -258,7 +286,8 @@ def summarize_rows(rows: Iterable[dict[str, float]]) -> dict[str, bool | float]:
         "T3a bulk R2>=0.40 all >= 85%": min(t3a_bulk) >= 0.85,
         "T3a all sub-0.40 baseline MAE <= cap": all(bool(v) for v in t3a_low_mae_ok),
         "hidden_share all in [0.12, 0.45]": min(hidden) >= 0.12 and max(hidden) <= 0.45,
-        "STRUCT ratio all in [0.30, 0.55]": min(struct_ratios) >= 0.30 and max(struct_ratios) <= 0.55,
+        "STRUCT ratio all in [0.30, 0.55]": min(struct_ratios) >= 0.30
+        and max(struct_ratios) <= 0.55,
         "T2 min >= 0.10": min_t2 >= 0.10,
     }
     return {

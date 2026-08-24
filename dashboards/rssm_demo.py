@@ -38,9 +38,7 @@ def render() -> None:
                 st.error("Backend indisponible. Les prédictions ne pourront pas être lancées.")
         st.caption("Endpoint principal : POST /simulate/hospital-world")
 
-    tabs = st.tabs(
-        ["Prévision 48h", "Simulation what-if", "Vue exécutive", "Diagnostics modèle"]
-    )
+    tabs = st.tabs(["Prévision 48h", "Simulation what-if", "Vue exécutive", "Diagnostics modèle"])
     with tabs[0]:
         forecasting.render(client)
     with tabs[1]:

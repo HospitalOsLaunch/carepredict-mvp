@@ -149,16 +149,14 @@ def origin_index_evidence() -> dict[str, Any]:
                 "file": "src/hospitalos/dynamics/jepa_rssm.py",
                 "lines": [240, 245, 246, 247, 248, 249, 250],
                 "meaning": (
-                    "Training loss iterates over that same origin range and "
-                    "targets the next 48h."
+                    "Training loss iterates over that same origin range and targets the next 48h."
                 ),
             },
             "calibration_targets": {
                 "file": "src/hospitalos/training/train_v2_forecast.py",
                 "lines": [452, 456, 457, 458, 459],
                 "meaning": (
-                    "Calibration uses origin_start=1 for daily patches, "
-                    "matching d in {1,2,3,4}."
+                    "Calibration uses origin_start=1 for daily patches, matching d in {1,2,3,4}."
                 ),
             },
         },

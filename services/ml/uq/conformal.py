@@ -68,7 +68,9 @@ class ConformalForecaster:
         self._validate_matching_arrays(true_values, pred_values)
 
         residuals = np.abs(true_values - pred_values)
-        quantile_level = min(1.0, np.ceil((len(residuals) + 1) * self.config.coverage) / len(residuals))
+        quantile_level = min(
+            1.0, np.ceil((len(residuals) + 1) * self.config.coverage) / len(residuals)
+        )
         self._residual_quantile = float(np.quantile(residuals, quantile_level, method="higher"))
         LOGGER.info(
             "conformal_calibration_completed",
@@ -130,7 +132,7 @@ class ConformalForecaster:
         cls,
         residual_quantile: float,
         config: ConformalConfig | None = None,
-    ) -> "ConformalForecaster":
+    ) -> ConformalForecaster:
         """Build a calibrated forecaster from a stored residual quantile."""
         if residual_quantile < 0:
             raise ValueError("residual_quantile must be non-negative")

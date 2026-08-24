@@ -115,12 +115,14 @@ def build_delta_data(
         for channel in range(chain.cfg.stage1.action_dim):
             channel_actions = torch.zeros_like(actions_future)
             channel_actions[..., channel] = actions_future[..., channel]
-            z_action_all.append(_rollout_latents(chain, x_context, static, actions_context, channel_actions))
+            z_action_all.append(
+                _rollout_latents(chain, x_context, static, actions_context, channel_actions)
+            )
     z0_all = []
     channel_ids = []
     targets = []
     action_values = []
-    for channel, z_action in enumerate(z_action_all):
+    for channel, _z_action in enumerate(z_action_all):
         z0_all.append(z0)
         channel_ids.append(
             torch.full(
@@ -211,7 +213,9 @@ def train_one_seed(
     return head.eval()
 
 
-def scenario_report(head: ActionDeltaHead, data: DeltaData, *, channel: int, sign: int) -> dict[str, float]:
+def scenario_report(
+    head: ActionDeltaHead, data: DeltaData, *, channel: int, sign: int
+) -> dict[str, float]:
     flat_channel = data.channel_id.reshape(-1)
     flat_action = data.action_value.reshape(-1)
     mask = flat_channel == channel

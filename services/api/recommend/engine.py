@@ -9,7 +9,12 @@ from typing import Protocol
 from services.api.dependencies.feature_window_fetcher import TimescaleFeatureWindowFetcher
 from services.api.recommend.drivers import recommendation_explanation
 from services.api.recommend.levers import candidate_levers
-from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, ScoredAction
+from services.api.recommend.scoring import (
+    ForecastContext,
+    ForecastPoint,
+    RuleBasedScorer,
+    ScoredAction,
+)
 from services.api.recommend.thresholds import (
     ForecastP75ThresholdProvider,
     ServiceThresholdProvider,

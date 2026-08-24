@@ -20,9 +20,9 @@ router = APIRouter(prefix="/predict", tags=["prediction"])
 @router.post("/charge", response_model=ChargePredictionResponse)
 def predict_charge(
     request: ChargePredictionRequest,
-    feature_fetcher: FeastFeatureFetcher = Depends(get_feature_fetcher),
-    model_bundle: PredictionModelBundle = Depends(get_model_bundle),
-    evidently_logger: EvidentlyPredictionLogger = Depends(get_evidently_logger),
+    feature_fetcher: FeastFeatureFetcher = Depends(get_feature_fetcher),  # noqa: B008
+    model_bundle: PredictionModelBundle = Depends(get_model_bundle),  # noqa: B008
+    evidently_logger: EvidentlyPredictionLogger = Depends(get_evidently_logger),  # noqa: B008
 ) -> ChargePredictionResponse:
     """Predict J+12h nursing care load with a calibrated 90% interval."""
     features = feature_fetcher.fetch(request)
