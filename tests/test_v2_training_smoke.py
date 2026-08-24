@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 import torch
@@ -60,7 +61,9 @@ def db_available() -> None:
     config = db_config_from_env()
     config["connect_timeout"] = 1
     try:
-        with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+        with psycopg2.connect(
+            **cast(dict[str, Any], config)
+        ) as connection, connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             cursor.fetchone()
     except Exception as exc:  # noqa: BLE001

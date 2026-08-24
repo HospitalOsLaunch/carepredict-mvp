@@ -77,7 +77,7 @@ def build_stage2_sites(
         site_static = static.loc[site_id]
         sites.append(
             Stage2Site(
-                site_id=site_id,
+                site_id=str(site_id),
                 features=group.loc[:, data.temporal_feature_columns].to_numpy(dtype=np.float32),
                 static=site_static.loc[list(data.static_feature_columns)].to_numpy(
                     dtype=np.float32

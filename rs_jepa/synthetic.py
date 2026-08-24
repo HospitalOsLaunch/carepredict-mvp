@@ -223,7 +223,7 @@ class SyntheticHospitalSimulator:
             weekday_strength = float(site_rng.uniform(0.04, 0.15))
             discharge_rate = float(site_rng.uniform(0.0025, 0.0065))
             frame = self._simulate_site(
-                site_id=site_id,
+                site_id=str(site_id),
                 timestamps=timestamps,
                 capacity=capacity,
                 case_mix=case_mix,

@@ -149,7 +149,7 @@ class PytorchForecastingTFTBackend:
         so that predict() can run without re-training.
         Raises FileNotFoundError if the bundle is missing.
         """
-        import cloudpickle  # type: ignore[import-untyped]
+        import cloudpickle
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
@@ -364,7 +364,7 @@ class PytorchForecastingTFTBackend:
         config: TFTConfig,
     ) -> TFTForecast:
         """Run a single forecast without Lightning ``Trainer`` or DataLoader setup."""
-        from pytorch_forecasting import TimeSeriesDataSet  # type: ignore[import-untyped]
+        from pytorch_forecasting import TimeSeriesDataSet
 
         if self._model is None:
             raise RuntimeError("model must be trained before predict()")
@@ -410,7 +410,7 @@ class PytorchForecastingTFTBackend:
         config: TFTConfig,
     ) -> TFTForecast:
         """Compatibility prediction path for unusual pytorch-forecasting releases."""
-        from pytorch_forecasting import TimeSeriesDataSet  # type: ignore[import-untyped]
+        from pytorch_forecasting import TimeSeriesDataSet
 
         if self._model is None:
             raise RuntimeError("model must be trained before predict()")

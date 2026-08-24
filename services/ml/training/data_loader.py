@@ -83,5 +83,6 @@ def frame_dataset_hash(frame: pd.DataFrame) -> str:
     import hashlib
 
     digest = hashlib.sha256()
-    digest.update(pd.util.hash_pandas_object(frame, index=True).values.tobytes())
+    hashed = pd.util.hash_pandas_object(frame, index=True).to_numpy(dtype=np.uint64)
+    digest.update(hashed.tobytes())
     return digest.hexdigest()
