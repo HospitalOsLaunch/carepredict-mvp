@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from torch import nn
+from torch.optim.adamw import AdamW
 
 from rs_jepa.config import RSJEPAConfig, config_from_dict
 from rs_jepa.diagnostics import run_diagnostic_for_seed as run_honesty_diagnostic
@@ -28,17 +29,18 @@ from rs_jepa.splits import (
     choose_cross_site_validation_sites,
 )
 from rs_jepa.synthetic import SyntheticHospitalSimulator
+from rs_jepa.typing import Array
 
 
 @dataclass(frozen=True)
 class PhaseASite:
     site_id: str
-    features: np.ndarray
-    static: np.ndarray
-    criticality: np.ndarray
-    actions: np.ndarray
-    action_deltas: np.ndarray
-    split: np.ndarray
+    features: Array
+    static: Array
+    criticality: Array
+    actions: Array
+    action_deltas: Array
+    split: Array
 
 
 @dataclass
@@ -112,7 +114,7 @@ def _sample_windows(
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int]:
     horizon = int(
         torch.tensor(cfg.stage1.horizons)[
-            torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item()
+            int(torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item())
         ].item()
     )
     window_len = cfg.stage1.context_steps + horizon
@@ -304,7 +306,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
     params: list[nn.Parameter] = []
     for module in (encoder, rssm, predictor):
         params.extend(module.parameters())
-    optimizer = torch.optim.AdamW(params, lr=cfg.stage1.lr, weight_decay=cfg.stage1.weight_decay)
+    optimizer = AdamW(params, lr=cfg.stage1.lr, weight_decay=cfg.stage1.weight_decay)
     total_steps = max(1, cfg.training.max_epochs * cfg.training.steps_per_epoch)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
     generator = torch.Generator().manual_seed(cfg.seed)
@@ -344,7 +346,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
             loss, components = latent_jepa_loss(pred_latents, target_latents, cfg.stage1)
 
             optimizer.zero_grad(set_to_none=True)
-            loss.backward()
+            loss.backward()  # type: ignore[no-untyped-call]
             action_grad_norm = _action_grad_norm(rssm, cfg)
             torch.nn.utils.clip_grad_norm_(params, cfg.stage1.grad_clip)
             optimizer.step()

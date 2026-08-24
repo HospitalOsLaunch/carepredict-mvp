@@ -10,9 +10,10 @@ import numpy as np
 import torch
 from torch import Tensor
 from torch.distributions import Normal, kl_divergence
+from torch.optim.adam import Adam
 
 from services.ml.world_model.config import RewardConfig, TrainConfig
-from services.ml.world_model.rssm import HospitalRSSM, RSSMState
+from services.ml.world_model.rssm import HospitalRSSM, RSSMSequence, RSSMState
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,7 +42,7 @@ class WorldModelTrainer:
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self._set_seeds(self.config.seed)
         self.model = model.to(device=self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.config.lr)
+        self.optimizer = Adam(self.model.parameters(), lr=self.config.lr)
         self.global_step = 0
 
     def train_step(self, batch: dict[str, Tensor]) -> dict[str, float]:
@@ -71,7 +72,7 @@ class WorldModelTrainer:
         )
 
         self.optimizer.zero_grad(set_to_none=True)
-        total_loss.backward()
+        total_loss.backward()  # type: ignore[no-untyped-call]
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.config.grad_clip)
         self.optimizer.step()
         self.global_step += 1
@@ -86,7 +87,7 @@ class WorldModelTrainer:
         self._log_metrics(metrics)
         return metrics
 
-    def _reconstruction_loss(self, states: dict[str, list[Tensor]], history_obs: Tensor) -> Tensor:
+    def _reconstruction_loss(self, states: RSSMSequence, history_obs: Tensor) -> Tensor:
         predictions: list[Tensor] = []
         for step_index in range(len(states["h"])):
             state: RSSMState = {"h": states["h"][step_index], "z": states["z"][step_index]}
@@ -97,7 +98,7 @@ class WorldModelTrainer:
 
     def _imagine_predictions(
         self,
-        states: dict[str, list[Tensor]],
+        states: RSSMSequence,
         future_actions: Tensor,
     ) -> tuple[Tensor, Tensor]:
         if not states["h"] or not states["z"]:
@@ -115,8 +116,12 @@ class WorldModelTrainer:
     def _balanced_kl_loss(self, priors: list[Normal], posteriors: list[Normal]) -> Tensor:
         terms: list[Tensor] = []
         for prior_dist, posterior_dist in zip(priors, posteriors, strict=True):
-            posterior_stop = Normal(posterior_dist.mean.detach(), posterior_dist.stddev.detach())
-            prior_stop = Normal(prior_dist.mean.detach(), prior_dist.stddev.detach())
+            posterior_stop = Normal(  # type: ignore[no-untyped-call]
+                posterior_dist.mean.detach(), posterior_dist.stddev.detach()
+            )
+            prior_stop = Normal(  # type: ignore[no-untyped-call]
+                prior_dist.mean.detach(), prior_dist.stddev.detach()
+            )
             posterior_weighted = kl_divergence(posterior_stop, prior_dist).sum(dim=-1)
             prior_weighted = kl_divergence(posterior_dist, prior_stop).sum(dim=-1)
             balanced = (

@@ -45,7 +45,7 @@ def response_mock(status_code: int, payload: dict[str, object] | None = None) ->
 
 def test_simulate_success() -> None:
     """A 200 response is parsed as a SimulationResponse."""
-    payload = {
+    payload: dict[str, object] = {
         "status": "ok",
         "hospital_id": "hosp-001",
         "service_id": "urg-001",

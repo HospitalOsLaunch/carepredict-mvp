@@ -27,7 +27,9 @@ class FakeService:
     def __init__(self) -> None:
         self.histories: list[list[float]] = []
 
-    def simulate(self, history_siips: list[float], action_sequence: list[list[float]]):
+    def simulate(
+        self, history_siips: list[float], action_sequence: list[list[float]]
+    ) -> list[dict[str, float | int | bool]]:
         self.histories.append(list(history_siips))
         baseline = float(history_siips[-1])
         return [

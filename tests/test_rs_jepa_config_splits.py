@@ -16,14 +16,14 @@ from rs_jepa.splits import (
 pytestmark = pytest.mark.rs_jepa
 
 
-def test_phase_a_config_loads_expected_horizons():
+def test_phase_a_config_loads_expected_horizons() -> None:
     cfg = load_config("configs/phaseA.yaml")
     assert cfg.stage1.horizons == (6, 24, 72, 168)
     assert cfg.stage1.context_steps == 168
     assert cfg.stage2.k_levels == 4
 
 
-def test_split_is_cross_site_and_temporal():
+def test_split_is_cross_site_and_temporal() -> None:
     rows = []
     for site in ["a", "b", "c", "d", "e"]:
         for ts in pd.date_range("2024-01-01", periods=24 * 30, freq="h"):
@@ -40,7 +40,7 @@ def test_split_is_cross_site_and_temporal():
     assert (temporal_val_ts >= summary.temporal_holdout_start).all()
 
 
-def test_split_guard_rejects_shuffled_site_history():
+def test_split_guard_rejects_shuffled_site_history() -> None:
     frame = pd.DataFrame(
         {
             "site_id": ["a", "a", "a"],
@@ -51,7 +51,7 @@ def test_split_guard_rejects_shuffled_site_history():
         require_monotonic_by_site(frame)
 
 
-def test_global_seed_reproducible_for_torch_and_numpy():
+def test_global_seed_reproducible_for_torch_and_numpy() -> None:
     import numpy as np
     import torch
 

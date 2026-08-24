@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
-from assets import drift_metrics, features, ingestion, model_training, normalization, predictions
 from dagster import Definitions, load_assets_from_modules
-from jobs.full_pipeline import full_pipeline
-from jobs.retraining_pipeline import retraining_pipeline
-from schedules.ingestion_schedule import hourly_ingestion_schedule
-from sensors.drift_sensor import drift_sensor
+
+from orchestration.dagster.assets import (
+    drift_metrics,
+    features,
+    ingestion,
+    model_training,
+    normalization,
+    predictions,
+)
+from orchestration.dagster.jobs.full_pipeline import full_pipeline
+from orchestration.dagster.jobs.retraining_pipeline import retraining_pipeline
+from orchestration.dagster.schedules.ingestion_schedule import hourly_ingestion_schedule
+from orchestration.dagster.sensors.drift_sensor import drift_sensor
 
 all_assets = load_assets_from_modules(
     [ingestion, normalization, features, model_training, predictions, drift_metrics]

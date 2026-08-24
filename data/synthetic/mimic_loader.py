@@ -10,7 +10,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TextIO
+from typing import Any, TextIO
 from uuid import uuid4
 
 LOGGER = logging.getLogger("carepredict.mimic_loader")
@@ -252,7 +252,7 @@ def configure_logging() -> None:
     logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"), format="%(levelname)s %(message)s")
 
 
-def _psycopg2() -> object:
+def _psycopg2() -> Any:
     import psycopg2
 
     return psycopg2

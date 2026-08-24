@@ -11,12 +11,12 @@ from dagster import AssetExecutionContext, asset
 def train_tft_model(context: AssetExecutionContext) -> str:
     """Train TFT and calibrate conformal intervals."""
     report_path = Path("reports/backtesting/carepredict_backtest.html")
-    context.log.info("TFT training asset scaffolded", report_path=str(report_path))
+    context.log.info(f"TFT training asset scaffolded: report_path={report_path}")
     return "tft-moirai-ft-v1.0"
 
 
 @asset(group_name="ml")
 def calibrate_conformal_intervals(context: AssetExecutionContext, train_tft_model: str) -> str:
     """Calibrate MAPIE/split-conformal intervals."""
-    context.log.info("Conformal calibration asset scaffolded", model_version=train_tft_model)
+    context.log.info(f"Conformal calibration asset scaffolded: model_version={train_tft_model}")
     return "coverage-0.90"

@@ -108,8 +108,8 @@ def sample_los_hours(
     rng: np.random.Generator,
 ) -> int:
     """Sample a truncated length of stay from the SIIPS service profile."""
-    mean = float(profile["mean_los_hours"])
-    std = float(profile["std_los_hours"])
+    mean = _scalar_profile_value(profile, "mean_los_hours")
+    std = _scalar_profile_value(profile, "std_los_hours")
     sampled = float(rng.normal(mean, std))
     return int(np.clip(round(sampled), 24, 3.0 * mean))
 
@@ -139,9 +139,19 @@ def build_patient_trajectory(
         initial_siips=sample_phase_siips(profile, "admission_initial_siips", rng),
         plateau_siips=plateau,
         pre_discharge_siips=sample_phase_siips(profile, "pre_discharge_siips", rng),
-        noise_std=float(profile["noise_std"]),
+        noise_std=_scalar_profile_value(profile, "noise_std"),
         surgery_hour=surgery_hour,
     )
+
+
+def _scalar_profile_value(
+    profile: Mapping[str, float | tuple[float, float]], key: str
+) -> float:
+    """Read a profile field that is contractually scalar."""
+    value = profile[key]
+    if isinstance(value, tuple):
+        raise TypeError(f"Profile field {key!r} must be scalar")
+    return float(value)
 
 
 def compute_patient_siips_trajectory(

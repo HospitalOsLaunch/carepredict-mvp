@@ -17,6 +17,7 @@ if str(ROOT) not in sys.path:
 
 from rs_jepa.config import RSJEPAConfig, load_config  # noqa: E402
 from rs_jepa.synthetic import SyntheticHospitalSimulator  # noqa: E402
+from rs_jepa.typing import Array  # noqa: E402
 
 
 class RegressionResult(NamedTuple):
@@ -119,7 +120,7 @@ def run_causal_diagnostic(cfg: RSJEPAConfig) -> CausalReport:
     )
 
 
-def _ols_last_feature(x: np.ndarray, y: np.ndarray) -> RegressionResult:
+def _ols_last_feature(x: Array, y: Array) -> RegressionResult:
     design = np.column_stack([np.ones(x.shape[0]), x])
     beta, *_ = np.linalg.lstsq(design, y, rcond=None)
     residual = y - design @ beta
@@ -131,7 +132,7 @@ def _ols_last_feature(x: np.ndarray, y: np.ndarray) -> RegressionResult:
     return RegressionResult(coefficient=coefficient, t_stat=coefficient / se)
 
 
-def _corr(a: np.ndarray, b: np.ndarray) -> float:
+def _corr(a: Array, b: Array) -> float:
     if float(np.std(a)) == 0.0 or float(np.std(b)) == 0.0:
         return 0.0
     return float(np.corrcoef(a, b)[0, 1])

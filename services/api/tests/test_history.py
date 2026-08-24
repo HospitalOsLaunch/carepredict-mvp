@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import psycopg
@@ -121,7 +122,7 @@ def test_feature_window_matches_realism_check_exactly(
 
 def _forecast_max_from_history(
     client: TestClient,
-    payload: dict,
+    payload: dict[str, Any],
     *,
     origin: str,
 ) -> float:
@@ -138,7 +139,7 @@ def _forecast_max_from_history(
         },
     )
     assert response.status_code == 200
-    return max(step["predicted_siips"] for step in response.json()["results"])
+    return float(max(step["predicted_siips"] for step in response.json()["results"]))
 
 
 def test_feature_window_and_forecast_are_invariant_across_same_day_origin_hours(

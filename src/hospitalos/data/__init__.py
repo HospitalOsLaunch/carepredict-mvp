@@ -1,0 +1,1 @@
+"""HospitalOS data adapters."""

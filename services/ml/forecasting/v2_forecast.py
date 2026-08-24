@@ -13,6 +13,8 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
+from rs_jepa.typing import Array
+
 DEFAULT_V2_FORECAST_ARTIFACT_DIR = Path("artifacts/v2_forecast_multi")
 
 
@@ -22,8 +24,8 @@ class V2ForecastArtifacts:
 
     model: nn.Module
     train_config: dict[str, Any]
-    q90_lo: np.ndarray
-    q90_hi: np.ndarray
+    q90_lo: Array
+    q90_hi: Array
     artifact_paths: dict[str, Path]
 
 

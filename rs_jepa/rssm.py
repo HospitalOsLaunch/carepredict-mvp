@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import torch
 from torch import nn
@@ -65,7 +66,7 @@ class RSSM(nn.Module):
         return mean, std
 
     def _state(self, h: torch.Tensor, s: torch.Tensor) -> torch.Tensor:
-        return self.state_norm(torch.cat([h, s], dim=-1))
+        return cast(torch.Tensor, self.state_norm(torch.cat([h, s], dim=-1)))
 
     def _actions(
         self,

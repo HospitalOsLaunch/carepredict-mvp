@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 import torch
@@ -10,6 +11,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from rs_jepa.config import Stage2Config
+from rs_jepa.typing import Array
 
 
 def _mlp(
@@ -39,7 +41,7 @@ class TensionHead(nn.Module):
         self.net = _mlp(latent_dim, cfg.head_hidden_dim, 1, cfg.head_depth, cfg.dropout)
 
     def forward(self, latents: torch.Tensor) -> torch.Tensor:
-        return self.net(latents).squeeze(-1)
+        return cast(torch.Tensor, self.net(latents).squeeze(-1))
 
 
 class OrdinalCriticalityHead(nn.Module):
@@ -59,7 +61,7 @@ class OrdinalCriticalityHead(nn.Module):
         )
 
     def forward(self, latents: torch.Tensor) -> torch.Tensor:
-        return self.net(latents)
+        return cast(torch.Tensor, self.net(latents))
 
 
 class LocalSIIPSCalibrationHead(nn.Module):
@@ -76,7 +78,7 @@ class LocalSIIPSCalibrationHead(nn.Module):
     def forward(self, latents: torch.Tensor) -> torch.Tensor:
         if not self.enabled:
             raise RuntimeError("La calibration SIIPS locale est désactivée pour Phase A.")
-        return self.net(latents).squeeze(-1)
+        return cast(torch.Tensor, self.net(latents).squeeze(-1))
 
 
 class CriticalityReadout(nn.Module):
@@ -135,7 +137,7 @@ class ActionDeltaHead(nn.Module):
             )
         channel_features = self.channel_embed(channels)
         features = torch.cat([z0, z_action, z_action - z0, channel_features], dim=-1)
-        return self.net(features).squeeze(-1)
+        return cast(torch.Tensor, self.net(features).squeeze(-1))
 
 
 def coral_targets(levels: torch.Tensor, k_levels: int) -> torch.Tensor:
@@ -162,7 +164,7 @@ def predict_ordinal_level(logits: torch.Tensor) -> torch.Tensor:
     return (torch.sigmoid(logits) >= 0.5).sum(dim=1).long()
 
 
-def ranking_correlation(scores: np.ndarray, targets: np.ndarray) -> float:
+def ranking_correlation(scores: Array, targets: Array) -> float:
     """Pearson correlation between score and target ranking, finite for flat targets."""
 
     scores = np.asarray(scores, dtype=float)
@@ -172,7 +174,7 @@ def ranking_correlation(scores: np.ndarray, targets: np.ndarray) -> float:
     return float(np.corrcoef(scores, targets)[0, 1])
 
 
-def per_site_zscore(scores: np.ndarray, site_ids: np.ndarray, eps: float = 1e-8) -> np.ndarray:
+def per_site_zscore(scores: Array, site_ids: Array, eps: float = 1e-8) -> Array:
     """Normalize Head-A scores within each site history, never globally."""
 
     scores = np.asarray(scores, dtype=float)

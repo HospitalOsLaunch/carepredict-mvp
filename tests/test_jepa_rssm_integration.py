@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import torch
 from torch import Tensor, nn
@@ -33,7 +35,7 @@ class DummyEncoder(nn.Module):
     def forward(self, tokens: Tensor, pos_idx: Tensor) -> Tensor:
         """Project tokens and ignore position indices."""
         del pos_idx
-        return self.proj(tokens)
+        return cast(Tensor, self.proj(tokens))
 
 
 def test_jepa_rssm_training_step_backward_and_freezing() -> None:
@@ -49,7 +51,7 @@ def test_jepa_rssm_training_step_backward_and_freezing() -> None:
 
     loss = model.training_step({"series": series, "siips": siips}, 0)
     assert torch.isfinite(loss)
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
     assert all(param.grad is None for param in encoder.parameters())
     assert any(param.grad is not None for param in model.gru.parameters())
 

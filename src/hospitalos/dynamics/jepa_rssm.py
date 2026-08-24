@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import lightning as L
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
-from torch.optim import AdamW
+from torch.optim.adamw import AdamW
 
 
 @dataclass
@@ -150,7 +150,7 @@ class JepaRSSM(L.LightningModule):
         """Encode raw series into frozen JEPA patch embeddings."""
         tokens = self.patcher(series)
         pos_idx = torch.arange(tokens.shape[1], device=tokens.device, dtype=torch.long)
-        return self.frozen_encoder(tokens, pos_idx)
+        return cast(Tensor, self.frozen_encoder(tokens, pos_idx))
 
     def unroll(self, z: Tensor) -> dict[str, Tensor]:
         """Unroll posterior RSSM states over JEPA embeddings."""
@@ -244,7 +244,7 @@ class JepaRSSM(L.LightningModule):
             )
         calendar = self._prepare_calendar(cal, features)[:, origin_slice, :]
         head_input = torch.cat([features[:, origin_slice, :], calendar], dim=-1)
-        return self.forecast_head(head_input)
+        return cast(Tensor, self.forecast_head(head_input))
 
     def forecast_loss(self, features: Tensor, siips: Tensor | None, cal: Tensor | None) -> Tensor:
         """Predict the next 48 hourly SIIPS values from daily posterior states."""

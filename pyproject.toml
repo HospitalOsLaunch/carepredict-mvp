@@ -35,6 +35,7 @@ dependencies = [
   "pytorch-forecasting>=1.0.0,<2.0.0",
   "pyyaml>=6.0.0,<7.0.0",
   "structlog>=24.1.0,<25.0.0",
+  "streamlit>=1.37.0,<2.0.0",
   "torch>=2.3.1,<2.5.0",
   "typer>=0.12.0,<1.0.0",
   "uni2ts @ git+https://github.com/SalesforceAIResearch/uni2ts@main",
@@ -52,6 +53,8 @@ dev = [
   "pytest-docker>=3.1.0,<4.0.0",
   "ruff>=0.4.0,<1.0.0",
   "testcontainers[kafka,postgres,redis]>=4.5.0,<5.0.0",
+  "pandas-stubs>=2.2.0,<3.0.0",
+  "types-psycopg2>=2.9.21,<3.0.0",
   "types-PyYAML>=6.0.12,<7.0.0",
 ]
 
@@ -64,6 +67,9 @@ foundation = [
 where = [".", "src"]
 include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
+[tool.setuptools.package-data]
+hospitalos = ["py.typed"]
+
 [tool.ruff]
 target-version = "py311"
 line-length = 100
@@ -73,6 +79,7 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 
 [tool.mypy]
 python_version = "3.11"
+mypy_path = "src"
 strict = true
 warn_unused_ignores = true
 warn_redundant_casts = true

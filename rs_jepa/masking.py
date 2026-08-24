@@ -22,7 +22,7 @@ def forecasting_mask(
 
     if horizon is None:
         choices = torch.tensor(cfg.horizons, dtype=torch.long)
-        pick = torch.randint(len(choices), (1,), generator=_rng(generator)).item()
+        pick = int(torch.randint(len(choices), (1,), generator=_rng(generator)).item())
         horizon = int(choices[pick].item())
     if horizon not in cfg.horizons:
         raise ValueError(f"Horizon {horizon} absent de cfg.horizons={cfg.horizons}.")

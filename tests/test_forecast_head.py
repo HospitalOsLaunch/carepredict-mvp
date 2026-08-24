@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pytest
 import torch
@@ -38,7 +40,7 @@ class DummyEncoder(nn.Module):
     def forward(self, tokens: Tensor, pos_idx: Tensor) -> Tensor:
         """Project tokens and ignore position indices."""
         del pos_idx
-        return self.proj(tokens)
+        return cast(Tensor, self.proj(tokens))
 
 
 def make_model() -> JepaRSSM:
@@ -99,7 +101,7 @@ def test_forecast_loss_finite_and_backward() -> None:
 
     loss = model.training_step({"series": series, "siips": siips, "calendar": calendar}, 0)
     assert torch.isfinite(loss)
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
 
     assert any(param.grad is not None for param in model.forecast_head.parameters())
 

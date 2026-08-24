@@ -17,5 +17,5 @@ def evidently_drift_report(context: AssetExecutionContext) -> dict[str, float]:
         return {"mae_7d": 0.0}
     payload = json.loads(report_path.read_text(encoding="utf-8"))
     mae_7d = float(payload.get("mae_7d", 0.0))
-    context.log.info("Loaded drift metrics", mae_7d=mae_7d)
+    context.log.info(f"Loaded drift metrics: mae_7d={mae_7d}")
     return {"mae_7d": mae_7d}

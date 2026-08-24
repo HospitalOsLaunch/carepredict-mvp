@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import partial
-from typing import Annotated
+from typing import Annotated, Any, Protocol
 from uuid import uuid4
 
 import anyio
@@ -37,6 +38,15 @@ from services.api.schemas.simulate import ActionStep
 LOGGER = structlog.get_logger(__name__)
 router = APIRouter(prefix="/actions", tags=["actions"])
 RequestIdHeader = Annotated[str | None, Header(alias="X-Request-ID")]
+
+
+class WorldModelLike(Protocol):
+    """Simulation contract required by the action endpoint."""
+
+    def simulate(
+        self, history_siips: list[float], action_sequence: list[list[float]]
+    ) -> list[dict[str, float | int | bool]]:
+        """Simulate one counterfactual action sequence."""
 
 
 def get_recommendation_engine(
@@ -568,7 +578,7 @@ async def simulate_action_recommendation(
 
 
 async def _simulate_trajectory(
-    world_model: object,
+    world_model: WorldModelLike,
     history_siips: list[float],
     actions: list[ActionStep],
 ) -> list[ActionTrajectoryStep]:
@@ -593,10 +603,10 @@ def _to_utc(value: datetime) -> datetime:
     return value.astimezone(UTC)
 
 
-def _stored_recommendation_from_row(row: object) -> StoredRecommendation:
+def _stored_recommendation_from_row(row: Sequence[Any] | None) -> StoredRecommendation:
     if row is None:
         raise ActionNotFoundError("recommendation update returned no row")
-    values = tuple(row)  # type: ignore[arg-type]
+    values = tuple(row)
     return StoredRecommendation(
         recommendation_id=str(values[0]),
         hospital_id=str(values[1]),
@@ -611,10 +621,10 @@ def _stored_recommendation_from_row(row: object) -> StoredRecommendation:
     )
 
 
-def _event_from_row(row: object) -> ActionEvent:
+def _event_from_row(row: Sequence[Any] | None) -> ActionEvent:
     if row is None:
         raise ActionNotFoundError("action event insert returned no row")
-    values = tuple(row)  # type: ignore[arg-type]
+    values = tuple(row)
     return ActionEvent(
         event_id=str(values[0]),
         recommendation_id=str(values[1]),

@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 import torch
 
 from scripts.train_rssm_synthetic import main, parse_args
 
 
-def test_train_rssm_synthetic_smoke(tmp_path) -> None:
+def test_train_rssm_synthetic_smoke(tmp_path: Path) -> None:
     """Run a tiny CPU training job and verify all serving artifacts."""
     args = parse_args(
         [

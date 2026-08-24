@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 from dagster import RunRequest, SensorEvaluationContext, SkipReason, sensor
-from jobs.retraining_pipeline import retraining_pipeline
+
+from orchestration.dagster.jobs.retraining_pipeline import retraining_pipeline
 
 DRIFT_REPORT_PATH = Path("reports/evidently/drift_metrics.json")
 MAE_7D_THRESHOLD = 1.0

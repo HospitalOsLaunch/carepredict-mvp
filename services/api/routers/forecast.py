@@ -92,5 +92,5 @@ async def forecast_charge(
         service_id=payload.service_id,
         model_version=service.model_version,
         granularity=service.granularity,
-        results=[ForecastStep(**item) for item in raw_results],
+        results=[ForecastStep.model_validate(item) for item in raw_results],
     )

@@ -9,6 +9,7 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any, cast
 from uuid import uuid4
 
 import numpy as np
@@ -547,7 +548,7 @@ def _occupancy_curve(
         if 0 <= index < hours:
             delta[index] -= 1
     raw = service.baseline_patients + np.cumsum(delta)
-    return np.clip(raw, 1, int(service.bed_count * 1.25)).astype(int)
+    return cast(npt.NDArray[np.int_], np.clip(raw, 1, int(service.bed_count * 1.25)).astype(int))
 
 
 def _event_counts_by_hour(
@@ -966,7 +967,7 @@ def _insert_care_load(cursor: object, care_load: Sequence[CareLoadRecord]) -> No
     )
 
 
-def _psycopg2() -> object:
+def _psycopg2() -> Any:
     import psycopg2
 
     return psycopg2

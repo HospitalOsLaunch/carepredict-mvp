@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from services.api.schemas.prediction import ChargePredictionResponse
+from services.api.schemas.prediction import AttentionWeights, ChargePredictionResponse
 from services.ml.models.tft_model import CarePredictTFT
 from services.ml.training.data_loader import load_synthetic_training_frame
 from services.ml.uq.conformal import ConformalForecaster
@@ -24,7 +24,7 @@ def test_full_flow_contract_smoke() -> None:
         mape=0.09,
         crps=0.12,
         model_version=forecast.model_version,
-        attention_weights={"top_features": forecast.top_features},
+        attention_weights=AttentionWeights(top_features=forecast.top_features),
     )
 
     assert response.lower_90 <= response.value <= response.upper_90

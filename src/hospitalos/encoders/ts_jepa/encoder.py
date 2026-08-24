@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import torch
 from torch import Tensor, nn
 
@@ -26,7 +28,7 @@ class TransformerBlock(nn.Module):
         attn_in = self.norm1(x)
         attn_out, _ = self.attn(attn_in, attn_in, attn_in, need_weights=False)
         x = x + attn_out
-        return x + self.mlp(self.norm2(x))
+        return cast(Tensor, x + self.mlp(self.norm2(x)))
 
 
 class TransformerEncoder(nn.Module):
@@ -63,4 +65,4 @@ class TransformerEncoder(nn.Module):
         x = tokens + pos.unsqueeze(0)
         for block in self.blocks:
             x = block(x)
-        return self.norm(x)
+        return cast(Tensor, self.norm(x))

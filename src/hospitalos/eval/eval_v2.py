@@ -7,7 +7,7 @@ import json
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import torch
@@ -19,7 +19,7 @@ from hospitalos.data.timescale_adapter import (
     TimescaleDatasetConfig,
     TimescaleHospitalDataset,
 )
-from hospitalos.dynamics.jepa_rssm import forecast_origin_slice
+from hospitalos.dynamics.jepa_rssm import JepaRSSM, forecast_origin_slice
 from hospitalos.eval.baseline_v1 import (
     DEFAULT_HORIZONS,
     PRIMARY_SCOPE,
@@ -36,10 +36,9 @@ from hospitalos.training.train_v2_forecast import (
     FrozenForecastModel,
     split_train_calibration_indices,
 )
+from rs_jepa.typing import Array
 from services.ml.forecasting.v2_forecast import (
-    V2ForecastArtifacts as V2Artifacts,
-)
-from services.ml.forecasting.v2_forecast import (
+    V2ForecastArtifacts,
     history_window_origin,
     load_v2_forecast_artifacts,
     predict_v2_from_history,
@@ -51,6 +50,8 @@ DEFAULT_ARTIFACT_DIR = Path("artifacts/v2_forecast")
 DEFAULT_OUT = DEFAULT_ARTIFACT_DIR / "eval_v2.json"
 BASELINE_PATH = Path("artifacts/baseline_v1_full.json")
 DIAGNOSTIC_HORIZONS = (1, 24, 48)
+
+V2Artifacts = V2ForecastArtifacts
 
 FROZEN_FLOORS = {
     "24": {
@@ -198,7 +199,7 @@ def collect_v2_records(
     *,
     artifacts: V2Artifacts,
     points: list[CareLoadPoint],
-    feature_rows: dict[datetime, np.ndarray],
+    feature_rows: dict[datetime, Array],
     train_end: datetime,
     stride_hours: int,
     horizons: tuple[int, ...] = DEFAULT_HORIZONS,
@@ -244,13 +245,13 @@ def collect_v2_records(
     return records
 
 
-def fetch_feature_rows(*, service_id: str, train_end: datetime) -> dict[datetime, np.ndarray]:
+def fetch_feature_rows(*, service_id: str, train_end: datetime) -> dict[datetime, Array]:
     """Fetch canonical feature rows using the Timescale adapter code path read-only."""
     adapter = TimescaleHospitalDataset(
         TimescaleDatasetConfig(split="val", train_end=train_end.isoformat(), services=[service_id])
     )
     rows = adapter._fetch_rows()  # noqa: SLF001 - diagnostic/eval reuse of adapter SQL path.
-    features: dict[datetime, np.ndarray] = {}
+    features: dict[datetime, Array] = {}
     for row in rows:
         if row["service_id"] != service_id:
             continue
@@ -261,13 +262,13 @@ def fetch_feature_rows(*, service_id: str, train_end: datetime) -> dict[datetime
 
 
 def history_frame(
-    feature_rows: dict[datetime, np.ndarray],
+    feature_rows: dict[datetime, Array],
     *,
     origin: datetime,
     length: int,
 ) -> Tensor | None:
     """Return the raw 7-channel feature history window ending at origin, or None."""
-    values: list[np.ndarray] = []
+    values: list[Array] = []
     start = origin - timedelta(hours=length - 1)
     for offset in range(length):
         value = feature_rows.get(start + timedelta(hours=offset))
@@ -314,7 +315,7 @@ def recompute_calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
     dataset = CalendarWindowDataset(train_base, calibration_indices)
     loader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=0)
     residuals: list[list[float]] = [[] for _ in range(48)]
-    forecaster = FrozenForecastModel(artifacts.model.eval())
+    forecaster = FrozenForecastModel(cast(JepaRSSM, artifacts.model.eval()))
     patch_len = int(artifacts.model.patcher.patch_len)
     for batch in loader:
         pred = forecaster.predict_window(batch).numpy()
@@ -341,7 +342,7 @@ def recompute_calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
     }
 
 
-def selected_residual_horizons(means: np.ndarray, counts: np.ndarray) -> dict[str, Any]:
+def selected_residual_horizons(means: Array, counts: Array) -> dict[str, Any]:
     """Return h1/h24/h48 residual diagnostic payload."""
     return {
         str(step): {
@@ -499,7 +500,7 @@ def load_eval_summary(path: Path) -> dict[str, Any] | None:
     """Load a previously generated v2 evaluation JSON when available."""
     if not path.exists():
         return None
-    return json.loads(path.read_text(encoding="utf-8"))
+    return cast(dict[str, Any], json.loads(path.read_text(encoding="utf-8")))
 
 
 def artifact_dir_label(result: dict[str, Any]) -> str:

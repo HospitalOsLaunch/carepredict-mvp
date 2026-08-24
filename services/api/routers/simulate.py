@@ -88,5 +88,5 @@ async def simulate_hospital_world(
         hospital_id=payload.hospital_id,
         service_id=payload.service_id,
         model_version=service.model_version,
-        results=[SimulationStepResult(**item) for item in raw_results],
+        results=[SimulationStepResult.model_validate(item) for item in raw_results],
     )

@@ -4,13 +4,56 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from dataclasses import replace
+from typing import TypedDict
 
 import numpy as np
 
-from rs_jepa.synthetic import generate_sites
+from rs_jepa.config import RSJEPAConfig
+from rs_jepa.synthetic import SyntheticSiteDiagnostics, generate_sites
+from rs_jepa.typing import Array
 
 
-def acf_at_lag(x: np.ndarray, lag: int) -> float:
+class ReadabilityRow(TypedDict):
+    site_id: str
+    r2: float
+    holdout_var: float
+    baseline_mae: float
+    n_holdout: float
+
+
+class TaggedReadabilityRow(ReadabilityRow):
+    tag: str
+
+
+class DiagnosticRow(TypedDict):
+    seed: float
+    t1_median: float
+    t1_frac: float
+    t2: float
+    t3a_mean_r2: float
+    t3a_min_r2: float
+    t3a_bulk_fraction: float
+    t3a_sub_count: float
+    t3a_low_mae_ok: float
+    t3b_naive_r2: float
+    t3b_naive_raw_r2: float
+    t3b_cond_r2: float
+    t3b_cond_raw_r2: float
+    t3b_gain: float
+    flat_count: float
+    hole_count: float
+    hidden_share: float
+    struct_dist: float
+    struct_intra: float
+    struct_ratio: float
+    t1_pass: float
+    t2_pass: float
+    t3a_pass: float
+    t3b_pass: float
+    low_sites: list[TaggedReadabilityRow]
+
+
+def acf_at_lag(x: Array, lag: int) -> float:
     x = np.asarray(x, float)
     x = x - x.mean()
     denom = np.sum(x * x)
@@ -19,13 +62,13 @@ def acf_at_lag(x: np.ndarray, lag: int) -> float:
     return float(np.sum(x[:-lag] * x[lag:]) / denom)
 
 
-def r2_score(y_true: np.ndarray, pred: np.ndarray) -> float:
+def r2_score(y_true: Array, pred: Array) -> float:
     ss_res = float(np.sum((y_true - pred) ** 2))
     ss_tot = float(np.sum((y_true - y_true.mean()) ** 2))
     return 1.0 - ss_res / max(ss_tot, 1e-12)
 
 
-def fit_ols_predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray) -> np.ndarray:
+def fit_ols_predict(X_train: Array, y_train: Array, X_test: Array) -> Array:
     X_mean = X_train.mean(axis=0, keepdims=True)
     X_std = X_train.std(axis=0, keepdims=True) + 1e-8
     Xtr = (X_train - X_mean) / X_std
@@ -33,14 +76,14 @@ def fit_ols_predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray
     Xtr_aug = np.c_[np.ones(len(Xtr)), Xtr]
     Xte_aug = np.c_[np.ones(len(Xte)), Xte]
     coef, *_ = np.linalg.lstsq(Xtr_aug, y_train, rcond=None)
-    return Xte_aug @ coef
+    return np.asarray(Xte_aug @ coef)
 
 
 def fit_ridge_score(
-    X_train: np.ndarray,
-    y_train: np.ndarray,
-    X_test: np.ndarray,
-    y_test: np.ndarray,
+    X_train: Array,
+    y_train: Array,
+    X_test: Array,
+    y_test: Array,
     alpha: float,
 ) -> float:
     X_mean = X_train.mean(axis=0, keepdims=True)
@@ -60,30 +103,34 @@ def fit_ridge_score(
     return r2_score(y_test, Xte_aug @ coef)
 
 
-def pairwise_distances(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+def pairwise_distances(a: Array, b: Array) -> Array:
     diff = a[:, None, :] - b[None, :, :]
-    return np.sqrt(np.sum(diff * diff, axis=2))
+    return np.asarray(np.sqrt(np.sum(diff * diff, axis=2)))
 
 
-def stack_instantaneous(site_list):
-    X, y = [], []
+def stack_instantaneous(site_list: list[SyntheticSiteDiagnostics]) -> tuple[Array, Array]:
+    X: list[Array] = []
+    y: list[Array] = []
     for site in site_list:
         X.append(site.observable_instantaneous)
         y.append(site.kappa)
     return np.concatenate(X), np.concatenate(y)
 
 
-def site_signature(site) -> np.ndarray:
+def site_signature(site: SyntheticSiteDiagnostics) -> Array:
     return np.concatenate([[site.capacity, site.nurse_ratio_target], site.casemix])
 
 
-def static_features(site, n_rows: int) -> np.ndarray:
+def static_features(site: SyntheticSiteDiagnostics, n_rows: int) -> Array:
     values = site_signature(site)[None, :]
     return np.repeat(values, repeats=n_rows, axis=0)
 
 
-def stack_instantaneous_with_static(site_list):
-    X, y = [], []
+def stack_instantaneous_with_static(
+    site_list: list[SyntheticSiteDiagnostics],
+) -> tuple[Array, Array]:
+    X: list[Array] = []
+    y: list[Array] = []
     for site in site_list:
         X.append(
             np.concatenate(
@@ -94,7 +141,7 @@ def stack_instantaneous_with_static(site_list):
     return np.concatenate(X), np.concatenate(y)
 
 
-def config_for_seed(cfg, seed: int):
+def config_for_seed(cfg: RSJEPAConfig, seed: int) -> RSJEPAConfig:
     return replace(
         cfg,
         seed=seed,
@@ -104,12 +151,12 @@ def config_for_seed(cfg, seed: int):
 
 
 def run_diagnostic_for_seed(
-    cfg,
+    cfg: RSJEPAConfig,
     seed: int,
     ridge_alpha: float = 1.0,
     mae_cap: float = 0.15,
     log: Callable[[str], None] | None = None,
-) -> dict[str, float | list[dict[str, float | str]]]:
+) -> DiagnosticRow:
     log = log or (lambda _line: None)
     cfg = config_for_seed(cfg, seed)
     sites = generate_sites(cfg)
@@ -142,7 +189,7 @@ def run_diagnostic_for_seed(
 
     train_sites = [site for site in sites if site.split == "train"]
     unseen_sites = [site for site in sites if site.split == "unseen"]
-    site_readability = []
+    site_readability: list[ReadabilityRow] = []
     for site in sites:
         X = site.observable_instantaneous
         y = site.kappa
@@ -176,7 +223,7 @@ def run_diagnostic_for_seed(
     flat_count = 0
     hole_count = 0
     low_mae_ok = True
-    low_site_rows = []
+    low_site_rows: list[TaggedReadabilityRow] = []
     if low_sites:
         log("[T3a-low-sites] site_id | R2 | var_kappa_holdout | baseline_MAE | n | tag")
         for row in low_sites:
@@ -187,8 +234,7 @@ def run_diagnostic_for_seed(
             else:
                 tag = "GENUINE READABILITY HOLE"
                 hole_count += 1
-            tagged = dict(row)
-            tagged["tag"] = tag
+            tagged = TaggedReadabilityRow(**row, tag=tag)
             low_site_rows.append(tagged)
             log(
                 f"  {row['site_id']} | {row['r2']:.3f} | {row['holdout_var']:.6f} | "
@@ -271,7 +317,7 @@ def run_diagnostic_for_seed(
     }
 
 
-def summarize_rows(rows: Iterable[dict[str, float]]) -> dict[str, bool | float]:
+def summarize_rows(rows: Iterable[DiagnosticRow]) -> dict[str, bool | float]:
     rows = list(rows)
     t1_fracs = [row["t1_frac"] for row in rows]
     t3a_mean = [row["t3a_mean_r2"] for row in rows]

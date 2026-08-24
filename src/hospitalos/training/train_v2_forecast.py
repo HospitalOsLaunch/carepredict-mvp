@@ -32,6 +32,7 @@ from hospitalos.dynamics.jepa_rssm import (
 )
 from hospitalos.encoders.ts_jepa.encoder import TransformerEncoder
 from hospitalos.encoders.ts_jepa.patcher import Patchifier
+from rs_jepa.typing import Array
 
 DEFAULT_ENCODER_CKPT = Path("runs/jepa_pretrain_long/encoder_smoke_timescale.pt")
 DEFAULT_OUT = Path("artifacts/v2_forecast")
@@ -427,7 +428,7 @@ def build_overlapping_calibration_windows(
     start: datetime,
     end: datetime,
     stride_days: int,
-) -> list[tuple[datetime, np.ndarray, np.ndarray]]:
+) -> list[tuple[datetime, Array, Array]]:
     """Build complete overlapping calibration windows from canonical hourly rows."""
     rows = base._fetch_rows()  # noqa: SLF001 - calibration uses adapter SQL read-only.
     by_service: dict[str, dict[datetime, dict[str, Any]]] = {}
@@ -438,7 +439,7 @@ def build_overlapping_calibration_windows(
             continue
         by_service.setdefault(service_id, {})[row["measured_at"]] = row
 
-    windows: list[tuple[datetime, np.ndarray, np.ndarray]] = []
+    windows: list[tuple[datetime, Array, Array]] = []
     for service_id in sorted(by_service):
         service_rows = by_service[service_id]
         for window_start in overlapping_window_starts(
@@ -475,7 +476,7 @@ def _float_or_nan(value: Any) -> float:
     return float(value)
 
 
-def _forward_fill_limit(values: np.ndarray, *, limit: int) -> np.ndarray:
+def _forward_fill_limit(values: Array, *, limit: int) -> Array:
     """Forward fill NaNs for up to ``limit`` consecutive rows."""
     out = values.copy()
     if out.ndim == 1:
@@ -494,7 +495,7 @@ def _forward_fill_limit(values: np.ndarray, *, limit: int) -> np.ndarray:
     return out.reshape(values.shape)
 
 
-def _finite_window(series: np.ndarray, siips: np.ndarray) -> bool:
+def _finite_window(series: Array, siips: Array) -> bool:
     """Return whether a calibration window is finite and clinically usable."""
     finite = np.isfinite(series).all() and np.isfinite(siips).all()
     return bool(finite and np.all(siips > 0.0))

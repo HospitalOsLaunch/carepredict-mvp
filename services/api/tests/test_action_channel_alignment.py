@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
+from typing import cast
 
-from scripts.train_rssm_synthetic import build_action_matrix
+from scripts.train_rssm_synthetic import ActionDatasetLike, build_action_matrix
 from services.api.schemas.simulate import ActionStep
 from services.ml.world_model.action_channels import ACTION_CHANNEL_INDEX, ACTION_CHANNELS
 
@@ -60,7 +61,9 @@ def test_build_action_matrix_uses_same_channel_positions() -> None:
         discharges=[SimpleNamespace(discharge_time=timestamps[1] + timedelta(minutes=30))],
     )
 
-    actions = build_action_matrix(dataset, timestamps, action_dim=len(ACTION_CHANNELS))
+    actions = build_action_matrix(
+        cast(ActionDatasetLike, dataset), timestamps, action_dim=len(ACTION_CHANNELS)
+    )
 
     assert actions[:, ACTION_CHANNEL_INDEX["admissions"]].tolist() == [1.0, 0.0, 1.0]
     assert actions[:, ACTION_CHANNEL_INDEX["discharges"]].tolist() == [0.0, 1.0, 0.0]

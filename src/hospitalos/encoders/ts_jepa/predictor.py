@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import torch
 from torch import Tensor, nn
 
@@ -51,4 +53,4 @@ class Predictor(nn.Module):
         for block in self.blocks:
             x = block(x)
         x = self.norm(x)
-        return self.out_proj(x[:, -tgt_idx.numel() :])
+        return cast(Tensor, self.out_proj(x[:, -tgt_idx.numel() :]))

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, fields, is_dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar, cast
 
 import yaml
 
@@ -115,18 +115,21 @@ class RSJEPAConfig:
     training: TrainingConfig = field(default_factory=TrainingConfig)
 
 
-def _coerce_dataclass(cls: type[Any], value: dict[str, Any] | None) -> Any:
+ConfigT = TypeVar("ConfigT")
+
+
+def _coerce_dataclass(cls: type[ConfigT], value: dict[str, Any] | None) -> ConfigT:
     value = dict(value or {})
     kwargs: dict[str, Any] = {}
-    field_map = {f.name: f for f in fields(cls)}
+    field_map = {f.name: f for f in fields(cast(Any, cls))}
     for name, raw in value.items():
         if name not in field_map:
             raise ValueError(f"Clé de configuration inconnue pour {cls.__name__}: {name}")
         typ = field_map[name].type
         if name == "horizons" and isinstance(raw, list):
             raw = tuple(int(v) for v in raw)
-        if is_dataclass(typ):
-            raw = _coerce_dataclass(typ, raw)
+        if isinstance(typ, type) and is_dataclass(typ):
+            raw = _coerce_dataclass(cast(type[Any], typ), cast(dict[str, Any] | None, raw))
         kwargs[name] = raw
     return cls(**kwargs)
 

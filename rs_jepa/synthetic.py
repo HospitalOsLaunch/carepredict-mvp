@@ -7,8 +7,9 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from rs_jepa.config import SyntheticConfig
+from rs_jepa.config import RSJEPAConfig, SyntheticConfig
 from rs_jepa.splits import CROSS_SITE_VAL, add_validation_splits, choose_cross_site_validation_sites
+from rs_jepa.typing import Array
 
 TEMPORAL_FEATURE_COLUMNS = (
     "inflow_per_capacity",
@@ -59,29 +60,29 @@ class SyntheticHospitalData:
 class SyntheticSiteDiagnostics:
     site_id: str
     split: str
-    occupancy_total: np.ndarray
-    util: np.ndarray
-    rise: np.ndarray
-    kappa: np.ndarray
-    observable_instantaneous: np.ndarray
+    occupancy_total: Array
+    util: Array
+    rise: Array
+    kappa: Array
+    observable_instantaneous: Array
     capacity: float
     nurse_ratio_target: float
-    casemix: np.ndarray
+    casemix: Array
 
 
-def sigmoid(x: np.ndarray) -> np.ndarray:
-    return 1.0 / (1.0 + np.exp(-x))
+def sigmoid(x: Array) -> Array:
+    return np.asarray(1.0 / (1.0 + np.exp(-x)))
 
 
-def pairwise_distances(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+def pairwise_distances(a: Array, b: Array) -> Array:
     diff = a[:, None, :] - b[None, :, :]
-    return np.sqrt(np.sum(diff * diff, axis=2))
+    return np.asarray(np.sqrt(np.sum(diff * diff, axis=2)))
 
 
 class SyntheticHospitalSimulator:
     """Generate heterogeneous hourly hospital dynamics with known criticality."""
 
-    def __init__(self, cfg: SyntheticConfig, reserved_site_ids: set[str] | None = None):
+    def __init__(self, cfg: SyntheticConfig, reserved_site_ids: set[str] | None = None) -> None:
         self.cfg = cfg
         self.rng = np.random.default_rng(cfg.seed)
         self.reserved_site_ids = reserved_site_ids or set()
@@ -170,6 +171,8 @@ class SyntheticHospitalSimulator:
                         best_gap = gap
                     if 0.35 <= ratio <= 0.50:
                         break
+                if best_candidate is None:
+                    raise RuntimeError("Unable to sample a reserved-site signature")
                 capacity, case_mix, base_saturation, staffing_base, seasonality_strength, ratio = (
                     best_candidate
                 )
@@ -368,10 +371,10 @@ class SyntheticHospitalSimulator:
 
     @staticmethod
     def _criticality(
-        occupancy_ratio: np.ndarray,
-        inflow_surge: np.ndarray,
-        effective_staffing_ratio: np.ndarray,
-    ) -> np.ndarray:
+        occupancy_ratio: Array,
+        inflow_surge: Array,
+        effective_staffing_ratio: Array,
+    ) -> Array:
         patients_per_staff_ratio = np.clip(
             occupancy_ratio / effective_staffing_ratio,
             0.0,
@@ -390,9 +393,9 @@ class SyntheticHospitalSimulator:
         capacity: int,
         base_saturation: float,
         discharge_rate: float,
-        inflow: np.ndarray,
-        discharge_noise: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray]:
+        inflow: Array,
+        discharge_noise: Array,
+    ) -> tuple[Array, Array]:
         occupancy = np.empty(n, dtype=float)
         discharges = np.empty(n, dtype=float)
         occupancy[0] = capacity * base_saturation
@@ -407,7 +410,7 @@ class SyntheticHospitalSimulator:
         discharges[-1] = discharge_rate * occupancy[-1]
         return occupancy, discharges
 
-    def _exogenous_actions(self, n: int, rng: np.random.Generator) -> tuple[np.ndarray, np.ndarray]:
+    def _exogenous_actions(self, n: int, rng: np.random.Generator) -> tuple[Array, Array]:
         """Draw state-independent action deltas for causal simulator diagnostics."""
         staffing_delta = np.zeros(n, dtype=float)
         discharge_delta = np.zeros(n, dtype=float)
@@ -427,7 +430,7 @@ class SyntheticHospitalSimulator:
             )
         return staffing_delta.astype(float), discharge_delta.astype(float)
 
-    def _surge_process(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def _surge_process(self, n: int, rng: np.random.Generator) -> Array:
         surge = np.zeros(n, dtype=float)
         expected_events = self.cfg.surge_event_rate_per_30d * 1.35 * (n / (24 * 30))
         n_events = int(rng.poisson(expected_events))
@@ -455,11 +458,11 @@ def assert_criticality_is_unitless(data: SyntheticHospitalData) -> None:
             raise ValueError(f"Entrée de criticality non unitless: {name}")
 
 
-def generate_sites(cfg) -> list[SyntheticSiteDiagnostics]:
+def generate_sites(cfg: RSJEPAConfig) -> list[SyntheticSiteDiagnostics]:
     """Return per-site diagnostic views of the Phase A simulator output."""
 
-    synthetic_cfg = getattr(cfg, "synthetic", cfg)
-    split_cfg = getattr(cfg, "split", None)
+    synthetic_cfg = cfg.synthetic
+    split_cfg = cfg.split
     site_ids = [f"site-{site_idx:03d}" for site_idx in range(synthetic_cfg.n_sites)]
     reserved_site_ids = (
         set(choose_cross_site_validation_sites(site_ids, split_cfg))

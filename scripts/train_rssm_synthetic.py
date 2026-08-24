@@ -16,6 +16,7 @@ from collections.abc import Sequence
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Protocol, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -31,6 +32,34 @@ from services.ml.world_model.action_channels import ACTION_CHANNEL_INDEX, ACTION
 from services.ml.world_model.config import RewardConfig, RSSMConfig, TrainConfig
 from services.ml.world_model.rssm import HospitalRSSM, RSSMState
 from services.ml.world_model.train import WorldModelTrainer
+
+
+class AdmissionLike(Protocol):
+    """Admission timestamp contract used for action alignment."""
+
+    @property
+    def admission_time(self) -> datetime:
+        """Return the admission timestamp."""
+
+
+class DischargeLike(Protocol):
+    """Discharge timestamp contract used for action alignment."""
+
+    @property
+    def discharge_time(self) -> datetime:
+        """Return the discharge timestamp."""
+
+
+class ActionDatasetLike(Protocol):
+    """Minimal event dataset contract required by ``build_action_matrix``."""
+
+    @property
+    def admissions(self) -> Sequence[AdmissionLike]:
+        """Return admission events."""
+
+    @property
+    def discharges(self) -> Sequence[DischargeLike]:
+        """Return discharge events."""
 
 LOGGER = logging.getLogger(__name__)
 
@@ -141,7 +170,7 @@ def hour_bucket(timestamp: datetime) -> datetime:
 
 
 def build_action_matrix(
-    dataset: SyntheticDataset,
+    dataset: ActionDatasetLike,
     timestamps: Sequence[datetime],
     action_dim: int,
 ) -> npt.NDArray[np.float32]:
@@ -354,7 +383,10 @@ def rollout_residuals_for_start(
         pred_value = float(normalized_pred.reshape(-1)[0].detach().cpu().item()) * std + mean
         predictions.append(pred_value)
     truth = raw_siips[start + history_length : start + history_length + horizon]
-    return np.abs(truth - np.asarray(predictions, dtype=np.float64)).astype(np.float64)
+    return cast(
+        npt.NDArray[np.float64],
+        np.abs(truth - np.asarray(predictions, dtype=np.float64)).astype(np.float64),
+    )
 
 
 def save_conformal_residuals(

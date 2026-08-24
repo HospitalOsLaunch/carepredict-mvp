@@ -77,7 +77,9 @@ def test_horizon_out_of_range_returns_422(client: TestClient) -> None:
 
 def test_malformed_feature_step_returns_422(client: TestClient) -> None:
     payload = _payload()
-    history = list(payload["history"])  # type: ignore[arg-type]
+    history_value = payload["history"]
+    assert isinstance(history_value, list)
+    history = list(history_value)
     malformed = dict(history[0])
     malformed.pop("occupancy_rate")
     history[0] = malformed

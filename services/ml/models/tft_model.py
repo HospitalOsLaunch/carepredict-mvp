@@ -149,7 +149,7 @@ class PytorchForecastingTFTBackend:
         so that predict() can run without re-training.
         Raises FileNotFoundError if the bundle is missing.
         """
-        import cloudpickle
+        import cloudpickle  # type: ignore[import-untyped]
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
@@ -179,7 +179,7 @@ class PytorchForecastingTFTBackend:
         """Fit a pytorch-forecasting TFT model on the provided dataset."""
         import lightning as L
         from lightning.pytorch.callbacks import EarlyStopping
-        from pytorch_forecasting import (
+        from pytorch_forecasting import (  # type: ignore[import-untyped]
             TemporalFusionTransformer,
             TimeSeriesDataSet,
         )
@@ -324,7 +324,7 @@ class PytorchForecastingTFTBackend:
         Lightning .ckpt files alone are insufficient because the dataset schema
         is not embedded reliably across pytorch-forecasting versions.
         """
-        import cloudpickle
+        import cloudpickle  # type: ignore[import-untyped]
 
         if self._model is None or self._training_dataset is None:
             raise RuntimeError("Cannot save bundle: model not trained")
@@ -364,7 +364,7 @@ class PytorchForecastingTFTBackend:
         config: TFTConfig,
     ) -> TFTForecast:
         """Run a single forecast without Lightning ``Trainer`` or DataLoader setup."""
-        from pytorch_forecasting import TimeSeriesDataSet
+        from pytorch_forecasting import TimeSeriesDataSet  # type: ignore[import-untyped]
 
         if self._model is None:
             raise RuntimeError("model must be trained before predict()")
@@ -410,7 +410,7 @@ class PytorchForecastingTFTBackend:
         config: TFTConfig,
     ) -> TFTForecast:
         """Compatibility prediction path for unusual pytorch-forecasting releases."""
-        from pytorch_forecasting import TimeSeriesDataSet
+        from pytorch_forecasting import TimeSeriesDataSet  # type: ignore[import-untyped]
 
         if self._model is None:
             raise RuntimeError("model must be trained before predict()")

@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from torch import nn
+from torch.optim.adamw import AdamW
 
 from rs_jepa.config import RSJEPAConfig
 from rs_jepa.encoder import ObservableEncoder
@@ -28,16 +29,17 @@ from rs_jepa.splits import (
 )
 from rs_jepa.synthetic import SyntheticHospitalSimulator
 from rs_jepa.train import LoadedEncoder, load_encoder_checkpoint
+from rs_jepa.typing import Array
 
 
 @dataclass(frozen=True)
 class Stage2Site:
     site_id: str
-    features: np.ndarray
-    static: np.ndarray
-    criticality: np.ndarray
-    levels: np.ndarray
-    split: np.ndarray
+    features: Array
+    static: Array
+    criticality: Array
+    levels: Array
+    split: Array
 
 
 @dataclass(frozen=True)
@@ -45,7 +47,7 @@ class Stage2Examples:
     latents: torch.Tensor
     criticality: torch.Tensor
     levels: torch.Tensor
-    site_ids: np.ndarray
+    site_ids: Array
 
 
 @dataclass(frozen=True)
@@ -103,7 +105,7 @@ def _window_arrays(
     sites: list[Stage2Site],
     cfg: RSJEPAConfig,
     split: str,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[Array, Array, Array, Array, Array]:
     windows = []
     statics = []
     criticality = []
@@ -194,7 +196,7 @@ def train_stage2_heads(
     device: torch.device,
 ) -> list[dict[str, float]]:
     heads.to(device)
-    optimizer = torch.optim.AdamW(
+    optimizer = AdamW(
         heads.parameters(),
         lr=cfg.stage2.lr,
         weight_decay=cfg.stage2.weight_decay,
@@ -213,7 +215,7 @@ def train_stage2_heads(
             ordinal = coral_loss(out["ordinal_logits"], levels[batch], cfg.stage2.k_levels)
             loss = tension_loss + ordinal
             optimizer.zero_grad(set_to_none=True)
-            loss.backward()
+            loss.backward()  # type: ignore[no-untyped-call]
             optimizer.step()
             losses.append(float(loss.detach().cpu().item()))
         history.append({"epoch": float(epoch + 1), "loss": float(np.mean(losses))})
