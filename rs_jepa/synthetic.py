@@ -484,7 +484,7 @@ def generate_sites(cfg: RSJEPAConfig) -> list[SyntheticSiteDiagnostics]:
         site_static = static.loc[site_id]
         sites.append(
             SyntheticSiteDiagnostics(
-                site_id=site_id,
+                site_id=str(site_id),
                 split=split,
                 occupancy_total=group["occupancy"].to_numpy(dtype=float),
                 util=group["occupancy_ratio"].to_numpy(dtype=float),

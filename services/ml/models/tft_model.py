@@ -149,7 +149,7 @@ class PytorchForecastingTFTBackend:
         so that predict() can run without re-training.
         Raises FileNotFoundError if the bundle is missing.
         """
-        import cloudpickle
+        import cloudpickle  # type: ignore[import-untyped]
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
@@ -324,7 +324,7 @@ class PytorchForecastingTFTBackend:
         Lightning .ckpt files alone are insufficient because the dataset schema
         is not embedded reliably across pytorch-forecasting versions.
         """
-        import cloudpickle  # type: ignore[import-untyped]
+        import cloudpickle
 
         if self._model is None or self._training_dataset is None:
             raise RuntimeError("Cannot save bundle: model not trained")
