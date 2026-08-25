@@ -9,8 +9,8 @@ from typing import Any
 import lightning as L
 import torch
 import torch.nn.functional as F
-from torch import Tensor, nn
-from torch.optim import AdamW
+from torch import Tensor
+from torch.optim.adamw import AdamW
 from torch.optim.lr_scheduler import LambdaLR
 
 from hospitalos.encoders.ts_jepa.config import JEPAConfig
@@ -73,7 +73,10 @@ class JEPALightningModule(L.LightningModule):
         loss = F.smooth_l1_loss(pred, tgt)
         self.log("jepa/loss", loss, prog_bar=True, on_step=True, on_epoch=True)
 
-        if self.cfg.probe_every_n_steps > 0 and int(self.global_step) % self.cfg.probe_every_n_steps == 0:
+        if (
+            self.cfg.probe_every_n_steps > 0
+            and int(self.global_step) % self.cfg.probe_every_n_steps == 0
+        ):
             self.log("probe/emb_std", embedding_std(tgt.detach()), on_step=True, on_epoch=False)
             self.log(
                 "probe/offdiag_corr",
@@ -132,7 +135,7 @@ class JEPALightningModule(L.LightningModule):
         ):
             target_param.mul_(momentum).add_(context_param.detach(), alpha=1.0 - momentum)
 
-    def configure_optimizers(self) -> dict[str, Any]:
+    def configure_optimizers(self) -> Any:
         """Configure AdamW and warmup-cosine learning-rate scheduling."""
         params = list(self.patcher.parameters())
         params += list(self.context_encoder.parameters())

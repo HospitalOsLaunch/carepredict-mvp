@@ -11,8 +11,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from rs_jepa.config import load_config
-from rs_jepa.diagnostics import run_diagnostic_for_seed, summarize_rows
+from rs_jepa.config import load_config  # noqa: E402 - import after local path bootstrap
+from rs_jepa.diagnostics import (  # noqa: E402 - import after local path bootstrap
+    run_diagnostic_for_seed,
+    summarize_rows,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -28,7 +31,9 @@ def main() -> int:
     args = parse_args()
     cfg = load_config(args.config)
     rows = [
-        run_diagnostic_for_seed(cfg, seed, ridge_alpha=args.ridge_alpha, mae_cap=args.mae_cap, log=print)
+        run_diagnostic_for_seed(
+            cfg, seed, ridge_alpha=args.ridge_alpha, mae_cap=args.mae_cap, log=print
+        )
         for seed in args.seeds
     ]
 
@@ -56,7 +61,8 @@ def main() -> int:
     for row in sorted(rows, key=lambda item: item["struct_ratio"]):
         print(
             f"seed={int(row['seed'])} STRUCT={row['struct_ratio']:.3f} "
-            f"gain={row['t3b_gain']:.3f} naive={row['t3b_naive_r2']:.3f} cond={row['t3b_cond_r2']:.3f}"
+            f"gain={row['t3b_gain']:.3f} naive={row['t3b_naive_r2']:.3f} "
+            f"cond={row['t3b_cond_r2']:.3f}"
         )
 
     summary = summarize_rows(rows)

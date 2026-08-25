@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 SUPPORTED_RESOURCES: set[str] = {"Patient", "Encounter", "Observation", "Procedure"}
 
 

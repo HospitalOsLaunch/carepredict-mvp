@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 CANONICAL_TOPIC = "canonical.events"
 
 

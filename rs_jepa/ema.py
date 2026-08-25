@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import copy
+from typing import Any, cast
 
 import torch
-from torch import nn
+from torch import Tensor, nn
 
 
 def tau_schedule(step: int, ramp_steps: int, start: float = 0.996, end: float = 0.9999) -> float:
@@ -42,6 +43,6 @@ class EMATargetEncoder(nn.Module):
                 target_buffer.copy_(online_buffers[name].detach())
 
     @torch.no_grad()
-    def forward(self, *args, **kwargs):
+    def forward(self, *args: Any, **kwargs: Any) -> Tensor:
         self.target.eval()
-        return self.target(*args, **kwargs)
+        return cast(Tensor, self.target(*args, **kwargs))

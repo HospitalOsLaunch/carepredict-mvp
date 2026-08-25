@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import torch
-from torch import LongTensor
+from torch import Tensor
 
 
 def block_mask(
@@ -11,7 +11,7 @@ def block_mask(
     mask_ratio: float,
     n_target_blocks: int,
     generator: torch.Generator,
-) -> tuple[LongTensor, LongTensor]:
+) -> tuple[Tensor, Tensor]:
     """Return sorted context and target indices from random contiguous blocks."""
     if n_patches <= 1:
         raise AssertionError("n_patches must be greater than one")
@@ -47,9 +47,7 @@ def block_mask(
                 break
         if success:
             target = sorted(
-                patch_idx
-                for start, end in intervals
-                for patch_idx in range(start, end)
+                patch_idx for start, end in intervals for patch_idx in range(start, end)
             )
             target_set = set(target)
             context = [idx for idx in range(n_patches) if idx not in target_set]

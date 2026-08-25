@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, cast, runtime_checkable
 
 import numpy as np
 import numpy.typing as npt
@@ -23,18 +23,15 @@ LOGGER = structlog.get_logger(__name__)
 class TimeSeriesDataset(Protocol):
     """Minimal dataset protocol accepted by the Moirai fine-tuning wrapper."""
 
-    def to_pandas(self) -> pd.DataFrame:
-        ...
+    def to_pandas(self) -> pd.DataFrame: ...
 
 
 class MoiraiBackend(Protocol):
     """Backend protocol for a concrete uni2ts Moirai adapter."""
 
-    def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]:
-        ...
+    def predict(self, history: pd.Series, horizon: int) -> npt.NDArray[np.float64]: ...
 
-    def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
-        ...
+    def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -150,7 +147,7 @@ class Uni2TSMoiraiBackend:
         if median.shape[0] < horizon:
             pad = np.full(horizon - median.shape[0], float(median[-1]), dtype=float)
             median = np.concatenate([median, pad])
-        return median[:horizon].astype(float)
+        return cast(npt.NDArray[np.float64], median[:horizon].astype(float))
 
     def fine_tune(self, dataset: TimeSeriesDataset, epochs: int) -> dict[str, float]:
         """Evaluate zero-shot Moirai on the dataset.
@@ -200,7 +197,7 @@ class Uni2TSMoiraiBackend:
         return {"baseline_mae": mae, "epochs": float(epochs), "windows": float(len(errors))}
 
     def _build_forecaster(self, horizon_override: int | None = None) -> None:
-        from uni2ts.model.moirai import (  # type: ignore[import-not-found]
+        from uni2ts.model.moirai import (  # type: ignore[import-untyped]
             MoiraiForecast,
             MoiraiModule,
         )

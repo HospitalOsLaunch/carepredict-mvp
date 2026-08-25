@@ -4,48 +4,24 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Protocol
 
 from services.api.dependencies.feature_window_fetcher import TimescaleFeatureWindowFetcher
 from services.api.recommend.drivers import recommendation_explanation
 from services.api.recommend.levers import candidate_levers
-from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, ScoredAction
+from services.api.recommend.scoring import (
+    ForecastContext,
+    ForecastPoint,
+    RuleBasedScorer,
+    ScoredAction,
+)
 from services.api.recommend.thresholds import (
+    FeatureWindowFetcherLike,
     ForecastP75ThresholdProvider,
+    ForecastServiceLike,
     ServiceThresholdProvider,
 )
 from services.api.schemas.actions import OpportunityKPIs, Recommendation, RiskWindow
 from services.ml.forecasting.v2_service import V2ForecastService
-
-
-class ForecastServiceLike(Protocol):
-    """Subset of ``V2ForecastService`` required by the engine."""
-
-    artifacts: object
-
-    def forecast(
-        self,
-        *,
-        history: list[list[float]],
-        origin_timestamp: datetime,
-        horizon: int,
-    ) -> list[dict[str, float | int]]:
-        """Return raw forecast dictionaries."""
-
-
-class FeatureWindowFetcherLike(Protocol):
-    """Subset of ``TimescaleFeatureWindowFetcher`` required by the engine."""
-
-    def fetch(
-        self,
-        *,
-        hospital_id: str,
-        service_id: str,
-        origin_timestamp: datetime,
-        length: int,
-        artifacts: object,
-    ) -> object:
-        """Return an object with a ``history`` attribute."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -75,7 +51,7 @@ class RecommendationEngine:
             forecast_service=forecast_service,
             feature_fetcher=self.feature_fetcher,
         )
-        self.history_length = history_length or getattr(forecast_service, "history_length", 120)
+        self.history_length = history_length or forecast_service.history_length
 
     def recommend(
         self,

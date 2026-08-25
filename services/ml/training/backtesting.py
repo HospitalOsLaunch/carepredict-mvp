@@ -113,8 +113,7 @@ def render_backtest_report(
     """Render a small standalone HTML report."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     rows = "\n".join(
-        f"<tr><th>{name}</th><td>{value:.4f}</td></tr>"
-        for name, value in metrics.as_dict().items()
+        f"<tr><th>{name}</th><td>{value:.4f}</td></tr>" for name, value in metrics.as_dict().items()
     )
     output_path.write_text(
         f"""<!doctype html>

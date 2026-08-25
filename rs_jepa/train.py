@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from torch import nn
+from torch.optim.adamw import AdamW
 
 from rs_jepa.config import RSJEPAConfig, config_from_dict
 from rs_jepa.diagnostics import run_diagnostic_for_seed as run_honesty_diagnostic
@@ -28,17 +29,18 @@ from rs_jepa.splits import (
     choose_cross_site_validation_sites,
 )
 from rs_jepa.synthetic import SyntheticHospitalSimulator
+from rs_jepa.typing import Array
 
 
 @dataclass(frozen=True)
 class PhaseASite:
     site_id: str
-    features: np.ndarray
-    static: np.ndarray
-    criticality: np.ndarray
-    actions: np.ndarray
-    action_deltas: np.ndarray
-    split: np.ndarray
+    features: Array
+    static: Array
+    criticality: Array
+    actions: Array
+    action_deltas: Array
+    split: Array
 
 
 @dataclass
@@ -88,9 +90,11 @@ def build_phase_a_sites(
         site_static = static.loc[site_id]
         sites.append(
             PhaseASite(
-                site_id=site_id,
+                site_id=str(site_id),
                 features=group.loc[:, data.temporal_feature_columns].to_numpy(dtype=np.float32),
-                static=site_static.loc[list(data.static_feature_columns)].to_numpy(dtype=np.float32),
+                static=site_static.loc[list(data.static_feature_columns)].to_numpy(
+                    dtype=np.float32
+                ),
                 criticality=group["criticality"].to_numpy(dtype=np.float32),
                 actions=group.loc[:, data.action_columns].to_numpy(dtype=np.float32),
                 action_deltas=group.loc[:, data.action_delta_columns].to_numpy(dtype=np.float32),
@@ -110,7 +114,7 @@ def _sample_windows(
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, int]:
     horizon = int(
         torch.tensor(cfg.stage1.horizons)[
-            torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item()
+            int(torch.randint(len(cfg.stage1.horizons), (1,), generator=generator).item())
         ].item()
     )
     window_len = cfg.stage1.context_steps + horizon
@@ -239,11 +243,7 @@ def load_stage1_checkpoint(
 
     load_device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     payload = torch.load(Path(path), map_location=load_device, weights_only=False)
-    missing = [
-        key
-        for key in ("rssm_state_dict", "predictor_state_dict")
-        if key not in payload
-    ]
+    missing = [key for key in ("rssm_state_dict", "predictor_state_dict") if key not in payload]
     if missing:
         raise ValueError(
             "Checkpoint Stage 1 incomplet: "
@@ -306,7 +306,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
     params: list[nn.Parameter] = []
     for module in (encoder, rssm, predictor):
         params.extend(module.parameters())
-    optimizer = torch.optim.AdamW(params, lr=cfg.stage1.lr, weight_decay=cfg.stage1.weight_decay)
+    optimizer = AdamW(params, lr=cfg.stage1.lr, weight_decay=cfg.stage1.weight_decay)
     total_steps = max(1, cfg.training.max_epochs * cfg.training.steps_per_epoch)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=total_steps)
     generator = torch.Generator().manual_seed(cfg.seed)
@@ -346,7 +346,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
             loss, components = latent_jepa_loss(pred_latents, target_latents, cfg.stage1)
 
             optimizer.zero_grad(set_to_none=True)
-            loss.backward()
+            loss.backward()  # type: ignore[no-untyped-call]
             action_grad_norm = _action_grad_norm(rssm, cfg)
             torch.nn.utils.clip_grad_norm_(params, cfg.stage1.grad_clip)
             optimizer.step()
@@ -392,9 +392,7 @@ def run_stage1_training(cfg: RSJEPAConfig, *, log: bool = True) -> Stage1Artifac
                 )
 
     ceiling_rows = [run_honesty_diagnostic(cfg, seed) for seed in range(5)]
-    ceiling = 1.0 - float(
-        np.mean([row["hidden_share"] for row in ceiling_rows])
-    )
+    ceiling = 1.0 - float(np.mean([row["hidden_share"] for row in ceiling_rows]))
     _summary = summarize_rows(ceiling_rows)
     probes = run_frozen_latent_probes(
         encoder,

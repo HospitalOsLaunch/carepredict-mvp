@@ -73,7 +73,10 @@ def test_action_plan_uses_realistic_total_magnitudes() -> None:
     staff_plan = action_plan_for_lever("move_staff", 48)
 
     assert discharge_plan.mode == "counterfactual"
-    assert sum(step.scheduled_discharges for step in discharge_plan.actions) == PRIORITIZE_DISCHARGE_TOTAL
+    assert (
+        sum(step.scheduled_discharges for step in discharge_plan.actions)
+        == PRIORITIZE_DISCHARGE_TOTAL
+    )
     assert staff_plan.mode == "heuristic"
     assert staff_plan.actions == []
 

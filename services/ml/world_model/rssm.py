@@ -76,7 +76,7 @@ class HospitalRSSM(nn.Module):
         """Build a diagonal Gaussian from concatenated mean and log-std parameters."""
         mean, raw_std = torch.chunk(params, chunks=2, dim=-1)
         std = torch.nn.functional.softplus(raw_std) + self.config.min_std
-        return Normal(mean, std)
+        return Normal(mean, std)  # type: ignore[no-untyped-call]
 
     def prior(self, h: Tensor) -> Normal:
         """Return the prior distribution p(z_t | h_t)."""
@@ -99,7 +99,11 @@ class HospitalRSSM(nn.Module):
         prior_dist = self.prior(h)
         encoded_obs = self.obs_encoder(obs)
         posterior_dist = self.posterior(h, encoded_obs)
-        z = posterior_dist.rsample() if self.training else posterior_dist.mean
+        z = (
+            posterior_dist.rsample()  # type: ignore[no-untyped-call]
+            if self.training
+            else posterior_dist.mean
+        )
         return {"h": h, "z": z}, prior_dist, posterior_dist
 
     def imagine_step(self, prev_state: RSSMState, action: Tensor) -> tuple[RSSMState, Normal]:
@@ -107,7 +111,11 @@ class HospitalRSSM(nn.Module):
         recurrent_input = torch.cat([action, prev_state["z"]], dim=-1)
         h = self.rnn(recurrent_input, prev_state["h"])
         prior_dist = self.prior(h)
-        z = prior_dist.rsample() if self.training else prior_dist.mean
+        z = (
+            prior_dist.rsample()  # type: ignore[no-untyped-call]
+            if self.training
+            else prior_dist.mean
+        )
         return {"h": h, "z": z}, prior_dist
 
     def decode(self, state: RSSMState) -> tuple[Tensor, Tensor]:

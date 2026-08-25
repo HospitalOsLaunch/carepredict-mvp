@@ -12,6 +12,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 from data.synthetic.siips_generator import DEFAULT_SERVICES, SyntheticDataset, generate_dataset
+from rs_jepa.typing import Array
 
 DEFAULT_CHANNELS: tuple[str, ...] = (
     "siips_score",
@@ -99,7 +100,7 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
             raise AssertionError("window length must be divisible by 24")
         return {"series": series, "siips": siips}
 
-    def _materialize(self, dataset: SyntheticDataset) -> tuple[np.ndarray, np.ndarray]:
+    def _materialize(self, dataset: SyntheticDataset) -> tuple[Array, Array]:
         """Convert generated records into aligned hourly arrays."""
         care_load = sorted(dataset.care_load, key=lambda record: record.measured_at)
         staffing = sorted(dataset.staffing, key=lambda record: record.shift_start)
@@ -157,7 +158,9 @@ class SyntheticHospitalDataset(Dataset[dict[str, Tensor]]):
                 raise AssertionError("synthetic series must have hourly granularity")
 
     @staticmethod
-    def _event_counts(timestamps: Sequence[datetime], event_times: Sequence[datetime]) -> np.ndarray:
+    def _event_counts(
+        timestamps: Sequence[datetime], event_times: Sequence[datetime]
+    ) -> Array:
         """Count events in each hourly bucket aligned to ``timestamps``."""
         hour_to_index = {timestamp: index for index, timestamp in enumerate(timestamps)}
         counts = np.zeros(len(timestamps), dtype=np.float32)

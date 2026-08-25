@@ -7,13 +7,15 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from feast import FeatureView, Field, PostgresSource
+from feast import FeatureView, Field
+from feast.infra.offline_stores.contrib.postgres_offline_store.postgres_source import (
+    PostgreSQLSource,
+)
 from feast.types import Float32, Int32
 
-from entities import service
+from services.feature_pipeline.feast.entities import service
 
-
-care_load_source = PostgresSource(
+care_load_source = PostgreSQLSource(
     name="mart_care_load_features_source",
     query="select * from marts.mart_care_load_features",
     timestamp_field="event_hour",
@@ -31,7 +33,7 @@ care_load_features = FeatureView(
     source=care_load_source,
 )
 
-temporal_source = PostgresSource(
+temporal_source = PostgreSQLSource(
     name="mart_temporal_features_source",
     query="select * from marts.mart_temporal_features",
     timestamp_field="event_hour",

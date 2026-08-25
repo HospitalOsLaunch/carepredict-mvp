@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pytest
@@ -13,6 +13,7 @@ from data.synthetic.siips_generator import db_config_from_env
 from hospitalos.data.timescale_adapter import (
     CHANNEL_NAMES,
     TimescaleDatasetConfig,
+    TimescaleHospitalDataset,
     build_timescale_dataset,
 )
 
@@ -28,17 +29,18 @@ def db_overrides() -> dict[str, Any]:
     config = db_config_from_env()
     config["connect_timeout"] = 1
     try:
-        with psycopg2.connect(**config) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT 1")
-                cursor.fetchone()
+        with psycopg2.connect(
+            **cast(dict[str, Any], config)
+        ) as connection, connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
     except Exception as exc:  # noqa: BLE001
         pytest.skip(f"TimescaleDB unavailable: {exc}")
     return {"connect_timeout": 1}
 
 
 @pytest.fixture(scope="module")
-def train_dataset(db_overrides: dict[str, Any]):
+def train_dataset(db_overrides: dict[str, Any]) -> TimescaleHospitalDataset:
     """Build a deterministic train split for one service."""
     return build_timescale_dataset(
         TimescaleDatasetConfig(
@@ -51,7 +53,9 @@ def train_dataset(db_overrides: dict[str, Any]):
     )
 
 
-def test_timescale_adapter_shapes_dtypes_and_channels(train_dataset) -> None:
+def test_timescale_adapter_shapes_dtypes_and_channels(
+    train_dataset: TimescaleHospitalDataset,
+) -> None:
     """Adapter returns the exact JEPA/RSSM tensor contract."""
     torch.manual_seed(0)
     np.random.seed(0)
@@ -64,7 +68,9 @@ def test_timescale_adapter_shapes_dtypes_and_channels(train_dataset) -> None:
     assert item["series"].shape[0] % 24 == 0
 
 
-def test_timescale_adapter_target_not_leaked_into_series(train_dataset) -> None:
+def test_timescale_adapter_target_not_leaked_into_series(
+    train_dataset: TimescaleHospitalDataset,
+) -> None:
     """SIIPS target is positive and not exactly duplicated by any feature channel."""
     torch.manual_seed(0)
     np.random.seed(0)
@@ -123,7 +129,9 @@ def test_timescale_adapter_determinism(db_overrides: dict[str, Any]) -> None:
     assert torch.equal(first["siips"], second["siips"])
 
 
-def test_timescale_adapter_rejected_window_counter(train_dataset) -> None:
+def test_timescale_adapter_rejected_window_counter(
+    train_dataset: TimescaleHospitalDataset,
+) -> None:
     """Rejected window count is exposed as a non-negative integer."""
     assert isinstance(train_dataset.n_rejected_windows, int)
     assert train_dataset.n_rejected_windows >= 0

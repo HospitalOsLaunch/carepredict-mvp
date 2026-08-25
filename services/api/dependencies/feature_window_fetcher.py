@@ -8,7 +8,7 @@ from typing import Any
 
 import psycopg
 
-from services.api.dependencies.feature_fetcher import DB_DSN
+from services.api.dependencies.feature_fetcher import DB_DSN as FEATURE_DB_DSN
 from services.api.schemas.history import FEATURE_WINDOW_CHANNELS
 from services.ml.forecasting.v2_forecast import (
     V2ForecastArtifacts,
@@ -17,6 +17,8 @@ from services.ml.forecasting.v2_forecast import (
 from services.ml.forecasting.v2_forecast import (
     history_window_origin as _model_history_window_origin,
 )
+
+DB_DSN = FEATURE_DB_DSN
 
 
 @dataclass(frozen=True, slots=True)

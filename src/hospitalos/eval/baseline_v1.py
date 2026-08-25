@@ -8,11 +8,12 @@ import json
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 import numpy as np
 
 from data.synthetic.siips_generator import db_config_from_env
+from rs_jepa.typing import Array
 from services.ml.world_model.config import ServingConfig
 from services.ml.world_model.inference import WorldModelService
 
@@ -74,12 +75,15 @@ def main(argv: list[str] | None = None) -> int:
     """Run the baseline evaluation and write frozen JSON plus SHA256 sidecar."""
     args = parse_args(argv)
     train_end = parse_utc(args.train_end)
-    service = WorldModelService.from_artifacts(
-        ServingConfig(
-            checkpoint_path=str(DEFAULT_ARTIFACTS["checkpoint"]),
-            scaler_path=str(DEFAULT_ARTIFACTS["scaler"]),
-            calibration_residuals_path=str(DEFAULT_ARTIFACTS["conformal_residuals"]),
-        )
+    service = cast(
+        Simulates,
+        WorldModelService.from_artifacts(
+            ServingConfig(
+                checkpoint_path=str(DEFAULT_ARTIFACTS["checkpoint"]),
+                scaler_path=str(DEFAULT_ARTIFACTS["scaler"]),
+                calibration_residuals_path=str(DEFAULT_ARTIFACTS["conformal_residuals"]),
+            ),
+        ),
     )
     points = fetch_care_load_points(service_ids=[PRIMARY_SCOPE])
     result = evaluate_baseline(
@@ -194,7 +198,9 @@ def collect_forecast_records(
     return records
 
 
-def history_until(points: list[CareLoadPoint], origin: datetime, *, max_length: int = 720) -> list[float]:
+def history_until(
+    points: list[CareLoadPoint], origin: datetime, *, max_length: int = 720
+) -> list[float]:
     """Return bounded SIIPS history using only observations at or before origin."""
     history = [
         float(point.siips)
@@ -239,7 +245,7 @@ def seasonal_metric_block(records: list[ForecastRecord], *, seed: int) -> dict[s
     }
 
 
-def bootstrap_mae_ci(errors: np.ndarray, *, seed: int, n_bootstrap: int = 2000) -> list[float]:
+def bootstrap_mae_ci(errors: Array, *, seed: int, n_bootstrap: int = 2000) -> list[float]:
     """Return seeded percentile bootstrap CI for MAE from absolute errors."""
     if errors.size == 0:
         return [float("nan"), float("nan")]
@@ -252,14 +258,14 @@ def bootstrap_mae_ci(errors: np.ndarray, *, seed: int, n_bootstrap: int = 2000) 
     ]
 
 
-def rmse(truth: np.ndarray, pred: np.ndarray) -> float:
+def rmse(truth: Array, pred: Array) -> float:
     """Return RMSE, or NaN for empty arrays."""
     if truth.size == 0:
         return float("nan")
     return float(np.sqrt(np.mean(np.square(truth - pred))))
 
 
-def safe_mean(values: np.ndarray) -> float:
+def safe_mean(values: Array) -> float:
     """Return float mean for numeric or boolean arrays, or NaN when empty."""
     if values.size == 0:
         return float("nan")
@@ -279,18 +285,17 @@ def fetch_care_load_points(*, service_ids: list[str]) -> list[CareLoadPoint]:
     """Fetch canonical care_load SIIPS points with deterministic ordering."""
     config = db_config_from_env()
     psycopg2 = _psycopg2()
-    with psycopg2.connect(**config) as connection:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
+    with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+        cursor.execute(
+            """
                 SELECT service_id, measured_at, siips_score::DOUBLE PRECISION
                 FROM canonical.care_load
                 WHERE service_id = ANY(%s)
                 ORDER BY service_id ASC, measured_at ASC
                 """,
-                (service_ids,),
-            )
-            rows = cursor.fetchall()
+            (service_ids,),
+        )
+        rows = cursor.fetchall()
     return [
         CareLoadPoint(
             service_id=str(service_id),

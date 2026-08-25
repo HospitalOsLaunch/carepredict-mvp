@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import psycopg
@@ -113,8 +114,7 @@ def test_feature_window_matches_realism_check_exactly(
         origin=origin,
     )
     expected_rows = [
-        [step[channel] for channel in FEATURE_WINDOW_CHANNELS]
-        for step in expected_dicts
+        [step[channel] for channel in FEATURE_WINDOW_CHANNELS] for step in expected_dicts
     ]
 
     assert payload["history"] == expected_rows
@@ -122,15 +122,12 @@ def test_feature_window_matches_realism_check_exactly(
 
 def _forecast_max_from_history(
     client: TestClient,
-    payload: dict,
+    payload: dict[str, Any],
     *,
     origin: str,
 ) -> float:
     channels = payload["channels"]
-    forecast_history = [
-        dict(zip(channels, row, strict=True))
-        for row in payload["history"]
-    ]
+    forecast_history = [dict(zip(channels, row, strict=True)) for row in payload["history"]]
     response = client.post(
         "/forecast/charge",
         json={
@@ -142,16 +139,13 @@ def _forecast_max_from_history(
         },
     )
     assert response.status_code == 200
-    return max(step["predicted_siips"] for step in response.json()["results"])
+    return float(max(step["predicted_siips"] for step in response.json()["results"]))
 
 
 def test_feature_window_and_forecast_are_invariant_across_same_day_origin_hours(
     client: TestClient,
 ) -> None:
-    origins = [
-        f"2025-07-08T{hour:02d}:00:00Z"
-        for hour in (0, 3, 9, 14, 18, 23)
-    ]
+    origins = [f"2025-07-08T{hour:02d}:00:00Z" for hour in (0, 3, 9, 14, 18, 23)]
     payloads = []
     fc_maxes = []
     for origin in origins:
@@ -225,10 +219,7 @@ def test_history_window_feeds_forecast_endpoint(client: TestClient) -> None:
     assert history_response.status_code == 200
     history_payload = history_response.json()
     channels = history_payload["channels"]
-    forecast_history = [
-        dict(zip(channels, row, strict=True))
-        for row in history_payload["history"]
-    ]
+    forecast_history = [dict(zip(channels, row, strict=True)) for row in history_payload["history"]]
 
     forecast_response = client.post(
         "/forecast/charge",

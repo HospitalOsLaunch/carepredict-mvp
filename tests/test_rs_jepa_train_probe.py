@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -64,7 +65,7 @@ def tiny_cfg(checkpoint_path: str = "") -> RSJEPAConfig:
     )
 
 
-def test_stage1_training_loop_runs_without_nan_and_logs_rank():
+def test_stage1_training_loop_runs_without_nan_and_logs_rank() -> None:
     artifacts = run_stage1_training(tiny_cfg(), log=False)
     assert len(artifacts.history) == 1
     row = artifacts.history[0]
@@ -73,7 +74,7 @@ def test_stage1_training_loop_runs_without_nan_and_logs_rank():
     assert row["effective_rank"] > 1.0
 
 
-def test_stage1_training_with_interventions_drives_action_gru_gradients():
+def test_stage1_training_with_interventions_drives_action_gru_gradients() -> None:
     cfg = tiny_cfg()
     cfg = replace(
         cfg,
@@ -88,13 +89,13 @@ def test_stage1_training_with_interventions_drives_action_gru_gradients():
     assert artifacts.history[0]["action_grad_norm"] > 0.0
 
 
-def test_ema_target_moves_during_training():
+def test_ema_target_moves_during_training() -> None:
     artifacts = run_stage1_training(tiny_cfg(), log=False)
     assert artifacts.initial_target_distance > 0.0
     assert artifacts.target_update_distance > 0.0
 
 
-def test_probe_harness_returns_finite_r2_and_beats_mean_baseline():
+def test_probe_harness_returns_finite_r2_and_beats_mean_baseline() -> None:
     artifacts = run_stage1_training(tiny_cfg(), log=False)
     result = artifacts.probes["temporal"]
     assert np.isfinite(result.latent_r2)
@@ -114,7 +115,7 @@ def test_probe_harness_returns_finite_r2_and_beats_mean_baseline():
     assert result.latent_r2 > result.mean_baseline_r2
 
 
-def test_probe_without_static_path_preserves_shapes_and_reuses_encoder():
+def test_probe_without_static_path_preserves_shapes_and_reuses_encoder() -> None:
     cfg = tiny_cfg()
     artifacts = run_stage1_training(cfg, log=False)
     _sites, train_sites, _cross_site_sites = build_phase_a_sites(cfg)
@@ -144,7 +145,7 @@ def test_probe_without_static_path_preserves_shapes_and_reuses_encoder():
         assert torch.equal(old_param, new_param.detach())
 
 
-def test_both_probe_variants_use_same_frozen_encoder_instance():
+def test_both_probe_variants_use_same_frozen_encoder_instance() -> None:
     cfg = tiny_cfg()
     artifacts = run_stage1_training(cfg, log=False)
     _sites, train_sites, _cross_site_sites = build_phase_a_sites(cfg)
@@ -169,7 +170,7 @@ def test_both_probe_variants_use_same_frozen_encoder_instance():
         assert torch.equal(old_param, new_param.detach())
 
 
-def test_per_timestep_probe_aligns_each_latent_to_matching_kappa_t():
+def test_per_timestep_probe_aligns_each_latent_to_matching_kappa_t() -> None:
     cfg = tiny_cfg()
     artifacts = run_stage1_training(cfg, log=False)
     _sites, train_sites, _cross_site_sites = build_phase_a_sites(cfg)
@@ -186,7 +187,7 @@ def test_per_timestep_probe_aligns_each_latent_to_matching_kappa_t():
     assert matrices.raw_full.shape[1] == matrices.raw_last.shape[1]
 
 
-def test_probe_interpretation_refuses_collapsed_rank():
+def test_probe_interpretation_refuses_collapsed_rank() -> None:
     artifacts = run_stage1_training(tiny_cfg(), log=False)
     result = artifacts.probes["temporal"]
     message = interpret_static_ablation(result, rank_threshold=10_000.0)
@@ -194,7 +195,7 @@ def test_probe_interpretation_refuses_collapsed_rank():
     assert "NOT interpretable" in message
 
 
-def test_encoder_checkpoint_roundtrip(tmp_path):
+def test_encoder_checkpoint_roundtrip(tmp_path: Path) -> None:
     checkpoint = tmp_path / "encoder.pt"
     artifacts = run_stage1_training(tiny_cfg(checkpoint_path=str(checkpoint)), log=False)
     loaded = load_encoder_checkpoint(checkpoint, device=torch.device("cpu"))
@@ -207,7 +208,7 @@ def test_encoder_checkpoint_roundtrip(tmp_path):
         assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
 
 
-def test_full_stage1_checkpoint_roundtrip_includes_dynamic_chain(tmp_path):
+def test_full_stage1_checkpoint_roundtrip_includes_dynamic_chain(tmp_path: Path) -> None:
     checkpoint = tmp_path / "stage1_full.pt"
     artifacts = run_stage1_training(tiny_cfg(checkpoint_path=str(checkpoint)), log=False)
     loaded = load_stage1_checkpoint(checkpoint, device=torch.device("cpu"))
@@ -234,7 +235,7 @@ def test_full_stage1_checkpoint_roundtrip_includes_dynamic_chain(tmp_path):
         assert torch.allclose(old_param.detach().cpu(), new_param.detach().cpu())
 
 
-def test_old_encoder_only_checkpoint_reports_missing_dynamic_chain(tmp_path):
+def test_old_encoder_only_checkpoint_reports_missing_dynamic_chain(tmp_path: Path) -> None:
     checkpoint = tmp_path / "encoder_only.pt"
     artifacts = run_stage1_training(tiny_cfg(), log=False)
     save_encoder_checkpoint(
@@ -251,13 +252,13 @@ def test_old_encoder_only_checkpoint_reports_missing_dynamic_chain(tmp_path):
         load_stage1_checkpoint(checkpoint, device=torch.device("cpu"))
 
 
-def test_probe_r2_metric_sanity_beats_trivial_mean_on_linear_signal():
+def test_probe_r2_metric_sanity_beats_trivial_mean_on_linear_signal() -> None:
     y = np.linspace(0.0, 1.0, 50)
     perfect = y.copy()
     mean_pred = np.full_like(y, fill_value=float(y.mean()))
     assert r2_score(y, perfect) > r2_score(y, mean_pred)
 
 
-def test_encoder_input_contract_guard_still_rejects_hidden_fields():
+def test_encoder_input_contract_guard_still_rejects_hidden_fields() -> None:
     with pytest.raises(ValueError, match="Colonnes interdites"):
         validate_observable_columns(["inflow_per_capacity", "criticality"])

@@ -2,9 +2,18 @@
 
 from __future__ import annotations
 
-from services.api.recommend.drivers import explain_priority, explain_risk, recommendation_explanation
+from services.api.recommend.drivers import (
+    explain_priority,
+    explain_risk,
+    recommendation_explanation,
+)
 from services.api.recommend.levers import LeverCandidate
-from services.api.recommend.scoring import ForecastContext, ForecastPoint, RuleBasedScorer, severity_from_context
+from services.api.recommend.scoring import (
+    ForecastContext,
+    ForecastPoint,
+    RuleBasedScorer,
+    severity_from_context,
+)
 
 
 def _context(*, peak: float, threshold: float = 1000.0, hours: int = 1) -> ForecastContext:

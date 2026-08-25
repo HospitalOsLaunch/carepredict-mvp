@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-import torch
+from typing import cast
+
 from torch import Tensor, nn
 
 
@@ -41,4 +42,4 @@ class Patchifier(nn.Module):
         n = self.n_patches(time)
         x_norm = instance_normalize(x)
         patches = x_norm.reshape(batch, n, self.patch_len * channels)
-        return self.proj(patches)
+        return cast(Tensor, self.proj(patches))

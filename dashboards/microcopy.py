@@ -6,20 +6,16 @@ from typing import Final
 
 APP_TITLE: Final[str] = "Hospitalos — Pilotage prédictif"
 APP_SUBTITLE: Final[str] = (
-    "Anticipation de la charge soignante par world model RSSM "
-    "calibré sur intervalles conformels."
+    "Anticipation de la charge soignante par world model RSSM calibré sur intervalles conformels."
 )
-APP_FOOTER_TEMPLATE: Final[str] = (
-    "Hospitalos · Modèle RSSM v1 · Données synthétiques · {date}"
-)
+APP_FOOTER_TEMPLATE: Final[str] = "Hospitalos · Modèle RSSM v1 · Données synthétiques · {date}"
 
 SIDEBAR_BRAND: Final[str] = "Hospitalos"
 SIDEBAR_TAGLINE: Final[str] = "Pilotage prédictif"
 SIDEBAR_TITLE: Final[str] = "Connexion au modèle"
 SIDEBAR_API_LABEL: Final[str] = "Adresse de l'API"
 SIDEBAR_API_HELP: Final[str] = (
-    "Adresse du service FastAPI exposant le modèle RSSM. "
-    "Par défaut : http://localhost:8000."
+    "Adresse du service FastAPI exposant le modèle RSSM. Par défaut : http://localhost:8000."
 )
 SIDEBAR_TEST_BUTTON: Final[str] = "Tester la connexion"
 SIDEBAR_STATUS_OK: Final[str] = "API joignable"
@@ -101,8 +97,7 @@ SIM_EMPTY_STATE: Final[str] = (
 )
 SIM_PLAN_A_TITLE: Final[str] = "Plan A — Situation actuelle"
 SIM_PLAN_A_HELP: Final[str] = (
-    "Plan d'actions actuellement prévu, sans modification. "
-    "Sert de référence pour la comparaison."
+    "Plan d'actions actuellement prévu, sans modification. Sert de référence pour la comparaison."
 )
 SIM_PLAN_B_TITLE: Final[str] = "Plan B — Action envisagée"
 SIM_PLAN_B_HELP: Final[str] = (
@@ -112,8 +107,7 @@ SIM_PLAN_B_HELP: Final[str] = (
 SIM_RUN_BUTTON: Final[str] = "Comparer les plans"
 SIM_LOADING: Final[str] = "Comparaison des deux plans en cours (10 à 20 secondes)…"
 SIM_SUMMARY_TEMPLATE: Final[str] = (
-    "Le Plan B {direction} la charge totale de {delta_pct} sur 48h. "
-    "{critical_change}"
+    "Le Plan B {direction} la charge totale de {delta_pct} sur 48h. {critical_change}"
 )
 SIM_DIRECTION_REDUCES: Final[str] = "réduit"
 SIM_DIRECTION_INCREASES: Final[str] = "augmente"
@@ -135,8 +129,7 @@ EXE_EMPTY_STATE: Final[str] = (
 )
 EXE_STATUS_LABEL: Final[str] = "Statut système"
 EXE_STATUS_HELP: Final[str] = (
-    "Niveau d'alerte global, calculé à partir du nombre de créneaux "
-    "critiques sur 48h."
+    "Niveau d'alerte global, calculé à partir du nombre de créneaux critiques sur 48h."
 )
 EXE_STATUS_STABLE: Final[str] = "Stable"
 EXE_STATUS_WATCH: Final[str] = "Sous surveillance"
@@ -169,14 +162,12 @@ EXE_ACTION_SIMULATE_INFO: Final[str] = (
     "Rendez-vous dans l'onglet « Simulation what-if » pour tester une intervention."
 )
 EXE_ACTION_DETAIL_INFO: Final[str] = (
-    "Consultez l'onglet « Prévision 48h » pour le graphique complet "
-    "et les détails par créneau."
+    "Consultez l'onglet « Prévision 48h » pour le graphique complet et les détails par créneau."
 )
 
 DIAG_TITLE: Final[str] = "Diagnostics modèle"
 DIAG_SUBTITLE: Final[str] = (
-    "Transparence du modèle : architecture, calibration, limites "
-    "et instructions de reproduction."
+    "Transparence du modèle : architecture, calibration, limites et instructions de reproduction."
 )
 DIAG_TRAINING_TITLE: Final[str] = "Courbes d'entraînement"
 DIAG_TRAINING_MISSING: Final[str] = (
@@ -207,8 +198,7 @@ DIAG_TRAINING_TEMPLATE: Final[str] = (
     "Entraînement actuel : {steps} steps sur SIIPS synthétique calibré"
 )
 DIAG_REFERENCE: Final[str] = (
-    "Référence : Hafner et al. 2023, « Mastering Diverse Domains through World Models » "
-    "(DreamerV3)"
+    "Référence : Hafner et al. 2023, « Mastering Diverse Domains through World Models » (DreamerV3)"
 )
 DIAG_TRAIN_COMMAND: Final[str] = "python scripts/train_rssm_synthetic.py --plot"
 DIAG_SERVE_COMMAND: Final[str] = "uvicorn services.api.main:app --port 8000"
@@ -232,8 +222,7 @@ ERR_API_SERVER_BODY: Final[str] = (
 )
 ERR_UNEXPECTED_TITLE: Final[str] = "Action impossible"
 ERR_UNEXPECTED_BODY: Final[str] = (
-    "Une erreur inattendue s'est produite. Rechargez la page "
-    "(touche F5) et réessayez."
+    "Une erreur inattendue s'est produite. Rechargez la page (touche F5) et réessayez."
 )
 TECHNICAL_DETAILS: Final[str] = "Détails techniques"
 

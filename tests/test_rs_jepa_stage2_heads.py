@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 import torch
@@ -72,7 +74,7 @@ def _ordered_logits(level: int, k_levels: int, magnitude: float = 8.0) -> torch.
     return torch.tensor([values], dtype=torch.float32)
 
 
-def test_stage2_freeze_blocks_encoder_grads_while_heads_receive_grads():
+def test_stage2_freeze_blocks_encoder_grads_while_heads_receive_grads() -> None:
     cfg = tiny_cfg()
     encoder = ObservableEncoder(n_obs=9, n_static=4, cfg=cfg.stage1)
     freeze_encoder(encoder)
@@ -87,7 +89,7 @@ def test_stage2_freeze_blocks_encoder_grads_while_heads_receive_grads():
     out = heads(latents)
     loss = coral_loss(out["ordinal_logits"], levels, cfg.stage2.k_levels)
     loss = loss + torch.nn.functional.smooth_l1_loss(out["tension"], tension_target)
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
 
     assert all(param.grad is None for param in encoder.parameters())
     head_grads = [param.grad for param in heads.parameters() if param.requires_grad]
@@ -95,7 +97,7 @@ def test_stage2_freeze_blocks_encoder_grads_while_heads_receive_grads():
     assert all(grad is not None and torch.isfinite(grad).all() for grad in head_grads)
 
 
-def test_coral_loss_is_ordered_and_near_zero_for_perfect_prediction():
+def test_coral_loss_is_ordered_and_near_zero_for_perfect_prediction() -> None:
     target = torch.tensor([2])
     perfect = coral_loss(_ordered_logits(2, 4), target, 4)
     adjacent = coral_loss(_ordered_logits(1, 4), target, 4)
@@ -106,7 +108,7 @@ def test_coral_loss_is_ordered_and_near_zero_for_perfect_prediction():
     assert reversed_far > adjacent
 
 
-def test_head_a_per_site_normalization_uses_local_history_not_global_pool():
+def test_head_a_per_site_normalization_uses_local_history_not_global_pool() -> None:
     scores = np.array([0.0, 1.0, 2.0, 10.0, 11.0, 12.0])
     site_ids = np.array(["a", "a", "a", "b", "b", "b"])
     normalized = per_site_zscore(scores, site_ids)
@@ -115,7 +117,7 @@ def test_head_a_per_site_normalization_uses_local_history_not_global_pool():
     assert abs(float(normalized[3:].mean())) < 1e-6
 
 
-def test_stage2_heads_shapes_and_siips_head_is_flag_gated():
+def test_stage2_heads_shapes_and_siips_head_is_flag_gated() -> None:
     cfg = tiny_cfg()
     heads = CriticalityReadout(cfg.stage1.latent_dim, cfg.stage2)
     latents = torch.randn(7, cfg.stage1.latent_dim)
@@ -126,7 +128,9 @@ def test_stage2_heads_shapes_and_siips_head_is_flag_gated():
         heads.siips(latents)
 
 
-def test_stage2_training_runs_end_to_end_with_finite_cross_site_and_temporal_metrics(tmp_path):
+def test_stage2_training_runs_end_to_end_with_finite_cross_site_and_temporal_metrics(
+    tmp_path: Path,
+) -> None:
     checkpoint = tmp_path / "encoder.pt"
     cfg = tiny_cfg(checkpoint_path=str(checkpoint))
     run_stage1_training(cfg, log=False)

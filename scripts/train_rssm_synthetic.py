@@ -16,6 +16,7 @@ from collections.abc import Sequence
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Protocol, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -32,6 +33,34 @@ from services.ml.world_model.config import RewardConfig, RSSMConfig, TrainConfig
 from services.ml.world_model.rssm import HospitalRSSM, RSSMState
 from services.ml.world_model.train import WorldModelTrainer
 
+
+class AdmissionLike(Protocol):
+    """Admission timestamp contract used for action alignment."""
+
+    @property
+    def admission_time(self) -> datetime:
+        """Return the admission timestamp."""
+
+
+class DischargeLike(Protocol):
+    """Discharge timestamp contract used for action alignment."""
+
+    @property
+    def discharge_time(self) -> datetime:
+        """Return the discharge timestamp."""
+
+
+class ActionDatasetLike(Protocol):
+    """Minimal event dataset contract required by ``build_action_matrix``."""
+
+    @property
+    def admissions(self) -> Sequence[AdmissionLike]:
+        """Return admission events."""
+
+    @property
+    def discharges(self) -> Sequence[DischargeLike]:
+        """Return discharge events."""
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -41,7 +70,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         description="Train the CarePredict Hospital RSSM on synthetic SIIPS data."
     )
     parser.add_argument("--months", type=int, default=6, help="Synthetic data months to generate.")
-    parser.add_argument("--end-date", type=str, default=None, help="Exclusive ISO end date for generated data.")
+    parser.add_argument(
+        "--end-date", type=str, default=None, help="Exclusive ISO end date for generated data."
+    )
     parser.add_argument(
         "--service-index",
         type=int,
@@ -139,7 +170,7 @@ def hour_bucket(timestamp: datetime) -> datetime:
 
 
 def build_action_matrix(
-    dataset: SyntheticDataset,
+    dataset: ActionDatasetLike,
     timestamps: Sequence[datetime],
     action_dim: int,
 ) -> npt.NDArray[np.float32]:
@@ -203,10 +234,7 @@ def sample_batch(
         axis=0,
     )
     future_actions_np = np.stack(
-        [
-            actions[start + history_length : start + history_length + horizon]
-            for start in starts
-        ],
+        [actions[start + history_length : start + history_length + horizon] for start in starts],
         axis=0,
     )
     future_targets_np = np.stack(
@@ -355,7 +383,10 @@ def rollout_residuals_for_start(
         pred_value = float(normalized_pred.reshape(-1)[0].detach().cpu().item()) * std + mean
         predictions.append(pred_value)
     truth = raw_siips[start + history_length : start + history_length + horizon]
-    return np.abs(truth - np.asarray(predictions, dtype=np.float64)).astype(np.float64)
+    return cast(
+        npt.NDArray[np.float64],
+        np.abs(truth - np.asarray(predictions, dtype=np.float64)).astype(np.float64),
+    )
 
 
 def save_conformal_residuals(
@@ -513,7 +544,9 @@ def build_training_dataset(
         # generate_dataset uses whole days from start to exclusive end, so the last hour is < end.
         if not timestamps[-1] < end_date:
             raise AssertionError("last generated care_load timestamp must be before --end-date")
-        LOGGER.info("rssm_synthetic_end_date_exclusive end_date=%s last_hour=%s", end_date, timestamps[-1])
+        LOGGER.info(
+            "rssm_synthetic_end_date_exclusive end_date=%s last_hour=%s", end_date, timestamps[-1]
+        )
     minimum_length = int(args.history_length) + int(args.horizon) + 100
     if siips.shape[0] < minimum_length:
         raise ValueError(

@@ -10,6 +10,7 @@ Ce script ne corrige rien : il LOCALISE la faute. À lancer dans le repo carepre
 Il rejoue le pipeline étape par étape et imprime, à chaque jonction, QUELLE prédiction
 alimente QUELLE méthode, plus des sanity checks qui doivent tous passer.
 """
+
 from __future__ import annotations
 
 import argparse

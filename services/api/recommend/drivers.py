@@ -77,7 +77,9 @@ def explain_priority(scored_action: ScoredAction, ctx: ForecastContext) -> Prior
     )
 
 
-def recommendation_explanation(scored_action: ScoredAction, ctx: ForecastContext) -> RecommendationExplanation:
+def recommendation_explanation(
+    scored_action: ScoredAction, ctx: ForecastContext
+) -> RecommendationExplanation:
     """Build the complete explanation object for one scored recommendation."""
     return RecommendationExplanation(
         risk=explain_risk(ctx),

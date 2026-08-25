@@ -22,7 +22,7 @@ def forecasting_mask(
 
     if horizon is None:
         choices = torch.tensor(cfg.horizons, dtype=torch.long)
-        pick = torch.randint(len(choices), (1,), generator=_rng(generator)).item()
+        pick = int(torch.randint(len(choices), (1,), generator=_rng(generator)).item())
         horizon = int(choices[pick].item())
     if horizon not in cfg.horizons:
         raise ValueError(f"Horizon {horizon} absent de cfg.horizons={cfg.horizons}.")
@@ -73,9 +73,7 @@ def block_temporal_mask(
             generator=_rng(generator),
             device="cpu",
         )
-        span_len = int(
-            span_draw.item()
-        )
+        span_len = int(span_draw.item())
         start_draw = torch.randint(
             0,
             steps - span_len + 1,
@@ -83,9 +81,7 @@ def block_temporal_mask(
             generator=_rng(generator),
             device="cpu",
         )
-        start = int(
-            start_draw.item()
-        )
+        start = int(start_draw.item())
         mask[b_idx, start : start + span_len] = True
     masked[mask] = 0
     return masked, mask

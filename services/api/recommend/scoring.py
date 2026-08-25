@@ -81,7 +81,7 @@ class RuleBasedScorer:
         normalized = max(0.0, min(1.0, raw_score / max(ctx.threshold * 0.08, 1.0)))
         severity = severity_from_context(ctx)
         stable_hash = hashlib.sha1(
-            f"{ctx.service_id}:{candidate.lever}:{ctx.peak_step}:{ctx.horizon_h}".encode("utf-8")
+            f"{ctx.service_id}:{candidate.lever}:{ctx.peak_step}:{ctx.horizon_h}".encode()
         ).hexdigest()[:10]
         return ScoredAction(
             id=f"rec_{stable_hash}",

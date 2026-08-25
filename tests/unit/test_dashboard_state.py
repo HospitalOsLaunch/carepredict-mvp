@@ -73,7 +73,9 @@ def test_derive_synthesis_with_response() -> None:
     assert synthesis["peak_value"] == 900.0
     assert synthesis["peak_time_hours"] == 1
     assert synthesis["critical_count"] == 2
-    assert synthesis["peak_step"].predicted_siips == 900.0
+    peak_step = state_module.coerce_step(synthesis["peak_step"])
+    assert peak_step is not None
+    assert peak_step.predicted_siips == 900.0
 
 
 def test_derive_synthesis_with_empty_results() -> None:

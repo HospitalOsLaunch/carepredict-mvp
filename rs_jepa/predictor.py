@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import torch
-from torch import nn
+from torch import Tensor, nn
 
 from rs_jepa.config import Stage1Config
 
@@ -29,4 +31,4 @@ class LatentPredictor(nn.Module):
     def forward(self, states: torch.Tensor) -> torch.Tensor:
         if states.ndim != 3:
             raise ValueError("states doit avoir la forme [B, H, state_dim].")
-        return self.net(states)
+        return cast(Tensor, self.net(states))

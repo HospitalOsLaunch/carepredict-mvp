@@ -14,6 +14,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 
 from data.synthetic.siips_generator import db_config_from_env
+from rs_jepa.typing import Array
 
 CHANNEL_NAMES: tuple[str, ...] = (
     "admissions_h",
@@ -42,8 +43,8 @@ class _Window:
     service_id: str
     start: datetime
     end: datetime
-    series: np.ndarray
-    siips: np.ndarray
+    series: Array
+    siips: Array
 
 
 class TimescaleHospitalDataset(Dataset[dict[str, Tensor]]):
@@ -106,13 +107,12 @@ class TimescaleHospitalDataset(Dataset[dict[str, Tensor]]):
         if self.cfg.db_overrides:
             config.update(self.cfg.db_overrides)
         psycopg2 = _psycopg2()
-        with psycopg2.connect(**config) as connection:
-            with connection.cursor() as cursor:
-                services = self._fetch_services(cursor)
-                care_load = self._fetch_care_load(cursor)
-                staffing = self._fetch_staffing(cursor)
-                admissions = self._fetch_event_counts(cursor, "canonical.admissions", "admission_time")
-                discharges = self._fetch_event_counts(cursor, "canonical.discharges", "discharge_time")
+        with psycopg2.connect(**config) as connection, connection.cursor() as cursor:
+            services = self._fetch_services(cursor)
+            care_load = self._fetch_care_load(cursor)
+            staffing = self._fetch_staffing(cursor)
+            admissions = self._fetch_event_counts(cursor, "canonical.admissions", "admission_time")
+            discharges = self._fetch_event_counts(cursor, "canonical.discharges", "discharge_time")
         return self._build_hourly_rows(services, care_load, staffing, admissions, discharges)
 
     def _service_filter(self) -> tuple[str, tuple[Any, ...]]:
@@ -187,10 +187,18 @@ class TimescaleHospitalDataset(Dataset[dict[str, Tensor]]):
                 "aide_count": aide_count,
                 "overtime_hours": overtime_hours,
             }
-            for service_id, shift_start, nurse_count, aide_count, overtime_hours in cursor.fetchall()
+            for (
+                service_id,
+                shift_start,
+                nurse_count,
+                aide_count,
+                overtime_hours,
+            ) in cursor.fetchall()
         }
 
-    def _fetch_event_counts(self, cursor: Any, table: str, time_column: str) -> dict[tuple[str, datetime], float]:
+    def _fetch_event_counts(
+        self, cursor: Any, table: str, time_column: str
+    ) -> dict[tuple[str, datetime], float]:
         service_filter, params = self._service_filter()
         where = _where(f"e.{service_filter}" if service_filter else "")
         cursor.execute(
@@ -259,10 +267,15 @@ class TimescaleHospitalDataset(Dataset[dict[str, Tensor]]):
             timestamps = [_to_utc(row["measured_at"]) for row in service_rows]
             _assert_hourly(timestamps)
             series = np.asarray(
-                [[_float_or_nan(row[channel]) for channel in self.channel_names] for row in service_rows],
+                [
+                    [_float_or_nan(row[channel]) for channel in self.channel_names]
+                    for row in service_rows
+                ],
                 dtype=np.float32,
             )
-            siips = np.asarray([_float_or_nan(row["siips"]) for row in service_rows], dtype=np.float32)
+            siips = np.asarray(
+                [_float_or_nan(row["siips"]) for row in service_rows], dtype=np.float32
+            )
             series = _forward_fill_limit(series, limit=3)
             siips = _forward_fill_limit(siips[:, None], limit=3)[:, 0]
 
@@ -270,7 +283,9 @@ class TimescaleHospitalDataset(Dataset[dict[str, Tensor]]):
             for start_index in range(0, max(max_start, 0), self.window_hours):
                 end_index = start_index + self.window_hours
                 start_ts = timestamps[start_index]
-                end_ts = timestamps[end_index - 1].replace() if end_index <= len(timestamps) else None
+                end_ts = (
+                    timestamps[end_index - 1].replace() if end_index <= len(timestamps) else None
+                )
                 if end_ts is None:
                     continue
                 exclusive_end = end_ts + (timestamps[1] - timestamps[0])
@@ -337,10 +352,12 @@ def _float_or_nan(value: object) -> float:
         return float("nan")
     if isinstance(value, Decimal):
         return float(value)
-    return float(value)
+    if isinstance(value, (int, float, str, bytes, bytearray)):
+        return float(value)
+    raise TypeError(f"Unsupported numeric database value: {type(value).__name__}")
 
 
-def _forward_fill_limit(values: np.ndarray, *, limit: int) -> np.ndarray:
+def _forward_fill_limit(values: Array, *, limit: int) -> Array:
     filled = values.astype(np.float32, copy=True)
     for col in range(filled.shape[1]):
         last = np.float32(np.nan)
@@ -357,7 +374,7 @@ def _forward_fill_limit(values: np.ndarray, *, limit: int) -> np.ndarray:
     return filled
 
 
-def _is_finite(values: np.ndarray) -> bool:
+def _is_finite(values: Array) -> bool:
     return bool(np.isfinite(values).all())
 
 
@@ -369,7 +386,7 @@ def _assert_hourly(timestamps: list[datetime]) -> None:
             raise AssertionError("canonical series must have hourly granularity")
 
 
-def _psycopg2() -> object:
+def _psycopg2() -> Any:
     import psycopg2
 
     return psycopg2

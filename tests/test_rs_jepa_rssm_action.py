@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import Any
 
 import pytest
 import torch
@@ -11,7 +12,7 @@ from rs_jepa.rssm import RSSM, RSSMOutput
 pytestmark = pytest.mark.rs_jepa
 
 
-def tiny_cfg(**kwargs) -> Stage1Config:
+def tiny_cfg(**kwargs: Any) -> Stage1Config:
     cfg = Stage1Config(
         latent_dim=12,
         rssm_deter_dim=18,
@@ -62,7 +63,7 @@ def _legacy_rollout_without_actions(
     )
 
 
-def test_rssm_accepts_context_and_future_actions_with_expected_shapes():
+def test_rssm_accepts_context_and_future_actions_with_expected_shapes() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=3)
@@ -90,7 +91,7 @@ def test_rssm_accepts_context_and_future_actions_with_expected_shapes():
     assert rolled.prior_std.shape == (4, 5, cfg.rssm_stoch_dim)
 
 
-def test_different_future_actions_change_rollout_trajectory():
+def test_different_future_actions_change_rollout_trajectory() -> None:
     torch.manual_seed(1)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=2)
@@ -120,7 +121,7 @@ def test_different_future_actions_change_rollout_trajectory():
     assert not torch.allclose(low, high)
 
 
-def test_no_action_matches_explicit_zero_action_for_action_dim_two():
+def test_no_action_matches_explicit_zero_action_for_action_dim_two() -> None:
     torch.manual_seed(2)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=1)
@@ -141,7 +142,7 @@ def test_no_action_matches_explicit_zero_action_for_action_dim_two():
     assert torch.allclose(implicit, explicit)
 
 
-def test_action_dim_zero_reproduces_legacy_no_action_rollout_seed_fixed():
+def test_action_dim_zero_reproduces_legacy_no_action_rollout_seed_fixed() -> None:
     torch.manual_seed(3)
     cfg = tiny_cfg(action_dim=0)
     rssm = RSSM(cfg, n_static=2)
@@ -156,7 +157,7 @@ def test_action_dim_zero_reproduces_legacy_no_action_rollout_seed_fixed():
     assert torch.allclose(current.prior_std, legacy.prior_std)
 
 
-def test_rollout_loss_backpropagates_to_gru_action_weights():
+def test_rollout_loss_backpropagates_to_gru_action_weights() -> None:
     torch.manual_seed(4)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=2)
@@ -173,7 +174,7 @@ def test_rollout_loss_backpropagates_to_gru_action_weights():
         actions_future=actions_future,
     ).states
     loss = states.square().mean()
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
 
     assert actions_future.grad is not None
     assert torch.isfinite(actions_future.grad).all()

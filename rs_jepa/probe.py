@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Protocol
 
 import numpy as np
 import torch
@@ -11,6 +13,7 @@ from rs_jepa.config import RSJEPAConfig
 from rs_jepa.diagnostics_latent import effective_rank
 from rs_jepa.encoder import ObservableEncoder
 from rs_jepa.splits import CROSS_SITE_VAL, TEMPORAL_VAL, TRAIN
+from rs_jepa.typing import Array
 
 
 @dataclass(frozen=True)
@@ -47,26 +50,46 @@ class ProbeResult:
 
 @dataclass(frozen=True)
 class ProbeMatrices:
-    last_latents: np.ndarray
-    full_latents: np.ndarray
-    raw_last: np.ndarray
-    raw_full: np.ndarray
-    y_last: np.ndarray
-    y_full: np.ndarray
+    last_latents: Array
+    full_latents: Array
+    raw_last: Array
+    raw_full: Array
+    y_last: Array
+    y_full: Array
 
 
-def r2_score(y_true: np.ndarray, pred: np.ndarray) -> float:
+class ProbeSite(Protocol):
+    """Structural contract required by the frozen-latent probe."""
+
+    @property
+    def features(self) -> Array:
+        """Return observable temporal features."""
+
+    @property
+    def static(self) -> Array:
+        """Return static site features."""
+
+    @property
+    def criticality(self) -> Array:
+        """Return aligned criticality targets."""
+
+    @property
+    def split(self) -> Array:
+        """Return aligned split labels."""
+
+
+def r2_score(y_true: Array, pred: Array) -> float:
     ss_res = float(np.sum((y_true - pred) ** 2))
     ss_tot = float(np.sum((y_true - y_true.mean()) ** 2))
     return 1.0 - ss_res / max(ss_tot, 1e-12)
 
 
-def numpy_effective_rank(latents: np.ndarray) -> float:
+def numpy_effective_rank(latents: Array) -> float:
     tensor = torch.as_tensor(latents, dtype=torch.float32)
     return float(effective_rank(tensor).detach().cpu().item())
 
 
-def fit_linear_predict(X_train: np.ndarray, y_train: np.ndarray, X_eval: np.ndarray) -> np.ndarray:
+def fit_linear_predict(X_train: Array, y_train: Array, X_eval: Array) -> Array:
     x_mean = X_train.mean(axis=0, keepdims=True)
     x_std = X_train.std(axis=0, keepdims=True) + 1e-8
     x_train = (X_train - x_mean) / x_std
@@ -74,16 +97,16 @@ def fit_linear_predict(X_train: np.ndarray, y_train: np.ndarray, X_eval: np.ndar
     x_train_aug = np.c_[np.ones(len(x_train)), x_train]
     x_eval_aug = np.c_[np.ones(len(x_eval)), x_eval]
     coef, *_ = np.linalg.lstsq(x_train_aug, y_train, rcond=None)
-    return x_eval_aug @ coef
+    return np.asarray(x_eval_aug @ coef)
 
 
 def _site_windows(
-    site,
+    site: ProbeSite,
     cfg: RSJEPAConfig,
     split: str,
     *,
     stride: int,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[Array, Array, Array, Array, Array]:
     rows = np.where(site.split == split)[0]
     if len(rows) == 0:
         return (
@@ -132,7 +155,7 @@ def _site_windows(
 
 def collect_probe_matrices(
     encoder: ObservableEncoder,
-    sites,
+    sites: Sequence[ProbeSite],
     cfg: RSJEPAConfig,
     split: str,
     *,
@@ -210,13 +233,13 @@ def collect_probe_matrices(
 
 def collect_probe_matrix(
     encoder: ObservableEncoder,
-    sites,
+    sites: Sequence[ProbeSite],
     cfg: RSJEPAConfig,
     split: str,
     *,
     device: torch.device,
     zero_static: bool = False,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[Array, Array, Array]:
     matrices = collect_probe_matrices(
         encoder,
         sites,
@@ -230,13 +253,13 @@ def collect_probe_matrix(
 
 def _collect_probe_matrix_with_rank_latents(
     encoder: ObservableEncoder,
-    sites,
+    sites: Sequence[ProbeSite],
     cfg: RSJEPAConfig,
     split: str,
     *,
     device: torch.device,
     zero_static: bool = False,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[Array, Array, Array, Array]:
     matrices = collect_probe_matrices(
         encoder,
         sites,
@@ -250,8 +273,8 @@ def _collect_probe_matrix_with_rank_latents(
 
 def evaluate_probe(
     encoder: ObservableEncoder,
-    train_sites,
-    eval_sites,
+    train_sites: Sequence[ProbeSite],
+    eval_sites: Sequence[ProbeSite],
     cfg: RSJEPAConfig,
     split: str,
     *,
@@ -322,21 +345,15 @@ def evaluate_probe(
     return ProbeResult(
         split=split,
         latent_r2_with_static=float(r2_score(eval_matrices.y_last, latent_pred)),
-        latent_r2_without_static=float(
-            r2_score(eval_no_static.y_last, latent_no_static_pred)
-        ),
+        latent_r2_without_static=float(r2_score(eval_no_static.y_last, latent_no_static_pred)),
         raw_r2=float(r2_score(eval_matrices.y_last, raw_pred)),
         mean_baseline_r2=float(r2_score(eval_matrices.y_last, mean_pred)),
-        per_timestep_r2_with_static=float(
-            r2_score(eval_matrices.y_full, per_timestep_pred)
-        ),
+        per_timestep_r2_with_static=float(r2_score(eval_matrices.y_full, per_timestep_pred)),
         per_timestep_r2_without_static=float(
             r2_score(eval_no_static.y_full, per_timestep_no_static_pred)
         ),
         per_timestep_raw_r2=float(r2_score(eval_matrices.y_full, per_timestep_raw_pred)),
-        per_timestep_mean_baseline_r2=float(
-            r2_score(eval_matrices.y_full, per_timestep_mean_pred)
-        ),
+        per_timestep_mean_baseline_r2=float(r2_score(eval_matrices.y_full, per_timestep_mean_pred)),
         ceiling_r2=float(ceiling_r2),
         effective_rank_with_static=numpy_effective_rank(eval_matrices.full_latents),
         effective_rank_without_static=numpy_effective_rank(eval_no_static.full_latents),
@@ -349,8 +366,8 @@ def evaluate_probe(
 
 def run_frozen_latent_probes(
     encoder: ObservableEncoder,
-    train_sites,
-    cross_site_sites,
+    train_sites: Sequence[ProbeSite],
+    cross_site_sites: Sequence[ProbeSite],
     cfg: RSJEPAConfig,
     *,
     ceiling_r2: float,
@@ -395,8 +412,7 @@ def interpret_static_ablation(result: ProbeResult, rank_threshold: float = 4.0) 
     min_rank = min(result.effective_rank_with_static, result.effective_rank_without_static)
     if min_rank < rank_threshold:
         return (
-            f"{base} -> LATENT COLLAPSED (rank={min_rank:.2f}) — "
-            "probe ablation NOT interpretable"
+            f"{base} -> LATENT COLLAPSED (rank={min_rank:.2f}) — probe ablation NOT interpretable"
         )
 
     anomaly = ""
@@ -407,8 +423,7 @@ def interpret_static_ablation(result: ProbeResult, rank_threshold: float = 4.0) 
         )
     if result.per_timestep_r2_without_static > result.per_timestep_r2_with_static:
         anomaly += (
-            " | PER-TIMESTEP ANOMALY: without_static exceeds with_static; report, "
-            "do not hide"
+            " | PER-TIMESTEP ANOMALY: without_static exceeds with_static; report, do not hide"
         )
     if result.per_timestep_static_delta >= -1e-9:
         reading = (

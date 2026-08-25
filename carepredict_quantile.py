@@ -62,7 +62,7 @@ class QuantileHead:
     models: dict[float, HistGradientBoostingRegressor] = field(default_factory=dict)
     site_to_code: dict[str, int] = field(default_factory=dict)
 
-    def fit(self, train: pd.DataFrame) -> "QuantileHead":
+    def fit(self, train: pd.DataFrame) -> QuantileHead:
         """Ajuste trois modèles quantiles sur train avec validation temporelle interne."""
         self.site_to_code = {
             site: idx for idx, site in enumerate(sorted(train["site_id"].astype(str).unique()))
@@ -154,7 +154,9 @@ def make_feature_frame(
     df["ma7"] = group.transform(lambda s: s.shift(1).rolling(7, min_periods=1).mean())
     df["load_derivative"] = group.shift(1) - group.shift(2)
     if site_to_code is None:
-        site_to_code = {site: idx for idx, site in enumerate(sorted(df["site_id"].astype(str).unique()))}
+        site_to_code = {
+            site: idx for idx, site in enumerate(sorted(df["site_id"].astype(str).unique()))
+        }
     df["site_code"] = df["site_id"].astype(str).map(site_to_code).fillna(-1).astype(float)
 
     # Les premières lignes de chaque split n'ont pas encore assez d'historique
@@ -167,7 +169,9 @@ def make_feature_frame(
     return df
 
 
-def fit_quantile_head(split: Any, surge_weight: float = 3.0, seed: int = 42) -> tuple[
+def fit_quantile_head(
+    split: Any, surge_weight: float = 3.0, seed: int = 42
+) -> tuple[
     QuantileHead,
     QuantilePredictions,
     QuantilePredictions,
@@ -187,7 +191,9 @@ def build_split(*, synthetic: bool, deps: list[str] | None = None) -> Any:
 def main() -> None:
     """Exécute l'étape 1 et affiche les diagnostics d'acceptation."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--synthetic", action="store_true", help="utiliser le générateur hors-ligne")
+    parser.add_argument(
+        "--synthetic", action="store_true", help="utiliser le générateur hors-ligne"
+    )
     parser.add_argument("--dep", nargs="*", default=None, help="codes départements à garder")
     parser.add_argument("--surge-weight", type=float, default=3.0)
     args = parser.parse_args()
@@ -209,6 +215,7 @@ def main() -> None:
             f"q_med ne bat pas la baseline saisonnière : skill={ss:+.3f} "
             f"(MAE modèle={mae_m:.2f}, baseline={mae_b:.2f}).",
             RuntimeWarning,
+            stacklevel=2,
         )
     else:
         print(f"[quantile] skill q_med vs baseline = {ss:+.3f}")
@@ -221,6 +228,7 @@ def main() -> None:
         warnings.warn(
             "Largeur quantile surge non supérieure au normal : conditionnalité insuffisante.",
             RuntimeWarning,
+            stacklevel=2,
         )
 
 

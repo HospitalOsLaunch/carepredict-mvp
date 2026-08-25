@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from typing import cast
 
 import torch
 from torch import nn
@@ -55,7 +56,7 @@ class SinusoidalPositionEncoding(nn.Module):
             raise ValueError(
                 f"Fenêtre T={steps} supérieure au maximum configuré {self.pe.shape[1]}."
             )
-        return x + self.pe[:, :steps].to(dtype=x.dtype, device=x.device)
+        return cast(torch.Tensor, x + self.pe[:, :steps].to(dtype=x.dtype, device=x.device))
 
 
 class ObservableEncoder(nn.Module):
@@ -117,4 +118,4 @@ class ObservableEncoder(nn.Module):
             h = h + static_embedding.unsqueeze(1)
         h = self.position(h)
         h = self.transformer(h)
-        return self.output_proj(self.norm(h))
+        return cast(torch.Tensor, self.output_proj(self.norm(h)))

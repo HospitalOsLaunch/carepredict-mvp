@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import Any
 
 import pytest
 import torch
@@ -16,7 +17,7 @@ from rs_jepa.rssm import RSSM
 pytestmark = pytest.mark.rs_jepa
 
 
-def tiny_cfg(**kwargs) -> Stage1Config:
+def tiny_cfg(**kwargs: Any) -> Stage1Config:
     cfg = Stage1Config(
         latent_dim=16,
         encoder_model_dim=16,
@@ -44,7 +45,7 @@ def finite_grad_sum(module: torch.nn.Module) -> float:
     return total
 
 
-def test_rssm_rollout_shapes_prior_only_target():
+def test_rssm_rollout_shapes_prior_only_target() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=3)
@@ -57,7 +58,7 @@ def test_rssm_rollout_shapes_prior_only_target():
     assert torch.all(out.prior_std > cfg.rssm_min_std)
 
 
-def test_static_covariates_change_rssm_rollout():
+def test_static_covariates_change_rssm_rollout() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     rssm = RSSM(cfg, n_static=2)
@@ -69,7 +70,7 @@ def test_static_covariates_change_rssm_rollout():
     assert not torch.allclose(first, second)
 
 
-def test_rssm_is_deterministic_under_fixed_seed():
+def test_rssm_is_deterministic_under_fixed_seed() -> None:
     cfg = tiny_cfg()
     z_context = torch.randn(2, 12, cfg.latent_dim)
     static = torch.randn(2, 2)
@@ -82,7 +83,7 @@ def test_rssm_is_deterministic_under_fixed_seed():
     assert torch.allclose(first_out, second_out)
 
 
-def test_predictor_output_shape_matches_target_encoder_latents():
+def test_predictor_output_shape_matches_target_encoder_latents() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     encoder = ObservableEncoder(n_obs=6, n_static=2, cfg=cfg)
@@ -99,7 +100,7 @@ def test_predictor_output_shape_matches_target_encoder_latents():
     assert pred.shape == target_latents.shape
 
 
-def test_latent_jepa_loss_backward_grads_are_finite():
+def test_latent_jepa_loss_backward_grads_are_finite() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     encoder = ObservableEncoder(n_obs=5, n_static=2, cfg=cfg)
@@ -115,13 +116,13 @@ def test_latent_jepa_loss_backward_grads_are_finite():
     loss, components = latent_jepa_loss(pred, target_latents, cfg)
     assert torch.isfinite(loss)
     assert set(components) == {"total", "pred", "var", "cov"}
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
     assert finite_grad_sum(encoder) > 0
     assert finite_grad_sum(rssm) > 0
     assert finite_grad_sum(predictor) > 0
 
 
-def test_joint_graph_stop_gradient_blocks_ema_target_branch():
+def test_joint_graph_stop_gradient_blocks_ema_target_branch() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     online_encoder = ObservableEncoder(n_obs=5, n_static=2, cfg=cfg)
@@ -137,7 +138,7 @@ def test_joint_graph_stop_gradient_blocks_ema_target_branch():
     pred_latents = predictor(rollout_states)
     target_latents = ema_target(x_target, static)
     loss, _components = latent_jepa_loss(pred_latents, target_latents, cfg)
-    loss.backward()
+    loss.backward()  # type: ignore[no-untyped-call]
 
     target_grads_none = all(param.grad is None for param in ema_target.target.parameters())
     online_grad = finite_grad_sum(online_encoder)
@@ -155,21 +156,21 @@ def test_joint_graph_stop_gradient_blocks_ema_target_branch():
     assert predictor_grad > 0
 
 
-def test_vicreg_variance_penalizes_collapsed_latents_more_than_spread_latents():
+def test_vicreg_variance_penalizes_collapsed_latents_more_than_spread_latents() -> None:
     collapsed = torch.zeros(8, 6, 16)
     spread = torch.randn(8, 6, 16) * 2.0
     assert variance_loss(collapsed) > 0.9
     assert variance_loss(spread) < variance_loss(collapsed)
 
 
-def test_covariance_loss_finite():
+def test_covariance_loss_finite() -> None:
     latents = torch.randn(8, 6, 16)
     loss = covariance_loss(latents)
     assert torch.isfinite(loss)
     assert loss >= 0
 
 
-def test_effective_rank_detects_collapsed_vs_spread_latents():
+def test_effective_rank_detects_collapsed_vs_spread_latents() -> None:
     collapsed = torch.ones(16, 8, 12)
     spread = torch.randn(16, 8, 12)
     collapsed_rank = effective_rank(collapsed)

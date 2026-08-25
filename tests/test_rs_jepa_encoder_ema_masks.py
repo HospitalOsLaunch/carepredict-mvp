@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from typing import Any
 
 import pytest
 import torch
@@ -19,7 +20,7 @@ from rs_jepa.masking import (
 pytestmark = pytest.mark.rs_jepa
 
 
-def tiny_cfg(**kwargs) -> Stage1Config:
+def tiny_cfg(**kwargs: Any) -> Stage1Config:
     cfg = Stage1Config(
         latent_dim=16,
         encoder_model_dim=16,
@@ -36,7 +37,7 @@ def tiny_cfg(**kwargs) -> Stage1Config:
 
 
 @pytest.mark.parametrize(("batch", "steps", "n_obs"), [(2, 18, 5), (4, 32, 9)])
-def test_encoder_shape(batch: int, steps: int, n_obs: int):
+def test_encoder_shape(batch: int, steps: int, n_obs: int) -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     encoder = ObservableEncoder(n_obs=n_obs, n_static=3, cfg=cfg)
@@ -46,7 +47,7 @@ def test_encoder_shape(batch: int, steps: int, n_obs: int):
     assert out.shape == (batch, steps, cfg.latent_dim)
 
 
-def test_encoder_determinism_depends_on_seed():
+def test_encoder_determinism_depends_on_seed() -> None:
     cfg = tiny_cfg()
     x = torch.randn(2, 12, 4)
     static = torch.randn(2, 2)
@@ -67,7 +68,7 @@ def test_encoder_determinism_depends_on_seed():
     assert not torch.allclose(out_first, out_third)
 
 
-def test_static_covariates_change_encoder_output():
+def test_static_covariates_change_encoder_output() -> None:
     torch.manual_seed(0)
     cfg = tiny_cfg()
     encoder = ObservableEncoder(4, 2, cfg)
@@ -78,12 +79,12 @@ def test_static_covariates_change_encoder_output():
     assert not torch.allclose(without_static, with_static)
 
 
-def test_encoder_rejects_hidden_or_absolute_fields():
+def test_encoder_rejects_hidden_or_absolute_fields() -> None:
     with pytest.raises(ValueError, match="Colonnes interdites"):
         validate_observable_columns(["occupancy_ratio", "criticality", "acuity"])
 
 
-def test_ema_target_parameters_are_distinct_and_frozen():
+def test_ema_target_parameters_are_distinct_and_frozen() -> None:
     online = ObservableEncoder(3, 1, tiny_cfg())
     ema = EMATargetEncoder(online)
     online_params = list(online.parameters())
@@ -94,7 +95,7 @@ def test_ema_target_parameters_are_distinct_and_frozen():
         assert not target_param.requires_grad
 
 
-def test_ema_target_forward_is_stop_gradient():
+def test_ema_target_forward_is_stop_gradient() -> None:
     torch.manual_seed(0)
     online = ObservableEncoder(3, 1, tiny_cfg())
     ema = EMATargetEncoder(online)
@@ -108,7 +109,7 @@ def test_ema_target_forward_is_stop_gradient():
     assert all(param.grad is None for param in ema.target.parameters())
 
 
-def test_ema_update_math_known_tensors():
+def test_ema_update_math_known_tensors() -> None:
     online = torch.nn.Linear(2, 2, bias=False)
     ema = EMATargetEncoder(online)
     with torch.no_grad():
@@ -118,7 +119,7 @@ def test_ema_update_math_known_tensors():
     assert torch.allclose(ema.target.weight, torch.full_like(ema.target.weight, 1.2))
 
 
-def test_ema_update_moves_target_toward_online():
+def test_ema_update_moves_target_toward_online() -> None:
     online = torch.nn.Linear(3, 3)
     ema = EMATargetEncoder(online)
     with torch.no_grad():
@@ -143,7 +144,7 @@ def test_ema_update_moves_target_toward_online():
     assert after < middle
 
 
-def test_tau_schedule_monotonic_ramp():
+def test_tau_schedule_monotonic_ramp() -> None:
     values = [
         tau_schedule(step, ramp_steps=100, start=0.996, end=0.9999)
         for step in [0, 10, 50, 100, 200]
@@ -154,7 +155,7 @@ def test_tau_schedule_monotonic_ramp():
 
 
 @pytest.mark.parametrize("horizon", [6, 12, 24])
-def test_forecasting_mask_context_target_sizes_no_overlap_and_cover_window(horizon: int):
+def test_forecasting_mask_context_target_sizes_no_overlap_and_cover_window(horizon: int) -> None:
     cfg = tiny_cfg(context_steps=24, horizons=(6, 12, 24))
     context_idx, target_idx = forecasting_mask(24 + horizon, cfg, horizon=horizon)
     assert len(context_idx) == 24
@@ -163,7 +164,7 @@ def test_forecasting_mask_context_target_sizes_no_overlap_and_cover_window(horiz
     assert torch.equal(torch.cat([context_idx, target_idx]), torch.arange(24 + horizon))
 
 
-def test_split_forecasting_window_shapes():
+def test_split_forecasting_window_shapes() -> None:
     cfg = tiny_cfg(context_steps=10, horizons=(4,))
     x = torch.randn(3, 14, 5)
     context, target, _context_idx, _target_idx = split_forecasting_window(x, cfg, horizon=4)
@@ -171,7 +172,7 @@ def test_split_forecasting_window_shapes():
     assert target.shape == (3, 4, 5)
 
 
-def test_block_temporal_mask_fraction_and_contiguous_span():
+def test_block_temporal_mask_fraction_and_contiguous_span() -> None:
     cfg = tiny_cfg(block_mask_min_frac=0.15, block_mask_max_frac=0.40)
     generator = torch.Generator().manual_seed(0)
     context = torch.ones(8, 40, 3)
@@ -186,7 +187,7 @@ def test_block_temporal_mask_fraction_and_contiguous_span():
     assert torch.all(masked[mask] == 0)
 
 
-def test_channel_mask_empirical_rate_and_whole_channel_zeroing():
+def test_channel_mask_empirical_rate_and_whole_channel_zeroing() -> None:
     cfg = tiny_cfg(channel_mask_prob=0.20)
     generator = torch.Generator().manual_seed(0)
     x = torch.ones(512, 16, 10)
@@ -197,7 +198,7 @@ def test_channel_mask_empirical_rate_and_whole_channel_zeroing():
         assert torch.all(masked[batch_idx, :, channel_idx] == 0)
 
 
-def test_mask_composition_shapes_and_zero_consistency():
+def test_mask_composition_shapes_and_zero_consistency() -> None:
     cfg = tiny_cfg(context_steps=24, horizons=(12,), channel_mask_prob=0.25)
     generator = torch.Generator().manual_seed(12)
     x = torch.ones(4, 36, 6)

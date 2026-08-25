@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 import structlog
@@ -25,8 +25,13 @@ class ServiceThresholdProvider(Protocol):
 class ForecastServiceLike(Protocol):
     """Subset of ``V2ForecastService`` needed for threshold calibration."""
 
-    artifacts: object
-    history_length: int
+    @property
+    def artifacts(self) -> Any:
+        """Return loaded forecast artifacts."""
+
+    @property
+    def history_length(self) -> int:
+        """Return the required history length."""
 
     def forecast(
         self,
@@ -36,6 +41,14 @@ class ForecastServiceLike(Protocol):
         horizon: int,
     ) -> list[dict[str, float | int]]:
         """Return raw forecast dictionaries."""
+
+
+class HistoryWindowLike(Protocol):
+    """Feature-window result required by recommendation code."""
+
+    @property
+    def history(self) -> list[list[float]]:
+        """Return the ordered feature history."""
 
 
 class FeatureWindowFetcherLike(Protocol):
@@ -48,9 +61,9 @@ class FeatureWindowFetcherLike(Protocol):
         service_id: str,
         origin_timestamp: datetime,
         length: int,
-        artifacts: object,
-    ) -> object:
-        """Return an object with a ``history`` attribute."""
+        artifacts: Any,
+    ) -> HistoryWindowLike:
+        """Return the typed feature history window."""
 
 
 class ForecastP75ThresholdProvider:
@@ -115,9 +128,7 @@ class ForecastP75ThresholdProvider:
                 continue
 
             if raw_forecast:
-                forecast_maxima.append(
-                    max(float(item["predicted_siips"]) for item in raw_forecast)
-                )
+                forecast_maxima.append(max(float(item["predicted_siips"]) for item in raw_forecast))
 
         if len(forecast_maxima) < self.min_valid:
             raise RuntimeError(

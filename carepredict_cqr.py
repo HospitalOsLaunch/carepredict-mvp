@@ -22,7 +22,7 @@ from carepredict_ingest import (
     conformal_intervals,
     seasonal_baseline,
 )
-from carepredict_quantile import fit_quantile_head, build_split
+from carepredict_quantile import build_split, fit_quantile_head
 
 
 @dataclass(frozen=True)
@@ -51,7 +51,9 @@ def conformal_quantile(scores: np.ndarray, alpha: float = 0.10) -> float:
     scores = np.asarray(scores, dtype=float)
     # Pour ce pipeline décisionnel, CQR corrige les quantiles mais ne contracte
     # pas des intervalles déjà prudents : un qhat négatif est donc borné à zéro.
-    return max(0.0, float(np.quantile(scores, finite_sample_level(len(scores), alpha), method="higher")))
+    return max(
+        0.0, float(np.quantile(scores, finite_sample_level(len(scores), alpha), method="higher"))
+    )
 
 
 def cqr_global(
@@ -215,25 +217,27 @@ def check_acceptance(report: pd.DataFrame) -> None:
     values = report.set_index("method")
     for method in ("cqr_global", "cqr_mondrian"):
         if float(values.loc[method, "cov_global"]) < 0.89:
-            warnings.warn(f"{method}: couverture globale < 0.89.", RuntimeWarning)
+            warnings.warn(f"{method}: couverture globale < 0.89.", RuntimeWarning, stacklevel=2)
     if float(values.loc["cqr_mondrian", "cov_surge"]) < 0.88:
-        warnings.warn("cqr_mondrian: couverture surge < 0.88.", RuntimeWarning)
-    if (
-        float(values.loc["cqr_mondrian", "width_normal"])
-        > float(values.loc["mondrian", "width_normal"])
-        and float(values.loc["cqr_mondrian", "cov_surge"])
-        >= float(values.loc["mondrian", "cov_surge"])
+        warnings.warn("cqr_mondrian: couverture surge < 0.88.", RuntimeWarning, stacklevel=2)
+    if float(values.loc["cqr_mondrian", "width_normal"]) > float(
+        values.loc["mondrian", "width_normal"]
+    ) and float(values.loc["cqr_mondrian", "cov_surge"]) >= float(
+        values.loc["mondrian", "cov_surge"]
     ):
         warnings.warn(
             "CQR-Mondrian couvre au moins autant en surge mais gonfle le normal vs Mondrian.",
             RuntimeWarning,
+            stacklevel=2,
         )
 
 
 def main() -> None:
     """CLI CQR."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--synthetic", action="store_true", help="utiliser le générateur hors-ligne")
+    parser.add_argument(
+        "--synthetic", action="store_true", help="utiliser le générateur hors-ligne"
+    )
     parser.add_argument("--dep", nargs="*", default=None, help="codes départements à garder")
     parser.add_argument("--alpha", type=float, default=0.10)
     parser.add_argument("--surge-weight", type=float, default=12.0)

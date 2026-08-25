@@ -149,12 +149,11 @@ class PytorchForecastingTFTBackend:
         so that predict() can run without re-training.
         Raises FileNotFoundError if the bundle is missing.
         """
-        import cloudpickle
+        import cloudpickle  # type: ignore[import-untyped]
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
-                f"Model bundle not found at {checkpoint_path}. "
-                "Run train_tft.py to generate it."
+                f"Model bundle not found at {checkpoint_path}. Run train_tft.py to generate it."
             )
 
         with checkpoint_path.open("rb") as handle:
@@ -180,7 +179,7 @@ class PytorchForecastingTFTBackend:
         """Fit a pytorch-forecasting TFT model on the provided dataset."""
         import lightning as L
         from lightning.pytorch.callbacks import EarlyStopping
-        from pytorch_forecasting import (
+        from pytorch_forecasting import (  # type: ignore[import-untyped]
             TemporalFusionTransformer,
             TimeSeriesDataSet,
         )
@@ -598,9 +597,7 @@ class PytorchForecastingTFTBackend:
             prepared = pd.concat(blocks, ignore_index=True)
             prepared = prepared.sort_values([config.service_column, config.time_column])
 
-        prepared["time_idx"] = (
-            prepared.groupby(config.service_column).cumcount().astype(int)
-        )
+        prepared["time_idx"] = prepared.groupby(config.service_column).cumcount().astype(int)
         return prepared.reset_index(drop=True)
 
     def _resolve_fit_frames(

@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from services.api.schemas.prediction import ChargePredictionRequest, ChargePredictionResponse
+from services.api.schemas.intervention import PlannedIntervention
+from services.api.schemas.prediction import (
+    AttentionWeights,
+    ChargePredictionRequest,
+    ChargePredictionResponse,
+)
 
 
 def test_prediction_response_schema_exact_keys() -> None:
@@ -16,7 +21,7 @@ def test_prediction_response_schema_exact_keys() -> None:
         mape=0.09,
         crps=0.12,
         model_version="tft-moirai-ft-v1.0",
-        attention_weights={"top_features": ["admissions_j0"]},
+        attention_weights=AttentionWeights(top_features=["admissions_j0"]),
     )
 
     assert set(response.model_dump().keys()) == {
@@ -37,11 +42,11 @@ def test_prediction_request_accepts_planned_interventions() -> None:
         hospital_id="hosp-001",
         timestamp=datetime(2026, 7, 15, 8, tzinfo=UTC),
         planned_interventions=[
-            {
-                "type": "discharge",
-                "scheduled_at": "2026-07-15T11:00:00Z",
-                "count": 3,
-            }
+            PlannedIntervention(
+                type="discharge",
+                scheduled_at=datetime(2026, 7, 15, 11, tzinfo=UTC),
+                count=3,
+            )
         ],
     )
 
