@@ -1,0 +1,115 @@
+# Canonical Schema v1 — Nantes v0.1
+#
+# Source de vérité versionnée qui sépare les données hospitalières brutes de
+# l'état consommé par les modèles (HOS-002). Domaines core gelés jusqu'au
+# sign-off Gate A. Toute modification du core exige un bump de version + le test
+# de compatibilité (tests/unit/test_canonical_schema_v1.py::test_core_fingerprint_frozen).
+#
+# Conventions:
+#   - timezone: tous les horodatages sont Europe/Paris, tz-aware obligatoire.
+#   - sensitivity: operational (agrégat non identifiant) | restricted (à protéger)
+#                  | forbidden (nominatif / texte libre — INTERDIT dans le canonical).
+#   - Sémantique bitemporelle: event_time (temps métier) et available_at (temps de
+#     disponibilité, base de la Temporal-Leakage Gate — fail-closed, HOS-010).
+#
+# Compatibilité avec le socle installé (services/connectors/schemas/canonical.py):
+#   - Identité: on RÉUTILISE `hospital_id`, `service_id`, `source_system` (mêmes
+#     noms que le Pydantic existant — pas de vocabulaire parallèle). `service_id`
+#     EST l'identifiant d'unité de soins.
+#   - `event_time`/`available_at` sont des AJOUTS bitemporels requis (le socle
+#     n'exposait que `received_at`/`measured_at`, sans sémantique de disponibilité).
+#     Mapping indicatif: measured_at -> event_time ; received_at ~ available_at
+#     (à confirmer par un vrai lag d'ingestion, cf. HOS-003).
+#
+# Gel: revue le 30/08 (ADR-0001), gel effectif jusqu'au sign-off Gate A (04/09).
+
+schema: canonical
+version: 1.0.0
+timezone: Europe/Paris
+frozen_until: 2026-09-04
+sensitivity_levels: [operational, restricted, forbidden]
+
+# Horodatages présents sur CHAQUE enregistrement canonique.
+temporal:
+  event_time:
+    type: datetime
+    required: true
+    timezone: Europe/Paris
+    sensitivity: operational
+    description: Temps métier auquel l'événement/état mesuré s'est produit.
+  available_at:
+    type: datetime
+    required: true
+    timezone: Europe/Paris
+    sensitivity: operational
+    description: >-
+      Temps auquel la valeur est devenue connaissable par le système. Base de la
+      Temporal-Leakage Gate: toute valeur utilisée à l'origine d'inférence T doit
+      vérifier available_at <= T. Fail-closed.
+
+# Identité d'unité présente sur CHAQUE enregistrement.
+identity:
+  hospital_id:
+    type: string
+    required: true
+    sensitivity: operational
+    description: Identifiant établissement (non nominatif).
+  service_id:
+    type: string
+    required: true
+    sensitivity: operational
+    description: Identifiant de l'unité / service de soins (ex. urg-001). Aligné sur canonical.py.
+  source_system:
+    type: string
+    required: true
+    sensitivity: operational
+    description: Système source de l'extraction (ex. sih, synthetic).
+
+# Domaines core gelés.
+domains:
+  flow:
+    description: Flux patient agrégé par unité et pas de temps.
+    fields:
+      admissions:      {type: integer, unit: count, nullable: false, minimum: 0, sensitivity: operational}
+      discharges:      {type: integer, unit: count, nullable: false, minimum: 0, sensitivity: operational}
+      transfers_in:    {type: integer, unit: count, nullable: true,  minimum: 0, sensitivity: operational}
+      transfers_out:   {type: integer, unit: count, nullable: true,  minimum: 0, sensitivity: operational}
+      occupancy:       {type: integer, unit: count, nullable: false, minimum: 0, sensitivity: operational, description: Patients présents dans l'unité.}
+
+  capacity:
+    description: Capacité et disponibilité en lits par unité.
+    fields:
+      beds_total:      {type: integer, unit: count, nullable: false, minimum: 0, sensitivity: operational}
+      beds_available:  {type: integer, unit: count, nullable: true,  minimum: 0, sensitivity: operational}
+      beds_blocked:    {type: integer, unit: count, nullable: true,  minimum: 0, sensitivity: operational}
+
+  staffing:
+    description: Effectifs soignants par unité et créneau.
+    fields:
+      nurse_count:          {type: number, unit: headcount, nullable: false, minimum: 0, sensitivity: operational}
+      aide_count:           {type: number, unit: headcount, nullable: false, minimum: 0, sensitivity: operational}
+      overtime_hours:       {type: number, unit: hours,     nullable: true,  minimum: 0, sensitivity: operational}
+      avg_seniority_months: {type: number, unit: months,    nullable: true,  minimum: 0, sensitivity: restricted, description: Peut ré-identifier en petit effectif.}
+
+  care_load:
+    description: Charge de soins mesurée par unité et pas de temps.
+    fields:
+      siips_score:     {type: number,  unit: points, nullable: false, minimum: 0, sensitivity: operational}
+      aas_score:       {type: number,  unit: points, nullable: true,  minimum: 0, sensitivity: operational}
+      patient_count:   {type: integer, unit: count,  nullable: false, minimum: 0, sensitivity: operational}
+
+  actions:
+    description: >-
+      Actions opérationnelles observées (canal d'action). Servi en shadow / non
+      causal (ADR-0001). Aucune donnée nominative.
+    fields:
+      action_type:     {type: enum, values: [staffing_change, discharge_planning, bed_management], nullable: false, sensitivity: operational}
+      magnitude:       {type: number, unit: signed_delta, nullable: true, sensitivity: operational, description: Amplitude signée de l'action (unité dépend du type).}
+      target_service_id: {type: string, nullable: true, sensitivity: operational, description: Service/unité cible si différent de l'émetteur.}
+
+# Zone d'extension: fermée avant premier contact Nantes (HOS-001 / HOS-002).
+# Rouvrir exige un nouvel ADR + bump de version. Aucun champ nominatif ou texte
+# libre ne peut être introduit ici (sensitivity=forbidden interdit dans le canonical).
+extensions:
+  status: closed
+  reason: Fermée avant premier contact Nantes ; réouverture = nouvel ADR + nouvelle version.

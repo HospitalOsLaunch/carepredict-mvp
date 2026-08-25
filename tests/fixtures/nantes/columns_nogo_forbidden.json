@@ -1,0 +1,1 @@
+{"columns": ["etablissement_id","uf_code","horodatage_mesure","horodatage_disponibilite","score_siips","nb_patients","nb_admissions","nb_sorties","nb_presents","Nom_Patient","commentaire_libre"]}

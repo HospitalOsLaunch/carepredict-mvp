@@ -1,0 +1,83 @@
+# Nantes v0.1 — Deployment Envelope (HOS-004), versionnée.
+# Enveloppe d'exécution en enclave CHU, OFFLINE (aucun réseau sortant).
+#
+# Ce fichier décrit la CIBLE enclave. Le `docker-compose.yml` du dépôt est un
+# compose de DÉVELOPPEMENT ; la section `release_hardening` liste les écarts à
+# appliquer pour la release pilote (gates de release), vérifiés vs le compose réel.
+
+envelope_version: 1.0.1
+target: nantes-v0.1
+runtime: docker-compose            # docker compose v2 (ou podman-compose compatible)
+os_supported: [Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, RHEL 9]
+
+network:
+  outbound: none                   # aucune sortie Internet en exécution nominale
+  air_gapped: true
+  confidentiality: "air-gap + isolation host ; PAS de TLS interne (trafic en clair sur le réseau docker). Confidentialité assurée par l'enclave, pas par chiffrement en transit."
+  host_binding_current: "0.0.0.0 (compose dev, syntaxe courte PORT:PORT)"
+  host_binding_target: "127.0.0.1 (voir release_hardening) ; datastores non exposés au host"
+
+# Dimensionnement (agrégé pour la stack pilote sur une seule machine).
+compute:
+  minimal:      {cpu_cores: 8,  ram_gb: 16, disk_gb: 100, gpu: none}
+  recommended:  {cpu_cores: 16, ram_gb: 32, disk_gb: 250, gpu: "optionnel (1x, inference CPU par défaut)"}
+  notes:
+    - Forecast v2 (JEPA/RSSM) et world model tournent en inférence CPU par défaut.
+    - GPU non requis pour le pilote ; s'il est fourni, il accélère un éventuel ré-entraînement.
+
+# Images (à figer par digest sha256 à la release ; préchargées via `docker save`/`load`).
+# Le compose dev utilise des TAGS ; le pin des digests est un gate de release.
+images:
+  - {service: redpanda,          image: "docker.redpanda.com/redpandadata/redpanda:v24.1.9", digest: "TO_PIN@release", note: "aussi utilisée par redpanda-init (création one-shot des topics)"}
+  - {service: timescaledb,       image: "timescale/timescaledb:2.14.2-pg15",                 digest: "TO_PIN@release"}
+  - {service: redis,             image: "redis:7.2.5-alpine",                                 digest: "TO_PIN@release"}
+  - {service: dagster-postgres,  image: "postgres:15.7-alpine",                              digest: "TO_PIN@release"}
+  - {service: dagster,           image: "carepredict/dagster:1.0.0",                          digest: "TO_PIN@release", build: infrastructure/dagster/Dockerfile, note: "dagster-webserver + dagster-daemon"}
+  - {service: mlflow,            image: "carepredict/mlflow:1.0.0",                           digest: "TO_PIN@release", build: infrastructure/mlflow/Dockerfile, note: "backend store = SQLite (/mlflow/mlflow.db)"}
+  - {service: api,               image: "carepredict/api:1.0.0",                              digest: "TO_PIN@release", build: infrastructure/api/Dockerfile}
+  - {service: dashboard,         image: "carepredict/dashboard:1.0.0",                        digest: "TO_PIN@release", build: services/dashboard/Dockerfile}
+
+# Ports. `exposure_current` = compose dev (0.0.0.0) ; `exposure_target` = enclave.
+ports:
+  - {service: api,               host: 8000,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "127.0.0.1"}
+  - {service: dashboard,         host: 5173,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "127.0.0.1"}
+  - {service: dagster-webserver, host: 3000,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "127.0.0.1"}
+  - {service: mlflow,            host: 5000,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "127.0.0.1"}
+  - {service: timescaledb,       host: 5432,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "aucun mapping host (réseau docker interne uniquement)"}
+  - {service: dagster-postgres,  host: 5433,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "aucun mapping host"}
+  - {service: redis,             host: 6379,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "aucun mapping host"}
+  - {service: redpanda,          host: 19092, proto: tcp, exposure_current: "0.0.0.0", exposure_target: "aucun mapping host"}
+  - {service: redpanda-admin,    host: 9644,  proto: tcp, exposure_current: "0.0.0.0", exposure_target: "aucun mapping host"}
+
+# Secrets (variables d'environnement ; défauts DEV en clair dans .env.example -> à OVERRIDER).
+secrets:
+  - {name: POSTGRES_PASSWORD,          scope: timescaledb,      note: "défaut dev 'carepredict_dev_password' à remplacer"}
+  - {name: DAGSTER_POSTGRES_PASSWORD,  scope: dagster-postgres, note: "défaut dev 'dagster_dev_password' à remplacer"}
+  # MLflow = SQLite (aucun mot de passe DB). Aucune clé d'API externe (chaîne offline).
+
+# Données persistées : volumes RÉELS du compose + volume artefacts à ajouter en release.
+volumes:
+  - {name: timescaledb-data,      contains: "UnitState + séries opérationnelles (agrégats par unité)", retention: "durée du pilote + purge validée DPO"}
+  - {name: dagster-postgres-data, contains: "métadonnées d'orchestration (runs)", retention: "durée du pilote"}
+  - {name: mlflow-data,           contains: "artefacts/param modèles + SQLite MLflow, provenance run_id", retention: "durée du pilote"}
+  - {name: dashboard-node-modules, contains: "dépendances build front (non sensible)", retention: éphémère}
+  - {name: "carepredict-artifacts (À AJOUTER en release)", contains: "rapports/manifests pipeline", retention: "durée du pilote", note: "absent du compose dev ; artefacts écrits sous /app (host bind-mount). Ajouter un volume nommé dédié."}
+at_rest:
+  live_volumes: "chiffrement disque at-rest requis (LUKS/host) — à confirmer DSI"
+  residency: "volumes et backups restent dans l'enclave (résidence France)"
+  restricted_fields: "avg_seniority_months (sensibilité restricted, non nominatif) peut persister"
+
+# Digest / sauvegarde / rollback.
+release:
+  digest_strategy: "figer chaque image par digest sha256 dans le compose de release + manifest signé"
+  preload: "images préchargées offline (`docker save`/`load`) ; `docker compose pull` interdit au runtime"
+  backup: "pg_dump TimescaleDB + Dagster-Postgres + copie volumes mlflow-data / carepredict-artifacts, chiffrés au repos"
+  rollback: "revenir au manifest de release N-1 (digests N-1) : `docker compose down` puis `up` sur le compose épinglé N-1 ; restaurer les dumps si migration de schéma (marqueur de migration à tracer, cf. runbook HOS-023)"
+
+# Écarts compose dev -> enclave (gates de release, vérifiés vs docker-compose.yml).
+release_hardening:
+  - "Épingler les images par digest sha256 (le compose dev utilise des tags)."
+  - "Retirer les bind-mounts `.:/app` (api, dagster-webserver, dagster-daemon) et `./services/dashboard:/app` — cuire le code dans l'image, sinon le rollback-par-digest est illusoire (code servi depuis le host)."
+  - "Binder les ports host en 127.0.0.1 ; retirer les mappings host des datastores (timescaledb/redis/redpanda/dagster-postgres)."
+  - "Ajouter un volume nommé dédié aux artefacts pipeline (ex. carepredict-artifacts)."
+  - "Overrider tous les secrets par défaut de .env.example ; interdire les mots de passe dev."

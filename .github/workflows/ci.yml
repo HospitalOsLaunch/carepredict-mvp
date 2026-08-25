@@ -6,6 +6,7 @@ on:
     branches: ["main"]
 
 jobs:
+  # Existing full-stack quality job (heavy deps: torch, dagster, feast, docker).
   quality:
     runs-on: ubuntu-24.04
     steps:
@@ -34,3 +35,57 @@ jobs:
 
       - name: Docker build
         run: docker compose build
+
+  # DSI-facing Gate A safety gate: fast, self-contained (no heavy deps), STRICT.
+  # Blocks merge if the Nantes data-safety layer is not clean, typed, and covered.
+  # These modules are fail-closed (privacy / temporal-leakage / validation) and
+  # must stay impeccable for enclave/DSI review.
+  gate-a-safety:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ruff mypy pytest pytest-cov pydantic pyyaml types-PyYAML
+
+      - name: Lint (safety layer)
+        run: |
+          ruff check \
+            services/connectors/schemas/canonical_schema.py \
+            services/validation/preflight.py \
+            services/validation/validator.py \
+            tests/unit/test_canonical_schema_v1.py \
+            tests/unit/test_preflight.py \
+            tests/unit/test_validator_v2.py
+
+      - name: Format check (safety layer)
+        run: |
+          ruff format --check \
+            services/connectors/schemas/canonical_schema.py \
+            services/validation/preflight.py \
+            services/validation/validator.py
+
+      - name: Type-check --strict (safety layer)
+        run: |
+          mypy --strict \
+            services/connectors/schemas/canonical_schema.py \
+            services/validation/preflight.py \
+            services/validation/validator.py
+
+      - name: Tests + coverage floor (offline, deterministic)
+        run: |
+          pytest -q -p no:cacheprovider \
+            tests/unit/test_canonical_schema_v1.py \
+            tests/unit/test_preflight.py \
+            tests/unit/test_validator_v2.py \
+            --cov=services.connectors.schemas.canonical_schema \
+            --cov=services.validation.preflight \
+            --cov=services.validation.validator \
+            --cov-report=term-missing \
+            --cov-fail-under=95
