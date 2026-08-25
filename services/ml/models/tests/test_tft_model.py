@@ -10,6 +10,7 @@ import pytest
 from services.ml.models.tft_model import (
     CarePredictTFT,
     FutureIntervention,
+    InterpretableTFTFallback,
     TFTConfig,
     build_future_covariates,
 )
@@ -26,8 +27,13 @@ def _history() -> pd.DataFrame:
     )
 
 
+def _fallback_model() -> CarePredictTFT:
+    """Return the deterministic backend used by unit and contract tests."""
+    return CarePredictTFT(backend=InterpretableTFTFallback())
+
+
 def test_tft_predict_returns_value_and_attention_features() -> None:
-    model = CarePredictTFT()
+    model = _fallback_model()
     interventions = [
         FutureIntervention(
             intervention_type="discharge",
@@ -43,7 +49,7 @@ def test_tft_predict_returns_value_and_attention_features() -> None:
 
     forecast = model.predict(_history(), interventions=interventions)
 
-    assert forecast.horizon_values.shape == (12,)
+    assert forecast.horizon_values.shape == (model.config.horizon,)
     assert isinstance(forecast.value, float)
     assert forecast.top_features[:2] == ["scheduled_discharges", "scheduled_surgeries"]
     assert forecast.model_version == "tft-moirai-ft-v1.0"
@@ -63,19 +69,20 @@ def test_build_future_covariates_maps_intervention_types() -> None:
         config=config,
     )
 
-    assert len(covariates) == 12
+    assert config.horizon == 168
+    assert len(covariates) == config.horizon
     assert covariates["expected_transfers_in"].sum() == 4
 
 
 def test_tft_rejects_missing_history_columns() -> None:
-    model = CarePredictTFT()
+    model = _fallback_model()
 
     with pytest.raises(ValueError, match="missing required columns"):
         model.predict(pd.DataFrame({"siips_score": [1.0]}))
 
 
 def test_tft_fit_returns_baseline_metrics() -> None:
-    model = CarePredictTFT()
+    model = _fallback_model()
 
     metrics = model.fit(_history())
 
