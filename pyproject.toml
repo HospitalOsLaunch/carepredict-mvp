@@ -65,10 +65,20 @@ foundation = [
 
 [tool.setuptools.packages.find]
 where = [".", "src"]
-include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
+include = [
+  "services*",
+  "orchestration*",
+  "data*",
+  "rs_jepa*",
+  "hospitalos*",
+  "p0d*",
+  "hfwm*",
+]
 
 [tool.setuptools.package-data]
 hospitalos = ["py.typed"]
+p0d = ["py.typed"]
+hfwm = ["py.typed"]
 
 [tool.ruff]
 target-version = "py311"
@@ -90,7 +100,7 @@ disallow_subclassing_any = true
 minversion = "8.0"
 addopts = "--strict-markers --strict-config -m 'not integration'"
 testpaths = ["tests", "data/synthetic/tests"]
-pythonpath = ["."]
+pythonpath = [".", "src"]
 markers = [
   "performance: latency and throughput checks that run on CPU by default",
   "integration: tests requiring external services (postgres/redis/kafka); skipped by default; run with `pytest -m integration` or `pytest -m 'integration or not integration'` for full suite",

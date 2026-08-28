@@ -1,0 +1,85 @@
+{
+  "schema_version": "hfwm.metrics.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "frozen_before_training": true,
+  "results_status": "NOT_EXECUTED",
+  "tasks": [
+    "occupancy",
+    "inflow",
+    "discharges",
+    "staffing",
+    "pressure"
+  ],
+  "horizons_hours": [
+    6,
+    24,
+    72
+  ],
+  "primary_metric": {
+    "id": "aggregate_normalized_mae",
+    "direction": "lower_is_better",
+    "definition": "Macro-average across preregistered task/horizon cells of MAE divided by the train-only interquartile range; cells with zero train IQR are INCONCLUSIVE.",
+    "aggregation": "equal weight per task then equal weight per horizon",
+    "cohort": "frozen common complete-target cohort per task/horizon",
+    "normalization_fit_partition": "train_only",
+    "uncertainty": "paired_episode_bootstrap_95_percentile",
+    "bootstrap_draws": 2000,
+    "bootstrap_seed": 8675309
+  },
+  "secondary_metrics": [
+    {
+      "id": "rmse",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "smape",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "pinball_q10_q50_q90",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "interval_coverage_80",
+      "direction": "target_0.80"
+    },
+    {
+      "id": "mean_interval_width_80",
+      "direction": "lower_at_valid_coverage"
+    },
+    {
+      "id": "joint_energy_score",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "rollout_drift",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "hard_constraint_violation_rate",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "hierarchical_consistency_error",
+      "direction": "lower_is_better"
+    },
+    {
+      "id": "calibration_error",
+      "direction": "lower_is_better"
+    }
+  ],
+  "critical_tasks": [
+    "occupancy",
+    "staffing",
+    "pressure"
+  ],
+  "comparison": {
+    "paired_by_episode": true,
+    "same_snapshot_and_target_cohort": true,
+    "strongest_eligible_comparator": true,
+    "relative_gain_formula": "(comparator_score - candidate_score) / comparator_score"
+  },
+  "missing_cell_policy": "INCONCLUSIVE",
+  "insufficient_power_policy": "INCONCLUSIVE",
+  "post_hoc_metric_change": "FORBIDDEN_NEW_VERSION_REQUIRED"
+}

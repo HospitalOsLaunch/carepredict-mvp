@@ -1,0 +1,154 @@
+schema_version: hfwm.r0.spec.v1
+document_version: 1
+status: PREREGISTRATION_FROZEN
+main_runs_authorized: true
+repository:
+  remote: https://github.com/HospitalOsLaunch/carepredict-mvp.git
+  baseline_commit: 06914578a4e88257ecf44e7fede72a20852f443a
+
+primary_question: >-
+  At information actually available at time t, does a shared hierarchical belief state
+  aware of the recording process predict joint operational trajectories, remain coherent
+  in free-running rollout, and adapt to an unseen site with less local data than a local model?
+
+secondary_hypotheses:
+  - shared_pretraining_improves_local_adaptation_efficiency
+  - joint_dynamics_improves_constraint_consistency_over_independent_forecasters
+  - recording_process_modelling_improves_robustness_to_delay_correction_missingness_and_silence
+additional_major_hypotheses_allowed: false
+
+state_factorization:
+  latent_state: S_t
+  available_observations: O_t
+  recording_process: R_t
+  observed_actions: A_t
+  available_context: C_t
+  hierarchy: H_t
+
+architecture_contract:
+  contract_version: hfwm.architecture.v1
+  components:
+    - HospitalTokenizer
+    - StateEncoder
+    - DynamicsCore
+    - ObservationModel
+    - ConstraintEngine
+    - ActionConditioner
+    - TaskHead
+    - JointDecoder
+    - SiteAdapter
+  family_agnostic: true
+  named_architecture_required: false
+
+primary_families:
+  maximum_count: 3
+  candidates:
+    - candidate_id: mechanistic_queue_semimarkov
+      family_role: explicit_mechanistic
+      hypothesis: explicit conservation and queue structure improves stable constrained rollout
+    - candidate_id: local_joint_from_scratch
+      family_role: local_learned_control
+      hypothesis: learned local dynamics are a capacity-matched control without shared pretraining
+    - candidate_id: shared_hfwm_multitask
+      family_role: shared_multitask_candidate
+      hypothesis: shared hierarchical belief dynamics improve joint rollout and low-shot adaptation
+  cartesian_architecture_search_forbidden: true
+
+comparison_invariants:
+  same_point_in_time_snapshots: true
+  same_cohorts: true
+  same_targets: true
+  same_horizons: true
+  same_metrics: true
+  equalize_or_document:
+    - parameter_budget
+    - compute_budget
+    - data_seen
+    - tuning_budget
+    - run_count
+    - local_adaptation_budget
+  numeric_values_authority:
+    bakeoff: HFWM_R0_BAKEOFF.yaml
+    splits: HFWM_R0_SPLITS.yaml
+    metrics: HFWM_R0_METRICS.yaml
+    kill_criteria: HFWM_R0_KILL_CRITERIA.yaml
+  unresolved_numeric_authority_blocks_main_runs: true
+
+temporal_contract:
+  snapshots_require_available_at_lte_as_of: true
+  corrections_are_append_only: true
+  explicit_timezones_required: true
+  deterministic_replay_required: true
+  split_order:
+    - organization
+    - site
+    - unit
+    - episode
+    - time
+    - windows
+  split_before_windowing: true
+
+moat_contracts:
+  htl: htl.contract.v1
+  hdc: hdc.episode.v1
+  dos: dos.decision_outcome.v1
+  hdb: hdb.benchmark.v1
+  sas: sas.release.v1
+  semantic_serialization: sorted-key compact UTF-8 JSON
+  semantic_hash: SHA-256
+
+actions:
+  branch_enabled: false
+  status: ACTION_CONDITIONING_NOT_IDENTIFIABLE
+  reason: >-
+    The inspected baseline does not establish actual execution with type, scope, dose,
+    timing, deviation, concurrent actions, support, and stable definitions.
+  intention_is_execution: false
+  causal_claim_allowed: false
+  planner_allowed: false
+
+foundation:
+  status: FOUNDATION_EVIDENCE_INSUFFICIENT
+  foundation_claim_allowed: false
+  missing_evidence:
+    - three_independent_organizations
+    - fully_unseen_site
+    - frozen_local_adaptation_budget
+    - capacity_matched_from_scratch_control
+    - performance_by_adaptation_budget_curve
+    - contamination_exclusion
+
+rights:
+  contract_version: hfwm.data_rights.v1
+  default_decision: denied
+  unresolved_rights_block_corpus_use: true
+  registry: HFWM_R0_DATA_RIGHTS.yaml
+
+permitted_claims_only_after_gates:
+  - EXPERIMENTAL_HOSPITAL_WORLD_MODEL
+  - HOSPITAL_WORLD_MODEL_CANDIDATE
+  - FOUNDATION_ARCHITECTURE_CANDIDATE
+  - BEHAVIOR_CONDITIONED_DYNAMICS_MODEL
+  - OBSERVATIONAL
+  - SHADOW_ONLY
+  - UNVALIDATED_AT_NANTES
+forbidden_claims:
+  - VALIDATED_WORLD_MODEL
+  - PROVEN_FOUNDATION_MODEL
+  - VALIDATED_AT_NANTES
+  - CAUSAL_EFFECT
+  - COUNTERFACTUAL_EFFECT
+  - BEST_ACTION
+  - PROVEN_OPERATIONAL_IMPACT
+  - AUTONOMOUS_EXECUTION
+  - CERTIFIED
+  - GUARANTEED
+  - FIRST_OR_UNIQUE
+
+current_blockers:
+  - ACTION_CONDITIONING_NOT_IDENTIFIABLE
+  - FOUNDATION_EVIDENCE_INSUFFICIENT
+  - EXTERNAL_DATA_SOURCES_DENIED
+  - SYNTHETIC_ONLY_EVIDENCE
+  - HGBR_CQR_NOT_EXECUTED
+  - GENERIC_TSFM_NOT_EXECUTED

@@ -1,0 +1,20 @@
+{
+  "schema_version": "hfwm.evaluation-config.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "preregistration_directory": "docs/research/hfwm",
+  "require_valid_preregistration_before_training": true,
+  "split_policy_id": "hfwm-r0-temporal-v1",
+  "candidate_family_ids": [
+    "mechanistic_queue_semimarkov",
+    "local_joint_from_scratch",
+    "shared_hfwm_multitask"
+  ],
+  "seeds": [
+    1729,
+    2718,
+    3141
+  ],
+  "primary_metric_id": "aggregate_normalized_mae",
+  "results_status": "NOT_EXECUTED",
+  "write_artifacts": false
+}

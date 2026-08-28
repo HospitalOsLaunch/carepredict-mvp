@@ -1,0 +1,119 @@
+{
+  "schema_version": "hfwm.bakeoff.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "frozen_before_training": true,
+  "results_status": "NOT_EXECUTED",
+  "primary_hypothesis": "A shared multi-task hospital dynamics representation improves the preregistered aggregate retrospective forecast score over a capacity-comparable local model, while respecting hard hospital constraints and avoiding critical-task regression.",
+  "scope": "RETROSPECTIVE_OBSERVATIONAL_SHADOW_ONLY",
+  "split_policy_id": "hfwm-r0-temporal-v1",
+  "primary_metric_id": "aggregate_normalized_mae",
+  "tasks": [
+    "occupancy",
+    "inflow",
+    "discharges",
+    "staffing",
+    "pressure"
+  ],
+  "horizons_hours": [
+    6,
+    24,
+    72
+  ],
+  "conditional_horizons": {
+    "168": {
+      "status": "NOT_EXECUTED",
+      "execute_only_if": "each frozen test cohort has at least 200 independent episodes with complete targets"
+    }
+  },
+  "seeds": [
+    1729,
+    2718,
+    3141
+  ],
+  "candidate_families": [
+    {
+      "id": "mechanistic_queue_semimarkov",
+      "kind": "mechanistic",
+      "hypothesis": "Explicit conservation and duration structure is sufficient for useful rollouts.",
+      "pretraining": false,
+      "tuning_trials_max": 8,
+      "cpu_core_hours_max_per_seed": 4,
+      "accelerator_hours_max_per_seed": 0,
+      "learned_parameters_max": 0
+    },
+    {
+      "id": "local_joint_from_scratch",
+      "kind": "local_from_scratch",
+      "hypothesis": "Local joint dynamics explain the result without shared pretraining.",
+      "pretraining": false,
+      "tuning_trials_max": 8,
+      "cpu_core_hours_max_per_seed": 4,
+      "accelerator_hours_max_per_seed": 1,
+      "learned_parameters_max": 2000000
+    },
+    {
+      "id": "shared_hfwm_multitask",
+      "kind": "shared_hfwm",
+      "hypothesis": "A shared multi-task belief state improves aggregate dynamics at equal local budget.",
+      "pretraining": true,
+      "tuning_trials_max": 8,
+      "cpu_core_hours_max_per_seed": 4,
+      "accelerator_hours_max_per_seed": 1,
+      "learned_parameters_max": 2000000
+    }
+  ],
+  "fairness_contract": {
+    "same_point_in_time_snapshots": true,
+    "same_train_validation_test_cohorts": true,
+    "same_tasks_horizons_targets_metrics": true,
+    "same_number_of_seeds": true,
+    "same_tuning_trials_for_learned_candidates": true,
+    "local_adaptation_examples_max": 256,
+    "site_adapter_parameters_max": 100000,
+    "backbone_frozen_during_site_adaptation": true
+  },
+  "final_gate_comparators": [
+    {
+      "id": "persistence",
+      "status": "NOT_EXECUTED",
+      "tuning": "NONE"
+    },
+    {
+      "id": "seasonal_naive_168h",
+      "status": "NOT_EXECUTED",
+      "tuning": "NONE"
+    },
+    {
+      "id": "hgbr_cqr",
+      "status": "NOT_EXECUTED",
+      "tuning": "FROZEN_NO_OPTIMIZATION",
+      "permitted_repairs": [
+        "temporal_leakage",
+        "integrity",
+        "reproducibility"
+      ]
+    },
+    {
+      "id": "generic_tsfm",
+      "status": "NOT_EXECUTED",
+      "checkpoint_verified": false,
+      "execute_only_if": "local checkpoint identity, license, provenance, and offline compatibility are verified"
+    }
+  ],
+  "ablations": [
+    "shared_pretraining_removed",
+    "joint_heads_replaced_by_independent_heads",
+    "site_identity_removed",
+    "recording_process_features_removed"
+  ],
+  "negative_controls": [
+    "future_observation_leakage_sentinel",
+    "future_action_leakage_sentinel",
+    "label_permutation",
+    "site_identity_shortcut",
+    "action_permutation_if_observable"
+  ],
+  "action_branch_status": "ACTION_CONDITIONING_NOT_IDENTIFIABLE",
+  "foundation_status": "FOUNDATION_EVIDENCE_INSUFFICIENT",
+  "decision_rule": "Apply HFWM_R0_KILL_CRITERIA.yaml without post-hoc threshold changes."
+}

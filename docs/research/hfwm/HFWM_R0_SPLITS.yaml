@@ -1,0 +1,86 @@
+{
+  "schema_version": "hfwm.splits.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "frozen_before_training": true,
+  "results_status": "NOT_EXECUTED",
+  "split_policy_id": "hfwm-r0-temporal-v1",
+  "split_before_windowing": true,
+  "hierarchy": [
+    "organization",
+    "site",
+    "unit",
+    "episode",
+    "time",
+    "window"
+  ],
+  "source_admission": "DENY_BY_DEFAULT_UNTIL_RIGHTS_APPROVED",
+  "episode_identity": "organization_id/site_id/unit_id/episode_id",
+  "correction_policy": "INDIVISIBLE_FAMILY",
+  "exact_semantic_duplicate_policy": "INDIVISIBLE_FAMILY",
+  "cross_split_near_duplicates": "FORBIDDEN",
+  "near_duplicate": {
+    "normalization": "NFKC_CASEFOLD_ALPHANUMERIC_TOKENS",
+    "shingle_width": 3,
+    "jaccard_threshold": 0.92
+  },
+  "temporal_fractions": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "temporal_assignment": {
+    "scope": "within each organization/site/unit after holdout removal",
+    "ordering": "contamination_group_max_episode_end_then_start_then_group_hash",
+    "rule": "earliest groups to train, then validation, latest groups to test",
+    "cutoff_source": "deterministic counts from the frozen authorized episode manifest"
+  },
+  "purge_gap_hours": 168,
+  "windowing": {
+    "history_hours": 336,
+    "stride_hours": 6,
+    "horizons_hours": [
+      6,
+      24,
+      72
+    ],
+    "maximum_available_at": "origin_at",
+    "future_observations_in_features": "FORBIDDEN",
+    "future_actions_in_features": "FORBIDDEN"
+  },
+  "holdouts": {
+    "organization": {
+      "status": "NOT_EXECUTED",
+      "execute_only_if": "at least three independent authorized organizations are present"
+    },
+    "site": {
+      "status": "NOT_EXECUTED",
+      "execute_only_if": "at least one whole authorized site can remain unseen by pretraining"
+    },
+    "temporal": {
+      "status": "REQUIRED"
+    }
+  },
+  "minimum_power_precheck": {
+    "minimum_episode_groups_per_unit": 20,
+    "on_failure": "INSUFFICIENT_DATA"
+  },
+  "frozen_partition_manifest_fields": [
+    "source_ids",
+    "source_versions",
+    "periods",
+    "organizations",
+    "sites",
+    "units",
+    "episode_ids",
+    "correction_families",
+    "semantic_hashes",
+    "deduplication_rules",
+    "proximity_rules",
+    "transformations",
+    "schema_versions",
+    "code_identity",
+    "external_checkpoint_exposure",
+    "manifest_sha256"
+  ],
+  "boundary_rule": "A new preregistration version is required to change any split after a main run."
+}

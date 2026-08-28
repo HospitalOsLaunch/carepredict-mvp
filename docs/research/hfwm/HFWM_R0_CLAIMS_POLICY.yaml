@@ -1,0 +1,48 @@
+{
+  "schema_version": "hfwm.claims-policy.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "frozen_before_training": true,
+  "results_status": "NOT_EXECUTED",
+  "allowed_claims": [
+    "EXPERIMENTAL_HOSPITAL_WORLD_MODEL",
+    "HOSPITAL_WORLD_MODEL_CANDIDATE",
+    "FOUNDATION_ARCHITECTURE_CANDIDATE",
+    "BEHAVIOR_CONDITIONED_DYNAMICS_MODEL",
+    "OBSERVATIONAL",
+    "SHADOW_ONLY",
+    "UNVALIDATED_AT_NANTES"
+  ],
+  "forbidden_claims": [
+    "P0 PASS",
+    "HFWM PASS",
+    "VALIDATED WORLD MODEL",
+    "PROVEN FOUNDATION MODEL",
+    "VALIDATED AT NANTES",
+    "CAUSAL EFFECT",
+    "COUNTERFACTUAL EFFECT",
+    "BEST ACTION",
+    "PROVEN OPERATIONAL IMPACT",
+    "AUTONOMOUS EXECUTION"
+  ],
+  "foundation_status": "FOUNDATION_EVIDENCE_INSUFFICIENT",
+  "foundation_reason": "Fewer than three independently authorized organizations and no verified wholly unseen establishment transfer gate are available at preregistration time.",
+  "action_status": "ACTION_CONDITIONING_NOT_IDENTIFIABLE",
+  "action_reason": "The repository exposes intentions and workflow states but does not prove executed action, dose, timing, deviations, concurrent actions, support, and decision factors.",
+  "causal_status": "NO_CAUSAL_CLAIM",
+  "nantes_status": "UNVALIDATED_AT_NANTES",
+  "execution_status": "SHADOW_ONLY",
+  "scan_scope": {
+    "include": [
+      "generated_reports",
+      "evaluation_exports",
+      "model_cards",
+      "dashboard_copy",
+      "evidence_packages"
+    ],
+    "exclude": [
+      "this_policy_document",
+      "quoted_normative_forbidden_claim_lists"
+    ]
+  },
+  "on_forbidden_claim": "BLOCK_EVIDENCE_PACKAGE"
+}

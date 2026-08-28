@@ -1,0 +1,122 @@
+contract_version: hfwm.data_rights.v1
+policy_version: hfwm-r0.rights.v1
+default_decision: denied
+sources:
+  - source_id: hfwm_r0_internal_synthetic_fixture
+    owner: HospitalOsLaunch_TASK_WORK_PRODUCT_PENDING_LEGAL_CONFIRMATION
+    licence: INTERNAL_HFWM_R0_EVALUATION_ONLY_BY_MISSION_AUTHORIZATION
+    allowed_purposes:
+      - local_hfwm_r0_training
+      - local_hfwm_r0_evaluation
+      - local_hfwm_r0_benchmark
+    training_allowed: true
+    evaluation_allowed: true
+    derived_features_allowed: true
+    embeddings_allowed: true
+    weights_allowed: false
+    cross_site_learning_allowed: true
+    benchmark_allowed: true
+    publication_allowed: false
+    retention: TASK_LOCAL_UNTIL_HUMAN_REVIEW_OR_WITHDRAWAL
+    deletion_obligations: DELETE_DERIVATIVES_ON_AUTHORIZATION_WITHDRAWAL
+    territory: LOCAL_EXECUTION_ENVIRONMENT_ONLY
+    expiry: UNTIL_HUMAN_REVIEW_OR_WITHDRAWAL
+    decision: allowed
+    evidence_refs:
+      - user_mission:MISSION_CODEX_HFWM_R0_MOAT_FINAL.md
+      - source:src/hfwm/corpus/generator.py
+
+  - source_id: drees_public_aggregates
+    owner: NOT_VERIFIED_IN_REPOSITORY
+    licence: NOT_VERIFIED_IN_REPOSITORY
+    allowed_purposes: []
+    training_allowed: false
+    evaluation_allowed: false
+    derived_features_allowed: false
+    embeddings_allowed: false
+    weights_allowed: false
+    cross_site_learning_allowed: false
+    benchmark_allowed: false
+    publication_allowed: false
+    retention: NOT_DOCUMENTED
+    deletion_obligations: NOT_DOCUMENTED
+    territory: NOT_DOCUMENTED
+    expiry: NOT_DOCUMENTED
+    decision: denied
+    evidence_refs: []
+
+  - source_id: carepredict_synthetic_generator
+    owner: NOT_VERIFIED_IN_REPOSITORY
+    licence: NOT_VERIFIED_IN_REPOSITORY
+    allowed_purposes: []
+    training_allowed: false
+    evaluation_allowed: false
+    derived_features_allowed: false
+    embeddings_allowed: false
+    weights_allowed: false
+    cross_site_learning_allowed: false
+    benchmark_allowed: false
+    publication_allowed: false
+    retention: NOT_DOCUMENTED
+    deletion_obligations: NOT_DOCUMENTED
+    territory: NOT_DOCUMENTED
+    expiry: NOT_DOCUMENTED
+    decision: denied
+    evidence_refs: []
+
+  - source_id: synthea
+    owner: NOT_VERIFIED_IN_REPOSITORY
+    licence: NOT_VERIFIED_IN_REPOSITORY
+    allowed_purposes: []
+    training_allowed: false
+    evaluation_allowed: false
+    derived_features_allowed: false
+    embeddings_allowed: false
+    weights_allowed: false
+    cross_site_learning_allowed: false
+    benchmark_allowed: false
+    publication_allowed: false
+    retention: NOT_DOCUMENTED
+    deletion_obligations: NOT_DOCUMENTED
+    territory: NOT_DOCUMENTED
+    expiry: NOT_DOCUMENTED
+    decision: denied
+    evidence_refs: []
+
+  - source_id: mimic_iv
+    owner: NOT_VERIFIED_IN_REPOSITORY
+    licence: DUA_RESTRICTED_NOT_VERIFIED_FOR_HFWM
+    allowed_purposes: []
+    training_allowed: false
+    evaluation_allowed: false
+    derived_features_allowed: false
+    embeddings_allowed: false
+    weights_allowed: false
+    cross_site_learning_allowed: false
+    benchmark_allowed: false
+    publication_allowed: false
+    retention: NOT_DOCUMENTED
+    deletion_obligations: NOT_DOCUMENTED
+    territory: NOT_DOCUMENTED
+    expiry: NOT_DOCUMENTED
+    decision: denied
+    evidence_refs: []
+
+  - source_id: site_partner_data
+    owner: NOT_VERIFIED
+    licence: NOT_VERIFIED
+    allowed_purposes: []
+    training_allowed: false
+    evaluation_allowed: false
+    derived_features_allowed: false
+    embeddings_allowed: false
+    weights_allowed: false
+    cross_site_learning_allowed: false
+    benchmark_allowed: false
+    publication_allowed: false
+    retention: NOT_DOCUMENTED
+    deletion_obligations: NOT_DOCUMENTED
+    territory: NOT_DOCUMENTED
+    expiry: NOT_DOCUMENTED
+    decision: denied
+    evidence_refs: []

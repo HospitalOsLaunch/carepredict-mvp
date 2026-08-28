@@ -24,7 +24,7 @@ jobs:
         run: ruff check .
 
       - name: Type-check
-        run: mypy --strict services orchestration data tests
+        run: mypy --strict services orchestration data src/p0d src/hfwm tests
 
       - name: Tests
         run: pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=xml

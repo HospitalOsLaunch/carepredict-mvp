@@ -1,0 +1,76 @@
+{
+  "schema_version": "hfwm.kill-criteria.v1",
+  "preregistration_version": "hfwm-r0.1",
+  "frozen_before_training": true,
+  "results_status": "NOT_EXECUTED",
+  "primary_metric_id": "aggregate_normalized_mae",
+  "thresholds": {
+    "primary_score_gain_min": 0.05,
+    "primary_gain_bootstrap_ci_95_lower_strictly_greater_than": 0.0,
+    "transfer_gain_min": 0.1,
+    "equivalent_performance_local_data_fraction_max": 0.5,
+    "hard_constraint_violation_rate_max": 0.01,
+    "critical_task_regression_max": 0.05,
+    "minimum_directionally_stable_seeds": 3
+  },
+  "insufficient_power_result": "INCONCLUSIVE",
+  "kill_rules": [
+    {
+      "id": "unresolved_contamination",
+      "condition": "any unresolved cross-split episode, correction, exact duplicate, near duplicate, or checkpoint exposure",
+      "decision": "INVALIDATE_ALL_AFFECTED_RESULTS"
+    },
+    {
+      "id": "no_joint_rollout_advantage",
+      "condition": "independent heads are equally performant and simpler, or joint rollout has no reproducible advantage",
+      "decision": "REJECT_JOINT_DYNAMICS_REQUALIFY_AS_FORECASTER"
+    },
+    {
+      "id": "no_transfer_advantage",
+      "condition": "no reproducible gain on a wholly unseen authorized site at equal local budget",
+      "decision": "FOUNDATION_EVIDENCE_INSUFFICIENT"
+    },
+    {
+      "id": "action_permutation_survives",
+      "condition": "action permutation does not materially degrade performance",
+      "decision": "REMOVE_ACTION_CONDITIONING"
+    },
+    {
+      "id": "action_observability_failed",
+      "condition": "execution, type, scope, dose, timing, deviations, concurrent actions, support, or confounders are insufficient",
+      "decision": "ACTION_CONDITIONING_NOT_IDENTIFIABLE"
+    },
+    {
+      "id": "hard_constraints_failed",
+      "condition": "hard_constraint_violation_rate exceeds 0.01",
+      "decision": "REJECT_ARCHITECTURE"
+    },
+    {
+      "id": "critical_regression",
+      "condition": "any critical task regresses by more than 0.05 without explicit human acceptance",
+      "decision": "REJECT_ARCHITECTURE"
+    },
+    {
+      "id": "site_identity_shortcut",
+      "condition": "gain is primarily explained by site identity",
+      "decision": "INVESTIGATE_SHORTCUT_AND_WITHHOLD_RESULT"
+    },
+    {
+      "id": "equal_compute_failure",
+      "condition": "advantage disappears at equal compute, data, tuning, runs, and local adaptation budget",
+      "decision": "REJECT_ARCHITECTURE"
+    },
+    {
+      "id": "comparator_failure",
+      "condition": "candidate is worse than controls without transfer, calibration, coherence, or auditability advantage",
+      "decision": "REJECT_ARCHITECTURE"
+    },
+    {
+      "id": "insufficient_rights",
+      "condition": "data or derivative rights are not explicit",
+      "decision": "NO_PROPRIETARY_MOAT_CLAIM_FOR_AFFECTED_ASSET"
+    }
+  ],
+  "threshold_change_policy": "FORBIDDEN_AFTER_MAIN_RUN_NEW_LINKED_VERSION_REQUIRED",
+  "human_authority": "Only human authority may decide continuation, shadow integration, or any acceptance status."
+}
