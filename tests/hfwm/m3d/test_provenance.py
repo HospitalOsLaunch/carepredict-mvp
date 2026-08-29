@@ -30,19 +30,22 @@ def _yaml(path: Path) -> dict[str, Any]:
     return value
 
 
-def test_agora_git_trace_is_uncommitted_and_removed_from_partner_package() -> None:
+def test_agora_git_trace_reflects_recorded_history_and_is_removed_from_partner_package() -> None:
     history = subprocess.run(
-        ["git", "log", "--all", "-SAGORA", "--format=%H", "--"],
+        ["git", "log", "--all", "--reverse", "-SAGORA", "--format=%H", "--"],
         cwd=ROOT,
         check=True,
         capture_output=True,
         text=True,
     )
-    assert history.stdout.strip() == ""
+    commits = [line for line in history.stdout.splitlines() if line]
+    # The first tracked occurrence is recorded by the release-freeze commit.
+    # This proves repository provenance only; it does not prove editorial origin.
+    assert commits
+    assert commits[0] == "6cd4819ef342a2382213b5f51b0f4dde634fe7fa"
     assert "AGORA" not in PARTNER_PATH.read_text(encoding="utf-8").upper()
     amendment = AMENDMENT_PATH.read_text(encoding="utf-8")
-    assert "git log -S'AGORA'" in amendment
-    assert "non attribuable depuis Git" in amendment
+    assert "première occurrence enregistrée" in amendment
     ledger = _yaml(LEDGER_PATH)
     original = ledger["claims"]["AGORA_HISTORICAL_PORTAL"]
     assert original["source_status"] == "UNSUPPORTED_REMOVE"

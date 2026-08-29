@@ -565,9 +565,17 @@ def run_power_plan(
                 )
                 == "BOUNDARY_CALIBRATION_PASS"
             )
-            boundary_calibration_statuses[str(item["endpoint_semantics"])] = interval_procedure_status(
-                _numeric(boundary["fail_guardrail"]["mc_ci95_lower"], name="boundary fail lower"),
-                _numeric(boundary["fail_guardrail"]["mc_ci95_upper"], name="boundary fail upper"),
+            boundary_calibration_statuses[str(item["endpoint_semantics"])] = (
+                interval_procedure_status(
+                    _numeric(
+                        boundary["fail_guardrail"]["mc_ci95_lower"],
+                        name="boundary fail lower",
+                    ),
+                    _numeric(
+                        boundary["fail_guardrail"]["mc_ci95_upper"],
+                        name="boundary fail upper",
+                    ),
+                )
             )
 
     payload: dict[str, JsonValue] = {

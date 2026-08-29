@@ -5,9 +5,10 @@
 L'affirmation initiale est corrigée ainsi : **« cité comme figurant dans un schéma du
 règlement intérieur ; l'extraction texte du PDF utilisée lors du challenge ne contient
 pas le terme ; non vérifié à ce stade »**. Elle est classée `UNSUPPORTED_REMOVE`. La
-première occurrence venait d'un fichier non suivi ; `git log -S'AGORA'`, `git blame` et
-`git ls-files` ne fournissent ni commit, ni auteur, ni message d'introduction. Le terme
-reste absent du document partenaire ; son origine initiale est non attribuable depuis Git.
+première occurrence enregistrée dans Git est le commit `6cd4819` (`chore(hfwm): freeze
+M3D.1 release content`) ; ce point de provenance ne date pas l'édition réelle et ne
+prouve pas l'attribution sémantique historique. Le terme reste absent du document
+partenaire et son rôle historique demeure non vérifié.
 
 Une vérification indépendante ultérieure du PDF actuellement servi par HCL, mis à jour en
 mars 2026, a trouvé une attestation textuelle plus forte : annexe 9, article 9, page PDF

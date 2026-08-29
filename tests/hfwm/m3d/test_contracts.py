@@ -44,6 +44,14 @@ EXPECTED_M2_RESULT = {
     "world_model_advantage": "NOT_TESTABLE_ON_M1",
 }
 
+EXPECTED_M2_PREREGISTRATION_STATUS = {
+    "m2_preregistration_contract_conformance": "SUPPORTED",
+    "m2_execution_time_validator_state": "UNRESOLVED",
+    "m2_software_gate_enforcement_at_execution": "NOT_PROVEN",
+    "m2_overall_preregistration_assurance": "PARTIAL",
+    "m2_code_state_not_fully_recoverable": True,
+}
+
 
 def load_yaml(path: Path) -> dict[str, Any]:
     document = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -194,7 +202,13 @@ def test_m2_epistemic_result_is_exact_and_m3_stays_unauthorized() -> None:
     assert {
         key: data_contract["m2_result"][key] for key in EXPECTED_M2_RESULT
     } == EXPECTED_M2_RESULT
-    assert current["m2_result"] == EXPECTED_M2_RESULT
+    assert {
+        key: current["m2_result"][key] for key in EXPECTED_M2_RESULT
+    } == EXPECTED_M2_RESULT
+    assert {
+        key: current["m2_result"][key]
+        for key in EXPECTED_M2_PREREGISTRATION_STATUS
+    } == EXPECTED_M2_PREREGISTRATION_STATUS
     assert draft["m2_result"] == EXPECTED_M2_RESULT
     assert data_contract["training_authorized"] is False
     assert draft["m3l_authorized"] is False

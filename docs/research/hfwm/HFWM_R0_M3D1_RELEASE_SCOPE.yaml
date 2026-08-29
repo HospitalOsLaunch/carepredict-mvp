@@ -75,6 +75,19 @@ files:
   - {path: src/hfwm/data_slice/builder.py, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/m3d/power_simulation.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/a3-git-status.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/a3-local-roundtrip.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/a3-mypy.stdout-stderr.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/a3-pytest.stdout-stderr.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/a3-ruff.stdout-stderr.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-local-a3.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-local-model.diff, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-local-parent.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-prereg-a3.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-prereg-old-validator-errors.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-prereg-parent.log, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/m2-preregistration.diff, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/toolchain-pip-freeze.txt, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/backbone/checkpoint.json, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/backbone/metrics.json, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/backbone/training_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
@@ -87,6 +100,11 @@ files:
   - {path: artifacts/hfwm-r0/data-slice/dataset_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/data-slice/split_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
   - {path: artifacts/hfwm-r0/data-slice/temporal_leakage_report.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M2_PREREGISTRATION_GATE_AUDIT.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_EXECUTABLE_EVIDENCE.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_PARTNER_PACKAGE_SOURCE.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_TARGETED_RECHECK_CLARIFICATION.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_TOOLCHAIN_ATTESTATION.yaml, classification: INTERNAL_EVIDENCE_ONLY}
 
   # Executable implementation and tests.
   - {path: src/hfwm/m3d/aggregation.py, classification: EXECUTABLE_EXTERNAL_CONTRACT}

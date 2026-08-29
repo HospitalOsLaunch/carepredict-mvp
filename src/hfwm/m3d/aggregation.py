@@ -64,7 +64,11 @@ def apply_whole_row_disclosure_mask(
         if embedded_reason is not None and embedded_reason not in ROW_ABSENCE_REASONS:
             raise ValueError(f"unsupported row_absence_reason: {embedded_reason}")
         mapped_reason = absence_by_row.get(key)
-        if embedded_reason is not None and mapped_reason is not None and embedded_reason != mapped_reason:
+        if (
+            embedded_reason is not None
+            and mapped_reason is not None
+            and embedded_reason != mapped_reason
+        ):
             raise ValueError(f"conflicting row_absence_reason for {key}")
         # A source row carrying an absence reason is already an explicit gap;
         # an empty side map must not silently release its stock/flow values.

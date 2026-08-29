@@ -19,10 +19,14 @@ Cette attestation est post-tag et ne modifie pas A3, B3 ni le tag.
   `manifest_sha256=384c4e5ae707edabcf19523b5fd782f4301ca405722aa71fab31d90e141c37e6`.
 - Axes de classification : `fit_output_impact: NONE_DEMONSTRATED`,
   `preregistration_gate_semantics_impact: MATERIAL`,
-  `temporal_relation_to_m2_execution: UNRESOLVED`,
-  `m2_preregistration_conformance_at_execution: NOT_PROVEN`. La modification
-  change l'autorisation/pré-enregistrement et peut changer l'acceptation d'un
-  manifeste invalide ; voir l'audit de gate pour les trois messages littéraux.
+  `temporal_relation_to_m2_execution: UNRESOLVED`. Le statut normatif clos est
+  `m2_preregistration_contract_conformance: SUPPORTED`, avec
+  `m2_execution_time_validator_state: UNRESOLVED`,
+  `m2_software_gate_enforcement_at_execution: NOT_PROVEN`,
+  `m2_overall_preregistration_assurance: PARTIAL` et
+  `m2_code_state_not_fully_recoverable: true`. La modification change
+  l'autorisation/pré-enregistrement et peut changer l'acceptation d'un manifeste
+  invalide ; voir l'audit de gate pour les trois messages littéraux.
 
 ## `local/model.py`
 

@@ -15,11 +15,15 @@ ajout de `_validate_bounded_m2a` pour vérifier la cohorte synthétique, le spli
 windowing, la calibration et les seuils M2A ; assouplissement conditionnel de la cohérence
 tasks/horizons pour le protocole borné.
 
-Classification historique supersédée par l'audit quadriaxial :
+Classification historique, complétée par le statut normatif clos :
 `fit_output_impact: NONE_DEMONSTRATED`,
 `preregistration_gate_semantics_impact: MATERIAL`,
 `temporal_relation_to_m2_execution: UNRESOLVED`,
-`m2_preregistration_conformance_at_execution: NOT_PROVEN`.
+`m2_preregistration_contract_conformance: SUPPORTED`,
+`m2_execution_time_validator_state: UNRESOLVED`,
+`m2_software_gate_enforcement_at_execution: NOT_PROVEN`,
+`m2_overall_preregistration_assurance: PARTIAL`,
+`m2_code_state_not_fully_recoverable: true`.
 
 Preuve : ce module ne forme pas de modèle et n'est pas importé par le runner M2B ; ses
 changements portent uniquement sur la validation préalable du manifeste. Les résultats
@@ -31,7 +35,7 @@ Diff exact : ajout de `fitted_state()` (copie canonique des paramètres) et
 `restore_fitted_state()` (validation de formes, finitude, variance positive et identité
 de site avant restauration).
 
-Classification historique supersédée par l'audit quadriaxial ; les axes complets
+Classification historique complétée par le statut normatif clos ; les axes complets
 et la conclusion temporelle sont dans `HFWM_R0_M2_PREREGISTRATION_GATE_AUDIT.md`.
 
 Preuve : les chemins `fit`, `predict_next`, `rollout` et `sample_rollout` utilisés par M2

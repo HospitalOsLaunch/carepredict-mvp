@@ -78,7 +78,7 @@ claims:
     required_action: "RETAIN_INTERNAL_ONLY; AGORA_REMAINS_ABSENT_FROM_PARTNER_REQUEST"
   AGORA_GIT_ORIGIN:
     claim_id: AGORA_GIT_ORIGIN
-    claim_text: "AGORA n'a pas de commit d'introduction dans ce dépôt."
+    claim_text: "La première occurrence enregistrée de AGORA dans Git est le commit 6cd4819 ; ce commit ne prouve ni l'édition réelle ni le rôle historique attribué."
     claim_type: REPOSITORY_PROVENANCE
     file: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md
     line: 1
@@ -86,10 +86,10 @@ claims:
     source_status: NOT_EXTERNAL_FACT
     source_type: GIT_HISTORY
     source_reference: "git log -S AGORA; git blame; git ls-files"
-    source_locator: "working tree on hfwm-r0@adc8d8ba59fe464692581141c901ed5813cbb5a3"
+    source_locator: "git log --all --reverse -S AGORA --format=%H ; premier résultat 6cd4819ef342a2382213b5f51b0f4dde634fe7fa"
     retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
     supports_claim: true
-    required_action: RECORD_UNCOMMITTED_UNATTRIBUTED_ORIGIN
+    required_action: RECORD_FIRST_TRACKED_OCCURRENCE_WITHOUT_EDITORIAL_ATTRIBUTION
   UNSUPPORTED_WEEKLY_COMMITTEE:
     claim_id: UNSUPPORTED_WEEKLY_COMMITTEE
     claim_text: "Un comité d'orientation se réunit chaque semaine."

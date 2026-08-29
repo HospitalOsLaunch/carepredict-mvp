@@ -30,7 +30,12 @@ m2_result:
   occupation_guardrail: FAILED_PROCEDURALLY
   true_occupation_regression: NOT_ESTIMATED_WITH_DECISION_GRADE_PRECISION
   world_model_advantage: NOT_TESTABLE_ON_M1
-  preregistration_conformance: AMBIGUOUS
+  preregistration_conformance: SUPPORTED
+  m2_preregistration_contract_conformance: SUPPORTED
+  m2_execution_time_validator_state: UNRESOLVED
+  m2_software_gate_enforcement_at_execution: NOT_PROVEN
+  m2_overall_preregistration_assurance: PARTIAL
+  m2_code_state_not_fully_recoverable: true
   preregistration_validator_change_time_relative_to_m2: UNRESOLVED
   preregistration_validator_state: NOT_PROVEN_AT_M2_EXECUTION
   fit_output_impact: NONE_DEMONSTRATED
