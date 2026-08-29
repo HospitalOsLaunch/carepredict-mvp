@@ -31,7 +31,7 @@ export function ScenarioTrajectoryChart({ points, showCustom = true, compact = f
             <CartesianGrid stroke="#d9dee8" strokeDasharray="2 4" vertical={false} />
             <XAxis dataKey="timeLabel" tick={{ fill: "#657181", fontSize: 11 }} tickLine={false} axisLine={{ stroke: "#b9c4d3" }} />
             <YAxis domain={[1300, 1900]} ticks={[1400, 1600, 1800]} tick={{ fill: "#657181", fontSize: 11 }} tickLine={false} axisLine={false} width={42} />
-            <Tooltip content={<ScenarioTooltip />} />
+            <Tooltip content={<ScenarioTooltip />} cursor={{ stroke: "#8a96a6", strokeDasharray: "3 3" }} />
             {includesCriticalWindow ? <ReferenceArea x1="16h" x2="20h" fill="#f36b5f" fillOpacity={0.08} ifOverflow="extendDomain" /> : null}
             <ReferenceLine y={1600} stroke="#c94040" strokeDasharray="5 5" label={{ value: "Seuil du scénario · 1 600 SIIPS", position: "insideTopRight", fill: "#9b3333", fontSize: 10 }} />
             <Area type="monotone" dataKey="upperBound" stroke="none" fill="#b9dfe1" fillOpacity={0.24} />
@@ -56,10 +56,15 @@ export function ScenarioTrajectoryChart({ points, showCustom = true, compact = f
 
 function ScenarioTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name?: string; value?: number; color?: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
+  const siipsEntries = payload.filter((entry) => ["Plan actuel", "HospitalOS", "Votre option"].includes(entry.name ?? "") && typeof entry.value === "number");
   return (
-    <div className="chart-tooltip">
+    <div className="chart-tooltip" role="tooltip">
       <p className="font-semibold text-text-strong">{label}</p>
-      {payload.filter((entry) => ["Plan actuel", "HospitalOS", "Votre option"].includes(entry.name ?? "")).map((entry) => <p key={entry.name} style={{ color: entry.color }}>{entry.name} · {entry.value} SIIPS</p>)}
+      {siipsEntries.map((entry) => <p key={entry.name} style={{ color: entry.color }}>{entry.name} · {formatSiipsTooltipValue(entry.value as number)}</p>)}
     </div>
   );
+}
+
+export function formatSiipsTooltipValue(value: number): string {
+  return `${value.toLocaleString("fr-FR")} SIIPS`;
 }

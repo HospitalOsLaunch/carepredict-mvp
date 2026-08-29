@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 
+import { MaterialButtonField, MaterialSelect, MaterialTextField } from "../components/MaterialField";
 import { useScenarioContext, type DecisionRecord } from "../domain/ScenarioContext";
 import {
   classifyRiskLevel,
@@ -128,32 +129,28 @@ export function History() {
     </div>
 
     <section className="space-y-4 border-b border-border-subtle pb-5" aria-label="Filtres de l'historique">
-      <input
-        aria-label="Rechercher dans l'historique"
+      <MaterialTextField
+        label="Rechercher une situation ou une action"
         type="search"
         value={search}
-        onChange={(event) => setSearch(event.currentTarget.value)}
-        placeholder="Rechercher une situation ou une action"
-        className="h-11 w-full rounded-lg border border-border-subtle bg-bg-card px-4 text-text-body"
+        onChange={setSearch}
       />
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative">
-          <button type="button" aria-expanded={periodOpen} aria-controls="history-period-panel" onClick={() => setPeriodOpen((open) => !open)} className="h-10 rounded-lg border border-border-subtle bg-bg-card px-3 text-control text-text-body">
-            {formatPeriodLabel(dateFrom, dateTo)} ▾
-          </button>
-          {periodOpen ? <div id="history-period-panel" className="absolute left-0 top-12 z-20 w-80 rounded-xl border border-border-subtle bg-bg-card p-4 shadow-xl">
+          <MaterialButtonField label="Période" value={formatPeriodLabel(dateFrom, dateTo)} emptyHint="Toutes les dates" expanded={periodOpen} controls="history-period-panel" onClick={() => setPeriodOpen((open) => !open)} />
+          {periodOpen ? <div id="history-period-panel" className="absolute left-0 top-14 z-20 w-80 rounded-xl border border-border-subtle bg-bg-card p-4 shadow-xl">
             <h2 className="text-body-strong text-text-strong">Période</h2>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <label className="text-caption">Du<input aria-label="Du" type="date" value={draftDateFrom} onChange={(event) => setDraftDateFrom(event.currentTarget.value)} className="mt-1 h-10 w-full rounded-lg border border-border-subtle px-2 text-text-body" /></label>
-              <label className="text-caption">Au<input aria-label="Au" type="date" value={draftDateTo} onChange={(event) => setDraftDateTo(event.currentTarget.value)} className="mt-1 h-10 w-full rounded-lg border border-border-subtle px-2 text-text-body" /></label>
+              <MaterialTextField label="Du" type="date" value={draftDateFrom} onChange={setDraftDateFrom} />
+              <MaterialTextField label="Au" type="date" value={draftDateTo} onChange={setDraftDateTo} />
             </div>
             <div className="mt-4 flex justify-end gap-3"><button type="button" className="text-control text-text-muted" onClick={() => { setDraftDateFrom(""); setDraftDateTo(""); setDateFrom(""); setDateTo(""); }}>Réinitialiser</button><button type="button" className="rounded-lg bg-brand-primary px-4 py-2 text-control text-white" onClick={() => { setDateFrom(draftDateFrom); setDateTo(draftDateTo); setPeriodOpen(false); }}>Appliquer</button></div>
           </div> : null}
         </div>
-        <CompactSelect label="Unité" value={unitId} onChange={setUnitId} options={[["all", "Toutes les unités"], ...RESEARCH_UNITS.map((unit) => [unit.id, unit.label] as [string, string])]} />
-        <CompactSelect label="Décision" value={decisionFilter} onChange={(value) => setDecisionFilter(value as DecisionFilter)} options={[["all", "Toutes"], ["accepted", "Validée"], ["modified", "Modifiée"], ["refused", "Refusée"]]} />
-        <button type="button" aria-expanded={advancedOpen} onClick={() => { setPeriodOpen(false); setAdvancedOpen(true); }} className="h-10 rounded-lg border border-border-subtle bg-bg-card px-3 text-control text-text-body">+ Plus de filtres{advancedFilterCount ? ` · ${advancedFilterCount}` : ""}</button>
-        <label className="ml-auto flex items-center gap-2 text-caption"><span className="sr-only">Trier l'historique</span><select aria-label="Trier l'historique" value={sort} onChange={(event) => setSort(event.currentTarget.value as HistorySortKey)} className="h-10 rounded-lg border border-border-subtle bg-bg-card px-3 text-text-body"><option value="created_desc">Plus récentes ↓</option><option value="created_asc">Plus anciennes ↑</option><option value="impact_desc">Impact le plus fort</option></select></label>
+        <MaterialSelect label="Unité" value={unitId} emptyValue="all" onChange={setUnitId} options={[["all", "Toutes les unités"], ...RESEARCH_UNITS.map((unit) => [unit.id, unit.label] as [string, string])]} />
+        <MaterialSelect label="Décision" value={decisionFilter} emptyValue="all" onChange={(value) => setDecisionFilter(value as DecisionFilter)} options={[["all", "Toutes"], ["accepted", "Validée"], ["modified", "Modifiée"], ["refused", "Refusée"]]} />
+        <button type="button" aria-expanded={advancedOpen} onClick={() => { setPeriodOpen(false); setAdvancedOpen(true); }} className="h-12 rounded-xl border border-border-subtle bg-bg-card px-4 text-control text-text-body outline-none focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/15">+ Plus de filtres{advancedFilterCount ? ` · ${advancedFilterCount}` : ""}</button>
+        <MaterialSelect className="ml-auto min-w-[180px]" label="Tri" value={sort} onChange={(value) => setSort(value as HistorySortKey)} options={[["created_desc", "Plus récentes ↓"], ["created_asc", "Plus anciennes ↑"], ["impact_desc", "Impact le plus fort"]]} />
       </div>
     </section>
 
@@ -193,9 +190,9 @@ function AdvancedFiltersDrawer({ risk, reason, session, refusalReasons, sessions
         <button type="button" autoFocus aria-label="Fermer les filtres avancés" onClick={onClose} className="rounded-full p-2 text-text-muted focus-visible:ring-2 focus-visible:ring-brand-primary">×</button>
       </div>
       <div className="mt-7 space-y-5">
-        <FilterSelect label="Risque initial" value={risk} onChange={onRisk} options={[["all", "Tous les risques"], ["low", "Faible"], ["moderate", "Modérée"], ["high", "Élevée"], ["critical", "Critique"]]} />
-        <FilterSelect label="Motif de refus" value={reason} onChange={onReason} options={[["all", "Tous les motifs"], ...refusalReasons.map((item) => [item, item] as [string, string])]} />
-        <FilterSelect label="Session de recherche" value={session} onChange={onSession} options={[["all", "Toutes les sessions"], ...sessions.map((item) => [item, "Session actuelle"] as [string, string])]} />
+        <MaterialSelect label="Risque initial" value={risk} emptyValue="all" onChange={onRisk} options={[["all", "Tous les risques"], ["low", "Faible"], ["moderate", "Modérée"], ["high", "Élevée"], ["critical", "Critique"]]} />
+        <MaterialSelect label="Motif de refus" value={reason} emptyValue="all" onChange={onReason} options={[["all", "Tous les motifs"], ...refusalReasons.map((item) => [item, item] as [string, string])]} />
+        <MaterialSelect label="Session de recherche" value={session} emptyValue="all" onChange={onSession} options={[["all", "Toutes les sessions"], ...sessions.map((item) => [item, "Session actuelle"] as [string, string])]} />
       </div>
       <footer className="absolute bottom-0 left-0 right-0 flex justify-end gap-3 border-t border-border-subtle bg-bg-card p-5">
         <button type="button" className="text-control text-text-muted" onClick={onReset}>Réinitialiser</button>
@@ -206,8 +203,6 @@ function AdvancedFiltersDrawer({ risk, reason, session, refusalReasons, sessions
 }
 
 function HistoryTab({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) { return <button type="button" role="tab" aria-selected={active} onClick={onClick} className={`border-b-2 pb-2 text-control ${active ? "border-brand-primary text-brand-primary" : "border-transparent text-text-muted"}`}>{label}</button>; }
-function CompactSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: [string, string][] }) { return <label className="flex items-center gap-2 text-caption"><span>{label}</span><select aria-label={label} value={value} onChange={(event) => onChange(event.currentTarget.value)} className="h-10 rounded-lg border border-border-subtle bg-bg-card px-3 pr-8 text-control text-text-body">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>; }
-function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: [string, string][] }) { return <label className="block text-caption">{label}<select aria-label={label} value={value} onChange={(event) => onChange(event.currentTarget.value)} className="mt-1 h-10 w-full rounded-lg border border-border-subtle bg-bg-card px-3 text-text-body">{options.map(([optionValue, optionLabel]) => <option key={optionValue} value={optionValue}>{optionLabel}</option>)}</select></label>; }
 
 function HistoryDrawer({ row, insight, onClose }: { row: HistoryRow; insight: ReturnType<typeof useScenarioContext>["insight"]; onClose: () => void }) {
   const baseline = simulateDischargeScenario(0, row.record.horizonHours).summary;
@@ -220,6 +215,6 @@ function HistoryDrawer({ row, insight, onClose }: { row: HistoryRow; insight: Re
 function DetailBlock({ title, children }: { title: string; children: ReactNode }) { return <section className="border-t border-border-subtle pt-4"><h3 className="text-body-strong text-text-strong">{title}</h3><div className="mt-2">{children}</div></section>; }
 function formatParameters(parameters: Record<string, number>): string { return `${parameters.confirmed_discharges ?? 0} sorties confirmées avant 15h`; }
 function formatSigned(value: number): string { return value < 0 ? `−${Math.abs(value)}` : `+${value}`; }
-function formatPeriodLabel(from: string, to: string): string { if (!from && !to) return "Période"; const format = (value: string) => value ? new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(`${value}T12:00:00`)) : "…"; return `${format(from)} → ${format(to)}`; }
+function formatPeriodLabel(from: string, to: string): string { if (!from && !to) return ""; const format = (value: string) => value ? new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(`${value}T12:00:00`)) : "…"; return `${format(from)} → ${format(to)}`; }
 function formatHistoryDate(value: string): string { const parts = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }).formatToParts(new Date(value)); const part = (type: string) => parts.find((item) => item.type === type)?.value ?? ""; return `${part("day")} ${part("month")} · ${part("hour")}:${part("minute")}`; }
 function formatHistoryDateTime(value: string): string { return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(value)); }

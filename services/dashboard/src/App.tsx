@@ -164,21 +164,20 @@ function ResearchContextHeader() {
   }, []);
 
   return (
-    <header className="flex min-h-16 flex-wrap items-center gap-x-8 gap-y-3 border-b border-border-subtle bg-bg-card px-8 py-3">
-      <div className="min-w-[220px]">
+    <header className="flex min-h-20 flex-wrap items-center gap-x-8 gap-y-3 border-b border-border-subtle bg-bg-card px-8 py-3">
+      <div className="min-w-[220px] space-y-2">
         <time className="text-card-label text-brand-primary" dateTime={now.toISOString()}>{formatHeaderDateTime(now)}</time>
-        <p className="mt-1 text-body-strong text-text-strong">Hôpital Démo</p>
+        <ContextDropdown<ResearchUnitId>
+          label="Unité"
+          ariaLabel="Unité hospitalière"
+          value={selectedUnitId}
+          valueLabel={getResearchUnit(selectedUnitId).label}
+          options={RESEARCH_UNITS.map((unit) => ({ value: unit.id, label: unit.label }))}
+          open={openControl === "unit"}
+          onToggle={() => setOpenControl((current) => current === "unit" ? null : "unit")}
+          onChange={(value) => { setSelectedUnit(value); setOpenControl(null); }}
+        />
       </div>
-      <ContextDropdown<ResearchUnitId>
-        label="Unité"
-        ariaLabel="Unité hospitalière"
-        value={selectedUnitId}
-        valueLabel={getResearchUnit(selectedUnitId).label}
-        options={RESEARCH_UNITS.map((unit) => ({ value: unit.id, label: unit.label }))}
-        open={openControl === "unit"}
-        onToggle={() => setOpenControl((current) => current === "unit" ? null : "unit")}
-        onChange={(value) => { setSelectedUnit(value); setOpenControl(null); }}
-      />
       <div className="ml-auto">
         <ContextDropdown<ResearchHorizonHours>
           label="Horizon"
@@ -196,12 +195,12 @@ function ResearchContextHeader() {
 }
 
 function ContextDropdown<T extends string | number>({ label, ariaLabel, value, valueLabel, options, open, onToggle, onChange }: { label: string; ariaLabel: string; value: T; valueLabel: string; options: Array<{ value: T; label: string }>; open: boolean; onToggle: () => void; onChange: (value: T) => void }) {
-  return <div className="relative flex items-center gap-3 text-caption" onKeyDown={(event) => { if (event.key === "Escape" && open) onToggle(); }}>
-    <span>{label}</span>
-    <button type="button" aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} onClick={onToggle} className="flex h-9 min-w-[112px] items-center justify-between gap-3 border-b border-border-subtle px-1 text-body-strong text-text-strong outline-none focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20">
+  return <div className="relative min-w-[170px]" onKeyDown={(event) => { if (event.key === "Escape" && open) onToggle(); }}>
+    <span className="pointer-events-none absolute -top-2 left-3 z-10 bg-bg-card px-1 text-[10px] font-medium text-brand-primary">{label}</span>
+    <button type="button" aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} onClick={onToggle} className={`flex h-12 w-full items-center justify-between gap-3 rounded-xl border bg-bg-card px-4 pt-1 text-body-strong text-text-strong outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary/15 ${open ? "border-brand-primary" : "border-border-subtle"}`}>
       {valueLabel}<ChevronDown className={`h-4 w-4 text-text-muted transition ${open ? "rotate-180" : ""}`} aria-hidden="true" />
     </button>
-    {open ? <div role="listbox" aria-label={`${label} disponible`} className="absolute right-0 top-11 z-40 min-w-[190px] overflow-hidden rounded-lg border border-border-subtle bg-bg-card py-1 shadow-xl">
+    {open ? <div role="listbox" aria-label={`${label} disponible`} className="absolute right-0 top-14 z-40 min-w-[210px] overflow-hidden rounded-xl border border-border-subtle bg-bg-card py-1 shadow-xl">
       {options.map((option) => <button key={String(option.value)} type="button" role="option" aria-selected={option.value === value} onClick={() => onChange(option.value)} className={`block w-full px-4 py-2.5 text-left text-body-copy outline-none hover:bg-bg-app focus-visible:bg-bg-app ${option.value === value ? "font-semibold text-brand-primary" : "text-text-body"}`}>{option.label}</button>)}
     </div> : null}
   </div>;

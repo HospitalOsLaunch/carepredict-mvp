@@ -16,6 +16,7 @@ import {
   targetForecastFor,
   targetScenarioStateFor,
 } from "../../research/hclTargetScenario";
+import { formatSiipsTooltipValue } from "../../research/ScenarioTrajectoryChart";
 import { Actions } from "../Actions";
 import { ForecastDetail } from "../ForecastDetail";
 import { History, sortHistoryRows, type HistoryRow } from "../History";
@@ -98,6 +99,8 @@ describe("prototype produit cible HospitalOS", () => {
     expect(screen.getByText("Très élevée", { selector: "p" })).toBeInTheDocument();
     expect(screen.getAllByText(/1810/).length).toBeGreaterThan(0);
     expect(document.body.textContent).not.toMatch(/seuil HCL|seuil national SIIPS/i);
+    expect(formatSiipsTooltipValue(1810)).toMatch(/1.810|1\s810/);
+    expect(formatSiipsTooltipValue(1810)).toContain("SIIPS");
   });
 
   it("produit une trajectoire déterministe non vide pour tous les horizons", () => {
@@ -133,6 +136,7 @@ describe("prototype produit cible HospitalOS", () => {
   it("expose les contrôles du header et conserve le contexte lors de la navigation", async () => {
     const user = userEvent.setup();
     render(<App />);
+    expect(screen.queryByText("Hôpital Démo")).not.toBeInTheDocument();
     const horizon = screen.getByRole("button", { name: "Horizon de prévision" });
     const unit = screen.getByRole("button", { name: "Unité hospitalière" });
     await user.click(horizon);
@@ -224,6 +228,14 @@ describe("prototype produit cible HospitalOS", () => {
   it("présente seulement les filtres primaires puis révèle période et filtres avancés", async () => {
     const user = userEvent.setup();
     renderWorkflow("/history");
+    const searchField = screen.getByLabelText("Rechercher une situation ou une action");
+    const searchLabel = screen.getByText("Rechercher une situation ou une action", { selector: "span" });
+    expect(searchLabel).toHaveAttribute("data-floating", "false");
+    await user.click(searchField);
+    expect(searchLabel).toHaveAttribute("data-floating", "true");
+    await user.type(searchField, "tension");
+    await user.tab();
+    expect(searchLabel).toHaveAttribute("data-floating", "true");
     expect(screen.getByRole("button", { name: /Période/ })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Unité" })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: "Décision" })).toBeInTheDocument();
