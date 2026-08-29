@@ -110,8 +110,9 @@ release:
   tag: HFWM-R0-M3D.1
   external_transmission_authorized: false
   transmission_note: >-
-    Le paquet est prêt pour revue documentaire externe ; aucune transmission
-    automatique ni accès aux données n'est autorisé par ce milestone.
+    La transmission documentaire externe reste suspendue tant que le gate A3
+    est HOLD ; aucune transmission automatique ni accès aux données n'est
+    autorisé par ce milestone.
 
 final_result: HFWM-R0-M3D.1 = HOLD
 blockers:
