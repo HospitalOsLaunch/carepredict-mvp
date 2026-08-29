@@ -1,381 +1,170 @@
 {
-  "agora_incident": {
-    "first_occurrence": "docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md:pre_amendment_66",
-    "git_tracked_at_introduction": false,
-    "introducing_author": null,
-    "introducing_commit": null,
-    "introducing_commit_message": null,
-    "original_source_verification": "UNSUPPORTED_REMOVE_NOT_REPRODUCIBLE_AT_CHALLENGE",
-    "partner_package_occurrences_after_amendment": 0,
-    "resolution": "ORIGINAL_CLAIM_UNVERIFIED_TERM_REMAINS_REMOVED",
-    "subsequent_current_pdf_source": "https://www.chu-lyon.fr/sites/default/files/reglement-interieur-hcl.pdf",
-    "subsequent_source_attests_role": true,
-    "subsequent_source_locator": "annex 9 article 9 PDF page 166 updated March 2026"
+  "schema_version": "hfwm.r0.m3d1.release-attestation.v2",
+  "release_content_commit_sha": "7b5b94c7e7d1aa393c8bab331a43038b6041dbf7",
+  "release_content_tree_sha": "f196629f940749272aebb34d2faac3805ccd8213",
+  "manifest_convention": "This manifest attests release content commit A4. The final release tag points to commit B4 whose parent is A4 and whose only release-content addition is this manifest.",
+  "release_content_commit_role": "A4_FROZEN_CONTENT",
+  "manifest_role": "B4_ATTESTATION_ONLY",
+  "historical_release_preserved": {
+    "tag": "HFWM-R0-M3D.1",
+    "content_commit": "707d45eef064fe1a52d4c422df0d9796fb23a6a4",
+    "content_tree": "97a1cad0763199382010f9b9e5f7bd0db6214d9e",
+    "manifest_commit": "f0f0d0827602e5c74d58ed1b28fecaab28052f02",
+    "tag_moved": false
   },
-  "blockers": [],
-  "changed_files_sha256": {
-    "artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json": {
-      "new_sha256": "e900cd880499b94bd1cb69954fde797a657c2be6ae1dd3af5c0462cacaad97e5",
-      "old_sha256": null
-    },
-    "artifacts/hfwm-r0/m3d/partner_questions.json": {
-      "new_sha256": "d62c6475b82dd7b6b4076f58cc85edb2f6192f6fe0afd0a257b73f1bcf62ebc3",
-      "old_sha256": null
-    },
-    "artifacts/hfwm-r0/m3d/power_simulation.json": {
-      "new_sha256": "e0d7f38541413c44fdf953cfc8c3423cfcec3de514129cce1ec5ffc90639f9de",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/CURRENT_MILESTONE.yaml": {
-      "new_sha256": "4a1528f398114bf993639e75997dc1e88ac82bc45ed6be4b1d037f8411a643df",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M2C_POSTMORTEM.md": {
-      "new_sha256": "a33ee869bf4477f76dd0019b9f7769d51974da3b4e1dba375135c7e995d36eae",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M2_SEED_AUDIT_TICKET.md": {
-      "new_sha256": "97ae7887ae2ce8a3662805dd44dafeaffc845f9f3c3ac089351d3cd9cf90979e",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M2_TARGET_DECOMPOSITION.md": {
-      "new_sha256": "4d5cc2b38221c336ed5f17e4df65200283a5e2c876ee9efcef1113a8a1d7604a",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md": {
-      "new_sha256": "e3951f78f1186e49da9c2fd9e5c9eaaef92a9600735ea5807c7d29e0586633ba",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md": {
-      "new_sha256": "ea287f2dac5b1f7bcae948c8abd59ac4328ddefbf356905f9db892208969fbfd",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml": {
-      "new_sha256": "f6ebe9abe15967d7b03dd461f0ad17077c6973b9e9eebfded887c717824e0c69",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3D_HOSTILE_REVIEW.md": {
-      "new_sha256": "7eaca4ff91166ecd0f9b44890cd4110928ff763059bc060992f87a6687f79b39",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml": {
-      "new_sha256": "4de84cac468b5c5060f32e91ffef461d3ff76ab0abb49f43c1921ab14f7ed8e4",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_AGGREGATION_SPEC.yaml": {
-      "new_sha256": "74e994e3b9dc9f9900da5c9a41d450bc1c695fc83b6c2db57ec8b5accdfbfb7e",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml": {
-      "new_sha256": "7308db53a9ceefb1c89ccd73245a7661f6bbcbdbd81539d35c1cb2011e226478",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md": {
-      "new_sha256": "4935b8f92d1d1c9a26698f339908a6528196a09365ec83da07e2f5f77380a744",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_DRAFT.yaml": {
-      "new_sha256": "8ca884ac28a1de3eacc96783d7c31af998227ec5737261a5594498e36229d805",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml": {
-      "new_sha256": "193b1bc2c25d39455e72867a155634c0a34864d060dcd233e51e6c8e176e0d98",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml": {
-      "new_sha256": "1f70d20537f700441d609edddd559603df0fcef3b0daeaf2b8061ec5f3cba442",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md": {
-      "new_sha256": "4566a2e2cdde35327f42e38fbdda60878702626c1079bd63189406cdca727acb",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md": {
-      "new_sha256": "1837b2e90805701cb2a6343dc2215dba4c22b6240bed15c7912878a6ff6e61bd",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml": {
-      "new_sha256": "d5e3a32aa38edc0e4c3d44dc0226c25d3b9bd02db55345f4cd6fb15a7310270c",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_SAP.md": {
-      "new_sha256": "f29743409804f6df33ddced112366b3f9c83a17441ccafa3c8c58958aeb9104d",
-      "old_sha256": null
-    },
-    "docs/research/hfwm/HFWM_R0_M3_SEED_REACHABILITY_AUDIT.md": {
-      "new_sha256": "fc55dfbea3458b1ad9fdf91c8752b1ea9538edf00935e201707b7c7813e2a1d1",
-      "old_sha256": null
-    },
-    "scripts/hfwm/freeze_m3d.py": {
-      "new_sha256": "88d5b7c92868d6ab2f4311df495121d33476bf164fea6d153053d0b45b5b9e69",
-      "old_sha256": null
-    },
-    "src/hfwm/m3d/__init__.py": {
-      "new_sha256": "359d72b2edc651f25febc6777d37424e1bbd632552fa21e6758a169209216d02",
-      "old_sha256": null
-    },
-    "src/hfwm/m3d/aggregation.py": {
-      "new_sha256": "ba0624d3d0beaa2a2146bfc121f7edc6ec47ed3514f0fab75577a802f56cf75a",
-      "old_sha256": null
-    },
-    "src/hfwm/m3d/contracts.py": {
-      "new_sha256": "b66679e41533e34b4065f6a3e84d6c8579f1a5b00938fb58c0588c3dcd1d1f52",
-      "old_sha256": null
-    },
-    "src/hfwm/m3d/power.py": {
-      "new_sha256": "16d44e7c53dde488bf3be5aa88d02d82d18028b2b87c0186ad6b6b4859777ce2",
-      "old_sha256": null
-    },
-    "src/hfwm/m3d/release.py": {
-      "new_sha256": "d7f8ba86f5cd70583b902618b090697839f354d665ec542315eb6663758aed77",
-      "old_sha256": null
-    },
-    "tests/fixtures/hfwm/m3d_synthetic_contract.yaml": {
-      "new_sha256": "9183fe7c5cb7a2104f26d672106596013a2b836b1a2aae9210f596b178fb3772",
-      "old_sha256": null
-    },
-    "tests/hfwm/m3d/test_aggregation.py": {
-      "new_sha256": "87f3ab1b260cce5caecc3904fad019ac8d977a0977cfcc6c23659c64eef17609",
-      "old_sha256": null
-    },
-    "tests/hfwm/m3d/test_contracts.py": {
-      "new_sha256": "972246429cf9cc50d5bd71ad7a998e1aa192e5d83e69d0d20344eda7a936f6f6",
-      "old_sha256": null
-    },
-    "tests/hfwm/m3d/test_power.py": {
-      "new_sha256": "449534973e0f1cfa64f3419629ae01a09029525d322a74326f6fbb91816a1894",
-      "old_sha256": null
-    },
-    "tests/hfwm/m3d/test_provenance.py": {
-      "new_sha256": "99d22554146bf9e8eb599f90eb6a5c486cd5a0e42f0c38894c9decdd0df1ea76",
-      "old_sha256": null
-    },
-    "tests/hfwm/m3d/test_release.py": {
-      "new_sha256": "2081cddd5de5dfdbdfa811c3c577ce452233faf0a6e6fbb393eeec7ba374a33e",
-      "old_sha256": null
+  "m2_preregistration_status": {
+    "m2_preregistration_contract_conformance": "SUPPORTED",
+    "m2_execution_time_validator_state": "UNRESOLVED",
+    "m2_software_gate_enforcement_at_execution": "NOT_PROVEN",
+    "m2_overall_preregistration_assurance": "PARTIAL",
+    "m2_code_state_not_fully_recoverable": true,
+    "fit_output_impact": "NONE_DEMONSTRATED",
+    "preregistration_gate_semantics_impact": "MATERIAL",
+    "temporal_relation_to_m2_execution": "UNRESOLVED"
+  },
+  "m2_results_integrity": {
+    "candidate_status": "REJECTED_BY_OCCUPANCY_GUARDRAIL",
+    "procedural_basis": "PRE_REGISTERED_POINT_ESTIMATE_RULE",
+    "occupation_point_estimate": "+17.31%",
+    "m3_retrospective_result": "INCONCLUSIVE_GUARDRAIL",
+    "results_modified": false
+  },
+  "a4_validation": {
+    "checkout": "/private/tmp/carepredict-m3d1-A4",
+    "head": "7b5b94c7e7d1aa393c8bab331a43038b6041dbf7",
+    "tree": "f196629f940749272aebb34d2faac3805ccd8213",
+    "pytest": "PASS",
+    "pytest_summary": "43 passed",
+    "targeted_m2_tests": "PASS",
+    "targeted_m2_summary": "11 passed",
+    "ruff": "PASS",
+    "mypy": "PASS",
+    "logs": {
+      "/private/tmp/a4-pytest-m3d.log": {"sha256": "35554b03c3a1252cda670ffeab6f4450c1a980934d9cd047625bdf021df5262a", "size_bytes": 324},
+      "/private/tmp/a4-targeted-m2.log": {"sha256": "64fce9c173436a3f46c34880c0075683930c3176e57fa23aed5a7cf200571874", "size_bytes": 272},
+      "/private/tmp/a4-ruff.log": {"sha256": "c305cf97b6e306d0ac2ef9ac086d6a5bd3f04851f883a8dac09abb3e631a84f4", "size_bytes": 117},
+      "/private/tmp/a4-mypy.log": {"sha256": "ab8950dff6e8ca1878745fc418781a90756452061fea1346633745f341cf29b3", "size_bytes": 135},
+      "/private/tmp/a4-numeric-invariance.log": {"sha256": "26d6f0acc29059b44d8025c9c3ef9ae4de4b8e35cef55570d646cfe3d844bf87", "size_bytes": 2710}
     }
   },
-  "claims": {
-    "allowed": [
-      "PRE_DATA_CONTRACT_READY_FOR_PARTNER_REVIEW",
-      "SYNTHETIC_FIXTURE_TESTED",
-      "PLANNING_SIMULATION_ONLY"
+  "toolchain_attestation": {
+    "python_executable": "/Users/saorygiovanni/Documents/Documents - MacBook Pro de Saory/Codex/CarePredict — comparaison des versions/carepredict-mvp/.venv/bin/python",
+    "python_version": "Python 3.11.15",
+    "pytest_version": "pytest 8.4.2",
+    "ruff_version": "ruff 0.15.16",
+    "mypy_version": "mypy 1.19.1",
+    "pip_freeze_sha256": "f7790aa47c234d91ae85907d69e620c4858be8ba0f283955a0d64172f971b274",
+    "environment_hermetic": false,
+    "environment_reused_from_repository_workspace": true,
+    "network_used": false
+  },
+  "agora_provenance": {
+    "first_tracked_occurrence_commit": "6cd4819ef342a2382213b5f51b0f4dde634fe7fa",
+    "historical_role_status": "UNSUPPORTED_REMOVE",
+    "partner_request_contains_agora": false,
+    "source_role_attestation": "not established by the historical attribution"
+  },
+  "archived_evidence": {
+    "post_tag_evidence": true,
+    "files": {
+      "artifacts/hfwm-r0/m3d/m2-prereg-parent.log": "bf5556fb12ea384e81eacc2406bf3aef6c729e72eed5e7ebb2ce898a1b3e9345",
+      "artifacts/hfwm-r0/m3d/m2-prereg-a3.log": "f1377806d26a6dc5d81e4dedf5aecfc96c3b0dd9f175b1fa2e89f311514b46a5",
+      "artifacts/hfwm-r0/m3d/m2-local-parent.log": "a6d45cd475348db3739ce1bdda8331fa6715be8fd1cec2a01cb055d214d1a895",
+      "artifacts/hfwm-r0/m3d/m2-local-a3.log": "5ff459b371d750f603a007e3e7a302a2f5b51318fc736dc6ea77c252be7c31be",
+      "artifacts/hfwm-r0/m3d/a3-local-roundtrip.log": "edbedf7f75a79a446989fa0db47ed112158c3c3c10ef1a3c0da37740926ee4a5",
+      "artifacts/hfwm-r0/m3d/m2-preregistration.diff": "b518a4f3109927e1e4424a8a1e8e2c718d281211442672c7948acd55b77c33f6",
+      "artifacts/hfwm-r0/m3d/m2-local-model.diff": "527266fea5b68f8ab40ba133fed8bba145349711670800b7b8d25b4414106d79",
+      "artifacts/hfwm-r0/m3d/m2-prereg-old-validator-errors.log": "ee42d6d330f498a5d4c325d42fd5245894924e7f5acbb8e2e781b9b41d971406",
+      "artifacts/hfwm-r0/m3d/toolchain-pip-freeze.txt": "f7790aa47c234d91ae85907d69e620c4858be8ba0f283955a0d64172f971b274"
+    }
+  },
+  "numerical_statistical_artifacts_unchanged": {
+    "compared_to_a3": "707d45eef064fe1a52d4c422df0d9796fb23a6a4",
+    "status": "PASS",
+    "all_byte_identical": true,
+    "artifacts": {
+      "artifacts/hfwm-r0/m3d/power_simulation.json": "e0d7f38541413c44fdf953cfc8c3423cfcec3de514129cce1ec5ffc90639f9de",
+      "artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json": "e900cd880499b94bd1cb69954fde797a657c2be6ae1dd3af5c0462cacaad97e5",
+      "artifacts/hfwm-r0/bakeoff-m2b/results.json": "29ee6b878db5311dcbc8a51ca0a5f9100e4c30c6606bf66181bc9fb42dd974bd",
+      "artifacts/hfwm-r0/bakeoff-m2b/manifest.json": "fc0eff2fee43ee91766fa19ea334eb93e31c0a746e503c6be61c115a826fe2ac",
+      "artifacts/hfwm-r0/bakeoff-m2b/comparative_table.md": "dc86025188ee4129bd02c5c74ca0051aa116c0db24a99ac8cf4a6f60d1d9b223",
+      "artifacts/hfwm-r0/bakeoff-m2b/crashes.json": "5783853348f83dca1edda33249be0b7e41dad32b94bf5cf60dac03186498953c",
+      "artifacts/hfwm-r0/data-slice/dataset.json": "0665833d32b435324d1a8951474922ae0e5c4e677901089629f960705b8c8113",
+      "artifacts/hfwm-r0/data-slice/dataset_manifest.json": "4b8a50d3719c654ea160fc1d788997c602429634bf657f1e30e5a2a771149b46",
+      "artifacts/hfwm-r0/data-slice/split_manifest.json": "e5752e8eb349ac9493d9f2ea6dc4b185441803a62d8d609c0b0173435b79ded7",
+      "artifacts/hfwm-r0/data-slice/temporal_leakage_report.json": "68520c4cd808d9250f805e176ff86f13a990db0bc3d65ea2de00fca5a7cdf082",
+      "artifacts/hfwm-r0/backbone/checkpoint.json": "9f3e9284e85ecf7afba12e9bee9a074c09fddf0c27e3cb2ff165ec2a330e32c4",
+      "artifacts/hfwm-r0/backbone/metrics.json": "bde3a92bdd09a2fbc40f8ddf456a66f1b39d4b9a244924fb0c8131fb0a24d106",
+      "artifacts/hfwm-r0/backbone/training_manifest.json": "f9932f5f04d6725fe60c1859230d8dbd50661da39f0970a2b49be2fc4f9e00b4",
+      "docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md": "1837b2e90805701cb2a6343dc2215dba4c22b6240bed15c7912878a6ff6e61bd",
+      "docs/research/hfwm/HFWM_R0_M3_SAP.md": "f29743409804f6df33ddced112366b3f9c83a17441ccafa3c8c58958aeb9104d",
+      "docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml": "7308db53a9ceefb1c89ccd73245a7661f6bbcbdbd81539d35c1cb2011e226478",
+      "docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml": "193b1bc2c25d39455e72867a155634c0a34864d060dcd233e51e6c8e176e0d98",
+      "docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml": "d5e3a32aa38edc0e4c3d44dc0226c25d3b9bd02db55345f4cd6fb15a7310270c",
+      "docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml": "4de84cac468b5c5060f32e91ffef461d3ff76ab0abb49f43c1921ab14f7ed8e4",
+      "docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md": "4566a2e2cdde35327f42e38fbdda60878702626c1079bd63189406cdca727acb",
+      "docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md": "4935b8f92d1d1c9a26698f339908a6528196a09365ec83da07e2f5f77380a744",
+      "docs/research/hfwm/HFWM_R0_M3_DRAFT.yaml": "8ca884ac28a1de3eacc96783d7c31af998227ec5737261a5594498e36229d805"
+    }
+  },
+  "independent_full_release_review": {
+    "mode": "INDEPENDENT_READ_ONLY_FULL_RELEASE_REVIEW",
+    "status": "PASS_RELEASE",
+    "blockers": [],
+    "major_non_blocking": [
+      "M2 historical code state remains not fully recoverable; validator execution-time state is UNRESOLVED, software gate enforcement NOT_PROVEN, assurance PARTIAL.",
+      "Legacy repository surfaces outside the reconstructed M3D.1 scope are not exported."
     ],
-    "forbidden": [
-      "P0_PASS",
-      "HFWM_PASS",
-      "VALIDATED_WORLD_MODEL",
-      "PROVEN_FOUNDATION_MODEL",
-      "SHARED_HFWM_WORKS",
-      "SHARED_HFWM_FAILS",
-      "VALIDATED_AT_NANTES",
-      "HISTORICAL_REALTIME_AVAILABILITY_WITHOUT_AVAILABLE_AT",
-      "DATA_IN_HAND",
-      "M3L_AUTHORIZED",
-      "M3F_AUTHORIZED"
-    ]
+    "pytest_verified": true,
+    "ruff_verified": true,
+    "mypy_verified": true,
+    "m2_sensitive_diff_audit_verified": true,
+    "release_content_commit_verified": "7b5b94c7e7d1aa393c8bab331a43038b6041dbf7",
+    "release_content_tree_verified": "f196629f940749272aebb34d2faac3805ccd8213",
+    "filesystem_files_seen": 113,
+    "ignored_files_seen": 609,
+    "external_surfaces_found": 3,
+    "executable_partner_contracts_found": 6,
+    "unaudited_external_surfaces": ["Legacy repository surfaces outside M3D.1 scope; not exported."],
+    "partner_package_source_verified": true,
+    "numerical_artifacts_unchanged_verified": true,
+    "no_forbidden_authorization": true
+  },
+  "files_sha256": {
+    "docs/research/hfwm/CURRENT_MILESTONE.yaml": "bcc6b68448db1e1df546b50cf6c682e3670ce4ae3d7c0a48b4691d252c0793aa",
+    "docs/research/hfwm/HFWM_R0_M2_PREREGISTRATION_GATE_AUDIT.md": "3b56cf9bf62409234bcc6ef5c40dec338822b4afe3fb9f2442f5c7d1c1ddcb6b",
+    "docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md": "4f89b0fb0f04f0a97bae65e13e4e43c64ea29dfd58b479385e964aab8158cb59",
+    "docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md": "ed6b02ac5de7d5ac3f482c07506773ff8559ee76c5b580134c5058785e083fbe",
+    "docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_EXECUTABLE_EVIDENCE.md": "27fa17571516a76c20e26bffa17658717f711fcd4518646654e8c0a6f0138808",
+    "docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml": "d8a174a0da454ed8a2a6f0a2f193ee52c2868cfb154a7de172ae02d0d0b02bf6",
+    "docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml": "81311967d3765a6b932b74771547e834ed9e5152078425676f590d4ba1194f6c",
+    "src/hfwm/m3d/aggregation.py": "b93630c3193e37d12c0e7433c8a1fc8a5a495a9640fa270ea3f280e1136fafe8",
+    "src/hfwm/m3d/power.py": "02c1604971b0b5b8e4b1990b566097986d4ceb86a1b8c23ae4d5b29a22ec4e94",
+    "tests/hfwm/m3d/test_contracts.py": "b47a7a7ec1dcb306e4412649e69f3bdcbd9f40e1e91d3ef3fd2ded0d65c0405d",
+    "tests/hfwm/m3d/test_provenance.py": "25a844d319de09be76657f581d3ec904592f0d5de8514e6dc011e4e85cfb66af",
+    "tests/hfwm/m3d/test_release.py": "d8158785598d988948264c88966ef6369a860b486d6f5cf85217f3c297a3cfbd",
+    "artifacts/hfwm-r0/m3d/m2-prereg-parent.log": "bf5556fb12ea384e81eacc2406bf3aef6c729e72eed5e7ebb2ce898a1b3e9345",
+    "artifacts/hfwm-r0/m3d/m2-prereg-a3.log": "f1377806d26a6dc5d81e4dedf5aecfc96c3b0dd9f175b1fa2e89f311514b46a5",
+    "artifacts/hfwm-r0/m3d/m2-local-parent.log": "a6d45cd475348db3739ce1bdda8331fa6715be8fd1cec2a01cb055d214d1a895",
+    "artifacts/hfwm-r0/m3d/m2-local-a3.log": "5ff459b371d750f603a007e3e7a302a2f5b51318fc736dc6ea77c252be7c31be",
+    "artifacts/hfwm-r0/m3d/a3-local-roundtrip.log": "edbedf7f75a79a446989fa0db47ed112158c3c3c10ef1a3c0da37740926ee4a5",
+    "artifacts/hfwm-r0/m3d/m2-preregistration.diff": "b518a4f3109927e1e4424a8a1e8e2c718d281211442672c7948acd55b77c33f6",
+    "artifacts/hfwm-r0/m3d/m2-local-model.diff": "527266fea5b68f8ab40ba133fed8bba145349711670800b7b8d25b4414106d79",
+    "artifacts/hfwm-r0/m3d/m2-prereg-old-validator-errors.log": "ee42d6d330f498a5d4c325d42fd5245894924e7f5acbb8e2e781b9b41d971406",
+    "artifacts/hfwm-r0/m3d/toolchain-pip-freeze.txt": "f7790aa47c234d91ae85907d69e620c4858be8ba0f283955a0d64172f971b274"
   },
   "commands_executed": [
-    "PYTHONPATH=src python3 -m pytest tests/hfwm/m3d -q",
-    "ruff check src/hfwm/m3d scripts/hfwm/freeze_m3d.py tests/hfwm/m3d",
-    "mypy src/hfwm/m3d scripts/hfwm/freeze_m3d.py"
+    "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src $TOOLCHAIN_PYTHON -m pytest tests/hfwm/m3d -q",
+    "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src $TOOLCHAIN_PYTHON -m pytest tests/hfwm/evaluation/test_preregistration.py tests/hfwm/models/local/test_local_joint.py -q",
+    "$TOOLCHAIN_PYTHON -m ruff check src/hfwm/m3d scripts/hfwm/freeze_m3d.py tests/hfwm/m3d",
+    "PYTHONPATH=src $TOOLCHAIN_PYTHON -m mypy src/hfwm/m3d scripts/hfwm/freeze_m3d.py"
   ],
-  "conventions": {
-    "assumed_count": 26,
-    "assumed_paths": [
-      "document[0].census_membership_conventions.administrative_transfer",
-      "document[0].census_membership_conventions.birth",
-      "document[0].census_membership_conventions.death",
-      "document[0].census_membership_conventions.leave_permission",
-      "document[0].census_membership_conventions.operating_room",
-      "document[0].census_membership_conventions.temporary_other_unit",
-      "document[0].event_categories.external_entries",
-      "document[0].event_categories.external_exits",
-      "document[0].event_categories.internal_inbound_transfers",
-      "document[0].event_categories.internal_outbound_transfers",
-      "document[0].event_categories.other_signed_census_adjustments",
-      "document[0].stock_variables.occupancy_rate",
-      "document[0].stock_variables.open_bed_count",
-      "document[0].stock_variables.patient_census_count",
-      "document[0].stock_variables.physical_presence_count",
-      "document[0].temporal_contract.available_at",
-      "document[0].temporal_contract.event_time",
-      "document[0].temporal_contract.extract_generated_at",
-      "document[0].temporal_contract.source_version",
-      "document[1].census_semantics.operating_room",
-      "document[1].census_semantics.permission",
-      "document[1].census_semantics.temporary_unit",
-      "document[1].episode_boundaries.administrative_reorganization",
-      "document[1].episode_boundaries.overlapping_windows",
-      "document[1].episode_boundaries.source_outage",
-      "document[1].episode_window"
-    ],
-    "confirmed_by_partner_count": 0,
-    "confirmed_by_partner_paths": []
-  },
-  "design_selection_status": "ACCEPTABLE_DESIGN_SELECTED",
-  "external_claims": {
-    "ledger": "docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml",
-    "status_counts": {
-      "ASSUMED_QUESTION_ONLY": 2,
-      "NOT_EXTERNAL_FACT": 4,
-      "SOURCED_OFFICIAL": 14,
-      "UNSUPPORTED_REMOVE": 4
-    },
-    "total": 24,
-    "unsupported_exposed_count": 0
-  },
-  "external_transmission_authorization_state": "PENDING_INDEPENDENT_POST_TAG_REVIEW",
-  "external_transmission_authorized": false,
-  "files_sha256": {
-    "artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json": "e900cd880499b94bd1cb69954fde797a657c2be6ae1dd3af5c0462cacaad97e5",
-    "artifacts/hfwm-r0/m3d/partner_questions.json": "d62c6475b82dd7b6b4076f58cc85edb2f6192f6fe0afd0a257b73f1bcf62ebc3",
-    "artifacts/hfwm-r0/m3d/power_simulation.json": "e0d7f38541413c44fdf953cfc8c3423cfcec3de514129cce1ec5ffc90639f9de",
-    "docs/research/hfwm/CURRENT_MILESTONE.yaml": "4a1528f398114bf993639e75997dc1e88ac82bc45ed6be4b1d037f8411a643df",
-    "docs/research/hfwm/HFWM_R0_M2C_POSTMORTEM.md": "a33ee869bf4477f76dd0019b9f7769d51974da3b4e1dba375135c7e995d36eae",
-    "docs/research/hfwm/HFWM_R0_M2_SEED_AUDIT_TICKET.md": "97ae7887ae2ce8a3662805dd44dafeaffc845f9f3c3ac089351d3cd9cf90979e",
-    "docs/research/hfwm/HFWM_R0_M2_TARGET_DECOMPOSITION.md": "4d5cc2b38221c336ed5f17e4df65200283a5e2c876ee9efcef1113a8a1d7604a",
-    "docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md": "e3951f78f1186e49da9c2fd9e5c9eaaef92a9600735ea5807c7d29e0586633ba",
-    "docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md": "ea287f2dac5b1f7bcae948c8abd59ac4328ddefbf356905f9db892208969fbfd",
-    "docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml": "f6ebe9abe15967d7b03dd461f0ad17077c6973b9e9eebfded887c717824e0c69",
-    "docs/research/hfwm/HFWM_R0_M3D_HOSTILE_REVIEW.md": "7eaca4ff91166ecd0f9b44890cd4110928ff763059bc060992f87a6687f79b39",
-    "docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml": "4de84cac468b5c5060f32e91ffef461d3ff76ab0abb49f43c1921ab14f7ed8e4",
-    "docs/research/hfwm/HFWM_R0_M3_AGGREGATION_SPEC.yaml": "74e994e3b9dc9f9900da5c9a41d450bc1c695fc83b6c2db57ec8b5accdfbfb7e",
-    "docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml": "7308db53a9ceefb1c89ccd73245a7661f6bbcbdbd81539d35c1cb2011e226478",
-    "docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md": "4935b8f92d1d1c9a26698f339908a6528196a09365ec83da07e2f5f77380a744",
-    "docs/research/hfwm/HFWM_R0_M3_DRAFT.yaml": "8ca884ac28a1de3eacc96783d7c31af998227ec5737261a5594498e36229d805",
-    "docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml": "193b1bc2c25d39455e72867a155634c0a34864d060dcd233e51e6c8e176e0d98",
-    "docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml": "1f70d20537f700441d609edddd559603df0fcef3b0daeaf2b8061ec5f3cba442",
-    "docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md": "4566a2e2cdde35327f42e38fbdda60878702626c1079bd63189406cdca727acb",
-    "docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md": "1837b2e90805701cb2a6343dc2215dba4c22b6240bed15c7912878a6ff6e61bd",
-    "docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml": "d5e3a32aa38edc0e4c3d44dc0226c25d3b9bd02db55345f4cd6fb15a7310270c",
-    "docs/research/hfwm/HFWM_R0_M3_SAP.md": "f29743409804f6df33ddced112366b3f9c83a17441ccafa3c8c58958aeb9104d",
-    "docs/research/hfwm/HFWM_R0_M3_SEED_REACHABILITY_AUDIT.md": "fc55dfbea3458b1ad9fdf91c8752b1ea9538edf00935e201707b7c7813e2a1d1",
-    "scripts/hfwm/freeze_m3d.py": "88d5b7c92868d6ab2f4311df495121d33476bf164fea6d153053d0b45b5b9e69",
-    "src/hfwm/m3d/__init__.py": "359d72b2edc651f25febc6777d37424e1bbd632552fa21e6758a169209216d02",
-    "src/hfwm/m3d/aggregation.py": "ba0624d3d0beaa2a2146bfc121f7edc6ec47ed3514f0fab75577a802f56cf75a",
-    "src/hfwm/m3d/contracts.py": "b66679e41533e34b4065f6a3e84d6c8579f1a5b00938fb58c0588c3dcd1d1f52",
-    "src/hfwm/m3d/power.py": "16d44e7c53dde488bf3be5aa88d02d82d18028b2b87c0186ad6b6b4859777ce2",
-    "src/hfwm/m3d/release.py": "d7f8ba86f5cd70583b902618b090697839f354d665ec542315eb6663758aed77",
-    "tests/fixtures/hfwm/m3d_synthetic_contract.yaml": "9183fe7c5cb7a2104f26d672106596013a2b836b1a2aae9210f596b178fb3772",
-    "tests/hfwm/m3d/test_aggregation.py": "87f3ab1b260cce5caecc3904fad019ac8d977a0977cfcc6c23659c64eef17609",
-    "tests/hfwm/m3d/test_contracts.py": "972246429cf9cc50d5bd71ad7a998e1aa192e5d83e69d0d20344eda7a936f6f6",
-    "tests/hfwm/m3d/test_power.py": "449534973e0f1cfa64f3419629ae01a09029525d322a74326f6fbb91816a1894",
-    "tests/hfwm/m3d/test_provenance.py": "99d22554146bf9e8eb599f90eb6a5c486cd5a0e42f0c38894c9decdd0df1ea76",
-    "tests/hfwm/m3d/test_release.py": "2081cddd5de5dfdbdfa811c3c577ce452233faf0a6e6fbb393eeec7ba374a33e"
-  },
-  "harm_detection_thresholds": {
-    "delta_10pct": 0.8,
-    "delta_15pct": 0.95
-  },
-  "inconclusive_governance": {
-    "blinded_sample_size_insufficient_status": "NO_GO_M3_INSUFFICIENT_EFFECTIVE_SAMPLE_SIZE",
-    "candidate_promotion": "forbidden",
-    "deployment_oriented_evaluation": "forbidden",
-    "evaluation_status": "CLOSED_AND_FROZEN",
-    "governance_action": "HOLD_NO_ADVANCE",
-    "guardrail_satisfaction_claim": "forbidden",
-    "noninferiority_claim": "forbidden",
-    "post_result_rescue_in_same_evaluation": "forbidden",
-    "resolution": "NEW_INDEPENDENT_EVALUATION_WITH_UNUSED_DATA_REQUIRED",
-    "result_status": "M3_RESULT_INCONCLUSIVE",
-    "same_protocol_post_result_extension": "forbidden",
-    "scientific_kill_claim": "forbidden"
-  },
-  "m2_code_state": "M2_CODE_STATE_NOT_FULLY_RECOVERABLE",
-  "m2_results_modified": false,
-  "m2_retrospective": {
-    "cluster_adjusted_standard_error": 0.15369043197017349,
-    "critical_value": 1.6448536269514715,
-    "decision": "INCONCLUSIVE_GUARDRAIL",
-    "iid_standard_error": 0.1031056874381268,
-    "lower_one_sided_95": -0.07972248005274954,
-    "observed_design_effect": 2.22192,
-    "point_regression": 0.17307578440112872,
-    "upper_one_sided_95": 0.425874048855007
-  },
-  "m2_sensitive_diff_audit": "docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md",
-  "m3f_authorized": false,
-  "m3l_authorized": false,
-  "manifest_convention": "This manifest attests release content commit A. The final release tag points to commit B whose parent is A and whose only release-content addition is this manifest.",
-  "mechanical_release_checks_pass": true,
-  "milestone_id": "HFWM-R0-M3D.1",
-  "monte_carlo_precision": {
-    "boundary_calibration_status": {
-      "COUNT": "BOUNDARY_CALIBRATION_PASS",
-      "RATE": "BOUNDARY_CALIBRATION_PASS"
-    },
-    "critical_boundary_half_width_ok": true,
-    "interval_procedure_valid_at_boundary": true,
-    "ordinary_half_width_ok": true
-  },
-  "partner_calendar_request": {
-    "attrition_planning": 0.6,
-    "minimum_months": 28,
-    "minimum_sites_subject_to_blinded_recalculation": 8,
-    "preferred_months": 36,
-    "target_sites": 12,
-    "units_per_site": 4
-  },
+  "training_executed": false,
   "partner_data_consumed": false,
-  "pessimistic_icc_selected_design_id": "episodes_640",
-  "power_simulation_output_hash": "a17fce9933eaf542f5b2d0bfacdf147144be171e18a9b4a1f26fc0db2ee14c92",
-  "power_simulation_rng_reachability": {
-    "different_output_hash": "37a4131413896038d28953427068d8a2c3668cd17216ba186a0e3e9587cbb9ad",
-    "different_seed_different": true,
-    "final_state_hash": "94080516ac809b7b7a54a867131ff6f90ae63d4244e4656fbb524231bc9726ed",
-    "first_output_hash": "e2382943512d0eac6d5cc631744d0492b04351476ba86bc5785ab0eb9e108315",
-    "initial_state_hash": "121a3efa9ca82875a33f0e234119b07589918153aeb12548eeabda92f629c4fa",
-    "repeat_output_hash": "e2382943512d0eac6d5cc631744d0492b04351476ba86bc5785ab0eb9e108315",
-    "rng_state_consumed": true,
-    "same_seed_identical": true,
-    "seed": 31082026,
-    "seed_reaches_final_generator": true
-  },
-  "release_content_commit_sha": "707d45eef064fe1a52d4c422df0d9796fb23a6a4",
-  "release_content_tree_sha": "97a1cad0763199382010f9b9e5f7bd0db6214d9e",
-  "release_review_artifact": {
-    "convention": "POST_TAG_SIDECAR_ASSOCIATED_WITH_TAG; NOT_A_COMMIT_B_CONTENT_FILE",
-    "path": "docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml"
-  },
-  "release_scope": {
-    "classification_errors": [],
-    "filesystem_files_seen": 93,
-    "ignored_files_seen": 5,
-    "scope_file": "docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml"
-  },
-  "repository": {
-    "branch": "",
-    "head": "707d45eef064fe1a52d4c422df0d9796fb23a6a4",
-    "working_tree_status": []
-  },
-  "review": {
-    "m3d1_new_reviewer_executed": false,
-    "main_agent_only": true
-  },
-  "sap_sha256": "f29743409804f6df33ddced112366b3f9c83a17441ccafa3c8c58958aeb9104d",
-  "schema_version": "hfwm.r0.m3d1.manifest.v2",
-  "seed_audit_status": {
-    "future_weights_persistence_required": true,
-    "hgbr_cqr": "DETERMINISTIC_BY_DESIGN",
-    "local_joint_from_scratch": "DETERMINISTIC_BY_DESIGN",
-    "m2_determinism_evidence_use": "INTERNAL_ONLY_NOT_ROBUSTNESS_OR_FUNDRAISING_PROOF",
-    "mechanistic_queue_semimarkov": "DETERMINISTIC_BY_DESIGN",
-    "model_fit_seed_status": "NOT_APPLICABLE_DETERMINISTIC_FIT",
-    "replication_policy": "ONE_FIT_PER_CONFIGURATION",
-    "separate_replay_ticket": "HFWM-R0-M2-SEED-AUDIT",
-    "shared_hfwm_multitask": "DETERMINISTIC_BY_DESIGN"
-  },
-  "selected_design_id": "episodes_512",
-  "test_results": [
-    "BLOCKED: pytest unavailable in clean runtime",
-    "BLOCKED: ruff unavailable in clean runtime",
-    "BLOCKED: mypy unavailable in clean runtime"
-  ],
-  "tier_a_aggregation": {
-    "movement_level_export_requested": false,
-    "partner_executes_spec": true,
-    "six_hour_data_assumed_stored": false
-  },
-  "training_executed": false
+  "m3l_authorized": false,
+  "m3f_authorized": false,
+  "deployment_authorized": false,
+  "automated_transmission": false,
+  "external_transmission_authorized": true,
+  "authorization_scope": "DOCUMENTARY_PARTNER_REVIEW_ONLY"
 }
