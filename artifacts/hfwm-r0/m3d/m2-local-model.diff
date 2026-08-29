@@ -1,0 +1,217 @@
+diff --git a/src/hfwm/models/local/model.py b/src/hfwm/models/local/model.py
+index ef54dc3..533804c 100644
+--- a/src/hfwm/models/local/model.py
++++ b/src/hfwm/models/local/model.py
+@@ -271,160 +271,212 @@ class LocalJointDynamicsModel:
+         context: Mapping[str, JSONValue],
+         horizon_steps: int,
+         sample_count: int,
+         seed: int,
+     ) -> TrajectoryRollout:
+         """Sample deterministic-by-seed futures around the free-running mean."""
+         if sample_count <= 0:
+             raise ValueError("sample_count must be positive")
+         mean_rollout = self.rollout(state, actions, context, horizon_steps)
+         means = cast(FloatArray, mean_rollout.state_trajectories)
+         scale = cast(FloatArray, mean_rollout.uncertainty_by_horizon)
+         generator = np.random.default_rng(seed)
+         noise = generator.normal(size=(sample_count, *means.shape)) * scale[np.newaxis, :, :]
+         samples = means[np.newaxis, :, :] + noise
+         for sample_index in range(sample_count):
+             for step in range(horizon_steps):
+                 samples[sample_index, step] = self._enforce_constraints(
+                     samples[sample_index, step], context
+                 )
+         initial = np.broadcast_to(
+             self._unpack_belief(state)[0], (sample_count, 1, self.config.observation_dim)
+         )
+         events = np.diff(np.concatenate((initial, samples), axis=1), axis=1)
+         return TrajectoryRollout(
+             state_trajectories=samples,
+             event_trajectories=events,
+             uncertainty_by_horizon=scale,
+             free_running=True,
+             horizon_steps=horizon_steps,
+             provenance=state.provenance,
+         )
+ 
+     def score_observed_trajectory(
+         self,
+         rollout: TrajectoryRollout,
+         observed: Sequence[Mapping[str, JSONValue]],
+     ) -> TrajectoryScore:
+         """Score a factual trajectory with per-step multivariate RMSE."""
+         if not observed:
+             raise ValueError("observed trajectory must not be empty")
+         predicted = np.asarray(rollout.state_trajectories, dtype=np.float64)
+         if predicted.ndim == 3:
+             predicted = predicted.mean(axis=0)
+         if predicted.ndim != 2 or predicted.shape[1] != self.config.observation_dim:
+             raise ValueError("rollout has an incompatible state trajectory shape")
+         if len(observed) > predicted.shape[0]:
+             raise ValueError("observed trajectory exceeds rollout horizon")
+         actual_rows: list[FloatArray] = []
+         for index, row in enumerate(observed):
+             value = row.get("state")
+             actual = np.asarray(value, dtype=np.float64)
+             if actual.shape != (self.config.observation_dim,) or not np.all(np.isfinite(actual)):
+                 raise ValueError(f"observed[{index}].state has an invalid shape or value")
+             actual_rows.append(actual)
+         actual_matrix = np.stack(actual_rows)
+         per_step = np.sqrt(np.mean((predicted[: len(actual_rows)] - actual_matrix) ** 2, axis=1))
+         return TrajectoryScore(
+             aggregate_score=float(np.mean(per_step)),
+             per_step_scores=tuple(float(value) for value in per_step),
+             scoring_rule="MULTIVARIATE_RMSE",
+             metadata={"observed_steps": len(actual_rows), "free_running": rollout.free_running},
+         )
+ 
+     def backbone_hash(self) -> str:
+         """Hash only the shared/core arrays, excluding the local adapter vector."""
+         coefficient, variance = self._fitted_arrays()
+         digest = hashlib.sha256()
+         config_payload = {
+             "belief_update_rate": self.config.belief_update_rate,
+             "observation_dim": self.config.observation_dim,
+             "recording_dim": self.config.recording_dim,
+             "ridge_alpha": self.config.ridge_alpha,
+             "seed": self.config.seed,
+         }
+         digest.update(json.dumps(config_payload, sort_keys=True, separators=(",", ":")).encode())
+         for array in (coefficient, variance):
+             digest.update(str(array.shape).encode("ascii"))
+             digest.update(array.astype("<f8", copy=False).tobytes(order="C"))
+         return digest.hexdigest()
+ 
++    def fitted_state(self) -> dict[str, FloatArray]:
++        """Return detached numeric state suitable for a caller-owned checkpoint."""
++
++        coefficient, variance = self._fitted_arrays()
++        return {
++            "coefficient": coefficient.copy(),
++            "residual_variance": variance.copy(),
++            "local_bias": self._local_bias.copy(),
++        }
++
++    def restore_fitted_state(
++        self,
++        *,
++        coefficient: FloatArray,
++        residual_variance: FloatArray,
++        local_bias: FloatArray,
++        site_id: str,
++    ) -> LocalJointDynamicsModel:
++        """Restore a validated local checkpoint without fitting or hidden I/O."""
++
++        arrays = (
++            np.asarray(coefficient, dtype=np.float64),
++            np.asarray(residual_variance, dtype=np.float64),
++            np.asarray(local_bias, dtype=np.float64),
++        )
++        expected_shapes = (
++            (self.config.design_dim, self.config.observation_dim),
++            (self.config.observation_dim,),
++            (self.config.observation_dim,),
++        )
++        if any(
++            array.shape != expected or not np.all(np.isfinite(array))
++            for array, expected in zip(arrays, expected_shapes, strict=True)
++        ):
++            raise ValueError("checkpoint arrays have an invalid shape or non-finite value")
++        if np.any(arrays[1] <= 0.0):
++            raise ValueError("checkpoint residual variances must be positive")
++        if not site_id:
++            raise ValueError("checkpoint site_id must not be empty")
++        self._coefficient = arrays[0].copy()
++        self._residual_variance = arrays[1].copy()
++        self._local_bias = arrays[2].copy()
++        self._site_id = site_id
++        self.identity = ComponentIdentity(
++            component_type="DynamicsCore",
++            implementation_id="local_joint_from_scratch",
++            contract_version="hfwm.dynamics-core.v1",
++            implementation_version="hfwm-r0.1",
++            artifact_hash=self.backbone_hash(),
++        )
++        return self
++
+     def _training_rows(
+         self,
+         trajectories: FloatArray,
+         *,
+         observed_mask: FloatArray | None,
+         recording_process: FloatArray | None,
+     ) -> tuple[FloatArray, FloatArray, FloatArray]:
+         values = np.asarray(trajectories, dtype=np.float64)
+         if (
+             values.ndim != 3
+             or values.shape[1] < 2
+             or values.shape[2] != self.config.observation_dim
+         ):
+             raise ValueError("trajectories must have shape (episodes, steps>=2, observation_dim)")
+         mask = np.isfinite(values).astype(np.float64)
+         if observed_mask is not None:
+             supplied_mask = np.asarray(observed_mask, dtype=np.float64)
+             if supplied_mask.shape != values.shape or not np.all(
+                 np.isin(supplied_mask, (0.0, 1.0))
+             ):
+                 raise ValueError("observed_mask must be binary and match trajectories")
+             mask *= supplied_mask
+         imputed = self._forward_impute(values, mask)
+         recording_shape = (*values.shape[:2], self.config.recording_dim)
+         if recording_process is None:
+             recording = np.zeros(recording_shape, dtype=np.float64)
+         else:
+             recording = np.asarray(recording_process, dtype=np.float64)
+             if recording.shape != recording_shape or not np.all(np.isfinite(recording)):
+                 raise ValueError("recording_process has an invalid shape or non-finite values")
+         design = np.concatenate(
+             (
+                 imputed[:, :-1, :],
+                 mask[:, :-1, :],
+                 recording[:, :-1, :],
+                 np.ones((*values.shape[:2][:-1], values.shape[1] - 1, 1), dtype=np.float64),
+             ),
+             axis=2,
+         )
+         return (
+             design.reshape(-1, self.config.design_dim),
+             imputed[:, 1:, :].reshape(-1, self.config.observation_dim),
+             mask[:, 1:, :].reshape(-1, self.config.observation_dim),
+         )
+ 
+     def _fit_rows(self, design: FloatArray, target: FloatArray, target_mask: FloatArray) -> None:
+         coefficient = np.zeros(
+             (self.config.design_dim, self.config.observation_dim), dtype=np.float64
+         )
+         variance = np.zeros(self.config.observation_dim, dtype=np.float64)
+         penalty = self.config.ridge_alpha * np.eye(self.config.design_dim, dtype=np.float64)
+         penalty[-1, -1] = 0.0
+         for feature in range(self.config.observation_dim):
+             selected = target_mask[:, feature] > 0.0
+             if not np.any(selected):
+                 raise ValueError(f"no observed training target for feature {feature}")
+             x_feature = design[selected]
+             y_feature = target[selected, feature]
+             coefficient[:, feature] = np.linalg.solve(
+                 x_feature.T @ x_feature + penalty,
+                 x_feature.T @ y_feature,
+             )
+             residual = y_feature - x_feature @ coefficient[:, feature]
+             variance[feature] = max(float(np.mean(residual**2)), 1e-8)
+         self._coefficient = coefficient
+         self._residual_variance = variance
+ 
+     def _forward_impute(self, values: FloatArray, mask: FloatArray) -> FloatArray:
+         result = np.zeros_like(values)
+         for episode in range(values.shape[0]):
+             previous = np.zeros(self.config.observation_dim, dtype=np.float64)
+             for step in range(values.shape[1]):
+                 current = np.where(mask[episode, step] > 0.0, values[episode, step], previous)
+                 result[episode, step] = current
+                 previous = current
+         return result
+ 
+     def _observation(self, batch: TokenBatch) -> tuple[FloatArray, FloatArray]:
+         values = np.asarray(batch.values, dtype=np.float64)
+         if values.shape != (self.config.observation_dim,):
