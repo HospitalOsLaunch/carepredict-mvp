@@ -1,0 +1,5 @@
+old_validator_valid= False
+old_validator_error_count= 3
+error_1: bakeoff and metrics horizons differ
+error_2: bakeoff and metrics tasks differ
+error_3: generic TSFM must be NOT_EXECUTED before a checkpoint is verified
