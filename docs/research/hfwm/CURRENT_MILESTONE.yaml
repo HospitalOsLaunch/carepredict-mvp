@@ -68,6 +68,8 @@ artifacts:
   release_scope: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml
   m2_diff_audit: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md
   m2_diff_executable_evidence: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_EXECUTABLE_EVIDENCE.md
+  m2_preregistration_diff: artifacts/hfwm-r0/m3d/m2-preregistration.diff
+  m2_local_model_diff: artifacts/hfwm-r0/m3d/m2-local-model.diff
   disclosure_sensitivity: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md
   targeted_recheck_clarification: docs/research/hfwm/HFWM_R0_M3D1_TARGETED_RECHECK_CLARIFICATION.yaml
   toolchain_attestation: docs/research/hfwm/HFWM_R0_M3D1_TOOLCHAIN_ATTESTATION.yaml

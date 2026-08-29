@@ -8,7 +8,9 @@ Cette attestation est post-tag et ne modifie pas A3, B3 ni le tag.
 - Auteur/message/date : `belaguy007`, `chore(hfwm): freeze M3D.1 release content`,
   `2026-08-29T15:10:49+02:00`.
 - Diff exact : `git diff --unified=3 6cd4819^ 6cd4819 --
-  src/hfwm/evaluation/preregistration.py` (94 lignes ajoutées, 10 supprimées).
+  src/hfwm/evaluation/preregistration.py` (94 lignes ajoutées, 10 supprimées),
+  conservé dans `artifacts/hfwm-r0/m3d/m2-preregistration.diff` avec SHA-256
+  `b518a4f3109927e1e4424a8a1e8e2c718d281211442672c7948acd55b77c33f6`.
 - Nature observée : budgets CPU, `runs_per_seed`, périmètre de budget, validation
   M2A bornée, cohérence TSFM et cross-document. Aucun import de modèle et aucune
   écriture de poids/predictions/rollout.
@@ -23,7 +25,9 @@ Cette attestation est post-tag et ne modifie pas A3, B3 ni le tag.
 
 - Même commit d'introduction et même auteur/message/date.
 - Diff exact : `git diff --unified=3 6cd4819^ 6cd4819 --
-  src/hfwm/models/local/model.py` (52 lignes ajoutées, aucune suppression).
+  src/hfwm/models/local/model.py` (52 lignes ajoutées, aucune suppression),
+  conservé dans `artifacts/hfwm-r0/m3d/m2-local-model.diff` avec SHA-256
+  `527266fea5b68f8ab40ba133fed8bba145349711670800b7b8d25b4414106d79`.
 - Nature observée : ajout de `fitted_state()` et `restore_fitted_state()` uniquement.
   Les corps de `fit`, `predict_next`, `rollout` et `sample_futures` sont inchangés.
 - Comparaison parent/A3 sur les mêmes données synthétiques, configuration et état :
