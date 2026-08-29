@@ -5,6 +5,7 @@ import {
   targetScenarioStateFor,
   TARGET_PRESSURE_THRESHOLD_SIIPS,
   type OperationalMetricDefinition,
+  type ResearchHorizonHours,
   type TargetRiskLevel,
   type TargetScenarioState
 } from "../research/hclTargetScenario";
@@ -67,6 +68,7 @@ export interface ActionableInsight {
 
 export interface ScenarioPoint {
   hour: number;
+  elapsedHours: number;
   timeLabel: string;
   baseline: number;
   recommended: number;
@@ -148,12 +150,12 @@ export const RESEARCH_INSIGHT: ActionableInsight = {
   metricDefinitions: scenario.metricDefinitions
 };
 
-export function simulateDischargeScenario(confirmedDischarges: number): {
+export function simulateDischargeScenario(confirmedDischarges: number, horizonHours: ResearchHorizonHours = 48): {
   points: ScenarioPoint[];
   summary: ScenarioSummary;
 } {
   const state = targetScenarioStateFor(confirmedDischarges);
-  const points = targetForecastFor(confirmedDischarges);
+  const points = targetForecastFor(confirmedDischarges, horizonHours);
   return {
     points,
     summary: {

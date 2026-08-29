@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Bell, Building2, ChevronDown, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Navigate, NavLink, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
+import { formatHeaderDateTime } from "./app/dateTime";
 import { isResearchMode } from "./app/research";
 import { legacyNavigationItem, navigationItems, researchNavigationItems } from "./app/navigation";
-import { ScenarioProvider } from "./domain/ScenarioContext";
+import { ScenarioProvider, useScenarioContext } from "./domain/ScenarioContext";
 import { LegacyDashboard } from "./legacy/LegacyDashboard";
 import { ActionEngine } from "./routes/ActionEngine";
 import { Actions } from "./routes/Actions";
@@ -21,6 +23,7 @@ import { PressureForecast } from "./routes/PressureForecast";
 import { Reports } from "./routes/Reports";
 import { Simulation } from "./routes/Simulation";
 import { Staffing } from "./routes/Staffing";
+import { getResearchUnit, RESEARCH_HORIZONS, RESEARCH_UNITS, type ResearchHorizonHours, type ResearchUnitId } from "./research/hclTargetScenario";
 
 const queryClient = new QueryClient();
 
@@ -93,13 +96,7 @@ export function AppShell() {
 
       <div className={researchMode ? "ml-[204px] min-h-screen" : "ml-[230px] min-h-screen"}>
         {researchMode ? (
-          <header className="flex h-16 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
-            <div>
-              <p className="text-card-label text-brand-primary">14 SEPTEMBRE · 08:00</p>
-              <p className="mt-1 text-body-strong text-text-strong">Hôpital Démo · Urgences</p>
-            </div>
-            <span className="text-caption">Horizon 48 h</span>
-          </header>
+          <ResearchContextHeader />
         ) : (
           <header className="flex h-20 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
             <button className="flex items-center gap-2 rounded-full border border-border-subtle bg-bg-card px-4 py-2 text-[13px] font-medium text-text-strong shadow-sm">
@@ -154,6 +151,60 @@ export function AppShell() {
       </div>
     </div>
   );
+}
+
+function ResearchContextHeader() {
+  const { selectedUnitId, horizonHours, setSelectedUnit, setHorizonHours } = useScenarioContext();
+  const [now, setNow] = useState(() => new Date());
+  const [openControl, setOpenControl] = useState<"unit" | "horizon" | null>(null);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <header className="flex min-h-16 flex-wrap items-center gap-x-8 gap-y-3 border-b border-border-subtle bg-bg-card px-8 py-3">
+      <div className="min-w-[220px]">
+        <time className="text-card-label text-brand-primary" dateTime={now.toISOString()}>{formatHeaderDateTime(now)}</time>
+        <p className="mt-1 text-body-strong text-text-strong">Hôpital Démo</p>
+      </div>
+      <ContextDropdown<ResearchUnitId>
+        label="Unité"
+        ariaLabel="Unité hospitalière"
+        value={selectedUnitId}
+        valueLabel={getResearchUnit(selectedUnitId).label}
+        options={RESEARCH_UNITS.map((unit) => ({ value: unit.id, label: unit.label }))}
+        open={openControl === "unit"}
+        onToggle={() => setOpenControl((current) => current === "unit" ? null : "unit")}
+        onChange={(value) => { setSelectedUnit(value); setOpenControl(null); }}
+      />
+      <div className="ml-auto">
+        <ContextDropdown<ResearchHorizonHours>
+          label="Horizon"
+          ariaLabel="Horizon de prévision"
+          value={horizonHours}
+          valueLabel={`${horizonHours} h`}
+          options={RESEARCH_HORIZONS.map((horizon) => ({ value: horizon, label: `${horizon} h` }))}
+          open={openControl === "horizon"}
+          onToggle={() => setOpenControl((current) => current === "horizon" ? null : "horizon")}
+          onChange={(value) => { setHorizonHours(value); setOpenControl(null); }}
+        />
+      </div>
+    </header>
+  );
+}
+
+function ContextDropdown<T extends string | number>({ label, ariaLabel, value, valueLabel, options, open, onToggle, onChange }: { label: string; ariaLabel: string; value: T; valueLabel: string; options: Array<{ value: T; label: string }>; open: boolean; onToggle: () => void; onChange: (value: T) => void }) {
+  return <div className="relative flex items-center gap-3 text-caption" onKeyDown={(event) => { if (event.key === "Escape" && open) onToggle(); }}>
+    <span>{label}</span>
+    <button type="button" aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} onClick={onToggle} className="flex h-9 min-w-[112px] items-center justify-between gap-3 border-b border-border-subtle px-1 text-body-strong text-text-strong outline-none focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20">
+      {valueLabel}<ChevronDown className={`h-4 w-4 text-text-muted transition ${open ? "rotate-180" : ""}`} aria-hidden="true" />
+    </button>
+    {open ? <div role="listbox" aria-label={`${label} disponible`} className="absolute right-0 top-11 z-40 min-w-[190px] overflow-hidden rounded-lg border border-border-subtle bg-bg-card py-1 shadow-xl">
+      {options.map((option) => <button key={String(option.value)} type="button" role="option" aria-selected={option.value === value} onClick={() => onChange(option.value)} className={`block w-full px-4 py-2.5 text-left text-body-copy outline-none hover:bg-bg-app focus-visible:bg-bg-app ${option.value === value ? "font-semibold text-brand-primary" : "text-text-body"}`}>{option.label}</button>)}
+    </div> : null}
+  </div>;
 }
 
 export default function App() {

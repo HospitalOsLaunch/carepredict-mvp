@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Check, ShieldAlert, X } from "lucide-react";
+import { ArrowRight, Check, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useScenarioContext } from "../domain/ScenarioContext";
@@ -10,7 +10,11 @@ import {
   simulateDischargeScenario,
   PRESSURE_THRESHOLD_SIIPS
 } from "../domain/insights";
-import { HCL_TARGET_PRODUCT_RESEARCH_SCENARIO as scenario } from "../research/hclTargetScenario";
+import {
+  classifySiipsWorkload,
+  formatWorkloadLevel,
+  HCL_TARGET_PRODUCT_RESEARCH_SCENARIO as scenario
+} from "../research/hclTargetScenario";
 import { ScenarioTrajectoryChart } from "../research/ScenarioTrajectoryChart";
 
 export const REFUSAL_REASONS = [
@@ -24,17 +28,34 @@ export const REFUSAL_REASONS = [
 
 export function Situations() {
   const navigate = useNavigate();
-  const { insight, simulation, decision, acceptRecommendation, refuseRecommendation } = useScenarioContext();
+  const { insight, simulation, decision, selectedUnit, horizonHours, acceptRecommendation, refuseRecommendation } = useScenarioContext();
   const baseline = simulateDischargeScenario(0).summary;
   const recommended = simulateDischargeScenario(scenario.recommendation.recommendedValue).summary;
   const risk = classifyRiskLevel(baseline.peak, baseline.criticalHours);
   const [dialog, setDialog] = useState<"execute" | "refuse" | null>(null);
   const [reason, setReason] = useState("");
+  const workloadLevel = formatWorkloadLevel(classifySiipsWorkload(baseline.peakSiips));
+  const hasActiveSituation = selectedUnit.id === "emergency" && horizonHours >= 12;
 
   const closeDialog = () => {
     setDialog(null);
     setReason("");
   };
+
+  if (!hasActiveSituation) {
+    return (
+      <section className="mx-auto max-w-[1180px] space-y-8" aria-labelledby="situations-title">
+        <header className="border-b border-border-subtle pb-6">
+          <p className="text-card-label text-brand-primary">{selectedUnit.label.toUpperCase()} · HORIZON {horizonHours} H</p>
+          <h1 id="situations-title" className="text-screen mt-3 text-3xl text-text-strong">Situations</h1>
+        </header>
+        <div className="border-y border-border-subtle bg-bg-card py-16 text-center">
+          <h2 className="text-xl font-semibold text-text-strong">Aucune situation prioritaire sur l’horizon sélectionné.</h2>
+          <p className="mx-auto mt-3 max-w-xl text-body-copy">Les signaux simulés ne dépassent pas les seuils de vigilance définis pour ce scénario.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto max-w-[1180px] space-y-8" aria-labelledby="situations-title">
@@ -67,14 +88,26 @@ export function Situations() {
           <PrimaryMetric label="Temps en tension" value={`${baseline.criticalHours} h`} />
           <PrimaryMetric label="Occupation prévue au pic" value={`${baseline.peakOccupancyPercent} %`} />
           <PrimaryMetric label="Lits disponibles au pic" value={`${baseline.peakAvailableBeds}`} suffix={` / ${scenario.bedCapacity}`} />
-          <PrimaryMetric label="Charge en soins au pic" value={`${baseline.peakSiips}`} suffix=" SIIPS" />
+          <PrimaryMetric label="Charge en soins au pic" value={`${baseline.peakSiips}`} suffix=" SIIPS" detail={workloadLevel} />
+        </div>
+
+        <div className="border-b border-border-subtle p-7">
+          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+            <section aria-labelledby="associated-signals-title">
+              <p id="associated-signals-title" className="text-card-label text-brand-primary">Signaux associés à la tension</p>
+              <ul className="mt-4 space-y-3 text-body-copy">
+                {insight.drivers.slice(0, 4).map((driver) => <li key={driver.id} className="border-l-2 border-brand-primary/50 pl-4"><span className="font-medium text-text-strong">{driver.label}</span><span className="mt-1 block text-caption">{driver.explanation}</span></li>)}
+              </ul>
+            </section>
+            <RecommendationBlock baseline={baseline} recommended={recommended} recommendation={insight.recommendation} onExecute={() => setDialog("execute")} onModify={() => navigate(`/situations/${insight.id}/modify`)} onRefuse={() => setDialog("refuse")} decision={decision} />
+          </div>
         </div>
 
         <div className="grid gap-8 p-7 lg:grid-cols-[1.3fr_0.7fr]">
           <div>
             <div className="flex items-end justify-between gap-4">
               <div><p className="text-card-label text-brand-primary">Évolution prévue</p><h3 className="mt-2 text-section text-lg text-text-strong">Trajectoire de tension · {scenario.serviceLabel}</h3></div>
-              <span className="text-caption">08h → 00h</span>
+              <span className="text-caption">Horizon {horizonHours} h</span>
             </div>
             <div className="mt-5"><ScenarioTrajectoryChart points={simulation.points} showCustom={false} ariaLabel="Trajectoire de tension opérationnelle et charge en soins" /></div>
           </div>
@@ -85,22 +118,10 @@ export function Situations() {
               <Signal label="Lits disponibles" value={`${baseline.peakAvailableBeds} / ${scenario.bedCapacity}`} detail="au pic prévu" />
               <Signal label="Flux net attendu" value={`+${scenario.expectedArrivalsBeforePeak - scenario.expectedBaselineExitsBeforePeak} patients`} detail={`${scenario.expectedArrivalsBeforePeak} entrées · ${scenario.expectedBaselineExitsBeforePeak} sorties`} />
               <Signal label="Couverture prévue" value={`${Math.abs(baseline.staffingGapPeak)} IDE sous le besoin estimé`} detail="16h–20h" />
-              <Signal label="Charge en soins" value={`${baseline.peakSiips} SIIPS`} detail="au pic prévu" />
+              <Signal label="Charge en soins" value={`${baseline.peakSiips} SIIPS`} detail={`${workloadLevel} · au pic prévu`} />
               <Signal label="Capacité d'aval" value={baseline.downstreamCapacity[0].toUpperCase() + baseline.downstreamCapacity.slice(1)} detail="signal à surveiller" />
             </div>
           </section>
-        </div>
-
-        <div className="border-t border-border-subtle p-7">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-            <section aria-labelledby="associated-signals-title">
-              <p id="associated-signals-title" className="text-card-label text-brand-primary">Signaux associés à la tension</p>
-              <ul className="mt-4 space-y-3 text-body-copy">
-                {insight.drivers.slice(0, 4).map((driver) => <li key={driver.id} className="border-l-2 border-brand-primary/50 pl-4"><span className="font-medium text-text-strong">{driver.label}</span><span className="mt-1 block text-caption">{driver.explanation}</span></li>)}
-              </ul>
-            </section>
-            <RecommendationBlock baseline={baseline} recommended={recommended} recommendation={insight.recommendation} onExecute={() => setDialog("execute")} onModify={() => navigate(`/situations/${insight.id}/modify`)} onRefuse={() => setDialog("refuse")} decision={decision} />
-          </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border-subtle px-7 py-4">
@@ -116,8 +137,8 @@ export function Situations() {
 
 export const Insights = Situations;
 
-function PrimaryMetric({ label, value, suffix = "" }: { label: string; value: string; suffix?: string }) {
-  return <div className="px-6 py-5 first:pl-7 last:pr-7"><p className="text-caption">{label}</p><p className="numeric-tabular mt-2 text-2xl font-semibold tracking-tight text-text-strong">{value}<span className="text-base font-normal text-text-muted">{suffix}</span></p></div>;
+function PrimaryMetric({ label, value, suffix = "", detail }: { label: string; value: string; suffix?: string; detail?: string }) {
+  return <div className="px-6 py-5 first:pl-7 last:pr-7"><p className="text-caption">{label}</p><p className="numeric-tabular mt-2 text-2xl font-semibold tracking-tight text-text-strong">{value}<span className="text-base font-normal text-text-muted">{suffix}</span></p>{detail ? <p className="mt-1 text-body-strong text-status-high" title="Niveau qualitatif utilisé dans ce scénario de recherche.">{detail}</p> : null}</div>;
 }
 
 function Signal({ label, value, detail }: { label: string; value: string; detail: string }) {

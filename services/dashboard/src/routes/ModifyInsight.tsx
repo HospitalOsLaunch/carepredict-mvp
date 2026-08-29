@@ -10,7 +10,7 @@ import { REFUSAL_REASONS } from "./Insights";
 
 export function ModifyInsight() {
   const navigate = useNavigate();
-  const { insight, decision, selectedParameters, simulation, setParameter, acceptModifiedScenario, refuseRecommendation } = useScenarioContext();
+  const { insight, decision, selectedParameters, simulation, selectedUnit, horizonHours, setParameter, acceptModifiedScenario, refuseRecommendation } = useScenarioContext();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showRefusal, setShowRefusal] = useState(false);
   const [refusalReason, setRefusalReason] = useState("");
@@ -22,6 +22,10 @@ export function ModifyInsight() {
 
   const updateSelected = (value: number) => setParameter(scenario.recommendation.parameterId, Math.max(scenario.recommendation.min, Math.min(scenario.recommendation.max, value)));
 
+  if (selectedUnit.id !== "emergency" || horizonHours < 12) {
+    return <section className="mx-auto max-w-[1180px] space-y-8"><Link to="/situations" className="text-control text-brand-primary">← Retour aux situations</Link><div className="border-y border-border-subtle bg-bg-card py-16 text-center"><h1 className="text-xl font-semibold text-text-strong">Aucune action à modifier sur ce contexte.</h1><p className="mt-3 text-body-copy">Sélectionnez Urgences et un horizon d’au moins 12 h pour retrouver la situation active.</p></div></section>;
+  }
+
   return (
     <section className="mx-auto max-w-[1180px] space-y-8" aria-labelledby="modify-title">
       <header className="flex flex-wrap items-end justify-between gap-5 border-b border-border-subtle pb-6">
@@ -31,7 +35,7 @@ export function ModifyInsight() {
           <h1 id="modify-title" className="mt-2 text-3xl font-semibold tracking-tight text-text-strong">Tester une autre option</h1>
           <p className="mt-2 max-w-2xl text-body-copy">Ajustez l'action et comparez son effet sur la situation prévue.</p>
         </div>
-        <span className="text-caption">Horizon {scenario.horizonHours} h</span>
+        <span className="text-caption">Horizon {horizonHours} h</span>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[0.7fr_1.3fr]">

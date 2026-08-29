@@ -5,6 +5,12 @@ import {
   simulateDischargeScenario,
   type ActionableInsight
 } from "./insights";
+import {
+  getResearchUnit,
+  type ResearchHorizonHours,
+  type ResearchUnitDefinition,
+  type ResearchUnitId
+} from "../research/hclTargetScenario";
 
 export type Decision = "accepted" | "dismissed";
 export type DecisionSource = "recommendation" | "modified_scenario";
@@ -13,6 +19,8 @@ export interface DecisionRecord {
   insightId: string;
   recommendationId: string;
   researchSessionId: string;
+  unitId: ResearchUnitId;
+  horizonHours: ResearchHorizonHours;
   decision: Decision;
   decisionSource: DecisionSource;
   originalParameters: Record<string, number>;
@@ -24,6 +32,8 @@ export interface DecisionRecord {
 
 interface ScenarioState {
   researchSessionId: string;
+  selectedUnitId: ResearchUnitId;
+  horizonHours: ResearchHorizonHours;
   insight: ActionableInsight;
   selectedParameters: Record<string, number>;
   decision: DecisionRecord | null;
@@ -31,7 +41,10 @@ interface ScenarioState {
 }
 
 interface ScenarioContextValue extends ScenarioState {
+  selectedUnit: ResearchUnitDefinition;
   simulation: ReturnType<typeof simulateDischargeScenario>;
+  setSelectedUnit: (unitId: ResearchUnitId) => void;
+  setHorizonHours: (horizonHours: ResearchHorizonHours) => void;
   setParameter: (id: string, value: number) => void;
   acceptRecommendation: () => void;
   acceptModifiedScenario: () => void;
@@ -57,6 +70,8 @@ function nextResearchSessionId(): string {
 function createInitialState(): ScenarioState {
   return {
     researchSessionId: nextResearchSessionId(),
+    selectedUnitId: "emergency",
+    horizonHours: 48,
     insight: RESEARCH_INSIGHT,
     selectedParameters: initialParameters(),
     decision: null,
@@ -67,9 +82,20 @@ function createInitialState(): ScenarioState {
 export function ScenarioProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<ScenarioState>(createInitialState);
 
+  const selectedUnit = getResearchUnit(state.selectedUnitId);
+  const contextualInsight = useMemo<ActionableInsight>(() => ({
+    ...state.insight,
+    context: {
+      ...state.insight.context,
+      serviceId: selectedUnit.id,
+      serviceLabel: selectedUnit.label,
+      horizonHours: state.horizonHours
+    }
+  }), [selectedUnit, state.horizonHours, state.insight]);
+
   const simulation = useMemo(
-    () => simulateDischargeScenario(state.selectedParameters.confirmed_discharges ?? 0),
-    [state.selectedParameters]
+    () => simulateDischargeScenario(state.selectedParameters.confirmed_discharges ?? 0, state.horizonHours),
+    [state.horizonHours, state.selectedParameters]
   );
 
   const makeRecord = (current: ScenarioState, decision: Decision, decisionSource: DecisionSource, selectedParameters: Record<string, number>, reason?: string): DecisionRecord => {
@@ -78,6 +104,8 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
       insightId: current.insight.id,
       recommendationId: current.insight.recommendation.id,
       researchSessionId: current.researchSessionId,
+      unitId: current.selectedUnitId,
+      horizonHours: current.horizonHours,
       decision,
       decisionSource,
       originalParameters: initialParameters(),
@@ -90,7 +118,11 @@ export function ScenarioProvider({ children }: { children: ReactNode }) {
 
   const value: ScenarioContextValue = {
     ...state,
+    insight: contextualInsight,
+    selectedUnit,
     simulation,
+    setSelectedUnit: (unitId) => setState((current) => ({ ...current, selectedUnitId: unitId })),
+    setHorizonHours: (horizonHours) => setState((current) => ({ ...current, horizonHours })),
     setParameter: (id, value) => {
       setState((current) => current.decision
         ? current

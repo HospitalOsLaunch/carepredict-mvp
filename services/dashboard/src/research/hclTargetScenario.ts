@@ -1,4 +1,13 @@
 export type TargetRiskLevel = "low" | "moderate" | "high" | "critical";
+export type WorkloadLevel = "low" | "moderate" | "high" | "very_high";
+export type ResearchHorizonHours = 6 | 12 | 18 | 24 | 48 | 72;
+export type ResearchUnitId = "emergency" | "pediatrics" | "internal_medicine" | "surgery" | "icu";
+
+export interface ResearchUnitDefinition {
+  id: ResearchUnitId;
+  label: string;
+  hasDedicatedSituation: boolean;
+}
 
 export type OperationalMetricSemantic =
   | "capacity"
@@ -32,6 +41,7 @@ export interface TargetScenarioState {
 
 export interface TargetForecastPoint {
   hour: number;
+  elapsedHours: number;
   timeLabel: string;
   baseline: number;
   recommended: number;
@@ -42,12 +52,35 @@ export interface TargetForecastPoint {
 }
 
 export const TARGET_PRESSURE_THRESHOLD_SIIPS = 1600;
+export const RESEARCH_HORIZONS: ResearchHorizonHours[] = [6, 12, 18, 24, 48, 72];
+export const RESEARCH_UNITS: ResearchUnitDefinition[] = [
+  { id: "emergency", label: "Urgences", hasDedicatedSituation: true },
+  { id: "pediatrics", label: "Pédiatrie", hasDedicatedSituation: false },
+  { id: "internal_medicine", label: "Médecine interne", hasDedicatedSituation: false },
+  { id: "surgery", label: "Chirurgie", hasDedicatedSituation: false },
+  { id: "icu", label: "Réanimation", hasDedicatedSituation: false }
+];
 
 export function classifyTargetRisk(peak: number, criticalHours: number): TargetRiskLevel {
   if (criticalHours >= 5 || peak >= 1800) return "critical";
   if (criticalHours > 0 || peak >= TARGET_PRESSURE_THRESHOLD_SIIPS) return "high";
   if (peak >= 1200) return "moderate";
   return "low";
+}
+
+export function classifySiipsWorkload(value: number): WorkloadLevel {
+  if (value >= 1750) return "very_high";
+  if (value >= 1600) return "high";
+  if (value >= 1400) return "moderate";
+  return "low";
+}
+
+export function formatWorkloadLevel(level: WorkloadLevel): string {
+  return { low: "Faible", moderate: "Modérée", high: "Élevée", very_high: "Très élevée" }[level];
+}
+
+export function getResearchUnit(unitId: ResearchUnitId): ResearchUnitDefinition {
+  return RESEARCH_UNITS.find((unit) => unit.id === unitId) ?? RESEARCH_UNITS[0];
 }
 
 export const TARGET_METRICS: OperationalMetricDefinition[] = [
@@ -60,12 +93,28 @@ export const TARGET_METRICS: OperationalMetricDefinition[] = [
   { id: "downstream", label: "Capacité d'aval", semantic: "downstream", provenance: "synthetic_research", researchCandidate: true }
 ];
 
-const BASELINE_SERIES = [1560, 1640, 1750, 1810, 1760, 1510];
-const RECOMMENDED_SERIES = [1510, 1580, 1590, 1610, 1580, 1460];
-const CUSTOM_THREE_SERIES = [1530, 1620, 1680, 1690, 1650, 1470];
-const CUSTOM_SEVEN_SERIES = [1500, 1570, 1580, 1530, 1510, 1430];
-const TIME_LABELS = ["08h", "12h", "16h", "18h", "20h", "00h"];
-const TIME_HOURS = [8, 12, 16, 18, 20, 24];
+const FORECAST_TIMELINE = [
+  { elapsedHours: 0, hour: 8, timeLabel: "08h" },
+  { elapsedHours: 4, hour: 12, timeLabel: "12h" },
+  { elapsedHours: 8, hour: 16, timeLabel: "16h" },
+  { elapsedHours: 10, hour: 18, timeLabel: "18h" },
+  { elapsedHours: 12, hour: 20, timeLabel: "20h" },
+  { elapsedHours: 16, hour: 24, timeLabel: "15 sept. · 00h" },
+  { elapsedHours: 24, hour: 32, timeLabel: "15 sept. · 08h" },
+  { elapsedHours: 30, hour: 38, timeLabel: "15 sept. · 14h" },
+  { elapsedHours: 36, hour: 44, timeLabel: "15 sept. · 20h" },
+  { elapsedHours: 42, hour: 50, timeLabel: "16 sept. · 02h" },
+  { elapsedHours: 48, hour: 56, timeLabel: "16 sept. · 08h" },
+  { elapsedHours: 54, hour: 62, timeLabel: "16 sept. · 14h" },
+  { elapsedHours: 60, hour: 68, timeLabel: "16 sept. · 20h" },
+  { elapsedHours: 66, hour: 74, timeLabel: "17 sept. · 02h" },
+  { elapsedHours: 72, hour: 80, timeLabel: "17 sept. · 08h" }
+] as const;
+const BASELINE_SERIES = [1560, 1640, 1750, 1810, 1760, 1510, 1490, 1580, 1660, 1515, 1460, 1540, 1625, 1490, 1440];
+const RECOMMENDED_SERIES = [1510, 1580, 1590, 1610, 1580, 1460, 1450, 1540, 1610, 1480, 1430, 1510, 1580, 1460, 1420];
+const CUSTOM_THREE_SERIES = [1530, 1620, 1680, 1690, 1650, 1470, 1470, 1560, 1635, 1495, 1445, 1525, 1600, 1475, 1430];
+const CUSTOM_SEVEN_SERIES = [1500, 1570, 1580, 1530, 1510, 1430, 1435, 1525, 1585, 1465, 1420, 1495, 1560, 1445, 1405];
+const DISCHARGE_REDUCTION_FACTORS = [12, 18, 26, 40, 34, 10, 8, 8, 10, 7, 6, 6, 9, 6, 5];
 
 function stateForDischarges(dischargeCount: number): TargetScenarioState {
   const count = Math.max(0, Math.min(8, Math.round(dischargeCount)));
@@ -145,14 +194,15 @@ function seriesForDischarges(dischargeCount: number): number[] {
   if (count === 3) return CUSTOM_THREE_SERIES;
   if (count === 5) return RECOMMENDED_SERIES;
   if (count === 7) return CUSTOM_SEVEN_SERIES;
-  return BASELINE_SERIES.map((value, index) => Math.round(value - count * [12, 18, 26, 40, 34, 10][index]));
+  return BASELINE_SERIES.map((value, index) => Math.round(value - count * DISCHARGE_REDUCTION_FACTORS[index]));
 }
 
-export function targetForecastFor(dischargeCount: number): TargetForecastPoint[] {
+export function targetForecastFor(dischargeCount: number, horizonHours: ResearchHorizonHours = 48): TargetForecastPoint[] {
   const custom = seriesForDischarges(dischargeCount);
-  return TIME_HOURS.map((hour, index) => ({
-    hour,
-    timeLabel: TIME_LABELS[index],
+  return FORECAST_TIMELINE.filter((point) => point.elapsedHours <= horizonHours).map((point, index) => ({
+    hour: point.hour,
+    elapsedHours: point.elapsedHours,
+    timeLabel: point.timeLabel,
     baseline: BASELINE_SERIES[index],
     recommended: RECOMMENDED_SERIES[index],
     custom: custom[index],
