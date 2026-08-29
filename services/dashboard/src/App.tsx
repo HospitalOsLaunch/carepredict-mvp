@@ -14,6 +14,7 @@ import { ForecastDetail } from "./routes/ForecastDetail";
 import { Insights } from "./routes/Insights";
 import { ModifyInsight } from "./routes/ModifyInsight";
 import { OrEd } from "./routes/OrEd";
+import { Overview } from "./routes/Overview";
 import { PatientFlow } from "./routes/PatientFlow";
 import { PressureForecast } from "./routes/PressureForecast";
 import { Reports } from "./routes/Reports";
@@ -127,12 +128,12 @@ export function AppShell() {
 
         <main className="p-8">
           <Routes>
-            <Route path="/" element={<Navigate to="/insights" replace />} />
+            <Route path="/" element={researchMode ? <Navigate to="/insights" replace /> : <Overview />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/insights/:insightId" element={<Insights />} />
             <Route path="/insights/:insightId/forecast" element={<ForecastDetail />} />
             <Route path="/insights/:insightId/modify" element={<ModifyInsight />} />
-            <Route path="/actions" element={<Actions />} />
+            <Route path="/actions" element={researchMode ? <Actions /> : <ActionEngine />} />
             <Route path="/history" element={<Actions />} />
             <Route path="/forecast" element={<PressureForecast />} />
             <Route path="/simulation" element={<Simulation />} />
