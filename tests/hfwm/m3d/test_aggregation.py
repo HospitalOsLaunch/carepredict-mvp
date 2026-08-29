@@ -149,6 +149,50 @@ def test_disclosure_rejects_partial_or_unknown_suppression_and_creates_gap() -> 
     assert masked[1]["eligible"] is True
 
 
+def test_embedded_absence_reason_suppresses_row_without_side_map() -> None:
+    row = {
+        "hospital_site_id": "s1",
+        "unit_id": "u1",
+        "bucket_start": "2026-01-01T00:00:00Z",
+        "patient_census_count_end": 12,
+        "external_entries_count": 2,
+        "row_absence_reason": "DISCLOSURE_SUPPRESSED",
+    }
+    released, gaps, counts = apply_whole_row_disclosure_mask([row], absence_by_row={})
+    assert released == []
+    assert gaps[0]["row_absence_reason"] == "DISCLOSURE_SUPPRESSED"
+    assert counts["disclosure_suppressed_rows"] == 1
+
+
+def test_disclosure_gap_cannot_be_bridged_by_omitting_middle_interval() -> None:
+    episodes = [
+        {
+            "episode_id": "bridge",
+            "required_intervals": [
+                {
+                    "hospital_site_id": "s1",
+                    "unit_id": "u1",
+                    "bucket_start": "2026-01-01T00:00:00Z",
+                },
+                {
+                    "hospital_site_id": "s1",
+                    "unit_id": "u1",
+                    "bucket_start": "2026-01-01T12:00:00Z",
+                },
+            ],
+        },
+        {"episode_id": "empty", "required_intervals": []},
+    ]
+    masked = apply_disclosure_eligibility_mask(
+        episodes,
+        gap_keys={("s1", "u1", "2026-01-01T06:00:00Z")},
+    )
+    assert masked[0]["eligible"] is False
+    assert masked[0]["ineligibility_reason"] == "DISCLOSURE_SUPPRESSED_INTERVAL"
+    assert masked[1]["eligible"] is False
+    assert masked[1]["ineligibility_reason"] == "MISSING_REQUIRED_INTERVALS"
+
+
 def test_disclosure_metadata_has_all_absence_categories() -> None:
     rows = [
         {

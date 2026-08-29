@@ -60,7 +60,15 @@ def apply_whole_row_disclosure_mask(
         if key in seen:
             raise ValueError("duplicate site/unit/time row")
         seen.add(key)
-        reason = absence_by_row.get(key)
+        embedded_reason = source_row.get("row_absence_reason")
+        if embedded_reason is not None and embedded_reason not in ROW_ABSENCE_REASONS:
+            raise ValueError(f"unsupported row_absence_reason: {embedded_reason}")
+        mapped_reason = absence_by_row.get(key)
+        if embedded_reason is not None and mapped_reason is not None and embedded_reason != mapped_reason:
+            raise ValueError(f"conflicting row_absence_reason for {key}")
+        # A source row carrying an absence reason is already an explicit gap;
+        # an empty side map must not silently release its stock/flow values.
+        reason = mapped_reason if mapped_reason is not None else embedded_reason
         if reason is not None:
             gaps.append(
                 {
@@ -91,13 +99,32 @@ def apply_disclosure_eligibility_mask(
     masked: list[dict[str, Any]] = []
     for episode in episodes:
         intervals = episode.get("required_intervals")
-        if not isinstance(intervals, list):
-            raise ValueError("episode required_intervals must be a list")
+        if not isinstance(intervals, list) or not intervals:
+            item = dict(episode)
+            item["eligible"] = False
+            item["ineligibility_reason"] = "MISSING_REQUIRED_INTERVALS"
+            masked.append(item)
+            continue
         normalized = {_row_key(interval) for interval in intervals if isinstance(interval, Mapping)}
         if len(normalized) != len(intervals):
             raise ValueError("episode intervals must contain complete row keys")
         item = dict(episode)
-        if normalized & gap_keys:
+        direct_gap = bool(normalized & gap_keys)
+        # Require the declared interval sequence to cover the full span.  If an
+        # episode lists endpoints but omits a suppressed interval between them,
+        # conservatively invalidate it rather than allowing a silent bridge.
+        parsed_intervals = [_instant(key[2], field="episode.bucket_start") for key in normalized]
+        span_start = min(parsed_intervals)
+        span_end = max(parsed_intervals)
+        bridged_gap = any(
+            gap_key not in normalized
+            and gap_key[0] == key[0]
+            and gap_key[1] == key[1]
+            and span_start <= _instant(gap_key[2], field="gap.bucket_start") <= span_end
+            for key in normalized
+            for gap_key in gap_keys
+        )
+        if direct_gap or bridged_gap:
             item["eligible"] = False
             item["ineligibility_reason"] = "DISCLOSURE_SUPPRESSED_INTERVAL"
         else:
