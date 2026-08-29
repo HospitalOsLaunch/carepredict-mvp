@@ -31,6 +31,12 @@ export const navigationItems: NavigationItem[] = [
   { path: "/reports", label: "Reports", icon: FileText, description: "Operational trend reporting" }
 ];
 
+export const researchNavigationItems: NavigationItem[] = [
+  { path: "/insights", label: "Insights", icon: LayoutDashboard, description: "Situations et recommandations à décider" },
+  { path: "/actions", label: "Actions", icon: Zap, description: "Décisions enregistrées et à examiner" },
+  { path: "/history", label: "Historique", icon: History, description: "Historique des décisions de recherche" }
+];
+
 export const legacyNavigationItem = {
   path: "/legacy",
   label: "Legacy TFT",
