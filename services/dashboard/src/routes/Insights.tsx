@@ -165,7 +165,7 @@ function DecisionDialog({
             <p className="text-card-label text-brand-primary">Décision humaine</p>
             <h2 id="decision-dialog-title" className="text-section mt-2 text-xl text-text-strong">{isExecute ? "Confirmer l'action" : "Refuser la recommandation"}</h2>
           </div>
-          <button type="button" aria-label="Fermer" className="rounded-full p-2 text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={onClose}><X className="h-5 w-5" aria-hidden="true" /></button>
+          <button type="button" aria-label="Fermer" autoFocus={isExecute} className="rounded-full p-2 text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={onClose}><X className="h-5 w-5" aria-hidden="true" /></button>
         </div>
         <div className="mt-5 space-y-3 rounded-xl bg-bg-app p-4 text-body-copy">
           <p className="text-body-strong text-text-strong">Prioriser 5 sorties confirmées avant 15h</p>
@@ -176,7 +176,7 @@ function DecisionDialog({
         {!isExecute ? (
           <label className="mt-5 block text-body-copy">
             <span className="text-body-strong text-text-strong">Pourquoi refusez-vous cette recommandation ?</span>
-            <select className="mt-2 h-11 w-full rounded-lg border border-border-subtle bg-bg-card px-3 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" value={reason} onChange={(event) => onReasonChange(event.currentTarget.value)}>
+            <select autoFocus={!isExecute} className="mt-2 h-11 w-full rounded-lg border border-border-subtle bg-bg-card px-3 outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20" value={reason} onChange={(event) => onReasonChange(event.currentTarget.value)}>
               <option value="">Sélectionner une raison</option>
               {REFUSAL_REASONS.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>

@@ -31,9 +31,9 @@ export function ForecastDetail() {
           <span className="text-caption">Seuil critique : {PRESSURE_THRESHOLD_SIIPS} SIIPS</span>
         </div>
         <div className="mt-6 space-y-3" aria-label="Courbe de prévision SIIPS">
-          {points.map((point) => <ForecastBar key={point.hour} hour={point.hour} value={point.baseline} />)}
+          {points.map((point) => <ForecastBar key={point.hour} hour={point.hour} value={point.baseline} lowerBound={point.lowerBound} upperBound={point.upperBound} />)}
         </div>
-        <div className="mt-6 flex flex-wrap gap-5 text-caption"><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-status-critical" />Prévision</span><span>Fenêtre de risque : {formatDateTime(insight.riskWindowStart)}–{formatDateTime(insight.riskWindowEnd)}</span><span>Niveau : {formatRiskLevel(insight.riskLevel)}</span></div>
+        <div className="mt-6 flex flex-wrap gap-5 text-caption"><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-status-critical" />Prévision</span><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-brand-primary/20" />Bande d'incertitude</span><span>Fenêtre de risque : {formatDateTime(insight.riskWindowStart)}–{formatDateTime(insight.riskWindowEnd)}</span><span>Niveau : {formatRiskLevel(insight.riskLevel)}</span></div>
       </article>
       <details className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card"><summary className="cursor-pointer text-body-strong text-text-strong">Comment cette prévision est-elle calculée ?</summary><p className="text-caption mt-3">Le scénario de recherche utilise une fixture synthétique déterministe. Les détails techniques restent séparés de la décision.</p></details>
     </section>
@@ -44,7 +44,9 @@ function ForecastMetric({ label, value }: { label: string; value: string }) {
   return <div className="rounded-card border border-border-subtle bg-bg-card p-4 shadow-card"><p className="text-caption">{label}</p><p className="numeric-tabular mt-2 text-section text-text-strong">{value}</p></div>;
 }
 
-function ForecastBar({ hour, value }: { hour: number; value: number }) {
+function ForecastBar({ hour, value, lowerBound, upperBound }: { hour: number; value: number; lowerBound: number; upperBound: number }) {
   const width = Math.min(100, Math.round((value / 2000) * 100));
-  return <div className="flex items-center gap-3"><span className="numeric-tabular w-12 text-right text-caption">T+{hour}h</span><div className="h-8 flex-1 rounded-lg bg-gauge-track"><div className="flex h-full items-center rounded-lg bg-status-critical/80 px-3 text-badge text-white" style={{ width: `${width}%`, minWidth: "4rem" }}>{value} SIIPS</div></div></div>;
+  const bandWidth = Math.min(100, Math.round(((upperBound - lowerBound) / 2000) * 100));
+  const bandLeft = Math.max(0, Math.round((lowerBound / 2000) * 100));
+  return <div className="flex items-center gap-3"><span className="numeric-tabular w-12 text-right text-caption">T+{hour}h</span><div className="relative h-8 flex-1 rounded-lg bg-gauge-track"><div className="absolute inset-y-1 rounded bg-brand-primary/20" style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }} aria-hidden="true" /><div className="relative flex h-full items-center rounded-lg bg-status-critical/80 px-3 text-badge text-white" style={{ width: `${width}%`, minWidth: "4rem" }}>{value} SIIPS</div></div></div>;
 }

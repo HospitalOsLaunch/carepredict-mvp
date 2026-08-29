@@ -59,6 +59,8 @@ export interface ScenarioPoint {
   recommended: number;
   custom: number;
   threshold: number;
+  lowerBound: number;
+  upperBound: number;
 }
 
 export interface ScenarioSummary {
@@ -143,7 +145,9 @@ export function simulateDischargeScenario(confirmedDischarges: number): {
       baseline,
       recommended: Math.round(baseline - recommendedReduction),
       custom: Math.round(baseline - customReduction),
-      threshold: PRESSURE_THRESHOLD_SIIPS
+      threshold: PRESSURE_THRESHOLD_SIIPS,
+      lowerBound: baseline - 100,
+      upperBound: baseline + 110
     };
   });
   const series = points.map((point) => point.custom);
