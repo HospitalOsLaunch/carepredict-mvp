@@ -1,0 +1,44 @@
+schema_version: hfwm.r0.m3-draft.v2
+protocol_id: HFWM-R0-M3-PRE_DATA_STAGING
+status: SUPERSEDED_BY_M3D_PRE_DATA_CONTRACT
+execution_authorized: false
+training_authorized: false
+m3l_authorized: false
+m3f_authorized: false
+
+m2_result:
+  candidate_status: REJECTED_BY_OCCUPANCY_GUARDRAIL
+  procedural_basis: PRE_REGISTERED_POINT_ESTIMATE_RULE
+  primary_superiority: INCONCLUSIVE
+  primary_inferiority: NOT_DEMONSTRATED
+  occupation_guardrail: FAILED_PROCEDURALLY
+  true_occupation_regression: NOT_ESTIMATED_WITH_DECISION_GRADE_PRECISION
+  world_model_advantage: NOT_TESTABLE_ON_M1
+
+scientific_question: >-
+  Un modèle de dynamique jointe apporte-t-il un avantage mesurable sur des
+  propriétés que les forecasters locaux ne représentent pas, sans dépasser le
+  guardrail occupation ?
+
+active_pre_data_contracts:
+  - docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml
+  - docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml
+  - docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml
+  - docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md
+  - docs/research/hfwm/HFWM_R0_M3_SAP.md
+  - docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+  - docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+
+architecture_proposal: NONE_IN_M3D
+candidate_selection: FORBIDDEN_BEFORE_SEPARATE_PRE_REGISTRATION_AND_HUMAN_DECISION
+next_action: PARTNER_REVIEW_OF_CONTRACTS_ONLY
+
+claims_forbidden:
+  - P0_PASS
+  - HFWM_PASS
+  - VALIDATED_WORLD_MODEL
+  - PROVEN_FOUNDATION_MODEL
+  - SHARED_HFWM_WORKS
+  - SHARED_HFWM_FAILS
+  - M3L_AUTHORIZED
+  - M3F_AUTHORIZED

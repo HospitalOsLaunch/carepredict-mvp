@@ -1,0 +1,400 @@
+schema_version: hfwm.r0.m3d1.external-claims-ledger.v2
+milestone_id: HFWM-R0-M3D.1
+verified_at: "2026-08-29T00:00:00+02:00"
+gate_status: PASS_NO_UNSUPPORTED_CLAIM_EXPOSED
+audit_criterion: SOURCE_MUST_ATTEST_ASSERTED_ROLE_OR_FACT_NOT_MERELY_CONTAIN_TERM
+allowed_source_statuses:
+  - SOURCED_OFFICIAL
+  - SOURCED_PARTNER_INTERNAL
+  - ASSUMED_QUESTION_ONLY
+  - UNSUPPORTED_REMOVE
+  - NOT_EXTERNAL_FACT
+
+files_audited:
+  - {file: artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json, external_claim_ids: []}
+  - {file: artifacts/hfwm-r0/m3d/partner_questions.json, external_claim_ids: [QUESTION_REGISTER]}
+  - {file: artifacts/hfwm-r0/m3d/power_simulation.json, external_claim_ids: []}
+  - {file: docs/research/hfwm/CURRENT_MILESTONE.yaml, external_claim_ids: [PROJECT_POLICY_HCL_NANTES_DIJON]}
+  - {file: docs/research/hfwm/HFWM_R0_M2C_POSTMORTEM.md, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M2_TARGET_DECOMPOSITION.md, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3D_HOSTILE_REVIEW.md, external_claim_ids: [HCL_GOVERNANCE_ORDER_NOT_ASSERTED]}
+  - {file: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md, external_claim_ids: [AGORA_CURRENT_PDF_ARTICLE_9]}
+  - {file: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml, external_claim_ids: [HCL_13_HOSPITALS, PROJECT_POLICY_HCL_NANTES_DIJON]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_AGGREGATION_SPEC.yaml, external_claim_ids: [HCL_SDC_STANDARD_QUESTION]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml, external_claim_ids: [QUESTION_REGISTER, PROJECT_POLICY_HCL_NANTES_DIJON]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_DRAFT.yaml, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml, external_claim_ids: [QUESTION_REGISTER, PROJECT_POLICY_HCL_NANTES_DIJON]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md, external_claim_ids: [HCL_GOVERNANCE_COSTRAT, HCL_GOVERNANCE_COMOR, HCL_GOVERNANCE_CIDS, HCL_GOVERNANCE_CSE, HCL_CSE_ACRONYM_COLLISION, HCL_EDS_ARTICLE_111, CNIL_EDS_312_INTERNAL_USE, RGPD_PROCESSOR_INSTRUCTIONS, RGPD_JOINT_CONTROL, CNIL_PSEUDONYM_NOT_ANONYM, CNIL_EXTERNAL_PSEUDONYM_ACCESS, CNIL_PRODUCT_PROMOTION_PROHIBITION, QUESTION_REGISTER, PROJECT_POLICY_HCL_NANTES_DIJON, M3D1_PLANNING_SCOPE]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md, external_claim_ids: [HCL_13_HOSPITALS]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml, external_claim_ids: []}
+  - {file: docs/research/hfwm/HFWM_R0_M3_SAP.md, external_claim_ids: [HCL_13_HOSPITALS]}
+  - {file: docs/research/hfwm/HFWM_R0_M3_SEED_REACHABILITY_AUDIT.md, external_claim_ids: []}
+  - {file: scripts/hfwm/freeze_m3d.py, external_claim_ids: []}
+  - {file: src/hfwm/m3d/__init__.py, external_claim_ids: []}
+  - {file: src/hfwm/m3d/contracts.py, external_claim_ids: []}
+  - {file: src/hfwm/m3d/aggregation.py, external_claim_ids: []}
+  - {file: src/hfwm/m3d/power.py, external_claim_ids: []}
+  - {file: src/hfwm/m3d/release.py, external_claim_ids: []}
+  - {file: tests/fixtures/hfwm/m3d_synthetic_contract.yaml, external_claim_ids: []}
+  - {file: tests/hfwm/m3d/test_aggregation.py, external_claim_ids: []}
+  - {file: tests/hfwm/m3d/test_contracts.py, external_claim_ids: []}
+  - {file: tests/hfwm/m3d/test_power.py, external_claim_ids: []}
+  - {file: tests/hfwm/m3d/test_provenance.py, external_claim_ids: []}
+  - {file: tests/hfwm/m3d/test_release.py, external_claim_ids: []}
+
+claims:
+  AGORA_HISTORICAL_PORTAL:
+    claim_id: AGORA_HISTORICAL_PORTAL
+    claim_text: "Cité comme figurant dans un schéma du règlement intérieur ; l'extraction texte du PDF utilisée lors du challenge ne contient pas le terme ; non vérifié à ce stade."
+    claim_type: INCIDENT_ORIGINAL_SOURCE_VERIFICATION
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: pre_amendment_66_and_76
+    external_exposure: REMOVED_FROM_PARTNER_DOCUMENT
+    source_status: UNSUPPORTED_REMOVE
+    source_type: HCL_OFFICIAL_PDF_CITED_BUT_ORIGINAL_CHECK_NOT_REPRODUCIBLE
+    source_reference: https://www.chu-lyon.fr/sites/default/files/reglement-interieur-hcl.pdf
+    source_locator: "Attribution initiale non suffisamment vérifiée ; l'existence du terme n'aurait de toute façon pas suffi à attester son rôle."
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: false
+    attests_asserted_role: false
+    required_action: "RETAIN_AS_INCIDENT; REMOVE_FROM_CURRENT_PARTNER_DOCUMENT"
+  AGORA_CURRENT_PDF_ARTICLE_9:
+    claim_id: AGORA_CURRENT_PDF_ARTICLE_9
+    claim_text: "Une vérification indépendante ultérieure du PDF HCL actuellement servi relie explicitement AGORA au dépôt des demandes adressées au secrétariat du Comité Scientifique et Éthique."
+    claim_type: INSTITUTIONAL_PORTAL_ROLE_CURRENT_PDF
+    file: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md
+    line: generated
+    external_exposure: INTERNAL_PROVENANCE_ONLY
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_PDF
+    source_reference: https://www.chu-lyon.fr/sites/default/files/reglement-interieur-hcl.pdf
+    source_locator: "PDF mis à jour mars 2026, annexe 9, Règlement CSE HCL version novembre 2024, article 9, page PDF 166"
+    retrieved_or_verified_at: "2026-08-29T03:10:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: "RETAIN_INTERNAL_ONLY; AGORA_REMAINS_ABSENT_FROM_PARTNER_REQUEST"
+  AGORA_GIT_ORIGIN:
+    claim_id: AGORA_GIT_ORIGIN
+    claim_text: "AGORA n'a pas de commit d'introduction dans ce dépôt."
+    claim_type: REPOSITORY_PROVENANCE
+    file: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md
+    line: 1
+    external_exposure: INTERNAL_ONLY
+    source_status: NOT_EXTERNAL_FACT
+    source_type: GIT_HISTORY
+    source_reference: "git log -S AGORA; git blame; git ls-files"
+    source_locator: "working tree on hfwm-r0@adc8d8ba59fe464692581141c901ed5813cbb5a3"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    required_action: RECORD_UNCOMMITTED_UNATTRIBUTED_ORIGIN
+  UNSUPPORTED_WEEKLY_COMMITTEE:
+    claim_id: UNSUPPORTED_WEEKLY_COMMITTEE
+    claim_text: "Un comité d'orientation se réunit chaque semaine."
+    claim_type: INSTITUTIONAL_CADENCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: pre_amendment_74
+    external_exposure: REMOVED_FROM_PARTNER_DOCUMENT
+    source_status: UNSUPPORTED_REMOVE
+    source_type: NONE
+    source_reference: null
+    source_locator: null
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: false
+    required_action: REMOVED_DO_NOT_ASK_PARTNER_TO_CONFIRM_EXISTENCE
+  UNSUPPORTED_EHOP_ALIAS:
+    claim_id: UNSUPPORTED_EHOP_ALIAS
+    claim_text: "La CIDS peut être appelée Clinique des Données ou eHOP."
+    claim_type: INSTITUTIONAL_NAME
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: pre_amendment_67
+    external_exposure: REMOVED_FROM_PARTNER_DOCUMENT
+    source_status: UNSUPPORTED_REMOVE
+    source_type: NONE
+    source_reference: null
+    source_locator: null
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: false
+    required_action: REPLACED_WITH_OFFICIAL_NAME_CELLULE_INGENIERIE_DONNEES_SANTE
+  UNSUPPORTED_DRCI_DRS_CIRCUIT_ROLE:
+    claim_id: UNSUPPORTED_DRCI_DRS_CIRCUIT_ROLE
+    claim_text: "DRCI/DRS appartient au circuit public d'instruction M3."
+    claim_type: INSTITUTIONAL_ROLE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: pre_amendment_73
+    external_exposure: REMOVED_FROM_PARTNER_DOCUMENT
+    source_status: UNSUPPORTED_REMOVE
+    source_type: NONE
+    source_reference: null
+    source_locator: null
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: false
+    required_action: REMOVED_FROM_PARTNER_GOVERNANCE_SECTION
+  HCL_GOVERNANCE_COSTRAT:
+    claim_id: HCL_GOVERNANCE_COSTRAT
+    claim_text: "COSTRAT — Comité Stratégique"
+    claim_type: INSTITUTIONAL_GOVERNANCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 96
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_WEBPAGE
+    source_reference: https://recherche.chu-lyon.fr/recherche-medicale-sur-donnees
+    source_locator: "section Gouvernance : comment est animé l'entrepôt ?, paragraphe Comité Stratégique"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  HCL_GOVERNANCE_COMOR:
+    claim_id: HCL_GOVERNANCE_COMOR
+    claim_text: "COMOR — Comité d'orientation des projets"
+    claim_type: INSTITUTIONAL_GOVERNANCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 98
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_WEBPAGE
+    source_reference: https://recherche.chu-lyon.fr/recherche-medicale-sur-donnees
+    source_locator: "section Gouvernance : comment est animé l'entrepôt ?, paragraphe Comité d'orientation des projets"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  HCL_GOVERNANCE_CIDS:
+    claim_id: HCL_GOVERNANCE_CIDS
+    claim_text: "CIDS — Cellule d'Ingénierie des Données de Santé"
+    claim_type: INSTITUTIONAL_GOVERNANCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 100
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_WEBPAGE
+    source_reference: https://recherche.chu-lyon.fr/recherche-medicale-sur-donnees
+    source_locator: "section Gouvernance : comment est animé l'entrepôt ?, paragraphe Cellule d'Ingénierie des Données de Santé"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  HCL_GOVERNANCE_CSE:
+    claim_id: HCL_GOVERNANCE_CSE
+    claim_text: "CSE — Comité Scientifique et Éthique"
+    claim_type: INSTITUTIONAL_GOVERNANCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 102
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_WEBPAGE
+    source_reference: https://recherche.chu-lyon.fr/recherche-medicale-sur-donnees
+    source_locator: "section Gouvernance : comment est animé l'entrepôt ?, paragraphe Comité Scientifique et Ethique"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  HCL_CSE_ACRONYM_COLLISION:
+    claim_id: HCL_CSE_ACRONYM_COLLISION
+    claim_text: "Le règlement intérieur HCL emploie CSE pour le Comité Social d'Établissement, tandis que la gouvernance EDS emploie CSE pour le Comité Scientifique et Éthique de la recherche sur les données de santé."
+    claim_type: INSTITUTIONAL_ACRONYM_COLLISION
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: generated
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_PDF_AND_WEBPAGE
+    source_reference: https://www.chu-lyon.fr/sites/default/files/reglement-interieur-hcl.pdf
+    source_locator: "article 21, page PDF 19 ; annexe 9 et page gouvernance EDS HCL pour le second sens"
+    retrieved_or_verified_at: "2026-08-29T03:10:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: EXPAND_FIRST_OCCURRENCE_AND_USE_CSE_EDS_IN_PARTNER_DOCUMENT
+  HCL_EDS_ARTICLE_111:
+    claim_id: HCL_EDS_ARTICLE_111
+    claim_text: "L'article 111 du règlement intérieur indique que les HCL opèrent un Entrepôt de Données de Santé pour la recherche en santé et les études relatives au pilotage hospitalier."
+    claim_type: INSTITUTIONAL_EDS_MANDATE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: generated
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_PDF
+    source_reference: https://www.chu-lyon.fr/sites/default/files/reglement-interieur-hcl.pdf
+    source_locator: "article 111, page PDF 52, version mise à jour mars 2026"
+    retrieved_or_verified_at: "2026-08-29T03:10:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_AS_EDS_EXISTENCE_AND_PURPOSE_ANCHOR_ONLY
+  HCL_13_HOSPITALS:
+    claim_id: HCL_13_HOSPITALS
+    claim_text: "Les HCL regroupent 13 hôpitaux publics."
+    claim_type: INSTITUTIONAL_VOLUME
+    file: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+    line: 11
+    external_exposure: INTERNAL_ANALYSIS_AND_PARTNER_CONTEXT
+    source_status: SOURCED_OFFICIAL
+    source_type: HCL_OFFICIAL_WEBPAGE
+    source_reference: https://www.chu-lyon.fr/hospices-civils-de-lyon
+    source_locator: "section 13 hôpitaux publics d'excellence, liste numérotée 1 à 13"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  CNIL_EDS_312_INTERNAL_USE:
+    claim_id: CNIL_EDS_312_INTERNAL_USE
+    claim_text: "Le point 3.1.2 encadre le pilotage stratégique réalisé par les personnels habilités du responsable et pour son usage exclusif."
+    claim_type: REGULATORY_REFERENCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 123
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_REFERENTIAL
+    source_reference: https://www.cnil.fr/sites/default/files/atoms/files/referentiel_entrepot.pdf
+    source_locator: "point 3.1.2, PDF page 4, lines 63-74 in indexed text"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_AS_PROVISIONAL_APPLICATION_PENDING_DPO
+  CNIL_PRODUCT_PROMOTION_PROHIBITION:
+    claim_id: CNIL_PRODUCT_PROMOTION_PROHIBITION
+    claim_text: "Le référentiel EDS interdit certaines utilisations de promotion de produits."
+    claim_type: REGULATORY_REFERENCE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 130
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_REFERENTIAL
+    source_reference: https://www.cnil.fr/sites/default/files/atoms/files/referentiel_entrepot.pdf
+    source_locator: "point 3.1.4, PDF page 4, lines 81-85 in indexed text"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SCOPE_EXACTLY_LIMITED_TO_REFERENTIAL
+  RGPD_PROCESSOR_INSTRUCTIONS:
+    claim_id: RGPD_PROCESSOR_INSTRUCTIONS
+    claim_text: "Un sous-traitant traite les données sur instructions documentées du responsable."
+    claim_type: REGULATORY_ROLE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 127
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_RGPD
+    source_reference: https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4
+    source_locator: "article 28(3)(a) RGPD"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_AS_ROLE_CRITERION_PENDING_DPO
+  RGPD_JOINT_CONTROL:
+    claim_id: RGPD_JOINT_CONTROL
+    claim_text: "La codétermination des finalités et moyens caractérise des responsables conjoints."
+    claim_type: REGULATORY_ROLE
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 128
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_RGPD
+    source_reference: https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4
+    source_locator: "article 26(1) RGPD"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_AS_ROLE_CRITERION_PENDING_DPO
+  CNIL_PSEUDONYM_NOT_ANONYM:
+    claim_id: CNIL_PSEUDONYM_NOT_ANONYM
+    claim_text: "La pseudonymisation ne vaut pas anonymisation automatique."
+    claim_type: REGULATORY_DATA_STATUS
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 134
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_WEBPAGE
+    source_reference: https://www.cnil.fr/fr/recherche-scientifique-hors-sante-enjeux-et-avantages-de-lanonymisation-et-de-la-pseudonymisation
+    source_locator: "sections Le principe et La pseudonymisation"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_WITH_SOURCE
+  CNIL_EXTERNAL_PSEUDONYM_ACCESS:
+    claim_id: CNIL_EXTERNAL_PSEUDONYM_ACCESS
+    claim_text: "Des équipes externes habilitées peuvent être destinataires de données pseudonymisées nécessaires après validation de leur projet par la gouvernance."
+    claim_type: REGULATORY_ACCESS
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 132
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: SOURCED_OFFICIAL
+    source_type: CNIL_OFFICIAL_REFERENTIAL
+    source_reference: https://www.cnil.fr/sites/default/files/atoms/files/referentiel_entrepot.pdf
+    source_locator: "point 6.3, PDF page 7, lines 233-237 in indexed text"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: true
+    required_action: KEEP_AS_PROVISIONAL_PENDING_LOCAL_GOVERNANCE
+  HCL_SDC_STANDARD_QUESTION:
+    claim_id: HCL_SDC_STANDARD_QUESTION
+    claim_text: "Le standard de Statistical Disclosure Control applicable aux agrégats Tier A doit être confirmé par les HCL/DPO."
+    claim_type: PARTNER_QUESTION
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: generated
+    external_exposure: PARTNER_QUESTION_ONLY
+    source_status: ASSUMED_QUESTION_ONLY
+    source_type: PARTNER_GOVERNANCE_QUESTION
+    source_reference: null
+    source_locator: "section Contrat de disclosure statistique — question DPO"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    attests_asserted_role: false
+    required_action: KEEP_ONLY_AS_QUESTION_NEVER_AS_FACT
+  QUESTION_REGISTER:
+    claim_id: QUESTION_REGISTER
+    claim_text: "Les conventions assumed sont présentées uniquement comme questions à confirmer."
+    claim_type: PARTNER_QUESTION
+    file: artifacts/hfwm-r0/m3d/partner_questions.json
+    line: generated
+    external_exposure: PARTNER_QUESTION_ONLY
+    source_status: ASSUMED_QUESTION_ONLY
+    source_type: PROJECT_ASSUMPTION
+    source_reference: docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml
+    source_locator: "objects status=assumed with question and owner_to_confirm"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    required_action: KEEP_ONLY_AS_QUESTION_NEVER_AS_FACT
+  PROJECT_POLICY_HCL_NANTES_DIJON:
+    claim_id: PROJECT_POLICY_HCL_NANTES_DIJON
+    claim_text: "HCL, Nantes et Dijon ont des rôles analytiques internes non autorisants."
+    claim_type: PROJECT_POLICY
+    file: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+    line: 7
+    external_exposure: INTERNAL_POLICY_AND_PARTNER_DISCLOSURE
+    source_status: NOT_EXTERNAL_FACT
+    source_type: PROJECT_DECISION
+    source_reference: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+    source_locator: "hcl, nantes and dijon policy blocks"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    required_action: KEEP_EXPLICITLY_AS_PROJECT_POLICY_NOT_PARTNER_COMMITMENT
+  HCL_GOVERNANCE_ORDER_NOT_ASSERTED:
+    claim_id: HCL_GOVERNANCE_ORDER_NOT_ASSERTED
+    claim_text: "Aucun ordre séquentiel COMOR/CSE/CIDS n'est affirmé."
+    claim_type: NEGATIVE_SCOPE_LIMIT
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 105
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: NOT_EXTERNAL_FACT
+    source_type: DOCUMENT_SCOPE
+    source_reference: null
+    source_locator: null
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    required_action: KEEP_SCOPE_LIMIT
+  M3D1_PLANNING_SCOPE:
+    claim_id: M3D1_PLANNING_SCOPE
+    claim_text: "La demande de faisabilité traduit les designs interne central et pessimiste en 28 à 36 mois, 8 à 12 sites, 4 unités par site et une granularité de 6 heures reconstruite."
+    claim_type: INTERNAL_PLANNING_TRANSLATION
+    file: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+    line: 40
+    external_exposure: EXTERNAL_PARTNER_DOCUMENT
+    source_status: NOT_EXTERNAL_FACT
+    source_type: PROJECT_SIMULATION_OUTPUT
+    source_reference: artifacts/hfwm-r0/m3d/power_simulation.json
+    source_locator: "selected_design_id=episodes_512; pessimistic ICC selected_design_id=episodes_640; attrition appendix in HFWM_R0_M3D1_AMENDMENT.md"
+    retrieved_or_verified_at: "2026-08-29T00:00:00+02:00"
+    supports_claim: true
+    required_action: KEEP_AS_FEASIBILITY_REQUEST_NOT_PARTNER_FACT

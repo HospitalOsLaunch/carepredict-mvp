@@ -1,0 +1,1 @@
+PYTHONPATH=src python scripts/hfwm/run_bakeoff.py --repository-root . --preregistration-dir docs/research/hfwm --output-dir artifacts/hfwm-r0/bakeoff-m2b

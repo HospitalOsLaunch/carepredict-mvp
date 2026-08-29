@@ -1,0 +1,24 @@
+{
+  "schema_version": "hfwm.r0.minimal-candidate-training.v1",
+  "candidate_id": "hfwm-r0-m1b-local-joint-ridge",
+  "model_family": "local_joint_from_scratch",
+  "dataset_path": "artifacts/hfwm-r0/data-slice/dataset.json",
+  "expected_dataset_hash": "64e831ec1a3fbf6fdad2bd0ac716b675619216d3b4c180895ac6acdba2bbb965",
+  "site_id": "synthetic-site-0-0",
+  "target_order": [
+    "occupancy",
+    "inflow"
+  ],
+  "step_hours": 6,
+  "rollout_steps": 4,
+  "seed": 1729,
+  "ridge_alpha": 1.0,
+  "belief_update_rate": 0.25,
+  "recording_dim": 2,
+  "max_parameters": 100,
+  "max_train_episodes": 14,
+  "cpu_seconds_budget": 60,
+  "uncertainty": "residual_gaussian_90pct_interval",
+  "hyperparameter_search": false,
+  "dataset_reduction_allowed_once_on_timeout": true
+}

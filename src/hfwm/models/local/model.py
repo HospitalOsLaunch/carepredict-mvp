@@ -348,6 +348,58 @@ class LocalJointDynamicsModel:
             digest.update(array.astype("<f8", copy=False).tobytes(order="C"))
         return digest.hexdigest()
 
+    def fitted_state(self) -> dict[str, FloatArray]:
+        """Return detached numeric state suitable for a caller-owned checkpoint."""
+
+        coefficient, variance = self._fitted_arrays()
+        return {
+            "coefficient": coefficient.copy(),
+            "residual_variance": variance.copy(),
+            "local_bias": self._local_bias.copy(),
+        }
+
+    def restore_fitted_state(
+        self,
+        *,
+        coefficient: FloatArray,
+        residual_variance: FloatArray,
+        local_bias: FloatArray,
+        site_id: str,
+    ) -> LocalJointDynamicsModel:
+        """Restore a validated local checkpoint without fitting or hidden I/O."""
+
+        arrays = (
+            np.asarray(coefficient, dtype=np.float64),
+            np.asarray(residual_variance, dtype=np.float64),
+            np.asarray(local_bias, dtype=np.float64),
+        )
+        expected_shapes = (
+            (self.config.design_dim, self.config.observation_dim),
+            (self.config.observation_dim,),
+            (self.config.observation_dim,),
+        )
+        if any(
+            array.shape != expected or not np.all(np.isfinite(array))
+            for array, expected in zip(arrays, expected_shapes, strict=True)
+        ):
+            raise ValueError("checkpoint arrays have an invalid shape or non-finite value")
+        if np.any(arrays[1] <= 0.0):
+            raise ValueError("checkpoint residual variances must be positive")
+        if not site_id:
+            raise ValueError("checkpoint site_id must not be empty")
+        self._coefficient = arrays[0].copy()
+        self._residual_variance = arrays[1].copy()
+        self._local_bias = arrays[2].copy()
+        self._site_id = site_id
+        self.identity = ComponentIdentity(
+            component_type="DynamicsCore",
+            implementation_id="local_joint_from_scratch",
+            contract_version="hfwm.dynamics-core.v1",
+            implementation_version="hfwm-r0.1",
+            artifact_hash=self.backbone_hash(),
+        )
+        return self
+
     def _training_rows(
         self,
         trajectories: FloatArray,

@@ -1,0 +1,122 @@
+schema_version: hfwm.r0.m3d.episode-spec.v1
+status: PRE_DATA_EPISODE_SPEC_FROZEN_FOR_PARTNER_REVIEW
+training_authorized: false
+partner_data_consumed: false
+
+analysis_unit: episode
+hierarchy:
+  - hospital_group
+  - hospital_site
+  - unit
+  - temporal_block
+  - episode
+independence:
+  units_within_same_site_independent: false
+  rollout_steps_independent: false
+  targets_independent: false
+  seed_labels_independent: false
+  episodes_preserved_whole: true
+
+episode_window:
+  observation_granularity: 6_hours
+  context_duration: 336_hours
+  maximum_rollout_horizon: 24_hours
+  full_episode_span: 360_hours
+  independent_episode_stride: 360_hours
+  rollout_steps:
+    - 1
+    - 2
+    - 4
+  temporal_block_duration: 30_days
+  interval_convention: half_open_[start,end)
+  status: assumed
+  owner_to_confirm: DIM
+  evidence: null
+  question: >-
+    Une granularité de six heures, un contexte de quatorze jours, un horizon maximal
+    d'un jour et des blocs de trente jours sont-ils compatibles avec la fréquence, la
+    fraîcheur et les pratiques opérationnelles des sources ?
+
+episode_boundaries:
+  preserve_patient_count_identity_across_boundary: true
+  no_window_crosses_split_or_temporal_block: true
+  overlapping_windows:
+    policy: SAME_DEPENDENCE_CLUSTER_AND_NEVER_COUNTED_AS_INDEPENDENT
+    status: assumed
+    owner_to_confirm: OTHER
+    evidence: null
+    question: >-
+      Quel pas entre épisodes chevauchants conserve une puissance utile sans prétendre
+      qu'ils sont indépendants ?
+  source_outage:
+    policy: EXCLUDE_UNIT_PERIOD_BEFORE_MODEL_RESULTS
+    reason_retained: true
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: Comment les ruptures et maintenances de chaque source sont-elles journalisées ?
+  administrative_reorganization:
+    policy: START_NEW_TEMPORAL_BLOCK_AND_VERSION_UNIT_MAPPING
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Existe-t-il un historique des créations, fusions, renommages et changements de périmètre
+      des unités ?
+
+snapshot_rule:
+  as_of: episode_origin
+  feature_eligibility: available_at_lte_as_of
+  future_corrections_excluded: true
+  missing_historical_available_at: RETROSPECTIVE_ONLY_NOT_REALTIME_REPLAY
+  extract_generated_at: DOCUMENTARY_BOUND_ONLY
+
+eligibility_mask:
+  frozen_before_outcomes: true
+  performance_based_selection: forbidden
+  key:
+    - hospital_group_id
+    - hospital_site_id
+    - unit_id
+    - temporal_block_id
+  retain_exclusion_reason: true
+  statuses:
+    - ELIGIBLE_RETROSPECTIVE
+    - INELIGIBLE_SEMANTICS
+    - INELIGIBLE_TEMPORAL
+    - INELIGIBLE_STOCK_FLOW
+    - INELIGIBLE_DEDUPLICATION
+    - INELIGIBLE_CAPACITY
+    - INELIGIBLE_SOURCE_OUTAGE
+  data_in_hand_statuses: M3E_ONLY
+
+census_semantics:
+  count_used_for_identity: patient_census_count
+  rate: patient_census_count_divided_by_time_aligned_open_bed_count
+  physical_presence_separate: true
+  operating_room:
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: Le bloc modifie-t-il le census ou seulement la présence physique ?
+  permission:
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: Permission et retour sont-ils deux changements de census ou de présence seulement ?
+  temporary_unit:
+    status: assumed
+    owner_to_confirm: DIRECTION_DES_SOINS
+    evidence: null
+    question: >-
+      L'hébergement temporaire hors unité change-t-il le census administratif, la présence,
+      les deux ou aucun ?
+
+split_policy:
+  chronological_split_before_windowing: true
+  site_holdout_policy_reference: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+  leakage_checks:
+    - no_episode_overlap_across_splits
+    - no_target_or_future_correction_available_at_origin
+    - no_nantes_access_in_m3l
+    - no_outcome_based_eligibility_change

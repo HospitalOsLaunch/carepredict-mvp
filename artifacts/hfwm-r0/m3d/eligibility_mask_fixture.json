@@ -1,0 +1,106 @@
+{
+  "frozen_before_outcomes": true,
+  "rows": [
+    {
+      "aggregate_score": 100.0,
+      "eligible": true,
+      "exclusion_reasons": [],
+      "hard_fail_dimensions": [],
+      "historical_realtime_claim_allowed": true,
+      "hospital_group_id": "synthetic-group",
+      "hospital_site_id": "synthetic-site-1",
+      "scores_from_raw_evidence": {
+        "capacity_availability": 100.0,
+        "correction_traceability": 100.0,
+        "deduplication_integrity": 100.0,
+        "freshness_observability": 100.0,
+        "semantic_completeness": 100.0,
+        "stock_flow_closure": 100.0,
+        "temporal_fidelity": 100.0
+      },
+      "temporal_block_id": "synthetic-block-1",
+      "unit_id": "synthetic-unit-a",
+      "vector_id": "complete_unit_block"
+    },
+    {
+      "aggregate_score": 85.71428571428571,
+      "eligible": true,
+      "exclusion_reasons": [
+        "freshness_observability_below_60",
+        "historical_available_at_missing_retro_only"
+      ],
+      "hard_fail_dimensions": [],
+      "historical_realtime_claim_allowed": false,
+      "hospital_group_id": "synthetic-group",
+      "hospital_site_id": "synthetic-site-1",
+      "scores_from_raw_evidence": {
+        "capacity_availability": 100.0,
+        "correction_traceability": 75.0,
+        "deduplication_integrity": 100.0,
+        "freshness_observability": 40.0,
+        "semantic_completeness": 100.0,
+        "stock_flow_closure": 100.0,
+        "temporal_fidelity": 85.0
+      },
+      "temporal_block_id": "synthetic-block-1",
+      "unit_id": "synthetic-unit-b",
+      "vector_id": "partial_replayability"
+    },
+    {
+      "aggregate_score": 67.14285714285714,
+      "eligible": false,
+      "exclusion_reasons": [
+        "semantic_completeness_below_90",
+        "stock_flow_closure_below_95",
+        "temporal_fidelity_below_70"
+      ],
+      "hard_fail_dimensions": [
+        "semantic_completeness",
+        "stock_flow_closure",
+        "temporal_fidelity"
+      ],
+      "historical_realtime_claim_allowed": false,
+      "hospital_group_id": "synthetic-group",
+      "hospital_site_id": "synthetic-site-1",
+      "scores_from_raw_evidence": {
+        "capacity_availability": 100.0,
+        "correction_traceability": 100.0,
+        "deduplication_integrity": 100.0,
+        "freshness_observability": 100.0,
+        "semantic_completeness": 30.0,
+        "stock_flow_closure": 0.0,
+        "temporal_fidelity": 40.0
+      },
+      "temporal_block_id": "synthetic-block-1",
+      "unit_id": "synthetic-unit-outage",
+      "vector_id": "source_outage"
+    },
+    {
+      "aggregate_score": 95.71428571428571,
+      "eligible": false,
+      "exclusion_reasons": [
+        "stock_flow_closure_below_95"
+      ],
+      "hard_fail_dimensions": [
+        "stock_flow_closure"
+      ],
+      "historical_realtime_claim_allowed": false,
+      "hospital_group_id": "synthetic-group",
+      "hospital_site_id": "synthetic-site-1",
+      "scores_from_raw_evidence": {
+        "capacity_availability": 100.0,
+        "correction_traceability": 100.0,
+        "deduplication_integrity": 100.0,
+        "freshness_observability": 100.0,
+        "semantic_completeness": 100.0,
+        "stock_flow_closure": 70.0,
+        "temporal_fidelity": 100.0
+      },
+      "temporal_block_id": "synthetic-block-1",
+      "unit_id": "synthetic-unit-c",
+      "vector_id": "broken_transfer"
+    }
+  ],
+  "schema_version": "hfwm.r0.m3d.fixture-eligibility.v1",
+  "synthetic_only": true
+}

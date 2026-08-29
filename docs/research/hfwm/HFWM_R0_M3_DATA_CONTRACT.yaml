@@ -1,0 +1,299 @@
+schema_version: hfwm.r0.m3d.data-contract.v1
+milestone_id: HFWM-R0-M3D
+status: PRE_DATA_CONTRACT_FROZEN_FOR_PARTNER_REVIEW
+execution_authorized: false
+partner_data_access_authorized: false
+training_authorized: false
+
+m2_result:
+  candidate_status: REJECTED_BY_OCCUPANCY_GUARDRAIL
+  procedural_basis: PRE_REGISTERED_POINT_ESTIMATE_RULE
+  primary_superiority: INCONCLUSIVE
+  primary_inferiority: NOT_DEMONSTRATED
+  occupation_guardrail: FAILED_PROCEDURALLY
+  true_occupation_regression: NOT_ESTIMATED_WITH_DECISION_GRADE_PRECISION
+  world_model_advantage: NOT_TESTABLE_ON_M1
+  authorized_statement: >-
+    M2 a rejeté procéduralement le candidat parce que son point estimate
+    d'occupation a franchi le guardrail pré-enregistré. Le banc M1 est trop peu
+    puissant pour établir la direction ou l'amplitude vraie de cet effet.
+  m2_occupation_semantics: COUNT
+  m2_semantics_evidence:
+    - artifacts/hfwm-r0/data-slice/dataset.json
+    - artifacts/hfwm-r0/bakeoff-m2b/results.json
+  m3_guardrail_comparable_to_m2: unknown
+  direct_metric_continuation_allowed: false
+  comparability_condition: >-
+    Le partenaire doit confirmer que patient_census_count correspond au compte
+    synthétique M1 et que la fenêtre, l'unité et la normalisation sont alignées.
+
+hierarchy:
+  order:
+    - hospital_group
+    - hospital_site
+    - unit
+    - temporal_block
+    - episode
+  independence_rule: >-
+    Les unités d'un même site ne sont jamais des observations indépendantes.
+    L'épisode est l'unité d'analyse, avec inférence groupée par site et bloc temporel.
+
+stock_variables:
+  patient_census_count:
+    definition: compte administratif de patients appartenant au census de l'unité
+    unit: patient_count
+    additive_identity_eligible: true
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Quelle définition administrative exacte du census d'unité est utilisée et à
+      quel instant le compte est-il réputé valide ?
+  physical_presence_count:
+    definition: personnes physiquement présentes dans l'unité au temps considéré
+    unit: patient_count
+    additive_identity_eligible: false
+    status: assumed
+    owner_to_confirm: DIRECTION_DES_SOINS
+    evidence: null
+    question: >-
+      Une mesure de présence physique distincte du census administratif est-elle
+      disponible, et comment traite-t-elle bloc, permission et hébergement temporaire ?
+  open_bed_count:
+    definition: lits réellement ouverts et utilisables pendant l'intervalle
+    unit: bed_count
+    time_varying_denominator: true
+    additive_identity_eligible: false
+    status: assumed
+    owner_to_confirm: DIRECTION_DES_SOINS
+    evidence: null
+    question: >-
+      Quelle source fait foi pour les lits ouverts, fermés et indisponibles, et quelle
+      est sa granularité temporelle ?
+  occupancy_rate:
+    definition: patient_census_count / open_bed_count au même instant
+    unit: ratio
+    derived: true
+    denominator_temporal: true
+    additive_identity_eligible: false
+    zero_denominator_policy: MISSING_AND_INELIGIBLE_FOR_RATE_ANALYSIS
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Le terme occupation utilisé par l'établissement désigne-t-il un compte, un taux,
+      une présence physique ou une autre mesure, et quel dénominateur temporel utilise-t-il ?
+
+census_membership_conventions:
+  operating_room:
+    default: remains_in_source_census
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: Un patient au bloc reste-t-il dans le census de son unité source ?
+  leave_permission:
+    default: exits_source_census_until_return
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Un départ en permission retire-t-il le patient du census, et quel événement
+      matérialise son retour ?
+  administrative_transfer:
+    default: changes_census_at_effective_care_transfer_time
+    status: assumed
+    owner_to_confirm: DPI
+    evidence: null
+    question: >-
+      Le changement de census suit-il l'heure de mutation administrative, l'arrivée
+      physique ou une autre heure effective ?
+  temporary_other_unit:
+    default: remains_in_source_census_unless_formal_transfer
+    status: assumed
+    owner_to_confirm: DIRECTION_DES_SOINS
+    evidence: null
+    question: >-
+      Un patient temporairement accueilli dans une autre unité reste-t-il dans le census
+      source et comment cette situation est-elle codée ?
+  birth:
+    default: external_entry_when_newborn_enters_unit_census
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Dans quelles unités une naissance constitue-t-elle une nouvelle entrée de census ?
+  death:
+    default: external_exit_at_effective_census_removal
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: Quelle heure fait foi pour la sortie de census liée à un décès ?
+
+closed_stock_flow_identity:
+  stock: patient_census_count
+  interval: half_open_[t,t_plus_1)
+  formula: >-
+    census[t+1] = census[t] + external_entries[t,t+1]
+    + internal_inbound_transfers[t,t+1] - external_exits[t,t+1]
+    - internal_outbound_transfers[t,t+1]
+    + other_signed_census_adjustments[t,t+1]
+  boundary_rule: event_time_equal_to_t_belongs_to_interval_starting_at_t
+  rate_identity_forbidden: true
+  physical_presence_identity_not_assumed: true
+
+event_categories:
+  external_entries:
+    unit: patient_count
+    interval: half_open_[t,t_plus_1)
+    boundary_rule: effective_event_time
+    provenance_expected: DPI_OR_ADT
+    mutually_exclusive_members:
+      - effective_external_admission
+      - birth_when_entering_census
+      - return_from_permission_when_prior_leave_exited_census
+      - documented_other_external_entry
+    status: assumed
+    owner_to_confirm: DPI
+    evidence: null
+    question: Quelles entrées externes sont mutuellement exclusives dans les interfaces ADT ?
+  internal_inbound_transfers:
+    unit: patient_count
+    interval: half_open_[t,t_plus_1)
+    boundary_rule: same_effective_time_as_outbound_leg
+    provenance_expected: DPI_OR_ADT
+    required_key: transfer_event_id
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: >-
+      Un identifiant commun relie-t-il les jambes sortante et entrante d'un transfert,
+      sinon quelle règle d'appariement peut être auditée ?
+  external_exits:
+    unit: patient_count
+    interval: half_open_[t,t_plus_1)
+    boundary_rule: effective_event_time
+    provenance_expected: DPI_OR_ADT
+    mutually_exclusive_members:
+      - effective_discharge
+      - death
+      - leave_permission_when_exiting_census
+      - documented_other_external_exit
+    status: assumed
+    owner_to_confirm: DPI
+    evidence: null
+    question: Quelles sorties externes sont mutuellement exclusives et quelle heure fait foi ?
+  internal_outbound_transfers:
+    unit: patient_count
+    interval: half_open_[t,t_plus_1)
+    boundary_rule: same_effective_time_as_inbound_leg
+    provenance_expected: DPI_OR_ADT
+    required_key: transfer_event_id
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: >-
+      Les transferts inter-unités sont-ils complets dans les deux sens et sur toutes les
+      unités du périmètre ?
+  other_signed_census_adjustments:
+    unit: signed_patient_count
+    interval: half_open_[t,t_plus_1)
+    boundary_rule: correction_effective_time_with_version_trace
+    provenance_expected: SOURCE_CORRECTION_HISTORY
+    mutually_exclusive_members:
+      - documented_other_entry
+      - documented_other_exit
+      - correction
+      - cancellation
+    status: assumed
+    owner_to_confirm: DIM
+    evidence: null
+    question: >-
+      Quels ajustements, corrections et annulations modifient rétrospectivement le census,
+      et leur historique de versions est-il disponible ?
+
+transfer_coupling:
+  invariant: one_outbound_A_and_one_inbound_B_are_one_coupled_event
+  preferred_key: transfer_event_id
+  fallback: audited_match_on_source_destination_effective_time_and_source_record_id
+  fallback_tolerance_seconds: 0
+  unmatched_policy: HARD_FAIL_STOCK_FLOW_CLOSURE_FOR_UNIT_PERIOD
+
+temporal_contract:
+  priority_fields:
+    - event_time_or_validity_interval
+    - extract_generated_at
+    - source_system
+    - hospital_site_id
+    - unit_id
+    - known_correction_rule
+    - source_version_or_last_modified_when_available
+    - recorded_at
+    - available_at
+    - ingested_at
+    - correction_history
+    - successive_source_snapshots
+  event_time:
+    status: assumed
+    owner_to_confirm: DPI
+    evidence: null
+    question: Quelle heure métier ou quel intervalle de validité fait foi pour chaque flux ?
+  extract_generated_at:
+    use: documentary_upper_bound_only
+    never_silent_available_at_substitute: true
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: Chaque extraction porte-t-elle un timestamp fiable de génération ?
+  source_version:
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: Un numéro de version ou last_modified existe-t-il pour suivre les corrections ?
+  available_at:
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: >-
+      L'heure de disponibilité historique de chaque variable est-elle conservée, séparément
+      de l'heure métier et de l'heure d'extraction ?
+  missing_historical_available_at_policy:
+    evaluation_scope: RETROSPECTIVE_ONLY_WITH_EXPLICIT_LIMIT
+    historical_realtime_claim: FORBIDDEN
+    prospective_append_only_extracts: START_ONLY_AFTER_PARTNER_AGREEMENT
+    extract_generated_at_use: DOCUMENTARY_BOUND_NOT_SILENT_SUBSTITUTE
+
+minimum_data_tier_a:
+  direct_patient_identifier_requested: false
+  fields:
+    - patient_census_count
+    - effective_external_admissions
+    - external_exits
+    - coupled_inbound_and_outbound_transfers
+    - other_signed_census_adjustments
+    - open_bed_count
+    - unavailable_bed_count
+    - hospital_site_id
+    - unit_id
+    - interval
+    - extract_generated_at
+    - correction_rules
+  small_cell_policy: PARTNER_DEFINED_SUPPRESSION_AGGREGATION_OR_CONTROL
+  aggregate_anonymity_assumed: false
+
+claims:
+  allowed:
+    - PRE_DATA_CONTRACT_READY_FOR_REVIEW
+    - SYNTHETIC_FIXTURE_TESTED
+    - PLANNING_SIMULATION_ONLY
+  forbidden:
+    - P0_PASS
+    - HFWM_PASS
+    - VALIDATED_WORLD_MODEL
+    - PROVEN_FOUNDATION_MODEL
+    - SHARED_HFWM_WORKS
+    - SHARED_HFWM_FAILS
+    - VALIDATED_AT_NANTES
+    - HISTORICAL_REALTIME_AVAILABILITY_WITHOUT_AVAILABLE_AT
+    - DATA_IN_HAND
+    - M3L_AUTHORIZED
+    - M3F_AUTHORIZED

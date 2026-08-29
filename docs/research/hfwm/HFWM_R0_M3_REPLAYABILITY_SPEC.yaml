@@ -1,0 +1,112 @@
+schema_version: hfwm.r0.m3d.replayability.v1
+status: PRE_DATA_THRESHOLDS_FROZEN_FOR_PARTNER_REVIEW
+key:
+  - hospital_group_id
+  - hospital_site_id
+  - unit_id
+  - temporal_block_id
+scope: RETROSPECTIVE_M3_ELIGIBILITY_ONLY
+historical_realtime_claim_without_available_at: forbidden
+
+dimensions:
+  semantic_completeness:
+    minimum: 90
+    blocking_for_retrospective: true
+    definition: census, event categories and unit semantics confirmed and mutually exclusive
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: census_definition_confirmed, kind: boolean_true, weight: 30}
+      - {id: event_taxonomy_exhaustive, kind: boolean_true, weight: 25}
+      - {id: event_categories_mutually_exclusive, kind: boolean_true, weight: 25}
+      - {id: unit_mapping_versioned, kind: boolean_true, weight: 20}
+  temporal_fidelity:
+    minimum: 70
+    blocking_for_retrospective: true
+    definition: event validity and extraction bounds are documented and ordered
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: event_time_coverage, kind: minimum, value: 0.99, weight: 35}
+      - {id: extract_generated_at_coverage, kind: minimum, value: 0.99, weight: 25}
+      - {id: timestamp_order_valid_rate, kind: minimum, value: 0.99, weight: 25}
+      - {id: correction_time_available, kind: boolean_true, weight: 15}
+  stock_flow_closure:
+    minimum: 95
+    blocking_for_retrospective: true
+    definition: closed identity holds within frozen tolerance after coupled transfers
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: absolute_census_residual_max, kind: maximum, value: 0, weight: 50}
+      - {id: unmatched_transfer_count, kind: maximum, value: 0, weight: 30}
+      - {id: closed_interval_coverage, kind: minimum, value: 0.99, weight: 20}
+  deduplication_integrity:
+    minimum: 95
+    blocking_for_retrospective: true
+    definition: duplicate and overlapping source events are resolved reproducibly
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: unresolved_duplicate_rate, kind: maximum, value: 0, weight: 60}
+      - {id: overlap_resolution_documented, kind: boolean_true, weight: 40}
+  correction_traceability:
+    minimum: 70
+    blocking_for_retrospective: true
+    definition: corrections and cancellations have version or snapshot evidence
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: correction_version_coverage, kind: minimum, value: 0.95, weight: 50}
+      - {id: cancellations_traceable, kind: boolean_true, weight: 25}
+      - {id: successive_snapshots_available, kind: boolean_true, weight: 25}
+  capacity_availability:
+    minimum: 90
+    blocking_for_retrospective: true
+    definition: time-aligned open and unavailable bed counts cover the analysis interval
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: open_bed_time_coverage, kind: minimum, value: 0.95, weight: 50}
+      - {id: denominator_positive_rate, kind: minimum, value: 1.0, weight: 30}
+      - {id: bed_closure_source_confirmed, kind: boolean_true, weight: 20}
+  freshness_observability:
+    minimum: 60
+    blocking_for_retrospective: false
+    definition: historical available_at or explicit documentary extraction bound exists
+    missing_evidence_policy: FAIL_CHECK
+    checks:
+      - {id: historical_available_at_coverage, kind: minimum, value: 0.95, weight: 60}
+      - {id: documentary_extract_bound_coverage, kind: minimum, value: 0.99, weight: 25}
+      - {id: prospective_append_only_plan_approved, kind: boolean_true, weight: 15}
+
+aggregate_reporting:
+  range: 0_to_100
+  method: unweighted_mean_of_seven_dimensions
+  can_override_hard_fail: false
+  label_if_any_hard_fail: INELIGIBLE_REGARDLESS_OF_AGGREGATE
+  score_source: DETERMINISTIC_WEIGHTED_RUBRIC_FROM_RAW_EVIDENCE
+  missing_evidence_policy: FAILED_CHECK_WITH_RETAINED_REASON
+
+eligibility_mask:
+  generated_pre_analysis: true
+  immutable_after_outcome_access: true
+  selection_based_on_model_performance: forbidden
+  exclusion_reason_required: true
+  eligible_retro_status: ELIGIBLE_RETROSPECTIVE_WITH_LIMITS
+  historical_realtime_status_requires_available_at: true
+  data_in_hand_status_owner: M3E
+
+fallback_without_available_at:
+  retrospective_evaluation: allowed_with_explicit_limit
+  historical_realtime_availability_claim: forbidden
+  prospective_append_only_extraction: after_partner_agreement_only
+  extract_generated_at: documentary_bound_never_silent_available_at_substitute
+
+fixture_expected_decisions:
+  complete_unit_block:
+    eligible: true
+    historical_realtime_claim_allowed: true
+  partial_replayability:
+    eligible: true
+    historical_realtime_claim_allowed: false
+  source_outage:
+    eligible: false
+    hard_fail_dimension: semantic_completeness
+  broken_transfer:
+    eligible: false
+    hard_fail_dimension: stock_flow_closure

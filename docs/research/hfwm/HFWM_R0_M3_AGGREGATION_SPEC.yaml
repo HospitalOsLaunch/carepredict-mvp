@@ -1,0 +1,133 @@
+schema_version: hfwm.r0.m3d1.tier-a-aggregation.v1
+status: PRE_DATA_CONFORMANCE_SPEC_FOR_PARTNER_REVIEW
+execution_owner: PARTNER_INSIDE_AUTHORIZED_ENVIRONMENT
+partner_data_exported_to_spika: false
+patient_identifier_requested: false
+movement_level_export_requested: false
+reference_implementation: src/hfwm/m3d/aggregation.py
+conformance_test: tests/hfwm/m3d/test_aggregation.py
+
+disclosure_contract:
+  status: PARTNER_DPO_TO_CONFIRM
+  whole_row_policy: >-
+    DISCLOSURE_SUPPRESSED_ROW suppresses the entire site x unit x time_window row;
+    stock and flow fields are never partially suppressed and suppressed values are
+    never reconstructed from adjacent released rows.
+  row_absence_reason:
+    enum:
+      - DISCLOSURE_SUPPRESSED
+      - SOURCE_OUTAGE
+      - UNIT_CLOSED
+      - NOT_APPLICABLE
+    required: true
+  gap_policy:
+    suppressed_row_creates_temporal_gap: true
+    analytical_episode_may_bridge_gap: false
+    eligibility_mask_reason: DISCLOSURE_SUPPRESSED_INTERVAL
+  extract_row_counts:
+    expected_rows: required
+    released_rows: required
+    disclosure_suppressed_rows: required
+    source_outage_rows: required
+    unit_closed_rows: required
+    not_applicable_rows: required
+    disclosure_suppression_rate: required
+  suppression_threshold: PARTNER_DPO_TO_CONFIRM
+  k_anonymity_or_equivalent_threshold: PARTNER_DPO_TO_CONFIRM
+  released_metadata_must_not_reconstruct_suppressed_values: true
+
+decision:
+  selected_option: PARTNER_EXECUTES_AGGREGATION_SPEC_RETURNS_TIER_A_COUNTS
+  rejected_default: EXPORT_PSEUDONYMIZED_MOVEMENTS_TO_SPIKA
+  rationale: >-
+    Preserve Tier A and avoid movement-level export while making the six-hour
+    reconstruction explicit, executable and testable rather than asking the partner to
+    invent the conventions.
+
+output_grain:
+  timezone: Europe/Paris
+  daylight_saving_policy:
+    status: assumed
+    owner_to_confirm: DSI
+    evidence: null
+    question: >-
+      Les timestamps source portent-ils un offset non ambigu et la conversion UTC permet-elle
+      de traiter les journées de 23 et 25 heures sans doublon ?
+  bucket_duration_hours: 6
+  interval_convention: half_open_[start,end)
+  required_boundaries_local_time:
+    - "00:00"
+    - "06:00"
+    - "12:00"
+    - "18:00"
+
+required_inputs_inside_partner_environment:
+  - event_id
+  - event_time_with_timezone
+  - available_at_or_version_timestamp_if_available
+  - event_type
+  - source_unit_id
+  - destination_unit_id_for_transfers
+  - transfer_event_id_or_audited_pairing_key
+  - correction_or_cancellation_link
+  - signed_delta_for_other_adjustments
+  - daily_authoritative_midnight_census_for_reconciliation
+  - time_aligned_open_bed_count
+
+closed_event_categories:
+  external_entry: 1
+  internal_inbound_transfer: 1
+  external_exit: -1
+  internal_outbound_transfer: -1
+  other_signed_census_adjustment: signed_integer
+
+aggregation_algorithm:
+  - normalize timezone-aware event instants to UTC for ordering
+  - reject duplicate event_id values
+  - filter corrections and versions by available_at_lte_as_of when historical metadata exists
+  - sort by event_time_then_event_id
+  - apply each signed census delta exactly once in its half-open six-hour bucket
+  - carry patient_census_count_end into the next bucket start
+  - compute occupancy_rate only after joining time-aligned open_bed_count
+  - reconcile every local midnight boundary with the authoritative daily census
+  - emit discrepancy and semantic-version fields; never silently overwrite a mismatch
+
+required_tier_a_outputs:
+  - hospital_site_id
+  - unit_id
+  - bucket_start
+  - bucket_end
+  - patient_census_count_start
+  - patient_census_count_end
+  - external_entries_count
+  - internal_inbound_transfers_count
+  - external_exits_count
+  - internal_outbound_transfers_count
+  - other_signed_census_adjustments
+  - open_bed_count
+  - occupancy_rate
+  - source_system
+  - extract_generated_at
+  - semantic_version
+  - reconciliation_discrepancy
+  - row_absence_reason
+
+row_absence_reason_for_released_rows: null
+
+hard_failures:
+  - negative_census
+  - duplicate_event_id
+  - broken_transfer_pair
+  - unexplained_midnight_reconciliation_difference
+  - timezone_missing_or_ambiguous
+  - census_semantic_version_missing_across_known_change
+
+historical_available_at_missing:
+  output_status: RETROSPECTIVE_ONLY_NOT_REALTIME_REPLAY
+  extract_generated_at_is_available_at_substitute: false
+
+future_change_control:
+  weights_persistence_required_for_every_model_run: true
+  configuration_hash_required: true
+  weights_hash_required: true
+  prediction_hash_required: true

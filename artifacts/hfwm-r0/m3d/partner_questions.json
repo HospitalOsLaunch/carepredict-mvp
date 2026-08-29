@@ -1,0 +1,134 @@
+{
+  "questions": [
+    {
+      "convention_path": "document[0].census_membership_conventions.administrative_transfer",
+      "owner_to_confirm": "DPI",
+      "question": "Le changement de census suit-il l'heure de mutation administrative, l'arrivée physique ou une autre heure effective ?"
+    },
+    {
+      "convention_path": "document[0].census_membership_conventions.birth",
+      "owner_to_confirm": "DIM",
+      "question": "Dans quelles unités une naissance constitue-t-elle une nouvelle entrée de census ?"
+    },
+    {
+      "convention_path": "document[0].census_membership_conventions.death",
+      "owner_to_confirm": "DIM",
+      "question": "Quelle heure fait foi pour la sortie de census liée à un décès ?"
+    },
+    {
+      "convention_path": "document[0].census_membership_conventions.leave_permission",
+      "owner_to_confirm": "DIM",
+      "question": "Un départ en permission retire-t-il le patient du census, et quel événement matérialise son retour ?"
+    },
+    {
+      "convention_path": "document[0].census_membership_conventions.operating_room",
+      "owner_to_confirm": "DIM",
+      "question": "Un patient au bloc reste-t-il dans le census de son unité source ?"
+    },
+    {
+      "convention_path": "document[0].census_membership_conventions.temporary_other_unit",
+      "owner_to_confirm": "DIRECTION_DES_SOINS",
+      "question": "Un patient temporairement accueilli dans une autre unité reste-t-il dans le census source et comment cette situation est-elle codée ?"
+    },
+    {
+      "convention_path": "document[0].event_categories.external_entries",
+      "owner_to_confirm": "DPI",
+      "question": "Quelles entrées externes sont mutuellement exclusives dans les interfaces ADT ?"
+    },
+    {
+      "convention_path": "document[0].event_categories.external_exits",
+      "owner_to_confirm": "DPI",
+      "question": "Quelles sorties externes sont mutuellement exclusives et quelle heure fait foi ?"
+    },
+    {
+      "convention_path": "document[0].event_categories.internal_inbound_transfers",
+      "owner_to_confirm": "DSI",
+      "question": "Un identifiant commun relie-t-il les jambes sortante et entrante d'un transfert, sinon quelle règle d'appariement peut être auditée ?"
+    },
+    {
+      "convention_path": "document[0].event_categories.internal_outbound_transfers",
+      "owner_to_confirm": "DSI",
+      "question": "Les transferts inter-unités sont-ils complets dans les deux sens et sur toutes les unités du périmètre ?"
+    },
+    {
+      "convention_path": "document[0].event_categories.other_signed_census_adjustments",
+      "owner_to_confirm": "DIM",
+      "question": "Quels ajustements, corrections et annulations modifient rétrospectivement le census, et leur historique de versions est-il disponible ?"
+    },
+    {
+      "convention_path": "document[0].stock_variables.occupancy_rate",
+      "owner_to_confirm": "DIM",
+      "question": "Le terme occupation utilisé par l'établissement désigne-t-il un compte, un taux, une présence physique ou une autre mesure, et quel dénominateur temporel utilise-t-il ?"
+    },
+    {
+      "convention_path": "document[0].stock_variables.open_bed_count",
+      "owner_to_confirm": "DIRECTION_DES_SOINS",
+      "question": "Quelle source fait foi pour les lits ouverts, fermés et indisponibles, et quelle est sa granularité temporelle ?"
+    },
+    {
+      "convention_path": "document[0].stock_variables.patient_census_count",
+      "owner_to_confirm": "DIM",
+      "question": "Quelle définition administrative exacte du census d'unité est utilisée et à quel instant le compte est-il réputé valide ?"
+    },
+    {
+      "convention_path": "document[0].stock_variables.physical_presence_count",
+      "owner_to_confirm": "DIRECTION_DES_SOINS",
+      "question": "Une mesure de présence physique distincte du census administratif est-elle disponible, et comment traite-t-elle bloc, permission et hébergement temporaire ?"
+    },
+    {
+      "convention_path": "document[0].temporal_contract.available_at",
+      "owner_to_confirm": "DSI",
+      "question": "L'heure de disponibilité historique de chaque variable est-elle conservée, séparément de l'heure métier et de l'heure d'extraction ?"
+    },
+    {
+      "convention_path": "document[0].temporal_contract.event_time",
+      "owner_to_confirm": "DPI",
+      "question": "Quelle heure métier ou quel intervalle de validité fait foi pour chaque flux ?"
+    },
+    {
+      "convention_path": "document[0].temporal_contract.extract_generated_at",
+      "owner_to_confirm": "DSI",
+      "question": "Chaque extraction porte-t-elle un timestamp fiable de génération ?"
+    },
+    {
+      "convention_path": "document[0].temporal_contract.source_version",
+      "owner_to_confirm": "DSI",
+      "question": "Un numéro de version ou last_modified existe-t-il pour suivre les corrections ?"
+    },
+    {
+      "convention_path": "document[1].census_semantics.operating_room",
+      "owner_to_confirm": "DIM",
+      "question": "Le bloc modifie-t-il le census ou seulement la présence physique ?"
+    },
+    {
+      "convention_path": "document[1].census_semantics.permission",
+      "owner_to_confirm": "DIM",
+      "question": "Permission et retour sont-ils deux changements de census ou de présence seulement ?"
+    },
+    {
+      "convention_path": "document[1].census_semantics.temporary_unit",
+      "owner_to_confirm": "DIRECTION_DES_SOINS",
+      "question": "L'hébergement temporaire hors unité change-t-il le census administratif, la présence, les deux ou aucun ?"
+    },
+    {
+      "convention_path": "document[1].episode_boundaries.administrative_reorganization",
+      "owner_to_confirm": "DIM",
+      "question": "Existe-t-il un historique des créations, fusions, renommages et changements de périmètre des unités ?"
+    },
+    {
+      "convention_path": "document[1].episode_boundaries.overlapping_windows",
+      "owner_to_confirm": "OTHER",
+      "question": "Quel pas entre épisodes chevauchants conserve une puissance utile sans prétendre qu'ils sont indépendants ?"
+    },
+    {
+      "convention_path": "document[1].episode_boundaries.source_outage",
+      "owner_to_confirm": "DSI",
+      "question": "Comment les ruptures et maintenances de chaque source sont-elles journalisées ?"
+    },
+    {
+      "convention_path": "document[1].episode_window",
+      "owner_to_confirm": "DIM",
+      "question": "Une granularité de six heures, un contexte de quatorze jours, un horizon maximal d'un jour et des blocs de trente jours sont-ils compatibles avec la fréquence, la fraîcheur et les pratiques opérationnelles des sources ?"
+    }
+  ]
+}

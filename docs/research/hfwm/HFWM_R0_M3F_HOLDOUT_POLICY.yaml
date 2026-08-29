@@ -1,0 +1,47 @@
+schema_version: hfwm.r0.m3d.holdout-policy.v1
+status: PRE_DATA_POLICY_FROZEN_FOR_HUMAN_REVIEW
+execution_authorized: false
+m3l_authorized: false
+m3f_authorized: false
+
+hcl:
+  role: POTENTIAL_M3L_DATA_SCOPE_PENDING_SEPARATE_APPROVAL
+  organization_count_for_inference: 1
+  hospital_sites_nested_within_group: true
+  reported_hospital_count: 13
+  independent_institutions_claim: forbidden
+  inter_establishment_generalization_from_hcl_only: forbidden
+
+nantes:
+  role: FUTURE_M3F_HOLDOUT_ONLY
+  data_requested_for_m3l: false
+  data_access_authorized_now: false
+  prohibited_uses:
+    - training
+    - calibration
+    - feature_selection
+    - hyperparameter_selection
+    - ablation_design
+    - opportunistic_inspection
+  future_access_requires: SEPARATE_AGREEMENT_PROTOCOL_AND_POWER_GATE
+
+dijon:
+  dijon_strategy: UNDECIDED
+  human_decision_required_before_first_meeting: true
+  promises_of_direct_hcl_model_deployability: forbidden
+  options:
+    LOCAL_RETRAIN:
+      description: modèle réentraîné et recalibré sur Dijon
+      transfer_claim_allowed: false
+    TRANSFER_EVALUATION:
+      description: Dijon devient holdout institutionnel avec protocole et puissance propres
+      pilot_deployment_before_gate: forbidden
+    UNDECIDED:
+      description: aucune promesse de modèle HCL directement déployable à Dijon
+
+scope_claims:
+  allowed: PRE_DATA_HOLDOUT_POLICY_ONLY
+  forbidden:
+    - VALIDATED_AT_NANTES
+    - HCL_PROVES_INSTITUTIONAL_TRANSFER
+    - DIJON_DEPLOYMENT_READY

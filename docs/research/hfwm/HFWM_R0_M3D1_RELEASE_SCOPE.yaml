@@ -1,0 +1,121 @@
+schema_version: hfwm.r0.m3d1.release-scope.v1
+purpose: >-
+  Explicit classification of every M3D.1 release-relevant file discovered from the
+  filesystem and Git. The final manifest is deliberately classified as a Commit-B file.
+release_content_commit_excludes:
+  - artifacts/hfwm-r0/m3d/manifest.json
+
+files:
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml, classification: SELF_LEDGER}
+  # External claim and partner-facing contract surfaces.
+  - {path: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md, classification: EXTERNAL_CLAIM_SURFACE}
+  - {path: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3_AGGREGATION_SPEC.yaml, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: docs/research/hfwm/HFWM_R0_M3_DRAFT.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/partner_questions.json, classification: EXTERNAL_CLAIM_SURFACE}
+
+  # Provenance and internal evidence.
+  - {path: docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml, classification: SELF_LEDGER}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3_SAP.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3_SEED_REACHABILITY_AUDIT.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M2_SEED_AUDIT_TICKET.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M2C_POSTMORTEM.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M2_POWER_AUDIT.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M2_TARGET_DECOMPOSITION.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D_HOSTILE_REVIEW.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M0_EVIDENCE.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M1A_EVIDENCE.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M1B_EVIDENCE.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M1F_EVIDENCE.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M1_HOSTILE_REVIEW.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_REUSE_MATRIX.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/CURRENT_MILESTONE.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/EXECUTION_PROTOCOL.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_BAKEOFF.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_BLOCKERS.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_CLAIMS_POLICY.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_DATA_CARD.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_DATA_RIGHTS.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_DECONTAMINATION.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_KILL_CRITERIA.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_METRICS.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_MOAT_CHARTER.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_SPEC.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_SPLITS.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: configs/hfwm/r0_evaluation.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: configs/hfwm/r0_m1b_minimal.yaml, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: scripts/hfwm/freeze_m3d.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: scripts/hfwm/build_data_slice.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: scripts/hfwm/run_bakeoff.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: scripts/hfwm/train_minimal_candidate.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: scripts/hfwm/validate_preregistration.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/m3d/power.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/m3d/contracts.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/m3d/__init__.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/m3d/release.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/__init__.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/contracts.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/data.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/m2b.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/metrics.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/bakeoff/runner.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/baselines/__init__.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/baselines/corpus_adapter.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/baselines/model.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/candidate/__init__.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/candidate/training.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/data_slice/__init__.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/data_slice/builder.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/eligibility_mask_fixture.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/m3d/power_simulation.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/backbone/checkpoint.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/backbone/metrics.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/backbone/training_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/bakeoff-m2b/comparative_table.md, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/bakeoff-m2b/crashes.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/bakeoff-m2b/manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/bakeoff-m2b/reproduce.txt, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/bakeoff-m2b/results.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/data-slice/dataset.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/data-slice/dataset_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/data-slice/split_manifest.json, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: artifacts/hfwm-r0/data-slice/temporal_leakage_report.json, classification: INTERNAL_EVIDENCE_ONLY}
+
+  # Executable implementation and tests.
+  - {path: src/hfwm/m3d/aggregation.py, classification: EXECUTABLE_EXTERNAL_CONTRACT}
+  - {path: tests/hfwm/m3d/test_aggregation.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/m3d/test_contracts.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/m3d/test_power.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/m3d/test_release.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/bakeoff/test_m2b.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/baselines/test_corpus_adapter.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/baselines/test_hgbr_cqr.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/candidate/test_training.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/data_slice/test_builder.py, classification: TEST_ONLY}
+  - {path: tests/hfwm/m3d/test_provenance.py, classification: TEST_ONLY}
+  - {path: tests/fixtures/hfwm/m3d_synthetic_contract.yaml, classification: TEST_ONLY}
+  - {path: src/hfwm/evaluation/preregistration.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: src/hfwm/models/local/model.py, classification: INTERNAL_EVIDENCE_ONLY}
+  - {path: tests/hfwm/evaluation/test_preregistration.py, classification: TEST_ONLY}
+
+  # Commit-B attestation only; never part of Commit-A content.
+  - {path: artifacts/hfwm-r0/m3d/manifest.json, classification: SELF_LEDGER, release_phase: COMMIT_B_ONLY}
+  - {path: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml, classification: SELF_LEDGER, release_phase: POST_TAG_REVIEW_SIDECAR}
+
+ignored_patterns:
+  - {pattern: .mypy_cache/**, classification: OUT_OF_RELEASE_WITH_REASON, reason: interpreter_cache}
+  - {pattern: .pytest_cache/**, classification: OUT_OF_RELEASE_WITH_REASON, reason: test_cache}
+  - {pattern: .ruff_cache/**, classification: OUT_OF_RELEASE_WITH_REASON, reason: lint_cache}
+  - {pattern: '**/__pycache__/**', classification: OUT_OF_RELEASE_WITH_REASON, reason: Python_bytecode_cache}
+  - {pattern: '**/*.pyc', classification: OUT_OF_RELEASE_WITH_REASON, reason: Python_bytecode}
+
+classification_coverage_rule: >-
+  Every discovered path under the release prefixes and every ignored path matching an
+  ignored_pattern must have exactly one classification. Unlisted relevant files fail closed.

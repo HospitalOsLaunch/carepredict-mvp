@@ -1,30 +1,73 @@
 {
-  "schema_version": "hfwm.bakeoff.v1",
+  "schema_version": "hfwm.bakeoff.v2",
+  "protocol_id": "hfwm-r0-m2a-bounded-v1",
   "preregistration_version": "hfwm-r0.1",
+  "frozen_before_main_runs": true,
   "frozen_before_training": true,
   "results_status": "NOT_EXECUTED",
-  "primary_hypothesis": "A shared multi-task hospital dynamics representation improves the preregistered aggregate retrospective forecast score over a capacity-comparable local model, while respecting hard hospital constraints and avoiding critical-task regression.",
-  "scope": "RETROSPECTIVE_OBSERVATIONAL_SHADOW_ONLY",
+  "observed_results_forbidden": true,
+  "scope": "RETROSPECTIVE_SYNTHETIC_OBSERVATIONAL_SHADOW_ONLY",
+  "numeric_authority": "THIS_MANIFEST_IS_THE_ONLY_EXECUTION_AUTHORITY_FOR_M2A",
+  "historical_contract_reconciliation": {
+    "HFWM_R0_METRICS.yaml": "Historical broad metric catalogue only; its wider target and horizon lists are not authorized for M2A execution.",
+    "HFWM_R0_SPLITS.yaml": "Temporal split policy is reused, but M2A is restricted to the dataset, cohort, targets and horizon frozen in this manifest.",
+    "HFWM_R0_SPEC.yaml": "Candidate-family identifiers may be reused; transfer, action-conditioning and foundation-model hypotheses are not evaluated in M2A."
+  },
+  "primary_hypothesis": "On the exact frozen M1 point-in-time cohort, shared joint dynamics reduce the paired four-step free-running normalized MAE by at least 5% versus the strongest eligible mechanistic or locally learned control, without critical-target regression or an integrity failure.",
+  "m1_references": {
+    "data_foundation_evidence": "HFWM_R0_M1A_EVIDENCE.md",
+    "candidate_evidence": "HFWM_R0_M1B_EVIDENCE.md",
+    "hostile_review": "HFWM_R0_M1_HOSTILE_REVIEW.md",
+    "hostile_review_verdict": "NO_BLOCKER_FOUND",
+    "blocker_fix_evidence": "HFWM_R0_M1F_EVIDENCE.md",
+    "dataset": "../../../artifacts/hfwm-r0/data-slice/dataset.json",
+    "dataset_manifest": "../../../artifacts/hfwm-r0/data-slice/dataset_manifest.json",
+    "split_manifest": "../../../artifacts/hfwm-r0/data-slice/split_manifest.json",
+    "candidate_config": "../../../configs/hfwm/r0_m1b_minimal.yaml",
+    "reference_checkpoint": "../../../artifacts/hfwm-r0/backbone/checkpoint.json",
+    "reference_metrics": "../../../artifacts/hfwm-r0/backbone/metrics.json",
+    "reference_training_manifest": "../../../artifacts/hfwm-r0/backbone/training_manifest.json",
+    "dataset_hash": "64e831ec1a3fbf6fdad2bd0ac716b675619216d3b4c180895ac6acdba2bbb965",
+    "reference_model_hash": "29ea5b8306e564f9e489ab919fcea91bdbc384b37e91b9db7c2d1789c7b81484"
+  },
+  "dataset_contract": {
+    "source_id": "hfwm_r0_internal_synthetic_fixture",
+    "rights_decision": "LOCAL_EVALUATION_ONLY_NO_DISTRIBUTION",
+    "grain": "hourly",
+    "step_hours": 6,
+    "row_count": 240,
+    "episode_count": 60,
+    "pseudo_site_count": 3,
+    "real_site_count": 0,
+    "split_episode_counts": {
+      "train": 42,
+      "validation": 9,
+      "test": 9
+    },
+    "split_row_counts": {
+      "train": 168,
+      "validation": 36,
+      "test": 36
+    },
+    "cohort_policy": "EXACT_COMMON_ROWS_PER_TARGET_ARM_AND_SEED",
+    "available_at_policy": "FEATURE_EVENT_AVAILABLE_AT_LTE_AS_OF",
+    "target_policy": "AS_OF_LT_TARGET_EVENT_TIME_LTE_AS_OF_PLUS_6H",
+    "correction_policy": "ONLY_CORRECTIONS_AVAILABLE_AT_AS_OF_IN_FEATURES",
+    "split_policy_id": "hfwm-r0-temporal-v1",
+    "split_before_windowing": true,
+    "overlapping_episode_policy": "FORBIDDEN",
+    "contamination_policy": "FAIL_CLOSED"
+  },
   "split_policy_id": "hfwm-r0-temporal-v1",
-  "primary_metric_id": "aggregate_normalized_mae",
   "tasks": [
     "occupancy",
-    "inflow",
-    "discharges",
-    "staffing",
-    "pressure"
+    "inflow"
   ],
   "horizons_hours": [
-    6,
-    24,
-    72
+    6
   ],
-  "conditional_horizons": {
-    "168": {
-      "status": "NOT_EXECUTED",
-      "execute_only_if": "each frozen test cohort has at least 200 independent episodes with complete targets"
-    }
-  },
+  "rollout_steps": 4,
+  "rollout_horizon_hours": 24,
   "seeds": [
     1729,
     2718,
@@ -34,32 +77,57 @@
     {
       "id": "mechanistic_queue_semimarkov",
       "kind": "mechanistic",
-      "hypothesis": "Explicit conservation and duration structure is sufficient for useful rollouts.",
+      "role": "simple_mechanistic_control",
+      "implementation": "src/hfwm/models/mechanistic/core.py",
+      "status": "NOT_EXECUTED",
       "pretraining": false,
-      "tuning_trials_max": 8,
-      "cpu_core_hours_max_per_seed": 4,
+      "runs_per_seed": 1,
+      "tuning_trials_max": 0,
+      "cpu_core_hours_max_per_seed": 1,
+      "cpu_seconds_max_per_seed": 60,
       "accelerator_hours_max_per_seed": 0,
-      "learned_parameters_max": 0
+      "budget_scope": "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_ARM_SEED",
+      "learned_parameters_max": 0,
+      "configuration": "MechanisticConfig defaults except step_hours=6.0; no data-fit constants",
+      "hypothesis": "Explicit queue and conservation structure is sufficient for stable joint rollout."
     },
     {
       "id": "local_joint_from_scratch",
       "kind": "local_from_scratch",
-      "hypothesis": "Local joint dynamics explain the result without shared pretraining.",
+      "role": "locally_learned_no_shared_pretraining_control",
+      "implementation": "src/hfwm/models/local/model.py",
+      "m1_reference_role": "executable_backbone_and_single-site_reference",
+      "status": "NOT_EXECUTED",
       "pretraining": false,
-      "tuning_trials_max": 8,
-      "cpu_core_hours_max_per_seed": 4,
-      "accelerator_hours_max_per_seed": 1,
-      "learned_parameters_max": 2000000
+      "fit_policy": "ONE_MODEL_PER_PSEUDO_SITE_TRAIN_ROWS_ONLY",
+      "runs_per_seed": 1,
+      "tuning_trials_max": 1,
+      "cpu_core_hours_max_per_seed": 1,
+      "cpu_seconds_max_per_seed": 60,
+      "accelerator_hours_max_per_seed": 0,
+      "budget_scope": "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_ARM_SEED",
+      "learned_parameters_max": 18,
+      "configuration": "JointDynamicsConfig from M1; no hyperparameter search",
+      "hypothesis": "Local joint dynamics explain the result without shared pretraining."
     },
     {
       "id": "shared_hfwm_multitask",
       "kind": "shared_hfwm",
-      "hypothesis": "A shared multi-task belief state improves aggregate dynamics at equal local budget.",
+      "role": "hfwm_r0_candidate",
+      "implementation": "src/hfwm/models/shared/model.py",
+      "status": "NOT_EXECUTED",
       "pretraining": true,
-      "tuning_trials_max": 8,
-      "cpu_core_hours_max_per_seed": 4,
-      "accelerator_hours_max_per_seed": 1,
-      "learned_parameters_max": 2000000
+      "fit_policy": "POOL_ALL_THREE_PSEUDO_SITE_TRAIN_ROWS_WITHOUT_SITE_ID_FEATURE",
+      "site_adaptation": "NONE_IN_PRIMARY_M2A_COMPARISON",
+      "runs_per_seed": 1,
+      "tuning_trials_max": 1,
+      "cpu_core_hours_max_per_seed": 1,
+      "cpu_seconds_max_per_seed": 60,
+      "accelerator_hours_max_per_seed": 0,
+      "budget_scope": "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_ARM_SEED",
+      "learned_parameters_max": 18,
+      "configuration": "Same JointDynamicsConfig and target order as local control",
+      "hypothesis": "Shared content-pooled joint dynamics improve paired free-running accuracy."
     }
   ],
   "fairness_contract": {
@@ -68,52 +136,184 @@
     "same_tasks_horizons_targets_metrics": true,
     "same_number_of_seeds": true,
     "same_tuning_trials_for_learned_candidates": true,
-    "local_adaptation_examples_max": 256,
-    "site_adapter_parameters_max": 100000,
-    "backbone_frozen_during_site_adaptation": true
+    "backbone_frozen_during_site_adaptation": true,
+    "same_test_rows_for_every_eligible_arm": true,
+    "same_teacher_forcing_inputs": true,
+    "same_free_running_initial_state_only": true,
+    "parameter_parity_unit": "PER_DEPLOYED_SITE_MODEL_18_PARAMETERS",
+    "aggregate_local_ensemble_parameters": 54,
+    "shared_model_parameters": 18,
+    "data_accounting": "LOCAL_ENSEMBLE_AND_SHARED_MODEL_EACH_CONSUME_42_TRAIN_EPISODES_TOTAL",
+    "post_t0_observation_injection": "FORBIDDEN"
   },
+  "tuning_contract": {
+    "hyperparameter_search": "FORBIDDEN",
+    "learned_configuration": "M1_FROZEN_CONFIGURATION_ONLY",
+    "validation_use": "CALIBRATION_AND_PREDECLARED_INTEGRITY_CHECKS_ONLY",
+    "test_use_before_final_run": "FORBIDDEN",
+    "retry_policy": "ONE_RETRY_ONLY_FOR_INFRASTRUCTURE_FAILURE_WITH_IDENTICAL_CONFIG",
+    "failed_seed_policy": "PERSIST_FAILURE_AND_DO_NOT_REPLACE_SEED"
+  },
+  "calibration": {
+    "target_coverage": 0.9,
+    "fit_partition": "validation_only",
+    "method": "ABSOLUTE_RESIDUAL_SPLIT_CONFORMAL_PER_TARGET_AND_ROLLOUT_STEP",
+    "quantile_method": "higher",
+    "minimum_validation_episodes_per_step": 3,
+    "on_insufficient_calibration": "INCONCLUSIVE_FOR_INTERVAL_METRICS",
+    "test_recalibration": "FORBIDDEN",
+    "m1_uncertainty_finding": "M1R-F02_HEURISTIC_UNCERTAINTY_REQUIRES_EXPLICIT_LABEL"
+  },
+  "metrics": {
+    "primary_metric_id": "aggregate_normalized_mae",
+    "primary_metric_definition": "Macro-average over occupancy and inflow and rollout steps 1..4 of test MAE divided by train-only target IQR",
+    "primary_metric_direction": "lower_is_better",
+    "zero_train_iqr_policy": "INCONCLUSIVE_CELL",
+    "pairing_unit": "episode_id",
+    "uncertainty": "PAIRED_EPISODE_BOOTSTRAP_95_PERCENTILE",
+    "bootstrap_draws": 2000,
+    "bootstrap_seed": 8675309,
+    "teacher_forcing_metrics": [
+      "mae_per_target",
+      "rmse_per_target"
+    ],
+    "free_running_metrics": [
+      "mae_per_target_and_step",
+      "rmse_per_target_and_step",
+      "aggregate_normalized_mae",
+      "rollout_drift_ratio_free_running_mae_over_teacher_forcing_mae"
+    ],
+    "calibration_metrics": [
+      "interval_90_coverage_per_target_and_step",
+      "mean_interval_width_90_per_target_and_step"
+    ],
+    "integrity_metrics": [
+      "non_finite_output_rate",
+      "reproducibility_hash_match_rate"
+    ],
+    "constraint_metrics": [
+      "non_negative_output_violation_rate"
+    ],
+    "capacity_constraint_status": "INCONCLUSIVE_NOT_EXPOSED_IN_FROZEN_M1_ROWS",
+    "conservation_constraint_status": "INCONCLUSIVE_DISCHARGES_NOT_A_FROZEN_M1_TARGET"
+  },
+  "primary_metric_id": "aggregate_normalized_mae",
   "final_gate_comparators": [
     {
-      "id": "persistence",
-      "status": "NOT_EXECUTED",
-      "tuning": "NONE"
-    },
-    {
-      "id": "seasonal_naive_168h",
-      "status": "NOT_EXECUTED",
-      "tuning": "NONE"
-    },
-    {
       "id": "hgbr_cqr",
+      "role": "legacy_final_comparator",
+      "implementation": "carepredict_cqr.py",
       "status": "NOT_EXECUTED",
       "tuning": "FROZEN_NO_OPTIMIZATION",
+      "runs_per_seed": 1,
+      "tuning_trials_max": 0,
+      "cpu_core_hours_max_per_seed": 1,
+      "cpu_seconds_max_per_seed": 60,
+      "accelerator_hours_max_per_seed": 0,
+      "budget_scope": "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_COMPARATOR_SEED",
+      "capacity_accounting": "REPORT_SUM_OF_FITTED_TREE_LEAVES_ACROSS_POINT_AND_QUANTILE_ESTIMATORS_PLUS_SERIALIZED_MODEL_BYTES_NO_PARITY_CLAIM",
+      "hyperparameters": "EXISTING_DEFAULTS_ONLY",
+      "required_input_contract": "EXACT_M1_ROWS_TARGETS_SPLITS_AND_HORIZON",
       "permitted_repairs": [
-        "temporal_leakage",
+        "remove_target_leakage",
         "integrity",
         "reproducibility"
-      ]
-    },
-    {
-      "id": "generic_tsfm",
-      "status": "NOT_EXECUTED",
-      "checkpoint_verified": false,
-      "execute_only_if": "local checkpoint identity, license, provenance, and offline compatibility are verified"
+      ],
+      "forbidden_changes": [
+        "new_features",
+        "new_target",
+        "hyperparameter_search",
+        "surge_reweighting_change",
+        "post_hoc_threshold_change"
+      ],
+      "on_contract_mismatch": "INELIGIBLE_CONTRACT_MISMATCH_PERSIST_REASON_NO_SUBSTITUTE"
     }
   ],
-  "ablations": [
-    "shared_pretraining_removed",
-    "joint_heads_replaced_by_independent_heads",
-    "site_identity_removed",
-    "recording_process_features_removed"
+  "excluded_comparators": [
+    {
+      "id": "generic_tsfm",
+      "decision": "EXCLUDED_NOT_EXECUTABLE_WITHOUT_SEPARATE_WORK",
+      "checkpoint_verified": false,
+      "reason": "No local checkpoint has verified identity, licence, provenance and offline compatibility."
+    }
   ],
-  "negative_controls": [
-    "future_observation_leakage_sentinel",
-    "future_action_leakage_sentinel",
-    "label_permutation",
-    "site_identity_shortcut",
-    "action_permutation_if_observable"
+  "stop_go": {
+    "minimum_test_episodes": 9,
+    "minimum_directionally_stable_seeds": 3,
+    "primary_relative_gain_min": 0.05,
+    "primary_gain_bootstrap_ci_95_lower_strictly_greater_than": 0.0,
+    "per_target_regression_max": 0.05,
+    "non_finite_output_rate_max": 0.0,
+    "non_negative_output_violation_rate_max": 0.01,
+    "go_decision": "ELIGIBLE_FOR_NEXT_LOCAL_REVIEW_ONLY",
+    "insufficient_power_decision": "INCONCLUSIVE",
+    "threshold_change_after_run": "FORBIDDEN_NEW_PROTOCOL_VERSION_REQUIRED"
+  },
+  "kill_criteria": [
+    {
+      "id": "freeze_or_contamination_failure",
+      "condition": "Any hash mismatch, future-feature leakage, future correction leakage, cross-split contamination or episode overlap",
+      "decision": "INVALIDATE_ALL_AFFECTED_RESULTS"
+    },
+    {
+      "id": "non_reproducible_candidate",
+      "condition": "Same arm, seed and inputs do not reproduce model and predictive metric hashes",
+      "decision": "KILL_AFFECTED_ARM"
+    },
+    {
+      "id": "no_shared_advantage",
+      "condition": "Shared candidate misses the 5% primary gain or its paired bootstrap lower bound is not above zero",
+      "decision": "WITHHOLD_SHARED_ADVANTAGE_CLAIM"
+    },
+    {
+      "id": "critical_target_regression",
+      "condition": "Occupancy or inflow normalized MAE regresses by more than 5% versus strongest eligible control",
+      "decision": "REJECT_SHARED_CANDIDATE_FOR_M2"
+    },
+    {
+      "id": "rollout_or_numeric_failure",
+      "condition": "Any non-finite output or non-negative violation rate above 1%",
+      "decision": "REJECT_AFFECTED_ARM"
+    },
+    {
+      "id": "hgbr_contract_failure",
+      "condition": "Legacy HGBR/CQR cannot consume the frozen M1 contract without forbidden modification",
+      "decision": "MARK_HGBR_CQR_INELIGIBLE_AND_PERSIST_REASON"
+    },
+    {
+      "id": "insufficient_rights",
+      "condition": "Checkpoint leaves the authorized local environment or is distributed while weights_allowed=false",
+      "decision": "STOP_AND_WITHHOLD_WEIGHT_OR_MOAT_CLAIMS"
+    }
   ],
+  "claims": {
+    "allowed_only_if_supported": [
+      "HOSPITAL_WORLD_MODEL_CANDIDATE",
+      "OBSERVATIONAL",
+      "SHADOW_ONLY",
+      "UNVALIDATED_AT_NANTES"
+    ],
+    "always_required": [
+      "FOUNDATION_EVIDENCE_INSUFFICIENT",
+      "ACTION_CONDITIONING_NOT_IDENTIFIABLE"
+    ],
+    "forbidden": [
+      "P0 PASS",
+      "HFWM PASS",
+      "VALIDATED WORLD MODEL",
+      "PROVEN FOUNDATION MODEL",
+      "VALIDATED AT NANTES",
+      "CAUSAL EFFECT",
+      "COUNTERFACTUAL EFFECT",
+      "BEST ACTION",
+      "PROVEN OPERATIONAL IMPACT",
+      "AUTONOMOUS EXECUTION"
+    ],
+    "synthetic_only_qualifier_required": true,
+    "human_authority_required_for_continuation": true
+  },
   "action_branch_status": "ACTION_CONDITIONING_NOT_IDENTIFIABLE",
   "foundation_status": "FOUNDATION_EVIDENCE_INSUFFICIENT",
-  "decision_rule": "Apply HFWM_R0_KILL_CRITERIA.yaml without post-hoc threshold changes."
+  "execution_status": "SHADOW_ONLY",
+  "decision_rule": "Apply this manifest without post-hoc changes; persist NOT_EXECUTED, INCONCLUSIVE, INELIGIBLE or KILLED outcomes as applicable."
 }

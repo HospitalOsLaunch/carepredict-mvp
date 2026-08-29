@@ -1,0 +1,99 @@
+milestone_id: HFWM-R0-M3D.1
+milestone_name: RELEASE_FREEZE_AND_EXTERNAL_REVIEW
+observable_goal: >-
+  construire et figer le banc de données contractuel, les fixtures synthétiques,
+  le plan de puissance et le SAP avant toute réception de données partenaire
+entry_status: M3_DATA_CONTRACT_BLOCKED
+status: IN_PROGRESS
+execution_mode: SINGLE_AGENT_EXECUTION
+review_policy: INDEPENDENT_FINAL_READ_ONLY_AFTER_TAG
+
+non_goals:
+  - entraînement de modèle
+  - modification d'architecture
+  - bake-off
+  - consommation de données HCL, Nantes ou Dijon
+  - modification de résultat ou seuil M2
+  - autorisation de M3-L ou M3-F
+  - claim sur le fonctionnement ou l'échec d'un HFWM partagé
+
+repository:
+  branch: hfwm-r0
+  head_at_start: adc8d8ba59fe464692581141c901ed5813cbb5a3
+  official_baseline_parent: 06914578a4e88257ecf44e7fede72a20852f443a
+
+m2_result:
+  candidate_status: REJECTED_BY_OCCUPANCY_GUARDRAIL
+  procedural_basis: PRE_REGISTERED_POINT_ESTIMATE_RULE
+  primary_superiority: INCONCLUSIVE
+  primary_inferiority: NOT_DEMONSTRATED
+  occupation_guardrail: FAILED_PROCEDURALLY
+  true_occupation_regression: NOT_ESTIMATED_WITH_DECISION_GRADE_PRECISION
+  world_model_advantage: NOT_TESTABLE_ON_M1
+
+controls:
+  primary: local_joint_from_scratch
+  external_reference_non_candidate: hgbr_cqr
+  structural: mechanistic_queue_semimarkov
+  dead_historical_candidate: shared_hfwm_multitask_m2
+
+agent_budget:
+  active_subagents: 0
+  total_subagents: 0
+  reviewer_limit: 1
+  correction_cycles_after_review: 0
+
+safety_confirmations:
+  training_executed: false
+  partner_data_consumed: false
+  m2_results_modified: false
+  m2_thresholds_modified: false
+  m3l_authorized: false
+  m3f_authorized: false
+
+artifacts:
+  seed_audit: docs/research/hfwm/HFWM_R0_M3_SEED_REACHABILITY_AUDIT.md
+  data_contract: docs/research/hfwm/HFWM_R0_M3_DATA_CONTRACT.yaml
+  episode_spec: docs/research/hfwm/HFWM_R0_M3_EPISODE_SPEC.yaml
+  replayability_spec: docs/research/hfwm/HFWM_R0_M3_REPLAYABILITY_SPEC.yaml
+  power_plan: docs/research/hfwm/HFWM_R0_M3_POWER_PLAN.md
+  sap: docs/research/hfwm/HFWM_R0_M3_SAP.md
+  holdout_policy: docs/research/hfwm/HFWM_R0_M3F_HOLDOUT_POLICY.yaml
+  partner_request: docs/research/hfwm/HFWM_R0_M3_PARTNER_DATA_REQUEST.md
+  evidence_manifest: artifacts/hfwm-r0/m3d/manifest.json
+  external_claims_ledger: docs/research/hfwm/HFWM_R0_M3_EXTERNAL_CLAIMS_LEDGER.yaml
+  amendment: docs/research/hfwm/HFWM_R0_M3D1_AMENDMENT.md
+  aggregation_spec: docs/research/hfwm/HFWM_R0_M3_AGGREGATION_SPEC.yaml
+  m2_seed_audit_ticket: docs/research/hfwm/HFWM_R0_M2_SEED_AUDIT_TICKET.md
+  release_scope: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml
+  m2_diff_audit: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md
+  disclosure_sensitivity: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md
+
+review:
+  new_reviewer_executed: pending_after_tag
+  main_agent_only: false
+
+human_decisions_required:
+  - validation du contrat sémantique et temporel par les propriétaires partenaires
+  - qualification juridique et opérationnelle par DPO et gouvernance
+  - stratégie Dijon avant le premier rendez-vous
+  - autorisation distincte éventuelle de M3-L puis de M3-F
+
+limits:
+  confirmed_partner_conventions: 0
+  m3_guardrail_comparable_to_m2: unknown
+  historical_realtime_claim_without_available_at: forbidden
+  hcl_cross_institution_generalization: forbidden
+  dijon_strategy: UNDECIDED
+
+human_decisions_recorded:
+  m2_historical_weights_block_partner_review: false
+  rationale: >-
+    La propriété bloquante pour M3D.1 est la reachability prospective du simulateur ;
+    le déterminisme M2 non vérifié ne figure pas comme preuve dans le paquet partenaire.
+  future_weights_persistence_required: true
+  m2_replay_ticket_blocks_partner_review: false
+
+blockers: []
+
+final_result: RELEASE_REVIEW_PENDING

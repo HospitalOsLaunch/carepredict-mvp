@@ -150,6 +150,7 @@ def _validate_bakeoff(document: Mapping[str, Any]) -> list[str]:
     budget_fields = (
         "tuning_trials_max",
         "cpu_core_hours_max_per_seed",
+        "cpu_seconds_max_per_seed",
         "accelerator_hours_max_per_seed",
         "learned_parameters_max",
     )
@@ -161,6 +162,10 @@ def _validate_bakeoff(document: Mapping[str, Any]) -> list[str]:
             value = candidate.get(field)
             if not isinstance(value, int) or value < 0:
                 errors.append(f"{kind}.{field} must be a non-negative integer")
+        if candidate.get("runs_per_seed") != 1:
+            errors.append(f"{kind}.runs_per_seed must be exactly one")
+        if candidate.get("budget_scope") != "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_ARM_SEED":
+            errors.append(f"{kind}.budget_scope must cover the total arm seed")
     mechanistic = by_kind.get("mechanistic", {})
     if mechanistic.get("learned_parameters_max") != 0:
         errors.append("mechanistic candidate learned_parameters_max must be zero")
@@ -169,6 +174,7 @@ def _validate_bakeoff(document: Mapping[str, Any]) -> list[str]:
     learned_budget_fields = (
         "tuning_trials_max",
         "cpu_core_hours_max_per_seed",
+        "cpu_seconds_max_per_seed",
         "accelerator_hours_max_per_seed",
         "learned_parameters_max",
     )
@@ -194,11 +200,34 @@ def _validate_bakeoff(document: Mapping[str, Any]) -> list[str]:
         hgbr = by_id.get("hgbr_cqr")
         if not isinstance(hgbr, dict) or hgbr.get("tuning") != "FROZEN_NO_OPTIMIZATION":
             errors.append("HGBR/CQR must remain frozen without optimization")
+        elif any(
+            not isinstance(hgbr.get(field), int) or int(hgbr.get(field, -1)) < 0
+            for field in (
+                "tuning_trials_max",
+                "cpu_core_hours_max_per_seed",
+                "cpu_seconds_max_per_seed",
+                "accelerator_hours_max_per_seed",
+            )
+        ):
+            errors.append("HGBR/CQR must freeze non-negative compute budgets")
+        elif hgbr.get("runs_per_seed") != 1:
+            errors.append("HGBR/CQR runs_per_seed must be exactly one")
+        elif hgbr.get("budget_scope") != (
+            "TOTAL_ACROSS_ALL_MODELS_FOR_ONE_COMPARATOR_SEED"
+        ):
+            errors.append("HGBR/CQR budget_scope must cover the total comparator seed")
+        elif not isinstance(hgbr.get("capacity_accounting"), str) or not hgbr[
+            "capacity_accounting"
+        ].strip():
+            errors.append("HGBR/CQR capacity_accounting must be explicit")
         tsfm = by_id.get("generic_tsfm")
-        if not isinstance(tsfm, dict) or tsfm.get("status") != "NOT_EXECUTED":
-            errors.append("generic TSFM must be NOT_EXECUTED before a checkpoint is verified")
-        elif tsfm.get("checkpoint_verified") is not False:
-            errors.append("generic TSFM checkpoint_verified must be false")
+        if tsfm is not None:
+            if not isinstance(tsfm, dict) or tsfm.get("status") != "NOT_EXECUTED":
+                errors.append(
+                    "generic TSFM must be NOT_EXECUTED before a checkpoint is verified"
+                )
+            elif tsfm.get("checkpoint_verified") is not False:
+                errors.append("generic TSFM checkpoint_verified must be false")
         if any(
             item.get("status") != "NOT_EXECUTED"
             for item in comparators
@@ -224,6 +253,59 @@ def _validate_bakeoff(document: Mapping[str, Any]) -> list[str]:
         errors.append("Foundation evidence status must remain insufficient")
     if document.get("results_status") != "NOT_EXECUTED":
         errors.append("preregistered bakeoff cannot contain observed results")
+    if document.get("protocol_id") == "hfwm-r0-m2a-bounded-v1":
+        errors.extend(_validate_bounded_m2a(document))
+    return errors
+
+
+def _validate_bounded_m2a(document: Mapping[str, Any]) -> list[str]:
+    """Validate the self-contained bounded protocol selected after M1."""
+
+    errors: list[str] = []
+    if document.get("tasks") != ["occupancy", "inflow"]:
+        errors.append("M2A tasks must be frozen to occupancy and inflow")
+    if document.get("horizons_hours") != [6] or document.get("rollout_steps") != 4:
+        errors.append("M2A must use the 6h target and four-step free-running rollout")
+    dataset = document.get("dataset_contract")
+    if not isinstance(dataset, dict):
+        errors.append("M2A dataset_contract must be an object")
+    else:
+        if dataset.get("split_before_windowing") is not True:
+            errors.append("M2A dataset must retain split-before-windowing")
+        if dataset.get("available_at_policy") != "FEATURE_EVENT_AVAILABLE_AT_LTE_AS_OF":
+            errors.append("M2A available_at policy is not fail-closed")
+        if dataset.get("real_site_count") != 0:
+            errors.append("M2A must declare that its cohort contains no real site")
+    calibration = document.get("calibration")
+    if not isinstance(calibration, dict) or calibration.get("fit_partition") != (
+        "validation_only"
+    ):
+        errors.append("M2A calibration must be fitted on validation only")
+    tuning = document.get("tuning_contract")
+    if not isinstance(tuning, dict) or tuning.get("hyperparameter_search") != "FORBIDDEN":
+        errors.append("M2A hyperparameter search must be forbidden")
+    metrics = document.get("metrics")
+    if not isinstance(metrics, dict) or metrics.get("primary_metric_id") != (
+        document.get("primary_metric_id")
+    ):
+        errors.append("M2A primary metric must be internally consistent")
+    stop_go = document.get("stop_go")
+    if not isinstance(stop_go, dict):
+        errors.append("M2A stop_go thresholds must be frozen")
+    else:
+        if stop_go.get("primary_relative_gain_min") != 0.05:
+            errors.append("M2A primary relative gain must remain 5%")
+        if stop_go.get("minimum_directionally_stable_seeds") != 3:
+            errors.append("M2A must require three directionally stable seeds")
+    excluded = document.get("excluded_comparators")
+    excluded_by_id = {
+        item.get("id"): item for item in excluded if isinstance(item, dict)
+    } if isinstance(excluded, list) else {}
+    tsfm = excluded_by_id.get("generic_tsfm")
+    if not isinstance(tsfm, dict) or tsfm.get("checkpoint_verified") is not False:
+        errors.append("M2A must exclude the unverified generic TSFM")
+    if document.get("observed_results_forbidden") is not True:
+        errors.append("M2A must forbid observed results in the preregistration")
     return errors
 
 
@@ -327,12 +409,14 @@ def _validate_cross_document(documents: Mapping[str, Mapping[str, Any]]) -> list
     split_id = documents["splits"].get("split_policy_id")
     if documents["bakeoff"].get("split_policy_id") != split_id:
         errors.append("bakeoff and splits policy ids differ")
-    if documents["bakeoff"].get("tasks") != documents["metrics"].get("tasks"):
-        errors.append("bakeoff and metrics tasks differ")
-    if documents["bakeoff"].get("horizons_hours") != documents["metrics"].get(
-        "horizons_hours"
-    ):
-        errors.append("bakeoff and metrics horizons differ")
+    bounded_m2a = documents["bakeoff"].get("protocol_id") == "hfwm-r0-m2a-bounded-v1"
+    if not bounded_m2a:
+        if documents["bakeoff"].get("tasks") != documents["metrics"].get("tasks"):
+            errors.append("bakeoff and metrics tasks differ")
+        if documents["bakeoff"].get("horizons_hours") != documents["metrics"].get(
+            "horizons_hours"
+        ):
+            errors.append("bakeoff and metrics horizons differ")
     spec_candidates = documents["spec"].get("primary_families", {}).get("candidates", [])
     spec_ids = [
         candidate.get("candidate_id")
