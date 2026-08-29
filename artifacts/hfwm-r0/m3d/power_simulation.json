@@ -1,5 +1,9 @@
 {
   "alpha_one_sided": 0.05,
+  "boundary_calibration_status": {
+    "COUNT": "BOUNDARY_CALIBRATION_PASS",
+    "RATE": "BOUNDARY_CALIBRATION_PASS"
+  },
   "calibration_repetitions": 40000,
   "control_error_denominator": "error_local_absolute",
   "critical_boundary_mc_half_width_limit": 0.0015,
@@ -1120,7 +1124,7 @@
         "within_block_icc": 0.35
       },
       {
-        "critical_value": 1.9715904267530944,
+        "critical_value": 1.971590426753095,
         "degrees_of_freedom": 7,
         "design_effect": 2.25,
         "design_id": "episodes_640",
@@ -1257,7 +1261,7 @@
         "within_block_icc": 0.35
       },
       {
-        "critical_value": 1.9665167883175274,
+        "critical_value": 1.9665167883175267,
         "degrees_of_freedom": 7,
         "design_effect": 2.25,
         "design_id": "episodes_768",
@@ -2490,7 +2494,7 @@
         "within_block_icc": 0.35
       },
       {
-        "critical_value": 1.9552641984052732,
+        "critical_value": 1.9552641984052739,
         "degrees_of_freedom": 7,
         "design_effect": 2.25,
         "design_id": "episodes_640",
@@ -2805,12 +2809,12 @@
   "previous_planning_point": 384,
   "relative_guardrail_margin": 0.05,
   "rng_reachability": {
-    "different_output_hash": "bb01bf5af49ba4183d23b060d7383b12a19934b93f282dcd1e7a89bb69f10e24",
+    "different_output_hash": "37a4131413896038d28953427068d8a2c3668cd17216ba186a0e3e9587cbb9ad",
     "different_seed_different": true,
     "final_state_hash": "94080516ac809b7b7a54a867131ff6f90ae63d4244e4656fbb524231bc9726ed",
-    "first_output_hash": "54bed30dd4cbe33beb1fef90f92eb6e5481940d37a093d25c870e10c29efbe05",
+    "first_output_hash": "e2382943512d0eac6d5cc631744d0492b04351476ba86bc5785ab0eb9e108315",
     "initial_state_hash": "121a3efa9ca82875a33f0e234119b07589918153aeb12548eeabda92f629c4fa",
-    "repeat_output_hash": "54bed30dd4cbe33beb1fef90f92eb6e5481940d37a093d25c870e10c29efbe05",
+    "repeat_output_hash": "e2382943512d0eac6d5cc631744d0492b04351476ba86bc5785ab0eb9e108315",
     "rng_state_consumed": true,
     "same_seed_identical": true,
     "seed": 31082026,
@@ -4462,7 +4466,7 @@
       "within_block_icc": 0.2
     },
     {
-      "critical_value": 1.970476052269074,
+      "critical_value": 1.9704760522690732,
       "degrees_of_freedom": 7,
       "design_effect": 1.3499999999999999,
       "design_id": "episodes_256",
@@ -4736,7 +4740,7 @@
       "within_block_icc": 0.2
     },
     {
-      "critical_value": 1.989969443470602,
+      "critical_value": 1.9899694434706021,
       "degrees_of_freedom": 7,
       "design_effect": 1.3499999999999999,
       "design_id": "episodes_320",
@@ -5562,7 +5566,7 @@
   "selected_design_id": "episodes_512",
   "selection_rule": "SMALLEST_GRID_POINT_PASSING_PRIMARY_POWER_FALSE_KILL_INCONCLUSIVE_BOUNDARY_COVERAGE_AND_HARM_DETECTION_FOR_COUNT_AND_RATE",
   "selection_status": "ACCEPTABLE_DESIGN_SELECTED",
-  "simulation_output_hash": "eb1e36d345b7775c07c788ec8ef2001330b319c053bbdff429a4161ee218af37",
+  "simulation_output_hash": "a17fce9933eaf542f5b2d0bfacdf147144be171e18a9b4a1f26fc0db2ee14c92",
   "target_power": 0.8,
   "target_relative_gain": 0.05,
   "training_authorized": false
