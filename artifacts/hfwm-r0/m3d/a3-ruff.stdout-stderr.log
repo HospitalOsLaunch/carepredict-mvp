@@ -1,0 +1,23 @@
+E501 Line too long (106 > 100)
+  --> src/hfwm/m3d/aggregation.py:67:101
+   |
+65 |             raise ValueError(f"unsupported row_absence_reason: {embedded_reason}")
+66 |         mapped_reason = absence_by_row.get(key)
+67 |         if embedded_reason is not None and mapped_reason is not None and embedded_reason != mapped_reason:
+   |                                                                                                     ^^^^^^
+68 |             raise ValueError(f"conflicting row_absence_reason for {key}")
+69 |         # A source row carrying an absence reason is already an explicit gap;
+   |
+
+E501 Line too long (103 > 100)
+   --> src/hfwm/m3d/power.py:568:101
+    |
+566 |                 == "BOUNDARY_CALIBRATION_PASS"
+567 |             )
+568 |             boundary_calibration_statuses[str(item["endpoint_semantics"])] = interval_procedure_status(
+    |                                                                                                     ^^^
+569 |                 _numeric(boundary["fail_guardrail"]["mc_ci95_lower"], name="boundary fail lower"),
+570 |                 _numeric(boundary["fail_guardrail"]["mc_ci95_upper"], name="boundary fail upper"),
+    |
+
+Found 2 errors.

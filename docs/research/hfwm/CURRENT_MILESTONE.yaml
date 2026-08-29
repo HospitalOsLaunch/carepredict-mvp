@@ -67,13 +67,21 @@ artifacts:
   m2_seed_audit_ticket: docs/research/hfwm/HFWM_R0_M2_SEED_AUDIT_TICKET.md
   release_scope: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml
   m2_diff_audit: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md
+  m2_diff_executable_evidence: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_EXECUTABLE_EVIDENCE.md
   disclosure_sensitivity: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md
+  targeted_recheck_clarification: docs/research/hfwm/HFWM_R0_M3D1_TARGETED_RECHECK_CLARIFICATION.yaml
+  toolchain_attestation: docs/research/hfwm/HFWM_R0_M3D1_TOOLCHAIN_ATTESTATION.yaml
+  partner_package_source: docs/research/hfwm/HFWM_R0_M3D1_PARTNER_PACKAGE_SOURCE.yaml
+  toolchain_pip_freeze: artifacts/hfwm-r0/m3d/toolchain-pip-freeze.txt
 
 review:
-  new_reviewer_executed: true
-  reviewer_artifact: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml
-  reviewer_status: PASS_RELEASE
-  main_agent_only: false
+  prior_targeted_review_artifact: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml
+  prior_targeted_review_interpretation: TARGETED_RECHECK_PASS
+  clarification_artifact: docs/research/hfwm/HFWM_R0_M3D1_TARGETED_RECHECK_CLARIFICATION.yaml
+  new_full_reviewer_executed: false
+  reviewer_artifact: null
+  reviewer_status: NOT_RUN_A3_PRECONDITION_FAILED
+  main_agent_only: true
 
 human_decisions_required:
   - validation du contrat sémantique et temporel par les propriétaires partenaires
@@ -96,8 +104,6 @@ human_decisions_recorded:
   future_weights_persistence_required: true
   m2_replay_ticket_blocks_partner_review: false
 
-blockers: []
-
 release:
   content_commit_a: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
   manifest_commit_b: f0f0d0827602e5c74d58ed1b28fecaab28052f02
@@ -109,15 +115,49 @@ release:
 
 final_result: HFWM-R0-M3D.1 = HOLD
 blockers:
-  - id: LOCAL_RELEASE_TEST_TOOLCHAIN_UNAVAILABLE
+  - id: A3_PYTEST_FAILURE
     severity: P0
     evidence: >-
-      Dans le checkout propre A3, `python3 -m pytest tests/hfwm/m3d -q` échoue car
-      pytest est absent ; `ruff` et `mypy` sont également absents. L'installation
-      temporaire a échoué faute de résolution réseau et n'a installé aucune dépendance.
+      Sur le checkout exact /private/tmp/carepredict-m3d1-A3, pytest
+      tests/hfwm/m3d -q a retourné 41 tests passés et 2 échecs reproductibles :
+      le test de trace AGORA trouve le commit historique 6cd4819 et le test de
+      scope attend des fichiers ignorés absents d'un checkout nettoyé.
     impact: >-
-      Les tests P0 obligatoires n'ont pas pu être exécutés depuis A3 ; aucun cache
-      antérieur n'est accepté comme preuve de release.
+      La validation Pytest requise sur les sources exactes A3 n'est pas PASS.
     required_action: >-
-      Exécuter pytest, Ruff et Mypy dans un environnement reproductible disponible,
-      puis régénérer une attestation post-tag sans modifier A3/B3.
+      Corriger la contradiction des tests dans une future version de contenu,
+      puis réexécuter sur un checkout propre explicitement versionné ; A3 reste
+      immuable pour cette release.
+  - id: A3_RUFF_FAILURE
+    severity: P0
+    evidence: >-
+      Ruff 0.15.16 sur A3 signale deux diagnostics E501 aux lignes 67 de
+      src/hfwm/m3d/aggregation.py et 568 de src/hfwm/m3d/power.py.
+    impact: La validation Ruff requise sur les sources exactes A3 n'est pas PASS.
+    required_action: >-
+      Corriger le formatage dans une future version de contenu ; aucun correctif
+      n'est appliqué à A3/B3 dans ce milestone.
+  - id: LOCAL_RELEASE_TEST_TOOLCHAIN_UNAVAILABLE
+    severity: RESOLVED
+    evidence: >-
+      Une toolchain locale existante a été identifiée et attestée sans réseau :
+      Python 3.11.15, pytest 8.4.2, Ruff 0.15.16, Mypy 1.19.1.
+    impact: >-
+      Ce blocker d'environnement est levé ; les échecs A3 de test et de lint
+      restent indépendants.
+    required_action: >-
+      Conserver l'attestation et ne pas présenter l'environnement comme hermétique.
+
+a3_toolchain_validation:
+  pytest: FAIL
+  ruff: FAIL
+  mypy: PASS
+  targeted_local_and_prereg_tests: PASS
+  identified_toolchain_artifact: docs/research/hfwm/HFWM_R0_M3D1_TOOLCHAIN_ATTESTATION.yaml
+
+execution_safety:
+  training_executed: false
+  partner_data_consumed: false
+  m3l_authorized: false
+  m3f_authorized: false
+  automated_transmission: false

@@ -1,0 +1,38 @@
+................................F.......F..                              [100%]
+=================================== FAILURES ===================================
+_____ test_agora_git_trace_is_uncommitted_and_removed_from_partner_package _____
+
+    def test_agora_git_trace_is_uncommitted_and_removed_from_partner_package() -> None:
+        history = subprocess.run(
+            ["git", "log", "--all", "-SAGORA", "--format=%H", "--"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+>       assert history.stdout.strip() == ""
+E       AssertionError: assert '6cd4819ef342...f4dde634fe7fa' == ''
+E         
+E         + 6cd4819ef342a2382213b5f51b0f4dde634fe7fa
+
+tests/hfwm/m3d/test_provenance.py:41: AssertionError
+_________ test_filesystem_scope_classifies_relevant_and_ignored_files __________
+
+    def test_filesystem_scope_classifies_relevant_and_ignored_files() -> None:
+        scope = load_scope(SCOPE)
+        errors = validate_release_scope(ROOT, scope)
+        assert errors == []
+        discovered = enumerate_release_scope(ROOT)
+        # The final manifest is deliberately Commit-B-only and is absent from the
+        # clean Commit-A checkout used for validation.
+        if (ROOT / "artifacts/hfwm-r0/m3d/manifest.json").is_file():
+            assert "artifacts/hfwm-r0/m3d/manifest.json" in discovered["filesystem_files"]
+>       assert any(path.startswith(".mypy_cache/") for path in discovered["ignored_files"])
+E       assert False
+E        +  where False = any(<generator object test_filesystem_scope_classifies_relevant_and_ignored_files.<locals>.<genexpr> at 0x10ca9fd80>)
+
+tests/hfwm/m3d/test_release.py:39: AssertionError
+=========================== short test summary info ============================
+FAILED tests/hfwm/m3d/test_provenance.py::test_agora_git_trace_is_uncommitted_and_removed_from_partner_package
+FAILED tests/hfwm/m3d/test_release.py::test_filesystem_scope_classifies_relevant_and_ignored_files
+2 failed, 41 passed in 1.01s

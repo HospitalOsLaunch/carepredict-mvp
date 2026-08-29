@@ -1,0 +1,30 @@
+schema_version: hfwm.r0.m3d1.targeted-recheck-clarification.v1
+milestone_id: HFWM-R0-M3D.1
+associated_tag: HFWM-R0-M3D.1
+historical_artifact: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml
+historical_artifact_status: IMMUTABLE_POST_TAG_RECORD
+historical_review_mode: INDEPENDENT_READ_ONLY_TARGETED_RE_REVIEW
+historical_legacy_field:
+  path: release_review.status
+  value: PASS_RELEASE
+  corrected_interpretation: TARGETED_RECHECK_PASS
+  rationale: >-
+    L'artefact historique ne couvrait que trois sondes disclosure ciblées. Il ne
+    constituait pas la revue indépendante complète exigée pour la release.
+targeted_recheck:
+  status: PASS
+  scope:
+    - embedded_row_absence_reason_without_side_map
+    - missing_or_empty_required_intervals
+    - omitted_middle_suppressed_interval
+  blockers: []
+full_release_review:
+  status: NOT_EXECUTED
+  reason: A3_PYTEST_AND_RUFF_PRECONDITION_FAILED
+claims:
+  historical_targeted_pass_is_full_release_pass: false
+  external_transmission_authorized: false
+  partner_data_access: false
+  training: false
+  m3l: false
+  m3f: false

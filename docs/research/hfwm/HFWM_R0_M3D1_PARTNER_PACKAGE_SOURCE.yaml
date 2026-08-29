@@ -1,0 +1,19 @@
+schema_version: hfwm.r0.m3d1.partner-package-source.v1
+export_status: NOT_EXPORTED
+partner_package_source_tag: HFWM-R0-M3D.1
+partner_package_source_content_commit: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
+partner_package_source_content_tree: 97a1cad0763199382010f9b9e5f7bd0db6214d9e
+manifest_commit: f0f0d0827602e5c74d58ed1b28fecaab28052f02
+branch_head_excluded: true
+branch_head_at_attestation: 0563b2a19f8473b4cf4da542a1bcc98c00eeee6a
+comparison_basis: >-
+  Toute surface documentaire partenaire doit être extraite du tag et du contenu
+  A3 attesté par B3, jamais de la branche hfwm-r0 post-tag.
+authorization:
+  documentary_partner_review: false
+  partner_data_access: false
+  training: false
+  m3l: false
+  m3f: false
+  deployment: false
+  automated_transmission: false

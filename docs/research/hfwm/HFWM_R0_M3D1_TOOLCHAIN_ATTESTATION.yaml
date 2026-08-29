@@ -1,0 +1,30 @@
+schema_version: hfwm.r0.m3d1.toolchain-attestation.v1
+associated_tag: HFWM-R0-M3D.1
+content_commit: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
+content_tree: 97a1cad0763199382010f9b9e5f7bd0db6214d9e
+toolchain_attestation:
+  python_executable: >-
+    /Users/saorygiovanni/Documents/Documents - MacBook Pro de Saory/Codex/CarePredict — comparaison des versions/carepredict-mvp/.venv/bin/python
+  python_version: Python 3.11.15
+  pytest_version: pytest 8.4.2
+  ruff_version: ruff 0.15.16
+  mypy_version: "mypy 1.19.1 (compiled: yes)"
+  pip_freeze_artifact: artifacts/hfwm-r0/m3d/toolchain-pip-freeze.txt
+  pip_freeze_sha256: f7790aa47c234d91ae85907d69e620c4858be8ba0f283955a0d64172f971b274
+  pip_freeze_command: >-
+    $TOOLCHAIN_PYTHON -m pip freeze
+  environment_hermetic: false
+  environment_reused_from_repository_workspace: true
+  network_used: false
+validation:
+  a3_head: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
+  a3_tree: 97a1cad0763199382010f9b9e5f7bd0db6214d9e
+  a3_checkout: /private/tmp/carepredict-m3d1-A3
+  pytest: FAIL
+  pytest_result: 41_passed_2_failed
+  ruff: FAIL
+  ruff_result: 2_E501_diagnostics
+  mypy: PASS
+  targeted_local_and_prereg_tests: PASS_11
+  training_executed: false
+  partner_data_consumed: false
