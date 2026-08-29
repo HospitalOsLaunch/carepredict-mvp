@@ -1,4 +1,15 @@
-export type InsightRiskLevel = "low" | "moderate" | "high" | "critical";
+import {
+  classifyTargetRisk,
+  HCL_TARGET_PRODUCT_RESEARCH_SCENARIO,
+  targetForecastFor,
+  targetScenarioStateFor,
+  TARGET_PRESSURE_THRESHOLD_SIIPS,
+  type OperationalMetricDefinition,
+  type TargetRiskLevel,
+  type TargetScenarioState
+} from "../research/hclTargetScenario";
+
+export type InsightRiskLevel = TargetRiskLevel;
 export type InsightConfidence = "low" | "medium" | "high";
 
 export interface ScenarioContext {
@@ -51,10 +62,12 @@ export interface ActionableInsight {
   confidence: InsightConfidence;
   drivers: InsightDriver[];
   recommendation: InsightRecommendation;
+  metricDefinitions: OperationalMetricDefinition[];
 }
 
 export interface ScenarioPoint {
   hour: number;
+  timeLabel: string;
   baseline: number;
   recommended: number;
   custom: number;
@@ -63,106 +76,89 @@ export interface ScenarioPoint {
   upperBound: number;
 }
 
-export interface ScenarioSummary {
+export interface ScenarioSummary extends TargetScenarioState {
   peak: number;
-  criticalHours: number;
 }
 
-export const PRESSURE_THRESHOLD_SIIPS = 1600;
+export const PRESSURE_THRESHOLD_SIIPS = TARGET_PRESSURE_THRESHOLD_SIIPS;
+export const classifyRiskLevel = classifyTargetRisk;
 
-export function classifyRiskLevel(peak: number, criticalHours: number): InsightRiskLevel {
-  if (peak >= 1800 || criticalHours >= 5) return "critical";
-  if (peak >= PRESSURE_THRESHOLD_SIIPS || criticalHours > 0) return "high";
-  if (peak >= 1200) return "moderate";
-  return "low";
-}
+const scenario = HCL_TARGET_PRODUCT_RESEARCH_SCENARIO;
+const baseline = scenario.states.baseline;
 
 export const RESEARCH_INSIGHT: ActionableInsight = {
-  id: "insight-urgences-2026-09-14",
+  id: "situation-urgences-2026-09-14",
   context: {
-    scenarioId: "scenario-demo-urgences-001",
-    hospitalId: "demo-hospital",
-    hospitalLabel: "Hôpital Démo",
-    serviceId: "urgences",
-    serviceLabel: "Urgences",
-    origin: "2026-09-14T08:00:00+02:00",
-    horizonHours: 48,
-    dataMode: "research_synthetic"
+    scenarioId: scenario.scenarioId,
+    hospitalId: scenario.hospitalId,
+    hospitalLabel: scenario.hospitalLabel,
+    serviceId: scenario.serviceId,
+    serviceLabel: scenario.serviceLabel,
+    origin: scenario.origin,
+    horizonHours: scenario.horizonHours,
+    dataMode: scenario.dataMode
   },
-  title: "Tension prévue aux Urgences",
-  riskLevel: "critical",
-  riskWindowStart: "2026-09-14T16:00:00+02:00",
-  riskWindowEnd: "2026-09-14T20:00:00+02:00",
-  peakPressureSiips: 1810,
-  criticalHours: 6,
+  title: "Tension critique prévue de 16h à 20h",
+  riskLevel: baseline.risk,
+  riskWindowStart: scenario.riskWindowStart,
+  riskWindowEnd: scenario.riskWindowEnd,
+  peakPressureSiips: baseline.peakSiips,
+  criticalHours: baseline.criticalHours,
   confidence: "high",
   drivers: [
     {
       id: "inflow",
-      label: "Arrivées soutenues",
-      explanation: "Le flux d'arrivées reste supérieur au rythme de sortie attendu."
+      label: "Flux entrant supérieur aux sorties avant le pic",
+      explanation: "18 entrées attendues contre 11 sorties prévues avant la fenêtre de tension."
     },
     {
       id: "discharge-window",
-      label: "Fenêtre de sorties confirmées",
-      explanation: "Cinq sorties confirmées peuvent réduire la tension avant le pic."
+      label: "5 sorties confirmées peuvent être avancées",
+      explanation: "Ces sorties sont déjà confirmées dans le scénario ; l'action ne décide pas de l'éligibilité médicale."
     },
     {
-      id: "capacity",
+      id: "staffing",
+      label: "Couverture IDE inférieure au besoin estimé",
+      explanation: "Un déficit de 2 IDE reste prévu sur la fenêtre 16h–20h, quelle que soit l'action capacitaire."
+    },
+    {
+      id: "downstream",
       label: "Capacité d'aval contrainte",
-      explanation: "La capacité disponible limite l'absorption du flux en fin de journée."
+      explanation: "La capacité d'aval limite l'absorption du flux en fin de journée."
     }
   ],
   recommendation: {
-    id: "recommendation-prioritize-discharge-001",
-    title: "Prioriser 5 sorties confirmées avant 15h",
-    rationale: "Cette action libère de la capacité avant la fenêtre de tension prévue.",
+    id: scenario.recommendation.id,
+    title: scenario.recommendation.title,
+    rationale: scenario.recommendation.rationale,
     expectedPeakDeltaSiips: -200,
     expectedCriticalHoursDelta: -5,
     feasibility: "high",
     confidence: "high",
-    parameters: [
-      {
-        id: "confirmed_discharges",
-        label: "Sorties confirmées avant 15h",
-        value: 5,
-        unit: "patients",
-        min: 0,
-        max: 8
-      }
-    ],
+    parameters: [{
+      id: scenario.recommendation.parameterId,
+      label: scenario.recommendation.parameterLabel,
+      value: scenario.recommendation.recommendedValue,
+      unit: scenario.recommendation.unit,
+      min: scenario.recommendation.min,
+      max: scenario.recommendation.max
+    }],
     status: "proposed"
-  }
+  },
+  metricDefinitions: scenario.metricDefinitions
 };
-
-const BASELINE_PROFILE = [1550, 1620, 1680, 1750, 1810, 1770, 1690, 1590, 1510, 1450];
 
 export function simulateDischargeScenario(confirmedDischarges: number): {
   points: ScenarioPoint[];
   summary: ScenarioSummary;
 } {
-  const clamped = Math.max(0, Math.min(8, Math.round(confirmedDischarges)));
-  const recommended = RESEARCH_INSIGHT.recommendation.parameters[0].value;
-  const points = BASELINE_PROFILE.map((baseline, index) => {
-    const timingFactor = index < 5 ? (index + 1) / 5 : 1;
-    const customReduction = clamped * 40 * timingFactor;
-    const recommendedReduction = recommended * 40 * timingFactor;
-    return {
-      hour: index * 4,
-      baseline,
-      recommended: Math.round(baseline - recommendedReduction),
-      custom: Math.round(baseline - customReduction),
-      threshold: PRESSURE_THRESHOLD_SIIPS,
-      lowerBound: baseline - 100,
-      upperBound: baseline + 110
-    };
-  });
-  const series = points.map((point) => point.custom);
+  const state = targetScenarioStateFor(confirmedDischarges);
+  const points = targetForecastFor(confirmedDischarges);
   return {
     points,
     summary: {
-      peak: Math.max(...series),
-      criticalHours: series.filter((value) => value > PRESSURE_THRESHOLD_SIIPS).length
+      ...state,
+      peak: state.peakSiips
     }
   };
 }
@@ -187,7 +183,11 @@ export function formatDateTime(value: string): string {
 export function formatRiskWindow(start: string, end: string): string {
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const date = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" }).format(startDate);
+  const date = new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    timeZone: "Europe/Paris"
+  }).format(startDate);
   const formatHour = (value: Date) => {
     const hourPart = new Intl.DateTimeFormat("fr-FR", {
       hour: "numeric",

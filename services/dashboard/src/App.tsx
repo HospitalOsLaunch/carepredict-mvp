@@ -12,7 +12,7 @@ import { Beds } from "./routes/Beds";
 import { ComponentGallery } from "./routes/ComponentGallery";
 import { ForecastDetail } from "./routes/ForecastDetail";
 import { History } from "./routes/History";
-import { Insights } from "./routes/Insights";
+import { Insights, Situations } from "./routes/Insights";
 import { ModifyInsight } from "./routes/ModifyInsight";
 import { OrEd } from "./routes/OrEd";
 import { Overview } from "./routes/Overview";
@@ -31,7 +31,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-bg-app text-text-body">
-      <aside className="fixed inset-y-0 left-0 flex w-[230px] flex-col bg-brand-navy text-white" aria-label="Navigation principale">
+      <aside className={`fixed inset-y-0 left-0 flex ${researchMode ? "w-[204px]" : "w-[230px]"} flex-col bg-brand-navy text-white`} aria-label="Navigation principale">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="text-card-label text-brand-primary">HospitalOS</div>
         </div>
@@ -42,7 +42,7 @@ export function AppShell() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                end={item.path === "/insights" || item.path === "/"}
+                end={item.path === "/situations" || item.path === "/insights" || item.path === "/"}
                 className={({ isActive }) =>
                   [
                     "mb-1 flex items-center gap-3 rounded-xl border-l-4 px-3 py-3 text-[13px] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-brand-primary",
@@ -75,9 +75,9 @@ export function AppShell() {
           ) : null}
         </nav>
         {researchMode ? (
-          <div className="m-4 rounded-card border border-brand-primary/30 bg-white/5 p-4 text-[12.5px] leading-[1.35] text-white/80" role="note">
-            <div className="font-semibold text-brand-primary">MODE ÉTUDE UTILISATEUR</div>
-            <p className="mt-2">Scénario hospitalier simulé · aucune donnée HCL · aucune action réelle exécutée</p>
+          <div className="m-3 border-t border-white/10 px-2 pb-2 pt-4 text-[11px] leading-[1.45] text-white/70" role="note">
+            <div className="font-semibold text-brand-primary">Prototype de recherche</div>
+            <p className="mt-1">Scénario simulé · aucune donnée HCL · aucune action hospitalière exécutée</p>
           </div>
         ) : (
           <div className="m-4 rounded-card border border-white/10 bg-white/5 p-4 text-[12.5px] leading-[1.35] text-white/70">
@@ -91,14 +91,14 @@ export function AppShell() {
         )}
       </aside>
 
-      <div className="ml-[230px] min-h-screen">
+      <div className={researchMode ? "ml-[204px] min-h-screen" : "ml-[230px] min-h-screen"}>
         {researchMode ? (
-          <header className="flex h-20 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
+          <header className="flex h-16 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
             <div>
-              <p className="text-card-label text-brand-primary">Scénario hospitalier simulé</p>
+              <p className="text-card-label text-brand-primary">14 SEPTEMBRE · 08:00</p>
               <p className="mt-1 text-body-strong text-text-strong">Hôpital Démo · Urgences</p>
             </div>
-            <span className="rounded-full border border-brand-primary/30 bg-brand-primary/5 px-3 py-2 text-badge text-brand-primary">Recherche utilisateur</span>
+            <span className="text-caption">Horizon 48 h</span>
           </header>
         ) : (
           <header className="flex h-20 items-center justify-between border-b border-border-subtle bg-bg-card px-8">
@@ -128,7 +128,11 @@ export function AppShell() {
 
         <main className="p-8">
           <Routes>
-            <Route path="/" element={researchMode ? <Navigate to="/insights" replace /> : <Overview />} />
+            <Route path="/" element={researchMode ? <Navigate to="/situations" replace /> : <Overview />} />
+            <Route path="/situations" element={<Situations />} />
+            <Route path="/situations/:insightId" element={<Situations />} />
+            <Route path="/situations/:insightId/forecast" element={<ForecastDetail />} />
+            <Route path="/situations/:insightId/modify" element={<ModifyInsight />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/insights/:insightId" element={<Insights />} />
             <Route path="/insights/:insightId/forecast" element={<ForecastDetail />} />
