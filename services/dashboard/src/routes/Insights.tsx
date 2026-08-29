@@ -84,7 +84,7 @@ export function Insights() {
             <h3 className="text-section mt-2 text-lg text-text-strong">{insight.recommendation.title}</h3>
             <p className="text-body-copy mt-2">{insight.recommendation.rationale}</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <Metric label="Impact attendu" value="−200 SIIPS" tone="good" />
+              <Metric label="Impact attendu" value="−200 SIIPS · −4 h" tone="good" />
               <Metric label="Faisabilité" value="Élevée" tone="good" />
               <Metric label="Confiance" value={formatConfidence(insight.recommendation.confidence)} />
             </div>
@@ -171,7 +171,7 @@ function DecisionDialog({
           <p className="text-body-strong text-text-strong">Prioriser 5 sorties confirmées avant 15h</p>
           <p>Service : Urgences</p>
           <p>Objectif : réduire la tension prévue entre 16h et 20h</p>
-          <p>Impact attendu : −200 SIIPS · Confiance : Élevée</p>
+          <p>Impact attendu : −200 SIIPS · −4 h en tension · Confiance : Élevée</p>
         </div>
         {!isExecute ? (
           <label className="mt-5 block text-body-copy">
