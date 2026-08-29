@@ -15,7 +15,11 @@ ajout de `_validate_bounded_m2a` pour vérifier la cohorte synthétique, le spli
 windowing, la calibration et les seuils M2A ; assouplissement conditionnel de la cohérence
 tasks/horizons pour le protocole borné.
 
-Classification : `POST_M2_NO_EFFECT_ON_REPRODUCIBILITY`.
+Classification historique supersédée par l'audit quadriaxial :
+`fit_output_impact: NONE_DEMONSTRATED`,
+`preregistration_gate_semantics_impact: MATERIAL`,
+`temporal_relation_to_m2_execution: UNRESOLVED`,
+`m2_preregistration_conformance_at_execution: NOT_PROVEN`.
 
 Preuve : ce module ne forme pas de modèle et n'est pas importé par le runner M2B ; ses
 changements portent uniquement sur la validation préalable du manifeste. Les résultats
@@ -27,7 +31,8 @@ Diff exact : ajout de `fitted_state()` (copie canonique des paramètres) et
 `restore_fitted_state()` (validation de formes, finitude, variance positive et identité
 de site avant restauration).
 
-Classification : `POST_M2_NO_EFFECT_ON_REPRODUCIBILITY`.
+Classification historique supersédée par l'audit quadriaxial ; les axes complets
+et la conclusion temporelle sont dans `HFWM_R0_M2_PREREGISTRATION_GATE_AUDIT.md`.
 
 Preuve : les chemins `fit`, `predict_next`, `rollout` et `sample_rollout` utilisés par M2
 ne sont pas modifiés ; les deux méthodes ajoutées sont des helpers d'I/O explicite et ne

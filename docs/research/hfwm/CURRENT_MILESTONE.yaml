@@ -30,6 +30,11 @@ m2_result:
   occupation_guardrail: FAILED_PROCEDURALLY
   true_occupation_regression: NOT_ESTIMATED_WITH_DECISION_GRADE_PRECISION
   world_model_advantage: NOT_TESTABLE_ON_M1
+  preregistration_conformance: AMBIGUOUS
+  preregistration_validator_change_time_relative_to_m2: UNRESOLVED
+  preregistration_validator_state: NOT_PROVEN_AT_M2_EXECUTION
+  fit_output_impact: NONE_DEMONSTRATED
+  preregistration_gate_semantics_impact: MATERIAL
 
 controls:
   primary: local_joint_from_scratch
@@ -68,6 +73,7 @@ artifacts:
   release_scope: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_SCOPE.yaml
   m2_diff_audit: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_AUDIT.md
   m2_diff_executable_evidence: docs/research/hfwm/HFWM_R0_M3D1_M2_DIFF_EXECUTABLE_EVIDENCE.md
+  m2_preregistration_gate_audit: docs/research/hfwm/HFWM_R0_M2_PREREGISTRATION_GATE_AUDIT.md
   m2_preregistration_diff: artifacts/hfwm-r0/m3d/m2-preregistration.diff
   m2_local_model_diff: artifacts/hfwm-r0/m3d/m2-local-model.diff
   disclosure_sensitivity: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md
@@ -93,6 +99,7 @@ human_decisions_required:
 
 limits:
   confirmed_partner_conventions: 0
+  m2_code_state_not_fully_recoverable_scope: WEIGHTS_AND_PREREGISTRATION_VALIDATOR
   m3_guardrail_comparable_to_m2: unknown
   historical_realtime_claim_without_available_at: forbidden
   hcl_cross_institution_generalization: forbidden

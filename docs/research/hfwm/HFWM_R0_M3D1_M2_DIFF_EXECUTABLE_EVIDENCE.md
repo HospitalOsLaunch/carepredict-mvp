@@ -17,9 +17,12 @@ Cette attestation est post-tag et ne modifie pas A3, B3 ni le tag.
 - Comparaison exécutable : l'ancien validateur retourne `valid=false` avec 3 erreurs
   sur le contrat M2A ; le validateur A3 retourne `valid=true`, avec le même
   `manifest_sha256=384c4e5ae707edabcf19523b5fd782f4301ca405722aa71fab31d90e141c37e6`.
-- Classification : `POST_M2_NO_EFFECT_ON_REPRODUCIBILITY` pour les fits approuvés ;
-  la modification change uniquement l'autorisation/pré-enregistrement et peut
-  changer l'acceptation d'un manifeste invalide.
+- Axes de classification : `fit_output_impact: NONE_DEMONSTRATED`,
+  `preregistration_gate_semantics_impact: MATERIAL`,
+  `temporal_relation_to_m2_execution: UNRESOLVED`,
+  `m2_preregistration_conformance_at_execution: NOT_PROVEN`. La modification
+  change l'autorisation/pré-enregistrement et peut changer l'acceptation d'un
+  manifeste invalide ; voir l'audit de gate pour les trois messages littéraux.
 
 ## `local/model.py`
 
@@ -37,8 +40,10 @@ Cette attestation est post-tag et ne modifie pas A3, B3 ni le tag.
   `uncertainty_hash=a17f8f07b5106de29d08437699d531cb5d08adeba66a5bbe00fa84cb44bed6a6`.
 - Test A3 de round-trip `fitted_state()`/`restore_fitted_state()` : `PASS` ; les
   tableaux `predict_next`, `rollout` et incertitude sont identiques.
-- Classification : `POST_M2_NO_EFFECT_ON_REPRODUCIBILITY` pour les chemins
-  historiques ; aucun poids M2 historique n'est reconstitué.
+- Axes de classification : `fit_output_impact: NONE_DEMONSTRATED` sur les
+  chemins testés ; la relation temporelle à M2 et la conformité du validateur
+  restent `UNRESOLVED` et `NOT_PROVEN`. Aucun poids M2 historique n'est
+  reconstitué.
 
 ## Limite obligatoire
 
