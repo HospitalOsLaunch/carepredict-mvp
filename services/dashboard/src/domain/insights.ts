@@ -70,6 +70,13 @@ export interface ScenarioSummary {
 
 export const PRESSURE_THRESHOLD_SIIPS = 1600;
 
+export function classifyRiskLevel(peak: number, criticalHours: number): InsightRiskLevel {
+  if (peak >= 1800 || criticalHours >= 5) return "critical";
+  if (peak >= PRESSURE_THRESHOLD_SIIPS || criticalHours > 0) return "high";
+  if (peak >= 1200) return "moderate";
+  return "low";
+}
+
 export const RESEARCH_INSIGHT: ActionableInsight = {
   id: "insight-urgences-2026-09-14",
   context: {
@@ -175,4 +182,19 @@ export function formatDateTime(value: string): string {
     hour: "2-digit",
     minute: "2-digit"
   }).format(new Date(value));
+}
+
+export function formatRiskWindow(start: string, end: string): string {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const date = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", timeZone: "Europe/Paris" }).format(startDate);
+  const formatHour = (value: Date) => {
+    const hourPart = new Intl.DateTimeFormat("fr-FR", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: "Europe/Paris"
+    }).formatToParts(value).find((part) => part.type === "hour");
+    return `${hourPart?.value ?? value.getHours()}h`;
+  };
+  return `${date} · ${formatHour(startDate)}–${formatHour(endDate)}`;
 }

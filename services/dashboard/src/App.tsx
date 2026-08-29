@@ -11,6 +11,7 @@ import { Actions } from "./routes/Actions";
 import { Beds } from "./routes/Beds";
 import { ComponentGallery } from "./routes/ComponentGallery";
 import { ForecastDetail } from "./routes/ForecastDetail";
+import { History } from "./routes/History";
 import { Insights } from "./routes/Insights";
 import { ModifyInsight } from "./routes/ModifyInsight";
 import { OrEd } from "./routes/OrEd";
@@ -33,7 +34,6 @@ export function AppShell() {
       <aside className="fixed inset-y-0 left-0 flex w-[230px] flex-col bg-brand-navy text-white" aria-label="Navigation principale">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="text-card-label text-brand-primary">HospitalOS</div>
-          <div className="mt-1 text-lg font-bold text-white">{researchMode ? "Étude utilisateur" : "Command"}</div>
         </div>
         <nav className="flex-1 px-3 py-4" aria-label="Écrans HospitalOS">
           {items.map((item) => {
@@ -134,7 +134,7 @@ export function AppShell() {
             <Route path="/insights/:insightId/forecast" element={<ForecastDetail />} />
             <Route path="/insights/:insightId/modify" element={<ModifyInsight />} />
             <Route path="/actions" element={researchMode ? <Actions /> : <ActionEngine />} />
-            <Route path="/history" element={<Actions />} />
+            <Route path="/history" element={<History />} />
             <Route path="/forecast" element={<PressureForecast />} />
             <Route path="/simulation" element={<Simulation />} />
             <Route path="/beds" element={<Beds />} />

@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 
 import { useScenarioContext } from "../domain/ScenarioContext";
-import { formatConfidence, formatDateTime, formatRiskLevel, PRESSURE_THRESHOLD_SIIPS } from "../domain/insights";
+import { classifyRiskLevel, formatConfidence, formatDateTime, formatRiskLevel, PRESSURE_THRESHOLD_SIIPS } from "../domain/insights";
 
 export function ForecastDetail() {
   const { insight, simulation } = useScenarioContext();
   const points = simulation.points;
+  const riskLevel = classifyRiskLevel(insight.peakPressureSiips, insight.criticalHours);
   return (
     <section className="space-y-6" aria-labelledby="forecast-detail-title">
       <header className="flex flex-wrap items-end justify-between gap-4">
@@ -33,7 +34,7 @@ export function ForecastDetail() {
         <div className="mt-6 space-y-3" aria-label="Courbe de prévision SIIPS">
           {points.map((point) => <ForecastBar key={point.hour} hour={point.hour} value={point.baseline} lowerBound={point.lowerBound} upperBound={point.upperBound} />)}
         </div>
-        <div className="mt-6 flex flex-wrap gap-5 text-caption"><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-status-critical" />Prévision</span><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-brand-primary/20" />Bande d'incertitude</span><span>Fenêtre de risque : {formatDateTime(insight.riskWindowStart)}–{formatDateTime(insight.riskWindowEnd)}</span><span>Niveau : {formatRiskLevel(insight.riskLevel)}</span></div>
+        <div className="mt-6 flex flex-wrap gap-5 text-caption"><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-status-critical" />Prévision</span><span><i className="mr-2 inline-block h-2 w-2 rounded-full bg-brand-primary/20" />Bande d'incertitude</span><span>Fenêtre de risque : {formatDateTime(insight.riskWindowStart)}–{formatDateTime(insight.riskWindowEnd)}</span><span>Niveau : {formatRiskLevel(riskLevel)}</span></div>
       </article>
       <details className="rounded-card border border-border-subtle bg-bg-card p-5 shadow-card"><summary className="cursor-pointer text-body-strong text-text-strong">Comment cette prévision est-elle calculée ?</summary><p className="text-caption mt-3">Le scénario de recherche utilise une fixture synthétique déterministe. Les détails techniques restent séparés de la décision.</p></details>
     </section>

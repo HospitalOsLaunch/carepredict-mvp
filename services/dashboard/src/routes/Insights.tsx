@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { ArrowRight, Check, ChevronRight, Clock3, ShieldAlert, X } from "lucide-react";
+import { ArrowRight, Check, Clock3, ShieldAlert, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useScenarioContext } from "../domain/ScenarioContext";
 import {
   formatConfidence,
-  formatDateTime,
+  classifyRiskLevel,
+  formatRiskWindow,
   formatRiskLevel,
   PRESSURE_THRESHOLD_SIIPS
 } from "../domain/insights";
 
-const REFUSAL_REASONS = [
+export const REFUSAL_REASONS = [
   "Ressources indisponibles",
   "Action non pertinente",
   "Action déjà en cours",
@@ -22,6 +23,7 @@ const REFUSAL_REASONS = [
 export function Insights() {
   const navigate = useNavigate();
   const { insight, decision, acceptRecommendation, refuseRecommendation } = useScenarioContext();
+  const riskLevel = classifyRiskLevel(insight.peakPressureSiips, insight.criticalHours);
   const [dialog, setDialog] = useState<"execute" | "refuse" | null>(null);
   const [reason, setReason] = useState("");
 
@@ -51,11 +53,11 @@ export function Insights() {
               <h2 id="primary-insight-title" className="text-section mt-2 text-xl text-text-strong">{insight.title}</h2>
               <p className="text-body-copy mt-2 flex items-center gap-2">
                 <Clock3 className="h-4 w-4 text-brand-primary" aria-hidden="true" />
-                Aujourd'hui · {formatDateTime(insight.riskWindowStart)}–{formatDateTime(insight.riskWindowEnd)}
+                {formatRiskWindow(insight.riskWindowStart, insight.riskWindowEnd)}
               </p>
             </div>
             <div className="rounded-full border border-status-critical/30 bg-white px-3 py-2 text-badge text-status-critical">
-              {formatRiskLevel(insight.riskLevel)}
+              {formatRiskLevel(riskLevel)}
             </div>
           </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-4">
@@ -84,7 +86,7 @@ export function Insights() {
             <h3 className="text-section mt-2 text-lg text-text-strong">{insight.recommendation.title}</h3>
             <p className="text-body-copy mt-2">{insight.recommendation.rationale}</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <Metric label="Impact attendu" value="−200 SIIPS · −5 h" tone="good" />
+              <Metric label="Impact attendu" value={`${formatDelta(insight.recommendation.expectedPeakDeltaSiips)} SIIPS · ${formatDelta(insight.recommendation.expectedCriticalHoursDelta)} h`} tone="good" />
               <Metric label="Faisabilité" value="Élevée" tone="good" />
               <Metric label="Confiance" value={formatConfidence(insight.recommendation.confidence)} />
             </div>
@@ -94,17 +96,19 @@ export function Insights() {
                 {decision.reason ? ` · ${decision.reason}` : ""}
               </div>
             ) : null}
-            <div className="mt-6 flex flex-wrap gap-3" aria-label="Actions de décision">
-              <button type="button" className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-3 text-control text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={() => setDialog("execute")}>
-                <Check className="h-4 w-4" aria-hidden="true" /> Exécuter
-              </button>
-              <button type="button" className="inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-bg-card px-4 py-3 text-control text-text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={() => navigate(`/insights/${insight.id}/modify`)}>
-                Modifier
-              </button>
-              <button type="button" className="inline-flex items-center gap-2 rounded-lg border border-status-critical/30 px-4 py-3 text-control text-status-critical focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-status-critical" onClick={() => setDialog("refuse")}>
-                <X className="h-4 w-4" aria-hidden="true" /> Refuser
-              </button>
-            </div>
+            {!decision ? (
+              <div className="mt-6 flex flex-wrap gap-3" aria-label="Actions de décision">
+                <button type="button" className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-4 py-3 text-control text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={() => setDialog("execute")}>
+                  <Check className="h-4 w-4" aria-hidden="true" /> Exécuter
+                </button>
+                <button type="button" className="inline-flex items-center gap-2 rounded-lg border border-border-subtle bg-bg-card px-4 py-3 text-control text-text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={() => navigate(`/insights/${insight.id}/modify`)}>
+                  Modifier
+                </button>
+                <button type="button" className="inline-flex items-center gap-2 rounded-lg border border-status-critical/30 px-4 py-3 text-control text-status-critical focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-status-critical" onClick={() => setDialog("refuse")}>
+                  <X className="h-4 w-4" aria-hidden="true" /> Refuser
+                </button>
+              </div>
+            ) : null}
           </section>
         </div>
 
@@ -117,6 +121,7 @@ export function Insights() {
       {dialog ? (
         <DecisionDialog
           mode={dialog}
+          insight={insight}
           reason={reason}
           onReasonChange={setReason}
           onClose={closeDialog}
@@ -141,8 +146,14 @@ function Metric({ label, value, tone = "default" }: { label: string; value: stri
   );
 }
 
+function formatDelta(value: number | null): string {
+  if (value === null) return "—";
+  return value < 0 ? `−${Math.abs(value)}` : `+${value}`;
+}
+
 function DecisionDialog({
   mode,
+  insight,
   reason,
   onReasonChange,
   onClose,
@@ -150,6 +161,7 @@ function DecisionDialog({
   canConfirm
 }: {
   mode: "execute" | "refuse";
+  insight: ReturnType<typeof useScenarioContext>["insight"];
   reason: string;
   onReasonChange: (value: string) => void;
   onClose: () => void;
@@ -168,10 +180,10 @@ function DecisionDialog({
           <button type="button" aria-label="Fermer" autoFocus={isExecute} className="rounded-full p-2 text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" onClick={onClose}><X className="h-5 w-5" aria-hidden="true" /></button>
         </div>
         <div className="mt-5 space-y-3 rounded-xl bg-bg-app p-4 text-body-copy">
-          <p className="text-body-strong text-text-strong">Prioriser 5 sorties confirmées avant 15h</p>
-          <p>Service : Urgences</p>
+          <p className="text-body-strong text-text-strong">{insight.recommendation.title}</p>
+          <p>Service : {insight.context.serviceLabel}</p>
           <p>Objectif : réduire la tension prévue entre 16h et 20h</p>
-          <p>Impact attendu : −200 SIIPS · −5 h en tension · Confiance : Élevée</p>
+          <p>Impact attendu : {formatDelta(insight.recommendation.expectedPeakDeltaSiips)} SIIPS · {formatDelta(insight.recommendation.expectedCriticalHoursDelta)} h en tension · Confiance : {formatConfidence(insight.recommendation.confidence)}</p>
         </div>
         {!isExecute ? (
           <label className="mt-5 block text-body-copy">
@@ -194,5 +206,3 @@ function DecisionDialog({
     </div>
   );
 }
-
-export { REFUSAL_REASONS };
