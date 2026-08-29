@@ -4,7 +4,7 @@ observable_goal: >-
   construire et figer le banc de données contractuel, les fixtures synthétiques,
   le plan de puissance et le SAP avant toute réception de données partenaire
 entry_status: M3_DATA_CONTRACT_BLOCKED
-status: COMPLETED
+status: BLOCKED
 execution_mode: SINGLE_AGENT_EXECUTION
 review_policy: INDEPENDENT_FINAL_READ_ONLY_AFTER_TAG
 
@@ -107,4 +107,17 @@ release:
     Le paquet est prêt pour revue documentaire externe ; aucune transmission
     automatique ni accès aux données n'est autorisé par ce milestone.
 
-final_result: HFWM-R0-M3D.1 = FROZEN_VERSIONED_AUDITED_READY_FOR_EXTERNAL_PARTNER_REVIEW
+final_result: HFWM-R0-M3D.1 = HOLD
+blockers:
+  - id: LOCAL_RELEASE_TEST_TOOLCHAIN_UNAVAILABLE
+    severity: P0
+    evidence: >-
+      Dans le checkout propre A3, `python3 -m pytest tests/hfwm/m3d -q` échoue car
+      pytest est absent ; `ruff` et `mypy` sont également absents. L'installation
+      temporaire a échoué faute de résolution réseau et n'a installé aucune dépendance.
+    impact: >-
+      Les tests P0 obligatoires n'ont pas pu être exécutés depuis A3 ; aucun cache
+      antérieur n'est accepté comme preuve de release.
+    required_action: >-
+      Exécuter pytest, Ruff et Mypy dans un environnement reproductible disponible,
+      puis régénérer une attestation post-tag sans modifier A3/B3.
