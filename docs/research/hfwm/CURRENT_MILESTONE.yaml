@@ -4,7 +4,7 @@ observable_goal: >-
   construire et figer le banc de données contractuel, les fixtures synthétiques,
   le plan de puissance et le SAP avant toute réception de données partenaire
 entry_status: M3_DATA_CONTRACT_BLOCKED
-status: IN_PROGRESS
+status: COMPLETED
 execution_mode: SINGLE_AGENT_EXECUTION
 review_policy: INDEPENDENT_FINAL_READ_ONLY_AFTER_TAG
 
@@ -70,7 +70,9 @@ artifacts:
   disclosure_sensitivity: docs/research/hfwm/HFWM_R0_M3_DISCLOSURE_SENSITIVITY.md
 
 review:
-  new_reviewer_executed: pending_after_tag
+  new_reviewer_executed: true
+  reviewer_artifact: docs/research/hfwm/HFWM_R0_M3D1_RELEASE_REVIEW.yaml
+  reviewer_status: PASS_RELEASE
   main_agent_only: false
 
 human_decisions_required:
@@ -96,4 +98,13 @@ human_decisions_recorded:
 
 blockers: []
 
-final_result: RELEASE_REVIEW_PENDING
+release:
+  content_commit_a: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
+  manifest_commit_b: f0f0d0827602e5c74d58ed1b28fecaab28052f02
+  tag: HFWM-R0-M3D.1
+  external_transmission_authorized: false
+  transmission_note: >-
+    Le paquet est prêt pour revue documentaire externe ; aucune transmission
+    automatique ni accès aux données n'est autorisé par ce milestone.
+
+final_result: HFWM-R0-M3D.1 = FROZEN_VERSIONED_AUDITED_READY_FOR_EXTERNAL_PARTNER_REVIEW

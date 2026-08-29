@@ -1,0 +1,34 @@
+schema_version: hfwm.r0.m3d1.release-review.v1
+milestone_id: HFWM-R0-M3D.1
+associated_tag: HFWM-R0-M3D.1
+reviewed_commit_sha: f0f0d0827602e5c74d58ed1b28fecaab28052f02
+reviewed_content_commit_sha: 707d45eef064fe1a52d4c422df0d9796fb23a6a4
+reviewed_content_tree_sha: 97a1cad0763199382010f9b9e5f7bd0db6214d9e
+review_mode: INDEPENDENT_READ_ONLY_TARGETED_RE_REVIEW
+release_review:
+  status: PASS_RELEASE
+  blockers: []
+  targeted_checks:
+    embedded_row_absence_reason_without_side_map: PASS
+    missing_or_empty_required_intervals: PASS
+    omitted_middle_suppressed_interval: PASS
+  recomputed_hash_mismatches: []
+  parent_commit_verified: true
+  manifest_only_diff_verified: true
+  tag_target_verified: true
+  no_training: true
+  no_partner_data: true
+  no_m3l_or_m3f_authorization: true
+  no_external_transmission_performed: true
+  evidence_commands:
+    - "git rev-parse HFWM-R0-M3D.1"
+    - "git rev-parse 707d45e^{tree}"
+    - "git diff --name-only 707d45e f0f0d08"
+    - "independent SHA-256 recomputation of 35 manifest entries from A3"
+    - "in-memory disclosure blocker probes with PYTHONDONTWRITEBYTECODE=1"
+  scope_note: >-
+    Legacy repository surfaces outside the M3D.1 release scope remain unaudited by
+    this review and must not be distributed as part of the partner package.
+  reviewer_conclusion: >-
+    The two reproducible disclosure blockers from the first review are resolved;
+    no blocker remains within the audited M3D.1 release scope.
