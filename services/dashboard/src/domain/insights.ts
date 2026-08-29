@@ -111,7 +111,7 @@ export const RESEARCH_INSIGHT: ActionableInsight = {
     title: "Prioriser 5 sorties confirmées avant 15h",
     rationale: "Cette action libère de la capacité avant la fenêtre de tension prévue.",
     expectedPeakDeltaSiips: -200,
-    expectedCriticalHoursDelta: -4,
+    expectedCriticalHoursDelta: -5,
     feasibility: "high",
     confidence: "high",
     parameters: [
