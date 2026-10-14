@@ -1,0 +1,37 @@
+name: synthetic-foundation
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-24.04
+    env:
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install lightweight dependencies
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3' 'pydantic>=2.7,<3' 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
+      - name: Lint new foundation
+        run: |
+          python -m ruff check src/hospitalos/synthetic tests/synthetic
+          python -m ruff format --check src/hospitalos/synthetic tests/synthetic
+      - name: Type-check new foundation
+        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py tests/synthetic
+      - name: Test multi-pole contracts
+        run: python -m pytest -q tests/synthetic
+      - name: Test imported v0.4.1 regressions and mutations
+        run: python -m hospitalos.synthetic.v041.tests
+      - name: Run one synthetic year
+        run: python -m hospitalos.synthetic --config configs/synthetic/hospital_two_poles.json --output runs/synthetic/annual
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-annual-manifest
+          path: |
+            runs/synthetic/annual/manifest.json
+            runs/synthetic/annual/config.json

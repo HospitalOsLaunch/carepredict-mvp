@@ -73,6 +73,7 @@ hospitalos = ["py.typed"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+extend-exclude = ["src/hospitalos/synthetic/v041"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
@@ -85,6 +86,10 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 disallow_any_generics = true
 disallow_subclassing_any = true
+
+[[tool.mypy.overrides]]
+module = ["hospitalos.synthetic.v041.*"]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"
