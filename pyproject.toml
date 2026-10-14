@@ -73,7 +73,7 @@ hospitalos = ["py.typed"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-extend-exclude = ["src/hospitalos/synthetic/v041"]
+extend-exclude = ["src/hospitalos/synthetic/v041", "build"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
