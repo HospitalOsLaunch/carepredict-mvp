@@ -1,5 +1,8 @@
 # Socle synthétique et générateur multi-pôles — lot 01
 
+Le [lot 02](lot02.md) ajoute un pipeline séparé d'observations telles que connues
+et une référence de prévision à 24 h à partir des sorties décrites ici.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis

@@ -17,6 +17,8 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [As-of observations and 24h reference, lot 02](docs/synthetic/lot02.md): replay
+  delayed and revised unit states, isolate future labels, and measure persistence.
 - [Multi-pole generator, lot 01](docs/synthetic/README.md): configure hospital,
   poles and units; run a shared simulation and export reproducible truth data.
   This synthetic-only research path is separate from the existing model benchmarks.
