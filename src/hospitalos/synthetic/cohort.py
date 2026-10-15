@@ -13,6 +13,7 @@ from typing import Any
 
 from .generate import generate, source_hashes
 from .learning import prepare_learning_run
+from .patient_learning import prepare_patient_run
 from .registry import CohortPlan, Partition, Registry, compile_registry
 
 
@@ -91,6 +92,7 @@ def materialize(
     *,
     partitions: tuple[Partition, ...] = ("train", "validation"),
     with_learning: bool = False,
+    with_patients: bool = False,
     test_protocol: str | None = None,
 ) -> dict[str, Any]:
     """Atomic batch; source registry remains unchanged. No model fitting or pooling."""
@@ -143,6 +145,14 @@ def materialize(
                     learning_manifest_sha256=_sha(root / "learning/manifest.json"),
                     learning_counts=learning["counts"],
                 )
+            if with_patients:
+                patient = prepare_patient_run(root / "truth", root / "patients")
+                record.update(
+                    patient_path=(relative / "patients").as_posix(),
+                    patient_run_id=patient["run_id"],
+                    patient_manifest_sha256=_sha(root / "patients/manifest.json"),
+                    patient_counts=patient["counts"],
+                )
             records.append(record)
         manifest = {
             "schema_version": "0.1",
@@ -155,6 +165,7 @@ def materialize(
             "selected_partitions": sorted(partitions),
             "test_access": {"opened": "test" in partitions, "protocol": test_protocol},
             "with_learning": with_learning,
+            "with_patients": with_patients,
             "worlds": records,
             "reserved_world_ids": [
                 w.world_id for w in registry.worlds if w.config.partition not in partitions
@@ -183,6 +194,7 @@ def main() -> None:
         default=["train", "validation"],
     )
     run_parser.add_argument("--with-learning", action="store_true")
+    run_parser.add_argument("--with-patients", action="store_true")
     run_parser.add_argument("--test-protocol")
     args = parser.parse_args()
     try:
@@ -195,6 +207,7 @@ def main() -> None:
                 args.output,
                 partitions=tuple(args.partitions),
                 with_learning=args.with_learning,
+                with_patients=args.with_patients,
                 test_protocol=args.test_protocol,
             )
             result = {

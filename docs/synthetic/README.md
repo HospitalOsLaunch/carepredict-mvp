@@ -20,6 +20,9 @@ avec audit des frontières et contrôle de non-anticipation.
 Le [lot 09](lot09.md) ajoute des profils d’observation par établissement : délais,
 informations manquantes et pannes de transmission, en rejeu et en boucle fermée.
 
+Le [lot 10](lot10.md) ajoute les parcours de mouvements patient tels que connus,
+les corrections et des cibles de départ censurées, séparées des observations.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
