@@ -213,6 +213,10 @@ def export_result(
             "partition": config.partition,
             "mechanism_family": config.mechanism_family,
             "dynamics": config.dynamics.model_dump(mode="json"),
+            "observation": {
+                "profile": config.observation.model_dump(mode="json"),
+                "role": "observation_generator_only_not_policy_inputs",
+            },
             "organisation_changes": {
                 "count": len(config.changes),
                 "schedule_role": "truth_only_not_policy_inputs",

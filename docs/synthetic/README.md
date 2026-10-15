@@ -17,6 +17,9 @@ les variantes dans trois plans de cohortes indépendants.
 Le [lot 08](lot08.md) ajoute des ruptures datées de lits, services et effectifs,
 avec audit des frontières et contrôle de non-anticipation.
 
+Le [lot 09](lot09.md) ajoute des profils d’observation par établissement : délais,
+informations manquantes et pannes de transmission, en rejeu et en boucle fermée.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis

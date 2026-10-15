@@ -6,17 +6,15 @@ import heapq
 from typing import Any
 
 from .config import HospitalConfig
+from .observation_profiles import observation_stream
 from .observations import Delivery, ObservedState
-from .v041 import observation
-
-_OBS: Any = observation
 
 
 class OnlineSnapshots:
     def __init__(self, config: HospitalConfig, calendar: Any):
         self.config = config
         self.offset = config.warmup_days * 24
-        self.adapter = _OBS.ObservationStream(calendar, config.seed)
+        self.adapter = observation_stream(config, calendar)
         self.pending: list[tuple[float, str, int, str, Delivery]] = []
         self.delivered: list[Delivery] = []
         self.next_hour = 0

@@ -18,6 +18,7 @@ from .config import (
     Identifier,
     MechanismFamily,
     Multiplier,
+    ObservationProfile,
     OrganisationalChange,
 )
 
@@ -70,6 +71,7 @@ class StructureSpec(FrozenConfig):
     partition: Partition
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    observation: ObservationProfile = ObservationProfile()
     changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleShape, ...], Field(min_length=1, max_length=12)]
     hospitals: Annotated[StrictInt, Field(ge=1, le=100)] = 2
@@ -190,6 +192,7 @@ def _entries(plan: CohortPlan) -> tuple[World, ...]:
                         "partition": spec.partition,
                         "mechanism_family": spec.mechanism_family,
                         "dynamics": spec.dynamics,
+                        "observation": spec.observation,
                         "changes": spec.changes,
                         "poles": poles,
                         "shared_resources": resources,

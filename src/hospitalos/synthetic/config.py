@@ -12,6 +12,8 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, model_validator
 Identifier = Annotated[str, Field(strict=True, pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")]
 Multiplier = Annotated[float, Field(ge=0, le=10, allow_inf_nan=False, strict=True)]
 MechanismFamily = Literal["v041", "local_v1", "hybrid_v1"]
+Probability = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False, strict=True)]
+DelayMinutes = Annotated[float, Field(ge=0, le=10080, allow_inf_nan=False, strict=True)]
 
 
 class FrozenConfig(BaseModel):
@@ -24,6 +26,75 @@ class DynamicsConfig(FrozenConfig):
     arrivals: Literal["v041", "shared_bursts_v1", "appointments_v1"] = "v041"
     discharges: Literal["v041", "daily_rounds_v1", "rolling_v1"] = "v041"
     staffing: Literal["v041", "persistent_absence_v1", "shared_float_v1"] = "v041"
+
+
+class ObservationOutage(FrozenConfig):
+    outage_id: Identifier
+    starts_at: dt.datetime
+    ends_at: dt.datetime
+    unit_ids: tuple[Identifier, ...] = ()  # Empty means all hospital units.
+
+    @model_validator(mode="after")
+    def valid_window(self) -> Self:
+        for value in (self.starts_at, self.ends_at):
+            if (
+                value.utcoffset() != dt.timedelta(hours=1)
+                or value.minute
+                or value.second
+                or value.microsecond
+            ):
+                raise ValueError("Outages require whole hours at explicit fixed UTC+01:00")
+        if self.ends_at <= self.starts_at:
+            raise ValueError("Outage end must be strictly after start")
+        if len(set(self.unit_ids)) != len(self.unit_ids):
+            raise ValueError("Duplicate outage unit")
+        return self
+
+
+class ObservationProfile(FrozenConfig):
+    """Snapshot observation hypotheses, never parameters of hospital physics."""
+
+    mode: Literal["v041", "site_v1"] = "v041"
+    missing_probability: Probability = 0.015
+    load_missing_multiplier: Multiplier = 2.0
+    recording_delay_median_minutes: DelayMinutes = 12.0
+    recording_delay_sigma: Annotated[float, Field(ge=0, le=3, strict=True, allow_inf_nan=False)] = (
+        0.9
+    )
+    ingestion_delay_min_minutes: DelayMinutes = 1.0
+    ingestion_delay_max_minutes: DelayMinutes = 15.0
+    availability_delay_minutes: DelayMinutes = 0.5
+    load_delay_multiplier: Multiplier = 1.6
+    ready_documented_probability: Probability = 0.6
+    downstream_documented_probability: Probability = 0.8
+    charge_noise_sigma: Annotated[float, Field(ge=0, le=3, strict=True, allow_inf_nan=False)] = 0.1
+    revision_probability: Probability = 0.02
+    revision_delay_min_h: Annotated[
+        float, Field(gt=0, le=720, strict=True, allow_inf_nan=False)
+    ] = 6.0
+    revision_delay_max_h: Annotated[
+        float, Field(gt=0, le=720, strict=True, allow_inf_nan=False)
+    ] = 48.0
+    duplicate_probability: Probability = 0.008
+    outages: tuple[ObservationOutage, ...] = ()
+
+    @model_validator(mode="after")
+    def valid_profile(self) -> Self:
+        for low, high in (
+            (self.ingestion_delay_min_minutes, self.ingestion_delay_max_minutes),
+            (self.revision_delay_min_h, self.revision_delay_max_h),
+        ):
+            if low > high:
+                raise ValueError("Reversed observation delay range")
+        if self.mode == "v041" and any(
+            getattr(self, key) != field.default
+            for key, field in type(self).model_fields.items()
+            if key != "mode"
+        ):
+            raise ValueError("Custom observation parameters require site_v1")
+        if len({o.outage_id for o in self.outages}) != len(self.outages):
+            raise ValueError("Duplicate outage_id")
+        return self
 
 
 class ChangeWindow(FrozenConfig):
@@ -126,6 +197,7 @@ class HospitalConfig(FrozenConfig):
     partition: Literal["development", "train", "validation", "test"] = "development"
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    observation: ObservationProfile = ObservationProfile()
     changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
     shared_resources: SharedResources = SharedResources()
@@ -179,6 +251,18 @@ class HospitalConfig(FrozenConfig):
         if len(set(change_ids)) != len(change_ids):
             raise ValueError("Duplicate change_id")
         units = {u.unit_id: u for u in self.units}
+        outage_windows: dict[str, list[tuple[dt.datetime, dt.datetime]]] = {}
+        for outage in self.observation.outages:
+            if not recorded_start <= outage.starts_at < outage.ends_at <= recorded_end:
+                raise ValueError("Outages must lie inside the recorded interval")
+            if not set(outage.unit_ids) <= units.keys():
+                raise ValueError("Outage names an unknown unit")
+            for unit_id in outage.unit_ids or tuple(units):
+                outage_windows.setdefault(unit_id, []).append((outage.starts_at, outage.ends_at))
+        for group in outage_windows.values():
+            ordered = sorted(group)
+            if any(a[1] > b[0] for a, b in zip(ordered, ordered[1:], strict=False)):
+                raise ValueError("Overlapping outages for the same unit")
         for change in self.changes:
             end = change.ends_at or recorded_end
             if not recorded_start <= change.starts_at < recorded_end or end > recorded_end:
@@ -221,6 +305,8 @@ class HospitalConfig(FrozenConfig):
             inactive.add("changes")
         if self.dynamics == DynamicsConfig():
             inactive.add("dynamics")
+        if self.observation == ObservationProfile():
+            inactive.add("observation")
         return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()
 
 
