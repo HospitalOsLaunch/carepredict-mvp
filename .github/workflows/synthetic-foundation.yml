@@ -32,6 +32,8 @@ jobs:
         run: python -m mypy --strict src/hospitalos/synthetic/patient_care.py src/hospitalos/synthetic/patient_care_asof.py scripts/validate_synthetic_care.py
       - name: Type-check documentary mechanisms and annual comparison
         run: python -m mypy --strict src/hospitalos/synthetic/documentary.py scripts/validate_synthetic_documentary.py
+      - name: Type-check realism measurement contract
+        run: python -m mypy --strict src/hospitalos/synthetic/realism.py
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -40,6 +42,8 @@ jobs:
         run: python -m hospitalos.synthetic --config configs/synthetic/hospital_two_poles.json --output runs/synthetic/annual
       - name: Replay as-of observations and score 24h reference
         run: python -m hospitalos.synthetic.learning --source runs/synthetic/annual --output runs/synthetic/asof-annual
+      - name: Reconcile annual realism measurements with independent movement accounting
+        run: python -m hospitalos.synthetic.realism --source runs/synthetic/annual --references configs/synthetic/realism_references_v1.json --output runs/synthetic/realism-annual
       - name: Replay patient movements and freeze censored targets
         run: python -m hospitalos.synthetic.patient_learning --source runs/synthetic/annual --output runs/synthetic/patient-annual
       - name: Compare patient census reconciliation on a development year
@@ -106,6 +110,8 @@ jobs:
           path: |
             runs/synthetic/annual/manifest.json
             runs/synthetic/annual/config.json
+            runs/synthetic/realism-annual/manifest.json
+            runs/synthetic/realism-annual/scorecard.json
             runs/synthetic/asof-annual/manifest.json
             runs/synthetic/asof-annual/evaluation/metrics.json
             runs/synthetic/ci-registry/registry.json

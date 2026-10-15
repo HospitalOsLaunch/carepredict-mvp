@@ -34,6 +34,11 @@ Le [lot 13](lot13.md) diversifie les prévisions du staff et les confirmations
 d’aval, réserve leurs familles par axe et contrôle leur indépendance vis-à-vis
 des trajectoires physiques.
 
+Le [lot 14](lot14.md) corrige les mesures de réalisme, réconcilie présences et files
+avec les événements, conserve les séjours censurés et les demandes non admises,
+et prépare la [séquence gériatrie–aval](realism_plan.md). Son scénario GHT-600
+représente 250 lits de médecine ; aucun réalisme externe n'est encore validé.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
