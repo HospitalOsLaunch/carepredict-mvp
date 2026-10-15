@@ -4,6 +4,8 @@ Le [lot 02](lot02.md) ajoute un pipeline séparé d'observations telles que conn
 et une référence de prévision à 24 h à partir des sorties décrites ici.
 Le [lot 03](lot03.md) ajoute le registre de cohortes et réserve des structures
 entières aux ensembles d'apprentissage, de validation et de test.
+Le [lot 04](lot04.md) ajoute des services réservés par pôle, une organisation mixte,
+le routage dirigé et des comparaisons de mécanismes à état et aléas communs.
 
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
@@ -126,8 +128,9 @@ chiffres et chemins ne sont pas ceux de ce nouveau lot.
 - **GEN-003 : livré pour les structures dans le lot 03.** Registre de cohortes,
   paramètres tirés par hôpital, réservation des établissements et structures.
   La réservation de mécanismes distincts attend GEN-004 : une seule famille existe.
-- **GEN-004 : ensuite.** Ressources locales et communes configurables, règles de
-  routage entre pôles, nouvelles familles de mécanismes et contrefactuels associés.
+- **GEN-004 : livré dans le lot 04 pour les mécanismes opérationnels.** Ressources
+  locales/communes, règles de routage et scénarios appariés. Les modèles cliniques,
+  d'arrivées et d'effectifs restent ceux de v0.4.1.
 
 Pour ce lot, les pôles sont des groupes organisationnels : ils n'ont pas encore de
 politique locale distincte. L'hébergement utilise tous les lits compatibles du

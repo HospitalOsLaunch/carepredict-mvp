@@ -17,6 +17,8 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [Resource pools, routing and paired scenarios, lot 04](docs/synthetic/lot04.md):
+  compare pooled, local and hybrid operations at identical total capacity and exogenous draws.
 - [Cohort registry and reserved hospital structures, lot 03](docs/synthetic/lot03.md):
   freeze hospital identities and replicates, generate partitioned cohorts, keep test closed.
 - [As-of observations and 24h reference, lot 02](docs/synthetic/lot02.md): replay

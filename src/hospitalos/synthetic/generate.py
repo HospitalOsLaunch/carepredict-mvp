@@ -176,6 +176,8 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
         _csv(truth / "poles_hourly.csv", aggregate(rows, "pole"))
         _csv(truth / "hospital_hourly.csv", aggregate(rows, "hospital"))
         _csv(truth / "shared_resources_hourly.csv", shared)
+        if result.resource_pools:
+            _csv(truth / "resource_pools_hourly.csv", result.resource_pools)
         _jsonl(truth / "events.jsonl.gz", events())
         (staging / "config.json").write_text(
             config.model_dump_json(indent=2) + "\n", encoding="utf-8"
@@ -205,17 +207,26 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
                 "recorded_hours": config.days * 24,
                 "unit_hour_rows": len(rows),
                 "events_including_warmup": len(result.journal.events),
+                "resource_pool_hour_rows": len(result.resource_pools),
             },
             "checks": result.checks,
             "files_sha256": files,
             "assumptions": {
                 "clock": "fixed UTC+01:00; no daylight saving",
-                "resources": "hospital-wide shared queues",
-                "hosting": "all hospital units with compatible available beds",
-                "poles": "organizational groups; no distinct local routing policy yet",
+                "resources": {
+                    "v041": "hospital-wide shared queues",
+                    "local_v1": "all four resources reserved by pole, same total capacity",
+                    "hybrid_v1": "local cleaning/transport; hospital imaging/specialist",
+                }[config.mechanism_family],
+                "hosting": {
+                    "v041": "all hospital units with compatible available beds",
+                    "local_v1": "compatible beds within the home pole only",
+                    "hybrid_v1": "home pole first, then allowed poles after configured delay",
+                }[config.mechanism_family],
+                "poles": "resource/routing boundaries for local_v1 and hybrid_v1",
                 "arrivals": "template rates times arrival_scale; no occupancy calibration",
                 "policy": "inherited v0.4.1 policy with privileged simulator information",
-                "family": "one mechanism family; configurable topology, no mechanism diversity",
+                "family": config.mechanism_family,
             },
         }
         (staging / "manifest.json").write_text(

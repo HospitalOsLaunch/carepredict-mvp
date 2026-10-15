@@ -849,6 +849,82 @@ class Sim:
                               revision=p.dsp_n - 1)
 
     # ---- un pas horaire
+    def hosting_candidates(self, st, u, p, h):
+        return sorted(((self.libres(st, v, h), v) for v in range(self.U) if v != u), reverse=True)
+
+    def start_transports(self, st, h, log, m):
+        x = self.x
+        # 4. transports de sortie
+        cap_tr = int(x.cap_transport[h])
+        while cap_tr > 0 and st.q_tr:
+            pid, hdem = st.q_tr.popleft()
+            p = st.patients.get(pid)
+            cap_tr -= 1
+            if p is None:
+                continue
+            if log is not None:
+                log.tache_debut(f"TR-{pid}", h)
+                log.tache_fin(f"TR-{pid}", h)
+            self.sortir(st, p, h, log, m)
+
+        return cap_tr
+
+    def repatriate(self, st, h, log, m, cap_tr):
+        U, hd = self.U, h % 24
+        # 8. rapatriement des patients hébergés (créneaux de transport restants, 9 h - 17 h)
+        if self.pole and 9 <= hd < 17 and cap_tr > 0:
+            for v in range(U):
+                for p in list(st.occ[v].values()):
+                    if cap_tr <= 0:
+                        break
+                    if (p.home == v or p.dis_h - h < P["rapatriement_marge_h"] or p.tr or st.q_urg[p.home]
+                            or st.q_prog[p.home]):
+                        continue
+                    b = self.lit_compatible(st, p.home, p.pid, h)
+                    if b < 0:
+                        continue
+                    cap_tr -= 1
+                    ancien = p.bed
+                    self.liberer(st, p, h, log)
+                    p.unit, p.bed, p.rapat = p.home, b, p.rapat + 1
+                    st.occ[p.home][p.pid] = p
+                    st.bed_pid[p.home][b] = p.pid
+                    m["transf_out"][v] += 1
+                    m["transf_in"][p.home] += 1
+                    if log is not None:
+                        log.event(h, "TRANSFERT_INTERNE", p.home, p.pid, depuis=self.x.unit_names[v],
+                                  lit_origine=ancien, lit=b)
+
+    def start_services(self, st, h, log):
+        x = self.x
+        # 9. démarrage des services : nettoyage et imagerie
+        en_cours = len(st.net_cours)
+        while st.q_net and en_cours < x.cap_nettoyage[h]:
+            u, b, duree, hdem = st.q_net.popleft()
+            st.bed_sale[u][b] = 2
+            st.net_cours.append((h + duree, u, b, hdem, h))
+            en_cours += 1
+            if log is not None:
+                log.tache_debut(f"NET-{u}-{b}-{hdem}", h)
+        cap_img = int(x.cap_imagerie[h])
+        while cap_img > 0 and st.q_img:
+            pid, hdem = st.q_img.popleft()
+            if pid not in st.patients:
+                continue
+            st.img_cours.append((h + 1, pid, hdem, h))
+            cap_img -= 1
+            if log is not None:
+                log.tache_debut(f"IMG-{pid}", h)
+        cap_av = int(x.cap_avis[h])
+        while cap_av > 0 and st.q_avis:
+            pid, hdem = st.q_avis.popleft()
+            if pid not in st.patients:
+                continue
+            st.avis_cours.append((h + P["avis_duree_h"], pid, hdem, h))
+            cap_av -= 1
+            if log is not None:
+                log.tache_debut(f"AVIS-{pid}", h)
+
     def step(self, st: State, h: int, politique=True, log=None, snap=None, force=None):
         """Avance d'une heure et renvoie un dict de métriques par unité.
 
@@ -951,18 +1027,7 @@ class Sim:
                     continue
                 self.sortir(st, p, h, log, m)
 
-        # 4. transports de sortie
-        cap_tr = int(x.cap_transport[h])
-        while cap_tr > 0 and st.q_tr:
-            pid, hdem = st.q_tr.popleft()
-            p = st.patients.get(pid)
-            cap_tr -= 1
-            if p is None:
-                continue
-            if log is not None:
-                log.tache_debut(f"TR-{pid}", h)
-                log.tache_fin(f"TR-{pid}", h)
-            self.sortir(st, p, h, log, m)
+        cap_tr = self.start_transports(st, h, log, m)
 
         # 5. arrivées
         for pid in x.arrivees[h]:
@@ -1015,7 +1080,7 @@ class Sim:
                 while q:
                     p = q.popleft()
                     if h - p.dec_h >= P["heberg_apres_h"]:
-                        cand = sorted(((self.libres(st, v, h), v) for v in range(U) if v != u), reverse=True)
+                        cand = self.hosting_candidates(st, u, p, h)
                         fait = False
                         for lv, v in cand:
                             if lv < P["heberg_libres_min"]:
@@ -1062,57 +1127,9 @@ class Sim:
                         garde.append(p)
                 st.q_trin[u] = garde
 
-        # 8. rapatriement des patients hébergés (créneaux de transport restants, 9 h - 17 h)
-        if self.pole and 9 <= hd < 17 and cap_tr > 0:
-            for v in range(U):
-                for p in list(st.occ[v].values()):
-                    if cap_tr <= 0:
-                        break
-                    if (p.home == v or p.dis_h - h < P["rapatriement_marge_h"] or p.tr or st.q_urg[p.home]
-                            or st.q_prog[p.home]):
-                        continue
-                    b = self.lit_compatible(st, p.home, p.pid, h)
-                    if b < 0:
-                        continue
-                    cap_tr -= 1
-                    ancien = p.bed
-                    self.liberer(st, p, h, log)
-                    p.unit, p.bed, p.rapat = p.home, b, p.rapat + 1
-                    st.occ[p.home][p.pid] = p
-                    st.bed_pid[p.home][b] = p.pid
-                    m["transf_out"][v] += 1
-                    m["transf_in"][p.home] += 1
-                    if log is not None:
-                        log.event(h, "TRANSFERT_INTERNE", p.home, p.pid, depuis=self.x.unit_names[v],
-                                  lit_origine=ancien, lit=b)
+        self.repatriate(st, h, log, m, cap_tr)
 
-        # 9. démarrage des services : nettoyage et imagerie
-        en_cours = len(st.net_cours)
-        while st.q_net and en_cours < x.cap_nettoyage[h]:
-            u, b, duree, hdem = st.q_net.popleft()
-            st.bed_sale[u][b] = 2
-            st.net_cours.append((h + duree, u, b, hdem, h))
-            en_cours += 1
-            if log is not None:
-                log.tache_debut(f"NET-{u}-{b}-{hdem}", h)
-        cap_img = int(x.cap_imagerie[h])
-        while cap_img > 0 and st.q_img:
-            pid, hdem = st.q_img.popleft()
-            if pid not in st.patients:
-                continue
-            st.img_cours.append((h + 1, pid, hdem, h))
-            cap_img -= 1
-            if log is not None:
-                log.tache_debut(f"IMG-{pid}", h)
-        cap_av = int(x.cap_avis[h])
-        while cap_av > 0 and st.q_avis:
-            pid, hdem = st.q_avis.popleft()
-            if pid not in st.patients:
-                continue
-            st.avis_cours.append((h + P["avis_duree_h"], pid, hdem, h))
-            cap_av -= 1
-            if log is not None:
-                log.tache_debut(f"AVIS-{pid}", h)
+        self.start_services(st, h, log)
 
         # informations du staff (simulation factuelle uniquement)
         if log is not None and hd == INFO["heure_staff"] and x.ouvre[d]:

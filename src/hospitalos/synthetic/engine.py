@@ -11,17 +11,12 @@ from typing import Any
 import numpy as np
 
 from .config import HospitalConfig
+from .mechanisms import RESOURCE_ARRAYS, ResourceSimulation
 from .v041 import hospsim, run
 
 # Keep dynamic legacy calls confined to this boundary.
 _HS: Any = hospsim
 _RUN: Any = run
-RESOURCE_ARRAYS = {
-    "cleaning": "cap_nettoyage",
-    "imaging": "cap_imagerie",
-    "transport": "cap_transport",
-    "specialist": "cap_avis",
-}
 
 
 @dataclass
@@ -30,6 +25,13 @@ class SimulationResult:
     journal: Any
     resources: list[dict[str, Any]]
     checks: dict[str, int]
+    resource_pools: list[dict[str, Any]]
+
+
+def simulation_from_exo(exo: Any, config: HospitalConfig) -> Any:
+    if config.mechanism_family == "v041":
+        return _HS.Sim(exo, "pole", config.warmup_days * 24, exo.H)
+    return ResourceSimulation(exo, config)
 
 
 def build_simulation(config: HospitalConfig) -> Any:
@@ -58,7 +60,7 @@ def build_simulation(config: HospitalConfig) -> Any:
         multiplier = getattr(config.shared_resources, name)
         setattr(exo, attr, np.floor(getattr(exo, attr) * multiplier).astype(int))
     # Legacy "pole" means pooled beds and resources. Here its perimeter is the hospital.
-    return _HS.Sim(exo, "pole", config.warmup_days * 24, exo.H)
+    return simulation_from_exo(exo, config)
 
 
 def simulate(config: HospitalConfig) -> SimulationResult:
@@ -67,6 +69,7 @@ def simulate(config: HospitalConfig) -> SimulationResult:
     journal = _RUN.Journal(sim)
     checks: Counter[str] = Counter()
     resources = []
+    resource_pools = []
     for hour in range(sim.x.H):
         before = [len(occupied) for occupied in state.occ]
         metrics = sim.step(state, hour, politique=True, log=journal)
@@ -83,7 +86,9 @@ def simulate(config: HospitalConfig) -> SimulationResult:
         checks["transferts_internes_equilibres"] += int(
             sum(metrics["transf_in"]) != sum(metrics["transf_out"])
         )
+        pool_rows = sim.resource_rows(state, hour) if isinstance(sim, ResourceSimulation) else []
         if hour >= sim.h0_rec:
+            resource_pools.extend(pool_rows)
             resources.append(
                 {
                     "h": hour - sim.h0_rec,
@@ -102,4 +107,4 @@ def simulate(config: HospitalConfig) -> SimulationResult:
     }
     if violations:
         raise RuntimeError(f"Simulation invariant violations: {violations}")
-    return SimulationResult(sim, journal, resources, dict(checks))
+    return SimulationResult(sim, journal, resources, dict(checks), resource_pools)

@@ -12,6 +12,8 @@ jobs:
       PYTHONPATH: src
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Regression test loads the pinned lot 03 engine from Git.
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -22,7 +24,7 @@ jobs:
           python -m ruff check src/hospitalos/synthetic tests/synthetic
           python -m ruff format --check src/hospitalos/synthetic tests/synthetic
       - name: Type-check new foundation
-        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py tests/synthetic
+        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py tests/synthetic
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -42,6 +44,11 @@ jobs:
           PY
           python -m hospitalos.synthetic.cohort freeze --plan runs/synthetic/ci-cohort-plan.json --output runs/synthetic/ci-registry
           python -m hospitalos.synthetic.cohort generate --registry runs/synthetic/ci-registry --output runs/synthetic/ci-cohort --with-learning
+      - name: Exercise local resources, mechanism reservation and paired 72h scenarios
+        run: |
+          python -m hospitalos.synthetic --config configs/synthetic/hospital_local_v1.json --days 7 --output runs/synthetic/local-smoke
+          python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_mechanisms_v1.json --output runs/synthetic/mechanism-registry
+          python -m hospitalos.synthetic.counterfactual --config configs/synthetic/hospital_v041.json --alternative configs/synthetic/hospital_hybrid_v1.json --at-hour 9 --horizon 72 --output runs/synthetic/paired-smoke
       - uses: actions/upload-artifact@v4
         with:
           name: synthetic-annual-manifest
@@ -53,3 +60,7 @@ jobs:
             runs/synthetic/ci-registry/registry.json
             runs/synthetic/ci-registry/manifest.json
             runs/synthetic/ci-cohort/manifest.json
+            runs/synthetic/local-smoke/manifest.json
+            runs/synthetic/mechanism-registry/manifest.json
+            runs/synthetic/paired-smoke/manifest.json
+            runs/synthetic/paired-smoke/outcomes.csv

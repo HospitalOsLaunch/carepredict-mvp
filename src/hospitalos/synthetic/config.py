@@ -11,6 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, model_validator
 
 Identifier = Annotated[str, Field(strict=True, pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")]
 Multiplier = Annotated[float, Field(ge=0, le=10, allow_inf_nan=False, strict=True)]
+MechanismFamily = Literal["v041", "local_v1", "hybrid_v1"]
 
 
 class FrozenConfig(BaseModel):
@@ -47,6 +48,16 @@ class SharedResources(FrozenConfig):
     specialist: Multiplier = 1.0
 
 
+class PoleResourceWeights(FrozenConfig):
+    pole_id: Identifier
+    weights: SharedResources = SharedResources()
+
+
+class RoutingLink(FrozenConfig):
+    origin: Identifier
+    destination: Identifier
+
+
 class HospitalConfig(FrozenConfig):
     schema_version: Literal["0.1"] = "0.1"
     hospital_id: Identifier
@@ -55,9 +66,12 @@ class HospitalConfig(FrozenConfig):
     days: Annotated[StrictInt, Field(ge=1, le=366)] = 365
     warmup_days: Annotated[StrictInt, Field(ge=0, le=365)] = 61
     partition: Literal["development", "train", "validation", "test"] = "development"
-    mechanism_family: Literal["v041"] = "v041"
+    mechanism_family: MechanismFamily = "v041"
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
     shared_resources: SharedResources = SharedResources()
+    pole_resource_weights: tuple[PoleResourceWeights, ...] = ()
+    routing_links: tuple[RoutingLink, ...] = ()
+    cross_pole_delay_h: Annotated[StrictInt, Field(ge=1, le=168)] = 12
 
     @model_validator(mode="after")
     def unique_ids(self) -> Self:
@@ -66,6 +80,30 @@ class HospitalConfig(FrozenConfig):
         ids.extend(unit.unit_id for pole in self.poles for unit in pole.units)
         if len(ids) != len(set(ids)):
             raise ValueError("Hospital, pole and unit IDs must be unique within the hospital")
+        pole_ids = {pole.pole_id for pole in self.poles}
+        if self.mechanism_family != "v041" and len(pole_ids) < 2:
+            raise ValueError("Local/hybrid mechanisms require at least two poles")
+        weights = {item.pole_id: item.weights for item in self.pole_resource_weights}
+        if len(weights) != len(self.pole_resource_weights) or not weights.keys() <= pole_ids:
+            raise ValueError("Resource weights must name unique known poles")
+        if self.mechanism_family == "v041" and (weights or self.routing_links):
+            raise ValueError("v041 retains hospital pooling and unrestricted routing")
+        if self.mechanism_family == "local_v1" and self.routing_links:
+            raise ValueError("Local routing cannot have cross-pole links")
+        if self.mechanism_family != "hybrid_v1" and self.cross_pole_delay_h != 12:
+            raise ValueError("Cross-pole delay is configurable only for hybrid_v1")
+        if self.mechanism_family == "hybrid_v1" and any(
+            w.imaging != 1.0 or w.specialist != 1.0 for w in weights.values()
+        ):
+            raise ValueError("Hybrid imaging/specialist are shared, without local weights")
+        for resource in ("cleaning", "imaging", "transport", "specialist"):
+            if not any(getattr(weights.get(p, SharedResources()), resource) > 0 for p in pole_ids):
+                raise ValueError(f"At least one pole must receive {resource} capacity")
+        links = {(link.origin, link.destination) for link in self.routing_links}
+        if len(links) != len(self.routing_links):
+            raise ValueError("Duplicate routing link")
+        if any(a not in pole_ids or b not in pole_ids or a == b for a, b in links):
+            raise ValueError("Routing links must connect distinct known poles")
         # Fail before simulation if the warm-up or end would exceed datetime bounds.
         try:
             self.start - dt.timedelta(days=self.warmup_days)
@@ -84,7 +122,13 @@ class HospitalConfig(FrozenConfig):
 
     @property
     def fingerprint(self) -> str:
-        return hashlib.sha256(self.model_dump_json().encode()).hexdigest()
+        # Preserve existing v041 dataset/world identities when adding inactive options.
+        inactive = (
+            {"pole_resource_weights", "routing_links", "cross_pole_delay_h"}
+            if self.mechanism_family == "v041"
+            else set()
+        )
+        return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()
 
 
 def load_config(path: Path) -> HospitalConfig:

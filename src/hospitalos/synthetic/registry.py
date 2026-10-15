@@ -11,7 +11,7 @@ from typing import Annotated, Any, Literal, Self
 import numpy as np
 from pydantic import Field, StrictInt, model_validator
 
-from .config import FrozenConfig, HospitalConfig, Identifier, Multiplier
+from .config import FrozenConfig, HospitalConfig, Identifier, MechanismFamily, Multiplier
 
 Partition = Literal["train", "validation", "test"]
 Template = Literal["MED_POLY", "CSG", "PNEUMO", "CARDIO"]
@@ -59,7 +59,7 @@ class ParameterRanges(FrozenConfig):
 class StructureSpec(FrozenConfig):
     structure_id: Identifier
     partition: Partition
-    mechanism_family: Literal["v041"] = "v041"
+    mechanism_family: MechanismFamily = "v041"
     poles: Annotated[tuple[PoleShape, ...], Field(min_length=1, max_length=12)]
     hospitals: Annotated[StrictInt, Field(ge=1, le=100)] = 2
     replicates: Annotated[StrictInt, Field(ge=1, le=100)] = 2
@@ -88,10 +88,16 @@ class CohortPlan(FrozenConfig):
         mechanisms: dict[str, str] = {}
         for spec in self.structures:
             key = shape_key(spec.poles)
-            if owners.setdefault(key, spec.partition) != spec.partition:
+            if (
+                self.split_axis == "structure"
+                and owners.setdefault(key, spec.partition) != spec.partition
+            ):
                 raise ValueError("Structural clone crosses partitions, including renamed shapes")
             physical_key = physics_shape_key(spec.poles)
-            if physics_owners.setdefault(physical_key, spec.partition) != spec.partition:
+            if (
+                self.split_axis == "structure"
+                and physics_owners.setdefault(physical_key, spec.partition) != spec.partition
+            ):
                 raise ValueError(
                     "Effective v041 structure crosses partitions after pole regrouping"
                 )
@@ -100,6 +106,8 @@ class CohortPlan(FrozenConfig):
                 and mechanisms.setdefault(spec.mechanism_family, spec.partition) != spec.partition
             ):
                 raise ValueError("Mechanism crosses partitions; v041 alone cannot test G4")
+            if spec.mechanism_family != "v041" and len(spec.poles) < 2:
+                raise ValueError("Local/hybrid mechanisms require at least two poles")
         try:
             self.start - dt.timedelta(days=self.warmup_days)
             self.start + dt.timedelta(days=self.days)
@@ -183,7 +191,9 @@ def _entries(plan: CohortPlan) -> tuple[World, ...]:
     return tuple(worlds)
 
 
-def validate_worlds(worlds: tuple[World, ...]) -> None:
+def validate_worlds(
+    worlds: tuple[World, ...], *, split_axis: Literal["structure", "mechanism"] = "structure"
+) -> None:
     """Also callable across registries: do not split hospital identities or shapes."""
     groups: dict[tuple[str, str], str] = {}
     seeds: set[int] = set()
@@ -197,11 +207,12 @@ def validate_worlds(worlds: tuple[World, ...]) -> None:
         physical_key = physics_shape_key(
             tuple(tuple(unit.template for unit in pole.units) for pole in config.poles)
         )
-        for kind, identity in (
-            ("hospital", config.hospital_id),
-            ("structure", key),
-            ("effective structure", physical_key),
-        ):
+        identities = [("hospital", config.hospital_id)]
+        if split_axis == "structure":
+            identities.extend((("structure", key), ("effective structure", physical_key)))
+        else:
+            identities.append(("mechanism", config.mechanism_family))
+        for kind, identity in identities:
             if groups.setdefault((kind, identity), config.partition) != config.partition:
                 raise ValueError(f"{kind} crosses partitions")
         parameters = config.model_dump(
@@ -225,7 +236,7 @@ class Registry(FrozenConfig):
 
     @model_validator(mode="after")
     def verified(self) -> Self:
-        validate_worlds(self.worlds)
+        validate_worlds(self.worlds, split_axis=self.plan.split_axis)
         if self.worlds != _entries(self.plan):
             raise ValueError("Registry entries differ from their deterministic plan")
         return self

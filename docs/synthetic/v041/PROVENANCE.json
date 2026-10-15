@@ -17,7 +17,8 @@
   "changes": [
     "Sibling imports made relative for packaging.",
     "Control subprocesses invoked as Python modules.",
-    "Exo accepts optional per-instance unit_specs; legacy defaults preserved."
+    "Exo accepts optional per-instance unit_specs; legacy defaults preserved.",
+    "Lot 04: extracted four overridable Sim hooks (hosting, discharge transport, repatriation, service starts); default trajectories checked against published lot 03 commit 3e9f76522baa5f155adcc3be1487d95911daaefc."
   ],
   "generated_corpus_included": false
 }
