@@ -17,6 +17,8 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [Cohort registry and reserved hospital structures, lot 03](docs/synthetic/lot03.md):
+  freeze hospital identities and replicates, generate partitioned cohorts, keep test closed.
 - [As-of observations and 24h reference, lot 02](docs/synthetic/lot02.md): replay
   delayed and revised unit states, isolate future labels, and measure persistence.
 - [Multi-pole generator, lot 01](docs/synthetic/README.md): configure hospital,

@@ -2,6 +2,8 @@
 
 Le [lot 02](lot02.md) ajoute un pipeline séparé d'observations telles que connues
 et une référence de prévision à 24 h à partir des sorties décrites ici.
+Le [lot 03](lot03.md) ajoute le registre de cohortes et réserve des structures
+entières aux ensembles d'apprentissage, de validation et de test.
 
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
@@ -85,8 +87,8 @@ PYTHONPATH=src python -m hospitalos.synthetic \
 
 Cette vérification refuse un même identifiant hospitalier dans plusieurs partitions,
 même si les graines diffèrent. Elle ne vérifie que les configurations fournies : le
-registre complet des mondes et la réservation de familles structurelles restent à
-construire. Renommer un hôpital ne démontre aucune indépendance statistique. L'exemple
+registre complet et la réservation de familles structurelles sont ajoutés par le
+[lot 03](lot03.md). Renommer un hôpital ne démontre aucune indépendance statistique. L'exemple
 est explicitement dans `development` et ne constitue pas un ensemble de test gelé.
 
 ## Vérification du lot
@@ -119,10 +121,11 @@ chiffres et chemins ne sont pas ceux de ce nouveau lot.
 
 - **SOC-001, GEN-001, GEN-002 : implémentés dans le lot 01.** Source corrigée,
   configuration hiérarchique, simulation partagée, export de vérité et vérifications.
-- **SOC-002 : prochain lot.** Contrat d'observation, rejeu « tel que connu », retards
+- **SOC-002 : livré dans le lot 02.** Contrat d'observation, rejeu « tel que connu », retards
   de saisie, tests d'invariance aux livraisons futures et première référence à 24 h.
-- **GEN-003 : ensuite.** Registre de cohortes, tirage de structures d'hôpitaux,
-  séparation complète des établissements et mécanismes entre ensembles.
+- **GEN-003 : livré pour les structures dans le lot 03.** Registre de cohortes,
+  paramètres tirés par hôpital, réservation des établissements et structures.
+  La réservation de mécanismes distincts attend GEN-004 : une seule famille existe.
 - **GEN-004 : ensuite.** Ressources locales et communes configurables, règles de
   routage entre pôles, nouvelles familles de mécanismes et contrefactuels associés.
 

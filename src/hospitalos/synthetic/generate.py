@@ -215,7 +215,7 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
                 "poles": "organizational groups; no distinct local routing policy yet",
                 "arrivals": "template rates times arrival_scale; no occupancy calibration",
                 "policy": "inherited v0.4.1 policy with privileged simulator information",
-                "family": "one mechanism family; no structural randomization yet",
+                "family": "one mechanism family; configurable topology, no mechanism diversity",
             },
         }
         (staging / "manifest.json").write_text(
