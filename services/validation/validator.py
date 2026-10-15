@@ -43,7 +43,7 @@ import json
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
@@ -153,14 +153,36 @@ def _parse_paris(value: Any) -> datetime | None:
     return parsed if parsed.tzinfo is not None else None
 
 
+def _instant_key(value: Any) -> str:
+    parsed = _parse_paris(value)
+    return parsed.astimezone(UTC).isoformat() if parsed is not None else str(value)
+
+
 def _bitemporal_key(domain: str, record: dict[str, Any]) -> tuple[str, ...]:
-    return (
+    key: tuple[str, ...] = (
         domain,
         str(record.get("hospital_id")),
         str(record.get("service_id")),
-        str(record.get("event_time")),
-        str(record.get("available_at")),
+        _instant_key(record.get("event_time")),
+        _instant_key(record.get("available_at")),
     )
+    if domain == "actions":
+        # v1 has no action_id: distinguish types and effective targets, without
+        # using magnitude (a changed magnitude must remain a conflict).
+        key += (
+            str(record.get("action_type")),
+            str(record.get("target_service_id") or record.get("service_id")),
+        )
+    return key
+
+
+def _normalized_payload(domain: str, record: dict[str, Any]) -> dict[str, Any]:
+    payload = dict(record)
+    for name in ("event_time", "available_at"):
+        payload[name] = _instant_key(record.get(name))
+    if domain == "actions":
+        payload["target_service_id"] = record.get("target_service_id") or record.get("service_id")
+    return payload
 
 
 def _err(code: DefectCode, location: str, message: str, remediation: str) -> Finding:
@@ -235,7 +257,7 @@ def validate_batch(
         key = _bitemporal_key(domain, record)
         if key in seen:
             first_index, first_record = seen[key]
-            if record == first_record:
+            if _normalized_payload(domain, record) == _normalized_payload(domain, first_record):
                 findings.append(
                     _err(
                         DefectCode.DUPLICATE,
