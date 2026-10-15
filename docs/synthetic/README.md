@@ -6,6 +6,8 @@ Le [lot 03](lot03.md) ajoute le registre de cohortes et réserve des structures
 entières aux ensembles d'apprentissage, de validation et de test.
 Le [lot 04](lot04.md) ajoute des services réservés par pôle, une organisation mixte,
 le routage dirigé et des comparaisons de mécanismes à état et aléas communs.
+Le [lot 05](lot05.md) fixe un premier protocole et compare persistance, saisonnalité
+et gradient boosting à 24 h sur des hôpitaux de validation distincts.
 
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux

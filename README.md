@@ -17,6 +17,10 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [Multihospital prediction references, lot 05](docs/synthetic/lot05.md): freeze the
+  evaluation protocol, fit train-only gradient boosting, and compare against
+  persistence and weekly seasonality on held-out validation hospitals.
+
 - [Resource pools, routing and paired scenarios, lot 04](docs/synthetic/lot04.md):
   compare pooled, local and hybrid operations at identical total capacity and exogenous draws.
 - [Cohort registry and reserved hospital structures, lot 03](docs/synthetic/lot03.md):

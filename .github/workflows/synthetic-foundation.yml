@@ -18,13 +18,13 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install lightweight dependencies
-        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3' 'pydantic>=2.7,<3' 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
+        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
       - name: Lint new foundation
         run: |
           python -m ruff check src/hospitalos/synthetic tests/synthetic
           python -m ruff format --check src/hospitalos/synthetic tests/synthetic
       - name: Type-check new foundation
-        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py tests/synthetic
+        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py tests/synthetic
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -39,11 +39,15 @@ jobs:
           import json
           from pathlib import Path
           plan = json.loads(Path("configs/synthetic/cohort_structures_v1.json").read_text())
-          plan.update(cohort_id="C_CI_FIXTURE", days=3, warmup_days=2)
+          plan.update(cohort_id="C_CI_FIXTURE", days=10, warmup_days=2)
           Path("runs/synthetic/ci-cohort-plan.json").write_text(json.dumps(plan))
           PY
           python -m hospitalos.synthetic.cohort freeze --plan runs/synthetic/ci-cohort-plan.json --output runs/synthetic/ci-registry
           python -m hospitalos.synthetic.cohort generate --registry runs/synthetic/ci-registry --output runs/synthetic/ci-cohort --with-learning
+      - name: Freeze and execute train-only references on the disposable fixture
+        run: |
+          python -m hospitalos.synthetic.benchmark freeze --registry runs/synthetic/ci-registry --cohort runs/synthetic/ci-cohort --protocol runs/synthetic/ci-benchmark-protocol.json
+          python -m hospitalos.synthetic.benchmark run --registry runs/synthetic/ci-registry --cohort runs/synthetic/ci-cohort --protocol runs/synthetic/ci-benchmark-protocol.json --output runs/synthetic/ci-benchmark
       - name: Exercise local resources, mechanism reservation and paired 72h scenarios
         run: |
           python -m hospitalos.synthetic --config configs/synthetic/hospital_local_v1.json --days 7 --output runs/synthetic/local-smoke
@@ -60,6 +64,10 @@ jobs:
             runs/synthetic/ci-registry/registry.json
             runs/synthetic/ci-registry/manifest.json
             runs/synthetic/ci-cohort/manifest.json
+            runs/synthetic/ci-benchmark-protocol.json
+            runs/synthetic/ci-benchmark/manifest.json
+            runs/synthetic/ci-benchmark/metrics.json
+            runs/synthetic/ci-benchmark/models.pkl
             runs/synthetic/local-smoke/manifest.json
             runs/synthetic/mechanism-registry/manifest.json
             runs/synthetic/paired-smoke/manifest.json
