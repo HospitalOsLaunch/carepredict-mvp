@@ -26,6 +26,10 @@ les corrections et des cibles de départ censurées, séparées des observations
 Le [lot 11](lot11.md) ajoute les recensements patient complets ou partiels et la
 réconciliation des localisations, sans transformer une absence locale en sortie.
 
+Le [lot 12](lot12.md) enrichit chaque ligne patient par les évaluations de charge,
+les sorties prévisionnelles et les besoins d’aval disponibles à cet instant,
+avec une provenance séparée de la présence et des cibles réalisées.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis

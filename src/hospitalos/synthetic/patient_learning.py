@@ -20,6 +20,8 @@ from .config import FrozenConfig, HospitalConfig
 from .generate import _jsonl, source_hashes
 from .learning import _digest, _events, verify_source
 from .patient_asof import PatientRow, replay_patient_batches
+from .patient_care import observe_care
+from .patient_care_asof import replay_care
 from .patient_census import CensusProfile, observe_censuses
 from .patient_observations import (
     Admission,
@@ -166,6 +168,7 @@ def prepare_patient_run(
     *,
     stale_after_h: float = 96.0,
     census_profile: CensusProfile | None = None,
+    with_care: bool = False,
 ) -> dict[str, Any]:
     if output.exists():
         raise FileExistsError(output)
@@ -180,6 +183,7 @@ def prepare_patient_run(
         "stale_after_h": stale_after_h,
         "horizons_h": [24, 48, 72],
         "census": census_profile.model_dump(mode="json") if census_profile else None,
+        "care_adapter": "patient_care_v1" if with_care else None,
     }
     hashes = source_hashes()
     runtime = {
@@ -194,6 +198,7 @@ def prepare_patient_run(
     ).hexdigest()[:24]
     deliveries = observe_patients(_events(source), config)
     censuses = observe_censuses(_events(source), config, census_profile) if census_profile else []
+    care = observe_care(_events(source), config) if with_care else []
     truth = build_patient_truth(_events(source), config)
     counts: Counter[str] = Counter()
     counts.update(
@@ -224,6 +229,10 @@ def prepare_patient_run(
         observation_conflict_rows=0,
         reconciliation_rows=0,
         unit_absence_transitions=0,
+        care_deliveries=len(care),
+        care_unique_events=len({r.event_id for r in care}),
+        care_revisions=sum(r.event_version > 1 for r in care),
+        care_duplicates=len(care) - len({(r.event_id, r.event_version) for r in care}),
     )
     observed_stays: set[str] = set()
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -239,6 +248,8 @@ def prepare_patient_run(
                 staging / "observed/censuses.jsonl.gz",
                 (r.model_dump(mode="json") for r in censuses),
             )
+        if with_care:
+            _jsonl(staging / "observed/care.jsonl.gz", (r.model_dump(mode="json") for r in care))
         _jsonl(
             staging / "targets/stays.jsonl.gz",
             (s.model_dump(mode="json") for _, s in sorted(truth.items())),
@@ -280,6 +291,47 @@ def prepare_patient_run(
 
         _jsonl(staging / "features/patients_asof.jsonl.gz", features())
 
+        if with_care:
+
+            def patients() -> Iterable[PatientRow]:
+                with gzip.open(staging / "features/patients_asof.jsonl.gz", "rt") as stream:
+                    for line in stream:
+                        yield PatientRow.model_validate_json(line)
+
+            counts.update(
+                care_rows=0,
+                care_plan_overdue_rows=0,
+                care_downstream_request_missing_rows=0,
+                care_unmatched_downstream_rows=0,
+            )
+            for key in ("assessment", "departure_plan", "destination", "downstream", "home_help"):
+                counts[f"care_{key}_missing_rows"] = counts[f"care_{key}_stale_rows"] = 0
+
+            def care_features() -> Iterable[dict[str, Any]]:
+                for row in replay_care(patients(), care, config, stale_after_h=stale_after_h):
+                    counts["care_rows"] += 1
+                    counts["care_plan_overdue_rows"] += row.plan_overdue is True
+                    counts["care_downstream_request_missing_rows"] += (
+                        row.downstream_request_missing is True
+                    )
+                    counts["care_unmatched_downstream_rows"] += row.unmatched_downstream_events > 0
+                    for key in (
+                        "assessment",
+                        "departure_plan",
+                        "destination",
+                        "downstream",
+                        "home_help",
+                    ):
+                        fact = getattr(row, key)
+                        counts[f"care_{key}_missing_rows"] += fact is None
+                        counts[f"care_{key}_stale_rows"] += fact is not None and fact.stale
+                    yield row.model_dump(mode="json")
+
+            _jsonl(staging / "features/patient_care_asof.jsonl.gz", care_features())
+            counts["care_stays_without_active_rows"] = len(
+                {r.stay_id for r in care} - observed_stays
+            )
+
         def targets() -> Iterable[dict[str, Any]]:
             with gzip.open(staging / "features/patients_asof.jsonl.gz", "rt") as stream:
                 for line in stream:
@@ -313,9 +365,17 @@ def prepare_patient_run(
                 "fixed UTC+01:00; movements during [h,h+1) become facts at h+1; horizon (t,t+H]"
             ),
             "scope": (
-                "movements and optional unit censuses; unit absence is not hospital discharge; "
-                "no clinical notes, learned encoder or patient-based policy"
+                "movements, optional unit censuses and separate care-document features; "
+                "care documents cannot change presence; no notes, encoder or patient policy"
             ),
+            "care_assumptions": [
+                "Charge is a noisy synthetic baseline proxy, not SIIPS or hourly delivered care.",
+                "Staff plans use the simulator's current latent course, not realized departures.",
+                "Legacy downstream confirmations use an 18h threshold before scheduled departure.",
+                "These mechanisms are engineering hypotheses and need independent stress tests.",
+            ]
+            if with_care
+            else [],
             "files_sha256": {
                 str(p.relative_to(staging)): _digest(p)
                 for p in sorted(staging.rglob("*"))
@@ -336,6 +396,7 @@ def main() -> None:
     parser.add_argument("--stale-after-hours", type=float, default=96.0)
     parser.add_argument("--with-census", action="store_true")
     parser.add_argument("--census-profile", type=Path)
+    parser.add_argument("--with-care", action="store_true")
     args = parser.parse_args()
     try:
         if args.census_profile and not args.with_census:
@@ -354,6 +415,7 @@ def main() -> None:
             args.output,
             stale_after_h=args.stale_after_hours,
             census_profile=census,
+            with_care=args.with_care,
         )
     except (ValueError, OSError, KeyError) as exc:
         parser.exit(1, f"Patient preparation failed: {exc}\n")
