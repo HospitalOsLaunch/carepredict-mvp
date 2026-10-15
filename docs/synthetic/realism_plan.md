@@ -10,6 +10,14 @@ du 19 novembre 2027 et ne ferme aucune porte de recherche.
 
 ## Séquence et critères
 
+**Mise à jour après revue du 15 octobre 2026 :** Guy a accepté de faire passer
+l'interface commune et une première expérience d'entraînement devant l'extension
+de l'aval. Cette étape est livrée dans le [lot 15](../operational/lot15.md). La
+séquence ci-dessous conserve le plan antérieur pour traçabilité : ses anciens
+lots 15–17 restent des chantiers ouverts, avec les références quotidiennes et
+climatologiques désormais implémentées pour l'expérience exploratoire. Le modèle
+JEPA et la dynamique multi-pas n'ont pas été livrés par ce premier prévisionniste.
+
 | Lot | Livrable | Critères avant passage au suivant |
 |---|---|---|
 | 14 — mesures fiables | Scorecard, référentiel provisoire, scénario médical GHT-600 importé | Comptabilité des présences et files réconciliée ; séjours ouverts et non-admis visibles ; pas de seuil empirique non justifié |

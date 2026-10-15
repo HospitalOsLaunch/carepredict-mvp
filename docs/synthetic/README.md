@@ -39,6 +39,10 @@ avec les événements, conserve les séjours censurés et les demandes non admis
 et prépare la [séquence gériatrie–aval](realism_plan.md). Son scénario GHT-600
 représente 250 lits de médecine ; aucun réalisme externe n'est encore validé.
 
+Le [lot 15](../operational/lot15.md) introduit le contrat opérationnel commun et
+entraîne un premier petit modèle sur ce générateur. Les mêmes poids traitent les
+observations par unité, pôle ou établissement ; les résultats restent exploratoires.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
