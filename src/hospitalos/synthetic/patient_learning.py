@@ -19,7 +19,8 @@ from pydantic import StrictBool, model_validator
 from .config import FrozenConfig, HospitalConfig
 from .generate import _jsonl, source_hashes
 from .learning import _digest, _events, verify_source
-from .patient_asof import PatientRow, replay_patients
+from .patient_asof import PatientRow, replay_patient_batches
+from .patient_census import CensusProfile, observe_censuses
 from .patient_observations import (
     Admission,
     Departure,
@@ -160,7 +161,11 @@ def patient_target(row: PatientRow, truth: dict[str, TruthStay]) -> dict[str, An
 
 
 def prepare_patient_run(
-    source: Path, output: Path, *, stale_after_h: float = 96.0
+    source: Path,
+    output: Path,
+    *,
+    stale_after_h: float = 96.0,
+    census_profile: CensusProfile | None = None,
 ) -> dict[str, Any]:
     if output.exists():
         raise FileExistsError(output)
@@ -174,6 +179,7 @@ def prepare_patient_run(
         "profile": patient_profile(config).model_dump(mode="json"),
         "stale_after_h": stale_after_h,
         "horizons_h": [24, 48, 72],
+        "census": census_profile.model_dump(mode="json") if census_profile else None,
     }
     hashes = source_hashes()
     runtime = {
@@ -187,6 +193,7 @@ def prepare_patient_run(
         ).encode()
     ).hexdigest()[:24]
     deliveries = observe_patients(_events(source), config)
+    censuses = observe_censuses(_events(source), config, census_profile) if census_profile else []
     truth = build_patient_truth(_events(source), config)
     counts: Counter[str] = Counter()
     counts.update(
@@ -209,6 +216,14 @@ def prepare_patient_run(
         unique_events=len({r.event_id for r in deliveries}),
         revisions=sum(r.event_version > 1 for r in deliveries),
         duplicates=len(deliveries) - len({(r.event_id, r.event_version) for r in deliveries}),
+        census_deliveries=len(censuses),
+        census_complete_deliveries=sum(r.complete for r in censuses),
+        census_revisions=sum(r.event_version > 1 for r in censuses),
+        census_duplicates=len(censuses) - len({(r.event_id, r.event_version) for r in censuses}),
+        census_presence_rows=0,
+        observation_conflict_rows=0,
+        reconciliation_rows=0,
+        unit_absence_transitions=0,
     )
     observed_stays: set[str] = set()
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -219,6 +234,11 @@ def prepare_patient_run(
         _jsonl(
             staging / "observed/movements.jsonl.gz", (r.model_dump(mode="json") for r in deliveries)
         )
+        if census_profile:
+            _jsonl(
+                staging / "observed/censuses.jsonl.gz",
+                (r.model_dump(mode="json") for r in censuses),
+            )
         _jsonl(
             staging / "targets/stays.jsonl.gz",
             (s.model_dump(mode="json") for _, s in sorted(truth.items())),
@@ -226,16 +246,37 @@ def prepare_patient_run(
 
         # Stream features and labels in separate passes; no truth object enters replay.
         def features() -> Iterable[dict[str, Any]]:
-            for row in replay_patients(
-                deliveries, config, run_id=run_id, stale_after_h=stale_after_h
+            unresolved: set[str] = set()
+            with (
+                (staging / "observed/reconciliation.jsonl.gz").open("wb") as raw_audit,
+                gzip.GzipFile(fileobj=raw_audit, filename="", mode="wb", mtime=0) as audit,
             ):
-                counts["features"] += 1
-                counts["stale_rows"] += row.stale
-                counts["bed_conflict_rows"] += row.bed_conflict
-                counts["admission_missing_rows"] += row.admission_missing
-                counts["request_missing_rows"] += row.request_missing
-                observed_stays.add(row.stay_id)
-                yield row.model_dump(mode="json")
+                for rows, changes in replay_patient_batches(
+                    deliveries,
+                    config,
+                    run_id=run_id,
+                    stale_after_h=stale_after_h,
+                    censuses=censuses,
+                ):
+                    for change in changes:
+                        audit.write((change.model_dump_json() + "\n").encode())
+                        counts["reconciliation_rows"] += 1
+                        if change.status == "unit_absence":
+                            counts["unit_absence_transitions"] += change.stay_id not in unresolved
+                            unresolved.add(change.stay_id)
+                        else:
+                            unresolved.discard(change.stay_id)
+                    for row in rows:
+                        counts["features"] += 1
+                        counts["stale_rows"] += row.stale
+                        counts["bed_conflict_rows"] += row.bed_conflict
+                        counts["admission_missing_rows"] += row.admission_missing
+                        counts["request_missing_rows"] += row.request_missing
+                        counts["census_presence_rows"] += row.presence_basis == "census"
+                        counts["observation_conflict_rows"] += row.observation_conflict
+                        observed_stays.add(row.stay_id)
+                        yield row.model_dump(mode="json")
+            counts["unresolved_unit_absences_final"] = len(unresolved)
 
         _jsonl(staging / "features/patients_asof.jsonl.gz", features())
 
@@ -271,7 +312,10 @@ def prepare_patient_run(
             "clock": (
                 "fixed UTC+01:00; movements during [h,h+1) become facts at h+1; horizon (t,t+H]"
             ),
-            "scope": "movement-only; no clinical notes, learned encoder or patient-based policy",
+            "scope": (
+                "movements and optional unit censuses; unit absence is not hospital discharge; "
+                "no clinical notes, learned encoder or patient-based policy"
+            ),
             "files_sha256": {
                 str(p.relative_to(staging)): _digest(p)
                 for p in sorted(staging.rglob("*"))
@@ -290,9 +334,27 @@ def main() -> None:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--stale-after-hours", type=float, default=96.0)
+    parser.add_argument("--with-census", action="store_true")
+    parser.add_argument("--census-profile", type=Path)
     args = parser.parse_args()
     try:
-        result = prepare_patient_run(args.source, args.output, stale_after_h=args.stale_after_hours)
+        if args.census_profile and not args.with_census:
+            raise ValueError("--census-profile requires --with-census")
+        census = (
+            (
+                CensusProfile.model_validate_json(args.census_profile.read_text())
+                if args.census_profile
+                else CensusProfile()
+            )
+            if args.with_census
+            else None
+        )
+        result = prepare_patient_run(
+            args.source,
+            args.output,
+            stale_after_h=args.stale_after_hours,
+            census_profile=census,
+        )
     except (ValueError, OSError, KeyError) as exc:
         parser.exit(1, f"Patient preparation failed: {exc}\n")
     print(json.dumps({"output": str(args.output), "counts": result["counts"]}))

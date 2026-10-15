@@ -13,6 +13,7 @@ from typing import Any
 
 from .generate import generate, source_hashes
 from .learning import prepare_learning_run
+from .patient_census import CensusProfile
 from .patient_learning import prepare_patient_run
 from .registry import CohortPlan, Partition, Registry, compile_registry
 
@@ -93,11 +94,14 @@ def materialize(
     partitions: tuple[Partition, ...] = ("train", "validation"),
     with_learning: bool = False,
     with_patients: bool = False,
+    with_census: bool = False,
     test_protocol: str | None = None,
 ) -> dict[str, Any]:
     """Atomic batch; source registry remains unchanged. No model fitting or pooling."""
     if output.exists():
         raise FileExistsError(output)
+    if with_census and not with_patients:
+        raise ValueError("Census reconciliation requires with_patients")
     if not partitions or len(set(partitions)) != len(partitions):
         raise ValueError("Choose nonempty, unique partitions")
     if not set(partitions) <= {"train", "validation", "test"}:
@@ -146,7 +150,11 @@ def materialize(
                     learning_counts=learning["counts"],
                 )
             if with_patients:
-                patient = prepare_patient_run(root / "truth", root / "patients")
+                patient = prepare_patient_run(
+                    root / "truth",
+                    root / "patients",
+                    census_profile=CensusProfile() if with_census else None,
+                )
                 record.update(
                     patient_path=(relative / "patients").as_posix(),
                     patient_run_id=patient["run_id"],
@@ -166,6 +174,7 @@ def materialize(
             "test_access": {"opened": "test" in partitions, "protocol": test_protocol},
             "with_learning": with_learning,
             "with_patients": with_patients,
+            "with_census": with_census,
             "worlds": records,
             "reserved_world_ids": [
                 w.world_id for w in registry.worlds if w.config.partition not in partitions
@@ -195,6 +204,7 @@ def main() -> None:
     )
     run_parser.add_argument("--with-learning", action="store_true")
     run_parser.add_argument("--with-patients", action="store_true")
+    run_parser.add_argument("--with-census", action="store_true")
     run_parser.add_argument("--test-protocol")
     args = parser.parse_args()
     try:
@@ -208,6 +218,7 @@ def main() -> None:
                 partitions=tuple(args.partitions),
                 with_learning=args.with_learning,
                 with_patients=args.with_patients,
+                with_census=args.with_census,
                 test_protocol=args.test_protocol,
             )
             result = {

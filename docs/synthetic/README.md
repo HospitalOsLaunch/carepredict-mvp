@@ -23,6 +23,9 @@ informations manquantes et pannes de transmission, en rejeu et en boucle fermée
 Le [lot 10](lot10.md) ajoute les parcours de mouvements patient tels que connus,
 les corrections et des cibles de départ censurées, séparées des observations.
 
+Le [lot 11](lot11.md) ajoute les recensements patient complets ou partiels et la
+réconciliation des localisations, sans transformer une absence locale en sortie.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
