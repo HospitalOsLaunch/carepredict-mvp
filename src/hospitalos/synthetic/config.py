@@ -28,6 +28,13 @@ class DynamicsConfig(FrozenConfig):
     staffing: Literal["v041", "persistent_absence_v1", "shared_float_v1"] = "v041"
 
 
+class DocumentaryConfig(FrozenConfig):
+    """Source-document mechanisms, independent of physical discharge and transport."""
+
+    staff_forecasts: Literal["v041", "admission_prior_v1", "milestones_v1"] = "v041"
+    downstream_confirmation: Literal["v041", "request_delay_v1", "review_capacity_v1"] = "v041"
+
+
 class ObservationOutage(FrozenConfig):
     outage_id: Identifier
     starts_at: dt.datetime
@@ -197,6 +204,7 @@ class HospitalConfig(FrozenConfig):
     partition: Literal["development", "train", "validation", "test"] = "development"
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    documentary: DocumentaryConfig = DocumentaryConfig()
     observation: ObservationProfile = ObservationProfile()
     changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
@@ -305,6 +313,8 @@ class HospitalConfig(FrozenConfig):
             inactive.add("changes")
         if self.dynamics == DynamicsConfig():
             inactive.add("dynamics")
+        if self.documentary == DocumentaryConfig():
+            inactive.add("documentary")
         if self.observation == ObservationProfile():
             inactive.add("observation")
         return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()

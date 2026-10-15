@@ -12,6 +12,7 @@ import numpy as np
 
 from .changes import apply_changes, boundary_events, log_boundaries
 from .config import HospitalConfig
+from .documentary import DocumentaryMechanisms
 from .dynamics import DynamicResourceSimulation, DynamicsExo, DynamicSimulation
 from .mechanisms import RESOURCE_ARRAYS, ResourceSimulation
 from .v041 import hospsim, run
@@ -39,6 +40,7 @@ def simulation_from_exo(exo: Any, config: HospitalConfig) -> Any:
     else:
         sim = ResourceSimulation(exo, config)
     sim.organisation_boundaries = boundary_events(config)
+    sim.documentary = DocumentaryMechanisms(config)
     return sim
 
 

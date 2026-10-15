@@ -17,6 +17,7 @@ from typing import Any, Literal, Self
 from pydantic import StrictBool, model_validator
 
 from .config import FrozenConfig, HospitalConfig
+from .documentary import documentary_assumptions
 from .generate import _jsonl, source_hashes
 from .learning import _digest, _events, verify_source
 from .patient_asof import PatientRow, replay_patient_batches
@@ -368,14 +369,8 @@ def prepare_patient_run(
                 "movements, optional unit censuses and separate care-document features; "
                 "care documents cannot change presence; no notes, encoder or patient policy"
             ),
-            "care_assumptions": [
-                "Charge is a noisy synthetic baseline proxy, not SIIPS or hourly delivered care.",
-                "Staff plans use the simulator's current latent course, not realized departures.",
-                "Legacy downstream confirmations use an 18h threshold before scheduled departure.",
-                "These mechanisms are engineering hypotheses and need independent stress tests.",
-            ]
-            if with_care
-            else [],
+            "documentary": config.documentary.model_dump(mode="json"),
+            "care_assumptions": documentary_assumptions(config) if with_care else [],
             "files_sha256": {
                 str(p.relative_to(staging)): _digest(p)
                 for p in sorted(staging.rglob("*"))

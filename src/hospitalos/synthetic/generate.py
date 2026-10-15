@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import HospitalConfig
+from .documentary import documentary_assumptions
 from .engine import SimulationResult, simulate
 
 # Ratios are recomputed after aggregation, never summed or averaged unweighted.
@@ -213,6 +214,7 @@ def export_result(
             "partition": config.partition,
             "mechanism_family": config.mechanism_family,
             "dynamics": config.dynamics.model_dump(mode="json"),
+            "documentary": config.documentary.model_dump(mode="json"),
             "observation": {
                 "profile": config.observation.model_dump(mode="json"),
                 "role": "observation_generator_only_not_policy_inputs",
@@ -255,6 +257,7 @@ def export_result(
                 "policy": policy_description,
                 "family": config.mechanism_family,
                 "dynamics": "versioned engineering assumptions; not calibrated to real data",
+                "documentary": documentary_assumptions(config),
             },
         }
         (staging / "manifest.json").write_text(

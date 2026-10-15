@@ -30,6 +30,8 @@ jobs:
         run: python -m mypy --strict src/hospitalos/synthetic/patient_census.py scripts/validate_synthetic_census.py
       - name: Type-check patient care observations and annual validation
         run: python -m mypy --strict src/hospitalos/synthetic/patient_care.py src/hospitalos/synthetic/patient_care_asof.py scripts/validate_synthetic_care.py
+      - name: Type-check documentary mechanisms and annual comparison
+        run: python -m mypy --strict src/hospitalos/synthetic/documentary.py scripts/validate_synthetic_documentary.py
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -44,6 +46,8 @@ jobs:
         run: python scripts/validate_synthetic_census.py --output runs/synthetic/census-annual
       - name: Verify patient care observations on the same development year
         run: python scripts/validate_synthetic_care.py --source runs/synthetic/census-annual/truth --output runs/synthetic/care-annual
+      - name: Compare documentary mechanisms on six development years
+        run: python scripts/validate_synthetic_documentary.py --output runs/synthetic/documentary-annual
       - name: Freeze and materialize a disposable cohort fixture
         run: |
           python - <<'PY'
@@ -136,3 +140,6 @@ jobs:
             runs/synthetic/census-annual/patients/manifest.json
             runs/synthetic/care-annual/report.json
             runs/synthetic/care-annual/patients/manifest.json
+            runs/synthetic/documentary-annual/report.json
+            runs/synthetic/documentary-annual/registry_staff_forecasts/manifest.json
+            runs/synthetic/documentary-annual/registry_downstream_confirmation/manifest.json

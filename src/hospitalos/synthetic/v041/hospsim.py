@@ -797,6 +797,16 @@ class Sim:
         elif decl not in (SMR, EHPAD) and p.aval_dem:
             p.aval_dem = False
             log.event(h, "DEMANDE_AVAL_ANNULEE", u, p.pid)
+        if getattr(self, "documentary", None) is not None:
+            self.documentary.destination(p.pid, old, decl, h)
+
+    def confirmer_aval(self, st, p, h, u, log):
+        if getattr(self, "documentary", None) is not None and self.documentary.confirm(self, st, p, h, u, log):
+            return
+        dp = self.p_dest[p.pid]
+        if dp in (SMR, EHPAD) and not p.conf and h >= p.dis_h - 18:
+            p.conf = True
+            log.event(h, "PLACE_AVAL_CONFIRMEE", u, p.pid, type_aval=DEST[dp])
 
     def _estimer_dsp(self, p, h, R):
         """Jour de sortie prévu par l'équipe : lit le cours clinique prévu (ready_h courant, sans les files
@@ -817,6 +827,8 @@ class Sim:
         return max(h // 24, int((h + reste) // 24))
 
     def infos_staff(self, st, h, log):
+        if getattr(self, "documentary", None) is not None and self.documentary.staff(self, st, h, log):
+            return
         R, I = self.rng_info, INFO
         d = h // 24
         for u in range(self.U):
@@ -1173,10 +1185,7 @@ class Sim:
                 if not p.rlog:
                     p.rlog = True
                     log.event(h, "SORTANT_MEDICAL", u, p.pid)
-                dp = self.p_dest[p.pid]
-                if dp in (SMR, EHPAD) and not p.conf and h >= p.dis_h - 18:
-                    p.conf = True
-                    log.event(h, "PLACE_AVAL_CONFIRMEE", u, p.pid, type_aval=DEST[dp])
+                self.confirmer_aval(st, p, h, u, log)
             for p in st.occ[u].values():
                 if p.aide_log == 1 and h >= p.aide_h:
                     p.aide_log = 2

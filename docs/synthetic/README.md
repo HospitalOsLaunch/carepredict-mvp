@@ -30,6 +30,10 @@ Le [lot 12](lot12.md) enrichit chaque ligne patient par les évaluations de char
 les sorties prévisionnelles et les besoins d’aval disponibles à cet instant,
 avec une provenance séparée de la présence et des cibles réalisées.
 
+Le [lot 13](lot13.md) diversifie les prévisions du staff et les confirmations
+d’aval, réserve leurs familles par axe et contrôle leur indépendance vis-à-vis
+des trajectoires physiques.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
