@@ -128,6 +128,7 @@ def materialize(
                 "replicate": world.replicate,
                 "structure_sha256": world.structure_sha256,
                 "config_sha256": config.fingerprint,
+                "dynamics": config.dynamics.model_dump(mode="json"),
                 "truth_path": (relative / "truth").as_posix(),
                 "truth_manifest_sha256": _sha(root / "truth/manifest.json"),
                 "counts": truth["counts"],

@@ -18,6 +18,14 @@ class FrozenConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+class DynamicsConfig(FrozenConfig):
+    """Versioned engineering hypotheses, independent of resource pooling."""
+
+    arrivals: Literal["v041", "shared_bursts_v1", "appointments_v1"] = "v041"
+    discharges: Literal["v041", "daily_rounds_v1", "rolling_v1"] = "v041"
+    staffing: Literal["v041", "persistent_absence_v1", "shared_float_v1"] = "v041"
+
+
 class UnitConfig(FrozenConfig):
     unit_id: Identifier
     template: Literal["MED_POLY", "CSG", "PNEUMO", "CARDIO"]
@@ -67,6 +75,7 @@ class HospitalConfig(FrozenConfig):
     warmup_days: Annotated[StrictInt, Field(ge=0, le=365)] = 61
     partition: Literal["development", "train", "validation", "test"] = "development"
     mechanism_family: MechanismFamily = "v041"
+    dynamics: DynamicsConfig = DynamicsConfig()
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
     shared_resources: SharedResources = SharedResources()
     pole_resource_weights: tuple[PoleResourceWeights, ...] = ()
@@ -128,6 +137,8 @@ class HospitalConfig(FrozenConfig):
             if self.mechanism_family == "v041"
             else set()
         )
+        if self.dynamics == DynamicsConfig():
+            inactive.add("dynamics")
         return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()
 
 

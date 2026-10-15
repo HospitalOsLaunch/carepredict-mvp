@@ -11,6 +11,9 @@ et gradient boosting à 24 h sur des hôpitaux de validation distincts.
 Le [lot 06](lot06.md) branche une politique sur les observations en direct et trace
 les recommandations, décisions du cadre et résultats d’exécution.
 
+Le [lot 07](lot07.md) diversifie les arrivées, sorties et effectifs et réserve
+les variantes dans trois plans de cohortes indépendants.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis

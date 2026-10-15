@@ -17,6 +17,8 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [Hospital dynamics diversity, lot 07](docs/synthetic/lot07.md): three variants per axis
+  for arrivals, discharge planning and staffing; independent mechanism holdouts.
 - [Observation-only policy loop, lot 06](docs/synthetic/lot06.md): deliver observations
   online, separate recommendation from cadre decisions, and trace execution failures
   with a reproducible decision ledger.

@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from .config import HospitalConfig
+from .dynamics import DynamicResourceSimulation, DynamicsExo, DynamicSimulation
 from .mechanisms import RESOURCE_ARRAYS, ResourceSimulation
 from .v041 import hospsim, run
 
@@ -29,6 +30,9 @@ class SimulationResult:
 
 
 def simulation_from_exo(exo: Any, config: HospitalConfig) -> Any:
+    if config.dynamics.discharges != "v041":
+        cls = DynamicSimulation if config.mechanism_family == "v041" else DynamicResourceSimulation
+        return cls(exo, config)
     if config.mechanism_family == "v041":
         return _HS.Sim(exo, "pole", config.warmup_days * 24, exo.H)
     return ResourceSimulation(exo, config)
@@ -48,13 +52,14 @@ def build_simulation(config: HospitalConfig) -> Any:
         specs[unit.unit_id] = spec
     start = config.start - dt.timedelta(days=config.warmup_days)
     end = config.start + dt.timedelta(days=config.days)
-    exo = _HS.Exo(
+    exo = DynamicsExo(
         list(specs),
         start,
         end,
         config.seed,
         echelles={unit.unit_id: unit.arrival_scale for unit in config.units},
         unit_specs=specs,
+        config=config,
     )
     for name, attr in RESOURCE_ARRAYS.items():
         multiplier = getattr(config.shared_resources, name)

@@ -24,7 +24,7 @@ jobs:
           python -m ruff check src/hospitalos/synthetic tests/synthetic
           python -m ruff format --check src/hospitalos/synthetic tests/synthetic
       - name: Type-check new foundation
-        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py src/hospitalos/synthetic/online.py src/hospitalos/synthetic/policy.py src/hospitalos/synthetic/policy_loop.py tests/synthetic
+        run: python -m mypy --strict src/hospitalos/synthetic/dynamics.py src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py src/hospitalos/synthetic/online.py src/hospitalos/synthetic/policy.py src/hospitalos/synthetic/policy_loop.py tests/synthetic
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -56,6 +56,11 @@ jobs:
       - name: Run observation-only policy and decision ledger
         run: |
           python -m hospitalos.synthetic.policy_loop --config configs/synthetic/hospital_two_poles.json --days 10 --output runs/synthetic/policy-smoke
+      - name: Freeze independent dynamics reservations (no test trajectories)
+        run: |
+          python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_arrivals_v1.json --output runs/synthetic/arrivals-registry
+          python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_discharges_v1.json --output runs/synthetic/discharges-registry
+          python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_staffing_v1.json --output runs/synthetic/staffing-registry
       - uses: actions/upload-artifact@v4
         with:
           name: synthetic-annual-manifest
@@ -80,3 +85,6 @@ jobs:
             runs/synthetic/policy-smoke/decisions/contexts.jsonl.gz
             runs/synthetic/policy-smoke/decisions/recommendations.jsonl.gz
             runs/synthetic/policy-smoke/decisions/ledger.jsonl.gz
+            runs/synthetic/arrivals-registry/manifest.json
+            runs/synthetic/discharges-registry/manifest.json
+            runs/synthetic/staffing-registry/manifest.json

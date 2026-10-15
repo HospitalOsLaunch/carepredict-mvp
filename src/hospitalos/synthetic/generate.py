@@ -207,6 +207,7 @@ def export_result(
             "hospital_id": config.hospital_id,
             "partition": config.partition,
             "mechanism_family": config.mechanism_family,
+            "dynamics": config.dynamics.model_dump(mode="json"),
             "config_sha256": config.fingerprint,
             "source_sha256": source_hashes(),
             "runtime": {
@@ -239,6 +240,7 @@ def export_result(
                 "arrivals": "template rates times arrival_scale; no occupancy calibration",
                 "policy": policy_description,
                 "family": config.mechanism_family,
+                "dynamics": "versioned engineering assumptions; not calibrated to real data",
             },
         }
         (staging / "manifest.json").write_text(
