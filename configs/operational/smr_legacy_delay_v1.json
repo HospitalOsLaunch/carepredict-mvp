@@ -1,0 +1,80 @@
+{
+  "protocol_id": "SMR_PAIRED_FIRST_MODEL_V1_LEGACY_DELAY",
+  "seed": 1501701,
+  "days": 120,
+  "warmup_days": 28,
+  "start": "2025-01-01",
+  "train_unit_counts": [
+    2,
+    4,
+    6,
+    2,
+    4,
+    6,
+    2,
+    4,
+    6,
+    2,
+    4,
+    6
+  ],
+  "validation_unit_counts": [
+    3,
+    5,
+    7,
+    3,
+    5,
+    7
+  ],
+  "reserved_test_unit_counts": [
+    9,
+    11
+  ],
+  "modes": [
+    "unit",
+    "pole",
+    "hospital"
+  ],
+  "horizon_h": 24,
+  "stride_h": 6,
+  "epochs": 60,
+  "batch_size": 128,
+  "learning_rate": 0.002,
+  "primary_comparator": "daily_same_hour",
+  "primary_score": "mse",
+  "targets": [
+    "occupancy",
+    "ed_waiting",
+    "care_workload_proxy"
+  ],
+  "status": "exploratory_validation_no_final_gate",
+  "limits": [
+    "One learned conditional-mean forecaster; not JEPA pretraining or a completed world model.",
+    "No real patient data, no real-site connector or deployment.",
+    "Unseen unit counts and groupings, not unseen clinical specialties or territorial mechanisms.",
+    "Synthetic engine retains fixed UTC+01 and its inherited privileged behaviour policy.",
+    "One model seed; six validation hospitals; confidence intervals are exploratory.",
+    "No calibrated uncertainty, action effects, adaptation or G1-G4/SYN claim.",
+    "Three hypothesised SMR capacity regimes; two validation hospitals per regime.",
+    "No EHPAD/HAD capacity, no clinical calibration, no coordination-time benefit.",
+    "Paired mortality-corrected old-delay control, not a causal bed effect."
+  ],
+  "smr_comparison": {
+    "variant": "legacy_delay",
+    "capacity_fractions": [
+      0.7,
+      0.4,
+      0.15
+    ],
+    "external_arrivals_per_bed_day": 0.005,
+    "pool_parameters": {
+      "preparation_h": 24,
+      "review_hour": 10,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45,
+      "external_patience_h": 168
+    }
+  }
+}

@@ -8,6 +8,10 @@ Le développement ne dépend pas de l'arrivée d'une extraction réelle ; les do
 individuels restent après SYN. Ce plan ne redate pas la cible globale provisoire
 du 19 novembre 2027 et ne ferme aucune porte de recherche.
 
+La première tranche d’aval SMR fini et sa comparaison appariée sont documentées
+dans le [lot 16](../operational/lot16.md). Elle couvre des places partagées et une
+demande extérieure, sans clore EHPAD/HAD, coordination ni validité externe.
+
 ## Séquence et critères
 
 **Mise à jour après revue du 15 octobre 2026 :** Guy a accepté de faire passer

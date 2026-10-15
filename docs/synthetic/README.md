@@ -176,3 +176,5 @@ autonomes. Le calendrier reste en UTC+1 fixe. Les arrivées ne sont pas recalibr
 atteindre un taux d'occupation cible. La politique historique consulte certaines
 informations privilégiées du simulateur et n'est pas un recommandeur déployable.
 La plausibilité et le transfert au réel ne sont pas démontrés par ces contrôles.
+
+- [Lot 16 : aval SMR fini, mortalité conditionnelle et comparaison du prévisionniste](../operational/lot16.md).

@@ -15,6 +15,7 @@ from .config import HospitalConfig
 from .documentary import DocumentaryMechanisms
 from .dynamics import DynamicResourceSimulation, DynamicsExo, DynamicSimulation
 from .mechanisms import RESOURCE_ARRAYS, ResourceSimulation
+from .smr import SMRAllocator
 from .v041 import hospsim, run
 
 # Keep dynamic legacy calls confined to this boundary.
@@ -41,6 +42,8 @@ def simulation_from_exo(exo: Any, config: HospitalConfig) -> Any:
         sim = ResourceSimulation(exo, config)
     sim.organisation_boundaries = boundary_events(config)
     sim.documentary = DocumentaryMechanisms(config)
+    if config.smr.mode == "finite_v1":
+        sim.smr = SMRAllocator(config.smr, config.seed)
     return sim
 
 
@@ -113,6 +116,8 @@ def advance_checked(
         "queue_transport": len(state.q_tr),
         "queue_specialist": len(state.q_avis),
     }
+    if getattr(sim, "smr", None) is not None:
+        resource.update(sim.smr.inspect(sim, state, hour))
     return resource, pool_rows
 
 
