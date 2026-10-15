@@ -191,6 +191,11 @@ def export_result(
         if result.resource_pools:
             _csv(truth / "resource_pools_hourly.csv", result.resource_pools)
         _jsonl(truth / "events.jsonl.gz", events())
+        if config.changes:
+            _jsonl(
+                truth / "changes.jsonl.gz",
+                (e for e in events() if e["type"] == "ORGANISATION_CHANGE"),
+            )
         (staging / "config.json").write_text(
             config.model_dump_json(indent=2) + "\n", encoding="utf-8"
         )
@@ -208,6 +213,11 @@ def export_result(
             "partition": config.partition,
             "mechanism_family": config.mechanism_family,
             "dynamics": config.dynamics.model_dump(mode="json"),
+            "organisation_changes": {
+                "count": len(config.changes),
+                "schedule_role": "truth_only_not_policy_inputs",
+                "windows": "start_inclusive_end_exclusive; fixed UTC+01:00",
+            },
             "config_sha256": config.fingerprint,
             "source_sha256": source_hashes(),
             "runtime": {

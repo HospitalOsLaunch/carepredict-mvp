@@ -10,6 +10,7 @@ from typing import Any
 
 import numpy as np
 
+from .changes import apply_changes, boundary_events, log_boundaries
 from .config import HospitalConfig
 from .dynamics import DynamicResourceSimulation, DynamicsExo, DynamicSimulation
 from .mechanisms import RESOURCE_ARRAYS, ResourceSimulation
@@ -32,10 +33,13 @@ class SimulationResult:
 def simulation_from_exo(exo: Any, config: HospitalConfig) -> Any:
     if config.dynamics.discharges != "v041":
         cls = DynamicSimulation if config.mechanism_family == "v041" else DynamicResourceSimulation
-        return cls(exo, config)
-    if config.mechanism_family == "v041":
-        return _HS.Sim(exo, "pole", config.warmup_days * 24, exo.H)
-    return ResourceSimulation(exo, config)
+        sim = cls(exo, config)
+    elif config.mechanism_family == "v041":
+        sim = _HS.Sim(exo, "pole", config.warmup_days * 24, exo.H)
+    else:
+        sim = ResourceSimulation(exo, config)
+    sim.organisation_boundaries = boundary_events(config)
+    return sim
 
 
 def build_simulation(config: HospitalConfig) -> Any:
@@ -64,6 +68,7 @@ def build_simulation(config: HospitalConfig) -> Any:
     for name, attr in RESOURCE_ARRAYS.items():
         multiplier = getattr(config.shared_resources, name)
         setattr(exo, attr, np.floor(getattr(exo, attr) * multiplier).astype(int))
+    apply_changes(exo, config)
     # Legacy "pole" means pooled beds and resources. Here its perimeter is the hospital.
     return simulation_from_exo(exo, config)
 
@@ -78,6 +83,7 @@ def advance_checked(
     politique: bool,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """One physical step with the same invariants in batch and policy environments."""
+    log_boundaries(sim, journal, hour)
     before = [len(occupied) for occupied in state.occ]
     metrics = sim.step(state, hour, politique=politique, log=journal)
     _RUN.verifier(sim, state, hour, checks)

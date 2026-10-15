@@ -26,6 +26,56 @@ class DynamicsConfig(FrozenConfig):
     staffing: Literal["v041", "persistent_absence_v1", "shared_float_v1"] = "v041"
 
 
+class ChangeWindow(FrozenConfig):
+    change_id: Identifier
+    starts_at: dt.datetime
+    ends_at: dt.datetime | None = None
+
+    @model_validator(mode="after")
+    def valid_window(self) -> Self:
+        for value in (self.starts_at, self.ends_at):
+            if value is not None and (
+                value.utcoffset() != dt.timedelta(hours=1)
+                or value.minute
+                or value.second
+                or value.microsecond
+            ):
+                raise ValueError("Changes require whole hours at explicit fixed UTC+01:00")
+        if self.ends_at is not None and self.ends_at <= self.starts_at:
+            raise ValueError("Change end must be strictly after start")
+        return self
+
+
+class BedClosure(ChangeWindow):
+    kind: Literal["bed_closure"]
+    unit_id: Identifier
+    additional_closed_beds: Annotated[StrictInt, Field(ge=1, le=200)]
+
+
+class ServiceCapacityChange(ChangeWindow):
+    kind: Literal["service_capacity"]
+    resource: Literal["cleaning", "imaging", "transport", "specialist"]
+    multiplier: Multiplier
+
+
+class StaffingShortage(ChangeWindow):
+    kind: Literal["staffing_shortage"]
+    unit_id: Identifier
+    additional_absent: Annotated[StrictInt, Field(ge=1, le=200)]
+
+    @model_validator(mode="after")
+    def full_shifts(self) -> Self:
+        # The inherited sid() uses midnight, 07:00 and 15:00 boundaries.
+        if any(v is not None and v.hour not in (0, 7, 15) for v in (self.starts_at, self.ends_at)):
+            raise ValueError("Staff shortages must start/end at 00:00, 07:00 or 15:00")
+        return self
+
+
+OrganisationalChange = Annotated[
+    BedClosure | ServiceCapacityChange | StaffingShortage, Field(discriminator="kind")
+]
+
+
 class UnitConfig(FrozenConfig):
     unit_id: Identifier
     template: Literal["MED_POLY", "CSG", "PNEUMO", "CARDIO"]
@@ -76,6 +126,7 @@ class HospitalConfig(FrozenConfig):
     partition: Literal["development", "train", "validation", "test"] = "development"
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
     shared_resources: SharedResources = SharedResources()
     pole_resource_weights: tuple[PoleResourceWeights, ...] = ()
@@ -119,6 +170,35 @@ class HospitalConfig(FrozenConfig):
             self.start + dt.timedelta(days=self.days)
         except OverflowError as exc:
             raise ValueError("Simulation dates are out of range") from exc
+        recorded_start = dt.datetime.combine(
+            self.start, dt.time(), dt.timezone(dt.timedelta(hours=1))
+        )
+        recorded_end = recorded_start + dt.timedelta(days=self.days)
+        windows: dict[tuple[str, str], list[tuple[dt.datetime, dt.datetime]]] = {}
+        change_ids = [c.change_id for c in self.changes]
+        if len(set(change_ids)) != len(change_ids):
+            raise ValueError("Duplicate change_id")
+        units = {u.unit_id: u for u in self.units}
+        for change in self.changes:
+            end = change.ends_at or recorded_end
+            if not recorded_start <= change.starts_at < recorded_end or end > recorded_end:
+                raise ValueError("Changes must lie inside the recorded interval")
+            if isinstance(change, ServiceCapacityChange):
+                target: str = change.resource
+            else:
+                target = change.unit_id
+                if target not in units:
+                    raise ValueError("Change names an unknown unit")
+                if (
+                    isinstance(change, BedClosure)
+                    and change.additional_closed_beds > units[target].beds
+                ):
+                    raise ValueError("Requested bed closure exceeds physical standard beds")
+            windows.setdefault((change.kind, target), []).append((change.starts_at, end))
+        for group in windows.values():
+            ordered = sorted(group)
+            if any(a[1] > b[0] for a, b in zip(ordered, ordered[1:], strict=False)):
+                raise ValueError("Overlapping changes for the same kind and target")
         return self
 
     @property
@@ -137,6 +217,8 @@ class HospitalConfig(FrozenConfig):
             if self.mechanism_family == "v041"
             else set()
         )
+        if not self.changes:
+            inactive.add("changes")
         if self.dynamics == DynamicsConfig():
             inactive.add("dynamics")
         return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()
