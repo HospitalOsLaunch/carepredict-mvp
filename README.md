@@ -17,6 +17,10 @@ measurement artifacts live.
 
 ### Synthetic Research Foundation
 
+- [Observation-only policy loop, lot 06](docs/synthetic/lot06.md): deliver observations
+  online, separate recommendation from cadre decisions, and trace execution failures
+  with a reproducible decision ledger.
+
 - [Multihospital prediction references, lot 05](docs/synthetic/lot05.md): freeze the
   evaluation protocol, fit train-only gradient boosting, and compare against
   persistence and weekly seasonality on held-out validation hospitals.

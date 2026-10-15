@@ -63,6 +63,46 @@ def build_simulation(config: HospitalConfig) -> Any:
     return simulation_from_exo(exo, config)
 
 
+def advance_checked(
+    sim: Any,
+    state: Any,
+    hour: int,
+    journal: Any,
+    checks: Counter[str],
+    *,
+    politique: bool,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """One physical step with the same invariants in batch and policy environments."""
+    before = [len(occupied) for occupied in state.occ]
+    metrics = sim.step(state, hour, politique=politique, log=journal)
+    _RUN.verifier(sim, state, hour, checks)
+    for unit in range(sim.U):
+        expected = (
+            before[unit]
+            + metrics["entrees"][unit]
+            - metrics["sorties"][unit]
+            + metrics["transf_in"][unit]
+            - metrics["transf_out"][unit]
+        )
+        checks["conservation_stock_flux"] += int(expected != len(state.occ[unit]))
+    checks["transferts_internes_equilibres"] += int(
+        sum(metrics["transf_in"]) != sum(metrics["transf_out"])
+    )
+    pool_rows = sim.resource_rows(state, hour) if isinstance(sim, ResourceSimulation) else []
+    resource = {
+        "h": hour - sim.h0_rec,
+        **{
+            f"capacity_{name}": int(getattr(sim.x, attr)[hour])
+            for name, attr in RESOURCE_ARRAYS.items()
+        },
+        "queue_cleaning": len(state.q_net),
+        "queue_imaging": len(state.q_img),
+        "queue_transport": len(state.q_tr),
+        "queue_specialist": len(state.q_avis),
+    }
+    return resource, pool_rows
+
+
 def simulate(config: HospitalConfig) -> SimulationResult:
     sim = build_simulation(config)
     state = _HS.State(sim.x)
@@ -71,37 +111,10 @@ def simulate(config: HospitalConfig) -> SimulationResult:
     resources = []
     resource_pools = []
     for hour in range(sim.x.H):
-        before = [len(occupied) for occupied in state.occ]
-        metrics = sim.step(state, hour, politique=True, log=journal)
-        _RUN.verifier(sim, state, hour, checks)
-        for unit in range(sim.U):
-            expected = (
-                before[unit]
-                + metrics["entrees"][unit]
-                - metrics["sorties"][unit]
-                + metrics["transf_in"][unit]
-                - metrics["transf_out"][unit]
-            )
-            checks["conservation_stock_flux"] += int(expected != len(state.occ[unit]))
-        checks["transferts_internes_equilibres"] += int(
-            sum(metrics["transf_in"]) != sum(metrics["transf_out"])
-        )
-        pool_rows = sim.resource_rows(state, hour) if isinstance(sim, ResourceSimulation) else []
+        resource, pools = advance_checked(sim, state, hour, journal, checks, politique=True)
         if hour >= sim.h0_rec:
-            resource_pools.extend(pool_rows)
-            resources.append(
-                {
-                    "h": hour - sim.h0_rec,
-                    **{
-                        f"capacity_{name}": int(getattr(sim.x, attr)[hour])
-                        for name, attr in RESOURCE_ARRAYS.items()
-                    },
-                    "queue_cleaning": len(state.q_net),
-                    "queue_imaging": len(state.q_img),
-                    "queue_transport": len(state.q_tr),
-                    "queue_specialist": len(state.q_avis),
-                }
-            )
+            resources.append(resource)
+            resource_pools.extend(pools)
     violations = {
         key: value for key, value in checks.items() if key != "heures_controlees" and value
     }

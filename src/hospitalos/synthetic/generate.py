@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import HospitalConfig
-from .engine import simulate
+from .engine import SimulationResult, simulate
 
 # Ratios are recomputed after aggregation, never summed or averaged unweighted.
 ADDITIVE_FIELDS = (
@@ -124,7 +124,19 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
     """Publish a complete run only after all invariants and writes have succeeded."""
     if output.exists():
         raise FileExistsError(f"Output already exists: {output}")
-    result = simulate(config)
+    return export_result(config, simulate(config), output)
+
+
+def export_result(
+    config: HospitalConfig,
+    result: SimulationResult,
+    output: Path,
+    *,
+    policy_description: str = "inherited v0.4.1 policy with privileged simulator information",
+) -> dict[str, Any]:
+    """Export a completed simulation without re-running it."""
+    if output.exists():
+        raise FileExistsError(output)
     h0 = config.warmup_days * 24
     units = [unit.unit_id for unit in config.units]
     poles = config.unit_poles
@@ -225,7 +237,7 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
                 }[config.mechanism_family],
                 "poles": "resource/routing boundaries for local_v1 and hybrid_v1",
                 "arrivals": "template rates times arrival_scale; no occupancy calibration",
-                "policy": "inherited v0.4.1 policy with privileged simulator information",
+                "policy": policy_description,
                 "family": config.mechanism_family,
             },
         }

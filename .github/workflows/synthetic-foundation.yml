@@ -24,7 +24,7 @@ jobs:
           python -m ruff check src/hospitalos/synthetic tests/synthetic
           python -m ruff format --check src/hospitalos/synthetic tests/synthetic
       - name: Type-check new foundation
-        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py tests/synthetic
+        run: python -m mypy --strict src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py src/hospitalos/synthetic/online.py src/hospitalos/synthetic/policy.py src/hospitalos/synthetic/policy_loop.py tests/synthetic
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -53,6 +53,9 @@ jobs:
           python -m hospitalos.synthetic --config configs/synthetic/hospital_local_v1.json --days 7 --output runs/synthetic/local-smoke
           python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_mechanisms_v1.json --output runs/synthetic/mechanism-registry
           python -m hospitalos.synthetic.counterfactual --config configs/synthetic/hospital_v041.json --alternative configs/synthetic/hospital_hybrid_v1.json --at-hour 9 --horizon 72 --output runs/synthetic/paired-smoke
+      - name: Run observation-only policy and decision ledger
+        run: |
+          python -m hospitalos.synthetic.policy_loop --config configs/synthetic/hospital_two_poles.json --days 10 --output runs/synthetic/policy-smoke
       - uses: actions/upload-artifact@v4
         with:
           name: synthetic-annual-manifest
@@ -72,3 +75,8 @@ jobs:
             runs/synthetic/mechanism-registry/manifest.json
             runs/synthetic/paired-smoke/manifest.json
             runs/synthetic/paired-smoke/outcomes.csv
+            runs/synthetic/policy-smoke/manifest.json
+            runs/synthetic/policy-smoke/policy.json
+            runs/synthetic/policy-smoke/decisions/contexts.jsonl.gz
+            runs/synthetic/policy-smoke/decisions/recommendations.jsonl.gz
+            runs/synthetic/policy-smoke/decisions/ledger.jsonl.gz
