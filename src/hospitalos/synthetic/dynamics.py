@@ -23,7 +23,24 @@ _HS: Any = hospsim
 class DynamicsExo(_HS.Exo):  # type: ignore[misc]
     def __init__(self, *args: Any, config: HospitalConfig, **kwargs: Any):
         self.dynamics = config.dynamics
+        self.clinical = config.clinical
         super().__init__(*args, **kwargs)
+
+    def destination_probabilities(self, spec: dict[str, Any], age: int, dep: int) -> Any:
+        if self.clinical.destinations == "v041":
+            return super().destination_probabilities(spec, age, dep)
+        weights = np.asarray(spec["dest"], dtype=float).copy()
+        # Death risk is separate from the conditional distribution among survivors.
+        death = float(weights[_HS.DECES] / weights.sum())
+        death *= max(0.3, 1 + self.clinical.death_age_slope * (age - 75))
+        death *= 1 + self.clinical.death_dependence_slope * (dep - 1)
+        death = min(1.0, death)
+        weights[_HS.DECES] = 0
+        weights[_HS.SMR] *= max(0.2, 1 + 0.35 * (dep - 2))
+        weights[_HS.EHPAD] *= max(0.1, 1 + 0.6 * (dep - 2)) if age >= 75 else 0.3
+        weights *= (1 - death) / weights.sum()
+        weights[_HS.DECES] = death
+        return weights
 
     def _capacites_et_effectifs(self, rng: Any) -> None:
         # Consume exactly the reference draws, preserving patients/services/policy RNG.
@@ -200,6 +217,8 @@ def discharge_time(sim: Any, patient: Any, variant: str) -> int:
     ready = int(patient.ready_h)
     if destination == _HS.DECES:
         return ready
+    if destination == _HS.SMR and getattr(sim, "smr", None) is not None:
+        return ready + 1
     if destination == _HS.DOM:
         ready = max(ready, int(patient.aide_h))
     else:
