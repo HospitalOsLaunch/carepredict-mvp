@@ -113,7 +113,10 @@ def prepare_learning_run(
         raise ValueError("Output must be outside the immutable truth run")
     config, input_hash = verify_source(source)
     settings = {
-        "profile": "v041_unit_snapshot_end_of_hour_v1",
+        "profile": "v041_unit_snapshot_end_of_hour_v1"
+        if config.observation.mode == "v041"
+        else "site_v1_unit_snapshot_end_of_hour_v1",
+        "observation": config.observation.model_dump(mode="json"),
         "seed": config.seed,
         "stale_after_h": stale_after_h,
         "horizon_h": HORIZON_H,
