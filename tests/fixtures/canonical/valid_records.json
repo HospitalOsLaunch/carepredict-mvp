@@ -1,0 +1,52 @@
+[
+  {
+    "domain": "care_load",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "aas_score": null,
+      "patient_count": 24
+    }
+  },
+  {
+    "domain": "flow",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-01-15T08:00:00+01:00",
+      "available_at": "2026-01-15T08:10:00+01:00",
+      "admissions": 5,
+      "discharges": 3,
+      "occupancy": 22
+    }
+  },
+  {
+    "domain": "staffing",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T07:00:00+02:00",
+      "available_at": "2026-08-11T07:00:00+02:00",
+      "nurse_count": 6.0,
+      "aide_count": 3.0
+    }
+  },
+  {
+    "domain": "actions",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T09:00:00+02:00",
+      "available_at": "2026-08-11T09:00:00+02:00",
+      "action_type": "discharge_planning",
+      "magnitude": 2.0
+    }
+  }
+]

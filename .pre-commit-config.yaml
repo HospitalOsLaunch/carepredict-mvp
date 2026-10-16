@@ -1,0 +1,40 @@
+# Pre-commit hooks — empêchent qu'un code non-clean soit committé (contexte santé).
+# Installation (une fois) :
+#   pip install pre-commit && pre-commit install
+# Exécution manuelle sur tout le dépôt :
+#   pre-commit run --all-files
+#
+# Note : mypy tourne ici sur la couche sécurité Nantes (rapide, sans deps lourdes).
+# La CI (job gate-a-safety) rejoue lint + format + types + couverture 95% comme
+# barrière bloquante côté serveur.
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff            # lint (auto-fix)
+        args: [--fix]
+      - id: ruff-format     # format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  - repo: local
+    hooks:
+      - id: mypy-safety-layer
+        name: mypy --strict (Nantes safety layer)
+        entry: mypy --strict
+        language: system
+        pass_filenames: false
+        files: ^services/(connectors/schemas/canonical_schema|validation/(preflight|validator))\.py$
+        args:
+          - services/connectors/schemas/canonical_schema.py
+          - services/validation/preflight.py
+          - services/validation/validator.py
