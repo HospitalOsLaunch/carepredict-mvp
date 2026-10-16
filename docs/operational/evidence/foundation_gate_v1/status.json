@@ -1,0 +1,21 @@
+{
+  "protocol_id": "FOUNDATION_GATE_V1",
+  "date": "2026-10-16",
+  "repository_base": "bfa1fa7e0a8bbdd8817157a162d65f507568a251",
+  "audit_type": "documentation_and_available_input_inspection",
+  "E0": "completed_with_blockers",
+  "E1_synthetic_baseline": "blocked_missing_original_observations",
+  "E2_real_operational_baseline": "blocked_no_eligible_dataset_identified",
+  "E3_synthetic_pretraining_value": "not_evaluated",
+  "foundation_inference_executed": false,
+  "new_model_training_executed": false,
+  "reserved_final_test_opened": false,
+  "performance_metrics": null,
+  "launch_manifest_complete": false,
+  "scope_limit": "No claim about data outside the inspected repository, workflow artifacts, current workspace and located sample.",
+  "next_required_inputs": [
+    "Original lot16 cohort observations, topologies, truths and manifests",
+    "Eligible synchronized operational real series with provenance and availability history",
+    "Exact software and weight revisions, fixed splits and inference budget before scoring"
+  ]
+}
