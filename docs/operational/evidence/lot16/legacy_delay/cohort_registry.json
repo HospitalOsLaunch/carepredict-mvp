@@ -1,0 +1,2446 @@
+[
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_00",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_00_P0",
+        "units": [
+          {
+            "arrival_scale": 0.8553539313347006,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_00_U0"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_00_P1",
+        "units": [
+          {
+            "arrival_scale": 0.916452123640297,
+            "beds": 29,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_00_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 682186678,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_01",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_01_P0",
+        "units": [
+          {
+            "arrival_scale": 1.0655014003112426,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_01_U0"
+          },
+          {
+            "arrival_scale": 0.8927339992706811,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_01_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_01_P1",
+        "units": [
+          {
+            "arrival_scale": 1.0055276850620163,
+            "beds": 36,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_01_U1"
+          },
+          {
+            "arrival_scale": 1.1197721230175945,
+            "beds": 21,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_01_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 312194677,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_02",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_02_P0",
+        "units": [
+          {
+            "arrival_scale": 1.0017409130395958,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_02_U0"
+          },
+          {
+            "arrival_scale": 1.206938080638211,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_02_U3"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_02_P1",
+        "units": [
+          {
+            "arrival_scale": 0.8636529411168593,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_02_U1"
+          },
+          {
+            "arrival_scale": 1.2135025198049252,
+            "beds": 33,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_02_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_02_P2",
+        "units": [
+          {
+            "arrival_scale": 1.1481953112160248,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_02_U2"
+          },
+          {
+            "arrival_scale": 1.2807584721348988,
+            "beds": 20,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_02_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 457343697,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_03",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_03_P0",
+        "units": [
+          {
+            "arrival_scale": 0.8619781987988739,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_03_U0"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_03_P1",
+        "units": [
+          {
+            "arrival_scale": 1.054262784345267,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_03_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 200982036,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_04",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_04_P0",
+        "units": [
+          {
+            "arrival_scale": 1.0213835442088897,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_04_U0"
+          },
+          {
+            "arrival_scale": 1.1583228842778375,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_04_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_04_P1",
+        "units": [
+          {
+            "arrival_scale": 0.9519411418455512,
+            "beds": 20,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_04_U1"
+          },
+          {
+            "arrival_scale": 0.9549159398898818,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_04_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 366839771,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_05",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_05_P0",
+        "units": [
+          {
+            "arrival_scale": 0.8680588010468602,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_05_U0"
+          },
+          {
+            "arrival_scale": 1.1992216506803808,
+            "beds": 36,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_05_U3"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_05_P1",
+        "units": [
+          {
+            "arrival_scale": 1.2909515923629729,
+            "beds": 20,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_05_U1"
+          },
+          {
+            "arrival_scale": 0.9923533919060268,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_05_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_05_P2",
+        "units": [
+          {
+            "arrival_scale": 1.2042714652479585,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_05_U2"
+          },
+          {
+            "arrival_scale": 1.04001478902871,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_05_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1678226327,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_06",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_06_P0",
+        "units": [
+          {
+            "arrival_scale": 1.1674251343539588,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_06_U0"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_06_P1",
+        "units": [
+          {
+            "arrival_scale": 0.9854121942114528,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_06_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 530667240,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_07",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_07_P0",
+        "units": [
+          {
+            "arrival_scale": 1.2792456240334895,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_07_U0"
+          },
+          {
+            "arrival_scale": 1.027810172769275,
+            "beds": 20,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_07_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_07_P1",
+        "units": [
+          {
+            "arrival_scale": 0.971204272628382,
+            "beds": 24,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_07_U1"
+          },
+          {
+            "arrival_scale": 1.1234027978625243,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_07_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 967755203,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_08",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_08_P0",
+        "units": [
+          {
+            "arrival_scale": 1.1214743081396203,
+            "beds": 36,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_08_U0"
+          },
+          {
+            "arrival_scale": 0.9076320124037509,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_08_U3"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_08_P1",
+        "units": [
+          {
+            "arrival_scale": 0.8885247970620472,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_08_U1"
+          },
+          {
+            "arrival_scale": 1.1127517393326332,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_08_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_08_P2",
+        "units": [
+          {
+            "arrival_scale": 0.9003865393156051,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_08_U2"
+          },
+          {
+            "arrival_scale": 1.2159892643996857,
+            "beds": 30,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_08_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 530282288,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_09",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_09_P0",
+        "units": [
+          {
+            "arrival_scale": 1.1615791703076843,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_09_U0"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_09_P1",
+        "units": [
+          {
+            "arrival_scale": 0.9073458051733844,
+            "beds": 34,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_09_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1397769516,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_train_10",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_10_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9525940228130731,
+            "beds": 33,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_10_U0"
+          },
+          {
+            "arrival_scale": 0.8550426969009769,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_10_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_10_P1",
+        "units": [
+          {
+            "arrival_scale": 1.2215389718285907,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_10_U1"
+          },
+          {
+            "arrival_scale": 0.8996581966106058,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_10_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 551565324,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_train_11",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "train",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_train_11_P0",
+        "units": [
+          {
+            "arrival_scale": 1.1667672191969332,
+            "beds": 24,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_11_U0"
+          },
+          {
+            "arrival_scale": 0.921109872679764,
+            "beds": 33,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_train_11_U3"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_11_P1",
+        "units": [
+          {
+            "arrival_scale": 1.1235657952746196,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_11_U1"
+          },
+          {
+            "arrival_scale": 1.1891568249187268,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_train_11_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_train_11_P2",
+        "units": [
+          {
+            "arrival_scale": 1.2954797578805262,
+            "beds": 36,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_train_11_U2"
+          },
+          {
+            "arrival_scale": 1.1527683236886073,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_train_11_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 366506640,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_validation_00",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_00_P0",
+        "units": [
+          {
+            "arrival_scale": 1.0216793729590692,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_00_U0"
+          },
+          {
+            "arrival_scale": 1.2517737130430402,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_00_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_00_P1",
+        "units": [
+          {
+            "arrival_scale": 1.0841402275932555,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_00_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 397332605,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_validation_01",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_01_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9929045935991294,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_01_U0"
+          },
+          {
+            "arrival_scale": 0.8987289938835138,
+            "beds": 25,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_01_U2"
+          },
+          {
+            "arrival_scale": 1.049241618062743,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_01_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_01_P1",
+        "units": [
+          {
+            "arrival_scale": 1.211316460864257,
+            "beds": 24,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_01_U1"
+          },
+          {
+            "arrival_scale": 0.917770030890129,
+            "beds": 36,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_01_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1865342656,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_validation_02",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_02_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9701450384722179,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_02_U0"
+          },
+          {
+            "arrival_scale": 1.0794446431409468,
+            "beds": 30,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_02_U3"
+          },
+          {
+            "arrival_scale": 1.236294705498212,
+            "beds": 30,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_02_U6"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_02_P1",
+        "units": [
+          {
+            "arrival_scale": 1.0413585137064145,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_02_U1"
+          },
+          {
+            "arrival_scale": 0.8523122659618263,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_02_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_02_P2",
+        "units": [
+          {
+            "arrival_scale": 1.1515702583742509,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_02_U2"
+          },
+          {
+            "arrival_scale": 0.9531366595636072,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_02_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 526013005,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_validation_03",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_03_P0",
+        "units": [
+          {
+            "arrival_scale": 1.0979316060691064,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_03_U0"
+          },
+          {
+            "arrival_scale": 1.2006511392281576,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_03_U2"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_03_P1",
+        "units": [
+          {
+            "arrival_scale": 1.058551043790784,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_03_U1"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1598722637,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_validation_04",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_04_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9490279786485487,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_04_U0"
+          },
+          {
+            "arrival_scale": 0.8526625940100493,
+            "beds": 29,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_04_U2"
+          },
+          {
+            "arrival_scale": 0.9862754703525665,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_04_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_04_P1",
+        "units": [
+          {
+            "arrival_scale": 0.9869568428176136,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_04_U1"
+          },
+          {
+            "arrival_scale": 1.098340235798113,
+            "beds": 33,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_04_U3"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 203676512,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_validation_05",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "validation",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_validation_05_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9735687549767924,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_05_U0"
+          },
+          {
+            "arrival_scale": 1.255892873380721,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_validation_05_U3"
+          },
+          {
+            "arrival_scale": 1.1322040311064405,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_05_U6"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_05_P1",
+        "units": [
+          {
+            "arrival_scale": 1.2159370385772137,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_05_U1"
+          },
+          {
+            "arrival_scale": 1.2939300585654188,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_validation_05_U4"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_validation_05_P2",
+        "units": [
+          {
+            "arrival_scale": 0.9185760047698847,
+            "beds": 27,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_validation_05_U2"
+          },
+          {
+            "arrival_scale": 0.8719942863262686,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_validation_05_U5"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 297722617,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "shared_bursts_v1",
+      "discharges": "rolling_v1",
+      "staffing": "shared_float_v1"
+    },
+    "hospital_id": "H16_test_00",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "test",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_test_00_P0",
+        "units": [
+          {
+            "arrival_scale": 0.9567302435544924,
+            "beds": 24,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_test_00_U0"
+          },
+          {
+            "arrival_scale": 1.2110518503721588,
+            "beds": 32,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_test_00_U3"
+          },
+          {
+            "arrival_scale": 1.1466835713924184,
+            "beds": 26,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_test_00_U6"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_test_00_P1",
+        "units": [
+          {
+            "arrival_scale": 1.1416636243005598,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_test_00_U1"
+          },
+          {
+            "arrival_scale": 1.0284949402600625,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_test_00_U4"
+          },
+          {
+            "arrival_scale": 1.0982401448374082,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_test_00_U7"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_test_00_P2",
+        "units": [
+          {
+            "arrival_scale": 1.167275743923241,
+            "beds": 35,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_test_00_U2"
+          },
+          {
+            "arrival_scale": 0.9310420465057947,
+            "beds": 28,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_test_00_U5"
+          },
+          {
+            "arrival_scale": 0.9787704405003794,
+            "beds": 20,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_test_00_U8"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1997990022,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  },
+  {
+    "changes": [],
+    "clinical": {
+      "death_age_slope": 0.03,
+      "death_dependence_slope": 0.0,
+      "destinations": "conditional_survival_v1"
+    },
+    "cross_pole_delay_h": 12,
+    "days": 120,
+    "documentary": {
+      "downstream_confirmation": "request_delay_v1",
+      "staff_forecasts": "milestones_v1"
+    },
+    "dynamics": {
+      "arrivals": "v041",
+      "discharges": "daily_rounds_v1",
+      "staffing": "persistent_absence_v1"
+    },
+    "hospital_id": "H16_test_01",
+    "mechanism_family": "v041",
+    "observation": {
+      "availability_delay_minutes": 0.5,
+      "charge_noise_sigma": 0.1,
+      "downstream_documented_probability": 0.8,
+      "duplicate_probability": 0.008,
+      "ingestion_delay_max_minutes": 15.0,
+      "ingestion_delay_min_minutes": 1.0,
+      "load_delay_multiplier": 1.6,
+      "load_missing_multiplier": 2.0,
+      "missing_probability": 0.015,
+      "mode": "site_v1",
+      "outages": [],
+      "ready_documented_probability": 0.6,
+      "recording_delay_median_minutes": 12.0,
+      "recording_delay_sigma": 0.9,
+      "revision_delay_max_h": 48.0,
+      "revision_delay_min_h": 6.0,
+      "revision_probability": 0.02
+    },
+    "partition": "test",
+    "pole_resource_weights": [],
+    "poles": [
+      {
+        "pole_id": "H16_test_01_P0",
+        "units": [
+          {
+            "arrival_scale": 1.2213121974984136,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_test_01_U0"
+          },
+          {
+            "arrival_scale": 1.0359976074806108,
+            "beds": 29,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_test_01_U3"
+          },
+          {
+            "arrival_scale": 0.9512265161481298,
+            "beds": 21,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_test_01_U6"
+          },
+          {
+            "arrival_scale": 1.1086705809507653,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_test_01_U9"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_test_01_P1",
+        "units": [
+          {
+            "arrival_scale": 1.006210201536014,
+            "beds": 23,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_test_01_U1"
+          },
+          {
+            "arrival_scale": 1.1927088909486805,
+            "beds": 24,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_test_01_U4"
+          },
+          {
+            "arrival_scale": 1.237833990738193,
+            "beds": 29,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CSG",
+            "unit_id": "H16_test_01_U7"
+          },
+          {
+            "arrival_scale": 1.2321378687348563,
+            "beds": 29,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_test_01_U10"
+          }
+        ]
+      },
+      {
+        "pole_id": "H16_test_01_P2",
+        "units": [
+          {
+            "arrival_scale": 1.2986172886117082,
+            "beds": 34,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "PNEUMO",
+            "unit_id": "H16_test_01_U2"
+          },
+          {
+            "arrival_scale": 1.1032405925960371,
+            "beds": 31,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "CARDIO",
+            "unit_id": "H16_test_01_U5"
+          },
+          {
+            "arrival_scale": 1.1792723962640068,
+            "beds": 22,
+            "isolation_beds": 4,
+            "oxygen_beds": 18,
+            "template": "MED_POLY",
+            "unit_id": "H16_test_01_U8"
+          }
+        ]
+      }
+    ],
+    "routing_links": [],
+    "schema_version": "0.1",
+    "seed": 1913812938,
+    "shared_resources": {
+      "cleaning": 1.0,
+      "imaging": 1.0,
+      "specialist": 1.0,
+      "transport": 1.0
+    },
+    "smr": {
+      "beds": 0,
+      "external_arrivals_per_day": 0.0,
+      "external_isolation_probability": 0.05,
+      "external_oxygen_probability": 0.2,
+      "external_patience_h": 168,
+      "isolation_beds": 0,
+      "mode": "legacy_delay",
+      "oxygen_beds": 0,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "start": "2025-01-01",
+    "warmup_days": 28
+  }
+]
