@@ -28,6 +28,58 @@ class DynamicsConfig(FrozenConfig):
     staffing: Literal["v041", "persistent_absence_v1", "shared_float_v1"] = "v041"
 
 
+class DocumentaryConfig(FrozenConfig):
+    """Source-document mechanisms, independent of physical discharge and transport."""
+
+    staff_forecasts: Literal["v041", "admission_prior_v1", "milestones_v1"] = "v041"
+    downstream_confirmation: Literal["v041", "request_delay_v1", "review_capacity_v1"] = "v041"
+
+
+class ClinicalConfig(FrozenConfig):
+    """Scenario assumptions, not clinically estimated risks."""
+
+    destinations: Literal["v041", "conditional_survival_v1"] = "v041"
+    death_age_slope: Annotated[float, Field(ge=0, le=0.1, allow_inf_nan=False)] = 0.03
+    death_dependence_slope: Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)] = 0.0
+
+    @model_validator(mode="after")
+    def active_parameters(self) -> Self:
+        if self.destinations == "v041" and (
+            self.death_age_slope != 0.03 or self.death_dependence_slope != 0.0
+        ):
+            raise ValueError("Clinical parameters require conditional_survival_v1")
+        return self
+
+
+class SMRConfig(FrozenConfig):
+    """One finite shared pool; all numerical defaults are uncalibrated hypotheses."""
+
+    mode: Literal["legacy_delay", "finite_v1"] = "legacy_delay"
+    beds: Annotated[StrictInt, Field(ge=0, le=2000)] = 0
+    oxygen_beds: Annotated[StrictInt, Field(ge=0)] = 0
+    isolation_beds: Annotated[StrictInt, Field(ge=0)] = 0
+    preparation_h: Annotated[StrictInt, Field(ge=1, le=720)] = 24
+    review_hour: Annotated[StrictInt, Field(ge=0, le=23)] = 10
+    reservation_ttl_h: Annotated[StrictInt, Field(ge=1, le=168)] = 48
+    retry_h: Annotated[StrictInt, Field(ge=1, le=168)] = 24
+    stay_median_days: Annotated[float, Field(gt=0, le=180, allow_inf_nan=False)] = 21.0
+    stay_sigma: Annotated[float, Field(ge=0, le=2, allow_inf_nan=False)] = 0.45
+    external_arrivals_per_day: Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)] = 0.0
+    external_oxygen_probability: Probability = 0.2
+    external_isolation_probability: Probability = 0.05
+    external_patience_h: Annotated[StrictInt, Field(ge=1, le=8760)] = 168
+
+    @model_validator(mode="after")
+    def valid_pool(self) -> Self:
+        if not self.isolation_beds <= self.oxygen_beds <= self.beds:
+            raise ValueError("Require isolation_beds <= oxygen_beds <= SMR beds")
+        if self.mode == "legacy_delay" and any(
+            getattr(self, k) != f.default for k, f in type(self).model_fields.items() if k != "mode"
+        ):
+            raise ValueError("SMR parameters require finite_v1")
+        return self
+
+
 class ObservationOutage(FrozenConfig):
     outage_id: Identifier
     starts_at: dt.datetime
@@ -197,6 +249,9 @@ class HospitalConfig(FrozenConfig):
     partition: Literal["development", "train", "validation", "test"] = "development"
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    documentary: DocumentaryConfig = DocumentaryConfig()
+    clinical: ClinicalConfig = ClinicalConfig()
+    smr: SMRConfig = SMRConfig()
     observation: ObservationProfile = ObservationProfile()
     changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleConfig, ...], Field(min_length=1)]
@@ -305,6 +360,12 @@ class HospitalConfig(FrozenConfig):
             inactive.add("changes")
         if self.dynamics == DynamicsConfig():
             inactive.add("dynamics")
+        if self.documentary == DocumentaryConfig():
+            inactive.add("documentary")
+        if self.clinical == ClinicalConfig():
+            inactive.add("clinical")
+        if self.smr == SMRConfig():
+            inactive.add("smr")
         if self.observation == ObservationProfile():
             inactive.add("observation")
         return hashlib.sha256(self.model_dump_json(exclude=inactive).encode()).hexdigest()

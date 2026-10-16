@@ -1,0 +1,45 @@
+{
+  "status": "imported_topology_and_supported_parameters_only_not_calibrated",
+  "archive_filename": "ght600_csg_calibration_v1.zip",
+  "archive_sha256": "468233e674e2f8efce32476ac960cc49b74b6265fe850533642e31515b73bc3e",
+  "member_sha256": {
+    "fr_overlay.py": "efd5ca50aaf236f394e69fc3ab716aed0902a07f963b023c3af999afa9210f4e",
+    "kpis.py": "5d813f1a5a82a7f3acf3dad1673dfad34697b57f3d1903eaf33d30cc84df126e",
+    "hospital_ght600_csg_calibrated_v1.json": "2a05572f99480604b1bf84be5f0b83e077c210dea3688778a2cfee3f5adab296",
+    "README.md": "e6c8b8a128631eca86d357ba6943e0a4dee1f2b67ea622d8cccb015271d31096",
+    "build_profile.py": "8031b19b41ec8422ecb1cc2d71673907c5c79efdc70f8b8d9ba11c1468f636a2",
+    "fr_calibrated_v1_overlay.json": "f86c82748e1db9e53ef1a95971cddf183f7d5729e51e962af2a7818940869ac1",
+    "run.py": "f3de89724702df6d830ce0b74c5b0f62ce700a0e1f1c6b8a8aa09775610992d2"
+  },
+  "source_config": "hospital_ght600_csg_calibrated_v1.json",
+  "imported_config": "configs/synthetic/hospital_ght600_medical_scope_v1.json",
+  "transformations": [
+    "Preserve topology, arrival scales and all 18 closure windows.",
+    "Use milestones_v1 staff forecasts and request_delay_v1 documentary confirmations.",
+    "Do not execute or import fr_overlay.py; inherited physical parameters remain unchanged."
+  ],
+  "scope": {
+    "context_establishment_beds": 600,
+    "simulated_standard_beds": 250,
+    "unsimulated_context_beds": 350,
+    "context_is_not_a_simulated_resource": true,
+    "units": 9,
+    "poles": 3,
+    "focal_units": [
+      "CSG_A",
+      "CSG_B",
+      "MPOLY_URG"
+    ],
+    "missing": [
+      "rest_of_establishment",
+      "surgery",
+      "obstetrics",
+      "ICU",
+      "ED_process",
+      "finite_territorial_downstream",
+      "coordination_tasks"
+    ]
+  },
+  "external_claims_status": "four_seed_overlay_results_not_reproduced_or_adopted_as_validation",
+  "overlay_port": "deferred_to_typed_versioned_hypotheses_after_metric_and_source_review"
+}

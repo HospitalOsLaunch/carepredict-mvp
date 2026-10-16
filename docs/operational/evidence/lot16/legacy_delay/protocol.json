@@ -1,0 +1,91 @@
+{
+  "batch_size": 128,
+  "code_sha256": {
+    "__init__.py": "2b459ae7b6fa72de565b20232f8f9f41b9edcb67e0b0de424a7deed50a44353f",
+    "adapter.py": "4ab2444adff86a716c816e39adf1eafc397c5f2fa3a72a88e4b631932371154e",
+    "contract.py": "ea19d6bf8b2bf3984b6db1743848eda07cab4696de8da57ee4c1efd33a4763a0",
+    "experiment.py": "2d496df5307c1be441a77df60322a04d460530060519083c3aa21746d3f9f3e2",
+    "forecast.py": "fe7cbd9594b93baf2a4c669fb850455f2e9116d8b9212885c58bedae8aef43be",
+    "smr_experiment.py": "6c38b5b35868f6e86f84a83ee7bf189dc31194bd64216216f46447add99b516e"
+  },
+  "cohort_manifest_sha256": "d033a0d6b319dcfe0bd99bb8d804f33a6c77fe55d7553e9df1fcdab31adc9e35",
+  "days": 120,
+  "epochs": 60,
+  "estimand": "conditional means; coherent sums only, no distribution/quantile claim",
+  "evaluation": "all scheduled origins; no exclusion for stale/missing inputs",
+  "horizon_h": 24,
+  "learning_rate": 0.002,
+  "limits": [
+    "One learned conditional-mean forecaster; not JEPA pretraining or a completed world model.",
+    "No real patient data, no real-site connector or deployment.",
+    "Unseen unit counts and groupings, not unseen clinical specialties or territorial mechanisms.",
+    "Synthetic engine retains fixed UTC+01 and its inherited privileged behaviour policy.",
+    "One model seed; six validation hospitals; confidence intervals are exploratory.",
+    "No calibrated uncertainty, action effects, adaptation or G1-G4/SYN claim.",
+    "Three hypothesised SMR capacity regimes; two validation hospitals per regime.",
+    "No EHPAD/HAD capacity, no clinical calibration, no coordination-time benefit.",
+    "Paired mortality-corrected old-delay control, not a causal bed effect."
+  ],
+  "modes": [
+    "unit",
+    "pole",
+    "hospital"
+  ],
+  "primary_comparator": "daily_same_hour",
+  "primary_score": "mse",
+  "protocol_id": "SMR_PAIRED_FIRST_MODEL_V1_LEGACY_DELAY",
+  "reserved_test_unit_counts": [
+    9,
+    11
+  ],
+  "seed": 1501701,
+  "smr_comparison": {
+    "capacity_fractions": [
+      0.7,
+      0.4,
+      0.15
+    ],
+    "external_arrivals_per_bed_day": 0.005,
+    "pool_parameters": {
+      "external_patience_h": 168,
+      "preparation_h": 24,
+      "reservation_ttl_h": 48,
+      "retry_h": 24,
+      "review_hour": 10,
+      "stay_median_days": 21.0,
+      "stay_sigma": 0.45
+    },
+    "variant": "legacy_delay"
+  },
+  "start": "2025-01-01",
+  "status": "exploratory_validation_no_final_gate",
+  "stride_h": 6,
+  "targets": [
+    "occupancy",
+    "ed_waiting",
+    "care_workload_proxy"
+  ],
+  "train_unit_counts": [
+    2,
+    4,
+    6,
+    2,
+    4,
+    6,
+    2,
+    4,
+    6,
+    2,
+    4,
+    6
+  ],
+  "validation_unit_counts": [
+    3,
+    5,
+    7,
+    3,
+    5,
+    7
+  ],
+  "warmup_days": 28
+}
