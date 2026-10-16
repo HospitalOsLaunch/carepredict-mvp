@@ -1,0 +1,28 @@
+{
+  "protocol_id": "COMMON_INTERFACE_FIRST_MODEL_V1",
+  "seed": 1501701,
+  "days": 120,
+  "warmup_days": 28,
+  "start": "2025-01-01",
+  "train_unit_counts": [2, 4, 6, 2, 4, 6, 2, 4, 6, 2, 4, 6],
+  "validation_unit_counts": [3, 5, 7, 3, 5, 7],
+  "reserved_test_unit_counts": [9, 11],
+  "modes": ["unit", "pole", "hospital"],
+  "horizon_h": 24,
+  "stride_h": 6,
+  "epochs": 60,
+  "batch_size": 128,
+  "learning_rate": 0.002,
+  "primary_comparator": "daily_same_hour",
+  "primary_score": "mse",
+  "targets": ["occupancy", "ed_waiting", "care_workload_proxy"],
+  "status": "exploratory_validation_no_final_gate",
+  "limits": [
+    "One learned conditional-mean forecaster; not JEPA pretraining or a completed world model.",
+    "No real patient data, no real-site connector or deployment.",
+    "Unseen unit counts and groupings, not unseen clinical specialties or territorial mechanisms.",
+    "Synthetic engine retains fixed UTC+01 and its inherited privileged behaviour policy.",
+    "One model seed; six validation hospitals; confidence intervals are exploratory.",
+    "No calibrated uncertainty, action effects, adaptation or G1-G4/SYN claim."
+  ]
+}

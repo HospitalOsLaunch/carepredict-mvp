@@ -34,6 +34,15 @@ Le [lot 13](lot13.md) diversifie les prévisions du staff et les confirmations
 d’aval, réserve leurs familles par axe et contrôle leur indépendance vis-à-vis
 des trajectoires physiques.
 
+Le [lot 14](lot14.md) corrige les mesures de réalisme, réconcilie présences et files
+avec les événements, conserve les séjours censurés et les demandes non admises,
+et prépare la [séquence gériatrie–aval](realism_plan.md). Son scénario GHT-600
+représente 250 lits de médecine ; aucun réalisme externe n'est encore validé.
+
+Le [lot 15](../operational/lot15.md) introduit le contrat opérationnel commun et
+entraîne un premier petit modèle sur ce générateur. Les mêmes poids traitent les
+observations par unité, pôle ou établissement ; les résultats restent exploratoires.
+
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
 patients les lits compatibles, le nettoyage, l'imagerie, le transport et les avis
@@ -167,3 +176,5 @@ autonomes. Le calendrier reste en UTC+1 fixe. Les arrivées ne sont pas recalibr
 atteindre un taux d'occupation cible. La politique historique consulte certaines
 informations privilégiées du simulateur et n'est pas un recommandeur déployable.
 La plausibilité et le transfert au réel ne sont pas démontrés par ces contrôles.
+
+- [Lot 16 : aval SMR fini, mortalité conditionnelle et comparaison du prévisionniste](../operational/lot16.md).

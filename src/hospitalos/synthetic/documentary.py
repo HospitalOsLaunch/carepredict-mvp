@@ -213,7 +213,7 @@ class DocumentaryMechanisms:
 
 
 def documentary_assumptions(config: HospitalConfig) -> list[str]:
-    return [
+    result = [
         "Charge is a noisy synthetic baseline proxy, not SIIPS or hourly delivered care.",
         (
             "Legacy staff plans/orientations use latent course and destination."
@@ -228,3 +228,15 @@ def documentary_assumptions(config: HospitalConfig) -> list[str]:
         "Documentary mechanisms do not change physical departure; mismatches are possible.",
         "Uncalibrated engineering hypotheses; development inspection is not blind evaluation.",
     ]
+    if config.smr.mode == "finite_v1":
+        result.extend(
+            [
+                "Finite SMR overrides SMR messages: need disclosed at readiness, confirmation "
+                "only on reservation; cancellations/expiry release it.",
+                "Provisional non-SMR orientation may be revised at readiness; physical SMR "
+                "request is separate from the documentary-delay machinery.",
+                "New SMR_* events contain current transitions, no future release time. "
+                "They remain in simulation truth; common learning inputs are unchanged.",
+            ]
+        )
+    return result
