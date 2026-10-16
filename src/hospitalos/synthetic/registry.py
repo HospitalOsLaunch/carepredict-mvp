@@ -12,17 +12,27 @@ import numpy as np
 from pydantic import Field, StrictInt, model_validator
 
 from .config import (
+    DocumentaryConfig,
     DynamicsConfig,
     FrozenConfig,
     HospitalConfig,
     Identifier,
     MechanismFamily,
     Multiplier,
+    ObservationProfile,
     OrganisationalChange,
 )
 
 Partition = Literal["train", "validation", "test"]
-SplitAxis = Literal["structure", "mechanism", "arrivals", "discharges", "staffing"]
+SplitAxis = Literal[
+    "structure",
+    "mechanism",
+    "arrivals",
+    "discharges",
+    "staffing",
+    "staff_forecasts",
+    "downstream_confirmation",
+]
 Template = Literal["MED_POLY", "CSG", "PNEUMO", "CARDIO"]
 PoleShape = Annotated[tuple[Template, ...], Field(min_length=1, max_length=8)]
 
@@ -70,6 +80,8 @@ class StructureSpec(FrozenConfig):
     partition: Partition
     mechanism_family: MechanismFamily = "v041"
     dynamics: DynamicsConfig = DynamicsConfig()
+    documentary: DocumentaryConfig = DocumentaryConfig()
+    observation: ObservationProfile = ObservationProfile()
     changes: tuple[OrganisationalChange, ...] = ()
     poles: Annotated[tuple[PoleShape, ...], Field(min_length=1, max_length=12)]
     hospitals: Annotated[StrictInt, Field(ge=1, le=100)] = 2
@@ -119,6 +131,10 @@ class CohortPlan(FrozenConfig):
                 raise ValueError("Mechanism crosses partitions; v041 alone cannot test G4")
             if self.split_axis in ("arrivals", "discharges", "staffing"):
                 variant = str(getattr(spec.dynamics, self.split_axis))
+                if mechanisms.setdefault(variant, spec.partition) != spec.partition:
+                    raise ValueError(f"{self.split_axis} mechanism crosses partitions")
+            if self.split_axis in ("staff_forecasts", "downstream_confirmation"):
+                variant = str(getattr(spec.documentary, self.split_axis))
                 if mechanisms.setdefault(variant, spec.partition) != spec.partition:
                     raise ValueError(f"{self.split_axis} mechanism crosses partitions")
             if spec.mechanism_family != "v041" and len(spec.poles) < 2:
@@ -190,6 +206,8 @@ def _entries(plan: CohortPlan) -> tuple[World, ...]:
                         "partition": spec.partition,
                         "mechanism_family": spec.mechanism_family,
                         "dynamics": spec.dynamics,
+                        "documentary": spec.documentary,
+                        "observation": spec.observation,
                         "changes": spec.changes,
                         "poles": poles,
                         "shared_resources": resources,
@@ -227,6 +245,8 @@ def validate_worlds(worlds: tuple[World, ...], *, split_axis: SplitAxis = "struc
             identities.extend((("structure", key), ("effective structure", physical_key)))
         elif split_axis == "mechanism":
             identities.append(("mechanism", config.mechanism_family))
+        elif split_axis in ("staff_forecasts", "downstream_confirmation"):
+            identities.append((split_axis, str(getattr(config.documentary, split_axis))))
         else:
             identities.append((split_axis, str(getattr(config.dynamics, split_axis))))
         for kind, identity in identities:
@@ -292,6 +312,19 @@ class Registry(FrozenConfig):
                         }
                     )
                     for axis in ("arrivals", "discharges", "staffing")
+                }
+                for partition in ("train", "validation", "test")
+            },
+            "documentary_by_partition": {
+                partition: {
+                    axis: sorted(
+                        {
+                            getattr(w.config.documentary, axis)
+                            for w in self.worlds
+                            if w.config.partition == partition
+                        }
+                    )
+                    for axis in ("staff_forecasts", "downstream_confirmation")
                 }
                 for partition in ("train", "validation", "test")
             },

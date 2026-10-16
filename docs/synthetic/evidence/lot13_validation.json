@@ -1,0 +1,713 @@
+{
+  "cases": [
+    {
+      "care_receipts_by_kind": {
+        "assessment": 32062,
+        "departure_plan": 6578,
+        "destination": 4880,
+        "downstream": 2172,
+        "home_help": 1465
+      },
+      "care_receipts_checked": 47157,
+      "case": "reference",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "f3d4483502a8a6087b6c25c34b1b66dc1ba20cb4e979596019352260e23d3607",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 523,
+        "n": 831,
+        "quantiles_10_50_90": [
+          18.0,
+          18.0,
+          20.0
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "v041",
+        "staff_forecasts": "v041"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 85,
+      "forecast_announcements_without_observed_exit": 73,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 2.41320293398533,
+        "mean_signed_error_days": -0.06391896611945512,
+        "n": 5726
+      },
+      "linked_confirmations_checked_including_warmup": 0,
+      "manifest_sha256": "f28d85bee0cda5705f39cad31427e6af44d945ac52a879396e5f534ef2f3b287",
+      "maximum_confirmations_per_hour": null,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 5799,
+        "DEMANDE_AVAL": 1021,
+        "DEMANDE_AVAL_ANNULEE": 89,
+        "DESTINATION_DEMANDEE": 4365,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 832
+      }
+    },
+    {
+      "care_receipts_by_kind": {
+        "assessment": 32086,
+        "departure_plan": 7133,
+        "destination": 4883,
+        "downstream": 2930,
+        "home_help": 1450
+      },
+      "care_receipts_checked": 48482,
+      "case": "admission_prior",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "46377b862c72fd85b577c4e4a520e0b76a852dff4816fdd47f539de79c1d22d5",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 523,
+        "n": 831,
+        "quantiles_10_50_90": [
+          18.0,
+          18.0,
+          20.0
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "v041",
+        "staff_forecasts": "admission_prior_v1"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 65,
+      "forecast_announcements_without_observed_exit": 72,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 4.551239008792965,
+        "mean_signed_error_days": -2.159552358113509,
+        "n": 6255
+      },
+      "linked_confirmations_checked_including_warmup": 0,
+      "manifest_sha256": "84679f889d9041fe739bfcc4a3ba4933d44318312b4d15fdfaccde3c05b46a37",
+      "maximum_confirmations_per_hour": null,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 6327,
+        "DEMANDE_AVAL": 1757,
+        "DEMANDE_AVAL_ANNULEE": 61,
+        "DESTINATION_DEMANDEE": 4368,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 832
+      }
+    },
+    {
+      "care_receipts_by_kind": {
+        "assessment": 32060,
+        "departure_plan": 10011,
+        "destination": 4895,
+        "downstream": 2940,
+        "home_help": 1449
+      },
+      "care_receipts_checked": 51355,
+      "case": "milestones",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "f9b8a0cf03086bb572d2bc0524915e13d0f12cab547ec855cdb523b5cbc1cab4",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 523,
+        "n": 831,
+        "quantiles_10_50_90": [
+          18.0,
+          18.0,
+          20.0
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "v041",
+        "staff_forecasts": "milestones_v1"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 103,
+      "forecast_announcements_without_observed_exit": 90,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 3.865071225071225,
+        "mean_signed_error_days": -0.8401139601139601,
+        "n": 8775
+      },
+      "linked_confirmations_checked_including_warmup": 0,
+      "manifest_sha256": "8bb7a0dfbd37c1222efad7a386bbfad743738ef4a482961ba67d4d3b935ff95e",
+      "maximum_confirmations_per_hour": null,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 8865,
+        "DEMANDE_AVAL": 1757,
+        "DEMANDE_AVAL_ANNULEE": 61,
+        "DESTINATION_DEMANDEE": 4368,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 832
+      }
+    },
+    {
+      "care_receipts_by_kind": {
+        "assessment": 31989,
+        "departure_plan": 6574,
+        "destination": 4879,
+        "downstream": 2132,
+        "home_help": 1440
+      },
+      "care_receipts_checked": 47014,
+      "case": "request_delay",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "b02a0f33874ed9d5329fc52db6b014af263b330bca762b01257ed081895a9385",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 1,
+        "n": 781,
+        "quantiles_10_50_90": [
+          3.0,
+          67.0,
+          221.0
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "request_delay_v1",
+        "staff_forecasts": "v041"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 85,
+      "forecast_announcements_without_observed_exit": 73,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 2.41320293398533,
+        "mean_signed_error_days": -0.06391896611945512,
+        "n": 5726
+      },
+      "linked_confirmations_checked_including_warmup": 921,
+      "manifest_sha256": "1ac9fd6f407c3f47c0116931e34583932eee3370d4f824d06fb205144b1fa6fe",
+      "maximum_confirmations_per_hour": 11,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 5799,
+        "DEMANDE_AVAL": 1021,
+        "DEMANDE_AVAL_ANNULEE": 89,
+        "DESTINATION_DEMANDEE": 4365,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 788
+      }
+    },
+    {
+      "care_receipts_by_kind": {
+        "assessment": 31983,
+        "departure_plan": 6586,
+        "destination": 4847,
+        "downstream": 1798,
+        "home_help": 1447
+      },
+      "care_receipts_checked": 46661,
+      "case": "review_capacity",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "9940802882d4cfea2016ce7fdff3f81c3b8a6a0373e85e6d93fee2ae940f44b6",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 0,
+        "n": 465,
+        "quantiles_10_50_90": [
+          22.0,
+          95.0,
+          286.20000000000005
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "review_capacity_v1",
+        "staff_forecasts": "v041"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 85,
+      "forecast_announcements_without_observed_exit": 73,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 2.41320293398533,
+        "mean_signed_error_days": -0.06391896611945512,
+        "n": 5726
+      },
+      "linked_confirmations_checked_including_warmup": 542,
+      "manifest_sha256": "5afcc67f5b75b2af34a7084db2f83f80a99e3bd993d53fa438d9a960340a4ad9",
+      "maximum_confirmations_per_hour": 2,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 5799,
+        "DEMANDE_AVAL": 1021,
+        "DEMANDE_AVAL_ANNULEE": 89,
+        "DESTINATION_DEMANDEE": 4365,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 470
+      }
+    },
+    {
+      "care_receipts_by_kind": {
+        "assessment": 31999,
+        "departure_plan": 10107,
+        "destination": 4874,
+        "downstream": 2540,
+        "home_help": 1465
+      },
+      "care_receipts_checked": 50985,
+      "case": "composed",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "88bfff49d4adbe9576dbef1e656c0df8197c08cb283061ddf36af6789765c7f0",
+      "confirmation_to_exit_hours_with_observed_exit": {
+        "exactly_18h": 0,
+        "n": 470,
+        "quantiles_10_50_90": [
+          3.0,
+          47.0,
+          189.0
+        ]
+      },
+      "documentary": {
+        "downstream_confirmation": "review_capacity_v1",
+        "staff_forecasts": "milestones_v1"
+      },
+      "files_verified": 6,
+      "forecast_announcements_beyond_extraction": 101,
+      "forecast_announcements_without_observed_exit": 90,
+      "forecast_diagnostics_on_announcements_with_observed_exit": {
+        "mae_days": 3.938578793992378,
+        "mean_signed_error_days": -1.0168123739071957,
+        "n": 8922
+      },
+      "linked_confirmations_checked_including_warmup": 546,
+      "manifest_sha256": "2154162fb25516c354397be0f15f89aff6056f81e45376e0a563e7d3d5ee424b",
+      "maximum_confirmations_per_hour": 2,
+      "online_offline_equal": true,
+      "physical_sha256": {
+        "actions": "81e728dc7d7a7786ee5177937303e64d2ba871b31af464fd6e4be9a2e3de1dca",
+        "cadre": "2bc2845f9564c482c18b923583363d954f0ac94b33ec50f11a3ab66849da5390",
+        "etats": "40d79639bc94243a1eaf74f3c3405e93adcd0c581618e493b169bdfde890942f",
+        "exogenous": "eb3ad1483190500373df073bea06ca199b893254888c0bc42a6fcb760dff7111",
+        "physical_events": "e1346db9f6a6891ca1cc242b901fb9acdbbf5d4939d14768b3db4cedd65ac7a6",
+        "resource_pools": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "resources": "dcae4b4b50838dba852eb62d7b50bf98848289fbb46a1374ad62be27342d0d5c",
+        "sejours": "3378ee8b4e6ba66970305cbacf096e693b75a95dfd5ce3a3dd8fddfc17139624",
+        "tasks": "c3b7db082c5825e9387e8fca63345522d49ad5efae7b67e53225d2cd82de4b42"
+      },
+      "source_events_recorded": {
+        "AIDE_DOMICILE_DEMANDE": 657,
+        "AIDE_DOMICILE_ORGANISEE": 657,
+        "DATE_SORTIE_PREVISIONNELLE": 9012,
+        "DEMANDE_AVAL": 1757,
+        "DEMANDE_AVAL_ANNULEE": 61,
+        "DESTINATION_DEMANDEE": 4368,
+        "EVALUATION_CHARGE": 28310,
+        "PLACE_AVAL_CONFIRMEE": 474
+      }
+    }
+  ],
+  "days_per_case": 365,
+  "limits": [
+    "Documentary confirmations do not allocate beds or constrain physical discharge.",
+    "Forecast diagnostics exclude censored outcomes and weight announcements, not stays.",
+    "Variants are inspected on development fixtures; reservation is not blind evaluation.",
+    "Global journal event numbering can alter observation noise keys across variants.",
+    "No trained model, final test, real data, clinical calibration or transfer claim."
+  ],
+  "purpose": "development mechanism diagnostics, not clinical accuracy or generalization",
+  "reserved_registries": {
+    "downstream_confirmation": {
+      "documentary_by_partition": {
+        "test": {
+          "downstream_confirmation": [
+            "review_capacity_v1"
+          ],
+          "staff_forecasts": [
+            "v041"
+          ]
+        },
+        "train": {
+          "downstream_confirmation": [
+            "v041"
+          ],
+          "staff_forecasts": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "downstream_confirmation": [
+            "request_delay_v1"
+          ],
+          "staff_forecasts": [
+            "v041"
+          ]
+        }
+      },
+      "dynamics_by_partition": {
+        "test": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "train": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        }
+      },
+      "mechanism_holdout": true,
+      "mechanism_world_counts": {
+        "v041": 12
+      },
+      "partitions": {
+        "test": {
+          "beds_per_hospital": [
+            95,
+            101
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "train": {
+          "beds_per_hospital": [
+            101,
+            104
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "validation": {
+          "beds_per_hospital": [
+            89,
+            104
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        }
+      },
+      "reserved_axis": "downstream_confirmation",
+      "sha256": "4f1b4cade74a64e09731b6ad5dbac435b043b428805eb742ee9159676dbefe3f"
+    },
+    "staff_forecasts": {
+      "documentary_by_partition": {
+        "test": {
+          "downstream_confirmation": [
+            "v041"
+          ],
+          "staff_forecasts": [
+            "milestones_v1"
+          ]
+        },
+        "train": {
+          "downstream_confirmation": [
+            "v041"
+          ],
+          "staff_forecasts": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "downstream_confirmation": [
+            "v041"
+          ],
+          "staff_forecasts": [
+            "admission_prior_v1"
+          ]
+        }
+      },
+      "dynamics_by_partition": {
+        "test": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "train": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        }
+      },
+      "mechanism_holdout": true,
+      "mechanism_world_counts": {
+        "v041": 12
+      },
+      "partitions": {
+        "test": {
+          "beds_per_hospital": [
+            99,
+            110
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "train": {
+          "beds_per_hospital": [
+            94,
+            101
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "validation": {
+          "beds_per_hospital": [
+            89,
+            105
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        }
+      },
+      "reserved_axis": "staff_forecasts",
+      "sha256": "ccf9fabe8abc89d29a5a4a5b0e1f9c5e16f61de6b08862dd89d79d81c714f954"
+    }
+  },
+  "script_sha256": "ec95fb88cfff94351b14e729c11f18472843249cf5ed42fc75c7fdd5d3024950",
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+    "changes.py": "b7b5fb76240ea6f46c4ae09d9051519da4c9ee1abc6c4c513a71492ed9242f92",
+    "cohort.py": "c9c609058b7c79d6e0f6dd2062464f1db035f803415c94600a1743acee31b1ee",
+    "config.py": "70ed3d3c3462fe40935e70f80b93047a5a8b3d41ff72785650bdaa9212580278",
+    "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+    "documentary.py": "2422dcdcc5331c4efe64903c0b407c07e7b464aae60610524659ba9194af5371",
+    "dynamics.py": "2e3703229b122345bf3d6a91522f656fa4fbf159cb26207484dd075ec0be1672",
+    "engine.py": "e7e9daeee5ad8d92f948404871158965045a5ffa5a7af092f2b471cb3f0e28ed",
+    "generate.py": "31a3657343fd223b31dbb7bd13cb8a93c839e9f2f3bc2197f78b4ee244ba099b",
+    "learning.py": "1ab7323336b2f9890bd2410b225b36e06e29cbc0d9c629a3069a75e9ff217eaf",
+    "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+    "observation_profiles.py": "d27ad55134ef36c13c28ca8e3e813f62612c8ed6d01e316390fec562e3e3358c",
+    "observations.py": "87671aa8742bc73666365adc21b950fe6d5f377c329bc76ffd2722e0051dee6e",
+    "online.py": "db31b7d848a4ca3a2815f64a617f15e00473b33d6a40dea0c21c1dda9a41743f",
+    "patient_asof.py": "b0d5c3a12c3c0ae5f193adfa61a3faafcfbf7de6249188ff09bde3f878d964df",
+    "patient_care.py": "6215338e12e31289edd6f71e7e37809f677e89d0210a333cf243b6657d2e4df4",
+    "patient_care_asof.py": "396fc0afb7759f413e595fc949add0a50e111e0c5dc948b2c0b4c5b88922aa76",
+    "patient_census.py": "570798dfe78e59e1848688fc2ba74beff7f0143f7128b41a19e6135435aa0182",
+    "patient_learning.py": "c43d99874fc1cc560331c841a60492adb486eb45a05e1fe864e377ec529ae42d",
+    "patient_observations.py": "3cf01fb36a2bd7aeb23b6632938f78162a1a679ac6a33448d404b0cdb54e92df",
+    "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+    "policy_loop.py": "32b7a097b9a22eedccf9cb22da6ed80477a6d6ac72e8cc64b74d52459e80b3bb",
+    "registry.py": "fd09e4b6f530c0b3335a8f36ca9ce420a98a131261606017f52025340d0c8340",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "9b1d4954def2469386aa52c60287008787673e579e6e0dc7379f41c7e8c8d417",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "synthetic_only": true,
+  "test_opened": false,
+  "warmup_days": 61
+}
