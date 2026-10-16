@@ -493,14 +493,28 @@ def test_all_missing_produces_no_fabricated_patients(
     assert report["counts"]["truth_stays"] > 0
 
 
-def test_cohort_patient_output_preserves_partition_and_test_reservation(tmp_path: Path) -> None:
+@pytest.mark.parametrize("with_census", [False, True])
+@pytest.mark.parametrize("with_care", [False, True])
+def test_cohort_patient_output_preserves_partition_and_test_reservation(
+    tmp_path: Path,
+    with_census: bool,
+    with_care: bool,
+) -> None:
     raw = json.loads(Path("configs/synthetic/cohort_structures_v1.json").read_text())
     raw.update(days=2, warmup_days=1)
     for spec in raw["structures"]:
         spec.update(hospitals=1, replicates=1)
     cohort.freeze(CohortPlan.model_validate(raw), tmp_path / "registry")
-    report = cohort.materialize(tmp_path / "registry", tmp_path / "cohort", with_patients=True)
+    report = cohort.materialize(
+        tmp_path / "registry",
+        tmp_path / "cohort",
+        with_patients=True,
+        with_census=with_census,
+        with_care=with_care,
+    )
     assert report["with_patients"] and not report["test_access"]["opened"]
+    assert report["with_census"] == with_census
+    assert report["with_care"] == with_care
     assert len(report["reserved_world_ids"]) == 1
     for w in report["worlds"]:
         manifest = json.loads(
@@ -509,9 +523,19 @@ def test_cohort_patient_output_preserves_partition_and_test_reservation(tmp_path
         assert (
             manifest["partition"] == w["partition"] and manifest["hospital_id"] == w["hospital_id"]
         )
+        assert (manifest["settings"]["census"] is not None) == with_census
+        assert ("observed/censuses.jsonl.gz" in manifest["files_sha256"]) == with_census
+        assert ("features/patient_care_asof.jsonl.gz" in manifest["files_sha256"]) == with_care
+        if with_care:
+            assert manifest["counts"]["care_rows"] == manifest["counts"]["features"]
     with pytest.raises(ValueError, match="test_protocol"):
         cohort.materialize(
-            tmp_path / "registry", tmp_path / "forbidden", partitions=("test",), with_patients=True
+            tmp_path / "registry",
+            tmp_path / "forbidden",
+            partitions=("test",),
+            with_patients=True,
+            with_census=with_census,
+            with_care=with_care,
         )
 
 
