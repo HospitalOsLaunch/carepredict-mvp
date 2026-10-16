@@ -1,0 +1,71 @@
+{
+  "assumptions": {
+    "arrivals": "template rates times arrival_scale; no occupancy calibration",
+    "clock": "fixed UTC+01:00; no daylight saving",
+    "family": "one mechanism family; no structural randomization yet",
+    "hosting": "all hospital units with compatible available beds",
+    "poles": "organizational groups; no distinct local routing policy yet",
+    "policy": "inherited v0.4.1 policy with privileged simulator information",
+    "resources": "hospital-wide shared queues"
+  },
+  "checks": {
+    "compatibilite_lit": 0,
+    "conservation_stock_flux": 0,
+    "heures_controlees": 10224,
+    "lien_patient_lit": 0,
+    "lit_double_affectation": 0,
+    "lit_occupe_et_sale": 0,
+    "occupation_vs_lits": 0,
+    "partition_lits": 0,
+    "registre_patients": 0,
+    "transferts_internes_equilibres": 0
+  },
+  "config_sha256": "78a52d9746225fc40d85935a639f8e237987b308104f48e00d1bf8da879268d1",
+  "counts": {
+    "events_including_warmup": 146347,
+    "poles": 2,
+    "recorded_hours": 8760,
+    "unit_hour_rows": 35040,
+    "units": 4
+  },
+  "data_role": "simulation_truth_not_training_inputs",
+  "files_sha256": {
+    "config.json": "c62a343a22c638a7aa10340425f88c739a07868fa785bea60785fdb9b919d3df",
+    "truth/events.jsonl.gz": "4e192939803ef9da79a0b7c83d019ca28687386cd440d84028f1115a83374218",
+    "truth/hospital_hourly.csv": "98fbe3ab500b38bcddb28bd6930e58d57045ee1f809a0e7e595c77637413aed3",
+    "truth/poles_hourly.csv": "521309e857ee57f71e2ac251d734ac6dd90dff1494a7484d3ef2c01c2d4fe6e2",
+    "truth/shared_resources_hourly.csv": "1c842fe6839486d8a9bfe70facaf3869fcab36ba62452bc64e8ac3497a601917",
+    "truth/units_hourly.csv": "58a851d2236641599537ed320da690e9820e567b1e7b9c077969919c6989fbdf"
+  },
+  "hospital_id": "H_SYN_001",
+  "mechanism_family": "v041",
+  "partition": "development",
+  "runtime": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "pydantic": "2.13.5",
+    "python": "3.12.14"
+  },
+  "schema_version": "0.1",
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "config.py": "203ad31478823bb69e37900dc7aa4e40131f9460a665ea821c48d5f90b734c02",
+    "engine.py": "ce4ac81e10b0048a24499f5c91cccf59f5b966308f45c01b9e2313f3e239252d",
+    "generate.py": "0ff165dc3d06f748b47398eef67044f0417ed83fac39f28930fe7ee3ea39bc41",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "5b436ac186453d5f1d213a1ac33529472ff0271e0f7a1b00ce0091b608df1d7e",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "a6905db6b7152dd32b69f9ecacf33ee55e9e07340c1153d8c53a76cf8a4c7d9c",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "synthetic_only": true
+}

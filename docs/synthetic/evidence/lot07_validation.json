@@ -1,0 +1,513 @@
+{
+  "cases": [
+    {
+      "case": "reference",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "ceaee7d59a8daf7fd409b8036dae3041e174144f48cb6713644a3e23922424bc",
+      "discharges": 4192,
+      "dynamics": {
+        "arrivals": "v041",
+        "discharges": "v041",
+        "staffing": "v041"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4925,
+      "manifest_sha256": "c4c20af6e43bcb6ddc7d02d15ac21a5b58bb478d0067de19452b0e1508ebeff1",
+      "mean_ed_waiting": 0.7468036529680365,
+      "mean_occupied_beds": 75.53219178082192,
+      "mean_staff_present": 19.50376712328767
+    },
+    {
+      "case": "shared_bursts_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "96cfb70b406bf0d1aca3180fb2185ab8d1cc50dc39eb07a5a78328e3a74ae536",
+      "discharges": 4184,
+      "dynamics": {
+        "arrivals": "shared_bursts_v1",
+        "discharges": "v041",
+        "staffing": "v041"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4984,
+      "manifest_sha256": "537a729ae9453ea1b9c57a461ed2e97da7555f97db5aab9b186e28c83f01c4ee",
+      "mean_ed_waiting": 1.0873287671232876,
+      "mean_occupied_beds": 76.53481735159818,
+      "mean_staff_present": 19.44326484018265
+    },
+    {
+      "case": "appointments_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "57f621a8e129a594ebe819137483ad2a66c5b65f1723868385d7e9cd41dc930d",
+      "discharges": 4266,
+      "dynamics": {
+        "arrivals": "appointments_v1",
+        "discharges": "v041",
+        "staffing": "v041"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 5063,
+      "manifest_sha256": "c34c9a070fd33083a1e2eb89c8dea662d44899cc1d17a56dd518b48e6ded2cf2",
+      "mean_ed_waiting": 0.8649543378995433,
+      "mean_occupied_beds": 80.3634703196347,
+      "mean_staff_present": 19.526940639269405
+    },
+    {
+      "case": "daily_rounds_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "84e15436f388246224a0510c58a52247b529dfa43fc157ffb0a452465464283e",
+      "discharges": 4143,
+      "dynamics": {
+        "arrivals": "v041",
+        "discharges": "daily_rounds_v1",
+        "staffing": "v041"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4925,
+      "manifest_sha256": "ff945f60be61154c95f2e5b8dcfe580250c1f0ae397181943a89df4d295cb75b",
+      "mean_ed_waiting": 0.9391552511415525,
+      "mean_occupied_beds": 80.91232876712328,
+      "mean_staff_present": 19.53162100456621
+    },
+    {
+      "case": "rolling_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "39a124b2ae9b2e8987f0754a36bd4a714953df871f0f5638522def2665b591fc",
+      "discharges": 4200,
+      "dynamics": {
+        "arrivals": "v041",
+        "discharges": "rolling_v1",
+        "staffing": "v041"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4925,
+      "manifest_sha256": "1b58fa788a0dfaa996be817d199793852b3894c759687b1a5416a1a6c9f9c9d2",
+      "mean_ed_waiting": 0.7139269406392694,
+      "mean_occupied_beds": 72.36244292237443,
+      "mean_staff_present": 19.46084474885845
+    },
+    {
+      "case": "persistent_absence_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "98dd2bcd9a66fb2b5889a2debec6decff23601c3c6aa076b409b92a79fa75d29",
+      "discharges": 4193,
+      "dynamics": {
+        "arrivals": "v041",
+        "discharges": "v041",
+        "staffing": "persistent_absence_v1"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4925,
+      "manifest_sha256": "81e5b5c8d9fb04f4cd813724d9c1c09c96a72d22304ef8b04fb2cef3abd816e1",
+      "mean_ed_waiting": 0.7458904109589041,
+      "mean_occupied_beds": 75.53767123287672,
+      "mean_staff_present": 19.11175799086758
+    },
+    {
+      "case": "shared_float_v1",
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "159536a50879d33746d7312522ad628797df1f771b2354995f818054a65c29b5",
+      "discharges": 4194,
+      "dynamics": {
+        "arrivals": "v041",
+        "discharges": "v041",
+        "staffing": "shared_float_v1"
+      },
+      "files_verified": 6,
+      "incoming_patients_including_warmup": 4925,
+      "manifest_sha256": "3b9e0a66e15f2f4973988e59356973eb9a6f4cba57b81cf45a2d9b5ef5b04f4d",
+      "mean_ed_waiting": 0.7462328767123287,
+      "mean_occupied_beds": 75.53310502283105,
+      "mean_staff_present": 19.676369863013697
+    }
+  ],
+  "days_per_case": 365,
+  "purpose": "development diagnostics; not a generalization benchmark or causal comparison",
+  "reserved_registries": {
+    "arrivals": {
+      "dynamics_by_partition": {
+        "test": {
+          "arrivals": [
+            "appointments_v1"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "train": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "arrivals": [
+            "shared_bursts_v1"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        }
+      },
+      "mechanism_holdout": true,
+      "mechanism_world_counts": {
+        "v041": 12
+      },
+      "partitions": {
+        "test": {
+          "beds_per_hospital": [
+            109,
+            113
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "train": {
+          "beds_per_hospital": [
+            114,
+            118
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "validation": {
+          "beds_per_hospital": [
+            100,
+            103
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        }
+      },
+      "reserved_axis": "arrivals",
+      "sha256": "0610be7995f5ef054c26cd9a963f93f9e87b18399c8ec4302c22048e738a3f62"
+    },
+    "discharges": {
+      "dynamics_by_partition": {
+        "test": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "rolling_v1"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "train": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "daily_rounds_v1"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        }
+      },
+      "mechanism_holdout": true,
+      "mechanism_world_counts": {
+        "v041": 12
+      },
+      "partitions": {
+        "test": {
+          "beds_per_hospital": [
+            106,
+            111
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "train": {
+          "beds_per_hospital": [
+            97,
+            104
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "validation": {
+          "beds_per_hospital": [
+            96,
+            104
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        }
+      },
+      "reserved_axis": "discharges",
+      "sha256": "57af8a863f0f58ff1f5ffef2a70123f371dbe4e516c86611d4214fe3f3d2254e"
+    },
+    "staffing": {
+      "dynamics_by_partition": {
+        "test": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "shared_float_v1"
+          ]
+        },
+        "train": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "v041"
+          ]
+        },
+        "validation": {
+          "arrivals": [
+            "v041"
+          ],
+          "discharges": [
+            "v041"
+          ],
+          "staffing": [
+            "persistent_absence_v1"
+          ]
+        }
+      },
+      "mechanism_holdout": true,
+      "mechanism_world_counts": {
+        "v041": 12
+      },
+      "partitions": {
+        "test": {
+          "beds_per_hospital": [
+            97,
+            101
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "train": {
+          "beds_per_hospital": [
+            103,
+            117
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        },
+        "validation": {
+          "beds_per_hospital": [
+            100,
+            117
+          ],
+          "hospitals": 2,
+          "poles_per_hospital": [
+            2
+          ],
+          "structures": 1,
+          "units_per_hospital": [
+            4
+          ],
+          "worlds": 4
+        }
+      },
+      "reserved_axis": "staffing",
+      "sha256": "ca87be0baeeba3e1c8d660f9cd396aaceee6df55025e37ca953df8d29da9736d"
+    }
+  },
+  "script_sha256": "7eb325b60aefd15b23e768eba9a29487235635c917266e525a7dc1f61f8c1e14",
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+    "cohort.py": "51cff58ed4950440e49b9045ec36b9b8dcd754752feba138ce80b45ea472dec7",
+    "config.py": "2dba44bf6ceec10146c8b60615ff9e0d52827e1a6acdefea882622156d40d638",
+    "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+    "dynamics.py": "2e3703229b122345bf3d6a91522f656fa4fbf159cb26207484dd075ec0be1672",
+    "engine.py": "a096fb8881e14ceda20bf72448054a97f0342a997571b9e66b94053489b55923",
+    "generate.py": "c98138ea0344a0b91b9b1d36a1940ab96eb12ff0ac8cf4459599185b98a3f652",
+    "learning.py": "cf29971d482b980a5dafd3729bf2befc1e6f33df7f71e08b4a65553320a6264f",
+    "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+    "observations.py": "5e6ddb54dfe3ce578fe9942ef257bce3663de9ab14295c8fda3ebf2dba05dc77",
+    "online.py": "28d9915388ee6b981cc8bfb590dba4c45c629911079e3072c5f2147866fa1583",
+    "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+    "policy_loop.py": "c42594d05e04125053e95168aec84eacad95c338a2636b842a17a07e1e0b6d73",
+    "registry.py": "e58a2a158bca364db35baae62cac396144dbacfb2d5974bceb6fe7d97e7d3a90",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "1fcb6a2ed467130a6b09b08d2a4a79a731e2453fbffdfeac29d9fdab4c7159b8",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "synthetic_only": true,
+  "test_access": {
+    "opened": false
+  },
+  "warmup_days": 61
+}

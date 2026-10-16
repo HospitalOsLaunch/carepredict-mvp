@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Regression test compares the engine with the published lot 03.
 
       - uses: actions/setup-python@v5
         with:

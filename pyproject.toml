@@ -27,6 +27,7 @@ dependencies = [
   "mapie>=0.8.0,<1.0.0",
   "numpy>=1.26.0,<3.0.0",
   "pandas>=2.2.0,<3.0.0",
+  "scikit-learn>=1.5,<1.9",
   "properscoring>=0.1,<1.0",
   "prometheus-client>=0.20.0,<1.0.0",
   "psycopg[binary,pool]>=3.1.0,<4.0.0",
@@ -73,6 +74,7 @@ hospitalos = ["py.typed"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+extend-exclude = ["src/hospitalos/synthetic/v041", "build"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
@@ -85,6 +87,10 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 disallow_any_generics = true
 disallow_subclassing_any = true
+
+[[tool.mypy.overrides]]
+module = ["hospitalos.synthetic.v041.*"]
+ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"

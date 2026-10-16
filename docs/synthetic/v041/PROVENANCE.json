@@ -1,0 +1,26 @@
+{
+  "source": "HospitalOS_Corpus_Synthetique_v0.4.1_1-coeur.zip",
+  "archive_sha256": "d5f5a045075b736df514342c4959b15d60e96ffbbb6a780b829619ae72e2db0f",
+  "original_source_sha256": {
+    "controles.py": "a92f3f5454c3862abc3a1eb459ab30fa55dbc2fc4e3b7362f1a45fe9394e5066",
+    "extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "hospsim.py": "af8add18bf7e742588a1bb63a1caec934d6be322a4b25e69877c747aca0df16e",
+    "notes.py": "0ad41974b7207cb04c8329aef2c3bccf91a1d8cf2ea1936ef512a65d7b0c15b9",
+    "observation.py": "a6905db6b7152dd32b69f9ecacf33ee55e9e07340c1153d8c53a76cf8a4c7d9c",
+    "parcours.py": "8e894edf3b9dc27173a81edfecce6de9172d63cc9be5b1a799e910face792143",
+    "realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "refusion_notes.py": "832905290ddf174b18edf8b91b801a83f744e05d8243a819b0a92b6d07ba11e5",
+    "run.py": "dae970cf998c422d79e09ca0fa0c04074145579d02befcf22b841197c5d47a4f",
+    "tests.py": "0200c992fcd788056ca0a47b9f72725ddb3e671695b035e2be6fc5502568e3d5",
+    "textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "changes": [
+    "Sibling imports made relative for packaging.",
+    "Control subprocesses invoked as Python modules.",
+    "Exo accepts optional per-instance unit_specs; legacy defaults preserved.",
+    "Lot 04: extracted four overridable Sim hooks (hosting, discharge transport, repatriation, service starts); default trajectories checked against published lot 03 commit 3e9f76522baa5f155adcc3be1487d95911daaefc.",
+    "Lot 06: extracted ObservationStream from the batch observer without changing its per-event draws; batch output regression checked against published lot 05 commit 4d0e4f975456c369ac7dffc2ab41239604a0af83.",
+    "Lot 13: added optional source-document hooks for staff reviews, declared destination and downstream confirmations; default trajectories regression-checked against published lot 03. Alternative mechanisms do not change physical discharge."
+  ],
+  "generated_corpus_included": false
+}

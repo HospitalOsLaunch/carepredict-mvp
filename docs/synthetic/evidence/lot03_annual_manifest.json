@@ -1,0 +1,400 @@
+{
+  "data_role": "partitioned_cohort_runs",
+  "join_key": "(world_id, entity_id, decision_h); patient/event IDs also need world_id",
+  "registry_manifest_sha256": "988371dbb59e0c619487d5e609ec6aeff09132ec86c8d2f460438209c5a9d779",
+  "registry_sha256": "98b3ad763b43612b6c5db013a6634c934debd0568aa34f3babfc07beffd28698",
+  "reserved_world_ids": [
+    "W_eece56920c95c1f03648ef88",
+    "W_874c2381c71fe5f9a6f91225",
+    "W_dc11657c53f14efd2b418e22",
+    "W_9bdcca3fab4a553672a559fa"
+  ],
+  "schema_version": "0.1",
+  "selected_partitions": [
+    "train",
+    "validation"
+  ],
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "a56d4bfe615fd48d9bd857b7eb6cdabe9ca23831d3337175b190ae71ae08e410",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "cohort.py": "fe91b77f8a4eb9287db861c483778061ffee4c701e93575a7cd0e06467e1a23b",
+    "config.py": "203ad31478823bb69e37900dc7aa4e40131f9460a665ea821c48d5f90b734c02",
+    "engine.py": "ce4ac81e10b0048a24499f5c91cccf59f5b966308f45c01b9e2313f3e239252d",
+    "generate.py": "9d5dc123ef548563b72ec6bfe6a126aff7131df48ddb2a4d9cf06ba517182889",
+    "learning.py": "cf29971d482b980a5dafd3729bf2befc1e6f33df7f71e08b4a65553320a6264f",
+    "observations.py": "5e6ddb54dfe3ce578fe9942ef257bce3663de9ab14295c8fda3ebf2dba05dc77",
+    "registry.py": "477782c0796c38e0b3a9dfd71c643cd5691bea02b0574fd401c2b459f41e760c",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "5b436ac186453d5f1d213a1ac33529472ff0271e0f7a1b00ce0091b608df1d7e",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "a6905db6b7152dd32b69f9ecacf33ee55e9e07340c1153d8c53a76cf8a4c7d9c",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "summary": {
+    "mechanism_holdout": false,
+    "mechanism_world_counts": {
+      "v041": 12
+    },
+    "partitions": {
+      "test": {
+        "beds_per_hospital": [
+          197,
+          202
+        ],
+        "hospitals": 2,
+        "poles_per_hospital": [
+          4
+        ],
+        "structures": 1,
+        "units_per_hospital": [
+          8
+        ],
+        "worlds": 4
+      },
+      "train": {
+        "beds_per_hospital": [
+          90,
+          102
+        ],
+        "hospitals": 2,
+        "poles_per_hospital": [
+          2
+        ],
+        "structures": 1,
+        "units_per_hospital": [
+          4
+        ],
+        "worlds": 4
+      },
+      "validation": {
+        "beds_per_hospital": [
+          148,
+          150
+        ],
+        "hospitals": 2,
+        "poles_per_hospital": [
+          3
+        ],
+        "structures": 1,
+        "units_per_hospital": [
+          6
+        ],
+        "worlds": 4
+      }
+    }
+  },
+  "synthetic_only": true,
+  "test_access": {
+    "opened": false,
+    "protocol": null
+  },
+  "with_learning": true,
+  "worlds": [
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "40591951893f03aea12b2b47f7bd533883a5a230ae16763b224079c1db37a9d3",
+      "counts": {
+        "events_including_warmup": 224307,
+        "poles": 3,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 52560,
+        "units": 6
+      },
+      "hospital_id": "H_e35b0991a1fc69cdcf96b066",
+      "learning_counts": {
+        "deliveries": 61916,
+        "features": 87600,
+        "labels": 87600
+      },
+      "learning_manifest_sha256": "ce3da9436ebf4162f223ed8e0d27b9b953ce681c3c85c88804d0ce12078397cc",
+      "learning_path": "validation/W_40591951893f03aea12b2b47/learning",
+      "learning_run_id": "ced8f9be9c698d6ec1374360",
+      "partition": "validation",
+      "replicate": 0,
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "truth_manifest_sha256": "2026df17e3d3533a3df25870a38def2b4851cf1bad413b12ada25ee4935e71ed",
+      "truth_path": "validation/W_40591951893f03aea12b2b47/truth",
+      "world_id": "W_40591951893f03aea12b2b47"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "6c647441df7591468497c95e437369feb8a64cd3061149ae6967f3ab5fe3ef09",
+      "counts": {
+        "events_including_warmup": 224222,
+        "poles": 3,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 52560,
+        "units": 6
+      },
+      "hospital_id": "H_e35b0991a1fc69cdcf96b066",
+      "learning_counts": {
+        "deliveries": 61923,
+        "features": 87600,
+        "labels": 87600
+      },
+      "learning_manifest_sha256": "a28889e7fec0d2883a55588b72a1bb7d7be89240adc8374438ca85a4dbe0c82a",
+      "learning_path": "validation/W_6c647441df7591468497c95e/learning",
+      "learning_run_id": "3d7ab76ac2f0a10ba3f3f2be",
+      "partition": "validation",
+      "replicate": 1,
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "truth_manifest_sha256": "cff37f76967591bca8723654f2638c5ca299865b9bf43616aaf18eb211fedbd3",
+      "truth_path": "validation/W_6c647441df7591468497c95e/truth",
+      "world_id": "W_6c647441df7591468497c95e"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "8ed7d7f212af3ccde5ebcd7e39c01993114ed24333973c45c4e2d87c1b5e3d42",
+      "counts": {
+        "events_including_warmup": 207120,
+        "poles": 3,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 52560,
+        "units": 6
+      },
+      "hospital_id": "H_1544411d67ce5d0db6ab52f7",
+      "learning_counts": {
+        "deliveries": 61942,
+        "features": 87600,
+        "labels": 87600
+      },
+      "learning_manifest_sha256": "e072984059f1ce4d5f643e4a02f95ae493a5b439edfa3eb55ab805b8d4d0a62b",
+      "learning_path": "validation/W_8ed7d7f212af3ccde5ebcd7e/learning",
+      "learning_run_id": "9069daa5e00f5300c6afdaf3",
+      "partition": "validation",
+      "replicate": 0,
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "truth_manifest_sha256": "fb361510ae72ddbc0f0e9d31fb1365f396a46d6ea8955bf3611b41ae59688ce5",
+      "truth_path": "validation/W_8ed7d7f212af3ccde5ebcd7e/truth",
+      "world_id": "W_8ed7d7f212af3ccde5ebcd7e"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "5ecbd630f01cee6e9412dd630925d3b74cd09150ce1e1712c2121c0f23c59b55",
+      "counts": {
+        "events_including_warmup": 207044,
+        "poles": 3,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 52560,
+        "units": 6
+      },
+      "hospital_id": "H_1544411d67ce5d0db6ab52f7",
+      "learning_counts": {
+        "deliveries": 62042,
+        "features": 87600,
+        "labels": 87600
+      },
+      "learning_manifest_sha256": "064ab20745ebf9a7099fe6e835e68368c95c1b863bf3bf6e618a9fdc93950761",
+      "learning_path": "validation/W_5ecbd630f01cee6e9412dd63/learning",
+      "learning_run_id": "fb67e45d69719a7efa7c205a",
+      "partition": "validation",
+      "replicate": 1,
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "truth_manifest_sha256": "9894a2bb478c36ceb61d1f6a1ba31ec039b0e0747444ead8e8711a79b344f7a1",
+      "truth_path": "validation/W_5ecbd630f01cee6e9412dd63/truth",
+      "world_id": "W_5ecbd630f01cee6e9412dd63"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "1191fde8da99eae0dffa34cec5a2fd976f6bb04ab5f8904315ba3612dbb4e25b",
+      "counts": {
+        "events_including_warmup": 138539,
+        "poles": 2,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 35040,
+        "units": 4
+      },
+      "hospital_id": "H_416145c20bdddbbd77f1cbc2",
+      "learning_counts": {
+        "deliveries": 41201,
+        "features": 61320,
+        "labels": 61320
+      },
+      "learning_manifest_sha256": "e1a8f5d1c5fa8415b21469fc5250e11015478a68fb3fc84b0ee39c1025e19169",
+      "learning_path": "train/W_1191fde8da99eae0dffa34ce/learning",
+      "learning_run_id": "305499a7595b18f256d20865",
+      "partition": "train",
+      "replicate": 0,
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "truth_manifest_sha256": "2294002adb600544f754eeb6f3c8f5c2872c9806bcb2feb4be7c8f8723a7eabd",
+      "truth_path": "train/W_1191fde8da99eae0dffa34ce/truth",
+      "world_id": "W_1191fde8da99eae0dffa34ce"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "a350dabe99f6a44f4633f6414b84e9743f741be5b025d051ca0dfb9f35ee7017",
+      "counts": {
+        "events_including_warmup": 137116,
+        "poles": 2,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 35040,
+        "units": 4
+      },
+      "hospital_id": "H_416145c20bdddbbd77f1cbc2",
+      "learning_counts": {
+        "deliveries": 41234,
+        "features": 61320,
+        "labels": 61320
+      },
+      "learning_manifest_sha256": "1175d92066a3415df73b7685104df423173af63b6403dd56bdea0c140a4e77a3",
+      "learning_path": "train/W_a350dabe99f6a44f4633f641/learning",
+      "learning_run_id": "4aeeb4e4f5980d1bd16d1e56",
+      "partition": "train",
+      "replicate": 1,
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "truth_manifest_sha256": "727aa88827d82b9cdfcfd2d9ca085b8a65e624fb0e4bc802641ce669553a0e82",
+      "truth_path": "train/W_a350dabe99f6a44f4633f641/truth",
+      "world_id": "W_a350dabe99f6a44f4633f641"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "db8cf8d5957fb3d10b41978fe0262946e385fd8ed96147f8ed0b0b6aba452ae4",
+      "counts": {
+        "events_including_warmup": 144313,
+        "poles": 2,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 35040,
+        "units": 4
+      },
+      "hospital_id": "H_49ee9e122d6c880354714fb4",
+      "learning_counts": {
+        "deliveries": 41263,
+        "features": 61320,
+        "labels": 61320
+      },
+      "learning_manifest_sha256": "9a7f0554418a684e0adc18ae2288ac81074cd2d5d23c589162e70c95a6c2c684",
+      "learning_path": "train/W_db8cf8d5957fb3d10b41978f/learning",
+      "learning_run_id": "6798c80d27a71362fa38d5af",
+      "partition": "train",
+      "replicate": 0,
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "truth_manifest_sha256": "ab053484bfeaadf4445095d49a2ab9c2580bf1524c4ccc5c78a94ed2ea281934",
+      "truth_path": "train/W_db8cf8d5957fb3d10b41978f/truth",
+      "world_id": "W_db8cf8d5957fb3d10b41978f"
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "f7a50cb80f44a70597c07bc65935ee16b6fcc6eb1099d447958d4f196fab2031",
+      "counts": {
+        "events_including_warmup": 145544,
+        "poles": 2,
+        "recorded_hours": 8760,
+        "unit_hour_rows": 35040,
+        "units": 4
+      },
+      "hospital_id": "H_49ee9e122d6c880354714fb4",
+      "learning_counts": {
+        "deliveries": 41295,
+        "features": 61320,
+        "labels": 61320
+      },
+      "learning_manifest_sha256": "0cd34e4cfa933e8f07ff7e162c918640bcc6fc5b14c95cc9468fa6e8b026e200",
+      "learning_path": "train/W_f7a50cb80f44a70597c07bc6/learning",
+      "learning_run_id": "719557c637318946629dd87a",
+      "partition": "train",
+      "replicate": 1,
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "truth_manifest_sha256": "04d21b4978703ee519bb2d72972295387dc02e2357dfb0f46cb979cacf668143",
+      "truth_path": "train/W_f7a50cb80f44a70597c07bc6/truth",
+      "world_id": "W_f7a50cb80f44a70597c07bc6"
+    }
+  ]
+}

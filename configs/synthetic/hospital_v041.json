@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1",
+  "hospital_id": "H_MECHANISM_DEV",
+  "seed": 20261015,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "partition": "development",
+  "mechanism_family": "v041",
+  "poles": [
+    {
+      "pole_id": "P_MED_GERIATRIE",
+      "units": [
+        {
+          "unit_id": "U_MED",
+          "template": "MED_POLY",
+          "beds": 28,
+          "isolation_beds": 5,
+          "oxygen_beds": 16
+        },
+        {
+          "unit_id": "U_GER",
+          "template": "CSG",
+          "beds": 24,
+          "isolation_beds": 5,
+          "oxygen_beds": 14
+        }
+      ]
+    },
+    {
+      "pole_id": "P_CARDIO_RESPIRATOIRE",
+      "units": [
+        {
+          "unit_id": "U_PNE",
+          "template": "PNEUMO",
+          "beds": 26,
+          "isolation_beds": 7,
+          "oxygen_beds": 26
+        },
+        {
+          "unit_id": "U_CAR",
+          "template": "CARDIO",
+          "beds": 24,
+          "isolation_beds": 4,
+          "oxygen_beds": 12
+        }
+      ]
+    }
+  ],
+  "shared_resources": {
+    "cleaning": 1.0,
+    "imaging": 1.0,
+    "transport": 1.0,
+    "specialist": 1.0
+  }
+}

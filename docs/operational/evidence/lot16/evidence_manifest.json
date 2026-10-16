@@ -1,0 +1,397 @@
+{
+  "cohorts": {
+    "finite_v1": {
+      "data_role": "operational_experiment_cohort",
+      "plan_sha256": "325f2097e038531d52bf409713b8261323a9ca91bdf66ffd78a83e8a08d96773",
+      "registry_sha256": "46758f4630d290c2ef592600de28746224f15a7935dd6ecf8b4c8bdb6a5fb30a",
+      "reserved": [
+        "H16_test_00",
+        "H16_test_01"
+      ],
+      "status": "complete",
+      "test_opened": false,
+      "worlds": [
+        {
+          "config_sha256": "9491af0fa99a2efaddb6ea35edf17cfe3aa4ea329fb75307d90504c699c9be7e",
+          "hospital_id": "H16_train_00",
+          "observed_manifest_sha256": "21120dcf7aed9e6b56edb9cc68480943838a726676800437c61be0a0a26dd5a4",
+          "partition": "train",
+          "truth_manifest_sha256": "f07b0f47ce7ef6f5b11d43e4b66d728f811a839ae98d5b80d1584c19e76c3ad7"
+        },
+        {
+          "config_sha256": "02f885e9638137baa89bc347041921f8d054be5cbbd75939a26971535d079ee4",
+          "hospital_id": "H16_train_01",
+          "observed_manifest_sha256": "0e24645d74d2068531e296e2d88ca47ae9be4dd1c5c3b4be4b9eaee553b0fb49",
+          "partition": "train",
+          "truth_manifest_sha256": "93dc3f66a16390947b4e0210a16e5c592d6a220597ad418ae3b54e456f31ec0d"
+        },
+        {
+          "config_sha256": "c4fbfd5d543cdf2a85615556b5295fa5c7c768caeac3cec93787f888054e0747",
+          "hospital_id": "H16_train_02",
+          "observed_manifest_sha256": "9d8b169fca3729768dec92d24680297b781f552246298cf70524b4626e72ed7c",
+          "partition": "train",
+          "truth_manifest_sha256": "6e3c127c4f030770f9159a0830376bd07c25d6aec646f1384daf6be75450fbe6"
+        },
+        {
+          "config_sha256": "dfdb983ea4669ba9c17148457b879c994287646c57b408c6002993e0dde927d8",
+          "hospital_id": "H16_train_03",
+          "observed_manifest_sha256": "6700cc06b1f85da86af825c20f30f7f209394eb164e2e89f2867804f52d295e1",
+          "partition": "train",
+          "truth_manifest_sha256": "92c79044caba6eb66448587bab50597f598a6276aa049e4ce66f224b30b5ff8f"
+        },
+        {
+          "config_sha256": "fcc347c523e81dd2ca5fc3e9505f283d7c0ea88db11a1406614b5f2c00c05709",
+          "hospital_id": "H16_train_04",
+          "observed_manifest_sha256": "637e1c65b363b75f5bf1003ffab03e1a9b1c3cf5d13d430fd2a958015664aa04",
+          "partition": "train",
+          "truth_manifest_sha256": "e4c7affaf81a5c9d845743c07ce3cab7046475bab11513d28973f6132ffd8e8a"
+        },
+        {
+          "config_sha256": "3d56584b53e1cfde6bad392df4398b9137feb9ed4ba748490ea70bf52f9a0cd8",
+          "hospital_id": "H16_train_05",
+          "observed_manifest_sha256": "881a9ab7cf61c859aeaf3bc1dea0cc631108393367199ef5db2f097e3bb04194",
+          "partition": "train",
+          "truth_manifest_sha256": "8a3286d8f238b4816321b6544683fa2c1f26640a4c0443eec9f9d3a9299c7cd5"
+        },
+        {
+          "config_sha256": "f67c56efd5ea6a2be1162bb0d66247babff5b4423d0f90fc81e97e95bcf1967c",
+          "hospital_id": "H16_train_06",
+          "observed_manifest_sha256": "34f4d9a433e1009b3158a04c56d38424cc212dcc9ad23013c0f04160dad01219",
+          "partition": "train",
+          "truth_manifest_sha256": "767fc57e6522cf2555aace7b36b14c573795bf704900368ddfa42e9a4ab33b00"
+        },
+        {
+          "config_sha256": "df7fa97a39666187f53f21b29b6907c25174eab896e7fc4c43c8738952b73c4e",
+          "hospital_id": "H16_train_07",
+          "observed_manifest_sha256": "ac0ad17d1af144f1dbd2a04f64af2c86dc81e3d7079e39d728a078ba1d4b86c1",
+          "partition": "train",
+          "truth_manifest_sha256": "6229eb95b6d17da3dc22f63f2b7d41c838541d28918bf452ecdc9f90d883f672"
+        },
+        {
+          "config_sha256": "cb262122c92e513b54f94b0468aec51520ffb2dbef0487b4cc791637d513f6cf",
+          "hospital_id": "H16_train_08",
+          "observed_manifest_sha256": "fed84a444d76ae0965dc218f5bf8df76fd1a581cf15ee9a0b89dd6ead4b97977",
+          "partition": "train",
+          "truth_manifest_sha256": "3e8f0db2c08f128978bf84ee0c86d63ed52a0f471b5fcd71d5bd50c221e0aa95"
+        },
+        {
+          "config_sha256": "de756087d971b3c2a282fc708782d005f0ec44d6185be75da12b47c13ff83a4a",
+          "hospital_id": "H16_train_09",
+          "observed_manifest_sha256": "283679fae15fada5e7ae89d8e8bdc74f698ee7f60798295b5916b19d51eda10c",
+          "partition": "train",
+          "truth_manifest_sha256": "33209a32b3fafcd9b792fc0991b4c0f9b88a1bd4fa9bf4773f5e8786386ea448"
+        },
+        {
+          "config_sha256": "b4dfb5092dbb968eebaff7fcbf0e2e6e00870837519d8bf744125a3017f85b4e",
+          "hospital_id": "H16_train_10",
+          "observed_manifest_sha256": "274e2a4dfcb02d6b1e59729c1a77e5588174f1f4c4a066ae9bb0fa999e91bb49",
+          "partition": "train",
+          "truth_manifest_sha256": "eec4a2a2ce29ff7834f380180c0c78100772079cec59e1c430d5b56ee7949ddc"
+        },
+        {
+          "config_sha256": "ba4801139115c6c8f913b1c9a57917afea63831786ad82cfde21f6657b89334a",
+          "hospital_id": "H16_train_11",
+          "observed_manifest_sha256": "024dcd917ff9645782ab84c618886eef541b1240f3c5957e63ec98a8bab8c756",
+          "partition": "train",
+          "truth_manifest_sha256": "6244b6443b99210a476f80c49554de0662914cf783fe1c41f7cabe842e4f5c7b"
+        },
+        {
+          "config_sha256": "0029695e8ee251aa916b8aac2ab0e132b4c8e03a16c25bb9be07d4c8f1311948",
+          "hospital_id": "H16_validation_00",
+          "observed_manifest_sha256": "c0c2dc933791983bb6f00c99569394266576724571c9db4e11b564f5f898c695",
+          "partition": "validation",
+          "truth_manifest_sha256": "c4fbabe26254d1c0e4f5f59047d65784d0a1da5d8e67c842ef3987f3324fc4ad"
+        },
+        {
+          "config_sha256": "36401056f5aedd9513fafa640e4da7d04b8ad2e8f3761a4e10e0d855c0273515",
+          "hospital_id": "H16_validation_01",
+          "observed_manifest_sha256": "6800a506c7c9823eeee07d51bd608bfefd93fc51b428c19e54801afd7a780c82",
+          "partition": "validation",
+          "truth_manifest_sha256": "bf21eb4eb55fa97cb646414de3b8c0731fa53e1a14825ae2535efd493d8b1414"
+        },
+        {
+          "config_sha256": "51638526e997eac6226f8de94e7799ca2c44aadfd020c45d2b4c5e82a4fd4f78",
+          "hospital_id": "H16_validation_02",
+          "observed_manifest_sha256": "4fafea840fae15031f45633144f83c26f913791fb272558cde066ac201f29685",
+          "partition": "validation",
+          "truth_manifest_sha256": "11b5d2ce19cbdf3ca970c79a09a36f68f8a2e1fd383b0aee15886ace36a2298a"
+        },
+        {
+          "config_sha256": "ae1ed24c3ba2234791e619ec477b8abe142748cd3d4312142f9034edfb70a215",
+          "hospital_id": "H16_validation_03",
+          "observed_manifest_sha256": "91b9cd1ac177e9449edd39a15a95611cfbeb2760b0fddaaa547b7b22fc813f47",
+          "partition": "validation",
+          "truth_manifest_sha256": "16280c6628751b29bbc9b4766605e4dc210e94d14fd9dbaf93f3bd2cb6f1db47"
+        },
+        {
+          "config_sha256": "7ba123b48fcdd34ffec509a106455dbb86715b54169071c263002e3a47e71c55",
+          "hospital_id": "H16_validation_04",
+          "observed_manifest_sha256": "4984594f6bacea7d7c15aa09a90438313041f3066e03bae66d6b7aebfa40c592",
+          "partition": "validation",
+          "truth_manifest_sha256": "9fae22e7b50dfae0b9544ea397226a3692d2e3ea2aa55beb980d33b1d98be595"
+        },
+        {
+          "config_sha256": "fbb40d8650a6e957adc0ee371f1cae439614ed44d37294ff377d720f0c6cb742",
+          "hospital_id": "H16_validation_05",
+          "observed_manifest_sha256": "759632adddc60a1166d21a4cce245acf3780dba7e8bb55088e6db40f30ab227c",
+          "partition": "validation",
+          "truth_manifest_sha256": "ed7686d5673e1f3ed03eaf0b2b976939ab39b770f3e2c59b83a49f364269481d"
+        }
+      ]
+    },
+    "legacy_delay": {
+      "data_role": "operational_experiment_cohort",
+      "plan_sha256": "bf7d3e21f61a35d049465f716652aa6c42755dd69f9002b275e250a8db16ff0e",
+      "registry_sha256": "ec629089b424badea526afa7433d9fc2bf532d8a5bc2be6b814b07ec588f8659",
+      "reserved": [
+        "H16_test_00",
+        "H16_test_01"
+      ],
+      "status": "complete",
+      "test_opened": false,
+      "worlds": [
+        {
+          "config_sha256": "70c671402bb7661e2624841d7f0b8da0429cb8212bfa35b671f8a27545987ef4",
+          "hospital_id": "H16_train_00",
+          "observed_manifest_sha256": "dd6760a8cfcd6a219a7bb913f11b5f606babff8f95ac3c2aac4fc2a023faa79c",
+          "partition": "train",
+          "truth_manifest_sha256": "79f40f4d6b7c228935e75775aa863c90ad4cd30a558da2b029c752e63a42fce5"
+        },
+        {
+          "config_sha256": "5ae0a39350e0c1b7c2b9418967d19ea8ee14e8f76ecbe8b19090c228da5d4e84",
+          "hospital_id": "H16_train_01",
+          "observed_manifest_sha256": "01c98898896003fdde84e397f90d8222b7a6bf68299d9c94d9ac0f0647c50547",
+          "partition": "train",
+          "truth_manifest_sha256": "f6ef647760594357874967ddd9da70bf0c4e17daeebedb5167665eee3a945221"
+        },
+        {
+          "config_sha256": "5e4b2f8a94a255a81da2a79dd741a7ed24986863db7ac10087fff6d63645d47f",
+          "hospital_id": "H16_train_02",
+          "observed_manifest_sha256": "580d5ad1e4bc14e43752f29d6cc1590a6ff7812bac4a6303616896e0b34afdf2",
+          "partition": "train",
+          "truth_manifest_sha256": "d438b7dcebd0d5c846083bb301887ef5b263faf0b226197fe33353878dfd6056"
+        },
+        {
+          "config_sha256": "bf8a15d90f33f431650bcc65618a1e78d37e1354da72ea7fe3845a90a32fb890",
+          "hospital_id": "H16_train_03",
+          "observed_manifest_sha256": "2d9ed7debd75bd09cdf74a466274d2ec9f48c2da6d4b1be373213564376c0d19",
+          "partition": "train",
+          "truth_manifest_sha256": "3bdef35fb87b6b5ebf09c1730ff72c5e6b5c753f51e279512267c88fb07e621f"
+        },
+        {
+          "config_sha256": "7715007b139940ef8eb86bc38c5f81be751992c816eb9a0c2a2163fb29be5858",
+          "hospital_id": "H16_train_04",
+          "observed_manifest_sha256": "8fbcc76a3dd215d194e6d83f017f35edbac6c6dcfe5f3e0d510d6fd0772e3faf",
+          "partition": "train",
+          "truth_manifest_sha256": "0e2a1523bfc9046007d31f548cadf97068c3a95de9c42bd69c3e22fb90652689"
+        },
+        {
+          "config_sha256": "01657c828505966d93b5d90ca5de40ad8a80091c928e73c2dae4ffedd0856e86",
+          "hospital_id": "H16_train_05",
+          "observed_manifest_sha256": "4ee0c1394e9907435c56c7136f613654f24033baa477cca696bd06096f499fcd",
+          "partition": "train",
+          "truth_manifest_sha256": "e0bd84508f8aad404dad6a4d2f31b1d2c233bf8a89488716c85c553c6e7c914b"
+        },
+        {
+          "config_sha256": "147a4038d85e5570b37734e653709e724d2248e5582c73818a3b84f19448ee6e",
+          "hospital_id": "H16_train_06",
+          "observed_manifest_sha256": "277255a5bed87b324ec32b38a77b53adeb15fbfe6b7ab9694beace335947cdd5",
+          "partition": "train",
+          "truth_manifest_sha256": "3eb93bf924a2ea95551e6eeb851aef4312dcd8d9fa6db143f16372275faecd28"
+        },
+        {
+          "config_sha256": "1e9f6029a77c4e62842aeeb31c0f1838042b04c7953af4236d7fc3aa99464afb",
+          "hospital_id": "H16_train_07",
+          "observed_manifest_sha256": "e46271ac7932f05b4e752e47b42061244e00f029265629ef9bcc9861d185b4fa",
+          "partition": "train",
+          "truth_manifest_sha256": "ea345b1bdc9fcc427cab1f5f2ba2ce91a56f7c58a37eea317a4914efcd1624f4"
+        },
+        {
+          "config_sha256": "54fadc5ac0cf9b343fdf749de4260e911eec208dfcaecba50dc92debbe8bd91b",
+          "hospital_id": "H16_train_08",
+          "observed_manifest_sha256": "6822e8f432bd56fa0532f3962ae73a3bdd5e58306f7fecdf5059ed908f596345",
+          "partition": "train",
+          "truth_manifest_sha256": "c03bff41ec86e7bffa77db59befca8182e7ab34d9200d4f1b09e2b23804adfa6"
+        },
+        {
+          "config_sha256": "5086944478dffce2456b4e6b5be782103274e700f74b668e95bf9f5dff3aaef0",
+          "hospital_id": "H16_train_09",
+          "observed_manifest_sha256": "61bd2c3583b20ddde00d8367cd8f2aaa756a1236a590c93d72d9f0e4e97db31b",
+          "partition": "train",
+          "truth_manifest_sha256": "3043d2755f1a01a70a24c968a5dc79b65052c32581df259630c13db8f3736d04"
+        },
+        {
+          "config_sha256": "4a1a3e8cd34bcb08d2a417241b5b6cf6237e20ee5fa62bec5eb602e05c369986",
+          "hospital_id": "H16_train_10",
+          "observed_manifest_sha256": "efee9eb008500aafe31f61505ac998efde12627dc9596a8f3e08bffeed993bcb",
+          "partition": "train",
+          "truth_manifest_sha256": "28e4fcf91d2eadf6c1a8e77c8b1290039829161ca5288df1a91813bad4c572fb"
+        },
+        {
+          "config_sha256": "5d88ab073b0ee60ed3a9160038a37e12acb03eb4ce6bd791f827e36b640a7ccf",
+          "hospital_id": "H16_train_11",
+          "observed_manifest_sha256": "5c77c4a392e7c131e9eb37855915bff672d7f7b9b56ab30ca8c04c0bdee7007a",
+          "partition": "train",
+          "truth_manifest_sha256": "c964ff7152ca4df4cf4a7ccd343ca9c2605cf097210c9ee7ee158970b0a59d97"
+        },
+        {
+          "config_sha256": "9ff96508a97ad72c3af47d264f52dba7c2e0994b7045c3e106522f4495972573",
+          "hospital_id": "H16_validation_00",
+          "observed_manifest_sha256": "fbdb4f922cd2f3877765fcb00830711b8a88e98b3756abeebae5e9a87f640c7f",
+          "partition": "validation",
+          "truth_manifest_sha256": "e36a7328ac09f90bfa35466da96c844b81197117a0979f98fc71bd9c2f504647"
+        },
+        {
+          "config_sha256": "fa569415da0e0c78b1faceb678c07528e74f8f8b95b2e15acc0cf08dbe4f9c27",
+          "hospital_id": "H16_validation_01",
+          "observed_manifest_sha256": "bdea5e78ec821e3a2d34d66da26aa52f0cc1c002be3d5039d78ce394e203ab44",
+          "partition": "validation",
+          "truth_manifest_sha256": "f4db77c1c9f065ffc46630ab1ee38bebb2926f772c509ad015da14876dd84f04"
+        },
+        {
+          "config_sha256": "2f0fab125c7fd3ccf9ba5406a6317a2b84bb92b3804c7d56e8813a893b37971d",
+          "hospital_id": "H16_validation_02",
+          "observed_manifest_sha256": "bd208eb7761d421d679f6fb9751b7e5b52d928079077dbaf57ddce64b47e485e",
+          "partition": "validation",
+          "truth_manifest_sha256": "efc9bc1df9321b180b7dace2d93c392547fcadf038d3d691779e15c3ee96a882"
+        },
+        {
+          "config_sha256": "56279aeae75cc9ad695a7243c005438719dec9745b973482d376ed7406f57976",
+          "hospital_id": "H16_validation_03",
+          "observed_manifest_sha256": "8ccf795c51f72108c625e15be238ad9397249f1ef9743862766acc9d24bfa05d",
+          "partition": "validation",
+          "truth_manifest_sha256": "89e74c33b3d5ce7c38999cfe21f220020fe117f7460e16905f6f18064c3f735f"
+        },
+        {
+          "config_sha256": "22cb4ef014c122d43b460ffffca62a0dfe545c708efde0762e517c2d97401ec8",
+          "hospital_id": "H16_validation_04",
+          "observed_manifest_sha256": "0c837ba9c9693b1339cb96784fd02cb5a49023bdedbf4ad67ea560564344780d",
+          "partition": "validation",
+          "truth_manifest_sha256": "bf74eb305585f605b0db623fd88b640ce91100caf58f78e9cd0fe8e7f5cc03a4"
+        },
+        {
+          "config_sha256": "17d32ac7f2f34d878313950c7d53646ed1c336d90f7de92f0a6b0c547fc74a76",
+          "hospital_id": "H16_validation_05",
+          "observed_manifest_sha256": "ded9d3768feb66a0623605142995ee10ca02db3862d08745595aa5d3ea4eb370",
+          "partition": "validation",
+          "truth_manifest_sha256": "28c50d67ab92d98c9ef5beb5d9a646dae5ce712392417e3d7693f78779d7cb76"
+        }
+      ]
+    }
+  },
+  "files_sha256": {
+    "comparison.json.gz": "e824485055c9ea431aa950a772d8e33088dd373599e758cff63366d43b2ce2b1",
+    "execution_notes.json": "20e8bf9c13eb5cacd54551059fffd060350c18119b87e1f52da3b5cfeefb86d7",
+    "finite_v1/cohort_manifest.json": "a9c477213e1260da5000078607dcc79b1b0b11ba4c314719397491a669708b36",
+    "finite_v1/cohort_registry.json": "46758f4630d290c2ef592600de28746224f15a7935dd6ecf8b4c8bdb6a5fb30a",
+    "finite_v1/generator_source_sha256.json": "f4fc9377e9d705aafd71f8eb05852763c6eefca1d204a299f0df65c3f9ff25ed",
+    "finite_v1/model.pt": "e9013960350df0e3a9f8f4aa57a659b68fe3102f6d60d362cc5515471d67758d",
+    "finite_v1/model_config.json": "c6d8b16a7bc3dce9b5e03b0fe98596e7dec6cbabf489ca0d7f87ca35466711d7",
+    "finite_v1/predictions_frozen.json": "72b493aa99f22d01c5fc16a29964d9791df4b40532780496ce196d6c1106c4a8",
+    "finite_v1/protocol.json": "288b5e0bf06e246b3f3f8949daf39d2eca0f3b8faaffdc719f38d92735756346",
+    "finite_v1/report.json.gz": "746ca539d7125bb2ebfcbe1cd6f9d6d40fbb4b10bf18a682485734dc20b2e511",
+    "legacy_delay/cohort_manifest.json": "d033a0d6b319dcfe0bd99bb8d804f33a6c77fe55d7553e9df1fcdab31adc9e35",
+    "legacy_delay/cohort_registry.json": "ec629089b424badea526afa7433d9fc2bf532d8a5bc2be6b814b07ec588f8659",
+    "legacy_delay/generator_source_sha256.json": "f4fc9377e9d705aafd71f8eb05852763c6eefca1d204a299f0df65c3f9ff25ed",
+    "legacy_delay/model.pt": "11f3cfde1f101b64fccecd932eab9a6ad6d86aeed17a23c42f90d4ce8eea79c2",
+    "legacy_delay/model_config.json": "67d2479c293edd9aacf964394d997be876640e356f19b0ba5aeee053e1371f23",
+    "legacy_delay/predictions_frozen.json": "a5c1328af45ec7129f8ed6ba4c093b93ec0619e5e40de322d8471a0f7a7c0b24",
+    "legacy_delay/protocol.json": "c9ecf429a7e7545b30b028356e66c578cea2c1d18310e8c370ca2a718ab5a876",
+    "legacy_delay/report.json.gz": "2052f16abf61ae5009e68ff78364a6e5d0d23fc0e21bc605846b1c5378366f0a",
+    "results.md": "afb4fa78ba95911958e6894fc72fd9df40912c7d61fc6d9d2669b98e3e9b398f"
+  },
+  "limits": [
+    "Capacity regimes are hypotheses, not empirically classified hospitals.",
+    "Different targets in paired arms: lower MSE across arms does not mean a better model.",
+    "Same model architecture, optimiser, budget and observed input fields; separate training in each arm.",
+    "Mortality correction is held fixed in both arms. Legacy SMR percentage action is disabled in the finite arm.",
+    "Changes reflect the whole SMR mechanism, not a causal estimate of additional beds.",
+    "Two validation hospitals per regime; one model seed; no formal gate or real transfer claim.",
+    "Finite horizon and 28-day warmup do not establish stationary queues."
+  ],
+  "local_tests": {
+    "historical_v041": 54,
+    "operational": 32,
+    "synthetic": 478,
+    "total": 564
+  },
+  "results": {
+    "finite_v1": {
+      "files_sha256": {
+        "climatology.npy": "3b8ddf774614c3855b4719806b6c70d2e1043dced740de07bfe176df55c9d269",
+        "model.pt": "e9013960350df0e3a9f8f4aa57a659b68fe3102f6d60d362cc5515471d67758d",
+        "model_config.json": "c6d8b16a7bc3dce9b5e03b0fe98596e7dec6cbabf489ca0d7f87ca35466711d7",
+        "predictions/H16_validation_00_hospital.npz": "17814462059cfd30d087f23972bb31edc25cbd18ef96ebf263c368802540f0bf",
+        "predictions/H16_validation_00_pole.npz": "8475d5854d5ce91ebbcb7b7e2c2564ffd579493bcd423e38d619cfef54634b85",
+        "predictions/H16_validation_00_unit.npz": "725f9c361ad700d467264b807044bc73938374908069ee124c89446df66d93b3",
+        "predictions/H16_validation_01_hospital.npz": "998667786b7a71900d21e6e7bc23a63686373b99e929db659bf70f706a7e0709",
+        "predictions/H16_validation_01_pole.npz": "77dfdc436c94f99f0455ad3f9eb5dae8e4b85973626f864807f502503fa3013a",
+        "predictions/H16_validation_01_unit.npz": "d0f928fd831b21608378679db06c380eba42da6c0c79a6f7138516b9fb338554",
+        "predictions/H16_validation_02_hospital.npz": "5741e8f439c662c85b9fbf55fbc307dea1f83a550c8027b0ccc4d31a6439463c",
+        "predictions/H16_validation_02_pole.npz": "31cdcf52a414b9c41b781471c2763a0efd8cd4ce06bd20b4c0895337ad076af8",
+        "predictions/H16_validation_02_unit.npz": "74dbd75e44e3d7098067d0a465b26279ae2cf6ef9418b8d8ba17ef5758deac86",
+        "predictions/H16_validation_03_hospital.npz": "531264668370d780ed3b4b01aac39271dab2b3025c7cdf18268a65418683a71d",
+        "predictions/H16_validation_03_pole.npz": "efa9f930e05c10ad046872f102c80c7a72e80bc3b01706f4924afa431f337f28",
+        "predictions/H16_validation_03_unit.npz": "013de6878a23fbea056261710c989a7b7c66c6d44458490f44a33562e52cc54f",
+        "predictions/H16_validation_04_hospital.npz": "8bc7fe7d705c4fe935052ef5a3699ff18478b1bc884c3a3ae0e9d90e0adcd020",
+        "predictions/H16_validation_04_pole.npz": "bcdf337363399fb96ab40fe8e8ff55aa344e4ea96729416f86ab75f61a5d70ed",
+        "predictions/H16_validation_04_unit.npz": "c16c4cb26f0bb060eeb2b3b3a30b0bc34437010e519e41f1ea0d4fc4a52aa070",
+        "predictions/H16_validation_05_hospital.npz": "dc44f612409b3d7216c9d4aefab03e8a636bc278b58147ddb651fe76ea2596f0",
+        "predictions/H16_validation_05_pole.npz": "3305bea8c842450e39ce2150e40e62f11f7c7dc2657017c7932a69e41e6b77da",
+        "predictions/H16_validation_05_unit.npz": "743faf57f0a51ebf1529f8655013362f2bdac6a3b18d69ca047c3a3a89b3f1d5",
+        "predictions_frozen.json": "72b493aa99f22d01c5fc16a29964d9791df4b40532780496ce196d6c1106c4a8",
+        "protocol.json": "288b5e0bf06e246b3f3f8949daf39d2eca0f3b8faaffdc719f38d92735756346",
+        "report.json": "b463cde12c1395df362d2dc846448dc373ba3768f7485b1f1e1ba9303be485bd"
+      },
+      "protocol_sha256": "288b5e0bf06e246b3f3f8949daf39d2eca0f3b8faaffdc719f38d92735756346",
+      "runtime": {
+        "numpy": "2.3.5",
+        "python": "3.11.9",
+        "torch": "2.4.1+cpu"
+      },
+      "status": "complete",
+      "synthetic_only": true,
+      "test_opened": false
+    },
+    "legacy_delay": {
+      "files_sha256": {
+        "climatology.npy": "c0b246cac5ae333027e92b060e66cfcf64156a31b739ba888dddafce41f45dec",
+        "model.pt": "11f3cfde1f101b64fccecd932eab9a6ad6d86aeed17a23c42f90d4ce8eea79c2",
+        "model_config.json": "67d2479c293edd9aacf964394d997be876640e356f19b0ba5aeee053e1371f23",
+        "predictions/H16_validation_00_hospital.npz": "959f038cc37984e3ca24141f8e4c8365d055aba3cb963e872ac0c09a304ae8aa",
+        "predictions/H16_validation_00_pole.npz": "80b49557a18926b848445d9c5578c3726396f2762e62a119d9febc6854188d95",
+        "predictions/H16_validation_00_unit.npz": "407c4e316eb40f0169455e353587612e15cb5579953197ba263c39c20e56e702",
+        "predictions/H16_validation_01_hospital.npz": "ffc5fe65d49a6b0b5b423aa1b1e01159a90030d5b782c40888597e45fcf05f52",
+        "predictions/H16_validation_01_pole.npz": "68cda6274de03aa8c28b3c9d4b19abaf46050f7a14ec8a167d583b8949065784",
+        "predictions/H16_validation_01_unit.npz": "f502be873d3301487301e92c91b9bb4ed2048273d4e2f857786cb8514ab8efce",
+        "predictions/H16_validation_02_hospital.npz": "b86141ee696bb514b3a180da2d1766f24cc2f64f717dfe10341ba268c63a957a",
+        "predictions/H16_validation_02_pole.npz": "9b9e0653418a79caa4e49c9d7627c4a5916f6aa4f2e3fd23802e79d5c1af49e2",
+        "predictions/H16_validation_02_unit.npz": "9e2ccc64c4241a110990e976fee15d09d2f93baa240e96c1d31a2cc98ed073b5",
+        "predictions/H16_validation_03_hospital.npz": "6ddd7e81f874c781a953d2ee429901437f625c1b2785fa9936c4fe9c764221ed",
+        "predictions/H16_validation_03_pole.npz": "91ed7e183edabd838b27ca5b68c6c81ece8aa7566a2e280ed3b054d95b23573c",
+        "predictions/H16_validation_03_unit.npz": "87f7ec92192063133de29b5cf656a7795d140802a93bad11fdddd2b9f8519951",
+        "predictions/H16_validation_04_hospital.npz": "e49babddd1d3534ca7aab48de799fa5e1fbd86f8aea647632da081890cb6315f",
+        "predictions/H16_validation_04_pole.npz": "8b3e267979fb171287b1951be299e578265df464b148f5a94e26a3d10d972d62",
+        "predictions/H16_validation_04_unit.npz": "e8b658422a5b6135980f452981f14c3477fb96a854346a16802aeef5164e4751",
+        "predictions/H16_validation_05_hospital.npz": "04d5142b4c9786c69e032866212cea9dd22da1a26eb2a3b595db76e2fc616647",
+        "predictions/H16_validation_05_pole.npz": "c65a064786cc4d6484f388f7bf39dbba35aa432ac290ca35be503c74a93b8c3e",
+        "predictions/H16_validation_05_unit.npz": "4520df40ac2fe3f40b510dd73e6f880fff052f6d6c447416801d028c5db24724",
+        "predictions_frozen.json": "a5c1328af45ec7129f8ed6ba4c093b93ec0619e5e40de322d8471a0f7a7c0b24",
+        "protocol.json": "c9ecf429a7e7545b30b028356e66c578cea2c1d18310e8c370ca2a718ab5a876",
+        "report.json": "afdcfbedff6a7deb8792d83b3ce202cf1d0d87adffa2ba893f68334f5d8fefa4"
+      },
+      "protocol_sha256": "c9ecf429a7e7545b30b028356e66c578cea2c1d18310e8c370ca2a718ab5a876",
+      "runtime": {
+        "numpy": "2.3.5",
+        "python": "3.11.9",
+        "torch": "2.4.1+cpu"
+      },
+      "status": "complete",
+      "synthetic_only": true,
+      "test_opened": false
+    }
+  },
+  "status": "exploratory_validation_complete",
+  "synthetic_only": true,
+  "test_opened": false
+}
