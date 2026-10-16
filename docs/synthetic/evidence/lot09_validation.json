@@ -1,0 +1,330 @@
+{
+  "cases": [
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "36a20d0d5a85ac4ae0d2e29a5cb35fabe405dde9629b64859f7d75f9cdb366b4",
+      "files_verified": 12,
+      "learning_manifest_sha256": "5102978c49094fdedf84638b9aa00dd9d49e530a28c1d59cf5eb221e200d6a24",
+      "observation_quality": {
+        "deliveries": 41825,
+        "revisions": 825,
+        "snapshot_events_available": 40662,
+        "snapshots_not_delivered_by_cutoff": 234,
+        "transport_duplicates": 338,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 0
+      },
+      "profile": "fast",
+      "transmission": {
+        "receipts_checked": 41825,
+        "receipts_from_outage_hours_delivered_later": 0
+      },
+      "truth_sha256": {
+        "truth/events.jsonl.gz": "4e192939803ef9da79a0b7c83d019ca28687386cd440d84028f1115a83374218",
+        "truth/hospital_hourly.csv": "98fbe3ab500b38bcddb28bd6930e58d57045ee1f809a0e7e595c77637413aed3",
+        "truth/poles_hourly.csv": "521309e857ee57f71e2ac251d734ac6dd90dff1494a7484d3ef2c01c2d4fe6e2",
+        "truth/shared_resources_hourly.csv": "1c842fe6839486d8a9bfe70facaf3869fcab36ba62452bc64e8ac3497a601917",
+        "truth/units_hourly.csv": "58a851d2236641599537ed320da690e9820e567b1e7b9c077969919c6989fbdf"
+      }
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "29a8a0e1965603f3d90fed38bb1c70c8f98a3d5e605ddee40316d6cf038b3fff",
+      "files_verified": 12,
+      "learning_manifest_sha256": "ce67dd768c0365b2fd6c4efce510b0d31dbbd5e92d5afd7ae8d021b3db43001d",
+      "observation_quality": {
+        "deliveries": 37074,
+        "revisions": 722,
+        "snapshot_events_available": 36057,
+        "snapshots_not_delivered_by_cutoff": 4839,
+        "transport_duplicates": 295,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 1798
+      },
+      "profile": "delayed",
+      "transmission": {
+        "receipts_checked": 37074,
+        "receipts_from_outage_hours_delivered_later": 0
+      },
+      "truth_sha256": {
+        "truth/events.jsonl.gz": "4e192939803ef9da79a0b7c83d019ca28687386cd440d84028f1115a83374218",
+        "truth/hospital_hourly.csv": "98fbe3ab500b38bcddb28bd6930e58d57045ee1f809a0e7e595c77637413aed3",
+        "truth/poles_hourly.csv": "521309e857ee57f71e2ac251d734ac6dd90dff1494a7484d3ef2c01c2d4fe6e2",
+        "truth/shared_resources_hourly.csv": "1c842fe6839486d8a9bfe70facaf3869fcab36ba62452bc64e8ac3497a601917",
+        "truth/units_hourly.csv": "58a851d2236641599537ed320da690e9820e567b1e7b9c077969919c6989fbdf"
+      }
+    },
+    {
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "config_sha256": "f3d4483502a8a6087b6c25c34b1b66dc1ba20cb4e979596019352260e23d3607",
+      "files_verified": 12,
+      "learning_manifest_sha256": "441ed987ac6756f6c26e9968a17e0a42b8d3ccfe5ded3d36885565e3f46132ab",
+      "observation_quality": {
+        "deliveries": 39666,
+        "revisions": 774,
+        "snapshot_events_available": 38567,
+        "snapshots_not_delivered_by_cutoff": 2329,
+        "transport_duplicates": 325,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 216
+      },
+      "profile": "intermittent",
+      "transmission": {
+        "receipts_checked": 39666,
+        "receipts_from_outage_hours_delivered_later": 238
+      },
+      "truth_sha256": {
+        "truth/events.jsonl.gz": "4e192939803ef9da79a0b7c83d019ca28687386cd440d84028f1115a83374218",
+        "truth/hospital_hourly.csv": "98fbe3ab500b38bcddb28bd6930e58d57045ee1f809a0e7e595c77637413aed3",
+        "truth/poles_hourly.csv": "521309e857ee57f71e2ac251d734ac6dd90dff1494a7484d3ef2c01c2d4fe6e2",
+        "truth/shared_resources_hourly.csv": "1c842fe6839486d8a9bfe70facaf3869fcab36ba62452bc64e8ac3497a601917",
+        "truth/units_hourly.csv": "58a851d2236641599537ed320da690e9820e567b1e7b9c077969919c6989fbdf"
+      }
+    }
+  ],
+  "closed_loop_note": "Observation changes may change recommendations and subsequent physics",
+  "days": 365,
+  "fixed_policy_truth_equal": true,
+  "observed_policy": {
+    "assumptions": {
+      "cadre": "current state and next-24h-arrival latent z; truth audit only",
+      "discharges": "changed patient plans, not actual discharges or effect estimates",
+      "execution": "synchronous synthetic requests; no network or real SI actions",
+      "learning": "use emitted live observations; never re-noise the truth",
+      "plugin_boundary": "typed data boundary for trusted code, not a security sandbox",
+      "probabilities": "recommendation q is not the propensity of executed actions",
+      "recommendations": "independent lever Bernoulli; shared unit/day exposure",
+      "reinforcement": "two shifts confirmed at request time; no simulated no-show"
+    },
+    "checks": {
+      "action_origins": {
+        "approved_recommendation": 797,
+        "cadre_initiative": 486,
+        "none": 4557
+      },
+      "approvals": {
+        "approved": 797,
+        "not_presented": 180,
+        "not_recommended": 4514,
+        "rejected": 349
+      },
+      "decision_contexts": 365,
+      "decision_records": 5840,
+      "executions": {
+        "applied": 916,
+        "failed": 43,
+        "not_applicable": 199,
+        "not_requested": 4557,
+        "partially_applied": 125
+      },
+      "online_replay_equal": true,
+      "physical": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      }
+    },
+    "config_sha256": "f3d4483502a8a6087b6c25c34b1b66dc1ba20cb4e979596019352260e23d3607",
+    "counts": {
+      "deliveries": 39669,
+      "features": 61320,
+      "truth_events": 152034
+    },
+    "data_role": "closed_loop_observed_policy",
+    "files_sha256": {
+      "config.json": "5c4560b8526668edf65e467f080566900e0413bd3e85108710a517b4770c98d6",
+      "decisions/contexts.jsonl.gz": "f39caea7c6e35ee27a1c3dc96815e3c001e50ea32f13f5b67f7c8448754ad9ee",
+      "decisions/ledger.jsonl.gz": "210d8b3d45983b4de0122baf1d0888e1750d6eab2646b7423543c53a8aaaa823",
+      "decisions/recommendations.jsonl.gz": "9b18690b1b4772bcc1b621d12b39f66bf92bc099746cc31cad7e4a8bc4e5f8f6",
+      "features/asof.jsonl.gz": "23ac985347569ad4fbbfc0926e7278ff1485d1c31f181590e196d6436d22b5a0",
+      "observed/unit_states.jsonl.gz": "b292accd459ee096a8d3b37491c554bda10cd7b79b2ce57736c97a6544cede70",
+      "policy.json": "c8c2eb17ac014bde1dbfd191fd4f0eb679b9e3aa5c0aaa5e2d84737be3043c9d",
+      "simulation/config.json": "d9ef25c38b52b221aaf3468a9cfbd220399bbc20d5be92690d60aa61da01692c",
+      "simulation/manifest.json": "315cb8a9a2dd98479f70b5e9a522f10ee543679967bbc46acd879831792a9562",
+      "simulation/truth/events.jsonl.gz": "c548a120c40b45c7794b8bac08d5b448ea9e037333f32d9e923ac2d0c4ea018c",
+      "simulation/truth/hospital_hourly.csv": "c6932ad5b3ab317ec425888bd5c89b1ebfd801028a4a7acb8a74c9d964028090",
+      "simulation/truth/poles_hourly.csv": "f9976515f300ca89a2677a49187ac61edb0990c9d5784f29cac1ddfd10bbb830",
+      "simulation/truth/shared_resources_hourly.csv": "4d91e8a628cf0950235a152162a61d9c03d25471c67465245e74e532489d2448",
+      "simulation/truth/units_hourly.csv": "0d08f5f8b8b4f7d3ca3ed1866fc335c2858e608a9a2041e9f5f0af042b323400",
+      "truth/cadre_private.jsonl.gz": "517856830e7a3475524ca7aa0cf829011fb070a8dee14cd887e556d214dfe3ed"
+    },
+    "hospital_id": "H_SYN_001",
+    "partition": "development",
+    "policy": {
+      "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+      "policy_id": "observed_rules",
+      "version": "1"
+    },
+    "run_id": "07934d8420ba3024dc8ba0e2",
+    "runtime": {
+      "numpy": "2.3.5",
+      "pandas": "2.2.3",
+      "pydantic": "2.13.5",
+      "python": "3.12.14"
+    },
+    "schema_version": "0.1",
+    "settings": {
+      "decision_hour": 9,
+      "observation": {
+        "availability_delay_minutes": 0.5,
+        "charge_noise_sigma": 0.1,
+        "downstream_documented_probability": 0.8,
+        "duplicate_probability": 0.008,
+        "ingestion_delay_max_minutes": 15.0,
+        "ingestion_delay_min_minutes": 1.0,
+        "load_delay_multiplier": 1.6,
+        "load_missing_multiplier": 2.0,
+        "missing_probability": 0.05,
+        "mode": "site_v1",
+        "outages": [
+          {
+            "ends_at": "2025-04-05T08:00:00+01:00",
+            "outage_id": "OUTAGE_HOSPITAL_APRIL",
+            "starts_at": "2025-04-03T08:00:00+01:00",
+            "unit_ids": []
+          },
+          {
+            "ends_at": "2025-10-03T00:00:00+01:00",
+            "outage_id": "OUTAGE_MED_OCTOBER",
+            "starts_at": "2025-10-01T00:00:00+01:00",
+            "unit_ids": [
+              "U_MED"
+            ]
+          }
+        ],
+        "ready_documented_probability": 0.6,
+        "recording_delay_median_minutes": 30.0,
+        "recording_delay_sigma": 0.9,
+        "revision_delay_max_h": 48.0,
+        "revision_delay_min_h": 6.0,
+        "revision_probability": 0.02
+      },
+      "observation_profile": "site_v1_snapshot_stream_v1",
+      "stale_after_h": 6.0,
+      "warmup": "common inherited policy"
+    },
+    "source_sha256": {
+      "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+      "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+      "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+      "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+      "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+      "changes.py": "b7b5fb76240ea6f46c4ae09d9051519da4c9ee1abc6c4c513a71492ed9242f92",
+      "cohort.py": "51cff58ed4950440e49b9045ec36b9b8dcd754752feba138ce80b45ea472dec7",
+      "config.py": "fcbdc201589a5f314a632e8414558581eb25794eeab8c3a554bb037bdb48a5c3",
+      "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+      "dynamics.py": "2e3703229b122345bf3d6a91522f656fa4fbf159cb26207484dd075ec0be1672",
+      "engine.py": "781cfce182a87ab9d2300be423e3fe98904f37524aac30d695bfdf6184cb3471",
+      "generate.py": "0d82147544cedae89d9cec72c5ad4fe0c21d43489736d2e6f2480cb36d306c76",
+      "learning.py": "1ab7323336b2f9890bd2410b225b36e06e29cbc0d9c629a3069a75e9ff217eaf",
+      "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+      "observation_profiles.py": "d27ad55134ef36c13c28ca8e3e813f62612c8ed6d01e316390fec562e3e3358c",
+      "observations.py": "87671aa8742bc73666365adc21b950fe6d5f377c329bc76ffd2722e0051dee6e",
+      "online.py": "db31b7d848a4ca3a2815f64a617f15e00473b33d6a40dea0c21c1dda9a41743f",
+      "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+      "policy_loop.py": "32b7a097b9a22eedccf9cb22da6ed80477a6d6ac72e8cc64b74d52459e80b3bb",
+      "registry.py": "ebc32bb715138fbf36e4ec905bfe8a611b0953f78786219e98f4c89458b378b5",
+      "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+      "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+      "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+      "v041/hospsim.py": "1fcb6a2ed467130a6b09b08d2a4a79a731e2453fbffdfeac29d9fdab4c7159b8",
+      "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+      "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+      "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+      "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+      "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+      "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+      "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+      "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+    },
+    "status": "complete",
+    "synthetic_only": true,
+    "test_opened": false,
+    "truth_manifest_sha256": "315cb8a9a2dd98479f70b5e9a522f10ee543679967bbc46acd879831792a9562"
+  },
+  "policy_files_verified": 15,
+  "policy_transmission": {
+    "receipts_checked": 39669,
+    "receipts_from_outage_hours_delivered_later": 238
+  },
+  "purpose": "observation diagnostics on common physics; no learned generalization claim",
+  "script_sha256": "ba8c3395a52aa5b4ca9f26cbe15e3a7fb657b26ab854cf30939c426cc88bfe59",
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+    "changes.py": "b7b5fb76240ea6f46c4ae09d9051519da4c9ee1abc6c4c513a71492ed9242f92",
+    "cohort.py": "51cff58ed4950440e49b9045ec36b9b8dcd754752feba138ce80b45ea472dec7",
+    "config.py": "fcbdc201589a5f314a632e8414558581eb25794eeab8c3a554bb037bdb48a5c3",
+    "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+    "dynamics.py": "2e3703229b122345bf3d6a91522f656fa4fbf159cb26207484dd075ec0be1672",
+    "engine.py": "781cfce182a87ab9d2300be423e3fe98904f37524aac30d695bfdf6184cb3471",
+    "generate.py": "0d82147544cedae89d9cec72c5ad4fe0c21d43489736d2e6f2480cb36d306c76",
+    "learning.py": "1ab7323336b2f9890bd2410b225b36e06e29cbc0d9c629a3069a75e9ff217eaf",
+    "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+    "observation_profiles.py": "d27ad55134ef36c13c28ca8e3e813f62612c8ed6d01e316390fec562e3e3358c",
+    "observations.py": "87671aa8742bc73666365adc21b950fe6d5f377c329bc76ffd2722e0051dee6e",
+    "online.py": "db31b7d848a4ca3a2815f64a617f15e00473b33d6a40dea0c21c1dda9a41743f",
+    "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+    "policy_loop.py": "32b7a097b9a22eedccf9cb22da6ed80477a6d6ac72e8cc64b74d52459e80b3bb",
+    "registry.py": "ebc32bb715138fbf36e4ec905bfe8a611b0953f78786219e98f4c89458b378b5",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "1fcb6a2ed467130a6b09b08d2a4a79a731e2453fbffdfeac29d9fdab4c7159b8",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "synthetic_only": true,
+  "test_opened": false,
+  "warmup_days": 61
+}

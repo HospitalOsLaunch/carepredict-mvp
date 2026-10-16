@@ -1,0 +1,60 @@
+{
+  "clock": "fixed UTC+01:00; decision at boundary h; snapshot h-1 ends at h",
+  "counts": {
+    "deliveries": 41335,
+    "features": 61320,
+    "labels": 61320
+  },
+  "data_role": "observations_features_targets_separated",
+  "files_sha256": {
+    "config.json": "c62a343a22c638a7aa10340425f88c739a07868fa785bea60785fdb9b919d3df",
+    "evaluation/metrics.json": "8cd8cc950ed31b0b016290007fbd3a0d72d2a6723a2ebb73843d5895c7cfb9ec",
+    "evaluation/persistence_24h.csv": "ef7fb553e4272082e1e88c41079c5f37b2745905712ed732e37d6eaab5afdd2d",
+    "features/asof.jsonl.gz": "10bb8c20154476530b7d5fcb972f3366ceb7b6647424a6ed3220cc5772773770",
+    "observed/unit_states.jsonl.gz": "6bdd5b1ffb2c9205bfaf86d5284f891213705a52d108a65cc2c8fb7a4eaa396a",
+    "targets/occupancy_load_queue_24h.csv": "72b0f6e26caf03056573d7af689bfd5db4817d70f14a92089a5ba732d84d961f"
+  },
+  "hospital_id": "H_SYN_001",
+  "input_manifest_sha256": "f65f78c9351321c7c64296b182fd9d05dfc94c3851383415893334fdcf07cf53",
+  "partition": "development",
+  "run_id": "16c7f775d794d866758b5bb3",
+  "runtime": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "pydantic": "2.13.5",
+    "python": "3.12.14"
+  },
+  "schema_version": "0.2",
+  "scope": "unit snapshots only; no patient trajectory/notes or learned model",
+  "settings": {
+    "horizon_h": 24,
+    "profile": "v041_unit_snapshot_end_of_hour_v1",
+    "seed": 41,
+    "stale_after_h": 6.0
+  },
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "a56d4bfe615fd48d9bd857b7eb6cdabe9ca23831d3337175b190ae71ae08e410",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "config.py": "203ad31478823bb69e37900dc7aa4e40131f9460a665ea821c48d5f90b734c02",
+    "engine.py": "ce4ac81e10b0048a24499f5c91cccf59f5b966308f45c01b9e2313f3e239252d",
+    "generate.py": "0ff165dc3d06f748b47398eef67044f0417ed83fac39f28930fe7ee3ea39bc41",
+    "learning.py": "cf29971d482b980a5dafd3729bf2befc1e6f33df7f71e08b4a65553320a6264f",
+    "observations.py": "5e6ddb54dfe3ce578fe9942ef257bce3663de9ab14295c8fda3ebf2dba05dc77",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "5b436ac186453d5f1d213a1ac33529472ff0271e0f7a1b00ce0091b608df1d7e",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "a6905db6b7152dd32b69f9ecacf33ee55e9e07340c1153d8c53a76cf8a4c7d9c",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "complete",
+  "synthetic_only": true
+}

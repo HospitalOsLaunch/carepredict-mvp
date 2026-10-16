@@ -1,0 +1,992 @@
+{
+  "synthetic_only": true,
+  "scope": "descriptive persistence reference; no model fitted, no test worlds opened",
+  "registry_sha256": "98b3ad763b43612b6c5db013a6634c934debd0568aa34f3babfc07beffd28698",
+  "totals": {
+    "worlds": 8,
+    "hospitals": 4,
+    "recorded_hospital_hours": 70080,
+    "checked_hospital_hours": 81792,
+    "unit_hour_rows": 350400,
+    "features": 595680,
+    "labels": 595680,
+    "deliveries": 412816,
+    "events_including_warmup": 1428205
+  },
+  "verified_child_files": 96,
+  "all_conservation_violations": 0,
+  "test_access": {
+    "opened": false,
+    "protocol": null
+  },
+  "references": [
+    {
+      "world_id": "W_40591951893f03aea12b2b47",
+      "hospital_id": "H_e35b0991a1fc69cdcf96b066",
+      "replicate": 0,
+      "partition": "validation",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 1.3775767292716445,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 187.36248167659184,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 6.2688960146587265,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.6623721746998014,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 73.78410740851503,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.9115991886986206,
+          "entities": 3
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.38223504774544353,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 43.328916055405614,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.834987178789211,
+          "entities": 6
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 5,
+          "eligible": 8737,
+          "n_scored": 8732,
+          "coverage": 0.9994277211857617,
+          "mae": 1.3775767292716445,
+          "rmse": 2.16188085091647,
+          "bias": 0.005153458543289051
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 5,
+          "eligible": 8737,
+          "n_scored": 8732,
+          "coverage": 0.9994277211857617,
+          "mae": 187.36248167659184,
+          "rmse": 360.70742129852664,
+          "bias": 3.1758256985799354
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 5,
+          "eligible": 8737,
+          "n_scored": 8732,
+          "coverage": 0.9994277211857617,
+          "mae": 6.2688960146587265,
+          "rmse": 7.787224229478899,
+          "bias": 0.06390288593678424
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 61916,
+        "snapshot_events_available": 60246,
+        "snapshots_not_delivered_by_cutoff": 1098,
+        "revisions": 1177,
+        "transport_duplicates": 493,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 20
+      }
+    },
+    {
+      "world_id": "W_6c647441df7591468497c95e",
+      "hospital_id": "H_e35b0991a1fc69cdcf96b066",
+      "replicate": 1,
+      "partition": "validation",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 1.3575681245706435,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 189.8625875887337,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 6.102816578887108,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.6454087474238608,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 74.42279367987176,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.8818410808335244,
+          "entities": 3
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.37434165330890773,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 43.547067017784904,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.8306236165178233,
+          "entities": 6
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 1.3575681245706435,
+          "rmse": 2.087588586114968,
+          "bias": -0.002862376917792535
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 189.8625875887337,
+          "rmse": 365.14098850950086,
+          "bias": 1.1039706892603622
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_e35b0991a1fc69cdcf96b066",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 6.102816578887108,
+          "rmse": 7.6671959807056655,
+          "bias": 0.015113350125944584
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 61923,
+        "snapshot_events_available": 60213,
+        "snapshots_not_delivered_by_cutoff": 1131,
+        "revisions": 1228,
+        "transport_duplicates": 482,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 18
+      }
+    },
+    {
+      "world_id": "W_8ed7d7f212af3ccde5ebcd7e",
+      "hospital_id": "H_1544411d67ce5d0db6ab52f7",
+      "replicate": 0,
+      "partition": "validation",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 1.040645752232654,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 166.4183398213877,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 6.437829173345546,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.49694679795435465,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 66.75485153805052,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.9823677581863977,
+          "entities": 3
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.2869055797267384,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 39.46191588428365,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.952942523471491,
+          "entities": 6
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 1.040645752232654,
+          "rmse": 1.5425793915709136,
+          "bias": 0.0035493473780627434
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 166.4183398213877,
+          "rmse": 316.2715894992223,
+          "bias": 2.3380054957636824
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 6.437829173345546,
+          "rmse": 7.820768180310551,
+          "bias": 0.0327455919395466
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 61942,
+        "snapshot_events_available": 60293,
+        "snapshots_not_delivered_by_cutoff": 1051,
+        "revisions": 1196,
+        "transport_duplicates": 453,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 18
+      }
+    },
+    {
+      "world_id": "W_5ecbd630f01cee6e9412dd63",
+      "hospital_id": "H_1544411d67ce5d0db6ab52f7",
+      "replicate": 1,
+      "partition": "validation",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 1.0161456544142906,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 165.83345814725755,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 6.250314897515173,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.48746463988311334,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 65.42109972986609,
+          "entities": 3
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.8868077303348882,
+          "entities": 3
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.2806340757363846,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 38.71617730225808,
+          "entities": 6
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.8828903393434093,
+          "entities": 6
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 1.0161456544142906,
+          "rmse": 1.4621449509374285,
+          "bias": 0.0022901637467078895
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 165.83345814725755,
+          "rmse": 313.28748315812066,
+          "bias": 2.6990621779457245
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_1544411d67ce5d0db6ab52f7",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 6.250314897515173,
+          "rmse": 7.744089031023392,
+          "bias": 0.0009160654986831558
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 62042,
+        "snapshot_events_available": 60318,
+        "snapshots_not_delivered_by_cutoff": 1026,
+        "revisions": 1260,
+        "transport_duplicates": 464,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 19
+      }
+    },
+    {
+      "world_id": "W_1191fde8da99eae0dffa34ce",
+      "hospital_id": "H_416145c20bdddbbd77f1cbc2",
+      "replicate": 0,
+      "partition": "train",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 0.9232882986031601,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 119.25512365468285,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 4.467483398213877,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.5798030684680558,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 67.62483340966338,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.8790359514540875,
+          "entities": 2
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.33816120906801006,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 39.898234772154794,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.8676150675520953,
+          "entities": 4
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 0.9232882986031601,
+          "rmse": 1.4538153652022006,
+          "bias": 0.0004579803068468056
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 119.25512365468285,
+          "rmse": 221.1223205524927,
+          "bias": 1.106252576139226
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 4.467483398213877,
+          "rmse": 5.478364716168646,
+          "bias": -0.02644836272040302
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 41201,
+        "snapshot_events_available": 40121,
+        "snapshots_not_delivered_by_cutoff": 775,
+        "revisions": 799,
+        "transport_duplicates": 281,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 12
+      }
+    },
+    {
+      "world_id": "W_a350dabe99f6a44f4633f641",
+      "hospital_id": "H_416145c20bdddbbd77f1cbc2",
+      "replicate": 1,
+      "partition": "train",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 0.8153194412640257,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 115.97681474696589,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 4.65548431417449,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.5133386764369132,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 65.85257155942296,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 2.9173918021525074,
+          "entities": 2
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.2949679413785207,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 38.913073047858944,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.874942752461644,
+          "entities": 4
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 0.8153194412640257,
+          "rmse": 1.206946917226676,
+          "bias": 0.0001144950767117014
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 115.97681474696589,
+          "rmse": 215.23494463957394,
+          "bias": 1.6342317380352644
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_416145c20bdddbbd77f1cbc2",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 4.65548431417449,
+          "rmse": 5.729405028314452,
+          "bias": 0.00652621937256698
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 41234,
+        "snapshot_events_available": 40149,
+        "snapshots_not_delivered_by_cutoff": 747,
+        "revisions": 782,
+        "transport_duplicates": 303,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 12
+      }
+    },
+    {
+      "world_id": "W_db8cf8d5957fb3d10b41978f",
+      "hospital_id": "H_49ee9e122d6c880354714fb4",
+      "replicate": 0,
+      "partition": "train",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 0.8722234943897412,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 127.95482367758186,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 4.7491412869246625,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.5499198534463018,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 72.27395065262195,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 3.0630295397297918,
+          "entities": 2
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.31875429356537666,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 42.64315176322418,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.9648786352186856,
+          "entities": 4
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 0.8722234943897412,
+          "rmse": 1.330878971480886,
+          "bias": 0.004579803068468056
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 127.95482367758186,
+          "rmse": 237.96549273362214,
+          "bias": 0.7412743302038008
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 3,
+          "eligible": 8737,
+          "n_scored": 8734,
+          "coverage": 0.999656632711457,
+          "mae": 4.7491412869246625,
+          "rmse": 5.90940884455845,
+          "bias": -0.019120677810854133
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 41263,
+        "snapshot_events_available": 40172,
+        "snapshots_not_delivered_by_cutoff": 724,
+        "revisions": 777,
+        "transport_duplicates": 314,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 12
+      }
+    },
+    {
+      "world_id": "W_f7a50cb80f44a70597c07bc6",
+      "hospital_id": "H_49ee9e122d6c880354714fb4",
+      "replicate": 1,
+      "partition": "train",
+      "macro_mae": [
+        {
+          "level": "hospital",
+          "target": "attente_urgences_nb",
+          "mae": 0.8535440283980305,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "charge_soins_min_h",
+          "mae": 129.34987862132144,
+          "entities": 1
+        },
+        {
+          "level": "hospital",
+          "target": "lits_occupes",
+          "mae": 4.78369403412344,
+          "entities": 1
+        },
+        {
+          "level": "pole",
+          "target": "attente_urgences_nb",
+          "mae": 0.5381596829914121,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "charge_soins_min_h",
+          "mae": 72.60390167362618,
+          "entities": 2
+        },
+        {
+          "level": "pole",
+          "target": "lits_occupes",
+          "mae": 3.003571805876449,
+          "entities": 2
+        },
+        {
+          "level": "unit",
+          "target": "attente_urgences_nb",
+          "mae": 0.31197901822982405,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "charge_soins_min_h",
+          "mae": 42.97140737887796,
+          "entities": 4
+        },
+        {
+          "level": "unit",
+          "target": "lits_occupes",
+          "mae": 1.9268171245774872,
+          "entities": 4
+        }
+      ],
+      "hospital_metrics": [
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "attente_urgences_nb",
+          "unit": "patients",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 0.8535440283980305,
+          "rmse": 1.255606914298305,
+          "bias": 0.0013740982480247338
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "charge_soins_min_h",
+          "unit": "care_minutes_per_hour",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 129.34987862132144,
+          "rmse": 240.57091297637194,
+          "bias": 2.26820451162258
+        },
+        {
+          "level": "hospital",
+          "entity_id": "H_49ee9e122d6c880354714fb4",
+          "target": "lits_occupes",
+          "unit": "beds",
+          "total": 8760,
+          "censored": 23,
+          "missing": 0,
+          "stale": 4,
+          "eligible": 8737,
+          "n_scored": 8733,
+          "coverage": 0.9995421769486094,
+          "mae": 4.78369403412344,
+          "rmse": 5.937477211320301,
+          "bias": -0.01328294973090576
+        }
+      ],
+      "observation_quality": {
+        "deliveries": 41295,
+        "snapshot_events_available": 40153,
+        "snapshots_not_delivered_by_cutoff": 743,
+        "revisions": 792,
+        "transport_duplicates": 350,
+        "unit_rows_missing": 0,
+        "unit_rows_stale": 13
+      }
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "schema_version": "0.1",
+  "hospital_id": "H_GHT600",
+  "seed": 600,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "partition": "development",
+  "mechanism_family": "v041",
+  "poles": [
+    {
+      "pole_id": "P_GERIATRIE",
+      "units": [
+        {
+          "unit_id": "CSG_A",
+          "template": "CSG",
+          "beds": 30,
+          "isolation_beds": 6,
+          "oxygen_beds": 18,
+          "arrival_scale": 1.12
+        },
+        {
+          "unit_id": "CSG_B",
+          "template": "CSG",
+          "beds": 30,
+          "isolation_beds": 6,
+          "oxygen_beds": 18,
+          "arrival_scale": 1.12
+        }
+      ]
+    },
+    {
+      "pole_id": "P_MEDECINE",
+      "units": [
+        {
+          "unit_id": "MPOLY_URG",
+          "template": "MED_POLY",
+          "beds": 30,
+          "isolation_beds": 5,
+          "oxygen_beds": 17,
+          "arrival_scale": 1.2
+        },
+        {
+          "unit_id": "MED_INT",
+          "template": "MED_POLY",
+          "beds": 28,
+          "isolation_beds": 5,
+          "oxygen_beds": 16,
+          "arrival_scale": 1.2
+        },
+        {
+          "unit_id": "MED_INF",
+          "template": "MED_POLY",
+          "beds": 28,
+          "isolation_beds": 5,
+          "oxygen_beds": 16,
+          "arrival_scale": 1.2
+        }
+      ]
+    },
+    {
+      "pole_id": "P_CARDIO_PNEUMO",
+      "units": [
+        {
+          "unit_id": "CARDIO_A",
+          "template": "CARDIO",
+          "beds": 28,
+          "isolation_beds": 5,
+          "oxygen_beds": 14,
+          "arrival_scale": 1.25
+        },
+        {
+          "unit_id": "CARDIO_B",
+          "template": "CARDIO",
+          "beds": 24,
+          "isolation_beds": 4,
+          "oxygen_beds": 12,
+          "arrival_scale": 1.25
+        },
+        {
+          "unit_id": "PNEUMO_A",
+          "template": "PNEUMO",
+          "beds": 28,
+          "isolation_beds": 8,
+          "oxygen_beds": 28,
+          "arrival_scale": 1.22
+        },
+        {
+          "unit_id": "PNEUMO_B",
+          "template": "PNEUMO",
+          "beds": 24,
+          "isolation_beds": 6,
+          "oxygen_beds": 24,
+          "arrival_scale": 1.22
+        }
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "STRUCT_CSG_A_0",
+      "kind": "bed_closure",
+      "unit_id": "CSG_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-04-07T07:00:00+01:00",
+      "ends_at": "2025-05-26T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CSG_A_1",
+      "kind": "bed_closure",
+      "unit_id": "CSG_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-09-15T07:00:00+01:00",
+      "ends_at": "2025-11-03T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CSG_B_0",
+      "kind": "bed_closure",
+      "unit_id": "CSG_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-07-14T07:00:00+01:00",
+      "ends_at": "2025-09-01T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CSG_B_1",
+      "kind": "bed_closure",
+      "unit_id": "CSG_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-09-08T07:00:00+01:00",
+      "ends_at": "2025-10-27T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MPOLY_URG_0",
+      "kind": "bed_closure",
+      "unit_id": "MPOLY_URG",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-03-10T07:00:00+01:00",
+      "ends_at": "2025-04-28T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MPOLY_URG_1",
+      "kind": "bed_closure",
+      "unit_id": "MPOLY_URG",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-05-19T07:00:00+01:00",
+      "ends_at": "2025-07-07T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MED_INT_0",
+      "kind": "bed_closure",
+      "unit_id": "MED_INT",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-01-07T07:00:00+01:00",
+      "ends_at": "2025-02-25T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MED_INT_1",
+      "kind": "bed_closure",
+      "unit_id": "MED_INT",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-05-19T07:00:00+01:00",
+      "ends_at": "2025-07-07T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MED_INF_0",
+      "kind": "bed_closure",
+      "unit_id": "MED_INF",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-01-13T07:00:00+01:00",
+      "ends_at": "2025-03-03T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_MED_INF_1",
+      "kind": "bed_closure",
+      "unit_id": "MED_INF",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-09-22T07:00:00+01:00",
+      "ends_at": "2025-11-10T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CARDIO_A_0",
+      "kind": "bed_closure",
+      "unit_id": "CARDIO_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-06-02T07:00:00+01:00",
+      "ends_at": "2025-07-21T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CARDIO_A_1",
+      "kind": "bed_closure",
+      "unit_id": "CARDIO_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-10-13T07:00:00+01:00",
+      "ends_at": "2025-12-01T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CARDIO_B_0",
+      "kind": "bed_closure",
+      "unit_id": "CARDIO_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-01-20T07:00:00+01:00",
+      "ends_at": "2025-03-10T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_CARDIO_B_1",
+      "kind": "bed_closure",
+      "unit_id": "CARDIO_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-10-20T07:00:00+01:00",
+      "ends_at": "2025-12-08T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_PNEUMO_A_0",
+      "kind": "bed_closure",
+      "unit_id": "PNEUMO_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-05-19T07:00:00+01:00",
+      "ends_at": "2025-07-07T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_PNEUMO_A_1",
+      "kind": "bed_closure",
+      "unit_id": "PNEUMO_A",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-10-27T07:00:00+01:00",
+      "ends_at": "2025-12-15T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_PNEUMO_B_0",
+      "kind": "bed_closure",
+      "unit_id": "PNEUMO_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-01-20T07:00:00+01:00",
+      "ends_at": "2025-03-10T07:00:00+01:00"
+    },
+    {
+      "change_id": "STRUCT_PNEUMO_B_1",
+      "kind": "bed_closure",
+      "unit_id": "PNEUMO_B",
+      "additional_closed_beds": 4,
+      "starts_at": "2025-10-27T07:00:00+01:00",
+      "ends_at": "2025-12-15T07:00:00+01:00"
+    }
+  ],
+  "documentary": {
+    "staff_forecasts": "milestones_v1",
+    "downstream_confirmation": "request_delay_v1"
+  }
+}

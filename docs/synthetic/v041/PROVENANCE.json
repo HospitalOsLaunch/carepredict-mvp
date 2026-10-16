@@ -17,7 +17,10 @@
   "changes": [
     "Sibling imports made relative for packaging.",
     "Control subprocesses invoked as Python modules.",
-    "Exo accepts optional per-instance unit_specs; legacy defaults preserved."
+    "Exo accepts optional per-instance unit_specs; legacy defaults preserved.",
+    "Lot 04: extracted four overridable Sim hooks (hosting, discharge transport, repatriation, service starts); default trajectories checked against published lot 03 commit 3e9f76522baa5f155adcc3be1487d95911daaefc.",
+    "Lot 06: extracted ObservationStream from the batch observer without changing its per-event draws; batch output regression checked against published lot 05 commit 4d0e4f975456c369ac7dffc2ab41239604a0af83.",
+    "Lot 13: added optional source-document hooks for staff reviews, declared destination and downstream confirmations; default trajectories regression-checked against published lot 03. Alternative mechanisms do not change physical discharge."
   ],
   "generated_corpus_included": false
 }
