@@ -1,0 +1,70 @@
+{
+  "cohort_id": "C_DISCHARGES_V1",
+  "seed": 7007,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "split_axis": "discharges",
+  "structures": [
+    {
+      "structure_id": "S_TRAIN",
+      "partition": "train",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "discharges": "v041"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_VALIDATION",
+      "partition": "validation",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "discharges": "daily_rounds_v1"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_TEST",
+      "partition": "test",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "discharges": "rolling_v1"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    }
+  ]
+}

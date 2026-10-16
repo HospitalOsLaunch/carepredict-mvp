@@ -1,0 +1,1179 @@
+{
+  "plan": {
+    "cohort_id": "C_BASELINES_V1",
+    "days": 365,
+    "ranges": {
+      "arrival_max": 1.2,
+      "arrival_min": 0.8,
+      "beds_max": 32,
+      "beds_min": 20,
+      "resource_max": 1.2,
+      "resource_min": 0.8
+    },
+    "schema_version": "0.1",
+    "seed": 481516,
+    "split_axis": "structure",
+    "start": "2025-01-01",
+    "structures": [
+      {
+        "hospitals": 2,
+        "mechanism_family": "v041",
+        "partition": "train",
+        "poles": [
+          [
+            "MED_POLY",
+            "CSG"
+          ],
+          [
+            "PNEUMO",
+            "CARDIO"
+          ]
+        ],
+        "replicates": 2,
+        "structure_id": "S_TWO_POLES"
+      },
+      {
+        "hospitals": 2,
+        "mechanism_family": "v041",
+        "partition": "validation",
+        "poles": [
+          [
+            "MED_POLY",
+            "CSG"
+          ],
+          [
+            "PNEUMO",
+            "CARDIO"
+          ],
+          [
+            "MED_POLY",
+            "PNEUMO"
+          ]
+        ],
+        "replicates": 2,
+        "structure_id": "S_THREE_POLES"
+      },
+      {
+        "hospitals": 2,
+        "mechanism_family": "v041",
+        "partition": "test",
+        "poles": [
+          [
+            "MED_POLY",
+            "CSG"
+          ],
+          [
+            "PNEUMO",
+            "CARDIO"
+          ],
+          [
+            "MED_POLY",
+            "PNEUMO"
+          ],
+          [
+            "CSG",
+            "CARDIO"
+          ]
+        ],
+        "replicates": 2,
+        "structure_id": "S_FOUR_POLES"
+      }
+    ],
+    "warmup_days": 61
+  },
+  "schema_version": "0.1",
+  "worlds": [
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_2f5a33340afbc1f33c608310",
+        "mechanism_family": "v041",
+        "partition": "test",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 0.943996,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 17,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.868641,
+                "beds": 27,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.08541,
+                "beds": 31,
+                "isolation_beds": 8,
+                "oxygen_beds": 31,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.828277,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.066004,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 1.199546,
+                "beds": 30,
+                "isolation_beds": 8,
+                "oxygen_beds": 30,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_03",
+            "units": [
+              {
+                "arrival_scale": 0.94567,
+                "beds": 30,
+                "isolation_beds": 6,
+                "oxygen_beds": 17,
+                "template": "CSG",
+                "unit_id": "U_03_00"
+              },
+              {
+                "arrival_scale": 0.955156,
+                "beds": 24,
+                "isolation_beds": 4,
+                "oxygen_beds": 12,
+                "template": "CARDIO",
+                "unit_id": "U_03_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 3491089552,
+        "shared_resources": {
+          "cleaning": 1.163703,
+          "imaging": 1.163453,
+          "specialist": 0.885404,
+          "transport": 0.877411
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 0,
+      "structure_id": "S_FOUR_POLES",
+      "structure_sha256": "3624c6f9f11c1e431d36c5abc3663e6b3e751b8f5ccf3a701b02a956845f4043",
+      "world_id": "W_1207437b93d5a8103c0a2afd"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_2f5a33340afbc1f33c608310",
+        "mechanism_family": "v041",
+        "partition": "test",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 0.943996,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 17,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.868641,
+                "beds": 27,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.08541,
+                "beds": 31,
+                "isolation_beds": 8,
+                "oxygen_beds": 31,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.828277,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.066004,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 1.199546,
+                "beds": 30,
+                "isolation_beds": 8,
+                "oxygen_beds": 30,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_03",
+            "units": [
+              {
+                "arrival_scale": 0.94567,
+                "beds": 30,
+                "isolation_beds": 6,
+                "oxygen_beds": 17,
+                "template": "CSG",
+                "unit_id": "U_03_00"
+              },
+              {
+                "arrival_scale": 0.955156,
+                "beds": 24,
+                "isolation_beds": 4,
+                "oxygen_beds": 12,
+                "template": "CARDIO",
+                "unit_id": "U_03_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 1429066290,
+        "shared_resources": {
+          "cleaning": 1.163703,
+          "imaging": 1.163453,
+          "specialist": 0.885404,
+          "transport": 0.877411
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 1,
+      "structure_id": "S_FOUR_POLES",
+      "structure_sha256": "3624c6f9f11c1e431d36c5abc3663e6b3e751b8f5ccf3a701b02a956845f4043",
+      "world_id": "W_dfdbec499e4c1ab615ef3c88"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_ff947f843515a808f2f23ec9",
+        "mechanism_family": "v041",
+        "partition": "test",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.065208,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 15,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 1.072972,
+                "beds": 20,
+                "isolation_beds": 4,
+                "oxygen_beds": 11,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.023864,
+                "beds": 29,
+                "isolation_beds": 7,
+                "oxygen_beds": 29,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 1.046849,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.037441,
+                "beds": 32,
+                "isolation_beds": 5,
+                "oxygen_beds": 18,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.935135,
+                "beds": 32,
+                "isolation_beds": 8,
+                "oxygen_beds": 32,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_03",
+            "units": [
+              {
+                "arrival_scale": 1.140116,
+                "beds": 20,
+                "isolation_beds": 4,
+                "oxygen_beds": 11,
+                "template": "CSG",
+                "unit_id": "U_03_00"
+              },
+              {
+                "arrival_scale": 1.099946,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_03_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 494167626,
+        "shared_resources": {
+          "cleaning": 0.867922,
+          "imaging": 0.859042,
+          "specialist": 1.055731,
+          "transport": 0.8205
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 0,
+      "structure_id": "S_FOUR_POLES",
+      "structure_sha256": "3624c6f9f11c1e431d36c5abc3663e6b3e751b8f5ccf3a701b02a956845f4043",
+      "world_id": "W_0d121d3e4e19f6712c5472d3"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_ff947f843515a808f2f23ec9",
+        "mechanism_family": "v041",
+        "partition": "test",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.065208,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 15,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 1.072972,
+                "beds": 20,
+                "isolation_beds": 4,
+                "oxygen_beds": 11,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.023864,
+                "beds": 29,
+                "isolation_beds": 7,
+                "oxygen_beds": 29,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 1.046849,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.037441,
+                "beds": 32,
+                "isolation_beds": 5,
+                "oxygen_beds": 18,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.935135,
+                "beds": 32,
+                "isolation_beds": 8,
+                "oxygen_beds": 32,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_03",
+            "units": [
+              {
+                "arrival_scale": 1.140116,
+                "beds": 20,
+                "isolation_beds": 4,
+                "oxygen_beds": 11,
+                "template": "CSG",
+                "unit_id": "U_03_00"
+              },
+              {
+                "arrival_scale": 1.099946,
+                "beds": 27,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_03_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 415049077,
+        "shared_resources": {
+          "cleaning": 0.867922,
+          "imaging": 0.859042,
+          "specialist": 1.055731,
+          "transport": 0.8205
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 1,
+      "structure_id": "S_FOUR_POLES",
+      "structure_sha256": "3624c6f9f11c1e431d36c5abc3663e6b3e751b8f5ccf3a701b02a956845f4043",
+      "world_id": "W_eaa2ba8f707f3bf0f7c96525"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_0f914a27e8b968aab7fad243",
+        "mechanism_family": "v041",
+        "partition": "validation",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.021918,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.877505,
+                "beds": 24,
+                "isolation_beds": 5,
+                "oxygen_beds": 14,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 0.826931,
+                "beds": 27,
+                "isolation_beds": 7,
+                "oxygen_beds": 27,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.840158,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 0.861046,
+                "beds": 29,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.82146,
+                "beds": 32,
+                "isolation_beds": 8,
+                "oxygen_beds": 32,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 977628067,
+        "shared_resources": {
+          "cleaning": 0.832065,
+          "imaging": 0.882941,
+          "specialist": 0.816135,
+          "transport": 0.950341
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 0,
+      "structure_id": "S_THREE_POLES",
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "world_id": "W_d5d46562845f55681156d2de"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_0f914a27e8b968aab7fad243",
+        "mechanism_family": "v041",
+        "partition": "validation",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.021918,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.877505,
+                "beds": 24,
+                "isolation_beds": 5,
+                "oxygen_beds": 14,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 0.826931,
+                "beds": 27,
+                "isolation_beds": 7,
+                "oxygen_beds": 27,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.840158,
+                "beds": 31,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 0.861046,
+                "beds": 29,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.82146,
+                "beds": 32,
+                "isolation_beds": 8,
+                "oxygen_beds": 32,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 3291978464,
+        "shared_resources": {
+          "cleaning": 0.832065,
+          "imaging": 0.882941,
+          "specialist": 0.816135,
+          "transport": 0.950341
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 1,
+      "structure_id": "S_THREE_POLES",
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "world_id": "W_5fdd56583a5df26b812d3e62"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_ec101355656e479aab6f82c4",
+        "mechanism_family": "v041",
+        "partition": "validation",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 0.827417,
+                "beds": 26,
+                "isolation_beds": 4,
+                "oxygen_beds": 14,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 1.038611,
+                "beds": 28,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.102469,
+                "beds": 25,
+                "isolation_beds": 6,
+                "oxygen_beds": 25,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.957908,
+                "beds": 26,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.179996,
+                "beds": 24,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.862822,
+                "beds": 23,
+                "isolation_beds": 6,
+                "oxygen_beds": 23,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 3939086050,
+        "shared_resources": {
+          "cleaning": 0.986263,
+          "imaging": 1.104564,
+          "specialist": 1.0015,
+          "transport": 1.069784
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 0,
+      "structure_id": "S_THREE_POLES",
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "world_id": "W_4d1e3c3ab7470c56e143e099"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_ec101355656e479aab6f82c4",
+        "mechanism_family": "v041",
+        "partition": "validation",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 0.827417,
+                "beds": 26,
+                "isolation_beds": 4,
+                "oxygen_beds": 14,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 1.038611,
+                "beds": 28,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.102469,
+                "beds": 25,
+                "isolation_beds": 6,
+                "oxygen_beds": 25,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.957908,
+                "beds": 26,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_02",
+            "units": [
+              {
+                "arrival_scale": 1.179996,
+                "beds": 24,
+                "isolation_beds": 4,
+                "oxygen_beds": 13,
+                "template": "MED_POLY",
+                "unit_id": "U_02_00"
+              },
+              {
+                "arrival_scale": 0.862822,
+                "beds": 23,
+                "isolation_beds": 6,
+                "oxygen_beds": 23,
+                "template": "PNEUMO",
+                "unit_id": "U_02_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 1632030902,
+        "shared_resources": {
+          "cleaning": 0.986263,
+          "imaging": 1.104564,
+          "specialist": 1.0015,
+          "transport": 1.069784
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 1,
+      "structure_id": "S_THREE_POLES",
+      "structure_sha256": "67101ab7b5a95fadc21b5ef3bb017190bd30c0ae8ede5052b84ad5061a00b51a",
+      "world_id": "W_fcdb40721d60319ccf70d62f"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_b5bb2179162cd1342ab32a59",
+        "mechanism_family": "v041",
+        "partition": "train",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.136667,
+                "beds": 20,
+                "isolation_beds": 3,
+                "oxygen_beds": 11,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.916721,
+                "beds": 28,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.039607,
+                "beds": 24,
+                "isolation_beds": 6,
+                "oxygen_beds": 24,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.80597,
+                "beds": 30,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 2919659013,
+        "shared_resources": {
+          "cleaning": 0.869303,
+          "imaging": 1.183218,
+          "specialist": 0.805912,
+          "transport": 0.843965
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 0,
+      "structure_id": "S_TWO_POLES",
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "world_id": "W_11af6cd214b6d666d875e02b"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_b5bb2179162cd1342ab32a59",
+        "mechanism_family": "v041",
+        "partition": "train",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.136667,
+                "beds": 20,
+                "isolation_beds": 3,
+                "oxygen_beds": 11,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.916721,
+                "beds": 28,
+                "isolation_beds": 5,
+                "oxygen_beds": 16,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.039607,
+                "beds": 24,
+                "isolation_beds": 6,
+                "oxygen_beds": 24,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.80597,
+                "beds": 30,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 1169920620,
+        "shared_resources": {
+          "cleaning": 0.869303,
+          "imaging": 1.183218,
+          "specialist": 0.805912,
+          "transport": 0.843965
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 0,
+      "replicate": 1,
+      "structure_id": "S_TWO_POLES",
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "world_id": "W_d409bdd06eb3cd0c5b73cc8a"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_344bc2ae906e82c84369dd31",
+        "mechanism_family": "v041",
+        "partition": "train",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.157175,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.840168,
+                "beds": 26,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.1104,
+                "beds": 29,
+                "isolation_beds": 7,
+                "oxygen_beds": 29,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.89571,
+                "beds": 29,
+                "isolation_beds": 4,
+                "oxygen_beds": 14,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 1344615778,
+        "shared_resources": {
+          "cleaning": 1.1329,
+          "imaging": 1.066661,
+          "specialist": 1.185155,
+          "transport": 1.152423
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 0,
+      "structure_id": "S_TWO_POLES",
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "world_id": "W_93cbba737962d9a009da7d75"
+    },
+    {
+      "config": {
+        "cross_pole_delay_h": 12,
+        "days": 365,
+        "hospital_id": "H_344bc2ae906e82c84369dd31",
+        "mechanism_family": "v041",
+        "partition": "train",
+        "pole_resource_weights": [],
+        "poles": [
+          {
+            "pole_id": "P_00",
+            "units": [
+              {
+                "arrival_scale": 1.157175,
+                "beds": 22,
+                "isolation_beds": 3,
+                "oxygen_beds": 12,
+                "template": "MED_POLY",
+                "unit_id": "U_00_00"
+              },
+              {
+                "arrival_scale": 0.840168,
+                "beds": 26,
+                "isolation_beds": 5,
+                "oxygen_beds": 15,
+                "template": "CSG",
+                "unit_id": "U_00_01"
+              }
+            ]
+          },
+          {
+            "pole_id": "P_01",
+            "units": [
+              {
+                "arrival_scale": 1.1104,
+                "beds": 29,
+                "isolation_beds": 7,
+                "oxygen_beds": 29,
+                "template": "PNEUMO",
+                "unit_id": "U_01_00"
+              },
+              {
+                "arrival_scale": 0.89571,
+                "beds": 29,
+                "isolation_beds": 4,
+                "oxygen_beds": 14,
+                "template": "CARDIO",
+                "unit_id": "U_01_01"
+              }
+            ]
+          }
+        ],
+        "routing_links": [],
+        "schema_version": "0.1",
+        "seed": 35722555,
+        "shared_resources": {
+          "cleaning": 1.1329,
+          "imaging": 1.066661,
+          "specialist": 1.185155,
+          "transport": 1.152423
+        },
+        "start": "2025-01-01",
+        "warmup_days": 61
+      },
+      "hospital_index": 1,
+      "replicate": 1,
+      "structure_id": "S_TWO_POLES",
+      "structure_sha256": "5ec36daaa33af95e316dc9545fff2853f52ff1e0bacfeaaf7fb2657ec624efd7",
+      "world_id": "W_53701307b274df2c4abf2706"
+    }
+  ]
+}

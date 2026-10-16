@@ -11,6 +11,7 @@ import numpy as np
 from pydantic import Field, StrictInt, model_validator
 
 from .config import FrozenConfig, HospitalConfig
+from .observation_profiles import observation_stream
 from .v041 import hospsim, observation
 
 _HS: Any = hospsim
@@ -122,7 +123,23 @@ def observe_snapshots(events: Iterable[dict[str, Any]], config: HospitalConfig) 
     if len(slots) != len(dates) * 24 * len(config.units):
         raise ValueError("Incomplete truth snapshot grid")
     snapshots.sort(key=lambda row: (row["h"], row["event_id"]))
-    delivered, _ = _OBS.observer(snapshots, calendar, config.seed, np.datetime64(start))
+    if config.observation.mode == "v041":
+        delivered, _ = _OBS.observer(snapshots, calendar, config.seed, np.datetime64(start))
+    else:
+        adapter = observation_stream(config, calendar)
+        delivered = [
+            {**raw, "delivery_id": f"{event['event_id']}:receipt{receipt}"}
+            for event in snapshots
+            for receipt, raw in enumerate(adapter.observe(event))
+        ]
+        delivered.sort(
+            key=lambda row: (
+                row["t_disponible"],
+                row["event_id"],
+                row["event_version"],
+                row["delivery_id"],
+            )
+        )
     result = []
     for row in delivered:
         if row["t_disponible"] - offset > config.days * 24:

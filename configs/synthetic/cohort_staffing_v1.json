@@ -1,0 +1,70 @@
+{
+  "cohort_id": "C_STAFFING_V1",
+  "seed": 7007,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "split_axis": "staffing",
+  "structures": [
+    {
+      "structure_id": "S_TRAIN",
+      "partition": "train",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "staffing": "v041"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_VALIDATION",
+      "partition": "validation",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "staffing": "persistent_absence_v1"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_TEST",
+      "partition": "test",
+      "mechanism_family": "v041",
+      "dynamics": {
+        "staffing": "shared_float_v1"
+      },
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    }
+  ]
+}

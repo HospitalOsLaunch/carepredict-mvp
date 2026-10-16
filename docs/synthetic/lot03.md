@@ -5,6 +5,10 @@ GEN-003 fournit un plan de cohorte figé avant génération, des configurations 
 Le pipeline du [lot 02](lot02.md) peut produire les observations telles que connues,
 les variables, les cibles et la référence à 24 h pour chaque monde.
 
+Le [lot 04](lot04.md) étend ce registre à trois organisations opérationnelles et
+rend possible la réservation d'une de ces variantes par mécanisme. Les limites
+ci-dessous concernant la seule famille v041 décrivent le périmètre du lot 03.
+
 Aucun modèle n'est entraîné dans ce lot. Le registre permet de préparer une
 évaluation sur des structures inédites ; il ne démontre pas la généralisation.
 
