@@ -34,6 +34,8 @@ jobs:
         run: python -m mypy --strict src/hospitalos/synthetic/documentary.py scripts/validate_synthetic_documentary.py
       - name: Type-check realism measurement contract
         run: python -m mypy --strict src/hospitalos/synthetic/realism.py
+      - name: Type-check finite SMR allocation
+        run: python -m mypy --strict src/hospitalos/synthetic/smr.py
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations

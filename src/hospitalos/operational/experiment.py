@@ -91,6 +91,10 @@ def configs(plan: dict[str, Any]) -> list[HospitalConfig]:
                     }
                 )
             )
+    if "smr_comparison" in plan:
+        from .smr_experiment import configure
+
+        result = configure(result, plan["smr_comparison"])
     return result
 
 

@@ -103,10 +103,15 @@ def aggregate(rows: list[dict[str, Any]], level: str) -> list[dict[str, Any]]:
 def _csv(path: Path, rows: list[dict[str, Any]]) -> None:
     if not rows:
         raise ValueError(f"Empty hourly export: {path.name}")
-    with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+    writer.writeheader()
+    writer.writerows(rows)
+    payload = stream.getvalue().encode("utf-8")
+    # A checksum of a truncated file is still a valid checksum. Verify the write
+    # against the intended payload before producing a "complete" manifest.
+    if path.write_bytes(payload) != len(payload) or path.read_bytes() != payload:
+        raise RuntimeError(f"Incomplete CSV write: {path.name}")
 
 
 def _jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
@@ -215,6 +220,8 @@ def export_result(
             "mechanism_family": config.mechanism_family,
             "dynamics": config.dynamics.model_dump(mode="json"),
             "documentary": config.documentary.model_dump(mode="json"),
+            "clinical": config.clinical.model_dump(mode="json"),
+            "smr": config.smr.model_dump(mode="json"),
             "observation": {
                 "profile": config.observation.model_dump(mode="json"),
                 "role": "observation_generator_only_not_policy_inputs",
@@ -258,6 +265,15 @@ def export_result(
                 "family": config.mechanism_family,
                 "dynamics": "versioned engineering assumptions; not calibrated to real data",
                 "documentary": documentary_assumptions(config),
+                "smr": (
+                    "Finite shared SMR beds; current ready scenario need, oxygen/isolation "
+                    "compatibility; weekday FIFO offers, expiring reservations, transport, "
+                    "occupied stays, outside demand. SMR acceleration has no implemented effect. "
+                    "EHPAD/home retain legacy rules. SMR ledger is truth only; not a calibrated "
+                    "clinical eligibility or territorial model."
+                    if config.smr.mode == "finite_v1"
+                    else "legacy sampled delay; no finite SMR beds"
+                ),
             },
         }
         (staging / "manifest.json").write_text(

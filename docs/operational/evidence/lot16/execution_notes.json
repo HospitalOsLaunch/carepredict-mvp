@@ -1,0 +1,343 @@
+{
+  "attempt": 1,
+  "complete_event_state_rows": 20160,
+  "expected_unit_rows": 20160,
+  "failed_world_manifests": {
+    "finite_v1": {
+      "assumptions": {
+        "arrivals": "template rates times arrival_scale; no occupancy calibration",
+        "clock": "fixed UTC+01:00; no daylight saving",
+        "documentary": [
+          "Charge is a noisy synthetic baseline proxy, not SIIPS or hourly delivered care.",
+          "Alternative staff plans/orientations use current findings, not future course.",
+          "Alternative confirmations use requests/current readiness, not bed allocation.",
+          "Documentary mechanisms do not change physical departure; mismatches are possible.",
+          "Uncalibrated engineering hypotheses; development inspection is not blind evaluation.",
+          "Finite SMR overrides SMR messages: need disclosed at readiness, confirmation only on reservation; cancellations/expiry release it.",
+          "Provisional non-SMR orientation may be revised at readiness; physical SMR request is separate from the documentary-delay machinery.",
+          "New SMR_* events contain current transitions, no future release time. They remain in simulation truth; common learning inputs are unchanged."
+        ],
+        "dynamics": "versioned engineering assumptions; not calibrated to real data",
+        "family": "v041",
+        "hosting": "all hospital units with compatible available beds",
+        "poles": "resource/routing boundaries for local_v1 and hybrid_v1",
+        "policy": "inherited v0.4.1 policy with privileged simulator information",
+        "resources": "hospital-wide shared queues",
+        "smr": "Finite shared SMR beds; current ready scenario need, oxygen/isolation compatibility; weekday FIFO offers, expiring reservations, transport, occupied stays, outside demand. SMR acceleration has no implemented effect. EHPAD/home retain legacy rules. SMR ledger is truth only; not a calibrated clinical eligibility or territorial model."
+      },
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 3552,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "clinical": {
+        "death_age_slope": 0.03,
+        "death_dependence_slope": 0.0,
+        "destinations": "conditional_survival_v1"
+      },
+      "config_sha256": "51638526e997eac6226f8de94e7799ca2c44aadfd020c45d2b4c5e82a4fd4f78",
+      "counts": {
+        "events_including_warmup": 103092,
+        "poles": 3,
+        "recorded_hours": 2880,
+        "resource_pool_hour_rows": 0,
+        "unit_hour_rows": 20160,
+        "units": 7
+      },
+      "data_role": "simulation_truth_not_training_inputs",
+      "documentary": {
+        "downstream_confirmation": "request_delay_v1",
+        "staff_forecasts": "milestones_v1"
+      },
+      "dynamics": {
+        "arrivals": "shared_bursts_v1",
+        "discharges": "rolling_v1",
+        "staffing": "shared_float_v1"
+      },
+      "files_sha256": {
+        "config.json": "03f42e71317704563f8d000fa63c1f6148e7cc31099fa636779806a3e4fee2fb",
+        "truth/events.jsonl.gz": "000c2b493ed9d4d45d02c25df513c56ff7f3a480ab643b82f44c624fb04b656a",
+        "truth/hospital_hourly.csv": "2eb29bcd82e76c4e5c773c7f3db5153bbec8de91a2ce55bd0829777ec532678b",
+        "truth/poles_hourly.csv": "b8be446fb895ec4e233413068f400ca5f36db3ee57f4cbf57f28b65c26060230",
+        "truth/shared_resources_hourly.csv": "d9c35ec4c23c8fa5168431783a3e1cee6a36fac6e34239b476d25828ecb4049c",
+        "truth/units_hourly.csv": "e0c30815ed0c80a599a1e53f037ee52113045e4422952a575de1cba273d909a6"
+      },
+      "hospital_id": "H16_validation_02",
+      "mechanism_family": "v041",
+      "observation": {
+        "profile": {
+          "availability_delay_minutes": 0.5,
+          "charge_noise_sigma": 0.1,
+          "downstream_documented_probability": 0.8,
+          "duplicate_probability": 0.008,
+          "ingestion_delay_max_minutes": 15.0,
+          "ingestion_delay_min_minutes": 1.0,
+          "load_delay_multiplier": 1.6,
+          "load_missing_multiplier": 2.0,
+          "missing_probability": 0.015,
+          "mode": "site_v1",
+          "outages": [],
+          "ready_documented_probability": 0.6,
+          "recording_delay_median_minutes": 12.0,
+          "recording_delay_sigma": 0.9,
+          "revision_delay_max_h": 48.0,
+          "revision_delay_min_h": 6.0,
+          "revision_probability": 0.02
+        },
+        "role": "observation_generator_only_not_policy_inputs"
+      },
+      "organisation_changes": {
+        "count": 0,
+        "schedule_role": "truth_only_not_policy_inputs",
+        "windows": "start_inclusive_end_exclusive; fixed UTC+01:00"
+      },
+      "partition": "validation",
+      "runtime": {
+        "numpy": "2.3.5",
+        "pandas": "2.2.3",
+        "pydantic": "2.13.5",
+        "python": "3.11.9"
+      },
+      "schema_version": "0.1",
+      "smr": {
+        "beds": 29,
+        "external_arrivals_per_day": 0.9400000000000001,
+        "external_isolation_probability": 0.05,
+        "external_oxygen_probability": 0.2,
+        "external_patience_h": 168,
+        "isolation_beds": 8,
+        "mode": "finite_v1",
+        "oxygen_beds": 29,
+        "preparation_h": 24,
+        "reservation_ttl_h": 48,
+        "retry_h": 24,
+        "review_hour": 10,
+        "stay_median_days": 21.0,
+        "stay_sigma": 0.45
+      },
+      "source_sha256": {
+        "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+        "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+        "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+        "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+        "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+        "changes.py": "b7b5fb76240ea6f46c4ae09d9051519da4c9ee1abc6c4c513a71492ed9242f92",
+        "cohort.py": "c9c609058b7c79d6e0f6dd2062464f1db035f803415c94600a1743acee31b1ee",
+        "config.py": "368e1ae796fce5bb580525fac6a4b0342fbbb77fe69f93055fcd2651a2347f45",
+        "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+        "documentary.py": "30a3306d3e4071b096cd851a716684712c60345b507f326d6836068977039f33",
+        "dynamics.py": "c025736bd9679ff2475d436951615ba9d99e3115452e96de402c1eeac20c05d4",
+        "engine.py": "b66b1f4c8fdd1a9c0e3672f99bfbfc1a3790313cc9662774690a2419d90f61dd",
+        "generate.py": "8523da80cd7abf82b2f8d9ee8347cd5c3f901cfc4bcba11d68c19f4dce665b0e",
+        "learning.py": "1ab7323336b2f9890bd2410b225b36e06e29cbc0d9c629a3069a75e9ff217eaf",
+        "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+        "observation_profiles.py": "d27ad55134ef36c13c28ca8e3e813f62612c8ed6d01e316390fec562e3e3358c",
+        "observations.py": "87671aa8742bc73666365adc21b950fe6d5f377c329bc76ffd2722e0051dee6e",
+        "online.py": "db31b7d848a4ca3a2815f64a617f15e00473b33d6a40dea0c21c1dda9a41743f",
+        "patient_asof.py": "b0d5c3a12c3c0ae5f193adfa61a3faafcfbf7de6249188ff09bde3f878d964df",
+        "patient_care.py": "6215338e12e31289edd6f71e7e37809f677e89d0210a333cf243b6657d2e4df4",
+        "patient_care_asof.py": "396fc0afb7759f413e595fc949add0a50e111e0c5dc948b2c0b4c5b88922aa76",
+        "patient_census.py": "570798dfe78e59e1848688fc2ba74beff7f0143f7128b41a19e6135435aa0182",
+        "patient_learning.py": "c43d99874fc1cc560331c841a60492adb486eb45a05e1fe864e377ec529ae42d",
+        "patient_observations.py": "3cf01fb36a2bd7aeb23b6632938f78162a1a679ac6a33448d404b0cdb54e92df",
+        "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+        "policy_loop.py": "32b7a097b9a22eedccf9cb22da6ed80477a6d6ac72e8cc64b74d52459e80b3bb",
+        "realism.py": "615a5e8d5b8da1dd5f77d04213af8228db291f9cbb00537917cec2b4b2a244be",
+        "registry.py": "fd09e4b6f530c0b3335a8f36ca9ce420a98a131261606017f52025340d0c8340",
+        "smr.py": "c1f3ed16dd043c20d96eec73bec9256c46d9306676a9137859aea15538d17c69",
+        "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+        "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+        "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+        "v041/hospsim.py": "3c950b507a3e418d694acb465d86f21b4068709646095f46895adee965805d73",
+        "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+        "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+        "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+        "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+        "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+        "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+        "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+        "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+      },
+      "status": "complete",
+      "synthetic_only": true
+    },
+    "legacy_delay": {
+      "assumptions": {
+        "arrivals": "template rates times arrival_scale; no occupancy calibration",
+        "clock": "fixed UTC+01:00; no daylight saving",
+        "documentary": [
+          "Charge is a noisy synthetic baseline proxy, not SIIPS or hourly delivered care.",
+          "Alternative staff plans/orientations use current findings, not future course.",
+          "Alternative confirmations use requests/current readiness, not bed allocation.",
+          "Documentary mechanisms do not change physical departure; mismatches are possible.",
+          "Uncalibrated engineering hypotheses; development inspection is not blind evaluation."
+        ],
+        "dynamics": "versioned engineering assumptions; not calibrated to real data",
+        "family": "v041",
+        "hosting": "all hospital units with compatible available beds",
+        "poles": "resource/routing boundaries for local_v1 and hybrid_v1",
+        "policy": "inherited v0.4.1 policy with privileged simulator information",
+        "resources": "hospital-wide shared queues",
+        "smr": "legacy sampled delay; no finite SMR beds"
+      },
+      "checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 3552,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "clinical": {
+        "death_age_slope": 0.03,
+        "death_dependence_slope": 0.0,
+        "destinations": "conditional_survival_v1"
+      },
+      "config_sha256": "2f0fab125c7fd3ccf9ba5406a6317a2b84bb92b3804c7d56e8813a893b37971d",
+      "counts": {
+        "events_including_warmup": 95368,
+        "poles": 3,
+        "recorded_hours": 2880,
+        "resource_pool_hour_rows": 0,
+        "unit_hour_rows": 20160,
+        "units": 7
+      },
+      "data_role": "simulation_truth_not_training_inputs",
+      "documentary": {
+        "downstream_confirmation": "request_delay_v1",
+        "staff_forecasts": "milestones_v1"
+      },
+      "dynamics": {
+        "arrivals": "shared_bursts_v1",
+        "discharges": "rolling_v1",
+        "staffing": "shared_float_v1"
+      },
+      "files_sha256": {
+        "config.json": "dd9f1bbad9a065dc19f3f3585763231bde6dbede5a09727c2f652157c8f002bd",
+        "truth/events.jsonl.gz": "07710aecf3f438f8af0df7dabf53f0094fc1b892d5773dc962811a5ca60d048e",
+        "truth/hospital_hourly.csv": "2b4df83a4ce9f3cb9d62260e5a9cc497efe8e65a4aea037034f9c58dcbc6b490",
+        "truth/poles_hourly.csv": "782909eb36a3de288af5349cac753d45ccaaee91f1e397e803c939d045d52ce0",
+        "truth/shared_resources_hourly.csv": "d25747c888be13b06307fc2245d34ba8e37c8c831f34e84c98532e54cf9ee4ca",
+        "truth/units_hourly.csv": "ed17a37667714cd5e1e943e9af446f46c5bb64ba2e704f691805c479e92165c2"
+      },
+      "hospital_id": "H16_validation_02",
+      "mechanism_family": "v041",
+      "observation": {
+        "profile": {
+          "availability_delay_minutes": 0.5,
+          "charge_noise_sigma": 0.1,
+          "downstream_documented_probability": 0.8,
+          "duplicate_probability": 0.008,
+          "ingestion_delay_max_minutes": 15.0,
+          "ingestion_delay_min_minutes": 1.0,
+          "load_delay_multiplier": 1.6,
+          "load_missing_multiplier": 2.0,
+          "missing_probability": 0.015,
+          "mode": "site_v1",
+          "outages": [],
+          "ready_documented_probability": 0.6,
+          "recording_delay_median_minutes": 12.0,
+          "recording_delay_sigma": 0.9,
+          "revision_delay_max_h": 48.0,
+          "revision_delay_min_h": 6.0,
+          "revision_probability": 0.02
+        },
+        "role": "observation_generator_only_not_policy_inputs"
+      },
+      "organisation_changes": {
+        "count": 0,
+        "schedule_role": "truth_only_not_policy_inputs",
+        "windows": "start_inclusive_end_exclusive; fixed UTC+01:00"
+      },
+      "partition": "validation",
+      "runtime": {
+        "numpy": "2.3.5",
+        "pandas": "2.2.3",
+        "pydantic": "2.13.5",
+        "python": "3.11.9"
+      },
+      "schema_version": "0.1",
+      "smr": {
+        "beds": 0,
+        "external_arrivals_per_day": 0.0,
+        "external_isolation_probability": 0.05,
+        "external_oxygen_probability": 0.2,
+        "external_patience_h": 168,
+        "isolation_beds": 0,
+        "mode": "legacy_delay",
+        "oxygen_beds": 0,
+        "preparation_h": 24,
+        "reservation_ttl_h": 48,
+        "retry_h": 24,
+        "review_hour": 10,
+        "stay_median_days": 21.0,
+        "stay_sigma": 0.45
+      },
+      "source_sha256": {
+        "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+        "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+        "asof.py": "361d53088b7ddc823302b427aad5a1b7b28d59584f44b5501a538a64cabd137b",
+        "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+        "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+        "changes.py": "b7b5fb76240ea6f46c4ae09d9051519da4c9ee1abc6c4c513a71492ed9242f92",
+        "cohort.py": "c9c609058b7c79d6e0f6dd2062464f1db035f803415c94600a1743acee31b1ee",
+        "config.py": "368e1ae796fce5bb580525fac6a4b0342fbbb77fe69f93055fcd2651a2347f45",
+        "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+        "documentary.py": "30a3306d3e4071b096cd851a716684712c60345b507f326d6836068977039f33",
+        "dynamics.py": "c025736bd9679ff2475d436951615ba9d99e3115452e96de402c1eeac20c05d4",
+        "engine.py": "b66b1f4c8fdd1a9c0e3672f99bfbfc1a3790313cc9662774690a2419d90f61dd",
+        "generate.py": "8523da80cd7abf82b2f8d9ee8347cd5c3f901cfc4bcba11d68c19f4dce665b0e",
+        "learning.py": "1ab7323336b2f9890bd2410b225b36e06e29cbc0d9c629a3069a75e9ff217eaf",
+        "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+        "observation_profiles.py": "d27ad55134ef36c13c28ca8e3e813f62612c8ed6d01e316390fec562e3e3358c",
+        "observations.py": "87671aa8742bc73666365adc21b950fe6d5f377c329bc76ffd2722e0051dee6e",
+        "online.py": "db31b7d848a4ca3a2815f64a617f15e00473b33d6a40dea0c21c1dda9a41743f",
+        "patient_asof.py": "b0d5c3a12c3c0ae5f193adfa61a3faafcfbf7de6249188ff09bde3f878d964df",
+        "patient_care.py": "6215338e12e31289edd6f71e7e37809f677e89d0210a333cf243b6657d2e4df4",
+        "patient_care_asof.py": "396fc0afb7759f413e595fc949add0a50e111e0c5dc948b2c0b4c5b88922aa76",
+        "patient_census.py": "570798dfe78e59e1848688fc2ba74beff7f0143f7128b41a19e6135435aa0182",
+        "patient_learning.py": "c43d99874fc1cc560331c841a60492adb486eb45a05e1fe864e377ec529ae42d",
+        "patient_observations.py": "3cf01fb36a2bd7aeb23b6632938f78162a1a679ac6a33448d404b0cdb54e92df",
+        "policy.py": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+        "policy_loop.py": "32b7a097b9a22eedccf9cb22da6ed80477a6d6ac72e8cc64b74d52459e80b3bb",
+        "realism.py": "615a5e8d5b8da1dd5f77d04213af8228db291f9cbb00537917cec2b4b2a244be",
+        "registry.py": "fd09e4b6f530c0b3335a8f36ca9ce420a98a131261606017f52025340d0c8340",
+        "smr.py": "c1f3ed16dd043c20d96eec73bec9256c46d9306676a9137859aea15538d17c69",
+        "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+        "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+        "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+        "v041/hospsim.py": "3c950b507a3e418d694acb465d86f21b4068709646095f46895adee965805d73",
+        "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+        "v041/observation.py": "5377cdc90545ff08e81891ee931bb8362f52dd9924a285f1858c6e9b7510e766",
+        "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+        "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+        "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+        "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+        "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+        "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+      },
+      "status": "complete",
+      "synthetic_only": true
+    }
+  },
+  "isolated_reexport_rows": 20160,
+  "observed_rows": {
+    "finite_v1": 4844,
+    "legacy_delay": 8187
+  },
+  "reason": "Incomplete target grid on H16_validation_02 in both arms",
+  "remedy": "Verify written CSV bytes against intended payload before publishing; regenerate both cohorts, same plans and seeds; no model or scenario tuning",
+  "root_cause": "unresolved transient file-write anomaly; hashes were computed on the already truncated files",
+  "status": "aborted_before_completed_evaluation"
+}
