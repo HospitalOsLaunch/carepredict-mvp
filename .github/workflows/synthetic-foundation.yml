@@ -24,7 +24,18 @@ jobs:
           python -m ruff check src/hospitalos/synthetic tests/synthetic
           python -m ruff format --check src/hospitalos/synthetic tests/synthetic
       - name: Type-check new foundation
-        run: python -m mypy --strict src/hospitalos/synthetic/dynamics.py src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py src/hospitalos/synthetic/online.py src/hospitalos/synthetic/policy.py src/hospitalos/synthetic/policy_loop.py tests/synthetic
+        # Include the site observation adapter and census reconciliation contract.
+        run: python -m mypy --strict src/hospitalos/synthetic/patient_observations.py src/hospitalos/synthetic/patient_asof.py src/hospitalos/synthetic/patient_learning.py src/hospitalos/synthetic/observation_profiles.py src/hospitalos/synthetic/changes.py src/hospitalos/synthetic/dynamics.py src/hospitalos/synthetic/config.py src/hospitalos/synthetic/engine.py src/hospitalos/synthetic/generate.py src/hospitalos/synthetic/__main__.py src/hospitalos/synthetic/observations.py src/hospitalos/synthetic/asof.py src/hospitalos/synthetic/baseline24.py src/hospitalos/synthetic/learning.py src/hospitalos/synthetic/registry.py src/hospitalos/synthetic/cohort.py src/hospitalos/synthetic/mechanisms.py src/hospitalos/synthetic/counterfactual.py src/hospitalos/synthetic/benchmark.py src/hospitalos/synthetic/online.py src/hospitalos/synthetic/policy.py src/hospitalos/synthetic/policy_loop.py tests/synthetic
+      - name: Type-check census contract and annual validation
+        run: python -m mypy --strict src/hospitalos/synthetic/patient_census.py scripts/validate_synthetic_census.py
+      - name: Type-check patient care observations and annual validation
+        run: python -m mypy --strict src/hospitalos/synthetic/patient_care.py src/hospitalos/synthetic/patient_care_asof.py scripts/validate_synthetic_care.py
+      - name: Type-check documentary mechanisms and annual comparison
+        run: python -m mypy --strict src/hospitalos/synthetic/documentary.py scripts/validate_synthetic_documentary.py
+      - name: Type-check realism measurement contract
+        run: python -m mypy --strict src/hospitalos/synthetic/realism.py
+      - name: Type-check finite SMR allocation
+        run: python -m mypy --strict src/hospitalos/synthetic/smr.py
       - name: Test multi-pole contracts
         run: python -m pytest -q tests/synthetic
       - name: Test imported v0.4.1 regressions and mutations
@@ -33,6 +44,16 @@ jobs:
         run: python -m hospitalos.synthetic --config configs/synthetic/hospital_two_poles.json --output runs/synthetic/annual
       - name: Replay as-of observations and score 24h reference
         run: python -m hospitalos.synthetic.learning --source runs/synthetic/annual --output runs/synthetic/asof-annual
+      - name: Reconcile annual realism measurements with independent movement accounting
+        run: python -m hospitalos.synthetic.realism --source runs/synthetic/annual --references configs/synthetic/realism_references_v1.json --output runs/synthetic/realism-annual
+      - name: Replay patient movements and freeze censored targets
+        run: python -m hospitalos.synthetic.patient_learning --source runs/synthetic/annual --output runs/synthetic/patient-annual
+      - name: Compare patient census reconciliation on a development year
+        run: python scripts/validate_synthetic_census.py --output runs/synthetic/census-annual
+      - name: Verify patient care observations on the same development year
+        run: python scripts/validate_synthetic_care.py --source runs/synthetic/census-annual/truth --output runs/synthetic/care-annual
+      - name: Compare documentary mechanisms on six development years
+        run: python scripts/validate_synthetic_documentary.py --output runs/synthetic/documentary-annual
       - name: Freeze and materialize a disposable cohort fixture
         run: |
           python - <<'PY'
@@ -43,7 +64,7 @@ jobs:
           Path("runs/synthetic/ci-cohort-plan.json").write_text(json.dumps(plan))
           PY
           python -m hospitalos.synthetic.cohort freeze --plan runs/synthetic/ci-cohort-plan.json --output runs/synthetic/ci-registry
-          python -m hospitalos.synthetic.cohort generate --registry runs/synthetic/ci-registry --output runs/synthetic/ci-cohort --with-learning
+          python -m hospitalos.synthetic.cohort generate --registry runs/synthetic/ci-registry --output runs/synthetic/ci-cohort --with-learning --with-patients --with-census --with-care
       - name: Freeze and execute train-only references on the disposable fixture
         run: |
           python -m hospitalos.synthetic.benchmark freeze --registry runs/synthetic/ci-registry --cohort runs/synthetic/ci-cohort --protocol runs/synthetic/ci-benchmark-protocol.json
@@ -61,12 +82,38 @@ jobs:
           python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_arrivals_v1.json --output runs/synthetic/arrivals-registry
           python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_discharges_v1.json --output runs/synthetic/discharges-registry
           python -m hospitalos.synthetic.cohort freeze --plan configs/synthetic/cohort_staffing_v1.json --output runs/synthetic/staffing-registry
+      - name: Exercise dated changes through observations and execution
+        run: |
+          python - <<'PYCONFIG'
+          import json
+          from pathlib import Path
+          raw = json.loads(Path("configs/synthetic/hospital_dated_changes_v1.json").read_text())
+          raw.update(days=7, warmup_days=7)
+          for change in raw["changes"]:
+              change.update(starts_at="2025-01-03T07:00:00+01:00", ends_at="2025-01-05T15:00:00+01:00")
+          Path("runs/synthetic/ci-changes-config.json").write_text(json.dumps(raw))
+          PYCONFIG
+          python -m hospitalos.synthetic.policy_loop --config runs/synthetic/ci-changes-config.json --output runs/synthetic/changes-smoke
+      - name: Exercise site profiles, transmission outage and as-of replay
+        run: |
+          python - <<'PYCONFIG'
+          import json
+          from pathlib import Path
+          raw = json.loads(Path("configs/synthetic/hospital_observation_intermittent_v1.json").read_text())
+          raw.update(days=7, warmup_days=2)
+          raw["observation"]["outages"] = [{"outage_id":"CI_OUTAGE", "starts_at":"2025-01-03T08:00:00+01:00", "ends_at":"2025-01-04T08:00:00+01:00"}]
+          Path("runs/synthetic/ci-observation-config.json").write_text(json.dumps(raw))
+          PYCONFIG
+          python -m hospitalos.synthetic.policy_loop --config runs/synthetic/ci-observation-config.json --output runs/synthetic/observation-smoke
+          python -m hospitalos.synthetic.learning --source runs/synthetic/observation-smoke/simulation --output runs/synthetic/observation-asof
       - uses: actions/upload-artifact@v4
         with:
           name: synthetic-annual-manifest
           path: |
             runs/synthetic/annual/manifest.json
             runs/synthetic/annual/config.json
+            runs/synthetic/realism-annual/manifest.json
+            runs/synthetic/realism-annual/scorecard.json
             runs/synthetic/asof-annual/manifest.json
             runs/synthetic/asof-annual/evaluation/metrics.json
             runs/synthetic/ci-registry/registry.json
@@ -88,3 +135,19 @@ jobs:
             runs/synthetic/arrivals-registry/manifest.json
             runs/synthetic/discharges-registry/manifest.json
             runs/synthetic/staffing-registry/manifest.json
+            runs/synthetic/changes-smoke/manifest.json
+            runs/synthetic/changes-smoke/simulation/manifest.json
+            runs/synthetic/changes-smoke/simulation/truth/changes.jsonl.gz
+            runs/synthetic/observation-smoke/manifest.json
+            runs/synthetic/observation-smoke/simulation/manifest.json
+            runs/synthetic/observation-asof/manifest.json
+            runs/synthetic/observation-asof/evaluation/metrics.json
+            runs/synthetic/patient-annual/manifest.json
+            runs/synthetic/patient-annual/config.json
+            runs/synthetic/census-annual/report.json
+            runs/synthetic/census-annual/patients/manifest.json
+            runs/synthetic/care-annual/report.json
+            runs/synthetic/care-annual/patients/manifest.json
+            runs/synthetic/documentary-annual/report.json
+            runs/synthetic/documentary-annual/registry_staff_forecasts/manifest.json
+            runs/synthetic/documentary-annual/registry_downstream_confirmation/manifest.json

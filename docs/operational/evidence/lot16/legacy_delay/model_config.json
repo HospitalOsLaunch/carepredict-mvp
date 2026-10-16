@@ -1,0 +1,26 @@
+{
+  "features": [
+    "occupancy",
+    "open_beds",
+    "ed_waiting",
+    "nurse_count",
+    "aide_count",
+    "care_workload_proxy"
+  ],
+  "input_width": 77,
+  "lags_h": [
+    0,
+    6,
+    24,
+    48,
+    168
+  ],
+  "model_type": "TopologyForecaster_conditional_means_v1",
+  "scope": "synthetic_experiment_only_not_validated_for_real_hospitals",
+  "targets": [
+    "occupancy",
+    "ed_waiting",
+    "care_workload_proxy"
+  ],
+  "weights_sha256": "11f3cfde1f101b64fccecd932eab9a6ad6d86aeed17a23c42f90d4ce8eea79c2"
+}

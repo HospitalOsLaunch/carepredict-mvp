@@ -1,0 +1,663 @@
+{
+  "protocol_id": "LOT14_VALIDATION_V1",
+  "date": "2026-10-15",
+  "status": "local_checks_pass_external_realism_not_validated",
+  "synthetic_only": true,
+  "base_commit": "fb6ff9cafaa96ddd771322848f52feabca4af4e9",
+  "validation": {
+    "new_measurement_tests": 24,
+    "synthetic_tests_passed": 457,
+    "legacy_regression_mutation_tests_passed": 54,
+    "total_tests_passed": 511,
+    "ruff_check": "pass",
+    "ruff_format_check": "pass",
+    "mypy_strict_ci_main_and_realism": "pass",
+    "test_python": "3.11.9",
+    "annual_scorecard_python": "3.12.14",
+    "numpy": "2.3.5"
+  },
+  "cases": [
+    {
+      "name": "reference_two_poles",
+      "config": "configs/synthetic/hospital_two_poles.json",
+      "source": "runs/synthetic/lot13/annual/reference",
+      "scorecard_output": "runs/synthetic/lot14/reference-verified-scorecard",
+      "hospital_id": "H_SYN_001",
+      "partition": "development",
+      "window": {
+        "clock": "fixed UTC+01:00; no DST",
+        "end_exclusive": "2026-01-01",
+        "hours": 8760,
+        "start": "2025-01-01"
+      },
+      "source_counts": {
+        "events_including_warmup": 146347,
+        "poles": 2,
+        "recorded_hours": 8760,
+        "resource_pool_hour_rows": 0,
+        "unit_hour_rows": 35040,
+        "units": 4
+      },
+      "source_checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "measurement_checks": {
+        "ed_queue_reconciled_each_unit_hour": true,
+        "occupancy_reconciled_each_unit_hour": true
+      },
+      "measurement_manifest": {
+        "external_realism_validated": false,
+        "files_sha256": {
+          "scorecard.json": "670394e31f534977e28873da73bcc4e9b30db8f1bfffad0166a8ddeb5c06654c"
+        },
+        "measurement_source_sha256": "615a5e8d5b8da1dd5f77d04213af8228db291f9cbb00537917cec2b4b2a244be",
+        "protocol_id": "REALISM_MEASURES_V1",
+        "references_sha256": "a6b1d54491dd7f3d6ebc6cdc10666d6eb999e9fc1e1b1ad904fd616cb619d3c1",
+        "runtime": {
+          "numpy": "2.3.5",
+          "python": "3.12.14"
+        },
+        "source_manifest_sha256": "f28d85bee0cda5705f39cad31427e6af44d945ac52a879396e5f534ef2f3b287",
+        "status": "complete"
+      },
+      "stays": {
+        "admission_modes": {
+          "programme": 633,
+          "transfert_entrant": 425,
+          "urgences": 3141
+        },
+        "admissions_age_75plus": 2032,
+        "admissions_in_window": 4199,
+        "admissions_in_window_still_present_at_end": 74,
+        "admitted_and_discharged_in_window": 4125,
+        "age_of_admissions": {
+          "mean": 73.3169802333889,
+          "n": 4199,
+          "p50": 74.0,
+          "p90": 91.0,
+          "p99": 103.0
+        },
+        "all_stays_present_at_end": 74,
+        "completed_readiness_wait_is_conditional_not_survival_estimate": true,
+        "discharge_destinations": {
+          "EHPAD": 166,
+          "SMR": 665,
+          "deces": 203,
+          "domicile": 2973,
+          "transfert": 185
+        },
+        "discharges_in_window": 4192,
+        "discharges_without_readiness_event": 490,
+        "first_ready_to_end_h_censored_lower_bounds": {
+          "mean": 34.5,
+          "n": 20,
+          "p50": 18.5,
+          "p90": 72.5,
+          "p99": 137.74999999999991
+        },
+        "first_ready_to_exit_h_by_final_destination_completed": {
+          "EHPAD": {
+            "mean": 217.52409638554218,
+            "n": 166,
+            "p50": 161.5,
+            "p90": 437.0,
+            "p99": 846.5499999999997
+          },
+          "SMR": {
+            "mean": 97.9187969924812,
+            "n": 665,
+            "p50": 71.0,
+            "p90": 191.20000000000005,
+            "p99": 494.04000000000053
+          },
+          "domicile": {
+            "mean": 25.155249441548772,
+            "n": 2686,
+            "p50": 16.0,
+            "p90": 57.0,
+            "p99": 171.0
+          },
+          "transfert": {
+            "mean": 32.04864864864865,
+            "n": 185,
+            "p50": 28.0,
+            "p90": 50.79999999999998,
+            "p99": 77.51999999999992
+          }
+        },
+        "first_ready_to_exit_h_completed": {
+          "mean": 47.19638033495408,
+          "n": 3702,
+          "p50": 21.0,
+          "p90": 123.0,
+          "p99": 372.91999999999825
+        },
+        "hospital_los_days_admitted_and_discharged_in_window": {
+          "mean": 6.492595959595961,
+          "n": 4125,
+          "p50": 5.0,
+          "p90": 12.583333333333334,
+          "p99": 25.868333333333243
+        },
+        "hospital_los_days_discharges_in_window": {
+          "mean": 6.579824666030534,
+          "n": 4192,
+          "p50": 5.083333333333333,
+          "p90": 12.708333333333334,
+          "p99": 26.685416666666697
+        },
+        "prewindow_admissions_discharged_in_window": 67
+      },
+      "hourly": {
+        "capacity_caused_downstream_blocked_hours": null,
+        "capacity_caused_downstream_blocked_hours_status": "not_identified_by_readiness_alone",
+        "care_proxy_minutes_per_patient_day": 239.272001958704,
+        "closed_bed_hours_share": 0.018457119905805196,
+        "coordination_minutes": null,
+        "coordination_minutes_status": "not_instrumented",
+        "ed_queue_patient_hours": 6542.0,
+        "first_ready_beyond_24h_bed_hours_share": 0.16548026031417853,
+        "first_ready_beyond_24h_present_hours": 109492,
+        "first_ready_present_hours": 173781,
+        "gross_absenteeism": null,
+        "gross_absenteeism_status": "unmeasurable_from_net_presence_export",
+        "hosted_patient_hours": 9688.0,
+        "hours": 8760,
+        "hours_at_full_open_capacity_share": 0.0,
+        "medically_ready_present_hours": 173781.0,
+        "net_staff_deficit_signed_share": 0.015188370377201887,
+        "occupancy_hourly_distribution": {
+          "mean": 0.7415489293227462,
+          "n": 8760,
+          "p50": 0.7419354838709677,
+          "p90": 0.8529411764705882,
+          "p99": 0.9428571428571428
+        },
+        "occupancy_open_capacity_weighted": 0.7417885114273607,
+        "occupied_bed_hours": 661662.0,
+        "open_bed_hours": 891982.0,
+        "patients_per_present_nurse_hour_weighted": 7.749341203752503,
+        "ready_with_smr_ehpad_destination_hours": 100279.0,
+        "staff_hours_above_plan": 2065.0,
+        "staff_hours_below_plan": 4700.0,
+        "staff_hours_planned": 173488.0,
+        "staff_hours_present": 170853.0,
+        "uncovered_minutes_hours_share": 0.39292237442922373,
+        "zero_open_capacity_hours": 0
+      },
+      "ed_request_cohort": {
+        "admitted_n": 3141,
+        "admitted_wait_gt4h_share": 0.004138809296402419,
+        "age_75plus_wait_h_conditional_on_admission": {
+          "mean": 2.133375877472878,
+          "n": 1567,
+          "p50": 2.0,
+          "p90": 4.0,
+          "p99": 4.0
+        },
+        "decision_08_12_h_conditional_on_admission": {
+          "mean": 2.0264550264550265,
+          "n": 378,
+          "p50": 2.0,
+          "p90": 4.0,
+          "p99": 4.0
+        },
+        "decision_16_20_h_conditional_on_admission": {
+          "mean": 1.9951923076923077,
+          "n": 832,
+          "p50": 2.0,
+          "p90": 3.0,
+          "p99": 4.0
+        },
+        "decision_to_admission_h_conditional_on_admission": {
+          "mean": 2.0713148678764726,
+          "n": 3141,
+          "p50": 2.0,
+          "p90": 4.0,
+          "p99": 4.0
+        },
+        "nonadmitted_terminal_outcomes": {
+          "ORIENTATION_HORS_PERIMETRE": 2
+        },
+        "nonadmitted_terminal_wait_h": {
+          "mean": 18.0,
+          "n": 2,
+          "p50": 18.0,
+          "p90": 18.8,
+          "p99": 18.98
+        },
+        "pending_at_end_n": 0,
+        "pending_wait_h_censored_lower_bounds": {
+          "mean": null,
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "p99": null
+        },
+        "request_cohort_n": 3143
+      },
+      "requested_csg_cohort": {
+        "admission_modes": {
+          "programme": 8,
+          "transfert_entrant": 63,
+          "urgences": 536
+        },
+        "admissions_age_75plus": 607,
+        "admissions_in_window": 607,
+        "admissions_in_window_still_present_at_end": 18,
+        "admitted_and_discharged_in_window": 589,
+        "age_of_admissions": {
+          "mean": 86.85831960461284,
+          "n": 607,
+          "p50": 87.0,
+          "p90": 93.0,
+          "p99": 98.93999999999994
+        },
+        "all_stays_present_at_end": 18,
+        "completed_readiness_wait_is_conditional_not_survival_estimate": true,
+        "discharge_destinations": {
+          "EHPAD": 97,
+          "SMR": 190,
+          "deces": 71,
+          "domicile": 227,
+          "transfert": 33
+        },
+        "discharges_in_window": 618,
+        "discharges_without_readiness_event": 90,
+        "first_ready_to_end_h_censored_lower_bounds": {
+          "mean": 58.666666666666664,
+          "n": 3,
+          "p50": 16.0,
+          "p90": 124.80000000000001,
+          "p99": 149.28
+        },
+        "first_ready_to_exit_h_by_final_destination_completed": {
+          "EHPAD": {
+            "mean": 204.60824742268042,
+            "n": 97,
+            "p50": 160.0,
+            "p90": 402.8000000000001,
+            "p99": 679.3999999999983
+          },
+          "SMR": {
+            "mean": 94.97894736842105,
+            "n": 190,
+            "p50": 70.0,
+            "p90": 184.99999999999994,
+            "p99": 552.1599999999992
+          },
+          "domicile": {
+            "mean": 19.83653846153846,
+            "n": 208,
+            "p50": 15.0,
+            "p90": 31.600000000000023,
+            "p99": 126.16000000000008
+          },
+          "transfert": {
+            "mean": 30.90909090909091,
+            "n": 33,
+            "p50": 26.0,
+            "p90": 51.400000000000006,
+            "p99": 62.44
+          }
+        },
+        "first_ready_to_exit_h_completed": {
+          "mean": 81.51325757575758,
+          "n": 528,
+          "p50": 38.0,
+          "p90": 198.90000000000003,
+          "p99": 538.1700000000005
+        },
+        "hospital_los_days_admitted_and_discharged_in_window": {
+          "mean": 11.719581211092246,
+          "n": 589,
+          "p50": 10.125,
+          "p90": 20.51666666666667,
+          "p99": 39.05333333333334
+        },
+        "hospital_los_days_discharges_in_window": {
+          "mean": 11.943635382955772,
+          "n": 618,
+          "p50": 10.229166666666668,
+          "p90": 20.80416666666667,
+          "p99": 41.37541666666675
+        },
+        "prewindow_admissions_discharged_in_window": 29
+      }
+    },
+    {
+      "name": "ght600_medical_scope",
+      "config": "configs/synthetic/hospital_ght600_medical_scope_v1.json",
+      "source": "runs/synthetic/lot14/ght600-medical-scope",
+      "scorecard_output": "runs/synthetic/lot14/ght600-scorecard",
+      "hospital_id": "H_GHT600",
+      "partition": "development",
+      "window": {
+        "clock": "fixed UTC+01:00; no DST",
+        "end_exclusive": "2026-01-01",
+        "hours": 8760,
+        "start": "2025-01-01"
+      },
+      "source_counts": {
+        "events_including_warmup": 410937,
+        "poles": 3,
+        "recorded_hours": 8760,
+        "resource_pool_hour_rows": 0,
+        "unit_hour_rows": 78840,
+        "units": 9
+      },
+      "source_checks": {
+        "compatibilite_lit": 0,
+        "conservation_stock_flux": 0,
+        "heures_controlees": 10224,
+        "lien_patient_lit": 0,
+        "lit_double_affectation": 0,
+        "lit_occupe_et_sale": 0,
+        "occupation_vs_lits": 0,
+        "partition_lits": 0,
+        "registre_patients": 0,
+        "transferts_internes_equilibres": 0
+      },
+      "measurement_checks": {
+        "ed_queue_reconciled_each_unit_hour": true,
+        "occupancy_reconciled_each_unit_hour": true
+      },
+      "measurement_manifest": {
+        "external_realism_validated": false,
+        "files_sha256": {
+          "scorecard.json": "a211c02be561ff4d62b56daa19f1573fe5fa53ea1c7c079babb0a73dfacd90db"
+        },
+        "measurement_source_sha256": "615a5e8d5b8da1dd5f77d04213af8228db291f9cbb00537917cec2b4b2a244be",
+        "protocol_id": "REALISM_MEASURES_V1",
+        "references_sha256": "a6b1d54491dd7f3d6ebc6cdc10666d6eb999e9fc1e1b1ad904fd616cb619d3c1",
+        "runtime": {
+          "numpy": "2.3.5",
+          "python": "3.12.14"
+        },
+        "source_manifest_sha256": "1045927eba5c64f8641b515f932c6738f0dbd801d2a4f41ea7cae58687f0ecd6",
+        "status": "complete"
+      },
+      "stays": {
+        "admission_modes": {
+          "programme": 1454,
+          "transfert_entrant": 1216,
+          "urgences": 9248
+        },
+        "admissions_age_75plus": 5970,
+        "admissions_in_window": 11918,
+        "admissions_in_window_still_present_at_end": 234,
+        "admitted_and_discharged_in_window": 11684,
+        "age_of_admissions": {
+          "mean": 73.78167477764725,
+          "n": 11918,
+          "p50": 75.0,
+          "p90": 91.0,
+          "p99": 103.0
+        },
+        "all_stays_present_at_end": 234,
+        "completed_readiness_wait_is_conditional_not_survival_estimate": true,
+        "discharge_destinations": {
+          "EHPAD": 531,
+          "SMR": 2007,
+          "deces": 593,
+          "domicile": 8256,
+          "transfert": 516
+        },
+        "discharges_in_window": 11903,
+        "discharges_without_readiness_event": 1510,
+        "first_ready_to_end_h_censored_lower_bounds": {
+          "mean": 83.32142857142857,
+          "n": 56,
+          "p50": 33.0,
+          "p90": 233.0,
+          "p99": 468.95000000000095
+        },
+        "first_ready_to_exit_h_by_final_destination_completed": {
+          "EHPAD": {
+            "mean": 218.91337099811676,
+            "n": 531,
+            "p50": 162.0,
+            "p90": 435.0,
+            "p99": 1004.9000000000021
+          },
+          "SMR": {
+            "mean": 99.83308420528151,
+            "n": 2007,
+            "p50": 75.0,
+            "p90": 202.0,
+            "p99": 421.82000000000016
+          },
+          "domicile": {
+            "mean": 25.584275786891947,
+            "n": 7339,
+            "p50": 16.0,
+            "p90": 59.0,
+            "p99": 173.0
+          },
+          "transfert": {
+            "mean": 31.99031007751938,
+            "n": 516,
+            "p50": 29.0,
+            "p90": 52.0,
+            "p99": 82.85000000000002
+          }
+        },
+        "first_ready_to_exit_h_completed": {
+          "mean": 50.118156451457715,
+          "n": 10393,
+          "p50": 21.0,
+          "p90": 128.0,
+          "p99": 376.0799999999999
+        },
+        "hospital_los_days_admitted_and_discharged_in_window": {
+          "mean": 6.743513208946707,
+          "n": 11684,
+          "p50": 5.375,
+          "p90": 13.041666666666666,
+          "p99": 26.88916666666667
+        },
+        "hospital_los_days_discharges_in_window": {
+          "mean": 6.835871208938923,
+          "n": 11903,
+          "p50": 5.458333333333333,
+          "p90": 13.375,
+          "p99": 27.289166666666613
+        },
+        "prewindow_admissions_discharged_in_window": 219
+      },
+      "hourly": {
+        "capacity_caused_downstream_blocked_hours": null,
+        "capacity_caused_downstream_blocked_hours_status": "not_identified_by_readiness_alone",
+        "care_proxy_minutes_per_patient_day": 241.57056948023384,
+        "closed_bed_hours_share": 0.04891265565545379,
+        "coordination_minutes": null,
+        "coordination_minutes_status": "not_instrumented",
+        "ed_queue_patient_hours": 45199.0,
+        "first_ready_beyond_24h_bed_hours_share": 0.17179585770187597,
+        "first_ready_beyond_24h_present_hours": 335546,
+        "first_ready_present_hours": 519180,
+        "gross_absenteeism": null,
+        "gross_absenteeism_status": "unmeasurable_from_net_presence_export",
+        "hosted_patient_hours": 130904.0,
+        "hours": 8760,
+        "hours_at_full_open_capacity_share": 0.04885844748858448,
+        "medically_ready_present_hours": 519180.0,
+        "net_staff_deficit_signed_share": 0.013811872605898556,
+        "occupancy_hourly_distribution": {
+          "mean": 0.9104867248251889,
+          "n": 8760,
+          "p50": 0.9224489795918367,
+          "p90": 0.992,
+          "p99": 1.0
+        },
+        "occupancy_open_capacity_weighted": 0.9102155856780759,
+        "occupied_bed_hours": 1953167.0,
+        "open_bed_hours": 2145829.0,
+        "patients_per_present_nurse_hour_weighted": 9.383098415626591,
+        "ready_with_smr_ehpad_destination_hours": 314927.0,
+        "staff_hours_above_plan": 3268.0,
+        "staff_hours_below_plan": 9084.0,
+        "staff_hours_planned": 421087.0,
+        "staff_hours_present": 415271.0,
+        "uncovered_minutes_hours_share": 0.7977168949771689,
+        "zero_open_capacity_hours": 0
+      },
+      "ed_request_cohort": {
+        "admitted_n": 9246,
+        "admitted_wait_gt4h_share": 0.1517412935323383,
+        "age_75plus_wait_h_conditional_on_admission": {
+          "mean": 4.075282308657465,
+          "n": 4782,
+          "p50": 3.0,
+          "p90": 11.0,
+          "p99": 20.0
+        },
+        "decision_08_12_h_conditional_on_admission": {
+          "mean": 3.1254071661237783,
+          "n": 1228,
+          "p50": 3.0,
+          "p90": 5.0,
+          "p99": 14.190000000000055
+        },
+        "decision_16_20_h_conditional_on_admission": {
+          "mean": 4.112019623875716,
+          "n": 2446,
+          "p50": 2.0,
+          "p90": 14.0,
+          "p99": 21.0
+        },
+        "decision_to_admission_h_conditional_on_admission": {
+          "mean": 4.056889465714904,
+          "n": 9246,
+          "p50": 2.0,
+          "p90": 11.0,
+          "p99": 20.0
+        },
+        "nonadmitted_terminal_outcomes": {
+          "ORIENTATION_HORS_PERIMETRE": 407
+        },
+        "nonadmitted_terminal_wait_h": {
+          "mean": 18.874692874692876,
+          "n": 407,
+          "p50": 18.0,
+          "p90": 24.0,
+          "p99": 35.879999999999995
+        },
+        "pending_at_end_n": 2,
+        "pending_wait_h_censored_lower_bounds": {
+          "mean": 2.0,
+          "n": 2,
+          "p50": 2.0,
+          "p90": 2.8,
+          "p99": 2.98
+        },
+        "request_cohort_n": 9655
+      },
+      "requested_csg_cohort": {
+        "admission_modes": {
+          "programme": 28,
+          "transfert_entrant": 173,
+          "urgences": 1565
+        },
+        "admissions_age_75plus": 1766,
+        "admissions_in_window": 1766,
+        "admissions_in_window_still_present_at_end": 58,
+        "admitted_and_discharged_in_window": 1708,
+        "age_of_admissions": {
+          "mean": 86.47961494903737,
+          "n": 1766,
+          "p50": 86.0,
+          "p90": 93.0,
+          "p99": 98.0
+        },
+        "all_stays_present_at_end": 58,
+        "completed_readiness_wait_is_conditional_not_survival_estimate": true,
+        "discharge_destinations": {
+          "EHPAD": 271,
+          "SMR": 559,
+          "deces": 194,
+          "domicile": 674,
+          "transfert": 68
+        },
+        "discharges_in_window": 1766,
+        "discharges_without_readiness_event": 268,
+        "first_ready_to_end_h_censored_lower_bounds": {
+          "mean": 154.9090909090909,
+          "n": 11,
+          "p50": 82.0,
+          "p90": 269.0,
+          "p99": 612.8000000000002
+        },
+        "first_ready_to_exit_h_by_final_destination_completed": {
+          "EHPAD": {
+            "mean": 211.0,
+            "n": 271,
+            "p50": 155.0,
+            "p90": 409.0,
+            "p99": 732.9000000000005
+          },
+          "SMR": {
+            "mean": 99.19141323792486,
+            "n": 559,
+            "p50": 73.0,
+            "p90": 200.2,
+            "p99": 426.61999999999955
+          },
+          "domicile": {
+            "mean": 20.908333333333335,
+            "n": 600,
+            "p50": 15.0,
+            "p90": 37.10000000000002,
+            "p99": 135.03999999999996
+          },
+          "transfert": {
+            "mean": 31.544117647058822,
+            "n": 68,
+            "p50": 30.0,
+            "p90": 48.0,
+            "p99": 59.989999999999995
+          }
+        },
+        "first_ready_to_exit_h_completed": {
+          "mean": 84.99265687583444,
+          "n": 1498,
+          "p50": 39.0,
+          "p90": 204.0,
+          "p99": 603.2399999999998
+        },
+        "hospital_los_days_admitted_and_discharged_in_window": {
+          "mean": 12.036934035909445,
+          "n": 1708,
+          "p50": 10.354166666666668,
+          "p90": 21.48333333333333,
+          "p99": 38.70541666666667
+        },
+        "hospital_los_days_discharges_in_window": {
+          "mean": 12.244714986787466,
+          "n": 1766,
+          "p50": 10.5,
+          "p90": 21.666666666666668,
+          "p99": 39.77083333333329
+        },
+        "prewindow_admissions_discharged_in_window": 58
+      }
+    }
+  ],
+  "limits": [
+    "One development seed per structure, no generalization proof.",
+    "GHT600 simulates 250 standard medical beds; the remaining 350 contextual beds have no active resource representation.",
+    "No runtime overlays were executed or imported.",
+    "Finite downstream capacity and coordination time remain unimplemented.",
+    "External reference entries are contextual and cannot pass an acceptance gate.",
+    "No model training or real patient data."
+  ]
+}

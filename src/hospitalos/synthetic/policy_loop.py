@@ -508,7 +508,10 @@ def run_policy(config: HospitalConfig, policy: Policy, output: Path) -> dict[str
                 "stale_after_h": env.stale_after_h,
                 "decision_hour": 9,
                 "warmup": "common inherited policy",
-                "observation_profile": "v041_snapshot_stream_v1",
+                "observation_profile": "v041_snapshot_stream_v1"
+                if config.observation.mode == "v041"
+                else "site_v1_snapshot_stream_v1",
+                "observation": config.observation.model_dump(mode="json"),
             },
             "counts": {
                 "features": len(env.features),
