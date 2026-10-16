@@ -2,6 +2,46 @@
 
 Le [lot 02](lot02.md) ajoute un pipeline séparé d'observations telles que connues
 et une référence de prévision à 24 h à partir des sorties décrites ici.
+Le [lot 03](lot03.md) ajoute le registre de cohortes et réserve des structures
+entières aux ensembles d'apprentissage, de validation et de test.
+Le [lot 04](lot04.md) ajoute des services réservés par pôle, une organisation mixte,
+le routage dirigé et des comparaisons de mécanismes à état et aléas communs.
+Le [lot 05](lot05.md) fixe un premier protocole et compare persistance, saisonnalité
+et gradient boosting à 24 h sur des hôpitaux de validation distincts.
+Le [lot 06](lot06.md) branche une politique sur les observations en direct et trace
+les recommandations, décisions du cadre et résultats d’exécution.
+
+Le [lot 07](lot07.md) diversifie les arrivées, sorties et effectifs et réserve
+les variantes dans trois plans de cohortes indépendants.
+
+Le [lot 08](lot08.md) ajoute des ruptures datées de lits, services et effectifs,
+avec audit des frontières et contrôle de non-anticipation.
+
+Le [lot 09](lot09.md) ajoute des profils d’observation par établissement : délais,
+informations manquantes et pannes de transmission, en rejeu et en boucle fermée.
+
+Le [lot 10](lot10.md) ajoute les parcours de mouvements patient tels que connus,
+les corrections et des cibles de départ censurées, séparées des observations.
+
+Le [lot 11](lot11.md) ajoute les recensements patient complets ou partiels et la
+réconciliation des localisations, sans transformer une absence locale en sortie.
+
+Le [lot 12](lot12.md) enrichit chaque ligne patient par les évaluations de charge,
+les sorties prévisionnelles et les besoins d’aval disponibles à cet instant,
+avec une provenance séparée de la présence et des cibles réalisées.
+
+Le [lot 13](lot13.md) diversifie les prévisions du staff et les confirmations
+d’aval, réserve leurs familles par axe et contrôle leur indépendance vis-à-vis
+des trajectoires physiques.
+
+Le [lot 14](lot14.md) corrige les mesures de réalisme, réconcilie présences et files
+avec les événements, conserve les séjours censurés et les demandes non admises,
+et prépare la [séquence gériatrie–aval](realism_plan.md). Son scénario GHT-600
+représente 250 lits de médecine ; aucun réalisme externe n'est encore validé.
+
+Le [lot 15](../operational/lot15.md) introduit le contrat opérationnel commun et
+entraîne un premier petit modèle sur ce générateur. Les mêmes poids traitent les
+observations par unité, pôle ou établissement ; les résultats restent exploratoires.
 
 Ce premier lot intègre le moteur corrigé v0.4.1 et permet de définir un hôpital
 composé de plusieurs pôles et unités. Une simulation unique fait partager aux
@@ -85,8 +125,8 @@ PYTHONPATH=src python -m hospitalos.synthetic \
 
 Cette vérification refuse un même identifiant hospitalier dans plusieurs partitions,
 même si les graines diffèrent. Elle ne vérifie que les configurations fournies : le
-registre complet des mondes et la réservation de familles structurelles restent à
-construire. Renommer un hôpital ne démontre aucune indépendance statistique. L'exemple
+registre complet et la réservation de familles structurelles sont ajoutés par le
+[lot 03](lot03.md). Renommer un hôpital ne démontre aucune indépendance statistique. L'exemple
 est explicitement dans `development` et ne constitue pas un ensemble de test gelé.
 
 ## Vérification du lot
@@ -119,12 +159,14 @@ chiffres et chemins ne sont pas ceux de ce nouveau lot.
 
 - **SOC-001, GEN-001, GEN-002 : implémentés dans le lot 01.** Source corrigée,
   configuration hiérarchique, simulation partagée, export de vérité et vérifications.
-- **SOC-002 : prochain lot.** Contrat d'observation, rejeu « tel que connu », retards
+- **SOC-002 : livré dans le lot 02.** Contrat d'observation, rejeu « tel que connu », retards
   de saisie, tests d'invariance aux livraisons futures et première référence à 24 h.
-- **GEN-003 : ensuite.** Registre de cohortes, tirage de structures d'hôpitaux,
-  séparation complète des établissements et mécanismes entre ensembles.
-- **GEN-004 : ensuite.** Ressources locales et communes configurables, règles de
-  routage entre pôles, nouvelles familles de mécanismes et contrefactuels associés.
+- **GEN-003 : livré pour les structures dans le lot 03.** Registre de cohortes,
+  paramètres tirés par hôpital, réservation des établissements et structures.
+  La réservation de mécanismes distincts attend GEN-004 : une seule famille existe.
+- **GEN-004 : livré dans le lot 04 pour les mécanismes opérationnels.** Ressources
+  locales/communes, règles de routage et scénarios appariés. Les modèles cliniques,
+  d'arrivées et d'effectifs restent ceux de v0.4.1.
 
 Pour ce lot, les pôles sont des groupes organisationnels : ils n'ont pas encore de
 politique locale distincte. L'hébergement utilise tous les lits compatibles du
@@ -134,3 +176,5 @@ autonomes. Le calendrier reste en UTC+1 fixe. Les arrivées ne sont pas recalibr
 atteindre un taux d'occupation cible. La politique historique consulte certaines
 informations privilégiées du simulateur et n'est pas un recommandeur déployable.
 La plausibilité et le transfert au réel ne sont pas démontrés par ces contrôles.
+
+- [Lot 16 : aval SMR fini, mortalité conditionnelle et comparaison du prévisionniste](../operational/lot16.md).

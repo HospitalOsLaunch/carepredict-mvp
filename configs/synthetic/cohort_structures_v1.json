@@ -1,0 +1,17 @@
+{
+  "cohort_id": "C_STRUCTURES_V1",
+  "seed": 314159,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "split_axis": "structure",
+  "ranges": {"beds_min": 20, "beds_max": 32, "arrival_min": 0.8, "arrival_max": 1.2, "resource_min": 0.8, "resource_max": 1.2},
+  "structures": [
+    {"structure_id": "S_TWO_POLES", "partition": "train", "hospitals": 2, "replicates": 2,
+     "poles": [["MED_POLY", "CSG"], ["PNEUMO", "CARDIO"]]},
+    {"structure_id": "S_THREE_POLES", "partition": "validation", "hospitals": 2, "replicates": 2,
+     "poles": [["MED_POLY", "CSG"], ["PNEUMO", "CARDIO"], ["MED_POLY", "PNEUMO"]]},
+    {"structure_id": "S_FOUR_POLES", "partition": "test", "hospitals": 2, "replicates": 2,
+     "poles": [["MED_POLY", "CSG"], ["PNEUMO", "CARDIO"], ["MED_POLY", "PNEUMO"], ["CSG", "CARDIO"]]}
+  ]
+}

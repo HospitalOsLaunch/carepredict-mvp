@@ -16,7 +16,8 @@ from pathlib import Path
 from typing import Any
 
 from .config import HospitalConfig
-from .engine import simulate
+from .documentary import documentary_assumptions
+from .engine import SimulationResult, simulate
 
 # Ratios are recomputed after aggregation, never summed or averaged unweighted.
 ADDITIVE_FIELDS = (
@@ -102,10 +103,15 @@ def aggregate(rows: list[dict[str, Any]], level: str) -> list[dict[str, Any]]:
 def _csv(path: Path, rows: list[dict[str, Any]]) -> None:
     if not rows:
         raise ValueError(f"Empty hourly export: {path.name}")
-    with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+    stream = io.StringIO(newline="")
+    writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+    writer.writeheader()
+    writer.writerows(rows)
+    payload = stream.getvalue().encode("utf-8")
+    # A checksum of a truncated file is still a valid checksum. Verify the write
+    # against the intended payload before producing a "complete" manifest.
+    if path.write_bytes(payload) != len(payload) or path.read_bytes() != payload:
+        raise RuntimeError(f"Incomplete CSV write: {path.name}")
 
 
 def _jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
@@ -124,7 +130,19 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
     """Publish a complete run only after all invariants and writes have succeeded."""
     if output.exists():
         raise FileExistsError(f"Output already exists: {output}")
-    result = simulate(config)
+    return export_result(config, simulate(config), output)
+
+
+def export_result(
+    config: HospitalConfig,
+    result: SimulationResult,
+    output: Path,
+    *,
+    policy_description: str = "inherited v0.4.1 policy with privileged simulator information",
+) -> dict[str, Any]:
+    """Export a completed simulation without re-running it."""
+    if output.exists():
+        raise FileExistsError(output)
     h0 = config.warmup_days * 24
     units = [unit.unit_id for unit in config.units]
     poles = config.unit_poles
@@ -176,7 +194,14 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
         _csv(truth / "poles_hourly.csv", aggregate(rows, "pole"))
         _csv(truth / "hospital_hourly.csv", aggregate(rows, "hospital"))
         _csv(truth / "shared_resources_hourly.csv", shared)
+        if result.resource_pools:
+            _csv(truth / "resource_pools_hourly.csv", result.resource_pools)
         _jsonl(truth / "events.jsonl.gz", events())
+        if config.changes:
+            _jsonl(
+                truth / "changes.jsonl.gz",
+                (e for e in events() if e["type"] == "ORGANISATION_CHANGE"),
+            )
         (staging / "config.json").write_text(
             config.model_dump_json(indent=2) + "\n", encoding="utf-8"
         )
@@ -193,6 +218,19 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
             "hospital_id": config.hospital_id,
             "partition": config.partition,
             "mechanism_family": config.mechanism_family,
+            "dynamics": config.dynamics.model_dump(mode="json"),
+            "documentary": config.documentary.model_dump(mode="json"),
+            "clinical": config.clinical.model_dump(mode="json"),
+            "smr": config.smr.model_dump(mode="json"),
+            "observation": {
+                "profile": config.observation.model_dump(mode="json"),
+                "role": "observation_generator_only_not_policy_inputs",
+            },
+            "organisation_changes": {
+                "count": len(config.changes),
+                "schedule_role": "truth_only_not_policy_inputs",
+                "windows": "start_inclusive_end_exclusive; fixed UTC+01:00",
+            },
             "config_sha256": config.fingerprint,
             "source_sha256": source_hashes(),
             "runtime": {
@@ -205,17 +243,37 @@ def generate(config: HospitalConfig, output: Path) -> dict[str, Any]:
                 "recorded_hours": config.days * 24,
                 "unit_hour_rows": len(rows),
                 "events_including_warmup": len(result.journal.events),
+                "resource_pool_hour_rows": len(result.resource_pools),
             },
             "checks": result.checks,
             "files_sha256": files,
             "assumptions": {
                 "clock": "fixed UTC+01:00; no daylight saving",
-                "resources": "hospital-wide shared queues",
-                "hosting": "all hospital units with compatible available beds",
-                "poles": "organizational groups; no distinct local routing policy yet",
+                "resources": {
+                    "v041": "hospital-wide shared queues",
+                    "local_v1": "all four resources reserved by pole, same total capacity",
+                    "hybrid_v1": "local cleaning/transport; hospital imaging/specialist",
+                }[config.mechanism_family],
+                "hosting": {
+                    "v041": "all hospital units with compatible available beds",
+                    "local_v1": "compatible beds within the home pole only",
+                    "hybrid_v1": "home pole first, then allowed poles after configured delay",
+                }[config.mechanism_family],
+                "poles": "resource/routing boundaries for local_v1 and hybrid_v1",
                 "arrivals": "template rates times arrival_scale; no occupancy calibration",
-                "policy": "inherited v0.4.1 policy with privileged simulator information",
-                "family": "one mechanism family; no structural randomization yet",
+                "policy": policy_description,
+                "family": config.mechanism_family,
+                "dynamics": "versioned engineering assumptions; not calibrated to real data",
+                "documentary": documentary_assumptions(config),
+                "smr": (
+                    "Finite shared SMR beds; current ready scenario need, oxygen/isolation "
+                    "compatibility; weekday FIFO offers, expiring reservations, transport, "
+                    "occupied stays, outside demand. SMR acceleration has no implemented effect. "
+                    "EHPAD/home retain legacy rules. SMR ledger is truth only; not a calibrated "
+                    "clinical eligibility or territorial model."
+                    if config.smr.mode == "finite_v1"
+                    else "legacy sampled delay; no finite SMR beds"
+                ),
             },
         }
         (staging / "manifest.json").write_text(

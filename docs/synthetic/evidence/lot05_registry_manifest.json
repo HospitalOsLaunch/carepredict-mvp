@@ -1,0 +1,95 @@
+{
+  "data_role": "cohort_registry_no_trajectories",
+  "files_sha256": {
+    "registry.json": "b1ff59768b8f145efe3859bc4f2278cba113a822c6be5d6945c54c3b002a30a5"
+  },
+  "mechanism_holdout": false,
+  "mechanism_world_counts": {
+    "v041": 12
+  },
+  "partitions": {
+    "test": {
+      "beds_per_hospital": [
+        214,
+        226
+      ],
+      "hospitals": 2,
+      "poles_per_hospital": [
+        4
+      ],
+      "structures": 1,
+      "units_per_hospital": [
+        8
+      ],
+      "worlds": 4
+    },
+    "train": {
+      "beds_per_hospital": [
+        102,
+        106
+      ],
+      "hospitals": 2,
+      "poles_per_hospital": [
+        2
+      ],
+      "structures": 1,
+      "units_per_hospital": [
+        4
+      ],
+      "worlds": 4
+    },
+    "validation": {
+      "beds_per_hospital": [
+        152,
+        165
+      ],
+      "hospitals": 2,
+      "poles_per_hospital": [
+        3
+      ],
+      "structures": 1,
+      "units_per_hospital": [
+        6
+      ],
+      "worlds": 4
+    }
+  },
+  "registry_sha256": "e4b87ca9aa845143aa0dfba307f6a39f01410a7e1ded21726c4501d854be4e2f",
+  "runtime": {
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "pydantic": "2.13.5",
+    "python": "3.12.14"
+  },
+  "schema_version": "0.1",
+  "source_sha256": {
+    "__init__.py": "d0b1394ea9a4d4275cf75da8e46683bc5e2d4c66efd77751f0db251cc5edc32a",
+    "__main__.py": "77bb5d8236ece1318fdbd10f1acb8226fa24a89d61010a5da72b44a9fb568908",
+    "asof.py": "a56d4bfe615fd48d9bd857b7eb6cdabe9ca23831d3337175b190ae71ae08e410",
+    "baseline24.py": "6debe806b24bd8b0eec9e9dfeafa8bb7afd67533f3ad585f36cebd478d2aa9be",
+    "benchmark.py": "6abfa23e9797b7b1df2a5bddff46d80d04141df74df5bcfe3a9d4ee882e9e4f8",
+    "cohort.py": "fe91b77f8a4eb9287db861c483778061ffee4c701e93575a7cd0e06467e1a23b",
+    "config.py": "1e506d371fde67cbca9635fef6e4d011c48475a631361a8810386a8ad4ab28ee",
+    "counterfactual.py": "8f9536c2014f385a36bcd6758c9cabdac147e0eff363358c17c85727ff8e40f5",
+    "engine.py": "0752bdd8cf52832a709319ce5d5da3cdcd6a5e0d589034b6d68c8676c19f5192",
+    "generate.py": "e21abb322766fb5881df12e2154d81f05007bd57157c2cae218a8c0a00d38d8c",
+    "learning.py": "cf29971d482b980a5dafd3729bf2befc1e6f33df7f71e08b4a65553320a6264f",
+    "mechanisms.py": "d0fe1b5610e9049b7ef842f99dbc459aff4dea75d82490b2ce70856cbbd35b19",
+    "observations.py": "5e6ddb54dfe3ce578fe9942ef257bce3663de9ab14295c8fda3ebf2dba05dc77",
+    "registry.py": "5b25ec6ce7c0a1d3803b854d4cb76df211f6339a17556afb3a7d2e6794714266",
+    "v041/__init__.py": "c0bb8519a53d4227cde45d4eaf0797833dbf34029c81eac228e0fb145f8beb1f",
+    "v041/controles.py": "298237dce2a88917f1267ea5e67aaa6d4128308a41a86bfc0835d55a83012811",
+    "v041/extraction.py": "605d83085408b3c2ffd2e0cdd529dbda4067eb4dbc6382021fa8046007f135db",
+    "v041/hospsim.py": "1fcb6a2ed467130a6b09b08d2a4a79a731e2453fbffdfeac29d9fdab4c7159b8",
+    "v041/notes.py": "ba9995329bb68680c4e4718330b9c0f3250e3552458cca5e342ce2ca5e6a2985",
+    "v041/observation.py": "a6905db6b7152dd32b69f9ecacf33ee55e9e07340c1153d8c53a76cf8a4c7d9c",
+    "v041/parcours.py": "72ef21921ff0474c1c84cc91209b089855fb11227a2d4a8ee703028742991f5d",
+    "v041/realisme.py": "c43c9e9b1117ed9bb3ed0611fa2edc63e27e26166c5a7e64ee63a2eb449a86fc",
+    "v041/refusion_notes.py": "91253b4fb42d44c5c1efe2e2d2532ba999d1623b995c0d48a5079fe354848f8b",
+    "v041/run.py": "a8304130a33d7e7ad2ec7dc21bab16a05678c19fb966e99456fd9a328629ef2e",
+    "v041/tests.py": "e7a173aa49df8c3a2e0c6b2bbc5d3289b8c2bd717092453cac545af7b4a3b98d",
+    "v041/textes_notes.py": "21e677a804865665ef421aab14a8475f2f965235a1712539f3af1eb2c36d54f3"
+  },
+  "status": "frozen",
+  "synthetic_only": true
+}

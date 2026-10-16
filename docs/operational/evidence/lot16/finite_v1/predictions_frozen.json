@@ -1,0 +1,20 @@
+{
+  "H16_validation_00_hospital.npz": "17814462059cfd30d087f23972bb31edc25cbd18ef96ebf263c368802540f0bf",
+  "H16_validation_00_pole.npz": "8475d5854d5ce91ebbcb7b7e2c2564ffd579493bcd423e38d619cfef54634b85",
+  "H16_validation_00_unit.npz": "725f9c361ad700d467264b807044bc73938374908069ee124c89446df66d93b3",
+  "H16_validation_01_hospital.npz": "998667786b7a71900d21e6e7bc23a63686373b99e929db659bf70f706a7e0709",
+  "H16_validation_01_pole.npz": "77dfdc436c94f99f0455ad3f9eb5dae8e4b85973626f864807f502503fa3013a",
+  "H16_validation_01_unit.npz": "d0f928fd831b21608378679db06c380eba42da6c0c79a6f7138516b9fb338554",
+  "H16_validation_02_hospital.npz": "5741e8f439c662c85b9fbf55fbc307dea1f83a550c8027b0ccc4d31a6439463c",
+  "H16_validation_02_pole.npz": "31cdcf52a414b9c41b781471c2763a0efd8cd4ce06bd20b4c0895337ad076af8",
+  "H16_validation_02_unit.npz": "74dbd75e44e3d7098067d0a465b26279ae2cf6ef9418b8d8ba17ef5758deac86",
+  "H16_validation_03_hospital.npz": "531264668370d780ed3b4b01aac39271dab2b3025c7cdf18268a65418683a71d",
+  "H16_validation_03_pole.npz": "efa9f930e05c10ad046872f102c80c7a72e80bc3b01706f4924afa431f337f28",
+  "H16_validation_03_unit.npz": "013de6878a23fbea056261710c989a7b7c66c6d44458490f44a33562e52cc54f",
+  "H16_validation_04_hospital.npz": "8bc7fe7d705c4fe935052ef5a3699ff18478b1bc884c3a3ae0e9d90e0adcd020",
+  "H16_validation_04_pole.npz": "bcdf337363399fb96ab40fe8e8ff55aa344e4ea96729416f86ab75f61a5d70ed",
+  "H16_validation_04_unit.npz": "c16c4cb26f0bb060eeb2b3b3a30b0bc34437010e519e41f1ea0d4fc4a52aa070",
+  "H16_validation_05_hospital.npz": "dc44f612409b3d7216c9d4aefab03e8a636bc278b58147ddb651fe76ea2596f0",
+  "H16_validation_05_pole.npz": "3305bea8c842450e39ce2150e40e62f11f7c7dc2657017c7932a69e41e6b77da",
+  "H16_validation_05_unit.npz": "743faf57f0a51ebf1529f8655013362f2bdac6a3b18d69ca047c3a3a89b3f1d5"
+}

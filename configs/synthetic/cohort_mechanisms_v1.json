@@ -1,0 +1,61 @@
+{
+  "cohort_id": "C_MECHANISMS_V1",
+  "seed": 271828,
+  "start": "2025-01-01",
+  "days": 365,
+  "warmup_days": 61,
+  "split_axis": "mechanism",
+  "structures": [
+    {
+      "structure_id": "S_POOLED",
+      "partition": "train",
+      "mechanism_family": "v041",
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_LOCAL",
+      "partition": "validation",
+      "mechanism_family": "local_v1",
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    },
+    {
+      "structure_id": "S_HYBRID",
+      "partition": "test",
+      "mechanism_family": "hybrid_v1",
+      "poles": [
+        [
+          "MED_POLY",
+          "CSG"
+        ],
+        [
+          "PNEUMO",
+          "CARDIO"
+        ]
+      ],
+      "hospitals": 2,
+      "replicates": 2
+    }
+  ]
+}

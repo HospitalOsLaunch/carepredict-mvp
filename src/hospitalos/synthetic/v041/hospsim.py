@@ -382,11 +382,7 @@ class Exo:
         los *= (1 + P["los_age"] * (age - 75)) * (1 + P["los_dep"] * (dep - 2))
         if src == PROG:
             los *= 0.8
-        w = np.array(s["dest"], float)
-        w[SMR] *= max(0.2, 1 + 0.35 * (dep - 2))
-        w[EHPAD] *= max(0.1, 1 + 0.6 * (dep - 2)) if age >= 75 else 0.3
-        w[DECES] *= max(0.3, 1 + 0.03 * (age - 75))
-        w /= w.sum()
+        w = self.destination_probabilities(s, age, dep)
         dest = int(rng.choice(5, p=w))
         if dest == SMR:
             aval = rng.lognormal(math.log(P["aval_smr"][0]), P["aval_smr"][1])
@@ -412,6 +408,13 @@ class Exo:
         vals["aide_delai_h"] = 24 * rng.lognormal(math.log(P["aide_median_j"]), P["aide_sigma"])
         for k, v in vals.items():
             cols[k].append(v)
+
+    def destination_probabilities(self, s, age, dep):
+        w = np.array(s["dest"], float)
+        w[SMR] *= max(0.2, 1 + 0.35 * (dep - 2))
+        w[EHPAD] *= max(0.1, 1 + 0.6 * (dep - 2)) if age >= 75 else 0.3
+        w[DECES] *= max(0.3, 1 + 0.03 * (age - 75))
+        return w / w.sum()
 
     def lambda_unite(self, u):
         """Arrivées journalières par source, déduites de l'occupation visée (loi de Little)."""
@@ -495,6 +498,8 @@ class State:
         s.surge_until = list(self.surge_until)
         s.renfort = dict(self.renfort)
         s.ratio = list(self.ratio)
+        if hasattr(self, "smr_state"):
+            s.smr_state = deepcopy(self.smr_state)
         return s
 
 
@@ -543,6 +548,8 @@ class Sim:
         x = self.x
         if dest == DECES:
             return ready
+        if dest == SMR and getattr(self, "smr", None) is not None:
+            return ready + 1  # Physical allocation, not an exogenous downstream delay.
         if dest == DOM and p.aide_h > ready:  # retour à domicile conditionné à l'aide organisée
             ready = p.aide_h
         day, hd = divmod(ready, 24)
@@ -659,6 +666,8 @@ class Sim:
             log.event(h, "ADMISSION", u, pid, lit=b, unite_cible=p.home, heberge=hosted, attente_h=h - p.dec_h)
 
     def sortir(self, st, p, h, log, m):
+        if getattr(self, "smr", None) is not None and self.p_dest[p.pid] == SMR:
+            self.smr.depart(self, st, p, h, log)
         u = p.unit
         self.liberer(st, p, h, log)
         del st.patients[p.pid]
@@ -723,6 +732,8 @@ class Sim:
                     continue
                 if self.p_dest[p.pid] not in (SMR, EHPAD) or p.accel or p.tr or p.dis_h <= h + 24:
                     continue
+                if self.p_dest[p.pid] == SMR and getattr(self, "smr", None) is not None:
+                    continue  # No assumed percentage benefit on a finite resource.
                 debut = max(h, p.ready_h)
                 rest_j = (p.dis_h - debut) / 24
                 red = int(math.ceil(P["aval_reduction"] * rest_j))
@@ -788,6 +799,13 @@ class Sim:
 
     # ---- informations du staff (journal uniquement)
     def _declarer_destination(self, p, decl, h, u, log):
+        if getattr(self, "smr", None) is not None:
+            # The SMR need is disclosed by the allocator only at current readiness.
+            # Before then retain a provisional home orientation, not latent destiny.
+            if p.dest_decl == SMR and p.aval_dem:
+                return
+            if decl == SMR:
+                decl = DOM
         old = p.dest_decl
         p.dest_decl = decl
         log.event(h, "DESTINATION_DEMANDEE", u, p.pid, destination_demandee=DEST[decl], revision=int(old >= 0))
@@ -797,6 +815,18 @@ class Sim:
         elif decl not in (SMR, EHPAD) and p.aval_dem:
             p.aval_dem = False
             log.event(h, "DEMANDE_AVAL_ANNULEE", u, p.pid)
+        if getattr(self, "documentary", None) is not None:
+            self.documentary.destination(p.pid, old, decl, h)
+
+    def confirmer_aval(self, st, p, h, u, log):
+        if getattr(self, "smr", None) is not None and (self.p_dest[p.pid] == SMR or p.dest_decl == SMR):
+            return  # Only the physical allocator emits SMR offers in finite_v1.
+        if getattr(self, "documentary", None) is not None and self.documentary.confirm(self, st, p, h, u, log):
+            return
+        dp = self.p_dest[p.pid]
+        if dp in (SMR, EHPAD) and not p.conf and h >= p.dis_h - 18:
+            p.conf = True
+            log.event(h, "PLACE_AVAL_CONFIRMEE", u, p.pid, type_aval=DEST[dp])
 
     def _estimer_dsp(self, p, h, R):
         """Jour de sortie prévu par l'équipe : lit le cours clinique prévu (ready_h courant, sans les files
@@ -817,6 +847,8 @@ class Sim:
         return max(h // 24, int((h + reste) // 24))
 
     def infos_staff(self, st, h, log):
+        if getattr(self, "documentary", None) is not None and self.documentary.staff(self, st, h, log):
+            return
         R, I = self.rng_info, INFO
         d = h // 24
         for u in range(self.U):
@@ -849,6 +881,82 @@ class Sim:
                               revision=p.dsp_n - 1)
 
     # ---- un pas horaire
+    def hosting_candidates(self, st, u, p, h):
+        return sorted(((self.libres(st, v, h), v) for v in range(self.U) if v != u), reverse=True)
+
+    def start_transports(self, st, h, log, m):
+        x = self.x
+        # 4. transports de sortie
+        cap_tr = int(x.cap_transport[h])
+        while cap_tr > 0 and st.q_tr:
+            pid, hdem = st.q_tr.popleft()
+            p = st.patients.get(pid)
+            cap_tr -= 1
+            if p is None:
+                continue
+            if log is not None:
+                log.tache_debut(f"TR-{pid}", h)
+                log.tache_fin(f"TR-{pid}", h)
+            self.sortir(st, p, h, log, m)
+
+        return cap_tr
+
+    def repatriate(self, st, h, log, m, cap_tr):
+        U, hd = self.U, h % 24
+        # 8. rapatriement des patients hébergés (créneaux de transport restants, 9 h - 17 h)
+        if self.pole and 9 <= hd < 17 and cap_tr > 0:
+            for v in range(U):
+                for p in list(st.occ[v].values()):
+                    if cap_tr <= 0:
+                        break
+                    if (p.home == v or p.dis_h - h < P["rapatriement_marge_h"] or p.tr or st.q_urg[p.home]
+                            or st.q_prog[p.home]):
+                        continue
+                    b = self.lit_compatible(st, p.home, p.pid, h)
+                    if b < 0:
+                        continue
+                    cap_tr -= 1
+                    ancien = p.bed
+                    self.liberer(st, p, h, log)
+                    p.unit, p.bed, p.rapat = p.home, b, p.rapat + 1
+                    st.occ[p.home][p.pid] = p
+                    st.bed_pid[p.home][b] = p.pid
+                    m["transf_out"][v] += 1
+                    m["transf_in"][p.home] += 1
+                    if log is not None:
+                        log.event(h, "TRANSFERT_INTERNE", p.home, p.pid, depuis=self.x.unit_names[v],
+                                  lit_origine=ancien, lit=b)
+
+    def start_services(self, st, h, log):
+        x = self.x
+        # 9. démarrage des services : nettoyage et imagerie
+        en_cours = len(st.net_cours)
+        while st.q_net and en_cours < x.cap_nettoyage[h]:
+            u, b, duree, hdem = st.q_net.popleft()
+            st.bed_sale[u][b] = 2
+            st.net_cours.append((h + duree, u, b, hdem, h))
+            en_cours += 1
+            if log is not None:
+                log.tache_debut(f"NET-{u}-{b}-{hdem}", h)
+        cap_img = int(x.cap_imagerie[h])
+        while cap_img > 0 and st.q_img:
+            pid, hdem = st.q_img.popleft()
+            if pid not in st.patients:
+                continue
+            st.img_cours.append((h + 1, pid, hdem, h))
+            cap_img -= 1
+            if log is not None:
+                log.tache_debut(f"IMG-{pid}", h)
+        cap_av = int(x.cap_avis[h])
+        while cap_av > 0 and st.q_avis:
+            pid, hdem = st.q_avis.popleft()
+            if pid not in st.patients:
+                continue
+            st.avis_cours.append((h + P["avis_duree_h"], pid, hdem, h))
+            cap_av -= 1
+            if log is not None:
+                log.tache_debut(f"AVIS-{pid}", h)
+
     def step(self, st: State, h: int, politique=True, log=None, snap=None, force=None):
         """Avance d'une heure et renvoie un dict de métriques par unité.
 
@@ -936,8 +1044,12 @@ class Sim:
             st.avis_cours = garde
 
         # 3. sorties (retard sous forte charge ; transport requis vers l'aval)
+        if getattr(self, "smr", None) is not None:
+            self.smr.prepare(self, st, h, log)
         for u in range(U):
             for p in [p for p in st.occ[u].values() if p.dis_h <= h and not p.tr and (not self.bloque(p) or self.p_dest[p.pid] == DECES)]:
+                if getattr(self, "smr", None) is not None and not self.smr.permits(self, st, p, h):
+                    continue
                 if (not p.delayed and self.p_dest[p.pid] != DECES and st.ratio[u] > P["seuil_charge_retard"]):
                     retard = min(P["retard_max_h"], int(math.ceil(P["retard_par_point"] * (st.ratio[u] - P["seuil_charge_retard"]))))
                     p.dis_h = h + retard
@@ -951,18 +1063,7 @@ class Sim:
                     continue
                 self.sortir(st, p, h, log, m)
 
-        # 4. transports de sortie
-        cap_tr = int(x.cap_transport[h])
-        while cap_tr > 0 and st.q_tr:
-            pid, hdem = st.q_tr.popleft()
-            p = st.patients.get(pid)
-            cap_tr -= 1
-            if p is None:
-                continue
-            if log is not None:
-                log.tache_debut(f"TR-{pid}", h)
-                log.tache_fin(f"TR-{pid}", h)
-            self.sortir(st, p, h, log, m)
+        cap_tr = self.start_transports(st, h, log, m)
 
         # 5. arrivées
         for pid in x.arrivees[h]:
@@ -1015,7 +1116,7 @@ class Sim:
                 while q:
                     p = q.popleft()
                     if h - p.dec_h >= P["heberg_apres_h"]:
-                        cand = sorted(((self.libres(st, v, h), v) for v in range(U) if v != u), reverse=True)
+                        cand = self.hosting_candidates(st, u, p, h)
                         fait = False
                         for lv, v in cand:
                             if lv < P["heberg_libres_min"]:
@@ -1062,57 +1163,9 @@ class Sim:
                         garde.append(p)
                 st.q_trin[u] = garde
 
-        # 8. rapatriement des patients hébergés (créneaux de transport restants, 9 h - 17 h)
-        if self.pole and 9 <= hd < 17 and cap_tr > 0:
-            for v in range(U):
-                for p in list(st.occ[v].values()):
-                    if cap_tr <= 0:
-                        break
-                    if (p.home == v or p.dis_h - h < P["rapatriement_marge_h"] or p.tr or st.q_urg[p.home]
-                            or st.q_prog[p.home]):
-                        continue
-                    b = self.lit_compatible(st, p.home, p.pid, h)
-                    if b < 0:
-                        continue
-                    cap_tr -= 1
-                    ancien = p.bed
-                    self.liberer(st, p, h, log)
-                    p.unit, p.bed, p.rapat = p.home, b, p.rapat + 1
-                    st.occ[p.home][p.pid] = p
-                    st.bed_pid[p.home][b] = p.pid
-                    m["transf_out"][v] += 1
-                    m["transf_in"][p.home] += 1
-                    if log is not None:
-                        log.event(h, "TRANSFERT_INTERNE", p.home, p.pid, depuis=self.x.unit_names[v],
-                                  lit_origine=ancien, lit=b)
+        self.repatriate(st, h, log, m, cap_tr)
 
-        # 9. démarrage des services : nettoyage et imagerie
-        en_cours = len(st.net_cours)
-        while st.q_net and en_cours < x.cap_nettoyage[h]:
-            u, b, duree, hdem = st.q_net.popleft()
-            st.bed_sale[u][b] = 2
-            st.net_cours.append((h + duree, u, b, hdem, h))
-            en_cours += 1
-            if log is not None:
-                log.tache_debut(f"NET-{u}-{b}-{hdem}", h)
-        cap_img = int(x.cap_imagerie[h])
-        while cap_img > 0 and st.q_img:
-            pid, hdem = st.q_img.popleft()
-            if pid not in st.patients:
-                continue
-            st.img_cours.append((h + 1, pid, hdem, h))
-            cap_img -= 1
-            if log is not None:
-                log.tache_debut(f"IMG-{pid}", h)
-        cap_av = int(x.cap_avis[h])
-        while cap_av > 0 and st.q_avis:
-            pid, hdem = st.q_avis.popleft()
-            if pid not in st.patients:
-                continue
-            st.avis_cours.append((h + P["avis_duree_h"], pid, hdem, h))
-            cap_av -= 1
-            if log is not None:
-                log.tache_debut(f"AVIS-{pid}", h)
+        self.start_services(st, h, log)
 
         # informations du staff (simulation factuelle uniquement)
         if log is not None and hd == INFO["heure_staff"] and x.ouvre[d]:
@@ -1125,7 +1178,7 @@ class Sim:
                 b = p.base24
                 if h - p.admit_h < 24:
                     b *= P["mult_entree"]
-                elif p.dis_h - h <= 12:
+                elif p.dis_h - h <= 12 and (getattr(self, "smr", None) is None or self.p_dest[p.pid] != SMR or self.smr.permits(self, st, p, h)):
                     b *= P["mult_veille_sortie"]
                 demande += b
             demande = demande / 24 * PROFIL_CHARGE[hd]
@@ -1156,10 +1209,7 @@ class Sim:
                 if not p.rlog:
                     p.rlog = True
                     log.event(h, "SORTANT_MEDICAL", u, p.pid)
-                dp = self.p_dest[p.pid]
-                if dp in (SMR, EHPAD) and not p.conf and h >= p.dis_h - 18:
-                    p.conf = True
-                    log.event(h, "PLACE_AVAL_CONFIRMEE", u, p.pid, type_aval=DEST[dp])
+                self.confirmer_aval(st, p, h, u, log)
             for p in st.occ[u].values():
                 if p.aide_log == 1 and h >= p.aide_h:
                     p.aide_log = 2
