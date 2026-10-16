@@ -1,0 +1,77 @@
+# Nantes Data Contract — Mapping Template (HOS-003) → Canonical Schema v1
+#
+# Le DIM remplit `source` avec le nom EXACT de la colonne de son extraction.
+# Le preflight (services/validation/preflight.py) compare le manifeste de colonnes
+# de l'extraction à ce template et rend une décision GO / RESTRICT / NO-GO.
+#
+# IMPORTANT — aucune donnée nominative n'est demandée : le preflight n'inspecte
+# que le MANIFESTE de colonnes (noms + types), jamais les valeurs de patients.
+
+schema_ref: canonical@1.0.0
+version: 1.0.0
+timezone: Europe/Paris
+frequency: hourly            # pas de temps attendu de l'extraction
+required_history_days: 90    # historique minimal exploitable
+
+# Mapping canonical (domaine.champ) -> colonne source attendue.
+# requirement: required | optional
+# derivable_from: le champ peut être dérivé de ces colonnes source si absent.
+mappings:
+  identity.hospital_id:   {source: etablissement_id,        requirement: required}
+  identity.service_id:    {source: uf_code,                 requirement: required}
+  temporal.event_time:    {source: horodatage_mesure,       requirement: required}
+  temporal.available_at:  {source: horodatage_disponibilite, requirement: required}
+
+  care_load.siips_score:  {source: score_siips,             requirement: required}
+  care_load.patient_count: {source: nb_patients,            requirement: required}
+  care_load.aas_score:    {source: score_aas,               requirement: optional}
+
+  flow.admissions:        {source: nb_admissions,           requirement: required}
+  flow.discharges:        {source: nb_sorties,              requirement: required}
+  flow.occupancy:         {source: nb_presents,             requirement: required}   # stock: exigé en direct (non dérivable de flux sans état initial)
+  flow.transfers_in:      {source: nb_mutations_entrantes,  requirement: optional}
+  flow.transfers_out:     {source: nb_mutations_sortantes,  requirement: optional}
+
+  capacity.beds_total:    {source: lits_armes,              requirement: optional}
+  capacity.beds_available: {source: lits_disponibles,       requirement: optional}
+
+  staffing.nurse_count:   {source: etp_ide,                 requirement: optional}
+  staffing.aide_count:    {source: etp_as,                  requirement: optional}
+
+  actions.action_type:    {source: type_action,             requirement: optional}
+
+# Motifs de colonnes INTERDITES (nominatif / texte libre / quasi-identifiants).
+# Matching PAR TOKEN (le nom est normalisé sans accents puis découpé sur les
+# séparateurs). Un motif mono-token matche un token exact (`nom` bloque
+# `Nom_Patient` mais pas `nombre_presents`) ; un motif multi-token (ex.
+# `date_naissance`) matche si TOUS ses tokens sont présents (`date_de_naissance`
+# est capté malgré le « de »). Toute correspondance déclenche NO-GO fail-closed.
+forbidden_patterns:
+  # Nominatif
+  - nom
+  - prenom
+  - ipp
+  - iep
+  - nir
+  - ins
+  - date_naissance
+  - naissance
+  - ddn
+  # Coordonnées / quasi-identifiants
+  - adresse
+  - code_postal
+  - postal
+  - ville
+  - commune
+  - residence
+  - telephone
+  - email
+  - securite_sociale
+  - secu
+  # Texte libre
+  - commentaire
+  - motif
+  - texte
+  - libelle_libre
+  - note
+  - observation

@@ -1,0 +1,150 @@
+[
+  {
+    "case": "missing_required_temporal",
+    "domain": "care_load",
+    "expected_code": "missing_required",
+    "expected_field": "available_at",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": 24
+    }
+  },
+  {
+    "case": "naive_timestamp",
+    "domain": "care_load",
+    "expected_code": "timestamp_not_tz_aware",
+    "expected_field": "event_time",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": 24
+    }
+  },
+  {
+    "case": "wrong_timezone",
+    "domain": "care_load",
+    "expected_code": "timezone_mismatch",
+    "expected_field": "event_time",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+05:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": 24
+    }
+  },
+  {
+    "case": "dst_wrong_offset",
+    "domain": "care_load",
+    "expected_code": "timezone_mismatch",
+    "expected_field": "event_time",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-07-01T08:00:00+01:00",
+      "available_at": "2026-07-01T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": 24
+    }
+  },
+  {
+    "case": "null_not_allowed",
+    "domain": "care_load",
+    "expected_code": "null_not_allowed",
+    "expected_field": "patient_count",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": null
+    }
+  },
+  {
+    "case": "type_mismatch",
+    "domain": "care_load",
+    "expected_code": "type_mismatch",
+    "expected_field": "patient_count",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": "twenty-four"
+    }
+  },
+  {
+    "case": "out_of_range_negative",
+    "domain": "flow",
+    "expected_code": "out_of_range",
+    "expected_field": "admissions",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "admissions": -1,
+      "discharges": 3,
+      "occupancy": 22
+    }
+  },
+  {
+    "case": "enum_violation",
+    "domain": "actions",
+    "expected_code": "enum_violation",
+    "expected_field": "action_type",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T09:00:00+02:00",
+      "available_at": "2026-08-11T09:00:00+02:00",
+      "action_type": "teleport_patient"
+    }
+  },
+  {
+    "case": "unknown_field_free_text",
+    "domain": "care_load",
+    "expected_code": "unknown_field",
+    "expected_field": "clinical_note",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00",
+      "siips_score": 42.0,
+      "patient_count": 24,
+      "clinical_note": "patient Jean Dupont, chambre 12, sortie prevue demain"
+    }
+  },
+  {
+    "case": "unknown_domain",
+    "domain": "billing",
+    "expected_code": "unknown_domain",
+    "expected_field": "",
+    "record": {
+      "hospital_id": "chu-nantes",
+      "service_id": "urg-001",
+      "source_system": "sih",
+      "event_time": "2026-08-11T08:00:00+02:00",
+      "available_at": "2026-08-11T08:05:00+02:00"
+    }
+  }
+]

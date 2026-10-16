@@ -1,0 +1,6 @@
+{"domain":"care_load","records":[
+ {"hospital_id":"chu-nantes","service_id":"urg-001","source_system":"sih","event_time":"2026-08-11T08:00:00+02:00","available_at":"2026-08-11T08:05:00+02:00","siips_score":42.0,"aas_score":10.0,"patient_count":24},
+ {"hospital_id":"chu-nantes","service_id":"urg-001","source_system":"sih","event_time":"2026-08-11T09:00:00+02:00","available_at":"2026-08-11T09:05:00+02:00","siips_score":41.0,"aas_score":null,"patient_count":23},
+ {"hospital_id":"chu-nantes","service_id":"urg-001","source_system":"sih","event_time":"2026-08-11T10:00:00+02:00","available_at":"2026-08-11T10:05:00+02:00","siips_score":40.0,"aas_score":null,"patient_count":22},
+ {"hospital_id":"chu-nantes","service_id":"urg-001","source_system":"sih","event_time":"2026-08-11T11:00:00+02:00","available_at":"2026-08-11T11:05:00+02:00","siips_score":39.0,"aas_score":null,"patient_count":21}
+]}
