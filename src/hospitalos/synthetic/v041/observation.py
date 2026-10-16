@@ -79,18 +79,19 @@ def iso(base, t_h):
     return (base + np.timedelta64(s, "s")).astype("datetime64[s]").astype(str) + "+01:00"
 
 
-def observer(evenements, x, seed, debut_np):
-    """Transforme les événements vrais en livraisons du système d'information.
+class ObservationStream:
+    """Incremental event adapter. Physics and observation RNG remain independent."""
 
-    evenements : liste de dict(event_id, h, type, unite, sejour, payload)
-    Retourne la liste des livraisons (dicts), triée par disponibilité.
-    """
-    ro = np.random.default_rng(np.random.SeedSequence([seed, 7]))  # flux indépendant de la physique
-    ouvres = [d for d in range(x.ndays) if x.ouvre[d] and 270 <= x.doy[d] <= 300]
-    jour_panne = int(ouvres[int(ro.integers(0, len(ouvres)))]) if ouvres else -1
-    p0, p1 = jour_panne * 24 + OBS["panne_si_heure_debut"], jour_panne * 24 + OBS["panne_si_heure_fin"]
-    out = []
-    for e in evenements:
+    def __init__(self, x, seed):
+        self.ro = np.random.default_rng(np.random.SeedSequence([seed, 7]))  # flux indépendant de la physique
+        ouvres = [d for d in range(x.ndays) if x.ouvre[d] and 270 <= x.doy[d] <= 300]
+        jour_panne = int(ouvres[int(self.ro.integers(0, len(ouvres)))]) if ouvres else -1
+        self.p0, self.p1 = jour_panne * 24 + OBS["panne_si_heure_debut"], jour_panne * 24 + OBS["panne_si_heure_fin"]
+        self.jour_panne = jour_panne
+
+    def observe(self, e):
+        ro, p0, p1 = self.ro, self.p0, self.p1
+        out = []
         typ = e["type"]
         payload = dict(e["payload"])
         tension = payload.get("minutes_non_couvertes_h", 0) > 0
@@ -100,7 +101,7 @@ def observer(evenements, x, seed, debut_np):
             pm = OBS["p_absence_par_type"].get(typ, OBS["p_absence"]) * (2 if tension else 1)
         u_miss = ro.random()
         if u_miss < pm:
-            continue
+            return out
         if typ == "ETAT_UNITE":
             dmin = ro.lognormal(math.log(OBS["delai_etat_min"]), OBS["delai_sigma"])
             payload = {k: payload[k] for k in CHAMPS_ETAT_OBSERVES}
@@ -154,12 +155,19 @@ def observer(evenements, x, seed, debut_np):
                         "t_disponible": rt + 2 / 60, "remplace_version": 1, "qualite": ["CORRECTION_SOURCE"]})
         if ro.random() < OBS["p_doublon"]:
             out.append({**base, "t_ingestion": ingestion + 2 / 60, "t_disponible": ingestion + 3 / 60})
+        return out
+
+
+def observer(evenements, x, seed, debut_np):
+    """Batch-compatible wrapper; incremental adapter preserves all RNG draws."""
+    adapter = ObservationStream(x, seed)
+    out = [row for event in evenements for row in adapter.observe(event)]
     out.sort(key=lambda o: (o["t_disponible"], o["event_id"], o["event_version"]))
     for i, o in enumerate(out):
         o["delivery_id"] = f"L{i + 1:08d}"
         canon = {k: v for k, v in o.items() if k not in ("delivery_id", "t_ingestion", "t_disponible")}
         o["empreinte"] = hashlib.sha256(json.dumps(canon, sort_keys=True, default=str).encode()).hexdigest()
-    return out, jour_panne
+    return out, adapter.jour_panne
 
 
 def vues_apprentissage(livraisons, verite, unites, h0, h1, frontieres, embargo=168):

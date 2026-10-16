@@ -1,0 +1,2664 @@
+[
+  {
+    "selection": "approval=rejected",
+    "record": {
+      "action_origin": "none",
+      "affected_count": 0,
+      "affected_unit": "patient_plans",
+      "approval": "rejected",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "f1a89d113f2ecc9db43e2427df053322742b0403cfd0d0ed650f356b31d75fbd",
+      "decision_h": 33,
+      "decision_id": "63f3896c59bf4dee38e32797:U_CAR@33:acceleration_aval",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "not_requested",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "acceleration_aval",
+      "pole_id": "P_CARDIO_RESPIRATOIRE",
+      "reason": "cadre_did_not_request",
+      "recommendation_probability": 0.35434369377420455,
+      "recommendation_vector_probability": 0.2763153662259849,
+      "recommended": true,
+      "requested": false,
+      "response_h": 33,
+      "unit_id": "U_CAR"
+    },
+    "context": {
+      "decision_h": 33,
+      "observations": [
+        {
+          "decision_h": 33,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 229.85,
+            "en_attente_aide_domicile": 0,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 30,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 1
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.28608561931787,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@33",
+          "sources": [
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 442.61,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.272198381975386,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@33",
+          "sources": [
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 2,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 241.09,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 16,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 4,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.23891702027413,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@33",
+          "sources": [
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 208.64,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 8,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 672.46,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 56,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 32.272198381975386,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@33",
+          "sources": [
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 5,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 449.73,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 3,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 5,
+            "lits_occupes": 30,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 15,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 7
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 12,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 1122.19,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 7,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 11,
+            "lits_occupes": 70,
+            "lits_ouverts": 101,
+            "lits_propres_libres": 31,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-02T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "approval=not_presented",
+    "record": {
+      "action_origin": "none",
+      "affected_count": 0,
+      "affected_unit": "patient_plans",
+      "approval": "not_presented",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "39fe210ad7d9ce610cd0e899cb3363b76f9c6a1c8649cd7201c3f00f82d642cf",
+      "decision_h": 9,
+      "decision_id": "63f3896c59bf4dee38e32797:U_GER@9:anticipation_sorties",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "not_requested",
+      "exposed": false,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "anticipation_sorties",
+      "pole_id": "P_MED_GERIATRIE",
+      "reason": "cadre_did_not_request",
+      "recommendation_probability": 0.401312339887548,
+      "recommendation_vector_probability": 0.0674487631851108,
+      "recommended": true,
+      "requested": false,
+      "response_h": 9,
+      "unit_id": "U_GER"
+    },
+    "context": {
+      "decision_h": 9,
+      "observations": [
+        {
+          "decision_h": 9,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.31821141855994,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 254.91,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 28,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 0
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@9",
+          "sources": [
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 479.16,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.287504586061686,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 192.82,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 14,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 9,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@9",
+          "sources": [
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 288.49,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 15,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 734.07,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 4,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 54,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 6,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 481.31,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 4,
+            "lits_occupes": 29,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 8
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 13,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 1215.38,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 8,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 6,
+            "en_attente_transport": 0,
+            "ide_presents": 10,
+            "lits_occupes": 69,
+            "lits_ouverts": 99,
+            "lits_propres_libres": 30,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-01T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "action_origin=cadre_initiative",
+    "record": {
+      "action_origin": "cadre_initiative",
+      "affected_count": 5,
+      "affected_unit": "patient_plans",
+      "approval": "not_recommended",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "39fe210ad7d9ce610cd0e899cb3363b76f9c6a1c8649cd7201c3f00f82d642cf",
+      "decision_h": 9,
+      "decision_id": "63f3896c59bf4dee38e32797:U_CAR@9:anticipation_sorties",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "applied",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "anticipation_sorties",
+      "pole_id": "P_CARDIO_RESPIRATOIRE",
+      "reason": "plan_or_capacity_changed",
+      "recommendation_probability": 0.15806090123861266,
+      "recommendation_vector_probability": 0.23443139339059652,
+      "recommended": false,
+      "requested": true,
+      "response_h": 9,
+      "unit_id": "U_CAR"
+    },
+    "context": {
+      "decision_h": 9,
+      "observations": [
+        {
+          "decision_h": 9,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.31821141855994,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 254.91,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 28,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 0
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@9",
+          "sources": [
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 479.16,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.287504586061686,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 192.82,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 14,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 9,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@9",
+          "sources": [
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 288.49,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 15,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 734.07,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 4,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 54,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 6,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 481.31,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 4,
+            "lits_occupes": 29,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 8
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 13,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 1215.38,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 8,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 6,
+            "en_attente_transport": 0,
+            "ide_presents": 10,
+            "lits_occupes": 69,
+            "lits_ouverts": 99,
+            "lits_propres_libres": 30,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-01T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "execution=applied",
+    "record": {
+      "action_origin": "approved_recommendation",
+      "affected_count": 2,
+      "affected_unit": "beds_activated",
+      "approval": "approved",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "39fe210ad7d9ce610cd0e899cb3363b76f9c6a1c8649cd7201c3f00f82d642cf",
+      "decision_h": 9,
+      "decision_id": "63f3896c59bf4dee38e32797:U_MED@9:lits_supplementaires",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "applied",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "lits_supplementaires",
+      "pole_id": "P_MED_GERIATRIE",
+      "reason": "plan_or_capacity_changed",
+      "recommendation_probability": 0.05,
+      "recommendation_vector_probability": 0.01364898828064787,
+      "recommended": true,
+      "requested": true,
+      "response_h": 9,
+      "unit_id": "U_MED"
+    },
+    "context": {
+      "decision_h": 9,
+      "observations": [
+        {
+          "decision_h": 9,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.31821141855994,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 254.91,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 28,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 0
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@9",
+          "sources": [
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 479.16,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.287504586061686,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 192.82,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 14,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 9,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@9",
+          "sources": [
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 288.49,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 15,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 734.07,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 4,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 54,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 6,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 481.31,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 4,
+            "lits_occupes": 29,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 8
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 13,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 1215.38,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 8,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 6,
+            "en_attente_transport": 0,
+            "ide_presents": 10,
+            "lits_occupes": 69,
+            "lits_ouverts": 99,
+            "lits_propres_libres": 30,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-01T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "execution=partially_applied",
+    "record": {
+      "action_origin": "cadre_initiative",
+      "affected_count": 1,
+      "affected_unit": "staff_shifts_confirmed",
+      "approval": "not_recommended",
+      "confirmed_shift_starts_h": [
+        63
+      ],
+      "context_sha256": "7fa71ac2b18e1bd3853e9f96a311035dcf8c3a1f836e6ab8e48489e556490425",
+      "decision_h": 57,
+      "decision_id": "63f3896c59bf4dee38e32797:U_MED@57:renfort_soignant",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "partially_applied",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "renfort_soignant",
+      "pole_id": "P_MED_GERIATRIE",
+      "reason": "staffing_not_fully_filled",
+      "recommendation_probability": 0.10633452486317622,
+      "recommendation_vector_probability": 0.5833686165738154,
+      "recommended": false,
+      "requested": true,
+      "response_h": 57,
+      "unit_id": "U_MED"
+    },
+    "context": {
+      "decision_h": 57,
+      "observations": [
+        {
+          "decision_h": 57,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 56.42114908335884,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@57",
+          "sources": [
+            {
+              "available_h": 56.42114908335884,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 337.66,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 0,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 17,
+            "lits_ouverts": 30,
+            "lits_propres_libres": 13,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 4,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 1
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 56.37815193957954,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@57",
+          "sources": [
+            {
+              "available_h": 56.37815193957954,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 376.61,
+            "en_attente_aide_domicile": 0,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 2.0,
+          "max_available_h": 55.33396222457918,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@57",
+          "sources": [
+            {
+              "available_h": 55.33396222457918,
+              "event_h": 55.0,
+              "event_id": "H_SYN_001:STATE:00001518:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 1,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 94.58,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 20,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 3,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 3,
+            "sortants_medicaux_presents": 1
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 56.39089078647794,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@57",
+          "sources": [
+            {
+              "available_h": 56.39089078647794,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 189.2,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 2,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 13,
+            "lits_ouverts": 24,
+            "lits_propres_libres": 11,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 2
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 56.42114908335884,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@57",
+          "sources": [
+            {
+              "available_h": 56.42114908335884,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 56.37815193957954,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 714.27,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 43,
+            "lits_ouverts": 56,
+            "lits_propres_libres": 13,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 4,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 2.0,
+          "max_available_h": 56.39089078647794,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@57",
+          "sources": [
+            {
+              "available_h": 55.33396222457918,
+              "event_h": 55.0,
+              "event_id": "H_SYN_001:STATE:00001518:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 56.39089078647794,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 283.78,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 2,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 5,
+            "lits_occupes": 33,
+            "lits_ouverts": 47,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 9,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 57,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 2.0,
+          "max_available_h": 56.42114908335884,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@57",
+          "sources": [
+            {
+              "available_h": 56.42114908335884,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 56.37815193957954,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 55.33396222457918,
+              "event_h": 55.0,
+              "event_id": "H_SYN_001:STATE:00001518:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 56.39089078647794,
+              "event_h": 56.0,
+              "event_id": "H_SYN_001:STATE:00001519:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 11,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 998.0500000000001,
+            "en_attente_aide_domicile": 3,
+            "en_attente_aval": 5,
+            "en_attente_avis": 2,
+            "en_attente_imagerie": 6,
+            "en_attente_transport": 0,
+            "ide_presents": 11,
+            "lits_occupes": 76,
+            "lits_ouverts": 103,
+            "lits_propres_libres": 27,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 4,
+            "soignants_presents": 22,
+            "sortants_medicaux_presents": 7
+          }
+        }
+      ],
+      "timestamp": "2025-01-03T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "execution=failed",
+    "record": {
+      "action_origin": "cadre_initiative",
+      "affected_count": 0,
+      "affected_unit": "staff_shifts_confirmed",
+      "approval": "not_recommended",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "f1a89d113f2ecc9db43e2427df053322742b0403cfd0d0ed650f356b31d75fbd",
+      "decision_h": 33,
+      "decision_id": "63f3896c59bf4dee38e32797:U_PNE@33:renfort_soignant",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "failed",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "renfort_soignant",
+      "pole_id": "P_CARDIO_RESPIRATOIRE",
+      "reason": "staffing_not_fully_filled",
+      "recommendation_probability": 0.1958634767484111,
+      "recommendation_vector_probability": 0.17416666378839482,
+      "recommended": false,
+      "requested": true,
+      "response_h": 33,
+      "unit_id": "U_PNE"
+    },
+    "context": {
+      "decision_h": 33,
+      "observations": [
+        {
+          "decision_h": 33,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 229.85,
+            "en_attente_aide_domicile": 0,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 30,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 1
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.28608561931787,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@33",
+          "sources": [
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 442.61,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.272198381975386,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@33",
+          "sources": [
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 2,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 241.09,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 16,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 4,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 32.23891702027413,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@33",
+          "sources": [
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 208.64,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 8,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 672.46,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 0,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 56,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 32.272198381975386,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@33",
+          "sources": [
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 5,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 449.73,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 3,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 5,
+            "lits_occupes": 30,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 15,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 7
+          }
+        },
+        {
+          "decision_h": 33,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 32.30535757856296,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@33",
+          "sources": [
+            {
+              "available_h": 32.30535757856296,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 32.28608561931787,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 32.272198381975386,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 32.23891702027413,
+              "event_h": 32.0,
+              "event_id": "H_SYN_001:STATE:00001495:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 12,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 1,
+            "charge_soins_min_h": 1122.19,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 7,
+            "en_attente_avis": 3,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 11,
+            "lits_occupes": 70,
+            "lits_ouverts": 101,
+            "lits_propres_libres": 31,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-02T09:00:00+01:00"
+    }
+  },
+  {
+    "selection": "execution=not_applicable",
+    "record": {
+      "action_origin": "approved_recommendation",
+      "affected_count": 0,
+      "affected_unit": "patient_plans",
+      "approval": "approved",
+      "confirmed_shift_starts_h": [],
+      "context_sha256": "39fe210ad7d9ce610cd0e899cb3363b76f9c6a1c8649cd7201c3f00f82d642cf",
+      "decision_h": 9,
+      "decision_id": "63f3896c59bf4dee38e32797:U_PNE@9:acceleration_aval",
+      "descriptor": {
+        "artifact_sha256": "9fed2d1e7e125dc5cc92dd05a7d1f174092cb7bac30da0bda740a029f5fc956b",
+        "policy_id": "observed_rules",
+        "version": "1"
+      },
+      "execution": "not_applicable",
+      "exposed": true,
+      "exposure_probability": 0.85,
+      "hospital_id": "H_SYN_001",
+      "lever": "acceleration_aval",
+      "pole_id": "P_CARDIO_RESPIRATOIRE",
+      "reason": "no_eligible_plan_changed",
+      "recommendation_probability": 0.35434369377420455,
+      "recommendation_vector_probability": 0.27673945663844535,
+      "recommended": true,
+      "requested": true,
+      "response_h": 9,
+      "unit_id": "U_PNE"
+    },
+    "context": {
+      "decision_h": 9,
+      "observations": [
+        {
+          "decision_h": 9,
+          "entity_id": "U_MED",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.31821141855994,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_MED@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 4,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 254.91,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 1,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 3,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 14,
+            "lits_ouverts": 28,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 7,
+            "sortants_medicaux_presents": 0
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_GER",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_GER@9",
+          "sources": [
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 479.16,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 3,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 3,
+            "lits_occupes": 26,
+            "lits_ouverts": 26,
+            "lits_propres_libres": 0,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 6,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_PNE",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.287504586061686,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_PNE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 192.82,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 14,
+            "lits_ouverts": 23,
+            "lits_propres_libres": 9,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "U_CAR",
+          "hospital_id": "H_SYN_001",
+          "level": "unit",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 1,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:U_CAR@9",
+          "sources": [
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 1,
+          "values": {
+            "as_presents": 3,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 288.49,
+            "en_attente_aide_domicile": 1,
+            "en_attente_aval": 2,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 1,
+            "en_attente_transport": 0,
+            "ide_presents": 2,
+            "lits_occupes": 15,
+            "lits_ouverts": 22,
+            "lits_propres_libres": 7,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 5,
+            "sortants_medicaux_presents": 4
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_MED_GERIATRIE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.60435758279641,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_MED_GERIATRIE@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 7,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 734.07,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 0,
+            "en_attente_imagerie": 4,
+            "en_attente_transport": 0,
+            "ide_presents": 6,
+            "lits_occupes": 40,
+            "lits_ouverts": 54,
+            "lits_propres_libres": 14,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 13,
+            "sortants_medicaux_presents": 3
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "P_CARDIO_RESPIRATOIRE",
+          "hospital_id": "H_SYN_001",
+          "level": "pole",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 2,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:P_CARDIO_RESPIRATOIRE@9",
+          "sources": [
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 2,
+          "values": {
+            "as_presents": 6,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 481.31,
+            "en_attente_aide_domicile": 2,
+            "en_attente_aval": 4,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 2,
+            "en_attente_transport": 0,
+            "ide_presents": 4,
+            "lits_occupes": 29,
+            "lits_ouverts": 45,
+            "lits_propres_libres": 16,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 0,
+            "soignants_presents": 10,
+            "sortants_medicaux_presents": 8
+          }
+        },
+        {
+          "decision_h": 9,
+          "entity_id": "H_SYN_001",
+          "hospital_id": "H_SYN_001",
+          "level": "hospital",
+          "max_age_h": 1.0,
+          "max_available_h": 8.691730928181869,
+          "missing": false,
+          "observed_units": 4,
+          "partition": "development",
+          "run_id": "63f3896c59bf4dee38e32797",
+          "sample_id": "63f3896c59bf4dee38e32797:H_SYN_001@9",
+          "sources": [
+            {
+              "available_h": 8.31821141855994,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0000",
+              "unit_id": "U_MED",
+              "version": 1
+            },
+            {
+              "available_h": 8.60435758279641,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0001",
+              "unit_id": "U_GER",
+              "version": 1
+            },
+            {
+              "available_h": 8.287504586061686,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0002",
+              "unit_id": "U_PNE",
+              "version": 1
+            },
+            {
+              "available_h": 8.691730928181869,
+              "event_h": 8.0,
+              "event_id": "H_SYN_001:STATE:00001471:0003",
+              "unit_id": "U_CAR",
+              "version": 1
+            }
+          ],
+          "stale": false,
+          "stale_after_h": 6.0,
+          "total_units": 4,
+          "values": {
+            "as_presents": 13,
+            "attente_urgences_4h_plus": 0,
+            "attente_urgences_nb": 0,
+            "charge_soins_min_h": 1215.38,
+            "en_attente_aide_domicile": 4,
+            "en_attente_aval": 8,
+            "en_attente_avis": 1,
+            "en_attente_imagerie": 6,
+            "en_attente_transport": 0,
+            "ide_presents": 10,
+            "lits_occupes": 69,
+            "lits_ouverts": 99,
+            "lits_propres_libres": 30,
+            "lits_sales_ou_nettoyage": 0,
+            "patients_heberges_presents": 3,
+            "soignants_presents": 23,
+            "sortants_medicaux_presents": 11
+          }
+        }
+      ],
+      "timestamp": "2025-01-01T09:00:00+01:00"
+    }
+  }
+]

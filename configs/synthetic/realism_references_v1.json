@@ -1,0 +1,123 @@
+{
+  "reference_set_id": "FR_MED_CSG_REALISM_CONTEXT_V1",
+  "status": "provisional_context_not_acceptance_bands",
+  "review_date": "2026-10-15",
+  "target": {
+    "establishment": "CH support de GHT, activité MCO, 300 à 1200 lits ; préciser lits MCO versus capacité totale",
+    "focal_units": ["court séjour gériatrique", "médecine polyvalente aval des urgences"],
+    "contexts": ["fonctionnement fluide", "tension récurrente", "crise d'aval"],
+    "individual_real_patient_data_used": false
+  },
+  "references": [
+    {
+      "id": "DGOS_OCCUPANCY_TARGET",
+      "indicator": "occupation",
+      "kind": "management_target",
+      "definition": "Cible de taux d'occupation en médecine et chirurgie ; pas une distribution empirique.",
+      "population": "Médecine et chirurgie, fiche nationale d'efficience hospitalière 2-4 (2016).",
+      "published_value": 0.95,
+      "source_url": "https://sante.gouv.fr/IMG/pdf/2-4_gestion_des_lits.pdf",
+      "source_status": "target_value_and_target_label_verified_in_indexed_official_source",
+      "comparability": "Ne définit ni la moyenne observée ni un seuil universel de réalisme ; dénominateur à harmoniser.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "DREES_MEDICINE_LOS_2024",
+      "indicator": "hospital_los_days_discharges_in_window",
+      "kind": "aggregate_empirical",
+      "definition": "Durée moyenne de séjour en hospitalisation complète de médecine, hors techniques peu invasives.",
+      "population": "Médecine France 2024, DREES établissements de santé édition 2026, fiche 10.",
+      "published_value": 6.2,
+      "source_url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-07/ES%202026%20-%20Fiche%2010%20-%20M%C3%A9decine,%20chirurgie,%20obst%C3%A9trique%20et%20ondontologie%20-%20activit%C3%A9%20et%20capacit%C3%A9s.pdf",
+      "source_status": "official_document_consulted",
+      "comparability": "Ne pas appliquer la moyenne de toute la médecine au CSG ; convention de jours PMSI et durée horaire à harmoniser.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "DREES_ED_BED_SEARCH_2023",
+      "indicator": "ed_decision_to_bed_assignment",
+      "kind": "aggregate_empirical",
+      "definition": "Décision d'hospitalisation vers attribution d'un lit, distincte de l'arrivée physique dans l'unité.",
+      "population": "Patients hospitalisés en aval des urgences enquêtées le mardi 13 juin 2023 ; pas une année ni une crise hivernale.",
+      "published_value": {"median_minutes_less_than": 15, "p90_minutes_approximately": 370},
+      "source_url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-06/ER1373_Urgences_Dur%C3%A9es_%C3%A9tapes.pdf",
+      "source_status": "official_document_consulted",
+      "comparability": "Le moteur mesure décision vers admission dans le périmètre ; le découpage attribution/transport manque. Les médianes des étapes ne s'additionnent pas.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "DREES_ED_MORNING_2023",
+      "indicator": "ed_bed_search_by_decision_hour",
+      "kind": "aggregate_empirical",
+      "definition": "Médiane de recherche d'un lit selon l'heure de décision, et non moyenne du délai jusqu'à admission.",
+      "population": "Même enquête ponctuelle Urgences 2023 ; stratifier aussi l'âge et le volume du service.",
+      "published_value": {"decision_08_12_median_minutes_approximately": 55, "decision_16_20_median_minutes_approximately": 10},
+      "source_url": "https://drees.solidarites-sante.gouv.fr/sites/default/files/2026-06/ER1373_Urgences_Dur%C3%A9es_%C3%A9tapes.pdf",
+      "source_status": "official_document_consulted",
+      "comparability": "Signal de structure à étudier ; ne justifie pas un rapport minimal universel de trois dans toutes les configurations.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "FHF_ABSENTEEISM_2024",
+      "indicator": "gross_absenteeism",
+      "kind": "aggregate_empirical",
+      "definition": "Absentéisme 2024, incluant notamment les congés maternité ; pas le déficit net après remplacements.",
+      "population": "Hôpital public, FHF L'essentiel RH 2025, édition février 2026.",
+      "published_value": 0.092,
+      "source_url": "https://www.fhf.fr/sites/default/files/2026-05/Essentiel%20RH%202025_0.pdf",
+      "source_status": "official_document_consulted",
+      "comparability": "Les exports horaires actuels ne permettent pas de reconstruire absences brutes, remplacements et renforts séparément.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "CSG_DOWNSTREAM_BLOCKAGE",
+      "indicator": "capacity_caused_downstream_blocked_hours",
+      "kind": "missing_comparable_evidence",
+      "definition": "Présence après disponibilité médicale, effectivement bloquée par une capacité d'aval indisponible.",
+      "population": "CSG/médecine polyvalente, par âge, dépendance, destination et régime de tension.",
+      "published_value": null,
+      "source_url": null,
+      "source_status": "comparable_reference_not_established",
+      "comparability": "Une borne tarifaire GHS ne définit pas la disponibilité médicale. La cible 8–12 % du prototype n'est pas adoptée.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "CSG_DESTINATIONS",
+      "indicator": "discharge_destinations",
+      "kind": "missing_comparable_evidence",
+      "definition": "Destinations des sorties, avec effectifs et population source explicites.",
+      "population": "CSG et médecine polyvalente séparément ; ajustement âge/dépendance à définir.",
+      "published_value": null,
+      "source_url": null,
+      "source_status": "case_mix_matched_reference_not_established",
+      "comparability": "La moyenne départementale de médecine ne démontre pas un excès de SMR dans un périmètre riche en gériatrie.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    },
+    {
+      "id": "COORDINATION_TIME",
+      "indicator": "coordination_minutes",
+      "kind": "missing_measurement",
+      "definition": "Durée des tâches de coordination, par acteur, en distinguant travail actif, attente et relance.",
+      "population": "Cadre, assistant social et gestionnaire de lits du périmètre pilote.",
+      "published_value": null,
+      "source_url": null,
+      "source_status": "no_measurement_or_simulated_task_duration",
+      "comparability": "Un nombre de messages ne mesure pas un temps de travail économisé ; aucune conversion arbitraire en minutes.",
+      "evaluation_role": "context_only",
+      "acceptance_band": null
+    }
+  ],
+  "external_validation": {
+    "status": "not_started",
+    "rule": "Réserver sources, sites ou périodes avant ajustement ; ne pas réutiliser la calibration comme validation indépendante.",
+    "expert_review": "Non réalisée ; les personas de la note ne sont pas des entretiens documentés.",
+    "individual_hospital_data": "Après SYN, conformément à la roadmap."
+  }
+}
