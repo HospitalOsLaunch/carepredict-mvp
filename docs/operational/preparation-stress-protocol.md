@@ -69,6 +69,12 @@ main, pas sur toute la diversité des organisations hospitalières.
 
 ## Conséquence pour le pilote
 
+La [comparaison des politiques en épisodes séquentiels](decision-robustness.md)
+mesure désormais l'effet sur l'attente, les ressources et le repli. Elle distingue
+la fréquence des décisions défavorables, leur coût moyen et les fausses alertes.
+L'amélioration mesurée sur le fixture de réorganisation ne protège pas des chocs
+de ressources non annoncés et ne qualifie pas la politique pour un usage réel.
+
 Avant un usage réel : confirmer la cible avec le
 [contrat d'événements](preparation-endpoint-protocol.md), mesurer les erreurs et
 la calibration par service/période, examiner les changements de processus et

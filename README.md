@@ -25,6 +25,10 @@ Use `--demo-learned --show-trace` for the
 The [endpoint audit](docs/operational/preparation-endpoint-protocol.md) prepares
 retrospective labels from timestamped events. A [frozen stress suite](docs/operational/preparation-stress-protocol.md)
 checks changed mechanisms and explicitly reports the learner's limitations.
+The [decision benchmark](docs/operational/decision-robustness.md) compares the
+reference, boosting and a supervised mixture with delayed labels, paired actions
+and an independent arithmetic oracle. It reports partial protection, without
+qualifying the policy for operational use.
 This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 

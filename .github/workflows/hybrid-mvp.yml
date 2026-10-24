@@ -47,3 +47,4 @@ jobs:
           PYTHONPATH=src python -m hospitalos.hybrid --demo-learned --show-trace
           PYTHONPATH=src python -m hospitalos.hybrid.retrospective --demo
           PYTHONPATH=src python -m hospitalos.hybrid.stress_preparation
+          PYTHONPATH=src python -m hospitalos.hybrid.decision_benchmark
