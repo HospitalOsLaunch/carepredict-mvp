@@ -524,6 +524,9 @@ body::before {
 
 /* ---------------------------------------------------------------- greeting */
 .hello {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
   margin: var(--s1) 0 var(--s4);
   font-family: var(--display);
   font-size: var(--t-xl);
@@ -619,17 +622,6 @@ body::before {
 .flow {
   scroll-margin-top: 72px;
 }
-.flow .panel__title {
-  display: flex;
-  align-items: center;
-  gap: var(--s2);
-}
-.flow--beds .panel__title::before,
-.flow--assign .panel__title::before {
-  content: "→";
-  color: var(--sun);
-  font-weight: 400;
-}
 .flowtabs {
   display: none;
 }
@@ -649,15 +641,21 @@ body::before {
 .panel__head {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--s3);
   padding: var(--s4) var(--s5) var(--s3);
 }
 .panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
   font-size: var(--t-lg);
   font-weight: 600;
   line-height: 1.25;
+}
+.panel__title .illu {
+  margin: -4px 0 -4px -4px;
 }
 .panel__aside {
   font-size: var(--t-sm);
@@ -708,6 +706,16 @@ body::before {
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: var(--s6);
   padding: var(--s5) var(--s5) var(--s6);
+}
+.proposal__lead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s4);
+  align-items: start;
+  min-width: 0;
+}
+.proposal__illu {
+  margin-top: -6px;
 }
 .proposal__title {
   font-size: var(--t-xl);
@@ -1313,6 +1321,9 @@ body::before {
   margin-bottom: var(--s6);
 }
 .page-head h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
   font-size: var(--t-2xl);
   line-height: 1.15;
   font-weight: 650;
@@ -1628,6 +1639,22 @@ body::before {
   color: var(--ink-3);
   font-size: var(--t-sm);
 }
+.empty--illu {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  padding: var(--s4) var(--s5) var(--s6);
+}
+.empty--illu p {
+  max-width: 46ch;
+}
+.empty__title {
+  font-family: var(--display);
+  font-size: var(--t-md);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
 .skeleton {
   height: 220px;
   border-radius: var(--r-md);
@@ -1906,10 +1933,6 @@ body::before {
   .flowgrid--show-attribuer .flow--assign {
     display: block;
   }
-  .flow--beds .panel__title::before,
-  .flow--assign .panel__title::before {
-    content: none;
-  }
   .flow {
     scroll-margin-top: 112px;
   }
@@ -1987,11 +2010,16 @@ body::before {
   color: var(--ink);
 }
 .help::backdrop {
-  background: rgb(13 19 17 / 0.45);
+  background: rgb(12 18 48 / 0.45);
 }
 .help h2 {
   font-size: var(--t-lg);
-  margin-bottom: var(--s3);
+  margin: var(--s2) 0 2px;
+}
+.help__lead {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  margin-bottom: var(--s4);
 }
 .help dl {
   display: grid;
@@ -2046,5 +2074,127 @@ body::before {
   from {
     transform: translateY(26px) scale(0.85);
     opacity: 0.4;
+  }
+}
+
+/* ---------------------------------------------------------------- spot illustrations
+   Fine and light: one 1.5px ink line that never scales, a wash blob behind, one or two
+   palette fills and a spark of sun. Decorative only (aria-hidden). */
+.illu {
+  flex: none;
+  overflow: visible;
+  --illu-line: var(--ink-2);
+}
+.illu * {
+  vector-effect: non-scaling-stroke;
+}
+.illu__blob {
+  fill: var(--brand-wash);
+}
+.illu--sun .illu__blob {
+  fill: var(--sun-wash);
+}
+.illu--mint .illu__blob {
+  fill: var(--bloc-wash);
+}
+.illu--apri .illu__blob {
+  fill: var(--sac-wash);
+}
+.illu .l {
+  fill: none;
+  stroke: var(--illu-line);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.illu .ok {
+  stroke: var(--bloc);
+  stroke-width: 2;
+}
+.illu .thick {
+  stroke-width: 3.5;
+}
+.illu .dash {
+  stroke-dasharray: 0.5 4.5;
+  stroke-width: 2;
+}
+.illu .p {
+  fill: var(--sheet);
+}
+.illu .sun {
+  fill: var(--sun);
+}
+.illu .mint {
+  fill: var(--mint);
+}
+.illu .apri {
+  fill: var(--sac-mark);
+}
+.illu .lav {
+  fill: var(--magnet);
+}
+.illu .brand {
+  fill: var(--brand);
+}
+.illu .ink {
+  fill: var(--illu-line);
+}
+.illu .glass {
+  fill: var(--sun);
+  fill-opacity: 0.28;
+}
+.illu .o {
+  opacity: 0.5;
+}
+
+/* Small life: the morning sun rises once, sparks twinkle once when a drawing appears. */
+.hello__illu .rise {
+  animation: illu-rise 900ms var(--ease-out) both;
+}
+.illu .spark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: illu-spark 700ms 200ms var(--ease-out) both;
+}
+@keyframes illu-rise {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+@keyframes illu-spark {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .proposal__illu,
+  .hello__illu {
+    width: 44px;
+    height: 44px;
+  }
+  .page-head h1 .illu {
+    width: 48px;
+    height: 48px;
+  }
+  .empty--illu .illu {
+    width: 56px;
+    height: 56px;
+  }
+}
+@media (forced-colors: active) {
+  .illu {
+    display: none;
+  }
+}
+@media (max-width: 440px) {
+  .proposal__lead {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s2);
+  }
+  .proposal__illu {
+    margin: 0;
   }
 }

@@ -8,6 +8,7 @@ import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from ".
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Fresh, Toast, useNow } from "./ui/common";
 import { Alert, BoardIcon, Info, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Illu, momentIllu } from "./ui/illustrations";
 
 type Route = "unite" | "proposition" | "donnees";
 
@@ -246,7 +247,9 @@ export function App() {
       </nav>
 
       <dialog ref={help} className="help" aria-labelledby="help-title">
+        <Illu name="keys" size={64} />
         <h2 id="help-title">Raccourcis pour aller vite</h2>
+        <p className="help__lead">Une touche, une action. Vos mains restent où elles sont.</p>
         <dl>
           {SHORTCUTS.map(([k, v]) => (
             <div key={k}>
@@ -269,13 +272,16 @@ export function App() {
 }
 
 /** Bonjour / Bonsoir / Bonne garde, from the hour of the reconstructed state in Paris. */
-function greeting(iso: string): string {
+function parisHour(iso: string): number {
   const parts = new Intl.DateTimeFormat("fr-FR", {
     hour: "numeric",
     hourCycle: "h23",
     timeZone: "Europe/Paris",
   }).formatToParts(new Date(iso));
-  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 12);
+  return Number(parts.find((p) => p.type === "hour")?.value ?? 12);
+}
+
+function greeting(hour: number): string {
   if (hour >= 5 && hour < 18) return "Bonjour.";
   if (hour >= 18 && hour < 22) return "Bonsoir.";
   return "Bonne garde.";
@@ -298,6 +304,7 @@ function UnitPage(props: {
 }) {
   const { a } = props;
   const oldest = oldestFact(a);
+  const hour = parisHour(a.state.at);
   // Phone: one flow column at a time; the proposal decides which one opens first.
   const [zone, setZone] = useState<Zone>(() =>
     a.plan?.selected.kind === "request_transport"
@@ -318,7 +325,10 @@ function UnitPage(props: {
   return (
     <>
       <h1 className="hello">
-        {greeting(a.state.at)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
+        <Illu name={momentIllu(hour)} size={56} className="hello__illu" />
+        <span>
+          {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
+        </span>
       </h1>
       <TensionStrip a={a} onJump={jump} />
       <Proposal {...props} />

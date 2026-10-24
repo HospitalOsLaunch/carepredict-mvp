@@ -27,6 +27,25 @@ Chaleureuse, claire, encourageante : « Bonjour. Voici votre unité à 08:30. »
 l'instant. Mieux vaut ne rien proposer que se tromper. » Signature : « Libérer. Attribuer.
 Respirer. »
 
+## Illustrations
+
+Des illustrations « spot » fines et légères donnent un peu de chaleur au cockpit, comme une
+plante sur un bureau (`src/ui/illustrations.tsx`). Une seule grammaire sur une grille de 64 :
+un blob doux en teinte lavée (soleil, menthe, lavande ou abricot), un trait d'encre de 1,5 px
+qui ne grossit jamais avec la taille, une ou deux aplats de la palette et une étincelle de soleil.
+
+- **Où** : la salutation (fenêtre du matin, lueur du soir, lune et tisane de garde), les trois
+  zones (porte entrouverte pour Libérer, lit pour Lits, clé pour Attribuer), la proposition
+  (le dessin montre ce qu'elle demande : véhicule, spray de bionettoyage, clé, tasse quand tout
+  roule, nuage quand les données manquent), les titres de page et de bloc, les états vides
+  (« Belle accalmie. » avec un voilier), l'aide aux raccourcis.
+- **Tailles** : 56 px salutation et proposition, 36 px zones, 32 px blocs, 64 px titres de page,
+  72 px états vides ; réduites sur téléphone.
+- **Règles** : décoratives seulement (`aria-hidden`), jamais porteuses d'information ; toutes les
+  couleurs viennent des jetons, donc le thème de nuit suit ; masquées en couleurs forcées. Seul
+  mouvement : le soleil du matin se lève et les étincelles s'allument une fois, coupés sous
+  reduced-motion.
+
 ## Zoning sous tension
 
 1. Barre haute : symbole, sélecteur d'unité avec statut (`U`, `1`–`9`), sections, heure de l'état.

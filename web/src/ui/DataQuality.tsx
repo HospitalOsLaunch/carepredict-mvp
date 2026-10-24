@@ -3,6 +3,7 @@ import { entityLabel, explain } from "../domain/labels";
 import { type Assessment, age, duration, freshnessIndex, longClock, minutesBetween } from "../domain/view";
 import { Fresh } from "./common";
 import { Back, Ban, Check } from "./icons";
+import { Illu } from "./illustrations";
 
 const RESOURCE_NAME: Record<string, string> = {
   staffed: "Lits armés disponibles",
@@ -29,7 +30,10 @@ export function DataQuality({
         <a className="back" href="#/">
           <Back size={14} /> Unité
         </a>
-        <h1>Qualité des données</h1>
+        <h1>
+          <Illu name="magnifier" size={64} />
+          Qualité des données
+        </h1>
         <p>
           Une proposition ne vaut que ce que valent les informations reçues. Ici : ce qui est arrivé, quand,
           et ce qui empêche une évaluation.
@@ -40,6 +44,7 @@ export function DataQuality({
           <section className="panel" aria-labelledby="state-title">
             <header className="panel__head">
               <h2 className="panel__title" id="state-title">
+                <Illu name="puzzle" size={32} />
                 État reconstruit
               </h2>
               {codes.length ? (
@@ -85,6 +90,7 @@ export function DataQuality({
           <section className="panel" aria-labelledby="ages-title">
             <header className="panel__head">
               <h2 className="panel__title" id="ages-title">
+                <Illu name="hourglass" size={32} />
                 Informations les plus anciennes
               </h2>
               <span className="panel__aside">l'encre pâlit avec l'âge</span>
@@ -131,6 +137,7 @@ export function DataQuality({
             <section className="panel" aria-labelledby="recv-title">
               <header className="panel__head">
                 <h2 className="panel__title" id="recv-title">
+                  <Illu name="envelope" size={32} />
                   Dernières réceptions
                 </h2>
               </header>
@@ -159,6 +166,7 @@ function Resources({ resources, at }: { resources: ResourceBudget[]; at: string 
     <section className="panel" aria-labelledby="res-title">
       <header className="panel__head">
         <h2 className="panel__title" id="res-title">
+          <Illu name="clipboard" size={32} />
           Ressources confirmées
         </h2>
         <span className="panel__aside">un signal de vie ne vaut pas confirmation</span>
@@ -233,6 +241,7 @@ function Source({ receipt }: { receipt: SourceReceipt }) {
     <section className="panel" aria-labelledby="src-title">
       <header className="panel__head">
         <h2 className="panel__title" id="src-title">
+          <Illu name="box" size={32} />
           Dernier export de la source
         </h2>
         <span className={`pill ${tone}`}>{label}</span>
@@ -313,6 +322,7 @@ function Journal({ summary }: { summary: ShadowSummary }) {
     <section className="panel" aria-labelledby="journal-title">
       <header className="panel__head">
         <h2 className="panel__title" id="journal-title">
+          <Illu name="notebook" size={32} />
           Journal d'observation
         </h2>
         <span className="pill">aucune commande émise</span>
@@ -362,6 +372,7 @@ function Limits() {
     <section className="panel" aria-labelledby="limits-title">
       <header className="panel__head">
         <h2 className="panel__title" id="limits-title">
+          <Illu name="signpost" size={32} />
           Ce que fait ce prototype, et ce qu'il ne fait pas
         </h2>
       </header>

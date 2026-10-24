@@ -12,25 +12,29 @@ import {
   num,
 } from "../domain/view";
 import { Back } from "./icons";
+import { Empty, Illu, type IlluName, proposalIllu } from "./illustrations";
 
 export function ProposalDetail({ a }: { a: Assessment }) {
   const plan = a.plan;
   if (!plan) {
     return (
       <>
-        <Head title="Aucune proposition à détailler" />
-        <p className="empty panel">
-          L'unité n'a pas encore été évaluée, ou l'évaluation s'est abstenue.{" "}
-          <a className="link" href="#/">
-            Revenir à l'unité
-          </a>
-        </p>
+        <Head title="Aucune proposition à détailler" illu="cloud" />
+        <div className="panel">
+          <Empty illu="plane" title="Rien à détailler pour l'instant.">
+            L'unité n'a pas encore été évaluée, ou l'évaluation s'est abstenue.{" "}
+            <a className="link" href="#/">
+              Revenir à l'unité
+            </a>
+          </Empty>
+        </div>
       </>
     );
   }
   return (
     <>
       <Head
+        illu={proposalIllu(plan)}
         title={plan.decision === "abstain" ? "Abstention" : actionTitle(plan.selected)}
         subtitle={`${DECISION[plan.decision]} calculée pour l'état de ${longClock(plan.created_at)}. Toutes les actions possibles ont été simulées sur les mêmes ${plan.scenarios} scénarios ; seule la décision humaine engage.`}
       />
@@ -48,13 +52,16 @@ export function ProposalDetail({ a }: { a: Assessment }) {
   );
 }
 
-function Head({ title, subtitle }: { title: string; subtitle?: string }) {
+function Head({ title, subtitle, illu }: { title: string; subtitle?: string; illu: IlluName }) {
   return (
     <header className="page-head">
       <a className="back" href="#/">
         <Back size={14} /> Unité
       </a>
-      <h1>{title}</h1>
+      <h1>
+        <Illu name={illu} size={64} />
+        {title}
+      </h1>
       {subtitle ? <p>{subtitle}</p> : null}
     </header>
   );
@@ -83,6 +90,7 @@ function Options({ plan }: { plan: Plan }) {
     <section className="panel" aria-labelledby="options-title">
       <header className="panel__head">
         <h2 className="panel__title" id="options-title">
+          <Illu name="balance" size={32} />
           Options comparées
         </h2>
         <label className="toggle" htmlFor={toggleId}>
@@ -351,6 +359,7 @@ function Trace({ trace, plan }: { trace: PairedTrace; plan: Plan }) {
     <section className="panel" aria-labelledby="trace-title">
       <header className="panel__head">
         <h2 className="panel__title" id="trace-title">
+          <Illu name="path" size={32} />
           Déroulé simulé, scénario 1 sur {plan.scenarios}
         </h2>
       </header>
@@ -407,13 +416,16 @@ function NoTrace({ origin }: { origin: Assessment["origin"] }) {
   return (
     <section className="panel">
       <header className="panel__head">
-        <h2 className="panel__title">Déroulé simulé</h2>
+        <h2 className="panel__title">
+          <Illu name="path" size={32} />
+          Déroulé simulé
+        </h2>
       </header>
-      <p className="empty">
+      <Empty illu="magnifier" title="Pas de déroulé à montrer.">
         {origin === "fixture"
-          ? "Aucun déroulé : la planification s'est abstenue."
+          ? "La planification s'est abstenue : il n'y a rien eu à simuler."
           : "L'API locale ne renvoie pas le déroulé détaillé. Il est disponible via la ligne de commande (--show-trace) et dans les données de démonstration."}
-      </p>
+      </Empty>
     </section>
   );
 }
@@ -445,6 +457,7 @@ function Hypotheses({ plan }: { plan: Plan }) {
     <section className="panel" aria-labelledby="hyp-title">
       <header className="panel__head">
         <h2 className="panel__title" id="hyp-title">
+          <Illu name="bulb" size={32} />
           Hypothèses déclarées
         </h2>
         <span className="pill pill--warn">synthétiques</span>
@@ -504,6 +517,7 @@ function Traceability({ plan, a }: { plan: Plan; a: Assessment }) {
     <section className="panel" aria-labelledby="trace-id-title">
       <header className="panel__head">
         <h2 className="panel__title" id="trace-id-title">
+          <Illu name="tag" size={32} />
           Traçabilité
         </h2>
       </header>

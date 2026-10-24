@@ -17,6 +17,7 @@ import {
 } from "../domain/view";
 import { Fresh, plural } from "./common";
 import { Check, Clock, Cross, Dash, Question } from "./icons";
+import { Empty, Illu } from "./illustrations";
 
 // ---------------------------------------------------------------- release chains
 
@@ -69,6 +70,7 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
     >
       <header className="panel__head">
         <h2 className="panel__title" id="releases-title">
+          <Illu name="door" size={36} />
           Libérer
         </h2>
         <span className="panel__aside">
@@ -76,10 +78,9 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
         </span>
       </header>
       {chains.length === 0 ? (
-        <p className="empty">
-          Aucune sortie en préparation pour l'instant. Elles apparaîtront dès qu'une autorisation ou une
-          logistique de sortie est saisie.
-        </p>
+        <Empty illu="suitcase" title="Aucune sortie en préparation.">
+          Elles apparaîtront ici dès qu'une autorisation ou une logistique de sortie sera saisie.
+        </Empty>
       ) : (
         <ol className="releases">
           {chains.map((c) => {
@@ -146,6 +147,7 @@ export function Queue({ a }: { a: Assessment }) {
     >
       <header className="panel__head">
         <h2 className="panel__title" id="queue-title">
+          <Illu name="key" size={36} />
           Attribuer
         </h2>
         <span className="panel__aside">
@@ -153,7 +155,9 @@ export function Queue({ a }: { a: Assessment }) {
         </span>
       </header>
       {entries.length === 0 ? (
-        <p className="empty">Personne n'attend de lit. Belle accalmie.</p>
+        <Empty illu="boat" title="Belle accalmie.">
+          Personne n'attend de lit pour l'instant.
+        </Empty>
       ) : (
         <ul className="queue">
           {entries.map((e) => {
@@ -161,11 +165,17 @@ export function Queue({ a }: { a: Assessment }) {
             const bedLine = e.reservedBed
               ? { text: `Lit ${e.reservedBed.id} réservé`, tone: "ok" }
               : e.usableNow.length
-                ? { text: `Lit prêt : ${e.usableNow.map((b) => b.id).join(", ")}`, tone: "ok" }
+                ? {
+                    text: `Lit prêt : ${e.usableNow.map((b) => b.id).join(", ")}`,
+                    tone: "ok",
+                  }
                 : target?.patient_id === e.patient.id
                   ? { text: "Concerné par la proposition", tone: "go" }
                   : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
-                    ? { text: `${targetBed.id} se libère avec la proposition`, tone: "go" }
+                    ? {
+                        text: `${targetBed.id} se libère avec la proposition`,
+                        tone: "go",
+                      }
                     : { text: "Pas encore de lit compatible", tone: "none" };
             return (
               <li key={e.patient.id}>
@@ -358,6 +368,7 @@ export function BedBoard({ a }: { a: Assessment }) {
     <section className="panel flow flow--beds" aria-labelledby="beds-title" id="zone-lits" tabIndex={-1}>
       <header className="panel__head">
         <h2 className="panel__title" id="beds-title">
+          <Illu name="bed" size={36} />
           Lits
         </h2>
         <span className="panel__aside">
@@ -389,13 +400,31 @@ export function BedBoard({ a }: { a: Assessment }) {
       </ul>
       <div className="legend" aria-hidden="true">
         <span>
-          <i style={{ background: "var(--bloc-wash)", borderColor: "var(--bloc)" }} /> Propre
+          <i
+            style={{
+              background: "var(--bloc-wash)",
+              borderColor: "var(--bloc)",
+            }}
+          />{" "}
+          Propre
         </span>
         <span>
-          <i style={{ background: "var(--sac-wash)", borderColor: "var(--sac-mark)" }} /> À nettoyer
+          <i
+            style={{
+              background: "var(--sac-wash)",
+              borderColor: "var(--sac-mark)",
+            }}
+          />{" "}
+          À nettoyer
         </span>
         <span>
-          <i style={{ background: "var(--magnet)", borderColor: "var(--magnet)" }} /> Occupé
+          <i
+            style={{
+              background: "var(--magnet)",
+              borderColor: "var(--magnet)",
+            }}
+          />{" "}
+          Occupé
         </span>
         <span>
           <i style={{ background: "var(--well)", borderStyle: "dashed" }} /> Fermé

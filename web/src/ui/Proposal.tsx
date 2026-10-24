@@ -14,6 +14,7 @@ import {
   proposalContext,
 } from "../domain/view";
 import { Ban, Check, Info, Refresh } from "./icons";
+import { Illu, proposalIllu } from "./illustrations";
 
 interface Props {
   a: Assessment;
@@ -34,14 +35,18 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
       <section className="panel proposal proposal--quiet" aria-labelledby="proposal-title">
         <Band label="À évaluer" a={a} />
         <div className="proposal__main">
-          <div>
-            <h2 className="proposal__title" id="proposal-title">
-              Prêt à évaluer l'unité
-            </h2>
-            <p className="mute">
-              HospitalOS simule les prochaines heures avec et sans chaque action possible, puis vous propose
-              la plus utile. Rien n'est envoyé : l'évaluation est simplement gardée en mémoire d'observation.
-            </p>
+          <div className="proposal__lead">
+            <Illu name="plane" size={56} className="proposal__illu" />
+            <div>
+              <h2 className="proposal__title" id="proposal-title">
+                Prêt à évaluer l'unité
+              </h2>
+              <p className="mute">
+                HospitalOS simule les prochaines heures avec et sans chaque action possible, puis vous propose
+                la plus utile. Rien n'est envoyé : l'évaluation est simplement gardée en mémoire
+                d'observation.
+              </p>
+            </div>
           </div>
         </div>
         <div className="proposal__actions">
@@ -60,14 +65,17 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
       <section className="panel proposal proposal--abstain" aria-labelledby="proposal-title">
         <Band label="Données à vérifier" a={a} />
         <div className="proposal__main">
-          <div>
-            <h2 className="proposal__title" id="proposal-title">
-              Pas de proposition pour l'instant
-            </h2>
-            <p className="mute">
-              Mieux vaut ne rien proposer que se tromper. Quelques informations manquent, ont vieilli ou se
-              contredisent : mettez-les à jour à la source, puis réévaluez.
-            </p>
+          <div className="proposal__lead">
+            <Illu name="cloud" size={56} className="proposal__illu" />
+            <div>
+              <h2 className="proposal__title" id="proposal-title">
+                Pas de proposition pour l'instant
+              </h2>
+              <p className="mute">
+                Mieux vaut ne rien proposer que se tromper. Quelques informations manquent, ont vieilli ou se
+                contredisent : mettez-les à jour à la source, puis réévaluez.
+              </p>
+            </div>
           </div>
           <div className="gates">
             {groups.map((g) => (
@@ -116,25 +124,28 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
     <section className={`panel proposal${quiet ? " proposal--quiet" : ""}`} aria-labelledby="proposal-title">
       <Band label={quiet ? "Rien à changer" : "Action suivante"} a={a} />
       <div className="proposal__main">
-        <div>
-          <h2 className="proposal__title" id="proposal-title">
-            {actionTitle(plan.selected)}
-          </h2>
-          <ul className="facts">
-            {plan.reasons.map((r) => (
-              <li key={r} title={r}>
-                {explain(r)}
-              </li>
-            ))}
-            {context.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-            {plan.warnings.map((w) => (
-              <li key={w} title={w}>
-                {explain(w)}
-              </li>
-            ))}
-          </ul>
+        <div className="proposal__lead">
+          <Illu name={proposalIllu(plan)} size={56} className="proposal__illu" />
+          <div>
+            <h2 className="proposal__title" id="proposal-title">
+              {actionTitle(plan.selected)}
+            </h2>
+            <ul className="facts">
+              {plan.reasons.map((r) => (
+                <li key={r} title={r}>
+                  {explain(r)}
+                </li>
+              ))}
+              {context.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+              {plan.warnings.map((w) => (
+                <li key={w} title={w}>
+                  {explain(w)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         {cmp.baseline && cmp.selected && !quiet ? (
           <div className="effect" aria-label="Effet simulé">
