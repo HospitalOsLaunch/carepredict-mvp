@@ -1,0 +1,42 @@
+name: hybrid-mvp
+
+on:
+  pull_request:
+    paths:
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'tests/hybrid/**'
+      - '.github/workflows/hybrid-mvp.yml'
+  push:
+    branches: ['main']
+    paths:
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'tests/hybrid/**'
+      - '.github/workflows/hybrid-mvp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contracts-and-mechanics:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated prototype dependencies
+        run: python -m pip install 'pydantic>=2.7,<3' pytest ruff mypy fastapi httpx
+      - name: Lint and format
+        run: |
+          ruff check src/hospitalos/hybrid services/api/hybrid_app.py tests/hybrid
+          ruff format --check src/hospitalos/hybrid services/api/hybrid_app.py tests/hybrid
+      - name: Type check
+        run: PYTHONPATH=src:. mypy --strict src/hospitalos/hybrid services/api/hybrid_app.py tests/hybrid
+      - name: Tests
+        run: PYTHONPATH=src:. pytest -q tests/hybrid
+      - name: Demonstrator
+        run: PYTHONPATH=src python -m hospitalos.hybrid --demo

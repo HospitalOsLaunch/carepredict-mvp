@@ -1,5 +1,17 @@
 # HospitalOS / CarePredict MVP
 
+## New MVP direction: explicit state, probabilistic simulation, assisted decisions
+
+The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:
+bitemporal patient/resource facts, constrained single-action proposals, joint
+scenario simulation, independent event-log scoring, and a persistent sandbox
+approval workflow. Its standalone local API does not load the TFT/RSSM stack.
+
+Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
+[hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
+This is a synthetic closed-cohort prototype, not a validated hospital deployment.
+The forecasting and world-model research paths documented below remain separate.
+
 HospitalOS is building a hospital operations world model: an AI system that learns how hospital pressure evolves across care workload, staffing, beds, patient flow, and capacity.
 
 The current MVP, CarePredict, validates the first wedge of this vision by forecasting nursing workload from SIIPS-style operational time series. It includes a synthetic-data pipeline, FastAPI serving layer, and a v2 forecasting stack combining a TS-JEPA encoder, RSSM dynamics, and direct multi-horizon prediction.
@@ -303,3 +315,4 @@ License: TODO. No tracked license file is present in this checkout.
 
 Contact: TODO. Add the repository owner or project contact before sharing
 outside the private review group.
+
