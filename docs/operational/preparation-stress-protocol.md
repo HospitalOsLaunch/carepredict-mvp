@@ -72,8 +72,9 @@ main, pas sur toute la diversité des organisations hospitalières.
 La [comparaison des politiques en épisodes séquentiels](decision-robustness.md)
 mesure désormais l'effet sur l'attente, les ressources et le repli. Elle distingue
 la fréquence des décisions défavorables, leur coût moyen et les fausses alertes.
-L'amélioration mesurée sur le fixture de réorganisation ne protège pas des chocs
-de ressources non annoncés et ne qualifie pas la politique pour un usage réel.
+Les écarts descriptifs v1 sont non concluants et ne qualifient pas la politique
+pour un usage réel. Le [protocole corrigé](decision-v2-protocol.md) sépare les
+contrôles de mécanique, les diagnostics de prévision et l'inférence décisionnelle.
 
 Avant un usage réel : confirmer la cible avec le
 [contrat d'événements](preparation-endpoint-protocol.md), mesurer les erreurs et

@@ -336,6 +336,7 @@ def run_benchmark(*, episodes: int = 48, scenarios: int = 32) -> dict[str, Any]:
         "summary": summary,
         "after_change": post,
         "decision_findings": {
+            "scientific_conclusion": "inconclusive_three_seeds_non_discriminating_reference",
             "supervised_mean_wait_worse_than_reference_after_change": [
                 stream
                 for stream, policies in post.items()

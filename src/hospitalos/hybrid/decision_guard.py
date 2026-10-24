@@ -27,6 +27,8 @@ from .survival import PreparationRecord, observed_cells
 def mix_curve(
     reference: PreparationCurve, challenger: PreparationCurve, alpha: float
 ) -> PreparationCurve:
+    if any(c.edges != EDGES or c.interpolation != "upper_edge" for c in (reference, challenger)):
+        raise ValueError("Legacy guard cannot approximate a continuous mixture by mixed hazards")
     if reference.patient_id != challenger.patient_id or not 0 <= alpha <= 1:
         raise ValueError("Mixture requires matching patients and alpha in [0,1]")
     return PreparationCurve(
@@ -46,6 +48,8 @@ def mix_forecasts(
     weight_available_at: datetime,
 ) -> PreparationForecasts:
     weight_available_at = instant(weight_available_at)
+    if any(f.schema_version != "PREPARATION_FORECAST_1" for f in (reference, challenger)):
+        raise ValueError("Legacy guard supports only discrete v1 bundles")
     keys = ("hospital_id", "origin", "state_fingerprint", "target", "evidence")
     if any(getattr(reference, k) != getattr(challenger, k) for k in keys):
         raise ValueError("Forecasts must describe the same state and origin")
@@ -82,6 +86,8 @@ def mix_forecasts(
 
 def curve_loss(curve: PreparationCurve, record: PreparationRecord) -> float:
     """Censored log loss of the mixture distribution, not a mixture of log losses."""
+    if curve.edges != EDGES or curve.interpolation != "upper_edge":
+        raise ValueError("Legacy loss requires a discrete v1 curve")
     if curve.patient_id != record.patient_id:
         raise ValueError("Prediction/label patient mismatch")
     if record.event_observed:

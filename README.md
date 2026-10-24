@@ -27,8 +27,10 @@ retrospective labels from timestamped events. A [frozen stress suite](docs/opera
 checks changed mechanisms and explicitly reports the learner's limitations.
 The [decision benchmark](docs/operational/decision-robustness.md) compares the
 reference, boosting and a supervised mixture with delayed labels, paired actions
-and an independent arithmetic oracle. It reports partial protection, without
-qualifying the policy for operational use.
+and an independent arithmetic oracle. Its scientific result is inconclusive.
+The [v2 protocol](docs/operational/decision-v2-protocol.md) adds continuous correlated
+preparation, stronger baselines, stable-stream CUSUM calibration and paired
+trajectory inference. All policies remain research-only.
 This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 

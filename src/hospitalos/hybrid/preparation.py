@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime
+from statistics import NormalDist
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, StrictInt, field_validator, model_validator
@@ -23,28 +24,45 @@ Probability = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
 
 class PreparationCurve(Closed):
     patient_id: Identifier
-    mass: Annotated[tuple[Probability, ...], Field(min_length=6, max_length=6)]
+    mass: Annotated[tuple[Probability, ...], Field(min_length=1, max_length=96)]
     beyond_24h: Probability
+    edges: tuple[StrictInt, ...] = EDGES
+    interpolation: Literal["upper_edge", "constant_hazard"] = "upper_edge"
 
     @model_validator(mode="after")
     def probability(self) -> Self:
+        if len(self.edges) != len(self.mass) or self.edges[-1] != 1440:
+            raise ValueError("Mass/grid mismatch or missing 24h endpoint")
+        if any(a >= b for a, b in zip((0, *self.edges[:-1]), self.edges, strict=True)):
+            raise ValueError("Preparation grid must be strictly increasing")
         if not math.isclose(sum(self.mass) + self.beyond_24h, 1, abs_tol=1e-9):
             raise ValueError("Preparation mass and tail must sum to one")
+        if self.interpolation == "constant_hazard" and self.beyond_24h <= 0:
+            raise ValueError("Finite constant hazards require positive residual survival")
         return self
 
     def quantile(self, probability: float) -> int | None:
         if not 0 < probability < 1:
             raise ValueError("Quantile probability must be in (0,1)")
         cumulative = 0.0
-        for minute, mass in zip(EDGES, self.mass, strict=True):
+        left = 0
+        for minute, mass in zip(self.edges, self.mass, strict=True):
+            previous = cumulative
             cumulative += mass
             if cumulative >= probability:
+                if self.interpolation == "constant_hazard":
+                    rate = -math.log1p(-mass / (1 - previous)) / (minute - left)
+                    value = left - math.log((1 - probability) / (1 - previous)) / rate
+                    return max(1, min(minute, math.ceil(value)))
                 return minute
+            left = minute
         return None
 
 
 class PreparationForecasts(Closed):
-    schema_version: Literal["PREPARATION_FORECAST_1"] = "PREPARATION_FORECAST_1"
+    schema_version: Literal["PREPARATION_FORECAST_1", "PREPARATION_FORECAST_2"] = (
+        "PREPARATION_FORECAST_1"
+    )
     target: Literal["residual_preparation_before_resource_queue"] = (
         "residual_preparation_before_resource_queue"
     )
@@ -55,6 +73,7 @@ class PreparationForecasts(Closed):
     origin: datetime
     model_available_at: datetime
     curves: Annotated[tuple[PreparationCurve, ...], Field(max_length=400)]
+    shared_loading: Probability = 0
 
     @field_validator("origin", "model_available_at")
     @classmethod
@@ -63,6 +82,15 @@ class PreparationForecasts(Closed):
 
     @model_validator(mode="after")
     def clocks(self) -> Self:
+        if self.schema_version == "PREPARATION_FORECAST_1" and (
+            self.shared_loading != 0
+            or any(c.edges != EDGES or c.interpolation != "upper_edge" for c in self.curves)
+        ):
+            raise ValueError("Continuous/correlated forecasts require schema v2")
+        if self.schema_version == "PREPARATION_FORECAST_2" and any(
+            c.interpolation != "constant_hazard" for c in self.curves
+        ):
+            raise ValueError("Schema v2 requires explicit continuous interpolation")
         if self.model_available_at > self.origin:
             raise ValueError("Model was not available at the decision origin")
         if len({c.patient_id for c in self.curves}) != len(self.curves):
@@ -92,10 +120,29 @@ def validate_preparation(state: State, forecasts: PreparationForecasts) -> None:
         raise ValueError("Preparation curves must cover exactly the eligible observed patients")
 
 
-def preparation_draw(curve: PreparationCurve, seed: int, scenario: int) -> int | None:
+def preparation_draw(
+    curve: PreparationCurve,
+    seed: int,
+    scenario: int,
+    *,
+    shared_loading: float = 0,
+    hospital_id: str = "",
+) -> int | None:
+    if not 0 <= shared_loading <= 1:
+        raise ValueError("Invalid shared loading")
     value = uniform(seed, scenario, "learned_preparation", curve.patient_id)
+    if shared_loading:
+        if not hospital_id:
+            raise ValueError("Shared preparation loading requires a hospital identifier")
+        normal = NormalDist()
+        common = uniform(seed, scenario, "shared_preparation", hospital_id)
+        z = normal.inv_cdf(min(1 - 1e-12, max(1e-12, common)))
+        e = normal.inv_cdf(min(1 - 1e-12, max(1e-12, value)))
+        value = normal.cdf(shared_loading * z + math.sqrt(1 - shared_loading**2) * e)
+    if curve.interpolation == "constant_hazard":
+        return curve.quantile(min(1 - 1e-12, max(1e-12, value)))
     cumulative = 0.0
-    for minute, mass in zip(EDGES, curve.mass, strict=True):
+    for minute, mass in zip(curve.edges, curve.mass, strict=True):
         cumulative += mass
         if value < cumulative:
             return minute

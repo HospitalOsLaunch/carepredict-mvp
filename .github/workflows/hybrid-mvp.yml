@@ -48,3 +48,5 @@ jobs:
           PYTHONPATH=src python -m hospitalos.hybrid.retrospective --demo
           PYTHONPATH=src python -m hospitalos.hybrid.stress_preparation
           PYTHONPATH=src python -m hospitalos.hybrid.decision_benchmark
+      - name: Corrected decision protocol and generated table validation
+        run: PYTHONPATH=src python -m hospitalos.hybrid.robustness_v2 --check

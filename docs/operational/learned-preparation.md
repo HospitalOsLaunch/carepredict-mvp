@@ -120,6 +120,26 @@ Les sorties `HYBRID_PLAN_4` incluent le contrat dans l'identité et le contenu
 persisté. Les propositions v1/v2/v3 doivent être régénérées ; conserver l'historique
 et réconcilier une émission inconnue avant toute nouvelle émission sandbox.
 
+### Contrat continu optionnel
+
+`PREPARATION_FORECAST_2` ajoute une grille explicite, l'interpolation
+`constant_hazard` et un `shared_loading` entre 0 et 1. Chaque masse détermine le
+risque constant dans son intervalle ; le tirage peut donc se terminer à l'intérieur
+d'un intervalle chevauchant l'horizon. Le moteur arrondit à la minute supérieure.
+La queue au-delà de 24 h reste explicite et ne force aucune sortie.
+
+Une copule gaussienne partage un facteur hospitalier entre les uniformes patients.
+Le chargement est une hypothèse déclarée, pas une corrélation estimée sur données
+réelles. Il ne remultiplie pas les durées et préserve leurs distributions marginales.
+Le modèle actuel n'établit pas une dépendance apprise entre préparation et transport.
+Ces distributions produisent `HYBRID_PLAN_5` et modifient l'identité du plan.
+L'absence de v2 conserve le comportement antérieur. Régénérer les propositions
+en attente après mise à jour du schéma ; conserver l'historique d'exécution.
+
+Le [banc v2](decision-v2-protocol.md) évalue des mélanges continus exacts. Le
+superviseur discret v1 refuse les courbes v2 : moyenner leurs masses puis
+interpoler un hazard ne reproduirait pas exactement le mélange de leurs densités.
+
 ## Exécution
 
 L'apprentissage utilise scikit-learn `>=1.5,<1.9`, déjà déclaré dans le dépôt.
@@ -148,8 +168,9 @@ le contrôle de plage seul ne la détecte pas. Aucun entraînement réel n'est e
 les horloges et le suivi, puis conduire une évaluation rétrospective temporelle.
 Étudier ensuite la censure informative, les risques concurrents, les origines
 répétées, la calibration par service et les dépendances résiduelles entre patients.
-Ici les tirages de préparation sont indépendants conditionnellement aux variables
-de charge ; les futurs changements de capacité ne modifient pas leur distribution.
+Dans le contrat v1, les tirages de préparation sont indépendants conditionnellement
+aux variables de charge. Le contrat v2 permet une dépendance commune déclarée ;
+les futurs changements de capacité ne modifient pas leurs distributions marginales.
 La validité causale d'une intervention et les plans multistades restent à établir.
 
 Références méthodologiques :

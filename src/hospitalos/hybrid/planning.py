@@ -78,7 +78,7 @@ class Candidate(Closed):
 
 
 class Plan(Closed):
-    schema_version: Literal["HYBRID_PLAN_4"] = "HYBRID_PLAN_4"
+    schema_version: Literal["HYBRID_PLAN_4", "HYBRID_PLAN_5"] = "HYBRID_PLAN_4"
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
     )
@@ -104,6 +104,16 @@ class Plan(Closed):
     service_status: Literal[
         "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
     ]
+
+    @model_validator(mode="after")
+    def forecast_version(self) -> Self:
+        continuous = (
+            self.preparation is not None
+            and self.preparation.schema_version == "PREPARATION_FORECAST_2"
+        )
+        if (self.schema_version == "HYBRID_PLAN_5") != continuous:
+            raise ValueError("Plan/forecast version mismatch")
+        return self
 
 
 def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], bool]:
@@ -246,6 +256,10 @@ def plan(request: PlanRequest) -> Plan:
             ):
                 reasons = ("simulated_improvement_rejected_due_to_resource_pressure",)
     return Plan(
+        schema_version="HYBRID_PLAN_5"
+        if request.preparation is not None
+        and request.preparation.schema_version == "PREPARATION_FORECAST_2"
+        else "HYBRID_PLAN_4",
         decision=decision,
         plan_id=plan_id,
         hospital_id=state.hospital_id,

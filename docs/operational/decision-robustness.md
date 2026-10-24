@@ -1,4 +1,4 @@
-# Robustesse des décisions : mélange, supervision différée et repli
+# Robustesse des décisions v1 : résultat non concluant
 
 Statut : expérience synthétique séquentielle, 24 octobre 2026. La politique
 supervisée reste expérimentale. Ce lot ajoute des fonctions de comparaison et
@@ -10,11 +10,17 @@ Une régression de prévision ne mesure pas directement une dégradation de déc
 Le benchmark compare maintenant les actions recommandées et leurs conséquences
 dans des épisodes à deux unités, avec départs préparables et ressources limitées.
 
-Sur le test réservé, le mélange supervisé réduit la fréquence des épisodes
-défavorables à la référence après réorganisation, ainsi que l'attente moyenne.
-Ce gain reste limité : une fausse alerte apparaît en régime stable, la supervision
-réagit avec retard et ne protège pas des chocs de ressources non annoncés. Aucune
-promotion de cette politique vers un usage opérationnel n'est justifiée.
+**Verdict scientifique : non concluant, pas de promotion.** Sur trois graines et
+96 épisodes post-réorganisation, les écarts descriptifs ne démontrent aucune
+supériorité statistiquement établie. La référence poolée ne distingue pas les
+deux transports en espérance dans ce fixture ; le bruit Monte Carlo les départage.
+Un repli qui copie cette référence réduit mécaniquement le taux « pire que la
+référence ». Ce taux seul ne démontre pas une protection décisionnelle.
+
+Le [protocole v2](decision-v2-protocol.md) remplace cet essai pour toute nouvelle
+conclusion scientifique : logistique, référence analytique, vérité continue,
+départs concurrents, CUSUM et inférence appariée sur 30 trajectoires réservées.
+Les fonctions v1 sont conservées pour reproduction et tests de régression.
 
 ## Politiques comparées
 
@@ -123,6 +129,11 @@ empirique 99 % des moyennes mobiles de la référence, augmenté de 0,25. Ce son
 des seuils de recherche fondés sur un petit échantillon, **sans garantie de taux
 de fausse alerte**. Ce n'est pas une implémentation de WATCH ou d'une borne conforme.
 
+La revue a confirmé que 40 labels ne donnent que 17 fenêtres chevauchantes :
+les quantiles 95 % et 99 % sélectionnent tous deux le maximum de leur série.
+Ces seuils v1 n'ont pas d'ARL contrôlé et ne doivent pas être réutilisés comme
+calibration opérationnelle. La v2 calibre conjointement des CUSUM sur des flux stables.
+
 Une alarme relative verrouille le repli vers la référence. Une alarme sur la
 référence suspend les recommandations. Il n'y a pas de reprise automatique dans
 ce lot. La supervision est commune aux deux unités ; une supervision par service
@@ -149,6 +160,9 @@ comptés séparément.
 
 ## Mesures et lecture du test réservé
 
+Les chiffres qui suivent décrivent l'exécution historique v1 et ne constituent
+pas une démonstration d'efficacité. Ils ne sont pas les résultats du protocole v2.
+
 Le rapport donne les moyennes, résultats par graine et phases avant/après rupture :
 attente cumulée sur six heures en patients-minutes, gain face à l'inaction, écart
 apparié à la référence, regret face à l'oracle, pire décile du regret, expositions
@@ -161,6 +175,12 @@ dans 8,3 % et le mélange supervisé dans 3,1 %. L'attente cumulée moyenne est
 respectivement de 940,78, 938,59 et 933,28 patients-minutes, contre 941,41 pour la
 référence. Le gain moyen du mélange supervisé est donc de 8,13 patients-minutes
 par épisode de six heures, soit environ 0,9 % : ce n'est pas un gain par patient.
+Le triplet meilleur/égal/pire vaut 11/75/10 pour le boosting, 9/79/8 pour le
+mélange fixe et 7/86/3 pour le mélange supervisé. Le gain supervisé repose sur
+10 épisodes de résultat différent ; il ferme 14,8 % de l'écart agrégé à l'oracle
+clairvoyant. Cet oracle n'est pas une politique atteignable. Aucun intervalle
+apparié n'a été établi ; trois trajectoires indépendantes sont insuffisantes
+pour une conclusion robuste, même si les trois moyennes sont favorables.
 La régression de prévision antérieure ne devient donc pas systématiquement une
 régression moyenne de décision dans ce nouveau fixture. Les deux expériences
 portent sur des mécanismes, des modèles et des mesures distincts.
@@ -173,6 +193,7 @@ alors qu'aucun label post-rupture n'est encore disponible : c'est une fausse ale
 depuis la rupture du délai de détection admissible. Une alarme sur trois contrôles
 stables est observée ; ce faible effectif ne permet pas d'estimer un taux général.
 Une partie du repli observé provient donc d'une alarme sans preuve de changement.
+Cette graine représente 22 des 47 épisodes de repli post-réorganisation.
 
 Le flux avec chocs non annoncés conserve des expositions de surcharge, y compris
 avec le repli. La continuité des tâches après réduction de capacité peut créer

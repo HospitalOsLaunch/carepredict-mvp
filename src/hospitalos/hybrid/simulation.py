@@ -115,7 +115,13 @@ def simulate(
         ):
             assert p.bed_id is not None
             minute = (
-                preparation_draw(curves[p.id], seed, scenario)
+                preparation_draw(
+                    curves[p.id],
+                    seed,
+                    scenario,
+                    shared_loading=preparation.shared_loading,
+                    hospital_id=state.hospital_id,
+                )
                 if preparation is not None
                 else multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
             )

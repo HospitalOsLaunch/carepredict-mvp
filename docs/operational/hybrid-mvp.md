@@ -69,8 +69,9 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
   est identifiée lorsque la relation charge–délai change.
 - [Comparaison décisionnelle séquentielle](decision-robustness.md) : référence,
   boosting, mélange fixe et mélange supervisé avec labels retardés. L'attente et
-  les ressources sont vérifiées par un oracle de calcul séparé ; la protection
-  mesurée reste partielle et les fonctions restent hors API par défaut.
+  les ressources sont vérifiées par un oracle de calcul séparé. Le résultat v1 est
+  non concluant. Le [protocole v2](decision-v2-protocol.md) renforce les références,
+  les distributions, les alarmes et l'inférence ; les politiques restent hors API par défaut.
 - Innovations aléatoires indexées par graine/scénario/mécanisme/entité, et facteur
   commun de ralentissement. Les plans partagent les mêmes innovations ; les
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
