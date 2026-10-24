@@ -1,27 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
 import { type Assessment, clock, longClock, oldestFact } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
-import { Proposal } from "./ui/Proposal";
+import { Journal } from "./ui/Journal";
+import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
-import { Fresh, Toast, useNow } from "./ui/common";
-import { Alert, BoardIcon, Info, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Fresh, Toast, type ToastState, useNow } from "./ui/common";
+import { Alert, BoardIcon, BookIcon, Info, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "donnees";
+type Route = "unite" | "proposition" | "journal" | "donnees";
 
-function readRoute(): Route {
-  const hash = window.location.hash.replace(/^#\/?/, "");
-  return hash === "proposition" || hash === "donnees" ? hash : "unite";
+interface Location {
+  route: Route;
+  /** Journal entry opened from a shared link: #/journal/<id>. */
+  param: string | null;
+}
+
+function readRoute(): Location {
+  const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
+  const route = head === "proposition" || head === "donnees" || head === "journal" ? head : "unite";
+  return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
 function go(route: Route) {
   window.location.hash = route === "unite" ? "/" : `/${route}`;
 }
 
-function useRoute(): Route {
+function useRoute(): Location {
   const [route, setRoute] = useState(readRoute);
   useEffect(() => {
     const on = () => {
@@ -37,6 +46,7 @@ function useRoute(): Route {
 const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon: () => JSX.Element }> = [
   { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
   { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
+  { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
   { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
 
@@ -50,17 +60,20 @@ const ORIGIN: Record<Connection, string> = {
 const TITLES: Record<Route, string> = {
   unite: "Unité",
   proposition: "Proposition",
+  journal: "Journal des décisions",
   donnees: "Qualité des données",
 };
 
 const SHORTCUTS: Array<[string, string]> = [
   ["U", "Changer d'unité"],
   ["1 à 9", "Aller directement à l'unité n"],
-  ["O", "Je l'aurais fait"],
-  ["N", "Je ne l'aurais pas fait, puis 1 à 6 pour le motif"],
+  ["O", "Valider la proposition"],
+  ["N", "Refuser, puis 1 à 6 pour le motif"],
+  ["F", "C'est fait (proposition validée)"],
   ["R", "Réévaluer l'unité"],
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
+  ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
 ];
@@ -85,6 +98,8 @@ function useShortcuts(
       else if (k === "?") openHelp();
       else if (k === "o") emit("yes");
       else if (k === "n") emit("no");
+      else if (k === "f") emit("done");
+      else if (k === "j") go("journal");
       else if (k === "r") store.evaluate();
       else if (k === "a") go("unite");
       else if (k === "d") go("proposition");
@@ -104,8 +119,8 @@ function useShortcuts(
 
 export function App() {
   const store = useAssessment();
-  const route = useRoute();
-  const [toast, setToast] = useState<string | null>(null);
+  const { route, param } = useRoute();
+  const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
   const help = useRef<HTMLDialogElement>(null);
   const clearToast = useCallback(() => setToast(null), []);
@@ -113,6 +128,17 @@ export function App() {
   const openHelp = useCallback(() => help.current?.showModal(), []);
   const a = store.assessment;
   const now = useNow(a, store.loadedAt);
+  const notify = useCallback((message: string, undo?: () => void) => setToast({ message, undo }), []);
+  const { records, me } = useJournal();
+  const todo = now ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
+
+  // Demonstration: a plausible shift of earlier decisions, read-only, never stored.
+  const stateAt = a?.state.at;
+  useEffect(() => {
+    if (store.connection === "fixture" || store.connection === "api-plan") {
+      if (stateAt) journal.setSamples(demoHistory(stateAt, store.units));
+    } else journal.setSamples([]);
+  }, [store.connection, stateAt, store.units]);
 
   useEffect(() => {
     document.title = `${store.unitName} · ${TITLES[route]} · HospitalOS`;
@@ -124,7 +150,7 @@ export function App() {
       if (id === store.unitId) return;
       store.setUnit(id);
       const name = store.units.find((u) => u.id === id)?.name;
-      if (name) setToast(`Vous êtes sur ${name}`);
+      if (name) setToast({ message: `Vous êtes sur ${name}` });
     },
     [store],
   );
@@ -151,6 +177,7 @@ export function App() {
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
                 {r.label}
+                {r.id === "journal" && todo ? <Badge n={todo} /> : null}
               </a>
             ))}
           </nav>
@@ -215,6 +242,16 @@ export function App() {
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />
         ) : route === "proposition" ? (
           <ProposalDetail a={a} />
+        ) : route === "journal" ? (
+          <Journal
+            records={records}
+            me={me}
+            now={now}
+            openId={param}
+            units={store.units}
+            unitId={store.unitId}
+            onToast={notify}
+          />
         ) : route === "donnees" ? (
           <DataQuality a={a} quality={store.quality} summary={store.shadowSummary} />
         ) : (
@@ -225,7 +262,8 @@ export function App() {
             busy={store.busy}
             awaitingEvaluation={store.awaitingEvaluation}
             onEvaluate={store.evaluate}
-            onToast={setToast}
+            unit={{ id: store.unitId, name: store.unitName }}
+            onToast={notify}
           />
         )}
       </main>
@@ -240,7 +278,10 @@ export function App() {
       <nav className="tabbar" aria-label="Sections">
         {ROUTES.map(({ id, href, label, Icon }) => (
           <a key={id} href={href} aria-current={route === id ? "page" : undefined}>
-            <Icon />
+            <span className="tabbar__icon">
+              <Icon />
+              {id === "journal" && todo ? <Badge n={todo} /> : null}
+            </span>
             {label}
           </a>
         ))}
@@ -266,8 +307,16 @@ export function App() {
           </button>
         </form>
       </dialog>
-      <Toast message={toast} onDone={clearToast} />
+      <Toast toast={toast} onDone={clearToast} />
     </div>
+  );
+}
+
+function Badge({ n }: { n: number }) {
+  return (
+    <span className="badge" aria-label={`${n} à faire`}>
+      {n}
+    </span>
   );
 }
 
@@ -300,7 +349,8 @@ function UnitPage(props: {
   busy: boolean;
   awaitingEvaluation: boolean;
   onEvaluate: () => void;
-  onToast: (m: string) => void;
+  unit: { id: string; name: string };
+  onToast: ToastFn;
 }) {
   const { a } = props;
   const oldest = oldestFact(a);
@@ -332,6 +382,12 @@ function UnitPage(props: {
       </h1>
       <TensionStrip a={a} onJump={jump} />
       <Proposal {...props} />
+      <InProgress
+        unitId={props.unit.id}
+        excludePlan={a.plan?.plan_id ?? null}
+        now={props.now}
+        onToast={props.onToast}
+      />
       <p className="freshline">
         État reconstruit le {longClock(a.state.at)}.
         {oldest ? (

@@ -91,6 +91,34 @@ export const ScalesIcon = (p: { size?: number }) => (
     <path d="M3 5l-1.5 4a1.8 1.8 0 0 0 3 0zM13 5l-1.5 4a1.8 1.8 0 0 0 3 0z" />
   </Svg>
 );
+export const BookIcon = (p: { size?: number }) => (
+  <Svg {...p}>
+    <path d="M3 2.5h8.5a1 1 0 0 1 1 1v10H4.5A1.5 1.5 0 0 1 3 12V2.5Z" />
+    <path d="M3 12a1.5 1.5 0 0 1 1.5-1.5h8M6 5.5h4" />
+  </Svg>
+);
+export const Search = (p: { size?: number }) => (
+  <Svg {...p}>
+    <circle cx="7" cy="7" r="4.5" />
+    <path d="M10.5 10.5l3 3" />
+  </Svg>
+);
+export const Download = (p: { size?: number }) => (
+  <Svg {...p}>
+    <path d="M8 2.5v8M4.5 7.5 8 11l3.5-3.5M3 13.5h10" />
+  </Svg>
+);
+export const Copy = (p: { size?: number }) => (
+  <Svg {...p}>
+    <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" />
+    <path d="M3.5 10.5h-1v-8h8v1" />
+  </Svg>
+);
+export const LinkIcon = (p: { size?: number }) => (
+  <Svg {...p}>
+    <path d="M7 9a3 3 0 0 0 4.2 0l2-2A3 3 0 0 0 9 2.8l-1 1M9 7a3 3 0 0 0-4.2 0l-2 2A3 3 0 0 0 7 13.2l1-1" />
+  </Svg>
+);
 export const PulseIcon = (p: { size?: number }) => (
   <Svg {...p}>
     <path d="M1.5 8.5h3l1.5-4 3 7 1.5-3h4" />

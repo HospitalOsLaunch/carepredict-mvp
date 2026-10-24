@@ -33,15 +33,37 @@ export function Fresh({ f, prefix }: { f: Freshness | undefined; prefix?: string
   );
 }
 
-export function Toast({ message, onDone }: { message: string | null; onDone: () => void }) {
+export interface ToastState {
+  message: string;
+  /** Offered for a few seconds after a decision: one tap puts things back. */
+  undo?: () => void;
+}
+
+export function Toast({ toast, onDone }: { toast: ToastState | null; onDone: () => void }) {
   useEffect(() => {
-    if (!message) return;
-    const id = window.setTimeout(onDone, 3200);
+    if (!toast) return;
+    const id = window.setTimeout(onDone, toast.undo ? 6000 : 3200);
     return () => window.clearTimeout(id);
-  }, [message, onDone]);
+  }, [toast, onDone]);
   return (
     <div aria-live="polite" role="status">
-      {message ? <div className="toast">{message}</div> : null}
+      {toast ? (
+        <div className="toast">
+          <span>{toast.message}</span>
+          {toast.undo ? (
+            <button
+              type="button"
+              className="toast__undo"
+              onClick={() => {
+                toast.undo?.();
+                onDone();
+              }}
+            >
+              Annuler
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

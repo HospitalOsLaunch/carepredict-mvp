@@ -9,8 +9,10 @@ suivante, flux Libérer → Lits → Attribuer, changement d'unité sans ouvrir 
 tout au clavier (`?` affiche les raccourcis).
 
 Prototype local en **mode observation** : l'interface n'émet aucune commande, ne
-réserve rien et n'expose aucun bouton d'exécution. L'avis « je l'aurais fait / je
-ne l'aurais pas fait » est conservé sur l'appareil, pas envoyé.
+réserve rien et n'expose aucun bouton d'exécution. Valider une proposition signifie « je
+m'en occupe » : la personne agit dans ses outils habituels, HospitalOS garde la trace (validée,
+faite, refusée avec motif, sans réponse, remplacée) dans le journal des décisions, conservé sur
+le poste dans ce prototype.
 
 ## Lancer
 
@@ -48,7 +50,7 @@ flux s'est interrompu (abstention). L'API locale ne sert qu'une unité à la foi
 s'adapte.
 
 ```bash
-npm run typecheck && npm test   # 63 tests : vocabulaire, dérivations, rendu, unités, raccourcis
+npm run typecheck && npm test   # 66 tests : vocabulaire, dérivations, rendu, unités, raccourcis, cycle de décision, journal
 npm run build                   # dist/ pour l'API locale
 npm run build:demo              # dist-demo/index.html autonome (aperçu partageable)
 npm run fixtures                # régénère src/fixtures depuis le planificateur
@@ -92,9 +94,11 @@ Système visuel : `DESIGN.md`.
 ## Suite côté API (non livré ici)
 
 1. `GET /hybrid/shadow/latest` : retrouver la dernière évaluation après un rechargement.
-2. `POST /hybrid/shadow/{episode_id}/opinion` : persister l'avis du cadre ou du
-   gestionnaire (verdict, motif codé, horodatage serveur, acteur authentifié). C'est la
-   donnée qui mesure la pertinence en pilote silencieux.
+2. Journal des décisions partagé, qui remplace le stockage local de `src/data/journal.ts` :
+   `POST /hybrid/decisions/{plan_id}/events` (validée, faite, refusée, finalement non, note ;
+   motif codé, acteur authentifié, horodatage serveur) et `GET /hybrid/decisions?unit=&since=`
+   pour l'historique. C'est aussi la donnée qui mesure la pertinence en pilote silencieux, et ce
+   qui permet à un collègue d'ouvrir le lien `#/journal/<id>` depuis un autre poste.
 3. Exposer le TTL de fraîcheur de la politique live dans `LiveSnapshot` (le cockpit
    suppose 5 min pour l'indice visuel « vieillissant »).
 4. Authentification opérateur et périmètre par unité avant tout usage hors poste local.

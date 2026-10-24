@@ -27,6 +27,38 @@ Chaleureuse, claire, encourageante : « Bonjour. Voici votre unité à 08:30. »
 l'instant. Mieux vaut ne rien proposer que se tromper. » Signature : « Libérer. Attribuer.
 Respirer. »
 
+## Cycle de vie d'une proposition
+
+HospitalOS propose, la personne décide et agit ; l'outil garde la trace. Valider n'envoie rien.
+
+```
+proposée ──Valider (O)──▶ validée, à faire ──C'est fait (F)──▶ faite
+    │                          └──Finalement non + motif──▶ finalement non
+    ├──Refuser (N) + motif (1–6)──▶ refusée
+    ├──Choisir plutôt une autre option──▶ refusée (« autre option préférée ») + option validée
+    ├──fraîcheur dépassée──▶ sans réponse
+    └──nouvelle évaluation de l'unité──▶ remplacée
+```
+
+- **Une réponse en un geste** : `O` valide, `N` puis `1`–`6` refuse avec un motif. Chaque pas
+  s'annule (bouton « Annuler » dans la carte et dans le toast, 6 s).
+- **Après validation** : la carte passe en abricot « Validée, à faire » et dit quoi faire hors
+  outil (« Appelez le transport pour P-0412. »). « C'est fait » la passe en menthe et invite à
+  réévaluer : l'état de l'unité a changé.
+- **Après refus** : le motif s'affiche, une note libre peut le préciser pour l'équipe, et les
+  autres options utiles s'ouvrent.
+- **Plusieurs propositions** : la carte garde la première, la plus utile ; « N autres options
+  utiles » liste celles qui battent « ne rien faire » sans enfreindre de règle (simulées une à une,
+  effets non cumulables). Une option validée et non faite reste visible sous la carte
+  (« En cours de votre côté ») pendant que de nouvelles propositions arrivent. Entre unités, le
+  sélecteur et le badge « Journal » comptent ce qui reste à faire.
+- **Journal des décisions** (`J`) : « À suivre » (à faire et en attente, toutes unités),
+  « Historique » filtrable (recherche patient, lit, personne, motif ; unité ; période ; moi ou
+  tout le monde ; statut), une fiche par décision avec sa chronologie (qui, quand, motif, notes)
+  et un lien partageable `#/journal/<id>`, « Transmission » à copier et export CSV. Les décisions
+  sont signées (nom et rôle). Prototype : le journal vit sur le poste ; le partage entre collègues
+  passe par l'API (README, « Suite côté API »).
+
 ## Illustrations
 
 Des illustrations « spot » fines et légères donnent un peu de chaleur au cockpit, comme une
