@@ -180,6 +180,12 @@ class HazardModel:
     sites_units: frozenset[tuple[str, str]]
     feature_bounds: tuple[tuple[float, float], ...]
 
+    def supports(self, features: PreparationFeatures, hospital_id: str, unit_id: str) -> bool:
+        return (hospital_id, unit_id) in self.sites_units and all(
+            low <= value <= high
+            for value, (low, high) in zip(features.vector()[:2], self.feature_bounds, strict=True)
+        )
+
     def raw(self, features: tuple[PreparationFeatures, ...]) -> tuple[tuple[float, ...], ...]:
         if self.estimator is None:
             return tuple(self.pooled for _ in features)
@@ -451,10 +457,7 @@ def forecast_preparation(model: HazardModel, state: State) -> PreparationForecas
     for pid, f in zip(ids, features, strict=True):
         patient = next(p for p in state.patients if p.id == pid)
         bed = next(b for b in state.beds if b.id == patient.bed_id)
-        if (state.hospital_id, bed.unit_id) not in model.sites_units or any(
-            not low <= value <= high
-            for value, (low, high) in zip(f.vector()[:2], model.feature_bounds, strict=True)
-        ):
+        if not model.supports(f, state.hospital_id, bed.unit_id):
             raise ValueError("Prediction outside the fitted site/unit or load support")
     hazards = model.hazards(features) if features else ()
     curves = []

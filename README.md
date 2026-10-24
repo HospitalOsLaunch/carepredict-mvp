@@ -22,6 +22,9 @@ Use `--demo-future --show-trace` for the
 [arrivals and perturbations slice](docs/operational/future-events.md).
 Use `--demo-learned --show-trace` for the
 [learned preparation contract and temporal protocol](docs/operational/learned-preparation.md).
+The [endpoint audit](docs/operational/preparation-endpoint-protocol.md) prepares
+retrospective labels from timestamped events. A [frozen stress suite](docs/operational/preparation-stress-protocol.md)
+checks changed mechanisms and explicitly reports the learner's limitations.
 This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 

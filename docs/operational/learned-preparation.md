@@ -139,6 +139,11 @@ versionné. Le code, les tests et ce contrat suffisent à reproduire l'expérien
 
 ## Suite scientifique
 
+Deux outils préparent cette suite : un [audit des événements et labels](preparation-endpoint-protocol.md)
+et une [évaluation sur régimes synthétiques réservés](preparation-stress-protocol.md).
+Le stress identifie une régression lorsque la relation charge–délai change ;
+le contrôle de plage seul ne la détecte pas. Aucun entraînement réel n'est effectué.
+
 Établir la sémantique de fin de préparation sur un flux réel autorisé, vérifier
 les horloges et le suivi, puis conduire une évaluation rétrospective temporelle.
 Étudier ensuite la censure informative, les risques concurrents, les origines

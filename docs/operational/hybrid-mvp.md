@@ -63,6 +63,10 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
 - Délai de préparation appris optionnel : référence de survie et gradient boosting,
   censure, recalibrage/sélection/test temporels séparés, raccordement JSON aux patients
   éligibles. [Contrat et limites de l'expérience synthétique](learned-preparation.md).
+- [Audit de la fin de préparation](preparation-endpoint-protocol.md) : labels à D,
+  corrections, suivi attesté et exclusions. [Stress de mécanismes réservés](preparation-stress-protocol.md) :
+  modèles verrouillés, censure informative et abstention hors support ; une régression
+  est identifiée lorsque la relation charge–délai change.
 - Innovations aléatoires indexées par graine/scénario/mécanisme/entité, et facteur
   commun de ralentissement. Les plans partagent les mêmes innovations ; les
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
