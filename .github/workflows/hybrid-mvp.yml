@@ -41,6 +41,7 @@ jobs:
       - name: Demonstrator
         run: |
           PYTHONPATH=src python -m hospitalos.hybrid --demo
+          PYTHONPATH=src python -m hospitalos.hybrid.shadow --demo
           PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace
           PYTHONPATH=src python -m hospitalos.hybrid --demo-future --show-trace
           PYTHONPATH=src python -m hospitalos.hybrid.learning_demo

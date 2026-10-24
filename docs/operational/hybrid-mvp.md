@@ -77,9 +77,14 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
 - Notateur séparé du moteur, qui reconstruit le parcours à partir du journal et
   contrôle les admissions, départs, ressources et conservation des patients.
-- Approbation/refus, expiration après 15 minutes, recontrôle de fraîcheur et
+- Workflow initial : approbation/refus, expiration après 15 minutes, recontrôle de fraîcheur et
   empreinte juste avant émission. État `sent` persisté avant retour de commande.
   Résultat `unknown` : réconciliation obligatoire, jamais de retry automatique.
+- [État vivant d’une unité et observation silencieuse](live-unit-pilot.md) :
+  confirmations de disponibilité distinctes des heartbeats, lots atomiques,
+  propositions de 120 secondes par défaut, réservations locales transactionnelles
+  et réconciliation après observation. Mode `shadow` sans émission ; sandbox
+  explicite pour vérifier la concurrence et la reprise. Aucun connecteur SI livré.
 
 La démonstration contient deux lits sales et un patient nécessitant de l'oxygène.
 Changer l'ordre de nettoyage peut réduire son attente dans ce scénario. Les durées
@@ -99,7 +104,11 @@ C'est une optimisation sur ce catalogue borné, pas une planification multistade
 ni un optimum global de l'hôpital. Le moteur de compatibilité reste indépendant
 du simulateur et doit être réutilisé lors du futur raccordement CP-SAT.
 
-## Workflow de validation sandbox
+## Workflow initial de validation sandbox
+
+Cet exemple historique conserve son contrat. Pour le périmètre vivant, utiliser
+`LiveStore` et `LiveWorkflow` décrits dans [le lot unité pilote](live-unit-pilot.md) :
+ils réunissent ingestion, disponibilité et réservations dans la même transaction.
 
 ```python
 from hospitalos.hybrid.demo import demo_request
@@ -121,7 +130,8 @@ workflow.close()
 
 Les noms d'acteurs sont des métadonnées de test, pas une authentification. La
 confirmation ci-dessus est une déclaration sandbox, pas une vérification d'un DPI.
-L'API expose seulement la planification, aucun endpoint d'exécution. Ne pas
+L'instance API par défaut expose la planification ; la fabrique permet aussi les
+lectures vivantes et épisodes silencieux. Aucun endpoint d'exécution. Ne pas
 exposer ce serveur hors loopback sans authentification, limites de requête,
 isolation des établissements et politique de conservation des données.
 
