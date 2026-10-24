@@ -1,6 +1,6 @@
 """Discrete-event model with explicit synthetic arrivals and perturbations.
 
-No learned or causal effect is claimed. An action changes allocation/order, not
+No causal effect is claimed. An action changes allocation/order, not
 the sampled service duration. The state supplied here is the observed state.
 """
 
@@ -17,6 +17,7 @@ from hospitalos.operational.contract import Closed
 
 from .innovations import draw as draw
 from .models import Action, State, action_errors, compatible, discharge_blockers
+from .preparation import PreparationForecasts, preparation_draw, validate_preparation
 from .scenarios import BedAdmissions, FutureArrival, FutureTape, ResourceChange, validate_tape
 
 PositiveMinutes = Annotated[StrictInt, Field(gt=0, le=1440)]
@@ -58,6 +59,7 @@ def simulate(
     scenario: int,
     horizon_minutes: int = 1440,
     future: FutureTape | None = None,
+    preparation: PreparationForecasts | None = None,
 ) -> Trajectory:
     errors = action_errors(state, action)
     if errors:
@@ -66,6 +68,9 @@ def simulate(
         raise ValueError("Horizon must be between one minute and 24 hours")
     future = future or FutureTape(state.at, ())
     validate_tape(state, future)
+    if preparation is not None:
+        validate_preparation(state, preparation)
+    curves = {c.patient_id: c for c in preparation.curves} if preparation is not None else {}
     units = {u.id: u for u in state.units}
     beds = {b.id: b for b in state.beds}
     patients = {p.id: p for p in state.patients}
@@ -109,8 +114,13 @@ def simulate(
             state, p, include_request=not new_request, require_capacity=False
         ):
             assert p.bed_id is not None
-            minute = multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
-            heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
+            minute = (
+                preparation_draw(curves[p.id], seed, scenario)
+                if preparation is not None
+                else multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
+            )
+            if minute is not None:
+                heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
 
     def depart(minute: int, bed_id: str, patient_id: str) -> None:
         if occupants[bed_id] != patient_id:

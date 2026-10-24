@@ -45,7 +45,7 @@ class HybridApiTest(unittest.TestCase):
         response = self.client.post("/hybrid/plan", json=pathway_request().model_dump(mode="json"))
         self.assertEqual(response.status_code, 200)
         result = response.json()
-        self.assertEqual(result["schema_version"], "HYBRID_PLAN_3")
+        self.assertEqual(result["schema_version"], "HYBRID_PLAN_4")
         self.assertEqual(result["selected"]["kind"], "request_transport")
         self.assertEqual(result["discharge_readiness"][0]["stage"], "transport_to_request")
         self.assertEqual(result["service_status"], "served_in_all_sampled_scenarios")

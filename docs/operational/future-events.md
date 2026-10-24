@@ -117,7 +117,8 @@ fixées, le transport démarre à D+120, le nettoyage à D+210 et l'admission su
 journaux appariés et le registre exogène du scénario 0 ; aucune comparaison
 chiffrée de cette fixture ne doit être présentée comme un bénéfice hospitalier.
 
-Le contrat de réponse est `HYBRID_PLAN_3` ; les faits restent v2. Les anciennes
+Le contrat de réponse est `HYBRID_PLAN_4` depuis le lot de préparation apprise
+optionnelle (v3 pour ce lot initial) ; les faits restent v2. Les anciennes
 propositions doivent être régénérées et toute émission inconnue réconciliée.
 Les hypothèses de futur font partie de l'identité et du contenu du plan persisté.
 `service_status` couvre désormais la file initiale **et les arrivées simulées**.
@@ -139,5 +140,6 @@ exécutés. Ce n'est pas l'intégralité de G2 ni une validation prédictive G1.
 Restent à modéliser : interruption réelle d'une mission, réservation d'aval ou
 tâche déjà en cours à D, fenêtres d'accueil, transferts, adhésion et échecs des
 actions, sorties des nouveaux admis et replanification au fil d'observations.
-L'apprentissage des arrivées/délais, leur calibration, CP-SAT et le raccordement
-au terrain demeurent des étapes distinctes.
+Un [premier délai de préparation appris sur synthétique](learned-preparation.md)
+est désormais optionnel. L'apprentissage des arrivées, la calibration sur données
+réelles, CP-SAT et le raccordement au terrain demeurent des étapes distinctes.

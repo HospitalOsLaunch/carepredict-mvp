@@ -60,6 +60,9 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
 - Arrivées et perturbations futures déclarées séparément des faits :
   [contrat, ressources non préemptives et registre exogène](future-events.md).
   Leur réalisation est commune aux actions et contrôlée par le notateur.
+- Délai de préparation appris optionnel : référence de survie et gradient boosting,
+  censure, recalibrage/sélection/test temporels séparés, raccordement JSON aux patients
+  éligibles. [Contrat et limites de l'expérience synthétique](learned-preparation.md).
 - Innovations aléatoires indexées par graine/scénario/mécanisme/entité, et facteur
   commun de ralentissement. Les plans partagent les mêmes innovations ; les
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
@@ -115,9 +118,10 @@ isolation des établissements et politique de conservation des données.
 
 ## Limites et prochaines tranches
 
-1. **Données et incertitude** : durées discrètes hypothétiques, pas de modèle de
-   survie entraîné ni calibration. Ajouter les distributions empiriques/survie
-   après contrat et données adaptés, avec censure et séparation temporelle.
+1. **Données et incertitude** : premier délai de préparation entraîné et recalibré
+   sur synthétique uniquement. Transport, nettoyage et arrivées restent sous
+   hypothèses. Établir le contrat de cible réel, puis évaluer la survie et sa
+   calibration sur périodes et services réservés ; aucune couverture garantie.
 2. **Dynamique** : arrivées sous hypothèses discrètes, pas de transfert entre lits,
    de durée de séjour des nouveaux admis, ni de travail de nettoyage déjà en cours
    à D. Les lits dont l'état n'est pas représentable doivent être marqués inconnus.

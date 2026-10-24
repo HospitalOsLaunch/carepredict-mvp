@@ -21,6 +21,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors
 from .pathway import DischargeReadiness, readiness
+from .preparation import PreparationForecasts, validate_preparation
 from .scenarios import FutureAssumptions, sample_future
 from .scoring import ResourcePressure, score
 from .simulation import Assumptions, simulate
@@ -33,6 +34,7 @@ class PlanRequest(Closed):
     events: Annotated[tuple[FactEvent, ...], Field(max_length=2000)]
     assumptions: Assumptions = Assumptions()
     future: FutureAssumptions | None = None
+    preparation: PreparationForecasts | None = None
     max_age_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 60
     horizon_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 1440
     scenarios: Annotated[StrictInt, Field(ge=1, le=128)] = 32
@@ -49,6 +51,8 @@ class PlanRequest(Closed):
     def scenario_availability(self) -> Self:
         if self.future is not None and self.future.declared_at > self.at:
             raise ValueError("Future hypotheses must be declared by the decision origin")
+        if self.preparation is not None:
+            validate_preparation(self.state(), self.preparation)
         return self
 
     def state(self) -> State:
@@ -74,7 +78,7 @@ class Candidate(Closed):
 
 
 class Plan(Closed):
-    schema_version: Literal["HYBRID_PLAN_3"] = "HYBRID_PLAN_3"
+    schema_version: Literal["HYBRID_PLAN_4"] = "HYBRID_PLAN_4"
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
     )
@@ -91,6 +95,7 @@ class Plan(Closed):
     candidates_truncated: bool
     assumptions: Assumptions
     future: FutureAssumptions | None = None
+    preparation: PreparationForecasts | None = None
     seed: int
     scenarios: int
     horizon_minutes: int
@@ -140,6 +145,7 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
             scenario=scenario,
             horizon_minutes=request.horizon_minutes,
             future=future,
+            preparation=request.preparation,
         )
         result = score(state, trajectory, expected_future=future)
         losses.append(result.waiting_patient_minutes)
@@ -168,6 +174,8 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
 
 def plan(request: PlanRequest) -> Plan:
     state = request.state()
+    if request.preparation is not None:
+        validate_preparation(state, request.preparation)
     no_op = Action(kind="no_op")
     parameters = request.model_dump(mode="json", exclude={"events"})
     parameters["fingerprint"] = state.fingerprint
@@ -178,6 +186,8 @@ def plan(request: PlanRequest) -> Plan:
     decision: Literal["recommend", "no_change", "abstain"] = "abstain"
     reasons = state.issues
     warnings = state.warnings
+    if request.preparation is not None:
+        warnings = (*warnings, "synthetic_learned_preparation_requires_real_validation")
     service_status: Literal[
         "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
     ] = "not_assessed"
@@ -249,6 +259,7 @@ def plan(request: PlanRequest) -> Plan:
         candidates_truncated=truncated,
         assumptions=request.assumptions,
         future=request.future,
+        preparation=request.preparation,
         seed=request.seed,
         scenarios=request.scenarios,
         horizon_minutes=request.horizon_minutes,

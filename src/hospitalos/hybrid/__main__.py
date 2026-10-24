@@ -21,6 +21,7 @@ def main() -> None:
     source.add_argument("--demo", action="store_true")
     source.add_argument("--demo-pathway", action="store_true")
     source.add_argument("--demo-future", action="store_true")
+    source.add_argument("--demo-learned", action="store_true")
     source.add_argument("--request", type=Path)
     parser.add_argument("--show-input", action="store_true")
     parser.add_argument(
@@ -29,8 +30,14 @@ def main() -> None:
         help="Include paired scenario 0 logs and independent scores",
     )
     args = parser.parse_args()
+    if args.demo_learned:
+        from .learning_demo import learned_request
+
+        learned = learned_request()
     request = (
-        demo_request()
+        learned
+        if args.demo_learned
+        else demo_request()
         if args.demo
         else pathway_request()
         if args.demo_pathway
@@ -58,6 +65,7 @@ def main() -> None:
                     scenario=0,
                     horizon_minutes=request.horizon_minutes,
                     future=future,
+                    preparation=request.preparation,
                 )
                 traces[name] = {
                     "trajectory": asdict(trace),

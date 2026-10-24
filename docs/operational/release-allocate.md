@@ -56,7 +56,9 @@ version. Ne pas convertir un flux réel contenant ces cas en inventant des zéro
 
 1. Seuls les patients déjà autorisés médicalement et dont la logistique est
    confirmée peuvent entrer dans la préparation de départ simulée.
-2. Un délai résiduel hypothétique produit l'événement `departure_ready`.
+2. Un délai résiduel hypothétique, ou la distribution optionnelle du
+   [premier modèle synthétique de préparation](learned-preparation.md), produit
+   l'événement `departure_ready`.
 3. La file est ordonnée par instant de disponibilité, priorité professionnelle
    fournie puis identifiant. Les places d'aval et équipes de transport sont
    partagées entre toutes les unités déclarées du pool.
@@ -148,8 +150,8 @@ la même base de code ; ce n'est pas une expertise externe indépendante.
 
 Le changement de contrat est explicite : `HYBRID_MVP_1` et les propositions
 `HYBRID_PLAN_1` ne sont pas migrés silencieusement. Reconstituer les faits v2 et
-régénérer les propositions avec `HYBRID_PLAN_3` (la v2 était celle de ce lot avant
-l'extension de scénarios futurs). Conserver les anciens journaux
+régénérer les propositions avec `HYBRID_PLAN_4` (v2 : parcours, v3 : scénarios
+futurs, v4 : préparation apprise optionnelle). Conserver les anciens journaux
 pour audit et réconcilier tout résultat inconnu avant une éventuelle nouvelle
 demande ; ne pas réémettre une commande en changeant simplement sa version.
 
@@ -159,7 +161,7 @@ Un flux patient/ressource adapté reste nécessaire avant le pilote.
 L'extension suivante couvre les nouvelles arrivées, fermetures d'admission et
 variations de capacité après D. Restent hors périmètre : transferts internes,
 séjours des nouveaux admis, fenêtres d'accueil, annulations de transport/aval,
-tâches déjà en cours à D, modèle de survie appris, calibration conforme,
+tâches déjà en cours à D, survie validée sur données réelles, calibration conforme,
 planification CP-SAT, console métier, extraction des SI et exécution réelle.
 Horizon maximal actuel : 24 h, sans extrapolation validée à 72 h.
 

@@ -10,6 +10,9 @@ The release-to-allocation slice adds explicit discharge logistics, shared transp
 teams, finite downstream places and a sandbox transport-request action.
 Declared future scenarios now support synthetic arrivals, bed admission closures
 and capacity changes, paired across actions with independent ledger checks.
+A censor-aware preparation-time learner now compares a pooled hazard baseline
+with gradient boosting on four separate synthetic time windows. Its optional
+JSON distributions replace preparation delays while preserving resource queues.
 
 Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
 [hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
@@ -17,6 +20,8 @@ Run `PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace` for
 the [release-to-allocation pathway and its limits](docs/operational/release-allocate.md).
 Use `--demo-future --show-trace` for the
 [arrivals and perturbations slice](docs/operational/future-events.md).
+Use `--demo-learned --show-trace` for the
+[learned preparation contract and temporal protocol](docs/operational/learned-preparation.md).
 This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 
