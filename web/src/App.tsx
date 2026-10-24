@@ -43,7 +43,7 @@ const ORIGIN: Record<Connection, string> = {
   probing: "Connexion…",
   "api-live": "API locale, unité en direct",
   "api-plan": "API locale, unités fictives",
-  fixture: "Démonstration, données fictives",
+  fixture: "Démonstration : unités et patients fictifs",
 };
 
 const TITLES: Record<Route, string> = {
@@ -123,7 +123,7 @@ export function App() {
       if (id === store.unitId) return;
       store.setUnit(id);
       const name = store.units.find((u) => u.id === id)?.name;
-      if (name) setToast(`Unité affichée : ${name}`);
+      if (name) setToast(`Vous êtes sur ${name}`);
     },
     [store],
   );
@@ -162,7 +162,7 @@ export function App() {
             ) : null}
             <span
               className="mode"
-              title="Mode observation : HospitalOS propose, n'envoie rien et ne réserve rien."
+              title="Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."
             >
               <span className="mode__dot" aria-hidden="true" />
               <span className="mode__text">Observation seule</span>
@@ -189,7 +189,7 @@ export function App() {
           <div className="notice notice--demo">
             <Info />
             <span className="notice__text">
-              {ORIGIN[store.connection]}. Propositions et contrôles calculés par le vrai planificateur.
+              {ORIGIN[store.connection]}. Chaque proposition sort du vrai planificateur.
             </span>
             {store.situations.length > 1 ? (
               <label className="notice__select">
@@ -230,7 +230,9 @@ export function App() {
       </main>
 
       <footer className="foot">
-        <span>Prototype local en mode observation. Les propositions restent hors décision de soin.</span>
+        <span>
+          HospitalOS propose, vous décidez. Mode observation : rien n'est envoyé au dossier patient.
+        </span>
         <span>Identifiants pseudonymes, aucune donnée nominative.</span>
       </footer>
 
@@ -244,7 +246,7 @@ export function App() {
       </nav>
 
       <dialog ref={help} className="help" aria-labelledby="help-title">
-        <h2 id="help-title">Raccourcis clavier</h2>
+        <h2 id="help-title">Raccourcis pour aller vite</h2>
         <dl>
           {SHORTCUTS.map(([k, v]) => (
             <div key={k}>
@@ -264,6 +266,19 @@ export function App() {
       <Toast message={toast} onDone={clearToast} />
     </div>
   );
+}
+
+/** Bonjour / Bonsoir / Bonne garde, from the hour of the reconstructed state in Paris. */
+function greeting(iso: string): string {
+  const parts = new Intl.DateTimeFormat("fr-FR", {
+    hour: "numeric",
+    hourCycle: "h23",
+    timeZone: "Europe/Paris",
+  }).formatToParts(new Date(iso));
+  const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 12);
+  if (hour >= 5 && hour < 18) return "Bonjour.";
+  if (hour >= 18 && hour < 22) return "Bonsoir.";
+  return "Bonne garde.";
 }
 
 type Zone = "liberer" | "lits" | "attribuer";
@@ -302,15 +317,17 @@ function UnitPage(props: {
 
   return (
     <>
-      <h1 className="visually-hidden">Unité, état de {clock(a.state.at)}</h1>
+      <h1 className="hello">
+        {greeting(a.state.at)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
+      </h1>
       <TensionStrip a={a} onJump={jump} />
       <Proposal {...props} />
       <p className="freshline">
-        État reconstruit pour le {longClock(a.state.at)}
+        État reconstruit le {longClock(a.state.at)}.
         {oldest ? (
           <>
             {" "}
-            · information la plus ancienne <Fresh f={oldest} />
+            Information la plus ancienne : <Fresh f={oldest} />.
           </>
         ) : null}
       </p>

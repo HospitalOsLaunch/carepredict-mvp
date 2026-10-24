@@ -77,8 +77,8 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
       </header>
       {chains.length === 0 ? (
         <p className="empty">
-          Aucune sortie en préparation. Elles apparaissent dès qu'une autorisation médicale ou une logistique
-          de sortie est saisie.
+          Aucune sortie en préparation pour l'instant. Elles apparaîtront dès qu'une autorisation ou une
+          logistique de sortie est saisie.
         </p>
       ) : (
         <ol className="releases">
@@ -114,7 +114,7 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
                         .slice(0, 2)
                         .map((p) => p.id)
                         .join(", ")}${more > 0 ? ` et ${more} autre${more > 1 ? "s" : ""}` : ""}`
-                    : "Aucun patient en attente compatible"}
+                    : "Aucun patient en attente n'a besoin de ce lit"}
                 </p>
               </li>
             );
@@ -123,7 +123,8 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
       )}
       {stays > 0 ? (
         <p className="stays">
-          {plural(stays, "autre patient hospitalisé", "autres patients hospitalisés")} sans sortie prévue.
+          {plural(stays, "autre patient hospitalisé", "autres patients hospitalisés")} sans sortie prévue pour
+          l'instant.
         </p>
       ) : null}
     </section>
@@ -152,7 +153,7 @@ export function Queue({ a }: { a: Assessment }) {
         </span>
       </header>
       {entries.length === 0 ? (
-        <p className="empty">Aucun patient en attente de lit pour cette unité.</p>
+        <p className="empty">Personne n'attend de lit. Belle accalmie.</p>
       ) : (
         <ul className="queue">
           {entries.map((e) => {
@@ -160,12 +161,12 @@ export function Queue({ a }: { a: Assessment }) {
             const bedLine = e.reservedBed
               ? { text: `Lit ${e.reservedBed.id} réservé`, tone: "ok" }
               : e.usableNow.length
-                ? { text: `Utilisable maintenant : ${e.usableNow.map((b) => b.id).join(", ")}`, tone: "ok" }
+                ? { text: `Lit prêt : ${e.usableNow.map((b) => b.id).join(", ")}`, tone: "ok" }
                 : target?.patient_id === e.patient.id
                   ? { text: "Concerné par la proposition", tone: "go" }
                   : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
-                    ? { text: `${targetBed.id} serait libéré par la proposition`, tone: "go" }
-                    : { text: "Aucun lit compatible maintenant", tone: "none" };
+                    ? { text: `${targetBed.id} se libère avec la proposition`, tone: "go" }
+                    : { text: "Pas encore de lit compatible", tone: "none" };
             return (
               <li key={e.patient.id}>
                 <span
@@ -234,7 +235,7 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
       zone: "attribuer",
       label: "À placer",
       value: String(s.waiting),
-      detail: longest != null ? `jusqu'à ${duration(longest)}` : "aucune attente",
+      detail: longest != null ? `le plus long : ${duration(longest)}` : "personne n'attend",
     },
     {
       zone: "lits",
@@ -252,11 +253,11 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
     {
       zone: "donnees",
       label: "Données",
-      value: checks ? String(checks) : "OK",
+      value: checks ? String(checks) : "✓",
       detail: checks
-        ? `contrôle${checks > 1 ? "s" : ""} en échec`
+        ? `point${checks > 1 ? "s" : ""} à vérifier`
         : oldest
-          ? `plus ancienne : ${duration(oldest.minutes)}`
+          ? `à jour, la plus ancienne : ${duration(oldest.minutes)}`
           : "à jour",
       tone: checks ? "warn" : undefined,
     },
@@ -403,7 +404,7 @@ export function BedBoard({ a }: { a: Assessment }) {
           <i style={{ background: "var(--sac-mark)", height: 3, border: 0 }} /> Sortie en préparation
         </span>
         <span>
-          <i style={{ outline: "2px solid var(--bloc)", outlineOffset: 1 }} /> Proposition
+          <i style={{ outline: "3px solid var(--sun)", outlineOffset: 1 }} /> Touché par la proposition
         </span>
       </div>
     </section>

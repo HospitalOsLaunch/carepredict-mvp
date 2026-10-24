@@ -4,9 +4,9 @@ import { duration } from "../domain/view";
 import { plural } from "./common";
 
 const DECISION: Record<UnitSummary["decision"], { label: string; tone: string }> = {
-  recommend: { label: "Proposition", tone: "go" },
-  no_change: { label: "Rien à changer", tone: "calm" },
-  abstain: { label: "Abstention", tone: "warn" },
+  recommend: { label: "Action proposée", tone: "go" },
+  no_change: { label: "Tout roule", tone: "calm" },
+  abstain: { label: "Données à vérifier", tone: "warn" },
   pending: { label: "À évaluer", tone: "calm" },
 };
 

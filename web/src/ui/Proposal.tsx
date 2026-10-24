@@ -32,15 +32,15 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
   if (awaitingEvaluation || (!plan && a.gateReasons.length === 0)) {
     return (
       <section className="panel proposal proposal--quiet" aria-labelledby="proposal-title">
-        <Band label="Pas encore évaluée" a={a} />
+        <Band label="À évaluer" a={a} />
         <div className="proposal__main">
           <div>
             <h2 className="proposal__title" id="proposal-title">
-              Aucune évaluation pour l'état actuel
+              Prêt à évaluer l'unité
             </h2>
             <p className="mute">
-              L'évaluation simule les prochaines heures avec et sans chaque action possible. En observation,
-              elle est enregistrée comme épisode, sans rien envoyer.
+              HospitalOS simule les prochaines heures avec et sans chaque action possible, puis vous propose
+              la plus utile. Rien n'est envoyé : l'évaluation est simplement gardée en mémoire d'observation.
             </p>
           </div>
         </div>
@@ -58,15 +58,15 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
     const groups = gateGroups(codes);
     return (
       <section className="panel proposal proposal--abstain" aria-labelledby="proposal-title">
-        <Band label="Abstention" a={a} />
+        <Band label="Données à vérifier" a={a} />
         <div className="proposal__main">
           <div>
             <h2 className="proposal__title" id="proposal-title">
-              Pas de proposition : l'état de l'unité n'est pas fiable
+              Pas de proposition pour l'instant
             </h2>
             <p className="mute">
-              HospitalOS ne calcule rien sur des informations manquantes, trop anciennes ou contradictoires.
-              Mettez-les à jour à la source, puis réévaluez.
+              Mieux vaut ne rien proposer que se tromper. Quelques informations manquent, ont vieilli ou se
+              contredisent : mettez-les à jour à la source, puis réévaluez.
             </p>
           </div>
           <div className="gates">
@@ -179,9 +179,9 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
         ) : (
           <div className="effect">
             <p className="effect__note">
-              {plan.candidates.length - 1} actions possibles ont été simulées sur{" "}
-              {duration(plan.horizon_minutes)}. Aucune ne réduit l'attente sans risquer de surcharger une
-              ressource.
+              Tout roule. {plan.candidates.length - 1} actions possibles ont été simulées sur{" "}
+              {duration(plan.horizon_minutes)} : aucune ne ferait mieux sans surcharger une équipe. Rien ne
+              presse de ce côté.
             </p>
           </div>
         )}
@@ -294,8 +294,10 @@ function Opinion(p: OpinionProps) {
     setDeclining(false);
     p.onToast(
       kept
-        ? "Avis noté sur cet appareil. Rien n'a été envoyé."
-        : "Avis non conservé : stockage du navigateur indisponible.",
+        ? verdict === "would_do"
+          ? "Merci, c'est noté. Rien n'a été envoyé."
+          : "Noté, merci : c'est exactement ce qui nous aide à mieux viser."
+        : "Avis non conservé : le navigateur refuse le stockage local.",
     );
   };
 
@@ -317,10 +319,12 @@ function Opinion(p: OpinionProps) {
   }, [declining]);
 
   const expiry = p.expired ? (
-    <span className="expiry expiry--late">Expirée à {clock(p.expiresAt)}. Réévaluez avant d'agir.</span>
+    <span className="expiry expiry--late">
+      Cette proposition a vieilli ({clock(p.expiresAt)}). Réévaluez avant d'agir.
+    </span>
   ) : (
     <span className="expiry">
-      Valable jusqu'à {clock(p.expiresAt)}, encore {duration(p.minutesLeft)}
+      Fraîche jusqu'à {clock(p.expiresAt)}, encore {duration(p.minutesLeft)}
     </span>
   );
 
@@ -399,8 +403,8 @@ function Opinion(p: OpinionProps) {
         </div>
       ) : null}
       <p className="note proposal__note" id="shadow-note">
-        <Info size={14} /> Mode observation : votre avis mesure la pertinence de la proposition. Aucune
-        demande n'est envoyée.
+        <Info size={14} /> Votre avis nous apprend ce qui vous est vraiment utile. Rien n'est envoyé : c'est
+        le mode observation.
       </p>
     </>
   );

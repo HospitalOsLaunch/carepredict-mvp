@@ -17,7 +17,7 @@ describe("cockpit", () => {
   it("leads with the tension strip, the next action and the three flow zones", async () => {
     render(<App />);
     await ready();
-    expect(screen.getByText(/Démonstration, données fictives/)).toBeTruthy();
+    expect(screen.getByText(/Démonstration : unités et patients fictifs/)).toBeTruthy();
     const strip = screen.getByRole("navigation", { name: "Situation de l'unité" });
     expect(within(strip).getByRole("button", { name: /À placer\s*4/ })).toBeTruthy();
     const release = screen.getByRole("region", { name: "Libérer" });

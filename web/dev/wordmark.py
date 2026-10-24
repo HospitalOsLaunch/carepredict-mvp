@@ -16,8 +16,15 @@ SRC = str(
 )
 
 
-def instance(weight):
-    f = TTFont(SRC)
+LEXEND = str(
+    __import__("pathlib").Path(__file__).resolve().parents[1]
+    / "node_modules/@fontsource-variable/lexend/files"
+    / "lexend-latin-wght-normal.woff2"
+)
+
+
+def instance(weight, src=SRC):
+    f = TTFont(src)
     inst = instantiateVariableFont(f, {"wght": weight})
     buf = io.BytesIO()
     inst.flavor = None
@@ -25,12 +32,12 @@ def instance(weight):
     return inst, buf.getvalue()
 
 
-def outline(runs, cap_px, tracking_em=-0.012):
+def outline(runs, cap_px, tracking_em=-0.012, src=SRC):
     """runs: [(text, weight)]. Returns (path_d, width_px) with baseline at y=0, y down."""
     d_parts = []
     x = 0.0
     for text, weight in runs:
-        font, data = instance(weight)
+        font, data = instance(weight, src)
         upem = font["head"].unitsPerEm
         scale = cap_px / font["OS/2"].sCapHeight
         face = hb.Face(data)

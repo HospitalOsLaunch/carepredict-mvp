@@ -98,18 +98,13 @@ export const PulseIcon = (p: { size?: number }) => (
 );
 
 /**
- * The HospitalOS symbol: an H whose crossbar is a magnet lifted off the bed board,
- * the moment a place is attributed. Stems take the ink, the magnet the action colour.
+ * The HospitalOS symbol: two beds and, between them, a sun rising — the place that
+ * frees up lets the light in. Pills take the brand blue, the sun the light.
  */
 export const Mark = ({ size = 24 }: { size?: number }) => (
   <svg className="brand__mark" width={size} height={size} viewBox="0 0 256 256" aria-hidden="true">
-    <path
-      fill="var(--ink)"
-      d="M48 32h32a8 8 0 0 1 8 8v176a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8Z M176 32h32a8 8 0 0 1 8 8v176a8 8 0 0 1-8 8h-32a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8Z"
-    />
-    <path
-      fill="var(--bloc)"
-      d="M104 80h48a8 8 0 0 1 8 8v48a8 8 0 0 1-8 8h-48a8 8 0 0 1-8-8V88a8 8 0 0 1 8-8Z"
-    />
+    <rect x="36" y="32" width="52" height="192" rx="26" fill="var(--brand)" />
+    <rect x="168" y="32" width="52" height="192" rx="26" fill="var(--brand)" />
+    <circle className="brand__sun" cx="128" cy="108" r="30" fill="var(--sun)" />
   </svg>
 );

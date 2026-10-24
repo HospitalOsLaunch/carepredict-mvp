@@ -36,11 +36,10 @@ const BLOCKERS: Record<string, string> = {
 };
 
 const REASONS: Record<string, string> = {
-  lower_simulated_waiting_cost_requires_human_approval:
-    "Réduit l'attente simulée. Une validation humaine reste nécessaire.",
-  no_admissible_simulated_improvement: "Aucune action n'améliore l'attente simulée.",
+  lower_simulated_waiting_cost_requires_human_approval: "Réduit l'attente simulée. C'est vous qui décidez.",
+  no_admissible_simulated_improvement: "Aucune action ne ferait mieux pour l'instant.",
   simulated_improvement_rejected_due_to_resource_pressure:
-    "Une action réduirait l'attente, mais surchargerait une ressource dans certains scénarios.",
+    "Une action réduirait l'attente, mais surchargerait une équipe dans certains scénarios : on s'abstient.",
   simulation_invariant_failure:
     "La simulation a détecté une incohérence interne : aucune proposition n'est faite.",
   missing_perimeter: "Le périmètre de l'unité n'est pas déclaré.",
@@ -138,7 +137,7 @@ export const BED_STATE: Record<BedState, string> = {
 
 export const DECISION: Record<Decision, string> = {
   recommend: "Proposition",
-  no_change: "Rien à changer",
+  no_change: "Tout roule",
   abstain: "Abstention",
 };
 

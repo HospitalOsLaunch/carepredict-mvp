@@ -208,7 +208,7 @@ function Options({ plan }: { plan: Plan }) {
               style={{
                 width: 16,
                 height: 8,
-                background: "var(--bloc)",
+                background: "var(--brand)",
                 borderRadius: "0 4px 4px 0",
                 display: "inline-block",
               }}
@@ -265,7 +265,7 @@ function Lanes({ trace, plan }: { trace: PairedTrace; plan: Plan }) {
   const x = (m: number) => left + (m / horizon) * (W - left - right);
   const lanes: Array<[string, Transition[], string]> = [
     ["Sans action", trace.baseline.trajectory.events, "var(--ink-3)"],
-    ["Avec la proposition", trace.selected.trajectory.events, "var(--bloc)"],
+    ["Avec la proposition", trace.selected.trajectory.events, "var(--brand)"],
   ];
   const ticks = Array.from({ length: Math.floor(horizon / 120) + 1 }, (_, i) => i * 120);
   return (
