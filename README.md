@@ -1,5 +1,39 @@
 # HospitalOS / CarePredict MVP
 
+## New MVP direction: explicit state, probabilistic simulation, assisted decisions
+
+The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:
+bitemporal patient/resource facts, constrained single-action proposals, joint
+scenario simulation, independent event-log scoring, and a persistent sandbox
+approval workflow. Its standalone local API does not load the TFT/RSSM stack.
+The release-to-allocation slice adds explicit discharge logistics, shared transport
+teams, finite downstream places and a sandbox transport-request action.
+Declared future scenarios now support synthetic arrivals, bed admission closures
+and capacity changes, paired across actions with independent ledger checks.
+A censor-aware preparation-time learner now compares a pooled hazard baseline
+with gradient boosting on four separate synthetic time windows. Its optional
+JSON distributions replace preparation delays while preserving resource queues.
+
+Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
+[hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
+Run `PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace` for
+the [release-to-allocation pathway and its limits](docs/operational/release-allocate.md).
+Use `--demo-future --show-trace` for the
+[arrivals and perturbations slice](docs/operational/future-events.md).
+Use `--demo-learned --show-trace` for the
+[learned preparation contract and temporal protocol](docs/operational/learned-preparation.md).
+The [endpoint audit](docs/operational/preparation-endpoint-protocol.md) prepares
+retrospective labels from timestamped events. A [frozen stress suite](docs/operational/preparation-stress-protocol.md)
+checks changed mechanisms and explicitly reports the learner's limitations.
+The [decision benchmark](docs/operational/decision-robustness.md) compares the
+reference, boosting and a supervised mixture with delayed labels, paired actions
+and an independent arithmetic oracle. Its scientific result is inconclusive.
+The [v2 protocol](docs/operational/decision-v2-protocol.md) adds continuous correlated
+preparation, stronger baselines, stable-stream CUSUM calibration and paired
+trajectory inference. All policies remain research-only.
+This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
+The forecasting and world-model research paths documented below remain separate.
+
 HospitalOS is building a hospital operations world model: an AI system that learns how hospital pressure evolves across care workload, staffing, beds, patient flow, and capacity.
 
 The current MVP, CarePredict, validates the first wedge of this vision by forecasting nursing workload from SIIPS-style operational time series. It includes a synthetic-data pipeline, FastAPI serving layer, and a v2 forecasting stack combining a TS-JEPA encoder, RSSM dynamics, and direct multi-horizon prediction.
@@ -303,3 +337,4 @@ License: TODO. No tracked license file is present in this checkout.
 
 Contact: TODO. Add the repository owner or project contact before sharing
 outside the private review group.
+
