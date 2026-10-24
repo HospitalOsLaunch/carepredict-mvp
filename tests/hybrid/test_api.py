@@ -6,7 +6,7 @@ import unittest
 
 from fastapi.testclient import TestClient
 
-from hospitalos.hybrid.demo import demo_request
+from hospitalos.hybrid.demo import demo_request, pathway_request
 from services.api.hybrid_app import app
 
 
@@ -40,6 +40,20 @@ class HybridApiTest(unittest.TestCase):
 
     def test_no_execution_endpoint(self) -> None:
         self.assertEqual(self.client.post("/hybrid/execute", json={}).status_code, 404)
+
+    def test_pathway_exposes_logistics_and_sampled_service_status(self) -> None:
+        response = self.client.post("/hybrid/plan", json=pathway_request().model_dump(mode="json"))
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(result["schema_version"], "HYBRID_PLAN_2")
+        self.assertEqual(result["selected"]["kind"], "request_transport")
+        self.assertEqual(result["discharge_readiness"][0]["stage"], "transport_to_request")
+        self.assertEqual(result["service_status"], "served_in_all_sampled_scenarios")
+
+    def test_old_fact_schema_is_not_silently_upgraded(self) -> None:
+        payload = pathway_request().model_dump(mode="json")
+        payload["events"][0]["schema_version"] = "HYBRID_MVP_1"
+        self.assertEqual(self.client.post("/hybrid/plan", json=payload).status_code, 422)
 
 
 if __name__ == "__main__":

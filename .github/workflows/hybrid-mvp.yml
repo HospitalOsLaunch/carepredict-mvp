@@ -39,4 +39,6 @@ jobs:
       - name: Tests
         run: PYTHONPATH=src:. pytest -q tests/hybrid
       - name: Demonstrator
-        run: PYTHONPATH=src python -m hospitalos.hybrid --demo
+        run: |
+          PYTHONPATH=src python -m hospitalos.hybrid --demo
+          PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace

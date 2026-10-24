@@ -11,7 +11,7 @@ from datetime import datetime
 
 from hospitalos.operational.contract import instant
 
-from .models import Bed, FactEvent, Patient, State, Unit, compatible
+from .models import Bed, Discharge, FactEvent, Patient, ResourcePool, State, Unit, compatible
 
 
 def canonical(event: FactEvent) -> str:
@@ -120,12 +120,41 @@ def reconstruct(
     units = tuple(e.fact for e in selected if isinstance(e.fact, Unit))
     beds = tuple(e.fact for e in selected if isinstance(e.fact, Bed))
     patients = tuple(e.fact for e in selected if isinstance(e.fact, Patient))
+    pools = tuple(e.fact for e in selected if isinstance(e.fact, ResourcePool))
+    discharges = tuple(e.fact for e in selected if isinstance(e.fact, Discharge))
     unit_map, bed_map, patient_map = (
         {u.id: u for u in units},
         {b.id: b for b in beds},
         {p.id: p for p in patients},
     )
     warnings: list[str] = []
+    pool_map = {pool.id: pool for pool in pools}
+    for pool in pools:
+        if pool.available is None:
+            issues.append(f"unknown_pool_capacity:{pool.id}")
+        if (
+            len(set(pool.unit_ids)) != len(pool.unit_ids)
+            or not set(pool.unit_ids) <= unit_map.keys()
+        ):
+            issues.append(f"invalid_pool_scope:{pool.id}")
+    for discharge in discharges:
+        patient = patient_map.get(discharge.id)
+        if patient is None:
+            issues.append(f"orphan_discharge:{discharge.id}")
+            continue
+        bed = bed_map.get(patient.bed_id or "")
+        for kind, pool_id in (
+            ("transport", discharge.transport_pool_id),
+            ("downstream", discharge.downstream_pool_id),
+        ):
+            if pool_id is not None:
+                linked_pool = pool_map.get(pool_id)
+                if (
+                    linked_pool is None
+                    or linked_pool.resource != kind
+                    or (bed is not None and bed.unit_id not in linked_pool.unit_ids)
+                ):
+                    issues.append(f"invalid_discharge_pool:{discharge.id}:{kind}")
     if not units or not beds:
         issues.append("missing_perimeter")
     reservations: set[str] = set()
@@ -173,6 +202,8 @@ def reconstruct(
         units=units,
         beds=beds,
         patients=patients,
+        pools=pools,
+        discharges=discharges,
         issues=tuple(sorted(set(issues))),
         warnings=tuple(sorted(warnings)),
     )

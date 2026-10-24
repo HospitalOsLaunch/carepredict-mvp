@@ -6,9 +6,13 @@ The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:
 bitemporal patient/resource facts, constrained single-action proposals, joint
 scenario simulation, independent event-log scoring, and a persistent sandbox
 approval workflow. Its standalone local API does not load the TFT/RSSM stack.
+The release-to-allocation slice adds explicit discharge logistics, shared transport
+teams, finite downstream places and a sandbox transport-request action.
 
 Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
 [hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
+Run `PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace` for
+the [release-to-allocation pathway and its limits](docs/operational/release-allocate.md).
 This is a synthetic closed-cohort prototype, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 

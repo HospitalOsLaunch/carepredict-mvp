@@ -1,4 +1,4 @@
-# MVP hybride HospitalOS — première tranche exécutable
+# MVP hybride HospitalOS — socle et parcours libérer → attribuer
 
 Décision : 24 octobre 2026. Statut : prototype local sur scénarios fictifs,
 à relire en PR. Aucune mesure d'efficacité hospitalière réelle.
@@ -13,7 +13,7 @@ Cette tranche relie les faits horodatés, la simulation sous hypothèses, le cho
 d'une action immédiate et un workflow d'approbation persistant. Elle réutilise
 les conventions UTC, identifiants et modèles fermés du contrat opérationnel.
 Les observations agrégées OPERATIONAL_V2 ne permettent pas de déduire des
-identités, compatibilités ou lits individuels : HYBRID_MVP_1 est une extension
+identités, compatibilités ou lits individuels : HYBRID_MVP_2 est une extension
 explicite nécessitant un flux patient/ressource distinct.
 
 ## Exécuter
@@ -49,10 +49,13 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
   le connecteur ; le prototype ne découvre pas des patients absents de tous les flux.
 - Lits, patients, compatibilités attestées, réservations, capacité soignante agrégée
   et équipes de nettoyage. La priorité patient est donnée par le métier.
-- Deux actions : réserver un lit propre compatible, prioriser le nettoyage d'un
-  lit sale ; plus la référence sans intervention. Aucune décision clinique.
-- Simulation événementielle d'une cohorte fermée : départs des patients déjà
-  déclarés médicalement sortants avec aval confirmé, nettoyage puis admissions.
+- Trois actions : réserver un lit propre compatible, prioriser le nettoyage d'un
+  lit sale, demander un transport dont les prérequis sont confirmés ; plus la
+  référence sans intervention. Aucune décision clinique.
+- Simulation événementielle d'une cohorte fermée : autorisation médicale et
+  logistique attestées, préparation, aval fini et transport partagé si nécessaires,
+  départ, nettoyage puis admission. Le contrat détaillé et ses limites sont dans
+  [le lot libérer → attribuer](release-allocate.md).
 - Innovations aléatoires indexées par graine/scénario/mécanisme/entité, et facteur
   commun de ralentissement. Les plans partagent les mêmes innovations ; les
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
@@ -115,8 +118,9 @@ isolation des établissements et politique de conservation des données.
    à D. Les lits dont l'état n'est pas représentable doivent être marqués inconnus.
    Les sorties autorisées ne sont pas décidées ou accélérées médicalement.
 3. **Ressources** : capacité soignante agrégée attestée, pas de simulation fine
-   des compétences, ratios, fatigue, transport ou stocks d'aval. Ajouter ces
-   préconditions avec le cadre/gestionnaire avant extension du catalogue.
+   des compétences, ratios ou fatigue. Le transport et l'aval sont des pools
+   résiduels attestés à D, sans réservations préexistantes ni services en cours
+   dans la cohorte. Ajouter ces cas avant raccordement à un flux réel.
 4. **Boucle opérationnelle** : chaque demande replanifie depuis un nouvel état ;
    pas de polling autonome ni raccordement à un SI. Le gateway est sandbox.
 5. **Évaluation** : notateur distinct mais même famille de simulation pour

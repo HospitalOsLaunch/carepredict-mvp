@@ -19,6 +19,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors
+from .pathway import DischargeReadiness, readiness
 from .scoring import score
 from .simulation import Assumptions, simulate
 
@@ -53,10 +54,12 @@ class Candidate(Closed):
     worst_decile_waiting_patient_minutes: float
     objective: float
     violations: tuple[str, ...]
+    scenarios_with_unserved_demand: int
+    max_waiting_at_end: int
 
 
 class Plan(Closed):
-    schema_version: Literal["HYBRID_PLAN_1"] = "HYBRID_PLAN_1"
+    schema_version: Literal["HYBRID_PLAN_2"] = "HYBRID_PLAN_2"
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
     )
@@ -76,6 +79,10 @@ class Plan(Closed):
     scenarios: int
     horizon_minutes: int
     tail_weight: float
+    discharge_readiness: tuple[DischargeReadiness, ...]
+    service_status: Literal[
+        "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
+    ]
 
 
 def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], bool]:
@@ -84,6 +91,10 @@ def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], boo
         action = Action(kind="prioritize_cleaning", bed_id=bed.id)
         if not action_errors(state, action):
             candidates.append(action)
+        if bed.occupant:
+            action = Action(kind="request_transport", bed_id=bed.id, patient_id=bed.occupant)
+            if not action_errors(state, action):
+                candidates.append(action)
         for patient in sorted(state.patients, key=lambda p: (-p.priority, p.waiting_since, p.id)):
             action = Action(kind="reserve_bed", bed_id=bed.id, patient_id=patient.id)
             if not action_errors(state, action):
@@ -93,6 +104,7 @@ def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], boo
 
 def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
     losses = []
+    waiting_at_end = []
     violations: set[str] = set()
     for scenario in range(request.scenarios):
         trajectory = simulate(
@@ -105,6 +117,7 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
         )
         result = score(state, trajectory)
         losses.append(result.waiting_patient_minutes)
+        waiting_at_end.append(result.waiting_at_end)
         violations.update(result.violations)
     mean = statistics.mean(losses)
     tail = statistics.mean(sorted(losses, reverse=True)[: max(1, math.ceil(len(losses) / 10))])
@@ -114,6 +127,8 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
         worst_decile_waiting_patient_minutes=tail,
         objective=(1 - request.tail_weight) * mean + request.tail_weight * tail,
         violations=tuple(sorted(violations)),
+        scenarios_with_unserved_demand=sum(n > 0 for n in waiting_at_end),
+        max_waiting_at_end=max(waiting_at_end),
     )
 
 
@@ -128,6 +143,9 @@ def plan(request: PlanRequest) -> Plan:
     selected = no_op
     decision: Literal["recommend", "no_change", "abstain"] = "abstain"
     reasons = state.issues
+    service_status: Literal[
+        "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
+    ] = "not_assessed"
     if not reasons:
         actions, truncated = enumerate_actions(state, request.max_candidates)
         candidates = tuple(evaluate(state, action, request) for action in actions)
@@ -139,6 +157,11 @@ def plan(request: PlanRequest) -> Plan:
                 candidates, key=lambda c: (c.objective, c.action.kind != "no_op", c.action.key)
             )
             selected = best.action
+            service_status = (
+                "unserved_in_some_sampled_scenarios"
+                if best.scenarios_with_unserved_demand
+                else "served_in_all_sampled_scenarios"
+            )
             decision = "no_change" if selected.kind == "no_op" else "recommend"
             reasons = (
                 "no_simulated_improvement"
@@ -162,4 +185,6 @@ def plan(request: PlanRequest) -> Plan:
         scenarios=request.scenarios,
         horizon_minutes=request.horizon_minutes,
         tail_weight=request.tail_weight,
+        discharge_readiness=readiness(state),
+        service_status=service_status,
     )

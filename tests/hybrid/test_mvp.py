@@ -12,14 +12,24 @@ from pydantic import ValidationError
 
 from hospitalos.hybrid.demo import demo_request
 from hospitalos.hybrid.journal import Journal
-from hospitalos.hybrid.models import Action, Bed, FactEvent, Patient, Unit, action_errors
+from hospitalos.hybrid.models import (
+    Action,
+    Bed,
+    Discharge,
+    Fact,
+    FactEvent,
+    Patient,
+    ResourcePool,
+    Unit,
+    action_errors,
+)
 from hospitalos.hybrid.planning import PlanRequest, plan
 from hospitalos.hybrid.scoring import score
 from hospitalos.hybrid.simulation import Assumptions, Trajectory, Transition, draw, simulate
 from hospitalos.hybrid.workflow import Workflow
 
 
-def replace_facts(request: PlanRequest, *facts: Unit | Bed | Patient) -> PlanRequest:
+def replace_facts(request: PlanRequest, *facts: Fact) -> PlanRequest:
     replacements = {f"{f.kind}:{f.id}": f for f in facts}
     events = tuple(
         event.model_copy(
@@ -197,6 +207,15 @@ class MechanicsTest(unittest.TestCase):
         for downstream in (False, None, True):
             request = replace_facts(
                 self.request,
+                Discharge(
+                    id="inpatient",
+                    documents_ready=True,
+                    escort_required=False,
+                    downstream_required=True,
+                    downstream_pool_id="smr",
+                    transport_required=False,
+                ),
+                ResourcePool(id="smr", resource="downstream", unit_ids=("medicine",), available=1),
                 Bed(id="bed-a", unit_id="medicine", state="occupied", occupant="inpatient"),
                 Patient(
                     id="inpatient",
