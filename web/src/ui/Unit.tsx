@@ -8,8 +8,11 @@ import {
   compatibleBed,
   duration,
   freshnessIndex,
+  nextStep,
+  oldestFact,
   queueEntries,
   releaseChains,
+  situation,
   stayCount,
 } from "../domain/view";
 import { Fresh, plural } from "./common";
@@ -58,10 +61,15 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
   const fresh = freshnessIndex(a);
   const target = a.plan?.decision === "recommend" ? a.plan.selected : null;
   return (
-    <section className="panel" aria-labelledby="releases-title">
+    <section
+      className="panel flow flow--release"
+      aria-labelledby="releases-title"
+      id="zone-liberer"
+      tabIndex={-1}
+    >
       <header className="panel__head">
         <h2 className="panel__title" id="releases-title">
-          Sorties à libérer
+          Libérer
         </h2>
         <span className="panel__aside">
           {plural(chains.length, "sortie en préparation", "sorties en préparation")}
@@ -69,32 +77,24 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
       </header>
       {chains.length === 0 ? (
         <p className="empty">
-          Aucune sortie en préparation. Les sorties apparaissent dès qu'une autorisation médicale ou une
-          logistique est saisie.
+          Aucune sortie en préparation. Elles apparaissent dès qu'une autorisation médicale ou une logistique
+          de sortie est saisie.
         </p>
       ) : (
         <ol className="releases">
           {chains.map((c) => {
-            const stage = c.readiness?.stage;
-            const proposed = target?.patient_id === c.patient.id;
+            const proposed =
+              target?.patient_id === c.patient.id || (target?.bed_id && target.bed_id === c.bed?.id);
             const f = fresh.get(`discharge:${c.patient.id}`) ?? fresh.get(`patient:${c.patient.id}`);
-            const stageTone =
-              stage === "ready_for_simulation" ? "ok" : stage === "transport_to_request" ? "todo" : "";
+            const next = nextStep(c.links);
+            const more = c.nextCandidates.length - 2;
             return (
               <li key={c.patient.id} className={`release${proposed ? " release--proposed" : ""}`}>
                 <div className="release__who">
-                  <span>
-                    <span className="id">{c.patient.id}</span>{" "}
-                    <span className="mute">lit {c.bed?.id ?? "?"}</span>
-                  </span>
-                  <span
-                    className={`release__stage${stageTone ? ` release__stage--${stageTone}` : ""}`}
-                    title={c.readiness?.blockers.map(explain).join(" ; ")}
-                  >
-                    {stage ? STAGE[stage].label : "Non évaluée"}
-                  </span>
-                  <span className="release__stage">
-                    <Fresh f={f} prefix="Saisie " />
+                  <span className="id">{c.patient.id}</span>
+                  <span className="bedtag">{c.bed?.id ?? "?"}</span>
+                  <span className="release__age">
+                    <Fresh f={f} />
                   </span>
                 </div>
                 <ol className="chain" aria-label={`Étapes de sortie de ${c.patient.id}`}>
@@ -102,16 +102,20 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
                     <LinkNode key={l.id} link={l} />
                   ))}
                 </ol>
-                <div className="handoff">
-                  {c.nextCandidates.length ? (
-                    <>
-                      <span>Une fois libéré, {c.bed?.id} convient à</span>
-                      <b>{c.nextCandidates.map((p) => p.id).join(", ")}</b>
-                    </>
-                  ) : (
-                    <span>Aucun patient en attente n'est compatible avec ce lit</span>
-                  )}
-                </div>
+                <p
+                  className={`release__next release__next--${next.tone}`}
+                  title={c.readiness?.blockers.map(explain).join(" ; ")}
+                >
+                  {next.text}
+                </p>
+                <p className="release__handoff">
+                  {c.nextCandidates.length
+                    ? `Libère ${c.bed?.id} pour ${c.nextCandidates
+                        .slice(0, 2)
+                        .map((p) => p.id)
+                        .join(", ")}${more > 0 ? ` et ${more} autre${more > 1 ? "s" : ""}` : ""}`
+                    : "Aucun patient en attente compatible"}
+                </p>
               </li>
             );
           })}
@@ -119,8 +123,7 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
       )}
       {stays > 0 ? (
         <p className="stays">
-          {plural(stays, "autre patient hospitalisé", "autres patients hospitalisés")} sans sortie prévue :
-          aucune autorisation ni logistique saisie.
+          {plural(stays, "autre patient hospitalisé", "autres patients hospitalisés")} sans sortie prévue.
         </p>
       ) : null}
     </section>
@@ -134,12 +137,19 @@ export function Queue({ a }: { a: Assessment }) {
   const target = a.plan?.decision === "recommend" ? a.plan.selected : null;
   const targetBed = a.state.beds.find((b) => b.id === target?.bed_id) ?? null;
   return (
-    <section className="panel" aria-labelledby="queue-title">
+    <section
+      className="panel flow flow--assign"
+      aria-labelledby="queue-title"
+      id="zone-attribuer"
+      tabIndex={-1}
+    >
       <header className="panel__head">
         <h2 className="panel__title" id="queue-title">
-          Patients à placer
+          Attribuer
         </h2>
-        <span className="panel__aside">par priorité soignante</span>
+        <span className="panel__aside">
+          {plural(entries.length, "patient à placer", "patients à placer")}
+        </span>
       </header>
       {entries.length === 0 ? (
         <p className="empty">Aucun patient en attente de lit pour cette unité.</p>
@@ -147,6 +157,15 @@ export function Queue({ a }: { a: Assessment }) {
         <ul className="queue">
           {entries.map((e) => {
             const needs = e.patient.requirements.map(capability);
+            const bedLine = e.reservedBed
+              ? { text: `Lit ${e.reservedBed.id} réservé`, tone: "ok" }
+              : e.usableNow.length
+                ? { text: `Utilisable maintenant : ${e.usableNow.map((b) => b.id).join(", ")}`, tone: "ok" }
+                : target?.patient_id === e.patient.id
+                  ? { text: "Concerné par la proposition", tone: "go" }
+                  : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
+                    ? { text: `${targetBed.id} serait libéré par la proposition`, tone: "go" }
+                    : { text: "Aucun lit compatible maintenant", tone: "none" };
             return (
               <li key={e.patient.id}>
                 <span
@@ -161,30 +180,102 @@ export function Queue({ a }: { a: Assessment }) {
                 <span className="queue__who">
                   <span className="id">{e.patient.id}</span>
                   <span className="queue__need">
-                    {needs.length ? `Besoin : ${needs.join(", ")}` : "Sans besoin particulier"}
+                    {needs.length ? needs.join(", ") : "Sans besoin particulier"}
                   </span>
                 </span>
                 <span className="queue__wait">
                   <b className="num">{duration(e.waitedMinutes)}</b>
                   <span>depuis {clock(e.patient.waiting_since)}</span>
                 </span>
-                <span className={`queue__bed${e.usableNow.length || e.reservedBed ? " queue__bed--ok" : ""}`}>
-                  {e.reservedBed
-                    ? `Lit ${e.reservedBed.id} réservé`
-                    : e.usableNow.length
-                      ? `Utilisable maintenant : ${e.usableNow.map((b) => b.id).join(", ")}`
-                      : target?.patient_id === e.patient.id
-                        ? "Concerné par la proposition"
-                        : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
-                          ? `Aucun lit maintenant ; ${targetBed.id} serait libéré par la proposition`
-                          : "Aucun lit compatible utilisable maintenant"}
-                </span>
+                <span className={`queue__bed queue__bed--${bedLine.tone}`}>{bedLine.text}</span>
               </li>
             );
           })}
         </ul>
       )}
     </section>
+  );
+}
+
+// ---------------------------------------------------------------- tension strip
+
+export interface StripTarget {
+  zone: "liberer" | "lits" | "attribuer" | "donnees";
+}
+
+export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: StripTarget["zone"]) => void }) {
+  const s = situation(a.state, a.plan);
+  const q = queueEntries(a.state);
+  const longest = q.length ? Math.max(...q.map((e) => e.waitedMinutes)) : null;
+  const chains = releaseChains(a.state, a.plan);
+  const steps = chains.map((c) => nextStep(c.links).tone);
+  const ready = steps.filter((t) => t === "ok").length;
+  const todo = steps.filter((t) => t === "todo").length;
+  const blocked = steps.filter((t) => t === "blocked").length;
+  const unknown = steps.filter((t) => t === "unknown").length;
+  const sortieDetail = [
+    "prêtes",
+    todo ? `${todo} à faire` : "",
+    unknown ? `${unknown} à renseigner` : "",
+    blocked ? `${blocked} ${blocked > 1 ? "bloquées" : "bloquée"}` : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const checks = [...new Set([...a.state.issues, ...a.gateReasons])].length;
+  const oldest = oldestFact(a);
+  const cells: Array<{
+    zone: StripTarget["zone"];
+    label: string;
+    value: string;
+    detail: string;
+    tone?: "warn" | "go";
+  }> = [
+    {
+      zone: "attribuer",
+      label: "À placer",
+      value: String(s.waiting),
+      detail: longest != null ? `jusqu'à ${duration(longest)}` : "aucune attente",
+    },
+    {
+      zone: "lits",
+      label: "Lits utilisables",
+      value: String(s.usable),
+      detail: s.dirty ? `${s.dirty} à nettoyer` : "aucun à nettoyer",
+      tone: s.usable > 0 ? "go" : undefined,
+    },
+    {
+      zone: "liberer",
+      label: "Sorties",
+      value: `${ready}/${chains.length}`,
+      detail: chains.length ? sortieDetail : "aucune en préparation",
+    },
+    {
+      zone: "donnees",
+      label: "Données",
+      value: checks ? String(checks) : "OK",
+      detail: checks
+        ? `contrôle${checks > 1 ? "s" : ""} en échec`
+        : oldest
+          ? `plus ancienne : ${duration(oldest.minutes)}`
+          : "à jour",
+      tone: checks ? "warn" : undefined,
+    },
+  ];
+  return (
+    <nav className="strip" aria-label="Situation de l'unité">
+      {cells.map((c) => (
+        <button
+          key={c.zone}
+          type="button"
+          className={`strip__cell${c.tone ? ` strip__cell--${c.tone}` : ""}`}
+          onClick={() => onJump(c.zone)}
+        >
+          <span className="strip__label">{c.label}</span>
+          <span className="strip__value num">{c.value}</span>
+          <span className="strip__detail">{c.detail}</span>
+        </button>
+      ))}
+    </nav>
   );
 }
 
@@ -263,7 +354,7 @@ export function BedBoard({ a }: { a: Assessment }) {
     );
   };
   return (
-    <section className="panel" aria-labelledby="beds-title">
+    <section className="panel flow flow--beds" aria-labelledby="beds-title" id="zone-lits" tabIndex={-1}>
       <header className="panel__head">
         <h2 className="panel__title" id="beds-title">
           Lits

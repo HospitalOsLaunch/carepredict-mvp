@@ -1,6 +1,8 @@
 {
  "id": "nominal",
  "label": "Matin\u00e9e ordinaire",
+ "unit": "medecine-polyvalente",
+ "unit_name": "M\u00e9decine polyvalente",
  "source": "fixture",
  "request": {
   "hospital_id": "ch-fictif",

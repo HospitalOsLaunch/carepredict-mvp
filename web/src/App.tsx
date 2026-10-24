@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import { type Connection, useAssessment } from "./data/useAssessment";
-import { entityLabel } from "./domain/labels";
-import { type Assessment, clock, longClock, oldestFact, situation } from "./domain/view";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type Connection, type Store, useAssessment } from "./data/useAssessment";
+import { type Assessment, clock, longClock, oldestFact } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { Proposal } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
-import { BedBoard, Queue, ReleaseBoard } from "./ui/Unit";
-import { Fresh, Toast, plural, useNow } from "./ui/common";
+import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
+import { UnitSwitcher } from "./ui/UnitSwitcher";
+import { Fresh, Toast, useNow } from "./ui/common";
 import { Alert, BoardIcon, Info, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
 
 type Route = "unite" | "proposition" | "donnees";
@@ -14,6 +14,10 @@ type Route = "unite" | "proposition" | "donnees";
 function readRoute(): Route {
   const hash = window.location.hash.replace(/^#\/?/, "");
   return hash === "proposition" || hash === "donnees" ? hash : "unite";
+}
+
+function go(route: Route) {
+  window.location.hash = route === "unite" ? "/" : `/${route}`;
 }
 
 function useRoute(): Route {
@@ -29,16 +33,16 @@ function useRoute(): Route {
   return route;
 }
 
-const ROUTES: Array<{ id: Route; href: string; label: string; Icon: () => JSX.Element }> = [
-  { id: "unite", href: "#/", label: "Unité", Icon: () => <BoardIcon /> },
-  { id: "proposition", href: "#/proposition", label: "Proposition", Icon: () => <ScalesIcon /> },
-  { id: "donnees", href: "#/donnees", label: "Données", Icon: () => <PulseIcon /> },
+const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon: () => JSX.Element }> = [
+  { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
+  { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
+  { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
 
 const ORIGIN: Record<Connection, string> = {
   probing: "Connexion…",
   "api-live": "API locale, unité en direct",
-  "api-plan": "API locale, scénarios fictifs",
+  "api-plan": "API locale, unités fictives",
   fixture: "Démonstration, données fictives",
 };
 
@@ -48,19 +52,82 @@ const TITLES: Record<Route, string> = {
   donnees: "Qualité des données",
 };
 
+const SHORTCUTS: Array<[string, string]> = [
+  ["U", "Changer d'unité"],
+  ["1 à 9", "Aller directement à l'unité n"],
+  ["O", "Je l'aurais fait"],
+  ["N", "Je ne l'aurais pas fait, puis 1 à 6 pour le motif"],
+  ["R", "Réévaluer l'unité"],
+  ["A", "Vue unité"],
+  ["D", "Détail de la proposition"],
+  ["Q", "Qualité des données"],
+  ["?", "Afficher cette aide"],
+];
+
+/** Single-key shortcuts, ignored while typing or with a modifier held. */
+function useShortcuts(
+  store: Store,
+  selectUnit: (id: string) => void,
+  openSwitcher: () => void,
+  openHelp: () => void,
+) {
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+      const t = e.target instanceof HTMLElement ? e.target : null;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (t?.closest('[role="listbox"], dialog[open]')) return;
+      const k = e.key.toLowerCase();
+      const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
+      const digit = Number(e.key);
+      if (k === "u") openSwitcher();
+      else if (k === "?") openHelp();
+      else if (k === "o") emit("yes");
+      else if (k === "n") emit("no");
+      else if (k === "r") store.evaluate();
+      else if (k === "a") go("unite");
+      else if (k === "d") go("proposition");
+      else if (k === "q") go("donnees");
+      else if (digit >= 1 && digit <= 9) {
+        // While the "why not" reasons are open, digits pick a reason instead of a unit.
+        if (document.querySelector(".feedback")) emit(e.key);
+        else if (store.units[digit - 1]) selectUnit(store.units[digit - 1]!.id);
+        else return;
+      } else return;
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", on);
+    return () => window.removeEventListener("keydown", on);
+  }, [store, selectUnit, openSwitcher, openHelp]);
+}
+
 export function App() {
   const store = useAssessment();
   const route = useRoute();
   const [toast, setToast] = useState<string | null>(null);
+  const [switcherSignal, setSwitcherSignal] = useState(0);
+  const help = useRef<HTMLDialogElement>(null);
   const clearToast = useCallback(() => setToast(null), []);
+  const openSwitcher = useCallback(() => setSwitcherSignal((n) => n + 1), []);
+  const openHelp = useCallback(() => help.current?.showModal(), []);
   const a = store.assessment;
   const now = useNow(a, store.loadedAt);
 
   useEffect(() => {
-    document.title = `${TITLES[route]} · Cockpit HospitalOS`;
-  }, [route]);
+    document.title = `${store.unitName} · ${TITLES[route]} · HospitalOS`;
+  }, [route, store.unitName]);
 
-  const unitName = "Médecine polyvalente";
+  // Announce a unit change made by the person (switcher or digit key), not the initial load.
+  const selectUnit = useCallback(
+    (id: string) => {
+      if (id === store.unitId) return;
+      store.setUnit(id);
+      const name = store.units.find((u) => u.id === id)?.name;
+      if (name) setToast(`Unité affichée : ${name}`);
+    },
+    [store],
+  );
+  useShortcuts(store, selectUnit, openSwitcher, openHelp);
 
   return (
     <div className="shell">
@@ -69,14 +136,16 @@ export function App() {
       </a>
       <header className="topbar">
         <div className="topbar__row">
-          <div className="brand">
+          <a className="brand" href="#/" aria-label="HospitalOS, vue unité">
             <Mark />
             <span translate="no">HospitalOS</span>
-          </div>
-          <div className="unitname">
-            <strong>{unitName}</strong>
-            <span>{a ? `État de ${clock(a.state.at)}` : "Chargement…"}</span>
-          </div>
+          </a>
+          <UnitSwitcher
+            summaries={store.summaries}
+            unitId={store.unitId}
+            onSelect={selectUnit}
+            openSignal={switcherSignal}
+          />
           <nav className="nav" aria-label="Sections">
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
@@ -85,26 +154,12 @@ export function App() {
             ))}
           </nav>
           <div className="topbar__end">
-            <div className="origin">
-              <label className="origin__label" htmlFor="scenario">
-                {ORIGIN[store.connection]}
-              </label>
-              {store.scenarios.length > 1 ? (
-                <select
-                  id="scenario"
-                  className="select"
-                  value={store.scenarioId}
-                  onChange={(e) => store.setScenario(e.target.value)}
-                  aria-label={`Source : ${ORIGIN[store.connection]}. Scénario`}
-                >
-                  {store.scenarios.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              ) : null}
-            </div>
+            {a ? (
+              <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
+                <span className="stateclock__label">État</span>
+                <span className="stateclock__time num">{clock(a.state.at)}</span>
+              </span>
+            ) : null}
             <span
               className="mode"
               title="Mode observation : HospitalOS propose, n'envoie rien et ne réserve rien."
@@ -116,6 +171,9 @@ export function App() {
               </span>
               <span className="visually-hidden">: aucune commande envoyée</span>
             </span>
+            <button type="button" className="helpbtn" onClick={openHelp} aria-label="Raccourcis clavier">
+              ?
+            </button>
           </div>
         </div>
       </header>
@@ -127,13 +185,29 @@ export function App() {
             <span>{store.error}</span>
           </div>
         ) : null}
-        {store.connection === "fixture" && a ? (
-          <div className="notice">
+        {store.connection !== "api-live" && store.connection !== "probing" && a ? (
+          <div className="notice notice--demo">
             <Info />
-            <span>
-              Démonstration : unité et patients fictifs. Les propositions, étapes de sortie et contrôles sont
-              ceux calculés par le vrai planificateur sur ces données.
+            <span className="notice__text">
+              {ORIGIN[store.connection]}. Propositions et contrôles calculés par le vrai planificateur.
             </span>
+            {store.situations.length > 1 ? (
+              <label className="notice__select">
+                <span>Situation</span>
+                <select
+                  id="situation"
+                  className="select"
+                  value={store.situationId}
+                  onChange={(e) => store.setSituation(e.target.value)}
+                >
+                  {store.situations.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
           </div>
         ) : null}
         {!a || !now ? (
@@ -144,6 +218,7 @@ export function App() {
           <DataQuality a={a} quality={store.quality} summary={store.shadowSummary} />
         ) : (
           <UnitPage
+            key={store.unitId}
             a={a}
             now={now}
             busy={store.busy}
@@ -155,8 +230,8 @@ export function App() {
       </main>
 
       <footer className="foot">
-        <span>Prototype local, mode observation. Recommandations hors décision de soin.</span>
-        <span>Identifiants pseudonymes ; aucune donnée nominative.</span>
+        <span>Prototype local en mode observation. Les propositions restent hors décision de soin.</span>
+        <span>Identifiants pseudonymes, aucune donnée nominative.</span>
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
@@ -167,10 +242,36 @@ export function App() {
           </a>
         ))}
       </nav>
+
+      <dialog ref={help} className="help" aria-labelledby="help-title">
+        <h2 id="help-title">Raccourcis clavier</h2>
+        <dl>
+          {SHORTCUTS.map(([k, v]) => (
+            <div key={k}>
+              <dt>
+                <kbd className="kbd">{k}</kbd>
+              </dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+        <form method="dialog">
+          <button className="btn" type="submit">
+            Fermer
+          </button>
+        </form>
+      </dialog>
       <Toast message={toast} onDone={clearToast} />
     </div>
   );
 }
+
+type Zone = "liberer" | "lits" | "attribuer";
+const ZONES: Array<[Zone, string]> = [
+  ["liberer", "Libérer"],
+  ["lits", "Lits"],
+  ["attribuer", "Attribuer"],
+];
 
 function UnitPage(props: {
   a: Assessment;
@@ -181,42 +282,57 @@ function UnitPage(props: {
   onToast: (m: string) => void;
 }) {
   const { a } = props;
-  const s = situation(a.state, a.plan);
   const oldest = oldestFact(a);
+  // Phone: one flow column at a time; the proposal decides which one opens first.
+  const [zone, setZone] = useState<Zone>(() =>
+    a.plan?.selected.kind === "request_transport"
+      ? "liberer"
+      : a.plan?.selected.kind === "prioritize_cleaning"
+        ? "lits"
+        : "attribuer",
+  );
+
+  const jump = (target: StripTarget["zone"]) => {
+    if (target === "donnees") return go("donnees");
+    setZone(target);
+    const el = document.getElementById(`zone-${target}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    el?.focus({ preventScroll: true });
+  };
+
   return (
     <>
-      <div className="situation">
-        <h1 className="situation__line">
-          <b>{plural(s.waiting, "patient attend", "patients attendent")}</b> un lit.{" "}
-          {s.usable === 0 ? (
-            <>Aucun lit n'est utilisable maintenant</>
-          ) : (
-            <>
-              <b>{plural(s.usable, "lit est utilisable", "lits sont utilisables")}</b> maintenant
-            </>
-          )}
-          {s.dirty ? <>, {plural(s.dirty, "est à nettoyer", "sont à nettoyer")}</> : null}.{" "}
-          <b>{plural(s.departuresPrepared, "sortie", "sorties")}</b> en préparation.
-        </h1>
-        <p className="situation__meta">
-          État reconstruit pour le <strong>{longClock(a.state.at)}</strong>
-          {oldest ? (
-            <>
-              <br />
-              Information la plus ancienne : {entityLabel(oldest.key)}, <Fresh f={oldest} />
-            </>
-          ) : null}
-        </p>
+      <h1 className="visually-hidden">Unité, état de {clock(a.state.at)}</h1>
+      <TensionStrip a={a} onJump={jump} />
+      <Proposal {...props} />
+      <p className="freshline">
+        État reconstruit pour le {longClock(a.state.at)}
+        {oldest ? (
+          <>
+            {" "}
+            · information la plus ancienne <Fresh f={oldest} />
+          </>
+        ) : null}
+      </p>
+      <div className="flowtabs" role="tablist" aria-label="Colonne affichée">
+        {ZONES.map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={zone === id}
+            aria-controls={`zone-${id}`}
+            className="flowtabs__tab"
+            onClick={() => setZone(id)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-      <div className="cockpit">
-        <div className="stack">
-          <Proposal {...props} />
-          <ReleaseBoard a={a} />
-        </div>
-        <div className="stack">
-          <Queue a={a} />
-          <BedBoard a={a} />
-        </div>
+      <div className={`flowgrid flowgrid--show-${zone}`}>
+        <ReleaseBoard a={a} />
+        <BedBoard a={a} />
+        <Queue a={a} />
       </div>
     </>
   );

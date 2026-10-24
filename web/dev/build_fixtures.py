@@ -17,6 +17,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import demo_pole  # noqa: E402
 from demo_unit import (  # noqa: E402
     AT,
     SOURCE,
@@ -40,7 +41,12 @@ from hospitalos.hybrid.simulation import simulate  # noqa: E402
 OUT = Path(__file__).resolve().parents[1] / "src" / "fixtures"
 
 
-def scenario(name: str, label: str, request: PlanRequest) -> dict[str, Any]:
+UNIT_NAME = "Médecine polyvalente"
+
+
+def scenario(
+    name: str, label: str, request: PlanRequest, unit: str = UNIT, unit_name: str = UNIT_NAME
+) -> dict[str, Any]:
     proposal = plan(request)
     state = request.state()
     traces: dict[str, Any] = {}
@@ -64,6 +70,8 @@ def scenario(name: str, label: str, request: PlanRequest) -> dict[str, Any]:
     return {
         "id": name,
         "label": label,
+        "unit": unit,
+        "unit_name": unit_name,
         "source": "fixture",
         "request": request.model_dump(mode="json"),
         "state": state.model_dump(mode="json"),
@@ -191,6 +199,23 @@ def main() -> None:
         scenario("nominal", "Matinée ordinaire", nominal()),
         scenario("perturbations", "Transport coupé, vague des urgences", perturbations()),
         scenario("incomplete", "Données incomplètes", incomplete()),
+        scenario(
+            "geriatrie",
+            "Matinée sous tension",
+            demo_pole.geriatrie(),
+            "court-sejour-geriatrique",
+            "Court séjour gériatrique",
+        ),
+        scenario(
+            "interne",
+            "Matinée calme",
+            demo_pole.medecine_interne(),
+            "medecine-interne",
+            "Médecine interne",
+        ),
+        scenario(
+            "pneumologie", "Flux interrompu", demo_pole.pneumologie(), "pneumologie", "Pneumologie"
+        ),
     )
     for item in scenarios:
         (OUT / f"scenario-{item['id']}.json").write_text(json.dumps(item, indent=1) + "\n")

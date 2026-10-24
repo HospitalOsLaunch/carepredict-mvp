@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { REASONS, type Verdict, opinionFor, saveOpinion } from "../data/feedback";
 import { actionTitle, explain } from "../domain/labels";
 import {
@@ -114,7 +114,7 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
 
   return (
     <section className={`panel proposal${quiet ? " proposal--quiet" : ""}`} aria-labelledby="proposal-title">
-      <Band label={quiet ? "Rien à changer" : "Proposition"} a={a} />
+      <Band label={quiet ? "Rien à changer" : "Action suivante"} a={a} />
       <div className="proposal__main">
         <div>
           <h2 className="proposal__title" id="proposal-title">
@@ -167,8 +167,8 @@ export function Proposal({ a, now, busy, awaitingEvaluation, onEvaluate, onToast
               />
             </div>
             <p className="effect__note">
-              Attente cumulée des patients à placer, en patient-minutes : moyenne de {plan.scenarios}{" "}
-              scénarios ; le trait marque le pire décile.{" "}
+              Attente cumulée en patient-minutes, moyenne de {plan.scenarios} scénarios. Le trait marque le
+              pire décile.{" "}
               {plan.service_status === "served_in_all_sampled_scenarios"
                 ? `Tous les patients sont placés avant ${end} dans chaque scénario.`
                 : plan.service_status === "unserved_in_some_sampled_scenarios"
@@ -278,16 +278,14 @@ interface OpinionProps {
 function Opinion(p: OpinionProps) {
   const [stored, setStored] = useState(() => opinionFor(p.planId));
   const [declining, setDeclining] = useState(false);
-  const [reason, setReason] = useState<string | null>(null);
-  const [comment, setComment] = useState("");
-  const commentId = useId();
+  const firstReason = useRef<HTMLButtonElement>(null);
 
-  const record = (verdict: Verdict) => {
+  const record = (verdict: Verdict, why: string | null = null) => {
     const opinion = {
       plan_id: p.planId,
       verdict,
-      reason: verdict === "would_not" ? reason : null,
-      comment: comment.trim(),
+      reason: verdict === "would_not" ? why : null,
+      comment: "",
       recorded_at: p.now,
       state_at: p.stateAt,
     };
@@ -300,6 +298,23 @@ function Opinion(p: OpinionProps) {
         : "Avis non conservé : stockage du navigateur indisponible.",
     );
   };
+
+  // Keyboard shortcuts are dispatched by the shell (see useShortcuts): O = oui, N = non.
+  useEffect(() => {
+    const on = (e: Event) => {
+      const key = (e as CustomEvent<string>).detail;
+      if (stored || p.expired) return;
+      if (key === "yes") record("would_do");
+      if (key === "no") setDeclining(true);
+      if (declining && /^[1-6]$/.test(key)) record("would_not", REASONS[Number(key) - 1]!.id);
+    };
+    window.addEventListener("hos:shortcut", on);
+    return () => window.removeEventListener("hos:shortcut", on);
+  });
+
+  useEffect(() => {
+    if (declining) firstReason.current?.focus();
+  }, [declining]);
 
   const expiry = p.expired ? (
     <span className="expiry expiry--late">Expirée à {clock(p.expiresAt)}. Réévaluez avant d'agir.</span>
@@ -339,7 +354,7 @@ function Opinion(p: OpinionProps) {
           disabled={p.expired}
           aria-describedby="shadow-note"
         >
-          <Check /> Je l'aurais fait
+          <Check /> Je l'aurais fait <kbd className="kbd">O</kbd>
         </button>
         <button
           className="btn"
@@ -347,10 +362,10 @@ function Opinion(p: OpinionProps) {
           aria-expanded={declining}
           disabled={p.expired}
         >
-          Je ne l'aurais pas fait
+          Je ne l'aurais pas fait <kbd className="kbd">N</kbd>
         </button>
         <a className="btn btn--quiet" href="#/proposition">
-          Voir le détail
+          Détail <kbd className="kbd">D</kbd>
         </a>
         <span className="spacer" />
         {p.expired ? (
@@ -361,48 +376,27 @@ function Opinion(p: OpinionProps) {
         {expiry}
       </div>
       {declining ? (
-        <form
-          className="feedback"
-          onSubmit={(e) => {
-            e.preventDefault();
-            record("would_not");
-          }}
-        >
-          <fieldset>
-            <legend>Pourquoi ?</legend>
-            <div className="chips">
-              {REASONS.map((r) => (
-                <label className="chip" key={r.id}>
-                  <input
-                    type="radio"
-                    name="reason"
-                    value={r.id}
-                    checked={reason === r.id}
-                    onChange={() => setReason(r.id)}
-                  />
-                  <span>{r.label}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <label htmlFor={commentId} className="note">
-            Précision (facultative, sans donnée identifiante)
-          </label>
-          <textarea
-            id={commentId}
-            className="textarea"
-            name="comment"
-            autoComplete="off"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Ex. : patient finalement gardé jusqu'à demain…"
-          />
-          <div>
-            <button className="btn" type="submit" disabled={!reason}>
-              Noter mon avis
-            </button>
+        <div className="feedback" role="group" aria-labelledby="why-label">
+          <p className="feedback__label" id="why-label">
+            Pourquoi ? Un appui suffit.
+          </p>
+          <div className="chips">
+            {REASONS.map((r, i) => (
+              <button
+                key={r.id}
+                ref={i === 0 ? firstReason : undefined}
+                type="button"
+                className="chip"
+                onClick={() => record("would_not", r.id)}
+              >
+                <kbd className="kbd" aria-hidden="true">
+                  {i + 1}
+                </kbd>
+                {r.label}
+              </button>
+            ))}
           </div>
-        </form>
+        </div>
       ) : null}
       <p className="note proposal__note" id="shadow-note">
         <Info size={14} /> Mode observation : votre avis mesure la pertinence de la proposition. Aucune

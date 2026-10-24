@@ -457,3 +457,48 @@ export function gateGroups(codes: string[]): { title: string; codes: string[] }[
   }
   return [...groups].map(([title, list]) => ({ title, codes: list }));
 }
+
+// ---------------------------------------------------------------- unit switcher
+
+export interface UnitSummary {
+  id: string;
+  name: string;
+  decision: "recommend" | "no_change" | "abstain" | "pending";
+  waiting: number;
+  usable: number;
+  dirty: number;
+  longestWaitMinutes: number | null;
+}
+
+export function unitSummary(id: string, name: string, a: Assessment | null): UnitSummary {
+  if (!a) return { id, name, decision: "pending", waiting: 0, usable: 0, dirty: 0, longestWaitMinutes: null };
+  const s = situation(a.state, a.plan);
+  const q = queueEntries(a.state);
+  return {
+    id,
+    name,
+    decision: a.plan ? a.plan.decision : a.gateReasons.length ? "abstain" : "pending",
+    waiting: s.waiting,
+    usable: s.usable,
+    dirty: s.dirty,
+    longestWaitMinutes: q.length ? Math.max(...q.map((e) => e.waitedMinutes)) : null,
+  };
+}
+
+/** The single next step a person can take on a departure, in plain imperative French. */
+export function nextStep(links: ChainLink[]): { text: string; tone: "ok" | "todo" | "blocked" | "unknown" } {
+  const pending = links.find((l) => l.status !== "ok" && l.status !== "na");
+  if (!pending) return { text: "Prête à partir", tone: "ok" };
+  const verbs: Record<ChainLink["id"], [string, string]> = {
+    medical: ["Obtenir l'avis médical de sortie", "Avis médical défavorable"],
+    documents: ["Préparer les documents de sortie", "Documents bloqués"],
+    escort: ["Confirmer l'accompagnant", "Accompagnant indisponible"],
+    downstream: ["Obtenir l'accord de l'aval", "Aval complet : chercher une autre place"],
+    transport: ["Demander le transport", "Aucun transport disponible"],
+  };
+  const [todo, blocked] = verbs[pending.id];
+  if (pending.status === "blocked") return { text: blocked, tone: "blocked" };
+  if (pending.status === "unknown")
+    return { text: `Renseigner : ${pending.label.toLowerCase()}`, tone: "unknown" };
+  return { text: todo, tone: "todo" };
+}

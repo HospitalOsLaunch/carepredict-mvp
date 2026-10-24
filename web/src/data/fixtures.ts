@@ -13,6 +13,8 @@ import type {
 export interface ScenarioFixture {
   id: string;
   label: string;
+  unit: string;
+  unit_name: string;
   source: "fixture";
   request: PlanRequest;
   state: State;
@@ -33,16 +35,24 @@ export interface FixtureBundle {
   quality: SourceReceipt;
 }
 
+// Order = unit order in the switcher, then situation order within a unit.
+const ORDER = ["nominal", "perturbations", "incomplete", "geriatrie", "interne", "pneumologie"];
+
 export async function loadFixtures(): Promise<FixtureBundle> {
-  const [nominal, perturbations, incomplete, live, quality] = await Promise.all([
-    import("../fixtures/scenario-nominal.json"),
-    import("../fixtures/scenario-perturbations.json"),
-    import("../fixtures/scenario-incomplete.json"),
+  const modules = import.meta.glob<{ default: unknown }>("../fixtures/scenario-*.json");
+  const scenarios = await Promise.all(
+    ORDER.map(async (id) => {
+      const load = modules[`../fixtures/scenario-${id}.json`];
+      if (!load) throw new Error(`Missing fixture ${id}`);
+      return (await load()).default as ScenarioFixture;
+    }),
+  );
+  const [live, quality] = await Promise.all([
     import("../fixtures/live.json"),
     import("../fixtures/quality.json"),
   ]);
   return {
-    scenarios: [nominal.default, perturbations.default, incomplete.default] as unknown as ScenarioFixture[],
+    scenarios,
     live: live.default as unknown as LiveFixture,
     quality: quality.default as unknown as SourceReceipt,
   };

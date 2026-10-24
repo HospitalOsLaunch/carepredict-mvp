@@ -1,5 +1,24 @@
 # Système visuel du cockpit
 
+La charte complète (plateforme de marque, voix, logo, jetons, composants) vit dans le
+design system « HospitalOS » ; ce fichier en résume ce qui touche le code. Logo : `public/brand/`,
+régénérable par `python web/dev/build_brand.py web/public/brand`.
+
+## Logo
+
+Le H d'HospitalOS dont la barre est un aimant soulevé du tableau des lits : l'instant où une
+place est attribuée. Tiges en `--ink`, aimant en `--bloc`. Logotype : Atkinson Hyperlegible Next
+700 vectorisé. Zone de protection : une largeur d'aimant. Minimum : 16 px (favicon), 96 px en
+version horizontale.
+
+## Zoning sous tension
+
+1. Barre haute : symbole, sélecteur d'unité avec statut (`U`, `1`–`9`), sections, heure de l'état.
+2. Bande de tension : à placer, lits utilisables, sorties, données ; chaque cellule mène à sa zone.
+3. Action suivante : titre à l'impératif, effet simulé, deux réponses (`O`, `N` puis `1`–`6`).
+4. Flux en trois colonnes, dans l'ordre physique : Libérer → Lits → Attribuer. Sur téléphone,
+   un onglet par zone, ouvert sur celle que touche la proposition.
+
 ## Intention
 
 - **Qui** : gestionnaire de lits à son bureau, téléphone qui sonne, deux écrans ;

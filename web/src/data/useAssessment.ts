@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ApiError, api } from "../api/client";
-import type { LiveSnapshot, ShadowSummary, SourceReceipt } from "../api/types";
-import { type Assessment, fromLive } from "../domain/view";
+import type { LiveSnapshot, Plan, ShadowSummary, SourceReceipt } from "../api/types";
+import { type Assessment, type UnitSummary, fromLive, unitSummary } from "../domain/view";
 import { type FixtureBundle, type ScenarioFixture, loadFixtures } from "./fixtures";
 
 /**
@@ -12,16 +12,27 @@ import { type FixtureBundle, type ScenarioFixture, loadFixtures } from "./fixtur
  */
 export type Connection = "probing" | "api-live" | "api-plan" | "fixture";
 
-export interface ScenarioOption {
+export interface Option {
   id: string;
   label: string;
 }
 
+export interface UnitOption {
+  id: string;
+  name: string;
+  situations: Option[];
+}
+
 export interface Store {
   connection: Connection;
-  scenarios: ScenarioOption[];
-  scenarioId: string;
-  setScenario: (id: string) => void;
+  units: UnitOption[];
+  summaries: UnitSummary[];
+  unitId: string;
+  unitName: string;
+  setUnit: (id: string) => void;
+  situations: Option[];
+  situationId: string;
+  setSituation: (id: string) => void;
   assessment: Assessment | null;
   /** Live mode: snapshot is known but no evaluation has been recorded yet. */
   awaitingEvaluation: boolean;
@@ -33,26 +44,27 @@ export interface Store {
   loadedAt: number;
 }
 
-const LIVE_OPTIONS: ScenarioOption[] = [
+const LIVE_UNIT = "medecine-polyvalente";
+const LIVE_SITUATIONS: Option[] = [
   { id: "live", label: "Unité en observation" },
   { id: "live-stale", label: "Confirmations périmées" },
 ];
 
-function fromScenario(s: ScenarioFixture, origin: Assessment["origin"]): Assessment {
+function fromScenario(s: ScenarioFixture, origin: Assessment["origin"], plan: Plan = s.plan): Assessment {
   return {
     origin,
     scenarioId: s.id,
     scenarioLabel: s.label,
     state: s.state,
-    plan: s.plan,
-    gateReasons: s.plan.decision === "abstain" ? s.plan.reasons : [],
+    plan,
+    gateReasons: plan.decision === "abstain" ? plan.reasons : [],
     events: s.request.events,
     resources: null,
     receivedAtBySource: null,
     trace: origin === "fixture" ? s.trace : null,
     episodeId: null,
     factBudgetMinutes: s.request.max_age_minutes,
-    expiresAt: s.plan.expires_at,
+    expiresAt: plan.expires_at,
   };
 }
 
@@ -78,20 +90,38 @@ function readError(error: unknown): string {
   return "Le service local est injoignable.";
 }
 
-function initialScenario(): string {
-  const fromUrl = new URLSearchParams(window.location.search).get("scenario");
-  return fromUrl ?? "nominal";
+function fromUrl(key: string): string | null {
+  try {
+    return new URLSearchParams(window.location.search).get(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeUrl(key: string, value: string): void {
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set(key, value);
+    window.history.replaceState(null, "", url);
+  } catch {
+    /* sandboxed frames may refuse URL changes; the selection still applies */
+  }
 }
 
 export function useAssessment(): Store {
   const [connection, setConnection] = useState<Connection>("probing");
   const [bundle, setBundle] = useState<FixtureBundle | null>(null);
-  const [scenarioId, setScenarioId] = useState(initialScenario);
+  const [scenarioId, setScenarioId] = useState(
+    () => fromUrl("situation") ?? fromUrl("scenario") ?? "nominal",
+  );
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [snapshot, setSnapshot] = useState<LiveSnapshot | null>(null);
+  const [apiPlans, setApiPlans] = useState<Record<string, Plan>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadedAt, setLoadedAt] = useState(() => Date.now());
+  const [refresh, setRefresh] = useState(0);
+  const lastByUnit = useRef<Record<string, string>>({});
   const request = useRef(0);
 
   // Probe once: live store → plan API → bundled fixtures.
@@ -101,6 +131,11 @@ export function useAssessment(): Store {
       const fixtures = await loadFixtures();
       if (cancelled) return;
       setBundle(fixtures);
+      const unit = fromUrl("unit");
+      if (unit && !fromUrl("situation") && !fromUrl("scenario")) {
+        const first = fixtures.scenarios.find((s) => s.unit === unit);
+        if (first) setScenarioId(first.id);
+      }
       if (__DEMO_ONLY__) return setConnection("fixture");
       try {
         await api.health();
@@ -128,7 +163,19 @@ export function useAssessment(): Store {
     };
   }, []);
 
-  // Build the assessment for the selected scenario.
+  // Plan API: evaluate every unit's default request once, for the switcher.
+  useEffect(() => {
+    if (connection !== "api-plan" || !bundle) return;
+    const firsts = [...new Map(bundle.scenarios.map((s) => [s.unit, s])).values()];
+    for (const s of bundle.scenarios.filter((x) => firsts.some((f) => f.id === x.id))) {
+      api
+        .plan(s.request)
+        .then((plan) => setApiPlans((prev) => ({ ...prev, [s.id]: plan })))
+        .catch(() => undefined);
+    }
+  }, [connection, bundle]);
+
+  // Build the assessment for the selected situation.
   useEffect(() => {
     if (!bundle || connection === "probing") return;
     const token = ++request.current;
@@ -151,17 +198,13 @@ export function useAssessment(): Store {
       .plan(s.request)
       .then((plan) => {
         if (token !== request.current) return;
-        setAssessment({
-          ...fromScenario(s, "api-plan"),
-          plan,
-          expiresAt: plan.expires_at,
-          gateReasons: plan.decision === "abstain" ? plan.reasons : [],
-        });
+        setApiPlans((prev) => ({ ...prev, [s.id]: plan }));
+        setAssessment(fromScenario(s, "api-plan", plan));
         setLoadedAt(Date.now());
       })
       .catch((e: unknown) => token === request.current && setError(readError(e)))
       .finally(() => token === request.current && setBusy(false));
-  }, [bundle, connection, scenarioId, snapshot]);
+  }, [bundle, connection, scenarioId, snapshot, refresh]);
 
   const evaluate = useCallback(() => {
     if (connection === "fixture" && bundle) {
@@ -171,8 +214,7 @@ export function useAssessment(): Store {
     }
     if (connection === "api-plan") {
       // Re-run the same request: identical inputs give an identical, reproducible plan.
-      setScenarioId((id) => id);
-      setBundle((b) => (b ? { ...b } : b));
+      setRefresh((n) => n + 1);
       return;
     }
     if (connection !== "api-live") return;
@@ -194,37 +236,85 @@ export function useAssessment(): Store {
       .finally(() => token === request.current && setBusy(false));
   }, [bundle, connection, scenarioId]);
 
-  const setScenario = useCallback((id: string) => {
-    setScenarioId(id);
-    try {
-      const url = new URL(window.location.href);
-      url.searchParams.set("scenario", id);
-      window.history.replaceState(null, "", url);
-    } catch {
-      /* sandboxed frames may refuse URL changes; the selection still applies */
+  const units: UnitOption[] = useMemo(() => {
+    if (connection === "api-live") {
+      return [
+        { id: LIVE_UNIT, name: "Médecine polyvalente", situations: [{ id: "live", label: "En direct" }] },
+      ];
     }
-  }, []);
+    const map = new Map<string, UnitOption>();
+    for (const s of bundle?.scenarios ?? []) {
+      const u = map.get(s.unit) ?? { id: s.unit, name: s.unit_name, situations: [] };
+      u.situations.push({ id: s.id, label: s.label });
+      map.set(s.unit, u);
+    }
+    if (connection === "fixture") map.get(LIVE_UNIT)?.situations.push(...LIVE_SITUATIONS);
+    return [...map.values()];
+  }, [bundle, connection]);
 
-  const scenarios: ScenarioOption[] =
-    connection === "api-live"
-      ? [{ id: "live", label: "Unité en observation (API locale)" }]
-      : [
-          ...(bundle?.scenarios.map((s) => ({ id: s.id, label: s.label })) ?? []),
-          ...(connection === "fixture" ? LIVE_OPTIONS : []),
-        ];
+  const unitOf = useCallback(
+    (sid: string) =>
+      sid.startsWith("live") ? LIVE_UNIT : (bundle?.scenarios.find((s) => s.id === sid)?.unit ?? LIVE_UNIT),
+    [bundle],
+  );
+  const unitId = unitOf(scenarioId);
+  const unit = units.find((u) => u.id === unitId);
+
+  const setSituation = useCallback(
+    (id: string) => {
+      setScenarioId(id);
+      lastByUnit.current[unitOf(id)] = id;
+      writeUrl("situation", id);
+    },
+    [unitOf],
+  );
+
+  const setUnit = useCallback(
+    (id: string) => {
+      const target = units.find((u) => u.id === id);
+      if (!target) return;
+      const next = lastByUnit.current[id] ?? target.situations[0]?.id;
+      if (next) setSituation(next);
+    },
+    [units, setSituation],
+  );
+
+  const summaries: UnitSummary[] = useMemo(
+    () =>
+      units.map((u) => {
+        if (u.id === unitId) return unitSummary(u.id, u.name, assessment);
+        if (!bundle || connection === "api-live") return unitSummary(u.id, u.name, null);
+        const sid = lastByUnit.current[u.id] ?? u.situations[0]!.id;
+        if (connection === "api-plan") {
+          const s = bundle.scenarios.find((x) => x.id === sid);
+          const plan = apiPlans[sid];
+          return unitSummary(u.id, u.name, s && plan ? fromScenario(s, "api-plan", plan) : null);
+        }
+        return unitSummary(u.id, u.name, fixtureAssessment(bundle, sid));
+      }),
+    [units, unitId, assessment, bundle, connection, apiPlans],
+  );
 
   return {
     connection,
-    scenarios,
-    scenarioId,
-    setScenario,
+    units,
+    summaries,
+    unitId,
+    unitName: unit?.name ?? "Unité",
+    setUnit,
+    situations: unit?.situations ?? [],
+    situationId: scenarioId,
+    setSituation,
     assessment,
     awaitingEvaluation: connection === "api-live" && !!assessment && !assessment.episodeId,
     busy,
     error,
     evaluate,
-    quality: connection === "fixture" || connection === "api-plan" ? (bundle?.quality ?? null) : null,
-    shadowSummary: connection === "api-live" ? null : (bundle?.live.summary ?? null),
+    quality:
+      (connection === "fixture" || connection === "api-plan") && unitId === LIVE_UNIT
+        ? (bundle?.quality ?? null)
+        : null,
+    shadowSummary: connection === "api-live" || unitId !== LIVE_UNIT ? null : (bundle?.live.summary ?? null),
     loadedAt,
   };
 }

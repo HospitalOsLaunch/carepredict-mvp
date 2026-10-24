@@ -4,6 +4,10 @@ Interface du MVP hybride (`src/hospitalos/hybrid`). Un seul parcours couplé :
 le **cadre de santé** voit ce qui bloque chaque sortie, le **gestionnaire de lits**
 voit qui attend quel lit, et les deux lisent la même proposition simulée.
 
+Conçu pour l'usage en tension : bande de tension lisible en un regard, une seule action
+suivante, flux Libérer → Lits → Attribuer, changement d'unité sans ouvrir chaque unité, et
+tout au clavier (`?` affiche les raccourcis).
+
 Prototype local en **mode observation** : l'interface n'émet aucune commande, ne
 réserve rien et n'expose aucun bouton d'exécution. L'avis « je l'aurais fait / je
 ne l'aurais pas fait » est conservé sur l'appareil, pas envoyé.
@@ -37,8 +41,14 @@ inchangé). Le cockpit détecte seul la source :
 | API locale, scénarios fictifs | `/health` répond, pas de LiveStore | `POST /hybrid/plan` avec les requêtes de démonstration |
 | Démonstration | API injoignable | aucun ; sorties précalculées |
 
+La démonstration couvre quatre unités fictives d'un même pôle, chacune calculée par le vrai
+planificateur : médecine polyvalente (proposition, plus trois situations), court séjour
+gériatrique sous tension (proposition), médecine interne (rien à changer), pneumologie dont le
+flux s'est interrompu (abstention). L'API locale ne sert qu'une unité à la fois ; le sélecteur
+s'adapte.
+
 ```bash
-npm run typecheck && npm test   # 61 tests : vocabulaire, dérivations, rendu
+npm run typecheck && npm test   # 63 tests : vocabulaire, dérivations, rendu, unités, raccourcis
 npm run build                   # dist/ pour l'API locale
 npm run build:demo              # dist-demo/index.html autonome (aperçu partageable)
 npm run fixtures                # régénère src/fixtures depuis le planificateur
@@ -46,11 +56,11 @@ npm run fixtures                # régénère src/fixtures depuis le planificate
 
 ## Ce que montre chaque écran
 
-**Unité.** Une phrase de situation, puis la **proposition** (point focal) : l'action,
-les faits qui la rendent lisible, l'effet simulé contre « sans action » sur les mêmes
-scénarios, l'échéance. En dessous, les **sorties à libérer** sous forme de chaîne
-(avis médical → documents → accompagnant → aval → transport) et, pour chaque lit, qui
-pourrait le prendre. À droite, les **patients à placer** et le **tableau des lits**.
+**Unité.** La **bande de tension** (à placer, lits utilisables, sorties, données), puis
+l'**action suivante** (point focal) : l'action, les faits qui la rendent lisible, l'effet
+simulé contre « sans action » sur les mêmes scénarios, l'échéance, deux réponses. Puis le flux :
+**Libérer** (chaîne avis médical → documents → accompagnant → aval → transport et la seule étape
+qui manque), **Lits** (tableau en aimants), **Attribuer** (patients à placer par priorité).
 
 **Proposition.** Toutes les options simulées (moyenne et pire décile, version tableau),
 le déroulé apparié d'un scénario, les hypothèses déclarées et la traçabilité (plan,

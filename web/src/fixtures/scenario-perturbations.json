@@ -1,6 +1,8 @@
 {
  "id": "perturbations",
  "label": "Transport coup\u00e9, vague des urgences",
+ "unit": "medecine-polyvalente",
+ "unit_name": "M\u00e9decine polyvalente",
  "source": "fixture",
  "request": {
   "hospital_id": "ch-fictif",

@@ -1,6 +1,8 @@
 {
  "id": "incomplete",
  "label": "Donn\u00e9es incompl\u00e8tes",
+ "unit": "medecine-polyvalente",
+ "unit_name": "M\u00e9decine polyvalente",
  "source": "fixture",
  "request": {
   "hospital_id": "ch-fictif",

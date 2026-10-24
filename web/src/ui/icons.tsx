@@ -97,18 +97,19 @@ export const PulseIcon = (p: { size?: number }) => (
   </Svg>
 );
 
-/** The mark: a bed outline whose headboard is an arrow handing over. */
-export const Mark = () => (
-  <svg className="brand__mark" viewBox="0 0 24 24" aria-hidden="true">
-    <rect x="1" y="1" width="22" height="22" rx="5" fill="var(--ink)" />
+/**
+ * The HospitalOS symbol: an H whose crossbar is a magnet lifted off the bed board,
+ * the moment a place is attributed. Stems take the ink, the magnet the action colour.
+ */
+export const Mark = ({ size = 24 }: { size?: number }) => (
+  <svg className="brand__mark" width={size} height={size} viewBox="0 0 256 256" aria-hidden="true">
     <path
-      d="M5.5 16.5v-6m0 3h13v3m-9.5-3v-2.2a1.3 1.3 0 0 1 1.3-1.3h6.9a1.3 1.3 0 0 1 1.3 1.3v2.2"
-      stroke="var(--board)"
-      strokeWidth="1.6"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="var(--ink)"
+      d="M48 32h32a8 8 0 0 1 8 8v176a8 8 0 0 1-8 8H48a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8Z M176 32h32a8 8 0 0 1 8 8v176a8 8 0 0 1-8 8h-32a8 8 0 0 1-8-8V40a8 8 0 0 1 8-8Z"
     />
-    <circle cx="7.6" cy="10.4" r="1.3" fill="var(--bloc)" />
+    <path
+      fill="var(--bloc)"
+      d="M104 80h48a8 8 0 0 1 8 8v48a8 8 0 0 1-8 8h-48a8 8 0 0 1-8-8V88a8 8 0 0 1 8-8Z"
+    />
   </svg>
 );
