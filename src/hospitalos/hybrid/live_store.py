@@ -111,68 +111,72 @@ class LiveStore:
                     raise ValueError("Conflicting batch identity")
                 return False
         with self.transaction(received_at) as now:
-            policy = self.policy
-            if batch.hospital_id != policy.hospital_id or batch.source not in policy.sources:
-                raise ValueError("Unconfigured hospital or source")
-            old = self.db.execute(
-                "SELECT body FROM live_batches WHERE id=?", (batch.batch_id,)
-            ).fetchone()
-            if old:
-                if ObservationBatch.model_validate_json(old[0]) != batch:
-                    raise ValueError("Conflicting batch identity")
-                return False
-            previous = self.db.execute(
-                "SELECT body, sequence FROM live_batches ORDER BY sequence DESC LIMIT 1"
-            ).fetchone()
-            sequence = 1
-            if previous:
-                last = ObservationBatch.model_validate_json(previous[0])
-                sequence = int(previous[1]) + 1
-                if batch.manifest_version not in {last.manifest_version, last.manifest_version + 1}:
-                    raise ValueError("Manifest versions must advance one step at a time")
-                if batch.manifest_version == last.manifest_version and set(
-                    batch.expected_entities
-                ) != set(last.expected_entities):
-                    raise ValueError("Changed manifest requires a new version")
-            elif batch.manifest_version != 1:
-                raise ValueError("Initial manifest must be version 1")
-            for key in batch.expected_entities:
-                kind, separator, identifier = key.partition(":")
-                if (
-                    not separator
-                    or not identifier
-                    or kind not in {"unit", "bed", "patient", "pool", "discharge"}
-                ):
-                    raise ValueError("Malformed manifest entity")
-                if kind == "unit" and identifier != policy.unit_id:
-                    raise ValueError("This database is restricted to one unit")
-            if f"unit:{policy.unit_id}" not in batch.expected_entities:
-                raise ValueError("The configured unit is mandatory")
-            for event in batch.events:
-                if f"{event.fact.kind}:{event.fact.id}" not in batch.expected_entities:
-                    raise ValueError("Undeclared event entity")
-                if event.available_at > now:
-                    raise ValueError("Future source timestamps are not observations")
-                self._scope(event)
-                self._ingest_fact(event, now)
-            for observation in batch.availability:
-                if observation.observed_at > now:
-                    raise ValueError("Future availability confirmation")
-                entity = (
-                    f"unit:{observation.target_id}"
-                    if observation.resource in {"staffed", "cleaning"}
-                    else f"pool:{observation.target_id}"
-                )
-                if entity not in batch.expected_entities:
-                    raise ValueError("Undeclared resource confirmation")
-                self.db.execute(
-                    "INSERT INTO live_resources(body) VALUES (?)",
-                    (observation.model_dump_json(),),
-                )
-            self.db.execute(
-                "INSERT INTO live_batches VALUES (?, ?, ?, ?)",
-                (batch.batch_id, batch.model_dump_json(), now.isoformat(), sequence),
+            return self._ingest(batch, now)
+
+    def _ingest(self, batch: ObservationBatch, now: datetime) -> bool:
+        """Internal: caller must hold this store's write transaction."""
+        policy = self.policy
+        if batch.hospital_id != policy.hospital_id or batch.source not in policy.sources:
+            raise ValueError("Unconfigured hospital or source")
+        old = self.db.execute(
+            "SELECT body FROM live_batches WHERE id=?", (batch.batch_id,)
+        ).fetchone()
+        if old:
+            if ObservationBatch.model_validate_json(old[0]) != batch:
+                raise ValueError("Conflicting batch identity")
+            return False
+        previous = self.db.execute(
+            "SELECT body, sequence FROM live_batches ORDER BY sequence DESC LIMIT 1"
+        ).fetchone()
+        sequence = 1
+        if previous:
+            last = ObservationBatch.model_validate_json(previous[0])
+            sequence = int(previous[1]) + 1
+            if batch.manifest_version not in {last.manifest_version, last.manifest_version + 1}:
+                raise ValueError("Manifest versions must advance one step at a time")
+            if batch.manifest_version == last.manifest_version and set(
+                batch.expected_entities
+            ) != set(last.expected_entities):
+                raise ValueError("Changed manifest requires a new version")
+        elif batch.manifest_version != 1:
+            raise ValueError("Initial manifest must be version 1")
+        for key in batch.expected_entities:
+            kind, separator, identifier = key.partition(":")
+            if (
+                not separator
+                or not identifier
+                or kind not in {"unit", "bed", "patient", "pool", "discharge"}
+            ):
+                raise ValueError("Malformed manifest entity")
+            if kind == "unit" and identifier != policy.unit_id:
+                raise ValueError("This database is restricted to one unit")
+        if f"unit:{policy.unit_id}" not in batch.expected_entities:
+            raise ValueError("The configured unit is mandatory")
+        for event in batch.events:
+            if f"{event.fact.kind}:{event.fact.id}" not in batch.expected_entities:
+                raise ValueError("Undeclared event entity")
+            if event.available_at > now:
+                raise ValueError("Future source timestamps are not observations")
+            self._scope(event)
+            self._ingest_fact(event, now)
+        for observation in batch.availability:
+            if observation.observed_at > now:
+                raise ValueError("Future availability confirmation")
+            entity = (
+                f"unit:{observation.target_id}"
+                if observation.resource in {"staffed", "cleaning"}
+                else f"pool:{observation.target_id}"
             )
+            if entity not in batch.expected_entities:
+                raise ValueError("Undeclared resource confirmation")
+            self.db.execute(
+                "INSERT INTO live_resources(body) VALUES (?)",
+                (observation.model_dump_json(),),
+            )
+        self.db.execute(
+            "INSERT INTO live_batches VALUES (?, ?, ?, ?)",
+            (batch.batch_id, batch.model_dump_json(), now.isoformat(), sequence),
+        )
         return True
 
     def _scope(self, event: FactEvent) -> None:
@@ -250,6 +254,11 @@ class LiveStore:
             max_age_minutes=math.ceil(self.policy.fact_ttl_seconds / 60),
         )
         issues = list(state.issues)
+        for source in self.policy.sources:
+            if self.db.execute(
+                "SELECT 1 FROM live_meta WHERE key=?", (f"source_block:{source}",)
+            ).fetchone():
+                issues.append(f"source_import_rejected:{source}")
         issues.extend(
             f"stale:{e.fact.kind}:{e.fact.id}"
             for e in events
@@ -409,15 +418,23 @@ class LiveStore:
         if self.policy.mode != "shadow":
             raise ValueError("Shadow observations require a shadow database")
         with self.transaction(now) as now:
-            episode = ShadowEpisode(
-                episode_id=uuid.uuid4().hex,
-                assessment=self._assess(now, options or PlanningOptions()),
-            )
-            self.db.execute(
-                "INSERT INTO live_episodes VALUES (?, ?)",
-                (episode.episode_id, episode.model_dump_json()),
-            )
-            return episode
+            return self._record_shadow(now, options)
+
+    def _record_shadow(
+        self, now: datetime, options: PlanningOptions | None = None
+    ) -> ShadowEpisode:
+        """Internal: caller must hold this store's write transaction."""
+        if self.policy.mode != "shadow":
+            raise ValueError("Shadow observations require a shadow database")
+        episode = ShadowEpisode(
+            episode_id=uuid.uuid4().hex,
+            assessment=self._assess(now, options or PlanningOptions()),
+        )
+        self.db.execute(
+            "INSERT INTO live_episodes VALUES (?, ?)",
+            (episode.episode_id, episode.model_dump_json()),
+        )
+        return episode
 
     def episode(self, episode_id: str) -> ShadowEpisode:
         with self.lock:

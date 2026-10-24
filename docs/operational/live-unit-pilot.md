@@ -163,6 +163,14 @@ n'émet pas de commandes, mais **l'absence d'influence humaine n'est pas garanti
 si les recommandations sont montrées aux équipes. Pour une phase réellement
 silencieuse, réserver ces sorties à l'équipe d'évaluation hors décision de soin.
 
+## Adaptateur de qualification en lecture
+
+Le [contrat d’export et son adaptateur local](source-qualification.md) ajoutent
+un mapping explicite, un préflight de colonnes et un diagnostic sans valeurs
+patient. Le mode par défaut qualifie les données sans lancer de simulation.
+Un export rejeté bloque la source jusqu’à de nouvelles observations complètes ;
+aucun connecteur réseau ou branchement à un SI réel n’est livré.
+
 ## Conditions de passage au pilote
 
 1. **Périmètre et données** : unité, responsables, sources autoritaires, manifeste

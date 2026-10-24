@@ -85,6 +85,10 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
   propositions de 120 secondes par défaut, réservations locales transactionnelles
   et réconciliation après observation. Mode `shadow` sans émission ; sandbox
   explicite pour vérifier la concurrence et la reprise. Aucun connecteur SI livré.
+- [Qualification de source en lecture](source-qualification.md) : mapping explicite
+  d’exports complets, préflight de colonnes, diagnostic de fraîcheur/complétude
+  et blocage d’une source rejetée. Qualité seule par défaut ; format fictif testé,
+  aucun flux hospitalier réellement connecté.
 
 La démonstration contient deux lits sales et un patient nécessitant de l'oxygène.
 Changer l'ordre de nettoyage peut réduire son attente dans ce scénario. Les durées
