@@ -6,7 +6,7 @@ import unittest
 
 from fastapi.testclient import TestClient
 
-from hospitalos.hybrid.demo import demo_request, pathway_request
+from hospitalos.hybrid.demo import demo_request, future_request, pathway_request
 from services.api.hybrid_app import app
 
 
@@ -45,7 +45,7 @@ class HybridApiTest(unittest.TestCase):
         response = self.client.post("/hybrid/plan", json=pathway_request().model_dump(mode="json"))
         self.assertEqual(response.status_code, 200)
         result = response.json()
-        self.assertEqual(result["schema_version"], "HYBRID_PLAN_2")
+        self.assertEqual(result["schema_version"], "HYBRID_PLAN_3")
         self.assertEqual(result["selected"]["kind"], "request_transport")
         self.assertEqual(result["discharge_readiness"][0]["stage"], "transport_to_request")
         self.assertEqual(result["service_status"], "served_in_all_sampled_scenarios")
@@ -53,6 +53,22 @@ class HybridApiTest(unittest.TestCase):
     def test_old_fact_schema_is_not_silently_upgraded(self) -> None:
         payload = pathway_request().model_dump(mode="json")
         payload["events"][0]["schema_version"] = "HYBRID_MVP_1"
+        self.assertEqual(self.client.post("/hybrid/plan", json=payload).status_code, 422)
+
+    def test_future_scenario_remains_an_explicit_hypothesis(self) -> None:
+        response = self.client.post("/hybrid/plan", json=future_request().model_dump(mode="json"))
+        self.assertEqual(response.status_code, 200)
+        result = response.json()
+        self.assertEqual(result["future"]["provenance"], "synthetic_hypothesis")
+        self.assertGreater(result["candidates"][0]["max_arrived"], 0)
+        self.assertEqual(result["service_status"], "unserved_in_some_sampled_scenarios")
+
+    def test_future_foreknowledge_and_unknown_pool_are_rejected(self) -> None:
+        payload = future_request().model_dump(mode="json")
+        payload["future"]["declared_at"] = "2026-10-24T09:00:00Z"
+        self.assertEqual(self.client.post("/hybrid/plan", json=payload).status_code, 422)
+        payload = future_request().model_dump(mode="json")
+        payload["future"]["changes"][0]["target_id"] = "invented-pool"
         self.assertEqual(self.client.post("/hybrid/plan", json=payload).status_code, 422)
 
 

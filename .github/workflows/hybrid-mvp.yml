@@ -42,3 +42,4 @@ jobs:
         run: |
           PYTHONPATH=src python -m hospitalos.hybrid --demo
           PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace
+          PYTHONPATH=src python -m hospitalos.hybrid --demo-future --show-trace

@@ -3,6 +3,8 @@
 24 octobre 2026. Statut : mécanismes exécutables sur cas fictifs, revue en PR.
 Ce lot étend le socle hybride ; il ne valide ni un pilote, ni une prévision,
 ni l'efficacité réelle d'une intervention. Aucun logiciel hospitalier n'est appelé.
+L'extension suivante ajoute les [arrivées et perturbations futures](future-events.md)
+sans changer les attestations médicales et logistiques décrites ici.
 
 ## Comportement
 
@@ -98,7 +100,9 @@ La sortie `discharge_readiness` expose les blocages : autorisation médicale non
 confirmée, logistique bloquée, transport à demander ou prêt pour simulation.
 Ce dernier statut ne promet ni un départ ni une heure de départ.
 
-`service_status` concerne uniquement les patients en attente d'un lit connus à D :
+Sans hypothèses d'arrivées, `service_status` concerne les patients en attente
+d'un lit connus à D. Avec l'extension de scénarios futurs, les arrivées simulées
+s'ajoutent à cette file :
 
 - `not_assessed` : état ou mécanique ne permettant pas l'évaluation ;
 - `served_in_all_sampled_scenarios` : aucune attente résiduelle dans cet échantillon ;
@@ -144,20 +148,22 @@ la même base de code ; ce n'est pas une expertise externe indépendante.
 
 Le changement de contrat est explicite : `HYBRID_MVP_1` et les propositions
 `HYBRID_PLAN_1` ne sont pas migrés silencieusement. Reconstituer les faits v2 et
-régénérer les propositions avec `HYBRID_PLAN_2`. Conserver les anciens journaux
+régénérer les propositions avec `HYBRID_PLAN_3` (la v2 était celle de ce lot avant
+l'extension de scénarios futurs). Conserver les anciens journaux
 pour audit et réconcilier tout résultat inconnu avant une éventuelle nouvelle
 demande ; ne pas réémettre une commande en changeant simplement sa version.
 
 Les données OPERATIONAL_V2 agrégées ne permettent pas de reconstruire ces entités.
 Un flux patient/ressource adapté reste nécessaire avant le pilote.
 
-Restent hors de ce lot : nouvelles arrivées après D, transferts internes, séjours
-des nouveaux admis, fenêtres d'accueil, annulations ou variations de ressources
-après D, tâches déjà en cours à D, modèle de survie appris, calibration conforme,
+L'extension suivante couvre les nouvelles arrivées, fermetures d'admission et
+variations de capacité après D. Restent hors périmètre : transferts internes,
+séjours des nouveaux admis, fenêtres d'accueil, annulations de transport/aval,
+tâches déjà en cours à D, modèle de survie appris, calibration conforme,
 planification CP-SAT, console métier, extraction des SI et exécution réelle.
 Horizon maximal actuel : 24 h, sans extrapolation validée à 72 h.
 
 Les tests vérifient une mécanique locale sous hypothèses. Ils ne font pas passer
 G0 (fidélité réelle), G1 (calibration) ou l'intégralité de G2 (résistance en boucle
-opérationnelle). La prochaine tranche devra étendre la dynamique et les
-perturbations avant l'apprentissage des délais et l'évaluation sur données réelles.
+opérationnelle). L'extension de la dynamique sous hypothèses ne remplace pas
+l'apprentissage des délais ni l'évaluation sur données réelles.

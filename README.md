@@ -8,12 +8,16 @@ scenario simulation, independent event-log scoring, and a persistent sandbox
 approval workflow. Its standalone local API does not load the TFT/RSSM stack.
 The release-to-allocation slice adds explicit discharge logistics, shared transport
 teams, finite downstream places and a sandbox transport-request action.
+Declared future scenarios now support synthetic arrivals, bed admission closures
+and capacity changes, paired across actions with independent ledger checks.
 
 Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
 [hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
 Run `PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace` for
 the [release-to-allocation pathway and its limits](docs/operational/release-allocate.md).
-This is a synthetic closed-cohort prototype, not a validated hospital deployment.
+Use `--demo-future --show-trace` for the
+[arrivals and perturbations slice](docs/operational/future-events.md).
+This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
 The forecasting and world-model research paths documented below remain separate.
 
 HospitalOS is building a hospital operations world model: an AI system that learns how hospital pressure evolves across care workload, staffing, beds, patient flow, and capacity.

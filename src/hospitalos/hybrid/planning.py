@@ -10,17 +10,19 @@ import hashlib
 import json
 import math
 import statistics
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import Field, StrictInt, field_validator
+from pydantic import Field, StrictInt, field_validator, model_validator
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors
 from .pathway import DischargeReadiness, readiness
-from .scoring import score
+from .scenarios import FutureAssumptions, sample_future
+from .scoring import ResourcePressure, score
 from .simulation import Assumptions, simulate
 
 
@@ -30,6 +32,7 @@ class PlanRequest(Closed):
     expected_entities: Annotated[tuple[str, ...], Field(min_length=1, max_length=400)]
     events: Annotated[tuple[FactEvent, ...], Field(max_length=2000)]
     assumptions: Assumptions = Assumptions()
+    future: FutureAssumptions | None = None
     max_age_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 60
     horizon_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 1440
     scenarios: Annotated[StrictInt, Field(ge=1, le=128)] = 32
@@ -41,6 +44,12 @@ class PlanRequest(Closed):
     @classmethod
     def utc(cls, value: datetime) -> datetime:
         return instant(value)
+
+    @model_validator(mode="after")
+    def scenario_availability(self) -> Self:
+        if self.future is not None and self.future.declared_at > self.at:
+            raise ValueError("Future hypotheses must be declared by the decision origin")
+        return self
 
     def state(self) -> State:
         return reconstruct(
@@ -56,10 +65,16 @@ class Candidate(Closed):
     violations: tuple[str, ...]
     scenarios_with_unserved_demand: int
     max_waiting_at_end: int
+    max_arrived: int = 0
+    mean_staffed_pressure: float = 0
+    mean_cleaning_pressure: float = 0
+    mean_transport_pressure: float = 0
+    mean_downstream_pressure: float = 0
+    pressure_regression_scenarios: int = 0
 
 
 class Plan(Closed):
-    schema_version: Literal["HYBRID_PLAN_2"] = "HYBRID_PLAN_2"
+    schema_version: Literal["HYBRID_PLAN_3"] = "HYBRID_PLAN_3"
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
     )
@@ -75,6 +90,7 @@ class Plan(Closed):
     candidates: tuple[Candidate, ...]
     candidates_truncated: bool
     assumptions: Assumptions
+    future: FutureAssumptions | None = None
     seed: int
     scenarios: int
     horizon_minutes: int
@@ -102,11 +118,20 @@ def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], boo
     return tuple(candidates[:limit]), len(candidates) > limit
 
 
-def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
+@dataclass(frozen=True)
+class Evaluation:
+    candidate: Candidate
+    pressure: tuple[ResourcePressure, ...]
+
+
+def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
     losses = []
     waiting_at_end = []
+    arrivals = []
+    pressure = []
     violations: set[str] = set()
     for scenario in range(request.scenarios):
+        future = sample_future(state, request.future, request.seed, scenario)
         trajectory = simulate(
             state,
             action,
@@ -114,14 +139,17 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
             seed=request.seed,
             scenario=scenario,
             horizon_minutes=request.horizon_minutes,
+            future=future,
         )
-        result = score(state, trajectory)
+        result = score(state, trajectory, expected_future=future)
         losses.append(result.waiting_patient_minutes)
         waiting_at_end.append(result.waiting_at_end)
+        arrivals.append(result.arrived)
+        pressure.append(result.pressure)
         violations.update(result.violations)
     mean = statistics.mean(losses)
     tail = statistics.mean(sorted(losses, reverse=True)[: max(1, math.ceil(len(losses) / 10))])
-    return Candidate(
+    candidate = Candidate(
         action=action,
         mean_waiting_patient_minutes=mean,
         worst_decile_waiting_patient_minutes=tail,
@@ -129,7 +157,13 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Candidate:
         violations=tuple(sorted(violations)),
         scenarios_with_unserved_demand=sum(n > 0 for n in waiting_at_end),
         max_waiting_at_end=max(waiting_at_end),
+        max_arrived=max(arrivals),
+        mean_staffed_pressure=statistics.mean(p.staffed_patient_minutes for p in pressure),
+        mean_cleaning_pressure=statistics.mean(p.cleaning_team_minutes for p in pressure),
+        mean_transport_pressure=statistics.mean(p.transport_team_minutes for p in pressure),
+        mean_downstream_pressure=statistics.mean(p.downstream_place_minutes for p in pressure),
     )
+    return Evaluation(candidate, tuple(pressure))
 
 
 def plan(request: PlanRequest) -> Plan:
@@ -143,20 +177,48 @@ def plan(request: PlanRequest) -> Plan:
     selected = no_op
     decision: Literal["recommend", "no_change", "abstain"] = "abstain"
     reasons = state.issues
+    warnings = state.warnings
     service_status: Literal[
         "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
     ] = "not_assessed"
     if not reasons:
         actions, truncated = enumerate_actions(state, request.max_candidates)
-        candidates = tuple(evaluate(state, action, request) for action in actions)
+        evaluations = tuple(evaluate(state, action, request) for action in actions)
+        baseline = evaluations[0]
+        candidates = tuple(
+            e.candidate.model_copy(
+                update={
+                    "pressure_regression_scenarios": sum(
+                        any(
+                            a > b
+                            for a, b in zip(
+                                actual.components(), reference.components(), strict=True
+                            )
+                        )
+                        for actual, reference in zip(e.pressure, baseline.pressure, strict=True)
+                    )
+                }
+            )
+            for e in evaluations
+        )
         # A mechanics failure invalidates the decision, rather than hiding a bad candidate.
         if any(c.violations for c in candidates):
             reasons = ("simulation_invariant_failure",)
         else:
             best = min(
-                candidates, key=lambda c: (c.objective, c.action.kind != "no_op", c.action.key)
+                (c for c in candidates if c.pressure_regression_scenarios == 0),
+                key=lambda c: (c.objective, c.action.kind != "no_op", c.action.key),
             )
             selected = best.action
+            if any(
+                (
+                    best.mean_staffed_pressure,
+                    best.mean_cleaning_pressure,
+                    best.mean_transport_pressure,
+                    best.mean_downstream_pressure,
+                )
+            ):
+                warnings = (*warnings, "simulated_resource_pressure_requires_review")
             service_status = (
                 "unserved_in_some_sampled_scenarios"
                 if best.scenarios_with_unserved_demand
@@ -164,10 +226,15 @@ def plan(request: PlanRequest) -> Plan:
             )
             decision = "no_change" if selected.kind == "no_op" else "recommend"
             reasons = (
-                "no_simulated_improvement"
+                "no_admissible_simulated_improvement"
                 if decision == "no_change"
                 else "lower_simulated_waiting_cost_requires_human_approval",
             )
+            if decision == "no_change" and any(
+                c.objective < baseline.candidate.objective and c.pressure_regression_scenarios
+                for c in candidates
+            ):
+                reasons = ("simulated_improvement_rejected_due_to_resource_pressure",)
     return Plan(
         decision=decision,
         plan_id=plan_id,
@@ -177,10 +244,11 @@ def plan(request: PlanRequest) -> Plan:
         expires_at=state.at + timedelta(minutes=15),
         selected=selected,
         reasons=reasons,
-        warnings=state.warnings,
+        warnings=warnings,
         candidates=candidates,
         candidates_truncated=truncated,
         assumptions=request.assumptions,
+        future=request.future,
         seed=request.seed,
         scenarios=request.scenarios,
         horizon_minutes=request.horizon_minutes,

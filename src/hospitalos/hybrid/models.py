@@ -174,7 +174,7 @@ def compatible(patient: Patient, bed: Bed) -> bool:
 
 
 def discharge_blockers(
-    state: State, patient: Patient, *, include_request: bool = True
+    state: State, patient: Patient, *, include_request: bool = True, require_capacity: bool = True
 ) -> tuple[str, ...]:
     """Snapshot prerequisites only; future resource contention is simulated separately."""
     reasons: list[str] = []
@@ -205,7 +205,7 @@ def discharge_blockers(
                 or bed.unit_id not in pool.unit_ids
             ):
                 reasons.append(f"{kind}_pool_unverified")
-            elif pool.available is None or pool.available == 0:
+            elif pool.available is None or (require_capacity and pool.available == 0):
                 reasons.append(f"{kind}_unavailable")
     if d.downstream_required and patient.downstream_confirmed is not True:
         reasons.append("downstream_acceptance_not_confirmed")

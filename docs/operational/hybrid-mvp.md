@@ -1,4 +1,4 @@
-# MVP hybride HospitalOS — socle et parcours libérer → attribuer
+# MVP hybride HospitalOS — état, parcours et scénarios futurs
 
 Décision : 24 octobre 2026. Statut : prototype local sur scénarios fictifs,
 à relire en PR. Aucune mesure d'efficacité hospitalière réelle.
@@ -22,6 +22,7 @@ Python 3.11+, Pydantic 2. Démonstrateur sans PyTorch, TFT, JEPA ou réseau :
 
 ```bash
 PYTHONPATH=src python -m hospitalos.hybrid --demo
+PYTHONPATH=src python -m hospitalos.hybrid --demo-future --show-trace
 PYTHONPATH=src python -m hospitalos.hybrid --demo --show-input > /tmp/hybrid-input.json
 PYTHONPATH=src python -m hospitalos.hybrid --request /tmp/hybrid-input.json
 ```
@@ -52,10 +53,13 @@ et son éventuelle troncature. Ces statistiques ne sont pas des intervalles cali
 - Trois actions : réserver un lit propre compatible, prioriser le nettoyage d'un
   lit sale, demander un transport dont les prérequis sont confirmés ; plus la
   référence sans intervention. Aucune décision clinique.
-- Simulation événementielle d'une cohorte fermée : autorisation médicale et
+- Simulation événementielle, fermée par défaut : autorisation médicale et
   logistique attestées, préparation, aval fini et transport partagé si nécessaires,
   départ, nettoyage puis admission. Le contrat détaillé et ses limites sont dans
   [le lot libérer → attribuer](release-allocate.md).
+- Arrivées et perturbations futures déclarées séparément des faits :
+  [contrat, ressources non préemptives et registre exogène](future-events.md).
+  Leur réalisation est commune aux actions et contrôlée par le notateur.
 - Innovations aléatoires indexées par graine/scénario/mécanisme/entité, et facteur
   commun de ralentissement. Les plans partagent les mêmes innovations ; les
   événements endogènes changent avec l'ordre de nettoyage et les affectations.
@@ -75,7 +79,8 @@ La recommandation cible CP-SAT/MILP reste la trajectoire pour les plans combiné
 Cette première version énumère les actions immédiates admissibles, dans une limite
 explicite de 32 candidats, puis les évalue sur les mêmes scénarios. Le meilleur
 candidat est sélectionné selon `(1-w)*attente_moyenne + w*pire_décile`, avec `w`
-déclaré. L'inaction gagne les égalités. Le coût est mesuré en patients-minutes
+déclaré. Un candidat augmentant une exposition de surcharge dans un scénario
+apparié est exclu avant ce classement. L'inaction gagne les égalités. Le coût est mesuré en patients-minutes
 d'attente depuis D, pas en taux d'occupation ni en efficacité économique.
 
 C'est une optimisation sur ce catalogue borné, pas une planification multistade
@@ -113,7 +118,7 @@ isolation des établissements et politique de conservation des données.
 1. **Données et incertitude** : durées discrètes hypothétiques, pas de modèle de
    survie entraîné ni calibration. Ajouter les distributions empiriques/survie
    après contrat et données adaptés, avec censure et séparation temporelle.
-2. **Dynamique** : aucune nouvelle arrivée après D, pas de transfert entre lits,
+2. **Dynamique** : arrivées sous hypothèses discrètes, pas de transfert entre lits,
    de durée de séjour des nouveaux admis, ni de travail de nettoyage déjà en cours
    à D. Les lits dont l'état n'est pas représentable doivent être marqués inconnus.
    Les sorties autorisées ne sont pas décidées ou accélérées médicalement.

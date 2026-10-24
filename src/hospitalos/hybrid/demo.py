@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 
 from .models import Bed, Discharge, FactEvent, Patient, ResourcePool, Unit
 from .planning import PlanRequest
+from .scenarios import ArrivalBatch, BedAdmissions, FutureAssumptions, ResourceChange
 from .simulation import Assumptions
 
 
@@ -105,4 +106,59 @@ def pathway_request() -> PlanRequest:
             load_multipliers=(1,),
         ),
         horizon_minutes=360,
+    )
+
+
+def future_request() -> PlanRequest:
+    request = pathway_request()
+    return request.model_copy(
+        update={
+            "future": FutureAssumptions(
+                declared_at=request.at,
+                arrivals=(
+                    ArrivalBatch(
+                        id="afternoon-demand",
+                        minute_options=(180,),
+                        count_options=(1, 2, 3),
+                        compatible_units=("medicine",),
+                    ),
+                ),
+                changes=(
+                    ResourceChange(
+                        id="transport-off",
+                        minute=15,
+                        resource="transport",
+                        target_id="transport",
+                        capacity=0,
+                    ),
+                    ResourceChange(
+                        id="transport-on",
+                        minute=120,
+                        resource="transport",
+                        target_id="transport",
+                        capacity=1,
+                    ),
+                    BedAdmissions(
+                        id="bed-close", minute=160, bed_id="bed-1", admissions_open=False
+                    ),
+                    BedAdmissions(
+                        id="bed-reopen", minute=210, bed_id="bed-1", admissions_open=True
+                    ),
+                    ResourceChange(
+                        id="staff-off",
+                        minute=240,
+                        resource="staffed_beds",
+                        target_id="medicine",
+                        capacity=0,
+                    ),
+                    ResourceChange(
+                        id="staff-on",
+                        minute=300,
+                        resource="staffed_beds",
+                        target_id="medicine",
+                        capacity=1,
+                    ),
+                ),
+            )
+        }
     )
