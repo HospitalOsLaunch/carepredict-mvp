@@ -1,0 +1,136 @@
+/*
+  HospitalOS cockpit — tokens.
+  World: the enamelled bed board of a ward office, magnets, scrubs green, yellow linen bags.
+  Depth strategy: borders + quiet surface shifts only (no drop shadows on panels).
+  Type: Atkinson Hyperlegible Next — drawn for low-vision legibility; read at arm's length,
+  tired, at 3 a.m. Scale 1.25 from 15px. Spacing base 4px; workbench density.
+*/
+@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
+
+:root {
+  color-scheme: light;
+
+  /* surfaces: board (page) → sheet (panel) → well (inset) */
+  --board: #edf0ee;
+  --sheet: #fbfcfb;
+  --well: #e3e8e5;
+  --well-strong: #d6ddd9;
+
+  /* ink: four tiers */
+  --ink: #15201d;
+  --ink-2: #3c4945;
+  --ink-3: #59655f;
+  --ink-4: #8b9692;
+
+  --line: rgb(21 32 29 / 0.13);
+  --line-soft: rgb(21 32 29 / 0.07);
+  --line-strong: rgb(21 32 29 / 0.26);
+
+  /* vert bloc — usable, ready, the one primary action */
+  --bloc: #1b6a55;
+  --bloc-strong: #0f4e3e;
+  --bloc-wash: #d9eae3;
+  --on-bloc: #f4fbf8;
+
+  /* sac jaune — to do, waiting, ageing */
+  --sac: #8f5606;
+  --sac-mark: #d99a2b;
+  --sac-wash: #f5e7c9;
+
+  /* alerte — blocked, contradictory. Used sparingly. */
+  --alerte: #a3302a;
+  --alerte-wash: #f4dcd8;
+
+  /* magnets */
+  --magnet: #2a3834;
+  --on-magnet: #eef3f1;
+
+  --focus: #1b6a55;
+  --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(21 32 29 / 0.12) 5px 6px);
+
+  --font: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible", system-ui, sans-serif;
+
+  /* type scale, ratio 1.25 on 15px */
+  --t-xs: 12px;
+  --t-sm: 13.5px;
+  --t-md: 15px;
+  --t-lg: 19px;
+  --t-xl: 23px;
+  --t-2xl: 29px;
+  --t-3xl: 36px;
+
+  /* spacing, 4px grid */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --rail: 368px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --board: #0d1311;
+    --sheet: #141c19;
+    --well: #1b2521;
+    --well-strong: #24302b;
+    --ink: #e5ebe8;
+    --ink-2: #b9c4bf;
+    --ink-3: #8f9b96;
+    --ink-4: #66726d;
+    --line: rgb(229 235 232 / 0.12);
+    --line-soft: rgb(229 235 232 / 0.06);
+    --line-strong: rgb(229 235 232 / 0.24);
+    --bloc: #57b898;
+    --bloc-strong: #7fd0b3;
+    --bloc-wash: rgb(87 184 152 / 0.14);
+    --on-bloc: #08201a;
+    --sac: #e6aa4c;
+    --sac-mark: #e6aa4c;
+    --sac-wash: rgb(230 170 76 / 0.14);
+    --alerte: #f08a7e;
+    --alerte-wash: rgb(240 138 126 / 0.14);
+    --magnet: #c9d4cf;
+    --on-magnet: #111a17;
+    --focus: #57b898;
+    --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(229 235 232 / 0.12) 5px 6px);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --board: #0d1311;
+  --sheet: #141c19;
+  --well: #1b2521;
+  --well-strong: #24302b;
+  --ink: #e5ebe8;
+  --ink-2: #b9c4bf;
+  --ink-3: #8f9b96;
+  --ink-4: #66726d;
+  --line: rgb(229 235 232 / 0.12);
+  --line-soft: rgb(229 235 232 / 0.06);
+  --line-strong: rgb(229 235 232 / 0.24);
+  --bloc: #57b898;
+  --bloc-strong: #7fd0b3;
+  --bloc-wash: rgb(87 184 152 / 0.14);
+  --on-bloc: #08201a;
+  --sac: #e6aa4c;
+  --sac-mark: #e6aa4c;
+  --sac-wash: rgb(230 170 76 / 0.14);
+  --alerte: #f08a7e;
+  --alerte-wash: rgb(240 138 126 / 0.14);
+  --magnet: #c9d4cf;
+  --on-magnet: #111a17;
+  --focus: #57b898;
+  --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(229 235 232 / 0.12) 5px 6px);
+}
