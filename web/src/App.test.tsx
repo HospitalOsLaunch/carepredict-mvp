@@ -14,7 +14,8 @@ beforeEach(() => {
   window.location.hash = "";
 });
 
-const ready = () => screen.findByRole("heading", { name: "Demander le transport de P-0412" });
+// The first render imports the fixture bundle lazily; allow for a cold CI transform.
+const ready = () => screen.findByRole("heading", { name: "Demander le transport de P-0412" }, { timeout: 5000 });
 
 describe("cockpit", () => {
   it("leads with the tension strip, the next action and the three flow zones", async () => {

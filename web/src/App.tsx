@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
+import { useSimulation } from "./data/useSimulation";
+import { SimulationJournal, SimulationPanel } from "./ui/Simulation";
 import { type Assessment, clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { Journal } from "./ui/Journal";
@@ -55,6 +57,7 @@ const ORIGIN: Record<Connection, string> = {
   "api-live": "API locale, unité en direct",
   "api-plan": "API locale, patients fictifs",
   fixture: "Patients fictifs, vrai planificateur",
+  simulation: "Simulateur connecté",
 };
 
 const TITLES: Record<Route, string> = {
@@ -92,6 +95,7 @@ function useShortcuts(
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (t?.closest('[role="listbox"], dialog[open]')) return;
       const k = e.key.toLowerCase();
+      if (store.connection === "simulation" && ["o", "n", "f"].includes(k)) return;
       const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
       const digit = Number(e.key);
       if (k === "u") openSwitcher();
@@ -120,7 +124,10 @@ function useShortcuts(
 }
 
 export function App() {
-  const store = useAssessment();
+  const [simulationMode] = useState(() => new URLSearchParams(window.location.search).get("source") === "simulator");
+  const observation = useAssessment(!simulationMode);
+  const simulation = useSimulation(simulationMode);
+  const store = simulationMode ? simulation.store : observation;
   const { route, param } = useRoute();
   const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
@@ -129,18 +136,20 @@ export function App() {
   const openSwitcher = useCallback(() => setSwitcherSignal((n) => n + 1), []);
   const openHelp = useCallback(() => help.current?.showModal(), []);
   const a = store.assessment;
-  const now = useNow(a, store.loadedAt);
+  const observationNow = useNow(simulationMode ? null : a, store.loadedAt);
+  const now = simulationMode ? (simulation.view?.now ?? null) : observationNow;
   const notify = useCallback((message: string, undo?: () => void) => setToast({ message, undo }), []);
   const { records, me } = useJournal();
-  const todo = now ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
+  const todo = now && !simulationMode ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
 
   // Demonstration: a plausible shift of earlier decisions, read-only, never stored.
   const stateAt = a?.state.at;
   useEffect(() => {
+    if (simulationMode) return;
     if (store.connection === "fixture" || store.connection === "api-plan") {
       if (stateAt) journal.setSamples(demoHistory(stateAt, store.units));
     } else journal.setSamples([]);
-  }, [store.connection, stateAt, store.units]);
+  }, [simulationMode, store.connection, stateAt, store.units]);
 
   useEffect(() => {
     document.title = `${store.unitName} · ${TITLES[route]} · HospitalOS`;
@@ -192,14 +201,14 @@ export function App() {
             ) : null}
             <span
               className="mode"
-              title="Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."
+              title={simulationMode ? "Commandes limitées au scénario fictif." : "Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."}
             >
               <span className="mode__dot" aria-hidden="true" />
-              <span className="mode__text">Observation seule</span>
+              <span className="mode__text">{simulationMode ? "Simulation connectée" : "Observation seule"}</span>
               <span className="mode__short" aria-hidden="true">
-                Observation
+                {simulationMode ? "Simulation" : "Observation"}
               </span>
-              <span className="visually-hidden">: aucune commande envoyée</span>
+              <span className="visually-hidden">{simulationMode ? ": patients fictifs uniquement" : ": aucune commande envoyée"}</span>
             </span>
             <button type="button" className="helpbtn" onClick={openHelp} aria-label="Raccourcis clavier">
               ?
@@ -209,13 +218,14 @@ export function App() {
       </header>
 
       <main className="main" id="contenu" tabIndex={-1}>
+        {simulationMode ? <SimulationPanel simulation={simulation} /> : null}
         {store.error ? (
           <div className="notice notice--error" role="alert">
             <Alert />
             <span>{store.error}</span>
           </div>
         ) : null}
-        {store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {store.connection !== "simulation" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -242,6 +252,8 @@ export function App() {
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />
         ) : route === "proposition" ? (
           <ProposalDetail a={a} />
+        ) : route === "journal" && simulationMode ? (
+          <SimulationJournal simulation={simulation} />
         ) : route === "journal" ? (
           <Journal
             records={records}
@@ -264,12 +276,13 @@ export function App() {
             onEvaluate={store.evaluate}
             unit={{ id: store.unitId, name: store.unitName }}
             onToast={notify}
+            simulation={simulationMode}
           />
         )}
       </main>
 
       <footer className="foot">
-        <span>HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes.</span>
+        <span>{simulationMode ? "Actions limitées à l'hôpital simulé. Patients fictifs. Aucune commande hospitalière." : "HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes."}</span>
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
@@ -289,7 +302,7 @@ export function App() {
         <h2 id="help-title">Raccourcis pour aller vite</h2>
         <p className="help__lead">Une touche, une action. Vos mains restent où elles sont.</p>
         <dl>
-          {SHORTCUTS.map(([k, v]) => (
+          {SHORTCUTS.filter(([k]) => !simulationMode || !["O", "N", "F"].includes(k)).map(([k, v]) => (
             <div key={k}>
               <dt>
                 <kbd className="kbd">{k}</kbd>
@@ -348,6 +361,7 @@ function UnitPage(props: {
   onEvaluate: () => void;
   unit: { id: string; name: string };
   onToast: ToastFn;
+  simulation?: boolean;
 }) {
   const { a } = props;
   const hour = parisHour(a.state.at);
@@ -377,13 +391,13 @@ function UnitPage(props: {
         </span>
       </h1>
       <TensionStrip a={a} onJump={jump} />
-      <Proposal {...props} />
-      <InProgress
+      {!props.simulation ? <Proposal {...props} /> : null}
+      {!props.simulation ? <InProgress
         unitId={props.unit.id}
         excludePlan={a.plan?.plan_id ?? null}
         now={props.now}
         onToast={props.onToast}
-      />
+      /> : null}
       <div className="flowtabs" role="tablist" aria-label="Colonne affichée">
         {ZONES.map(([id, label]) => (
           <button

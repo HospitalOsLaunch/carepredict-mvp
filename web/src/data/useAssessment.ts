@@ -10,7 +10,7 @@ import { type FixtureBundle, type ScenarioFixture, loadFixtures } from "./fixtur
  * - "api-plan": local FastAPI without live store; demonstration requests sent to POST /hybrid/plan
  * - "fixture":  no API reachable; precomputed outputs of the same planner
  */
-export type Connection = "probing" | "api-live" | "api-plan" | "fixture";
+export type Connection = "probing" | "api-live" | "api-plan" | "fixture" | "simulation";
 
 export interface Option {
   id: string;
@@ -108,7 +108,7 @@ function writeUrl(key: string, value: string): void {
   }
 }
 
-export function useAssessment(): Store {
+export function useAssessment(enabled = true): Store {
   const [connection, setConnection] = useState<Connection>("probing");
   const [bundle, setBundle] = useState<FixtureBundle | null>(null);
   const [scenarioId, setScenarioId] = useState(
@@ -126,6 +126,7 @@ export function useAssessment(): Store {
 
   // Probe once: live store → plan API → bundled fixtures.
   useEffect(() => {
+    if (!enabled) return;
     let cancelled = false;
     (async () => {
       const fixtures = await loadFixtures();
@@ -161,7 +162,7 @@ export function useAssessment(): Store {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [enabled]);
 
   // Plan API: evaluate every unit's default request once, for the switcher.
   useEffect(() => {
