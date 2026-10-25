@@ -19,10 +19,12 @@ boucle de décisions dont les effets sont limités à un hôpital fictif (voir c
 
 ### Démonstration dynamique connectée
 
+Depuis la racine, **`python3 demo.py`** prépare les dépendances et lance le backend
+et ce cockpit dans un seul terminal. Le navigateur s'ouvre avec **`?source=simulator`**.
+Ctrl+C arrête les deux services. Prérequis : Python 3.11+ et Node.js 22+ avec npm.
+
 La [première boucle simulée](../docs/simulator/dynamic-demo.md) alimente le même
-backend avec une unité gériatrique qui évolue. Lancer
-`PYTHONPATH=src:. python web/dev/serve_simulator_api.py` depuis la racine, puis
-ouvrir le cockpit avec **`?source=simulator`**. Les contrôles explicites de ce mode
+backend avec une unité gériatrique qui évolue. Les contrôles explicites de ce mode
 appliquent les décisions uniquement dans le scénario et partagent son horloge.
 Une panne du serveur est affichée ; aucun repli sur les données précalculées.
 
@@ -46,8 +48,9 @@ PYTHONPATH=src:. python web/dev/serve_demo_api.py
 PYTHONPATH=src:. python web/dev/serve_demo_api.py --ageing
 ```
 
-Vite relaie `/api/*` vers `http://127.0.0.1:8000` (`services/api/hybrid_app.py`,
-inchangé). Le cockpit détecte seul la source :
+Vite relaie `/api/*` vers `http://127.0.0.1:8000` par défaut ; le lanceur intégré
+peut choisir un autre port local avec `--api-port`. En observation historique,
+le cockpit détecte seul la source :
 
 | Source | Détection | Appels |
 |---|---|---|

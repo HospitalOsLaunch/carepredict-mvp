@@ -1,6 +1,6 @@
 # Première boucle de démonstration connectée
 
-25 octobre 2026. Statut : tranche locale sur scénario fictif, non qualifiée.
+25 octobre 2026. Statut : branche intégrée, tranche locale sur scénario fictif, non qualifiée.
 
 Un patient attend un lit avec oxygène. Le vrai planificateur hybride propose de
 prioriser le nettoyage du lit G02. Le cockpit transmet une décision à une
@@ -9,33 +9,67 @@ Après nettoyage, réservation et transfert, l'installation du patient apparaît
 dans les observations retardées du cockpit.
 
 Cette tranche met en œuvre le raccordement décrit dans la
-[spécification documentaire v0.3, PR #23](https://github.com/HospitalOsLaunch/carepredict-mvp/blob/844008eaf4d7ad8332840c2f24200009b7a8e64c/docs/simulator/spec-v0.3.md).
+[spécification documentaire v0.3](spec-v0.3.md), désormais dans la même branche.
 Elle ne constitue ni le moteur v0.3 complet ni la clôture de M1–M4. Le cockpit
 repose sur `claude/cockpit-web`, dont le socle hybride correspond à la PR #22.
 
-## Lancer depuis cette branche
+## Lancer avec une commande
 
-Python 3.11+ et Node 22. Aucune base hospitalière, poids de modèle, GPU ou connexion
-à un SI n'est nécessaire pour cette tranche. Dans un environnement Python dédié :
-
-```bash
-python -m pip install 'simpy>=4.1,<5' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' fastapi uvicorn
-PYTHONPATH=src:. python web/dev/serve_simulator_api.py --seed 7
-```
-
-Dans un second terminal :
+Prérequis : **Python 3.11+ et Node.js 22+ avec npm**. Depuis la racine du dépôt :
 
 ```bash
-cd web
-npm ci
-npm run dev
+python3 demo.py
 ```
 
-Ouvrir **http://localhost:5173/?source=simulator**. Le proxy Vite transmet les
-appels au serveur local 127.0.0.1:8000. Le paramètre `source=simulator` impose
+Le premier lancement crée `.venv-demo`, installe les dépendances et la pile numérique épinglées
+dans `requirements-demo.txt` et lance `npm ci` avec `web/package-lock.json`.
+Il nécessite un accès aux registres Python/npm. Les lancements suivants réutilisent
+ces installations tant que les fichiers de dépendances n'ont pas changé.
+Les dépendances Python transitives restent résolues par pip ; ce fichier n'est pas
+un verrou exhaustif de toutes les plateformes.
+
+Le lanceur attend que le simulateur réponde à travers le proxy du cockpit, puis
+ouvre **http://127.0.0.1:5173/?source=simulator**. **Ctrl+C arrête les deux services.**
+Il n'arrête jamais un serveur déjà présent sur un port : il affiche alors un message
+et quitte. Une défaillance d'un des services arrête l'autre.
+
+Aucune base hospitalière, aucun Docker, poids de modèle, GPU, fichier `.env` ou
+connexion à un SI n'est nécessaire. L'environnement `.venv` du dépôt n'est pas utilisé.
+`make demo` est un alias ; l'ancien parcours Docker/entraînement est `make demo-legacy`.
+
+Options utiles :
+
+```bash
+python3 demo.py --no-browser                       # afficher le lien sans ouvrir de navigateur
+python3 demo.py --port 5180 --api-port 8010         # autres ports locaux
+python3 demo.py --setup-only                       # préparer les dépendances seulement
+python3 demo.py --no-install                       # exiger une installation déjà préparée
+python3 demo.py --check                            # lancer, vérifier HTTP + planificateur, arrêter
+```
+
+Le script fonctionne aussi depuis un autre dossier en utilisant son chemin absolu.
+Python absent ou trop ancien : utiliser l'exécutable Python 3.11+ installé sur la machine.
+Node/npm absent ou trop ancien : installer Node.js 22+ puis relancer la même commande.
+Installation interrompue : relancer ; si `.venv-demo` est signalé incomplet, retirer
+uniquement ce dossier dédié et relancer. Une session simulée n'est pas persistée.
+
+Le paramètre `source=simulator` impose
 une source connectée : une indisponibilité du serveur produit une erreur visible,
 sans substitution par des fixtures. `npm run build:demo` reste l'aperçu statique
 historique ; ce fichier autonome ne contient pas de moteur Python.
+
+Pour travailler dans deux terminaux, après `python3 demo.py --setup-only` :
+
+```bash
+# Terminal 1, depuis la racine (macOS/Linux)
+PYTHONPATH=src:. .venv-demo/bin/python web/dev/serve_simulator_api.py --seed 7
+# Terminal 2, depuis la racine
+cd web
+npm run dev
+```
+
+Dans ce mode manuel, ouvrir http://localhost:5173/?source=simulator. Le proxy vise
+le port 8000 par défaut. `HOSPITALOS_DEMO_API_PORT` permet de changer son port local.
 
 La session démarre en pause. Cliquer « Évaluer le scénario », puis « Appliquer
 dans le scénario ». Avancer le temps avec +1/+5 minutes ou « Lire ×60 » ; la pause
@@ -129,11 +163,13 @@ réalisées ne prouve aucune efficacité. Le résultat final concerne seulement 
 ## Vérifications et limites
 
 ```bash
-python -m pip install pytest httpx ruff mypy
-PYTHONPATH=src:. pytest -q tests/hybrid tests/simulator
-ruff check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
-ruff format --check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
-PYTHONPATH=src:. mypy --strict src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+python3 demo.py --setup-only
+python3 demo.py --no-install --check
+.venv-demo/bin/python -m pip install httpx 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
+PYTHONPATH=src:. .venv-demo/bin/python -m pytest -q tests/hybrid tests/simulator tests/demo
+.venv-demo/bin/python -m ruff check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+.venv-demo/bin/python -m ruff format --check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+PYTHONPATH=src:. .venv-demo/bin/python -m mypy --strict demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
 cd web
 npm run typecheck
 npm test

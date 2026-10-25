@@ -11,6 +11,11 @@ on:
       - 'tests/simulator/**'
       - 'tests/hybrid/**'
       - 'pyproject.toml'
+      - 'demo.py'
+      - 'requirements-demo.txt'
+      - 'Makefile'
+      - 'tests/demo/**'
+      - 'docs/simulator/**'
       - 'web/**'
       - '.github/workflows/dynamic-demo.yml'
   push:
@@ -24,6 +29,10 @@ on:
       - 'tests/simulator/**'
       - 'tests/hybrid/**'
       - 'pyproject.toml'
+      - 'demo.py'
+      - 'requirements-demo.txt'
+      - 'Makefile'
+      - 'tests/demo/**'
       - 'web/**'
 
 permissions:
@@ -42,18 +51,23 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - name: Install isolated demo dependencies
-        run: python -m pip install 'simpy>=4.1,<5' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' fastapi httpx uvicorn pytest ruff mypy
+      - name: Prepare the same installation as the one-command demo
+        run: python demo.py --setup-only
+      - name: Install test tooling
+        run: .venv-demo/bin/python -m pip install httpx 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
       - name: Python checks and hybrid regressions
         run: |
-          ruff check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
-          ruff format --check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
-          PYTHONPATH=src:. mypy --strict src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
-          PYTHONPATH=src:. pytest -q tests/hybrid tests/simulator
+          .venv-demo/bin/python -m ruff check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          .venv-demo/bin/python -m ruff format --check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          PYTHONPATH=src:. .venv-demo/bin/python -m mypy --strict demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          PYTHONPATH=src:. .venv-demo/bin/python -m pytest -q tests/hybrid tests/simulator tests/demo
+      - name: Verify one-command launch and reuse on alternative ports
+        run: |
+          python demo.py --no-install --check
+          python demo.py --no-install --check --port 5180 --api-port 8010
       - name: Cockpit checks
         working-directory: web
         run: |
-          npm ci
           npm run typecheck
           npm test
           npm run build

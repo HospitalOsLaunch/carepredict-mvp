@@ -1,5 +1,30 @@
 # HospitalOS / CarePredict MVP
 
+## Lancer la démonstration intégrée
+
+Cette branche réunit le backend hybride, le cockpit, la
+[spécification v0.3](docs/simulator/spec-v0.3.md) et la
+[première boucle dynamique](docs/simulator/dynamic-demo.md).
+Prérequis : **Python 3.11+ et Node.js 22+ avec npm**.
+
+```bash
+python3 demo.py
+```
+
+Au premier lancement, la commande prépare `.venv-demo` et les dépendances du
+cockpit. Elle démarre les deux services locaux et ouvre
+**http://127.0.0.1:5173/?source=simulator**. Les lancements suivants réutilisent
+les dépendances tant que leurs fichiers de référence n'ont pas changé.
+**Ctrl+C arrête les deux services.** Aucun Docker, entraînement ML ni fichier
+`.env` n'est nécessaire pour ce parcours.
+
+Dans le cockpit : **Évaluer le scénario → Appliquer dans le scénario → +5 minutes**.
+Le scénario porte sur trois lits fictifs ; il ne qualifie pas l'ensemble du moteur
+prévu par v0.3. Voir le [guide de lancement et de dépannage](docs/simulator/dynamic-demo.md)
+et la [provenance de l'intégration](docs/simulator/README.md#branche-commune).
+`make demo` lance le même parcours. L'ancien démarrage Docker et entraînement
+reste accessible avec `make demo-legacy`.
+
 ## New MVP direction: explicit state, probabilistic simulation, assisted decisions
 
 The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:
@@ -48,6 +73,16 @@ what is in the repo, how to run the main paths, and where the authoritative
 measurement artifacts live.
 
 ## What To Review First
+
+### Hospital Simulator Specification
+
+- [Simulator specification v0.3](docs/simulator/spec-v0.3.md): consolidated
+  business, scientific and interface requirements for the geriatric unit simulator,
+  with milestones M1–M4 and twenty acceptance scenarios.
+- [Integration map and implementation sequence](docs/simulator/README.md):
+  reuse candidates in the synthetic foundation and draft PR #22, explicit gaps,
+  version boundaries and evidence still required. This is a documentary revision,
+  not a qualification of the complete simulator; the bounded dynamic demo is available above.
 
 ### Synthetic Research Foundation
 
