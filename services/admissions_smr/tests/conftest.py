@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Callable, Iterator
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.clock import FrozenClock
@@ -19,11 +21,24 @@ TODAY = date(2026, 10, 25)
 PASSWORD = "mot-de-passe-solide"
 
 
+def test_database_url(tmp_path: Path) -> str:
+    """SQLite by default; ADM_TEST_DATABASE_URL runs the same tests on PostgreSQL."""
+    url = os.getenv("ADM_TEST_DATABASE_URL")
+    if not url:
+        return f"sqlite:///{tmp_path / 'test.db'}"
+    engine = create_engine(url)
+    with engine.begin() as connection:
+        connection.execute(text("DROP SCHEMA public CASCADE"))
+        connection.execute(text("CREATE SCHEMA public"))
+    engine.dispose()
+    return url
+
+
 @pytest.fixture
 def app_client(tmp_path: Path) -> Iterator[TestClient]:
     settings = Settings(
         environment="test",
-        database_url=f"sqlite:///{tmp_path / 'test.db'}",
+        database_url=test_database_url(tmp_path),
         secret_key="t" * 40,
         token_ttl_minutes=60,
         password_iterations=1000,

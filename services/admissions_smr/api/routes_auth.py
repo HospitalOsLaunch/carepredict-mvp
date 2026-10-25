@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query, status
+import secrets
+from urllib.parse import quote
+
+import httpx
+from fastapi import APIRouter, HTTPException, Query, Request, status
+from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 from sqlalchemy import select
 
 from services.admissions_smr.api.deps import (
@@ -13,7 +19,16 @@ from services.admissions_smr.api.deps import (
     SessionDep,
     SettingsDep,
 )
+from services.admissions_smr.config import Settings
 from services.admissions_smr.models import AuditEntry, Group, Site, User
+from services.admissions_smr.oidc import (
+    OidcError,
+    OidcProvider,
+    claim_value,
+    new_flow,
+    pack_flow,
+    unpack_flow,
+)
 from services.admissions_smr.schemas import (
     AuditOut,
     LoginIn,
@@ -23,7 +38,12 @@ from services.admissions_smr.schemas import (
     UserUpdate,
     VocabularyOut,
 )
-from services.admissions_smr.security import hash_password, issue_token, verify_password
+from services.admissions_smr.security import (
+    InvalidToken,
+    hash_password,
+    issue_token,
+    verify_password,
+)
 from services.admissions_smr.vocab import (
     CAPACITY_REASONS,
     LOSS_REASONS,
@@ -46,6 +66,7 @@ def user_out(user: User) -> UserOut:
         role=user.role,
         site_id=user.site_id,
         active=user.active,
+        oidc_subject=user.oidc_subject,
     )
 
 
@@ -54,6 +75,11 @@ def login(body: LoginIn, session: SessionDep, settings: SettingsDep, clock: Cloc
     user = session.scalar(select(User).where(User.email == body.email.strip().lower()))
     if user is None or not user.active or not verify_password(body.password, user.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Identifiants incorrects")
+    if not settings.password_login and user.role != "ingestion":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "Connexion par mot de passe désactivée : utilisez la connexion par carte (OIDC)",
+        )
     group = session.get(Group, user.group_id)
     assert group is not None
     session.add(
@@ -151,6 +177,15 @@ def update_user(user_id: int, body: UserUpdate, ctx: AdminCtx) -> UserOut:
         user.active = body.active
     if body.password is not None:
         user.password_hash = hash_password(body.password, ctx.settings.password_iterations)
+    if "oidc_subject" in changes:
+        value = (body.oidc_subject or "").strip() or None
+        if value and ctx.session.scalar(
+            select(User.id).where(User.oidc_subject == value, User.id != user.id)
+        ):
+            raise HTTPException(
+                status.HTTP_409_CONFLICT, "Identifiant déjà rattaché à un autre compte"
+            )
+        user.oidc_subject = value
     ctx.audit(
         "user.update",
         "user",
@@ -185,3 +220,126 @@ def audit_log(ctx: AdminCtx, limit: int = Query(200, ge=1, le=2000)) -> list[Aud
         )
         for r in rows
     ]
+
+
+# --- OpenID Connect (Pro Santé Connect or the group's identity provider) -----------
+
+OIDC_COOKIE = "adm_oidc"
+
+
+class AuthMethodsOut(BaseModel):
+    password: bool
+    oidc_label: str | None
+
+
+@router.get("/auth/methods", response_model=AuthMethodsOut, tags=["auth"])
+def auth_methods(settings: SettingsDep) -> AuthMethodsOut:
+    return AuthMethodsOut(
+        password=settings.password_login,
+        oidc_label=settings.oidc.label if settings.oidc else None,
+    )
+
+
+def _provider(request: Request, settings: Settings) -> OidcProvider:
+    if settings.oidc is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Connexion OIDC non configurée")
+    provider: OidcProvider | None = getattr(request.app.state, "oidc_provider", None)
+    if provider is None:
+        http = getattr(request.app.state, "oidc_http", None) or httpx.Client()
+        provider = OidcProvider(settings.oidc, http)
+        request.app.state.oidc_provider = provider
+    return provider
+
+
+@router.get("/auth/oidc/login", tags=["auth"], response_class=RedirectResponse)
+def oidc_login(request: Request, settings: SettingsDep) -> RedirectResponse:
+    provider = _provider(request, settings)
+    flow = new_flow()
+    try:
+        target = provider.authorize_url(flow)
+    except OidcError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from exc
+    response = RedirectResponse(target, status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        OIDC_COOKIE,
+        pack_flow(flow, settings.secret_key),
+        max_age=600,
+        httponly=True,
+        secure=settings.is_production,
+        samesite="lax",
+        path="/api/auth/oidc",
+    )
+    return response
+
+
+@router.get("/auth/oidc/callback", tags=["auth"], response_class=RedirectResponse)
+def oidc_callback(
+    request: Request,
+    session: SessionDep,
+    settings: SettingsDep,
+    clock: ClockDep,
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+) -> RedirectResponse:
+    provider = _provider(request, settings)
+    assert settings.oidc is not None
+    front = settings.oidc.frontend_url
+
+    def fail(message: str) -> RedirectResponse:
+        response = RedirectResponse(
+            f"{front}/#oidc_error={quote(message)}", status_code=status.HTTP_303_SEE_OTHER
+        )
+        response.delete_cookie(OIDC_COOKIE, path="/api/auth/oidc")
+        return response
+
+    if error:
+        return fail("Connexion refusée par le fournisseur d'identité")
+    cookie = request.cookies.get(OIDC_COOKIE)
+    if not code or not state or not cookie:
+        return fail("Connexion incomplète, recommencez")
+    try:
+        flow = unpack_flow(cookie, settings.secret_key)
+        if not secrets.compare_digest(flow.state, state):
+            return fail("Session de connexion invalide, recommencez")
+        tokens = provider.exchange(code, flow)
+        claims = provider.verify_id_token(tokens["id_token"], flow.nonce)
+        match = settings.oidc.match_claim
+        value = claim_value(claims, match)
+        if value is None and tokens.get("access_token"):
+            claims = {**provider.userinfo(str(tokens["access_token"])), **claims}
+            value = claim_value(claims, match)
+    except (OidcError, InvalidToken) as exc:
+        return fail(str(exc))
+    subject = str(claims["sub"])
+    user = session.scalar(select(User).where(User.oidc_subject == subject))
+    if user is None and value is not None:
+        if match == "email":
+            user = session.scalar(select(User).where(User.email == value.lower()))
+        else:
+            # e.g. the RPPS number entered by the administrator for this professional
+            user = session.scalar(select(User).where(User.oidc_subject == value))
+    if user is None or not user.active or user.role == "ingestion":
+        return fail(
+            "Aucun compte actif ne correspond à cette identité : contactez votre administrateur"
+        )
+    if user.oidc_subject != subject and match in ("email", "sub"):
+        user.oidc_subject = subject
+    session.add(
+        AuditEntry(
+            group_id=user.group_id,
+            user_id=user.id,
+            at=clock.now(),
+            action="auth.login_oidc",
+            entity="user",
+            entity_id=str(user.id),
+            detail=settings.oidc.label,
+        )
+    )
+    session.commit()
+    token = issue_token(user.id, settings.secret_key, settings.token_ttl_minutes, clock.now())
+    response = RedirectResponse(
+        f"{front}/#oidc_token={token}", status_code=status.HTTP_303_SEE_OTHER
+    )
+    response.delete_cookie(OIDC_COOKIE, path="/api/auth/oidc")
+    return response

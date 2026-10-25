@@ -1,5 +1,6 @@
 -r requirements.txt
-httpx>=0.27,<1
+-r ../admissions_agent/requirements.txt
 pytest>=8.2,<9
 ruff>=0.4,<1
 mypy>=1.10,<2
+types-PyYAML>=6,<7

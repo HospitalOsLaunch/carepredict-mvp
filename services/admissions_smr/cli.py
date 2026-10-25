@@ -16,7 +16,8 @@ from sqlalchemy import select
 
 from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import get_settings
-from services.admissions_smr.db import Base, make_engine, make_session_factory
+from services.admissions_smr.db import make_engine, make_session_factory
+from services.admissions_smr.migrate import upgrade
 from services.admissions_smr.models import Group, User
 from services.admissions_smr.security import hash_password
 
@@ -30,13 +31,18 @@ def main(argv: list[str] | None = None) -> int:
     init.add_argument("--admin-email", required=True)
     init.add_argument("--admin-name", required=True)
 
+    sub.add_parser("migrate", help="Mettre le schéma de la base à jour")
+
     demo = sub.add_parser("seed-demo", help="Charger le groupe de démonstration (synthétique)")
     demo.add_argument("--password", default=os.getenv("ADM_DEMO_PASSWORD", "demo-hospitalos-2026"))
 
     args = parser.parse_args(argv)
     settings = get_settings()
     engine = make_engine(settings.database_url)
-    Base.metadata.create_all(engine)
+    upgrade(engine)
+    if args.command == "migrate":
+        print("Schéma à jour.")
+        return 0
     session = make_session_factory(engine)()
     clock = Clock(settings.timezone)
 
