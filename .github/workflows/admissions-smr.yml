@@ -45,7 +45,7 @@ jobs:
           ruff check services/admissions_smr services/admissions_agent
           ruff format --check services/admissions_smr services/admissions_agent
       - name: Type-check --strict
-        run: mypy --strict services/admissions_smr services/admissions_agent
+        run: mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
       - name: Migrations match the models
         run: python -m pytest -q -p no:cacheprovider services/admissions_smr/tests/test_migrations.py
       - name: API tests on PostgreSQL (includes North Star calibration checks)

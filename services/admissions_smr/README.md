@@ -274,6 +274,6 @@ Reste, et ne peut pas être « fait » dans le code :
 pytest -q services/admissions_smr/tests services/admissions_agent/tests
 ADM_TEST_DATABASE_URL=postgresql+psycopg://user@host/db pytest -q services/admissions_smr/tests
 ruff check services/admissions_smr services/admissions_agent
-mypy --strict services/admissions_smr services/admissions_agent
+mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
 cd services/admissions_web && npm test && npm run build
 ```
