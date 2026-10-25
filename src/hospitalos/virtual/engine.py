@@ -15,16 +15,27 @@ from .config import HospitalConfig
 
 
 class VirtualEngine:
-    def __init__(self, config: HospitalConfig, seed: int, deliver: Callable[[Frame], None]) -> None:
+    def __init__(
+        self,
+        config: HospitalConfig,
+        seed: int,
+        deliver: Callable[[Frame], None],
+        *,
+        epoch: datetime = START,
+    ) -> None:
         self.config, self.seed, self.deliver = config, seed, deliver
+        self.epoch = epoch
+        self.prefix = f"{config.unit_id}-" if epoch != START else ""
         self.env = simpy.Environment()
         self.feed_enabled = True
         self.observed: Frame | None = None
         self.journal: list[TruthEvent] = []
         self.primitives: dict[str, int] = {}
         self.beds = {
-            f"G{n:02d}": PhysicalBed(
-                f"G{n:02d}", oxygen=n in config.oxygen_beds, hygiene="dirty" if n <= 2 else "ready"
+            f"{self.prefix}G{n:02d}": PhysicalBed(
+                f"{self.prefix}G{n:02d}",
+                oxygen=n in config.oxygen_beds,
+                hygiene="dirty" if n <= 2 else "ready",
             )
             for n in range(1, config.beds + 1)
         }
@@ -36,16 +47,16 @@ class VirtualEngine:
         self.coordinator_free = 0.0
         self.arrival_index = 0
         for n in range(config.initially_occupied):
-            bed = self.beds[f"G{n + 3:02d}"]
+            bed = self.beds[f"{self.prefix}G{n + 3:02d}"]
             patient = PhysicalPatient(
-                f"P-I{n:03d}", -86400, oxygen=bed.oxygen, status="admitted", bed=bed.id
+                f"{self.prefix}P-I{n:03d}", -86400, oxygen=bed.oxygen, status="admitted", bed=bed.id
             )
             self.patients[patient.id] = patient
             bed.occupant = patient.id
             self._record("initial_admitted", patient.id, bed.id)
             self._schedule_departure(patient, 600 + n * 900)
         for n in range(config.initial_waiting):
-            patient = PhysicalPatient(f"P-W{n:03d}", -n * 300, oxygen=n == 0)
+            patient = PhysicalPatient(f"{self.prefix}P-W{n:03d}", -n * 300, oxygen=n == 0)
             self.patients[patient.id] = patient
             self._record("initial_waiting", patient.id)
         self._later(0, self._observe)
@@ -58,7 +69,7 @@ class VirtualEngine:
 
     @property
     def now(self) -> datetime:
-        return START + timedelta(seconds=self.second)
+        return self.epoch + timedelta(seconds=self.second)
 
     def draw(self, mechanism: str, entity: str, occurrence: int, support: tuple[int, ...]) -> int:
         key = (
@@ -92,6 +103,13 @@ class VirtualEngine:
         self.check()
 
     def _observe(self) -> None:
+        if self.epoch != START:
+            # The campus archive owns historical observations; retain only active patients
+            # and the short departure delivery window in the operational engine.
+            expired = [key for key, at in self.departed_at.items() if self.second - at > 120]
+            for key in expired:
+                self.patients.pop(key, None)
+                self.departed_at.pop(key, None)
         if self.feed_enabled:
             # Departures remain visible for one observation cycle. Future readiness is not exported.
             frame = Frame(
@@ -121,7 +139,7 @@ class VirtualEngine:
         ):
             raise RuntimeError("virtual_active_patient_bound_exceeded")
         index = self.arrival_index
-        patient_id = f"P-A{index:06d}"
+        patient_id = f"{self.prefix}P-A{index:06d}"
         self.arrival_index += 1
         oxygen = self.draw("oxygen", patient_id, 0, (0, 0, 1)) == 1
         self.patients[patient_id] = PhysicalPatient(patient_id, self.second, oxygen=oxygen)

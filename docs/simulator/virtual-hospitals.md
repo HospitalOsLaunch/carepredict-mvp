@@ -1,3 +1,5 @@
+> **Évolution du produit** : le lancement par défaut utilise maintenant [un hôpital à quatre unités, en temps réel Paris, avec historique et prévision apprise](hospital-campus.md). Le présent document décrit la référence antérieure X1/X2/X3, conservée pour les campagnes développeur.
+
 # Produit connecté à des hôpitaux virtuels
 
 Le parcours par défaut est le cockpit métier : choisir X1, X2 ou X3, lire la

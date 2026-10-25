@@ -8,8 +8,8 @@ Conçu pour l'usage en tension : bande de tension lisible en un regard, une seul
 suivante, flux Libérer → Lits → Attribuer, changement d'unité sans ouvrir chaque unité, et
 tout au clavier (`?` affiche les raccourcis).
 
-Par défaut, le cockpit se connecte aux **hôpitaux virtuels autonomes X1, X2, X3**.
-Les décisions sont transmises au backend de l’établissement choisi et conservées
+Par défaut, le cockpit se connecte à **l’Hôpital Saint-Clair : quatre unités, 78 lits, temps réel Paris**.
+Les décisions sont transmises au backend de l’unité choisie et conservées
 avec leurs preuves. Le journal local historique n’est pas utilisé dans ce mode.
 Aucun contrôle de scénario ou de campagne ne figure dans la navigation métier.
 
@@ -17,7 +17,7 @@ Aucun contrôle de scénario ou de campagne ne figure dans la navigation métier
 
 Depuis la racine : **`python3 demo.py`** (Python 3.11+, Node.js 22+).
 Ctrl+C arrête les services et conserve l’état. Voir le
-[guide des hôpitaux virtuels](../docs/simulator/virtual-hospitals.md).
+[guide de l’hôpital multi-unités](../docs/simulator/hospital-campus.md).
 
 Le laboratoire reste explicite : `python3 demo.py --lab`, puis `?source=simulator`.
 

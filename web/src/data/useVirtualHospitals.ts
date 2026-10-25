@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "../api/client";
-import { virtualApi, type Hospital, type HospitalView } from "../api/virtual";
+import { virtualApi, type Hospital, type HospitalView, type HospitalOverview, type UnitHistory, viewKey } from "../api/virtual";
 import { fromLive, unitSummary } from "../domain/view";
 import type { Store } from "./useAssessment";
 export interface Workspace {
+  overview: HospitalOverview | null; history: UnitHistory | null; historyError: string | null;
   view: HospitalView | null; hospitals: Hospital[]; store: Store;
   decide: (accept: boolean, reason?: string) => void;
 }
 export function useVirtualHospitals(enabled: boolean): Workspace {
+  const [overview, setOverview] = useState<HospitalOverview | null>(null);
+  const [history, setHistory] = useState<UnitHistory | null>(null);
+  const [historyError, setHistoryError] = useState<string | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [id, setId] = useState("");
   const [view, setView] = useState<HospitalView | null>(null);
@@ -23,7 +27,7 @@ export function useVirtualHospitals(enabled: boolean): Workspace {
     if (mutation) setBusy(true);
     try {
       const next = await operation();
-      if (token !== generation.current || next.hospital_id !== id) return;
+      if (token !== generation.current || viewKey(next) !== id) return;
       current.current = next; setView(next); setError(null);
     } catch (e) {
       if (token !== generation.current) return;
@@ -50,14 +54,27 @@ export function useVirtualHospitals(enabled: boolean): Workspace {
     refresh(); const timer = window.setInterval(refresh, 1500);
     return () => { window.clearInterval(timer); ++generation.current; pending.current = null; };
   }, [enabled, id, refresh]);
+  useEffect(() => {
+    if (!enabled || !id.includes("/")) return;
+    let active = true;
+    setHistory(null); setHistoryError(null);
+    const load = async () => {
+      try {
+        const [o, h] = await Promise.all([virtualApi.overview(), virtualApi.history(id)]);
+        if (active) { setOverview(o); setHistory(h); setHistoryError(null); }
+      } catch { if (active) setHistoryError("Historique et vue hôpital temporairement indisponibles."); }
+    };
+    void load(); const timer = window.setInterval(() => { void load(); }, 15000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [enabled, id]);
   const select = useCallback((next: string) => {
     if (!hospitals.some(h => h.id === next) || next === id) return;
     ++generation.current; pending.current = null; current.current = null;
-    setView(null); setError(null); setBusy(false); setId(next);
+    setView(null); setHistory(null); setError(null); setBusy(false); setId(next);
   }, [hospitals, id]);
   const decide = useCallback((accept: boolean, reason = "") => {
     const v = current.current;
-    if (v && v.hospital_id === id && v.can_decide && !error)
+    if (v && viewKey(v) === id && v.can_decide && !error)
       void run(() => virtualApi.decide(v, accept, reason, crypto.randomUUID()), true);
   }, [run, error, id]);
   const episode = view?.episode;
@@ -65,9 +82,9 @@ export function useVirtualHospitals(enabled: boolean): Workspace {
     view.snapshot.issues, "api-live", episode?.episode_id ?? null, episode?.assessment.expires_at ?? null) : null;
   const name = hospitals.find(h => h.id === id)?.name ?? "Établissements";
   const store: Store = { connection: "virtual", units: hospitals.map(h => ({ id: h.id, name: h.name, situations: [] })),
-    summaries: [unitSummary(id, name, assessment)], unitId: id, unitName: `${name} · ${view?.unit_name ?? "Gériatrie"}`,
+    summaries: [unitSummary(id, name, assessment)], unitId: id, unitName: view?.hospital_id === "H1" ? `${view.hospital_name} · ${view.unit_name}` : `${name} · ${view?.unit_name ?? "Gériatrie"}`,
     setUnit: select, situations: [], situationId: "", setSituation: () => undefined,
     assessment, awaitingEvaluation: !episode, busy, error, evaluate: refresh,
     quality: null, shadowSummary: null, loadedAt: 0 };
-  return { view, hospitals, store, decide };
+  return { view, hospitals, store, decide, overview, history, historyError };
 }

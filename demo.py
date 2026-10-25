@@ -171,7 +171,7 @@ def request(url: str, body: bytes | None = None) -> dict[str, Any]:
 def wait_ready(
     url: str,
     children: Sequence[subprocess.Popen[bytes]],
-    timeout: float = 45,
+    timeout: float = 180,
     virtual: bool = False,
 ) -> None:
     deadline = time.monotonic() + timeout
@@ -255,13 +255,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--state-dir",
         type=Path,
-        default=ROOT / ".hospitalos-virtual",
+        default=ROOT / ".hospitalos-campus",
         help="état persistant des établissements virtuels",
     )
     parser.add_argument(
-        "--clock-rate", type=float, default=12, help="secondes virtuelles par seconde (12)"
+        "--clock-rate", type=float, default=1, help="horloge produit temps réel (1)"
     )
     args = parser.parse_args(argv)
+    if not args.lab and args.clock_rate != 1:
+        parser.error("le produit utilise le temps réel : clock-rate doit être 1")
     if not 0 < args.clock_rate <= 60:
         parser.error("clock-rate doit être entre 0 (exclu) et 60")
     if not 0 <= args.seed <= 1_000_000_000:
@@ -347,10 +349,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not args.lab:
                 catalog = request(f"{origin}/api/product/hospitals")
                 for hospital in catalog["hospitals"]:
-                    unit = request(f"{origin}/api/product/hospitals/{hospital['id']}/unit")
-                    if unit.get("hospital_id") != hospital["id"] or unit["snapshot"]["issues"]:
-                        raise DemoError("Flux hospitalier incomplet ou mal identifié.")
-                say("Vérification réussie : cockpit → proxy → trois hôpitaux virtuels. Arrêt.")
+                    for entry in hospital["units"]:
+                        path = (
+                            f"{origin}/api/product/hospitals/{hospital['id']}/units/{entry['id']}"
+                        )
+                        unit = request(path)
+                        history = request(path + "/history")
+                        if (
+                            unit.get("hospital_id") != hospital["id"]
+                            or unit.get("unit_id") != entry["id"]
+                            or unit["snapshot"]["issues"]
+                            or unit["clock_rate"] != 1
+                            or history["samples"] < 672
+                        ):
+                            raise DemoError("Flux, horloge ou historique hospitalier incomplet.")
+                say(
+                    "Vérification réussie : hôpital, quatre unités, "
+                    "temps réel et historique. Arrêt."
+                )
                 return 0
             view = request(f"{origin}/api/demo/evaluate", b"{}")
             if not view.get("can_apply") or not view.get("episode"):
@@ -373,7 +389,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         say(f"Démo prête : {url}")
         say(
-            "Les établissements évoluent en arrière-plan. Choisissez votre hôpital. "
+            "L’hôpital évolue en temps réel Paris. Choisissez votre unité. "
             "Ctrl+C arrête les services et conserve les décisions."
             if not args.lab
             else "Laboratoire : évaluer, décider, avancer. Ctrl+C arrête les services."

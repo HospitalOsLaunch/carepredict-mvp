@@ -19,7 +19,7 @@ from hospitalos.hybrid.live_models import LiveSnapshot, PlanningOptions, ShadowE
 from hospitalos.hybrid.models import action_errors
 from hospitalos.hybrid.simulation import Assumptions
 from hospitalos.operational.contract import Closed, Identifier
-from hospitalos.simulator.engine import Frame
+from hospitalos.simulator.engine import START, Frame
 
 from .config import HospitalConfig, hospitals
 from .engine import VirtualEngine
@@ -28,6 +28,7 @@ from .feed import VirtualFeed
 
 class Decision(Closed):
     hospital_id: Identifier
+    unit_id: Identifier | None = None
     run_id: Identifier
     request_id: Identifier
     revision: Annotated[StrictInt, Field(ge=0)]
@@ -68,6 +69,7 @@ class HospitalView(Closed):
     schema_version: Literal["HOSPITAL_WORKSPACE_1"] = "HOSPITAL_WORKSPACE_1"
     hospital_id: str
     hospital_name: str
+    unit_id: str = "geriatrie"
     unit_name: str
     run_id: str
     revision: int
@@ -83,10 +85,20 @@ class HospitalView(Closed):
 
 class HospitalRuntime:
     def __init__(
-        self, config: HospitalConfig, seed: int = 7, path: str = ":memory:", clock_rate: float = 12
+        self,
+        config: HospitalConfig,
+        seed: int = 7,
+        path: str = ":memory:",
+        clock_rate: float = 12,
+        *,
+        epoch: datetime = START,
+        warmup_seconds: float = 0,
+        history_receiver: Callable[[Frame], None] | None = None,
     ) -> None:
         self.lock = threading.RLock()
         self.config, self.seed, self.clock_rate = config, seed, clock_rate
+        self.history_receiver = history_receiver
+        self.projection_from = max(0, warmup_seconds - 120)
         self.db = sqlite3.connect(path, check_same_thread=False)
         self.db.executescript(
             "CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);"
@@ -94,7 +106,12 @@ class HospitalRuntime:
             "record TEXT NOT NULL, evidence TEXT NOT NULL);"
         )
         identity = json.dumps(
-            {"engine": "VIRTUAL_ENGINE_1", "config": config.model_dump(), "seed": seed},
+            {
+                "engine": "VIRTUAL_ENGINE_1",
+                "config": config.model_dump(),
+                "seed": seed,
+                **({"epoch": epoch.isoformat()} if epoch != START else {}),
+            },
             sort_keys=True,
         )
         old = self.db.execute("SELECT value FROM meta WHERE key='identity'").fetchone()
@@ -104,7 +121,7 @@ class HospitalRuntime:
         run = self.db.execute("SELECT value FROM meta WHERE key='run'").fetchone()
         self.run_id = str(run[0]) if run else uuid4().hex
         saved = self.db.execute("SELECT value FROM meta WHERE key='second'").fetchone()
-        target = float(saved[0]) if saved else config.delivery_seconds
+        target = max(float(saved[0]) if saved else config.delivery_seconds, warmup_seconds)
         self.revision = 0
         self.offered: ShadowEpisode | None = None
         self.assessed_second = -1000.0
@@ -112,8 +129,8 @@ class HospitalRuntime:
         self.records: dict[str, DecisionRecord] = {}
         self.observed_status: dict[str, str] = {}
         self.activity = Activity()
-        self.feed = VirtualFeed(lambda: self.engine.now, config)
-        self.engine = VirtualEngine(config, seed, self._receive)
+        self.feed = VirtualFeed(lambda: self.engine.now, config, epoch=epoch)
+        self.engine = VirtualEngine(config, seed, self._receive, epoch=epoch)
         self.replaying = True
         try:
             # Intents are replayed in original insertion order, including equal timestamps.
@@ -155,6 +172,10 @@ class HospitalRuntime:
             self.engine.advance(min(86400, second - self.engine.second))
 
     def _receive(self, frame: Frame) -> None:
+        if self.history_receiver is not None:
+            self.history_receiver(frame)
+        if self.engine.second < self.projection_from:
+            return
         first = not self.observed_status
         counts = self.activity.model_dump()
         for patient in frame.patients:
@@ -215,6 +236,7 @@ class HospitalRuntime:
             return HospitalView(
                 hospital_id=self.config.hospital_id,
                 hospital_name=self.config.name,
+                unit_id=self.config.unit_id,
                 unit_name=self.config.unit_name,
                 run_id=self.run_id,
                 revision=self.revision,
@@ -236,6 +258,8 @@ class HospitalRuntime:
         with self.lock:
             if request.hospital_id != self.config.hospital_id or request.run_id != self.run_id:
                 raise ValueError("hospital_or_run_mismatch")
+            if request.unit_id is not None and request.unit_id != self.config.unit_id:
+                raise ValueError("unit_mismatch")
             existing = self.db.execute(
                 "SELECT request FROM decisions WHERE id=?", (request.request_id,)
             ).fetchone()
