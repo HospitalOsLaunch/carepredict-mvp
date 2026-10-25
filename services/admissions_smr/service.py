@@ -15,8 +15,10 @@ from services.admissions_smr.api.deps import Ctx
 from services.admissions_smr.domain.forecast import (
     DEFAULT_MIN_AT_RISK,
     HazardModel,
+    PlanSlip,
     PoolForecast,
     StayRecord,
+    estimate_plan_slip,
     fit_hazard,
     forecast_pool,
 )
@@ -30,10 +32,19 @@ from services.admissions_smr.domain.scoring import (
     normalise_weights,
     prioritise,
 )
-from services.admissions_smr.models import AdmissionRequest, RequestEvent, Site, Stay, User
+from services.admissions_smr.models import (
+    AdmissionRequest,
+    AgentTask,
+    RequestEvent,
+    Site,
+    Stay,
+    StayPlanChange,
+    User,
+)
 from services.admissions_smr.schemas import (
     EventOut,
     FactorOut,
+    PortalReplyOut,
     RequestDetailOut,
     RequestOut,
     SuggestionOut,
@@ -91,9 +102,37 @@ def stay_records(
             admission_date=s.admission_date,
             discharge_date=s.discharge_date,
             planned_discharge_date=s.planned_discharge_date,
+            care_level=s.care_level,
         )
         for s in session.scalars(query)
     ]
+
+
+def plan_history(session: Session, group_id: int) -> dict[int, list[tuple[date, date | None]]]:
+    rows = session.execute(
+        select(StayPlanChange.stay_id, StayPlanChange.recorded_on, StayPlanChange.planned_date)
+        .join(Stay, Stay.id == StayPlanChange.stay_id)
+        .where(Stay.group_id == group_id)
+    ).all()
+    out: dict[int, list[tuple[date, date | None]]] = defaultdict(list)
+    for stay_id, recorded_on, planned in rows:
+        out[stay_id].append((recorded_on, planned))
+    return out
+
+
+def record_plan(ctx: Ctx, stay: Stay, planned: date | None, source: str) -> None:
+    """Keep every planned discharge date entered, so its reliability can be measured."""
+    if stay.plan_changes and stay.plan_changes[-1].planned_date == planned:
+        return
+    stay.planned_discharge_date = planned
+    stay.plan_changes.append(
+        StayPlanChange(
+            recorded_at=ctx.clock.now(),
+            recorded_on=ctx.clock.today(),
+            planned_date=planned,
+            source=source,
+        )
+    )
 
 
 def active_on(records: list[StayRecord], day: date) -> list[StayRecord]:
@@ -103,6 +142,25 @@ def active_on(records: list[StayRecord], day: date) -> list[StayRecord]:
         for r in records
         if r.admission_date <= day and (r.discharge_date is None or r.discharge_date >= day)
     ]
+
+
+def reserved_arrivals(
+    session: Session, group_id: int
+) -> dict[tuple[int, str], list[tuple[date, int]]]:
+    """Promised admissions per pool, with the care level declared in the request."""
+    rows = session.scalars(
+        select(AdmissionRequest).where(
+            AdmissionRequest.group_id == group_id,
+            AdmissionRequest.status.in_(RESERVING_STATUSES),
+            AdmissionRequest.site_id.is_not(None),
+            AdmissionRequest.proposed_date.is_not(None),
+        )
+    )
+    out: dict[tuple[int, str], list[tuple[date, int]]] = defaultdict(list)
+    for r in rows:
+        assert r.site_id is not None and r.proposed_date is not None
+        out[(r.site_id, r.mention_requested)].append((r.proposed_date, r.care_level))
+    return out
 
 
 def reservations(session: Session, group_id: int) -> dict[tuple[int, str], dict[date, int]]:
@@ -128,6 +186,8 @@ class GroupForecast:
     pools: dict[tuple[int, str], PoolForecast]
     records: list[StayRecord]
     low_data_mentions: list[str]
+    slip: PlanSlip
+    active_by_pool: dict[tuple[int, str], list[StayRecord]]
 
 
 def build_forecast(
@@ -135,7 +195,8 @@ def build_forecast(
 ) -> GroupForecast:
     # Hazards are fitted on the whole group: more data, and mentions behave alike across sites.
     records = stay_records(session, group_id)
-    model = fit_hazard(records, as_of)
+    plans = plan_history(session, group_id)
+    model = fit_hazard(records, as_of, plans=plans or None)
     current = [
         r
         for r in records
@@ -145,6 +206,7 @@ def build_forecast(
     for r in current:
         by_pool[(r.site_id, r.mention)].append(r)
     reserved = reservations(session, group_id)
+    slip = estimate_plan_slip(records, plans, as_of)
     pools: dict[tuple[int, str], PoolForecast] = {}
     for site in sites:
         for pool in site.pools:
@@ -156,9 +218,10 @@ def build_forecast(
                 horizon,
                 model,
                 reservations=reserved.get(key, {}),
+                plan_slip=slip.weights,
             )
     low = sorted(m for m, n in model.n_completed.items() if n < DEFAULT_MIN_AT_RISK)
-    return GroupForecast(as_of, model, pools, records, low)
+    return GroupForecast(as_of, model, pools, records, low, slip, dict(by_pool))
 
 
 def referrer_shares(session: Session, group_id: int, as_of: date) -> dict[int, dict[str, float]]:
@@ -333,12 +396,27 @@ def request_detail(
             alternative,
         )
     stay_id = ctx.session.scalar(select(Stay.id).where(Stay.request_id == req.id))
+    reply = ctx.session.scalar(
+        select(AgentTask)
+        .where(AgentTask.request_id == req.id, AgentTask.kind == "reply_portal")
+        .order_by(AgentTask.created_at.desc(), AgentTask.id.desc())
+        .limit(1)
+    )
     return RequestDetailOut(
         **base.model_dump(),
         suggestions=[suggestion_out(s) for s in prio.suggestions],
         events=events,
         draft_message=draft,
         stay_id=stay_id,
+        portal_reply=PortalReplyOut(
+            task_id=reply.id,
+            status=reply.status,
+            engine_used=reply.engine_used,
+            error=reply.error,
+            updated_at=reply.updated_at,
+        )
+        if reply
+        else None,
     )
 
 

@@ -26,7 +26,7 @@ from services.admissions_smr.models import (
     Stay,
 )
 from services.admissions_smr.schemas import ImportErrorOut, ImportIn, ImportOut
-from services.admissions_smr.service import join_codes
+from services.admissions_smr.service import join_codes, record_plan
 
 router = APIRouter(tags=["imports"])
 
@@ -34,7 +34,7 @@ Kind = Literal["lits", "sejours", "demandes"]
 
 _EXAMPLES: dict[str, str] = {
     "lits": "SMR Les Tilleuls;750000001;Lyon;geriatrie;40;36;4;oxygene|nutrition_enterale",
-    "sejours": "SMR Les Tilleuls;geriatrie;PAT-000123;02/10/2026;;",
+    "sejours": "SMR Les Tilleuls;geriatrie;PAT-000123;02/10/2026;;;3",
     "demandes": (
         "viatrajectoire;VT-2026-001234;24/10/2026 14:05;CH de Villefranche;Médecine polyvalente;"
         "PAT-000456;84;F;geriatrie;Fracture du col fémoral opérée;3;non;oxygene;28/10/2026"
@@ -170,27 +170,34 @@ def _apply_stays(ctx: Ctx, rows: list[StayRow], errors: list[RowError]) -> tuple
             )
         )
         if stay is None:
-            ctx.session.add(
-                Stay(
-                    group_id=ctx.group.id,
-                    site_id=site.id,
-                    mention=row.mention,
-                    patient_ref=row.patient_ref,
-                    admission_date=row.admission_date,
-                    planned_discharge_date=row.planned_discharge_date,
-                    discharge_date=row.discharge_date,
-                    created_at=ctx.clock.now(),
-                    updated_at=ctx.clock.now(),
-                )
+            stay = Stay(
+                group_id=ctx.group.id,
+                site_id=site.id,
+                mention=row.mention,
+                patient_ref=row.patient_ref,
+                admission_date=row.admission_date,
+                discharge_date=row.discharge_date,
+                care_level=row.care_level,
+                created_at=ctx.clock.now(),
+                updated_at=ctx.clock.now(),
             )
-            ctx.session.flush()
+            ctx.session.add(stay)
             created += 1
         else:
             stay.mention = row.mention
-            stay.planned_discharge_date = row.planned_discharge_date
             stay.discharge_date = row.discharge_date
+            if row.care_level is not None:
+                stay.care_level = row.care_level
             stay.updated_at = ctx.clock.now()
             updated += 1
+        # An import only knows today's plan: it is dated today, never back-dated.
+        if stay.discharge_date is None and (
+            row.planned_discharge_date is not None or stay.planned_discharge_date is not None
+        ):
+            record_plan(ctx, stay, row.planned_discharge_date, "import")
+        elif stay.discharge_date is not None:
+            stay.planned_discharge_date = row.planned_discharge_date
+        ctx.session.flush()
     return created, updated
 
 

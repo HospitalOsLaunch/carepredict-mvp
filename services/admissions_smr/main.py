@@ -10,9 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from services.admissions_smr import __version__
 from services.admissions_smr.api import (
+    routes_agent,
     routes_auth,
     routes_imports,
     routes_insights,
+    routes_predictions,
     routes_requests,
     routes_sites,
     routes_stays,
@@ -56,11 +58,13 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
         return {"status": "ok", "version": __version__}
 
     for module in (
+        routes_agent,
         routes_auth,
         routes_sites,
         routes_requests,
         routes_stays,
         routes_insights,
+        routes_predictions,
         routes_imports,
     ):
         api.include_router(module.router)

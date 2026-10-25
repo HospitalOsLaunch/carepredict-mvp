@@ -41,6 +41,8 @@ class Group(Base):
     value_per_bed_day: Mapped[float] = mapped_column(Float, default=0.0)
     success_fee_rate: Mapped[float] = mapped_column(Float, default=0.0)
     scoring_weights_json: Mapped[str] = mapped_column(Text, default="{}")
+    # Minutes of care per care level and per admission / discharge (hypotheses to calibrate).
+    care_minutes_json: Mapped[str] = mapped_column(Text, default="{}")
 
     sites: Mapped[list[Site]] = relationship(back_populates="group")
 
@@ -112,6 +114,8 @@ class User(Base):
     # When set, a coordination user only sees and acts on this site.
     site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Subject of the identity provider (Pro Santé Connect / SSO), linked on first login.
+    oidc_subject: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
 
@@ -127,10 +131,47 @@ class Stay(Base):
     admission_date: Mapped[date] = mapped_column(Date, index=True)
     planned_discharge_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     discharge_date: Mapped[date | None] = mapped_column(Date, nullable=True, index=True)
+    care_level: Mapped[int | None] = mapped_column(Integer, nullable=True)
     request_id: Mapped[int | None] = mapped_column(
         ForeignKey("admission_requests.id"), nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+    plan_changes: Mapped[list[StayPlanChange]] = relationship(
+        back_populates="stay", cascade="all, delete-orphan", order_by="StayPlanChange.recorded_at"
+    )
+
+
+class StayPlanChange(Base):
+    """Every planned discharge date ever entered, to measure how plans slip."""
+
+    __tablename__ = "stay_plan_changes"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    stay_id: Mapped[int] = mapped_column(ForeignKey("stays.id"), index=True)
+    recorded_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    recorded_on: Mapped[date] = mapped_column(Date)  # local calendar day of the entry
+    planned_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    source: Mapped[str] = mapped_column(String(20), default="saisie")
+
+    stay: Mapped[Stay] = relationship(back_populates="plan_changes")
+
+
+class StaffPlan(Base):
+    """Care hours available for a pool: a weekly pattern (weekday) or a dated override (day)."""
+
+    __tablename__ = "staff_plans"
+    __table_args__ = (UniqueConstraint("site_id", "mention", "weekday", "day"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    site_id: Mapped[int] = mapped_column(ForeignKey("sites.id"), index=True)
+    mention: Mapped[str] = mapped_column(String(40))
+    weekday: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    day: Mapped[date | None] = mapped_column(Date, nullable=True)
+    care_hours: Mapped[float] = mapped_column(Float)
+    comment: Mapped[str | None] = mapped_column(String(300), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
 
@@ -198,3 +239,75 @@ class AuditEntry(Base):
     entity: Mapped[str] = mapped_column(String(80))
     entity_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
     detail: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class AgentState(Base):
+    """Per-group settings and liveness of the computer-use agent."""
+
+    __tablename__ = "agent_states"
+
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), primary_key=True)
+    paused: Mapped[bool] = mapped_column(Boolean, default=False)
+    policy_json: Mapped[str] = mapped_column(Text, default="{}")
+    last_heartbeat_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    agent_id: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    agent_version: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    engines_json: Mapped[str] = mapped_column(Text, default="[]")
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+class AgentTask(Base):
+    """Work for the agent: read the portal inbox, or write a reply back to the portal."""
+
+    __tablename__ = "agent_tasks"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(30), index=True)
+    request_id: Mapped[int | None] = mapped_column(
+        ForeignKey("admission_requests.id"), nullable=True, index=True
+    )
+    payload_json: Mapped[str] = mapped_column(Text, default="{}")
+    status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    claimed_by: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    lease_until: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    engine_used: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    finished_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+
+
+class AgentAttempt(Base):
+    """One engine's try at a task, with its cost: the basis of routing and budget control."""
+
+    __tablename__ = "agent_attempts"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("agent_tasks.id"), index=True)
+    engine: Mapped[str] = mapped_column(String(60))
+    outcome: Mapped[str] = mapped_column(String(20))  # success | failure | refused
+    cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    steps: Mapped[int] = mapped_column(Integer, default=0)
+    duration_s: Mapped[float] = mapped_column(Float, default=0.0)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, index=True)
+
+
+class AgentCalibration(Base):
+    """Pointing test of a vision engine: an open model is only routed to after passing it."""
+
+    __tablename__ = "agent_calibrations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    engine: Mapped[str] = mapped_column(String(60))
+    model: Mapped[str] = mapped_column(String(200))
+    convention: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    hit_rate: Mapped[float] = mapped_column(Float)
+    trials: Mapped[int] = mapped_column(Integer)
+    at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)

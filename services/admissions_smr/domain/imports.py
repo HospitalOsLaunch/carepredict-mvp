@@ -6,7 +6,8 @@ Three files are supported (headers are case- and accent-insensitive; ``;`` or
 
 * ``lits``     : site, finess, ville, mention, lits_installes, lits_ouverts,
                  chambres_isolement, capacites
-* ``sejours``  : site, mention, patient_ref, date_entree, date_sortie_prevue, date_sortie
+* ``sejours``  : site, mention, patient_ref, date_entree, date_sortie_prevue, date_sortie,
+                 niveau_soins (1 à 4, facultatif)
 * ``demandes`` : source, ref_externe, recue_le, etablissement_adresseur,
                  service_adresseur, patient_ref, age, sexe, mention,
                  categorie_clinique, niveau_soins, isolement, besoins, date_souhaitee
@@ -42,6 +43,7 @@ TEMPLATES: dict[str, list[str]] = {
         "date_entree",
         "date_sortie_prevue",
         "date_sortie",
+        "niveau_soins",
     ],
     "demandes": [
         "source",
@@ -103,6 +105,7 @@ class StayRow:
     admission_date: date
     planned_discharge_date: date | None
     discharge_date: date | None
+    care_level: int | None = None
 
 
 @dataclass(frozen=True)
@@ -228,13 +231,14 @@ def _parse_stay(line: int, row: dict[str, str], errors: list[RowError]) -> StayR
     admission = _date(row, "date_entree", line, errors, required=True)
     planned = _date(row, "date_sortie_prevue", line, errors)
     discharge = _date(row, "date_sortie", line, errors)
+    care = _int(row, "niveau_soins", line, errors, minimum=1, maximum=4)
     if admission and discharge and discharge < admission:
         errors.append(RowError(line, "date_sortie", "Sortie antérieure à l'entrée"))
     if admission and planned and planned < admission:
         errors.append(RowError(line, "date_sortie_prevue", "Sortie prévue antérieure à l'entrée"))
     if errors or site is None or mention is None or patient is None or admission is None:
         return None
-    return StayRow(line, site, mention, patient, admission, planned, discharge)
+    return StayRow(line, site, mention, patient, admission, planned, discharge, care)
 
 
 def _parse_request(
