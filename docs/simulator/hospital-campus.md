@@ -7,7 +7,9 @@ hôpital agrège les observations des quatre unités ; le sélecteur et les cart
 ouvrent leur cockpit, leurs propositions et leur journal. Patients, lits, sources,
 sessions et décisions sont identifiés par unité ; leurs identifiants physiques
 sont uniques à l'échelle de H1. Les ressources de nettoyage restent propres à chaque
-unité. Les unités ne transfèrent pas encore de patients entre elles.
+unité. Les patients en attente peuvent être placés dans une autre unité déclarée compatible,
+après accord explicite du cadre receveur. Le transfert de patients déjà installés
+n’est pas couvert.
 
 ## Démarrage et continuité
 
@@ -24,9 +26,10 @@ Les démarrages suivants rejouent encore le monde depuis son origine ; ils ne
 réentraînent pas les modèles. Le lanceur attend jusqu'à 180 secondes. Une nouvelle
 session indépendante peut être créée avec `--state-dir /chemin/nouveau-dossier`.
 
-Le dossier `.hospitalos-campus` contient le manifeste de l'hôpital (origine UTC,
+Le dossier `.hospitalos-workplace` contient le manifeste de l'hôpital (origine UTC,
 graine, configuration), les bases opérationnelles et les bases d'observations et
-de modèles par unité. Il est distinct de l'ancienne démo `.hospitalos-virtual` :
+de modèles par unité. La mécanique WORKPLACE_1 est distincte des anciennes bases `.hospitalos-campus`
+et `.hospitalos-virtual` :
 les décisions X1/X2/X3 ne sont pas attribuées arbitrairement à H1. Aucune ancienne
 base n'est effacée. La mécanique de reprise conserve les intentions de décision
 et leurs preuves, puis les rejoue une seule fois dans chaque reconstruction.
@@ -83,8 +86,11 @@ JEPA entraîné, ni d'une preuve d'efficacité clinique, ni d'un SI hospitalier 
 - `GET /product/hospitals` : un établissement, quatre unités.
 - `GET /product/hospitals/H1/overview` : capacités, occupations et attentes observées.
 - `GET /product/hospitals/H1/units/{unit_id}` : cockpit de l'unité.
-- `POST /product/hospitals/H1/units/{unit_id}/decisions` : validation/refus avec
-  établissement, unité, session, révision et empreinte ; contrôle côté serveur.
+- `GET /product/hospitals/H1/workspace` : file hospitalière, tâches, capacités, entrées et prévisions.
+- `POST /product/hospitals/H1/operations` : commande nommée, révision du journal et
+  empreintes des observations concernées ; contrôle métier côté serveur.
+- L’ancienne route `POST …/units/{unit_id}/decisions` refuse les commandes H1 afin
+  de ne pas contourner le journal hospitalier.
 - `GET /product/hospitals/H1/units/{unit_id}/history` : série récente, agrégats et modèle.
 - `GET /product/hospitals/H1/units/{unit_id}/history/export` : observations complètes CSV.
 
@@ -101,8 +107,75 @@ reconstruction croît avec la durée depuis l'origine : une prochaine étape tec
 sera un checkpoint physique sérialisable et versionné, avant un fonctionnement
 continu de plusieurs mois. L'archive agrégée est durable ; elle n'est pas un dossier
 patient longitudinal ou un entrepôt bitemporel complet. Le lancement est local,
-mono-processus, sans authentification ; le signataire reste « Équipe de garde ».
+mono-processus, sans authentification. Les profils nommés sont des identités de
+démonstration sélectionnables, pas une preuve d’identité professionnelle.
 
 Les tests couvrent l'unicité des identifiants, le routage et les décisions par unité,
 les périodes d'apprentissage/validation, l'export complet, la persistance du modèle,
 le rattrapage après arrêt et le changement d'heure du 25 octobre 2026.
+
+
+## Priorités du poste intégrées
+
+La revue hostile était simulée : les évolutions ci-dessous ne constituent pas une
+validation par de vrais utilisateurs hospitaliers.
+
+| Besoin | Comportement disponible |
+| --- | --- |
+| Sorties crédibles | Seules les sorties en préparation apparaissent ; autorisation attendue, documents, transport et aval sont distincts. Une absence d’autorisation n’est pas un avis défavorable. |
+| Placement hospitalier | File commune, recherche, alternatives par lit et raisons d’exclusion ; une demande attend le cadre receveur avant la réservation et l’installation. |
+| Capacité du poste | Le cadre déclare une capacité, un motif et une durée, ou ferme un lit libre. Les patients installés restent en place ; les nouvelles installations sont contrôlées. |
+| Travail et relève | Responsable nommé fictif, accord, refus motivé, transmission, relance, échéance et historique. « Pris en charge » et « résultat observé » sont deux états distincts. |
+| Admissions prévues | Trois admissions synthétiques par unité chaque jour, à 08 h, 11 h et 15 h de Paris ; visibilité 48 h et protection motivée d’un lit propre. |
+| Préparer le prochain poste | Prévisions directes à 8 h et 24 h, plage empirique, capacité déclarée, entrées prévues et sorties en préparation. |
+
+Dans « Travail du poste », choisir l’identité de démonstration adaptée au parcours.
+Un bed manager demande un placement, puis le profil du cadre de l’unité receveuse
+accepte dans « Relève & suivi ». Sans cet accord, aucune installation ne découle
+de la demande ; celle-ci expire après son échéance de suivi et remet le patient
+à disposition de l’allocation autonome. Le lit proposé n’est pas immobilisé
+pendant l’attente : sa disponibilité et la capacité sont revérifiées à l’accord.
+Deux demandes ne peuvent donc pas installer deux patients dans le même lit.
+
+Le cadre de chaque unité peut réduire la capacité jusqu’à zéro, y compris en
+dessous de l’occupation actuelle. Les patients restent installés ; les nouvelles
+admissions sont bloquées. Les déclarations expirent à l’heure indiquée. Les
+versions des déclarations empêchent une ancienne expiration d’annuler une nouvelle
+capacité ou une nouvelle fermeture. Les protections d’admission consomment dès
+maintenant un lit propre et une place dotée ; ce n’est pas une réservation sur une
+sortie future incertaine. Elles ne sont consommables que par le patient nommé.
+
+Les équipes virtuelles de documents, transport et aval accusent réception en
+arrière-plan. Les confirmations prennent respectivement 10–20, 30–60 et 60–120
+minutes selon les hypothèses déterministes. Les équipes ordinaires continuent
+aussi leur travail sans utilisateur. Les confirmations logistiques sont propres au patient : un transport confirmé
+pour l’un ne rend pas les autres sorties prêtes. Une tâche ne devient terminée qu’après
+observation du résultat ; aucune commande ne délivre une autorisation médicale.
+
+## Durabilité des opérations et limites
+
+`operations.sqlite` conserve chaque commande, son identifiant idempotent, son
+heure, son acteur fictif, ses arguments et les observations à l’appui. Le verrou
+hospitalier sérialise validation et mutation ; une révision ou une observation
+périmée est refusée. Un envoi dont la réponse est perdue peut être retenté avec le
+même identifiant sans doubler son effet. La reprise reconstruit les quatre unités
+sur une même chronologie, applique les commandes dans l’ordre et retrouve les
+tâches ainsi que leurs résultats observés. Les réponses automatiques suivent des
+frontières de minute identiques pendant l’exécution et le rejeu.
+
+Les prévisions à 8 h et 24 h sont ajustées séparément sur les observations passées.
+Leurs cibles d’entraînement précèdent les cibles de validation. Le choix entre
+ridge et persistance et les quantiles d’erreur 10–90 % utilisent la validation
+synthétique : la plage affichée n’est pas une garantie de couverture sur des
+patients réels ni un test indépendant. Les modèles demeurent figés. Ils ne
+simulent pas causalement une nouvelle fermeture, une protection ou une modification
+d’effectif ; ces contraintes et les admissions déclarées sont présentées à côté.
+
+La file hospitalière rapproche les observations des unités ; chaque flux conserve
+son délai. Les données affichées peuvent donc précéder une déclaration immédiate
+pendant un cycle de livraison. La mutation revérifie l’état courant du monde
+virtuel. Les 500 dernières tâches et décisions sont exposées au cockpit ; le
+journal SQLite intégral reste conservé. Les profils et compatibilités sont
+fictifs, sans connexion au SI, authentification, gestion d’astreinte réelle ou
+validation clinique. Un état antérieur reste intact mais n’est pas migré vers
+WORKPLACE_1 : choisir le nouveau dossier par défaut ou un dossier vide.

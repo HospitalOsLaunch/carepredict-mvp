@@ -12,8 +12,10 @@ from typing import Any
 
 import structlog
 
+from .clinical import ClinicalEngine
 from .config import HospitalConfig
 from .history import History
+from .operations import Operations
 from .runtime import HospitalRuntime
 
 
@@ -48,6 +50,8 @@ class CampusFleet:
         import fcntl
 
         self.clock = clock or (lambda: datetime.now(UTC))
+        self.lock = threading.RLock()
+        self.ops: Operations | None = None
         self.stop_event = threading.Event()
         self.thread: threading.Thread | None = None
         self.errors: dict[str, str] = {}
@@ -64,7 +68,7 @@ class CampusFleet:
             manifest_path = state_dir / "hospital.json"
             configs = campus_units()
             identity = {
-                "version": "CAMPUS_1",
+                "version": "WORKPLACE_1",
                 "seed": seed,
                 "configs": [c.model_dump(mode="json") for c in configs],
             }
@@ -83,6 +87,9 @@ class CampusFleet:
                 )
                 temporary.replace(manifest_path)
             target = max(0, (self.clock() - self.epoch).total_seconds())
+            self.ops = Operations(self, str(state_dir / "operations.sqlite"))
+            commands = self.ops.commands()
+            bootstrap = commands[0][0] if commands else target
             for index, config in enumerate(configs):
                 key = config.unit_id
                 name = hashlib.sha256(key.encode()).hexdigest()[:16]
@@ -94,9 +101,16 @@ class CampusFleet:
                     str(state_dir / f"{name}.sqlite"),
                     1,
                     epoch=self.epoch,
-                    warmup_seconds=target,
+                    warmup_seconds=bootstrap,
+                    engine_type=ClinicalEngine,
+                    managed=True,
                     history_receiver=history.receive,
                 )
+            for second, request, payload in commands:
+                self._advance_all(second)
+                self.ops.apply(request, payload, second)
+            self._advance_all(target)
+            for history in self.histories.values():
                 history.fit()
         except Exception:
             self.close()
@@ -113,29 +127,56 @@ class CampusFleet:
         self.thread = threading.Thread(target=self._work, name="hospital-paris", daemon=True)
         self.thread.start()
 
-    def sync(self) -> None:
-        target = (self.clock() - self.epoch).total_seconds()
-        for key, unit in self.units.items():
-            if key in self.errors:
-                continue
-            try:
+    @property
+    def second(self) -> float:
+        return min(unit.engine.second for unit in self.units.values())
+
+    @property
+    def now(self) -> datetime:
+        return self.epoch + timedelta(seconds=self.second)
+
+    def _advance_all(self, target: float) -> None:
+        if target < self.second:
+            raise ValueError("clock_cannot_rewind")
+        while self.second < target:
+            boundary = (int(self.second) // 60 + 1) * 60
+            step = min(target, boundary)
+            for unit in self.units.values():
                 with unit.lock:
-                    if target > unit.engine.second:
-                        # Resume sleep/downtime without flooding the live projection.
-                        unit.projection_from = max(0, target - 120)
-                        unit._advance_to(target)
-                    unit.assess()
+                    unit.projection_from = max(0, target - 120)
+                    unit._advance_to(step)
+            if step == boundary and self.ops:
+                self.ops.tick(self.epoch + timedelta(seconds=step))
+
+    def sync(self, *, plan: bool = True) -> None:
+        with self.lock:
+            if self.errors:
+                return
+            target = max(self.second, (self.clock() - self.epoch).total_seconds())
+            try:
+                self._advance_all(target)
+                for unit in self.units.values():
+                    if plan:
+                        unit.assess()
                     unit.checkpoint()
             except Exception:
-                self.errors[key] = "unit_feed_unavailable"
-                structlog.get_logger().exception("campus_unit_failed", unit=key)
+                self.errors.update(dict.fromkeys(self.units, "hospital_runtime_unavailable"))
+                structlog.get_logger().exception("hospital_runtime_failed")
+                raise
 
     def _work(self) -> None:
         while not self.stop_event.is_set():
-            self.sync()
+            try:
+                self.sync()
+            except Exception:
+                return
             self.stop_event.wait(1)
 
     def overview(self) -> dict[str, Any]:
+        with self.lock:
+            return self._overview()
+
+    def _overview(self) -> dict[str, Any]:
         units: list[dict[str, Any]] = []
         for key, unit in self.units.items():
             with unit.lock:
@@ -146,7 +187,7 @@ class CampusFleet:
                         "id": key,
                         "name": unit.config.unit_name,
                         "available": key not in self.errors,
-                        "capacity": unit.config.staffed_beds,
+                        "capacity": snapshot.state.units[0].staffed_beds,
                         "occupied": sum(b.state == "occupied" for b in beds),
                         "waiting": sum(p.status == "waiting" for p in snapshot.state.patients),
                         "observed_at": (
@@ -173,4 +214,6 @@ class CampusFleet:
             unit.close()
         for history in self.histories.values():
             history.close()
+        if self.ops:
+            self.ops.close()
         self.file_lock.close()

@@ -9,11 +9,12 @@ from typing import Any
 
 from hospitalos.hybrid.live_models import LivePolicy
 from hospitalos.hybrid.live_store import LiveStore
-from hospitalos.hybrid.models import Bed, Discharge, Fact, FactEvent, Patient, Unit
+from hospitalos.hybrid.models import Bed, Discharge, Fact, FactEvent, Patient, ResourcePool, Unit
 from hospitalos.hybrid.source_adapter import SourceAdapter
 from hospitalos.hybrid.source_contract import KINDS, SourceProfile, TableMapping, expected_fields
 from hospitalos.simulator.engine import START, Frame
 
+from .clinical import CareBed, CareFrame, CarePatient
 from .config import HospitalConfig
 
 
@@ -74,7 +75,9 @@ class VirtualFeed:
         facts: list[Fact] = [
             Unit(
                 id=self.config.unit_id,
-                staffed_beds=self.config.staffed_beds,
+                staffed_beds=frame.staffed_beds
+                if isinstance(frame, CareFrame)
+                else self.config.staffed_beds,
                 cleaning_teams=self.config.cleaning_teams,
             )
         ]
@@ -87,10 +90,16 @@ class VirtualFeed:
                     if b.occupant
                     else "closed"
                     if not b.opened
+                    or (
+                        isinstance(frame, CareFrame)
+                        and b.id in frame.held_beds
+                        and not b.reserved_for
+                    )
                     else "clean"
                     if b.hygiene == "ready"
                     else "dirty",
-                    capabilities=("oxygen",) if b.oxygen else (),
+                    capabilities=(("oxygen",) if b.oxygen else ())
+                    + (("isolation",) if isinstance(b, CareBed) and b.isolation else ()),
                     occupant=b.occupant,
                     reserved_for=b.reserved_for,
                 )
@@ -100,25 +109,70 @@ class VirtualFeed:
                 Patient(
                     id=p.id,
                     status=p.status,
-                    compatible_units=(self.config.unit_id,),
-                    requirements=("oxygen",) if p.oxygen else (),
+                    compatible_units=p.compatible_units
+                    if isinstance(p, CarePatient)
+                    else (self.config.unit_id,),
+                    requirements=(("oxygen",) if p.oxygen else ())
+                    + (("isolation",) if isinstance(p, CarePatient) and p.isolation else ()),
                     priority=2 if p.oxygen else 1,
                     waiting_since=self.epoch + timedelta(seconds=p.since),
                     bed_id=p.bed,
-                    medically_cleared=p.cleared if p.status == "admitted" else None,
-                    downstream_confirmed=True if p.cleared else None,
+                    medically_cleared=p.cleared
+                    if p.status == "admitted"
+                    and (not isinstance(p, CarePatient) or p.discharge_planned)
+                    else None,
+                    downstream_confirmed=p.downstream_ready
+                    if isinstance(p, CarePatient) and p.downstream_required
+                    else True
+                    if p.cleared
+                    else None,
                 )
             )
-            if p.status == "admitted":
+            if p.status == "admitted" and (not isinstance(p, CarePatient) or p.discharge_planned):
                 facts.append(
                     Discharge(
                         id=p.id,
-                        documents_ready=p.cleared,
+                        documents_ready=p.documents_ready
+                        if isinstance(p, CarePatient)
+                        else p.cleared,
                         escort_required=False,
-                        downstream_required=False,
-                        transport_required=False,
+                        downstream_required=p.downstream_required
+                        if isinstance(p, CarePatient)
+                        else False,
+                        downstream_pool_id=f"{p.id}-downstream"
+                        if isinstance(p, CarePatient) and p.downstream_required
+                        else None,
+                        transport_required=p.transport_required
+                        if isinstance(p, CarePatient)
+                        else False,
+                        transport_pool_id=f"{p.id}-transport"
+                        if isinstance(p, CarePatient) and p.transport_required
+                        else None,
+                        transport_requested=p.transport_requested
+                        if isinstance(p, CarePatient) and p.transport_required
+                        else None,
                     )
                 )
+        if isinstance(frame, CareFrame):
+            # Confirmed logistics belong to the named patient, not to every discharge
+            # in the unit. A separate synthetic pool prevents cross-patient readiness.
+            for p in frame.patients:
+                if (
+                    not isinstance(p, CarePatient)
+                    or p.status != "admitted"
+                    or not p.discharge_planned
+                ):
+                    continue
+                for resource in ("transport", "downstream"):
+                    if getattr(p, f"{resource}_required"):
+                        facts.append(
+                            ResourcePool(
+                                id=f"{p.id}-{resource}",
+                                resource=resource,
+                                unit_ids=(self.config.unit_id,),
+                                available=int(getattr(p, f"{resource}_ready")),
+                            )
+                        )
         expected = tuple(sorted(f"{f.kind}:{f.id}" for f in facts))
         if expected != self.expected:
             self.manifest_version += 1
@@ -145,7 +199,18 @@ class VirtualFeed:
         availability = next(t for t in self.profile.tables if t.kind == "availability")
         committed = sum(b.occupant is not None or b.reserved_for is not None for b in frame.beds)
         for resource, count in (
-            ("staffed", max(0, self.config.staffed_beds - committed)),
+            (
+                "staffed",
+                max(
+                    0,
+                    (
+                        frame.staffed_beds
+                        if isinstance(frame, CareFrame)
+                        else self.config.staffed_beds
+                    )
+                    - committed,
+                ),
+            ),
             ("cleaning", frame.cleaning_available),
         ):
             values: dict[str, Any] = {
@@ -156,6 +221,18 @@ class VirtualFeed:
                 "evidence_ref": f"direct-observation:{self.sequence}:{resource}",
             }
             rows[availability.table].append({v: values[k] for k, v in availability.columns.items()})
+        for fact in facts:
+            if isinstance(fact, ResourcePool):
+                values = {
+                    "resource": fact.resource,
+                    "target_id": fact.id,
+                    "available": fact.available,
+                    "observed_at": frame.observed_at.isoformat(),
+                    "evidence_ref": f"direct-observation:{self.sequence}:{fact.id}",
+                }
+                rows[availability.table].append(
+                    {v: values[k] for k, v in availability.columns.items()}
+                )
         result = self.adapter.receive(
             json.dumps(
                 {

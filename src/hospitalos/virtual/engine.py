@@ -6,6 +6,7 @@ import hashlib
 from collections.abc import Callable, Generator
 from dataclasses import replace
 from datetime import datetime, timedelta
+from typing import Any
 
 import simpy
 
@@ -32,7 +33,7 @@ class VirtualEngine:
         self.journal: list[TruthEvent] = []
         self.primitives: dict[str, int] = {}
         self.beds = {
-            f"{self.prefix}G{n:02d}": PhysicalBed(
+            f"{self.prefix}G{n:02d}": self._make_bed(
                 f"{self.prefix}G{n:02d}",
                 oxygen=n in config.oxygen_beds,
                 hygiene="dirty" if n <= 2 else "ready",
@@ -48,7 +49,7 @@ class VirtualEngine:
         self.arrival_index = 0
         for n in range(config.initially_occupied):
             bed = self.beds[f"{self.prefix}G{n + 3:02d}"]
-            patient = PhysicalPatient(
+            patient = self._make_patient(
                 f"{self.prefix}P-I{n:03d}", -86400, oxygen=bed.oxygen, status="admitted", bed=bed.id
             )
             self.patients[patient.id] = patient
@@ -56,12 +57,28 @@ class VirtualEngine:
             self._record("initial_admitted", patient.id, bed.id)
             self._schedule_departure(patient, 600 + n * 900)
         for n in range(config.initial_waiting):
-            patient = PhysicalPatient(f"{self.prefix}P-W{n:03d}", -n * 300, oxygen=n == 0)
+            patient = self._make_patient(f"{self.prefix}P-W{n:03d}", -n * 300, oxygen=n == 0)
             self.patients[patient.id] = patient
             self._record("initial_waiting", patient.id)
         self._later(0, self._observe)
         self._later(120, self._dispatch)
         self._later(600, self._arrive)
+
+    def _make_bed(self, identifier: str, **kwargs: Any) -> PhysicalBed:
+        return PhysicalBed(identifier, **kwargs)
+
+    def _make_patient(self, identifier: str, since: float, **kwargs: Any) -> PhysicalPatient:
+        return PhysicalPatient(identifier, since, **kwargs)
+
+    @property
+    def staffed_capacity(self) -> int:
+        return self.config.staffed_beds
+
+    def compatible(self, patient: PhysicalPatient, bed: PhysicalBed) -> bool:
+        return not patient.oxygen or bed.oxygen
+
+    def held_for_other(self, bed_id: str, patient_id: str) -> bool:
+        return False
 
     @property
     def second(self) -> float:
@@ -142,7 +159,7 @@ class VirtualEngine:
         patient_id = f"{self.prefix}P-A{index:06d}"
         self.arrival_index += 1
         oxygen = self.draw("oxygen", patient_id, 0, (0, 0, 1)) == 1
-        self.patients[patient_id] = PhysicalPatient(patient_id, self.second, oxygen=oxygen)
+        self.patients[patient_id] = self._make_patient(patient_id, self.second, oxygen=oxygen)
         self._record("arrived", patient_id)
         peak = self.config.regime == "influx" and 0 <= self.second % 86400 < 7200
         support = (
@@ -228,17 +245,20 @@ class VirtualEngine:
                     return
 
     def _reserve(self, patient_id: str, bed_id: str, *, coordinated: bool = False) -> bool:
-        patient, bed = self.patients[patient_id], self.beds[bed_id]
+        patient, bed = self.patients.get(patient_id), self.beds.get(bed_id)
+        if patient is None or bed is None:
+            return False
         if (
             patient.status != "waiting"
             or bed.occupant
             or bed.reserved_for
             or bed.hygiene != "ready"
             or not bed.opened
-            or (patient.oxygen and not bed.oxygen)
+            or not self.compatible(patient, bed)
+            or self.held_for_other(bed_id, patient_id)
             or any(b.reserved_for == patient.id for b in self.beds.values())
             or sum(b.occupant is not None or b.reserved_for is not None for b in self.beds.values())
-            >= self.config.staffed_beds
+            >= self.staffed_capacity
         ):
             return False
         bed.reserved_for = patient.id
@@ -253,7 +273,8 @@ class VirtualEngine:
                 and bed.hygiene == "ready"
                 and bed.opened
                 and patient.status == "waiting"
-                and (not patient.oxygen or bed.oxygen)
+                and self.compatible(patient, bed)
+                and sum(b.occupant is not None for b in self.beds.values()) < self.staffed_capacity
             ):
                 bed.reserved_for, bed.occupant = None, patient.id
                 patient.status, patient.bed = "admitted", bed.id

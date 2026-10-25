@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Workspace } from "../data/useVirtualHospitals";
 import { clock } from "../domain/view";
 const STATUS = { accepted: "Transmission en cours", refusal_recorded: "Refus enregistré",
-  executed: "Prise en charge confirmée", refused: "Commande non retenue", failed: "Échec de la commande" };
+  executed: "Résultat observé / commande exécutée", refused: "Commande non retenue", failed: "Échec de la commande" };
 export function VirtualProposal({ workspace: w }: { workspace: Workspace }) {
   const [refusing, setRefusing] = useState(false);
   const [reason, setReason] = useState("");
@@ -10,7 +10,7 @@ export function VirtualProposal({ workspace: w }: { workspace: Workspace }) {
   const action = p?.selected;
   const label = action?.kind === "prioritize_cleaning" ? `Prioriser le nettoyage du lit ${action.bed_id}`
     : action?.kind === "reserve_bed" ? `Réserver le lit ${action.bed_id} pour ${action.patient_id}` : "Aucune action à valider pour le moment";
-  const disabled = !v?.can_decide || w.store.busy || !!w.store.error;
+  const disabled = !v?.can_decide || w.store.busy || !!w.store.error || (v?.hospital_id === "H1" && (!w.operations.data || w.operations.busy || !!w.operations.error || !!w.operations.retry));
   return <section className="virtual-proposal" aria-labelledby="virtual-proposal-title">
     <p className="eyebrow">Proposition · {v?.hospital_name}</p>
     <h2 id="virtual-proposal-title">{label}</h2>

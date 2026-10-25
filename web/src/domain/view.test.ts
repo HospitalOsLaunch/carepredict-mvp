@@ -124,3 +124,15 @@ describe("freshness is decided by the backend", () => {
     expect(a.gateReasons.some((c) => c.startsWith("stale_confirmation:"))).toBe(true);
   });
 });
+
+it("does not count a requested transport as ready without availability", () => {
+  const state = structuredClone(nominal.state) as ScenarioFixture["state"];
+  const patient = state.patients.find(p => p.status === "admitted")!;
+  patient.medically_cleared = true;
+  state.discharges = [{kind:"discharge",id:patient.id,documents_ready:true,escort_required:false,escort_confirmed:null,downstream_required:false,downstream_pool_id:null,transport_required:true,transport_pool_id:"patient-transport",transport_requested:true}];
+  state.pools = [{kind:"pool",id:"patient-transport",resource:"transport",unit_ids:patient.compatible_units,available:0}];
+  const chain = releaseChains(state,null).find(c=>c.patient.id===patient.id)!;
+  expect(chain.links.find(l=>l.id==="transport")?.status).toBe("todo");
+  state.pools[0]!.available = 1;
+  expect(releaseChains(state,null).find(c=>c.patient.id===patient.id)!.links.find(l=>l.id==="transport")?.status).toBe("ok");
+});

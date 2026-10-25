@@ -194,7 +194,7 @@ export function chainLinks(patient: Patient, d: Discharge | undefined, state: St
   const pool = (id: string | null) => state.pools.find((p) => p.id === id);
   const links: ChainLink[] = [];
   const [ms, md] = tri(patient.medically_cleared, "Sortie autorisée", "Non autorisée");
-  links.push({ id: "medical", label: "Avis médical", status: ms === "todo" ? "blocked" : ms, detail: md });
+  links.push({ id: "medical", label: "Avis médical", status: ms, detail: md });
   if (!d) {
     for (const [id, label] of [
       ["documents", "Documents"],
@@ -245,8 +245,11 @@ export function chainLinks(patient: Patient, d: Discharge | undefined, state: St
     links.push({ id: "transport", label: "Transport", status: "unknown", detail: "Besoin non renseigné" });
   else {
     const p = pool(d.transport_pool_id);
-    if (d.transport_requested === true)
-      links.push({ id: "transport", label: "Transport", status: "ok", detail: "Demandé" });
+    if (d.transport_requested === true) {
+      const available = p?.available != null && p.available > 0;
+      links.push({ id: "transport", label: "Transport", status: available ? "ok" : "todo",
+        detail: available ? "Demandé · disponible" : "Demandé · disponibilité à confirmer" });
+    }
     else if (p?.available === 0)
       links.push({ id: "transport", label: "Transport", status: "blocked", detail: "Aucun disponible" });
     else links.push({ id: "transport", label: "Transport", status: "todo", detail: "À demander" });
@@ -490,7 +493,7 @@ export function nextStep(links: ChainLink[]): { text: string; tone: "ok" | "todo
   const pending = links.find((l) => l.status !== "ok" && l.status !== "na");
   if (!pending) return { text: "Prête à partir", tone: "ok" };
   const verbs: Record<ChainLink["id"], [string, string]> = {
-    medical: ["Obtenir l'avis médical de sortie", "Avis médical défavorable"],
+    medical: ["Obtenir l'avis médical de sortie", "Autorisation de sortie non confirmée"],
     documents: ["Préparer les documents de sortie", "Documents bloqués"],
     escort: ["Confirmer l'accompagnant", "Accompagnant indisponible"],
     downstream: ["Obtenir l'accord de l'aval", "Aval complet : chercher une autre place"],
