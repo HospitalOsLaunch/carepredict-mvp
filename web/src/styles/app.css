@@ -1196,7 +1196,7 @@ body::before {
   padding: 0 4px;
   border-radius: 3px;
   border: 1px solid currentColor;
-  opacity: 0.8;
+  opacity: 1;
 }
 .magnet--occupied {
   background: var(--magnet);
