@@ -15,6 +15,16 @@ measurement artifacts live.
 
 ## What To Review First
 
+### Hospital Simulator Specification
+
+- [Simulator specification v0.3](docs/simulator/spec-v0.3.md): consolidated
+  business, scientific and interface requirements for the geriatric unit simulator,
+  with milestones M1–M4 and twenty acceptance scenarios.
+- [Integration map and implementation sequence](docs/simulator/README.md):
+  reuse candidates in the synthetic foundation and draft PR #22, explicit gaps,
+  version boundaries and evidence still required. This is a documentary revision,
+  not a delivered or qualified simulator release.
+
 ### Synthetic Research Foundation
 
 - [Dated organisation changes, lot 08](docs/synthetic/lot08.md): temporary/permanent

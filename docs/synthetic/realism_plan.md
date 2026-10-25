@@ -1,5 +1,12 @@
 # Plan accepté — cible médecine/gériatrie et aval contraint
 
+> **Raccordement du 25 octobre 2026.** La
+> [spécification v0.3 du banc mono-unité](../simulator/spec-v0.3.md) et son
+> [plan d'intégration](../simulator/README.md) précisent la nouvelle tranche
+> court séjour gériatrique. Son aval exogène initial reste distinct du SMR fini
+> du lot 16. Le plan historique et les résultats ci-dessous conservent leur
+> périmètre ; aucun jalon v0.3 n'est déclaré atteint par cette mise à jour.
+
 Décision de Guy du 15 octobre 2026 : poursuivre sur synthétique exclusivement,
 en solo avec Codex, avec le CH support de GHT à activité MCO comme cible prioritaire.
 La taille 300–1 200 lits décrit un segment commercial ; préciser la capacité MCO,
