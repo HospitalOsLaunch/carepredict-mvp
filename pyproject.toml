@@ -83,6 +83,9 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 python_version = "3.11"
 mypy_path = "src"
 strict = true
+# The admissions services have their own dependencies, CI job and mypy configuration
+# (services/admissions_smr/mypy.ini); the root environment does not install them.
+exclude = ["^services/admissions_(smr|agent|web)/"]
 warn_unused_ignores = true
 warn_redundant_casts = true
 disallow_any_generics = true
