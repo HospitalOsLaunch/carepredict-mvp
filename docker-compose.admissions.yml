@@ -1,0 +1,46 @@
+# HospitalOS Admissions SMR: API + web + PostgreSQL.
+#   ADM_SECRET_KEY=$(openssl rand -hex 32) ADM_DB_PASSWORD=... \
+#     docker compose -f docker-compose.admissions.yml up -d --build
+# Production must run on HDS-certified hosting with TLS terminated in front of "web".
+name: hospitalos_admissions
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: admissions
+      POSTGRES_USER: admissions
+      POSTGRES_PASSWORD: ${ADM_DB_PASSWORD:?ADM_DB_PASSWORD is required}
+    volumes:
+      - admissions-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admissions -d admissions"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+      dockerfile: services/admissions_smr/Dockerfile
+    environment:
+      ADM_ENV: ${ADM_ENV:-production}
+      ADM_DATABASE_URL: postgresql+psycopg://admissions:${ADM_DB_PASSWORD}@db:5432/admissions
+      ADM_SECRET_KEY: ${ADM_SECRET_KEY:?ADM_SECRET_KEY is required}
+      ADM_TIMEZONE: Europe/Paris
+      ADM_CORS_ORIGINS: ""
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: services/admissions_web/Dockerfile
+    ports:
+      - "${ADM_WEB_PORT:-8080}:8080"
+    depends_on:
+      - api
+
+volumes:
+  admissions-db:

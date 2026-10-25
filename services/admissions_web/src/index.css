@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: theme("colors.ink.DEFAULT");
+    background: theme("colors.sky.DEFAULT");
+    font-family: theme("fontFamily.sans");
+    font-size: 16px;
+    line-height: 1.5;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { margin: 0; min-height: 100vh; }
+  h1, h2, h3 { font-family: theme("fontFamily.display"); letter-spacing: -0.015em; }
+  h1 { font-size: 2rem; line-height: 1.1; font-weight: 700; }
+  h2 { font-size: 1.375rem; line-height: 1.2; font-weight: 650; }
+  h3 { font-size: 1.0625rem; line-height: 1.3; font-weight: 650; }
+  :focus-visible { outline: 3px solid theme("colors.violet.DEFAULT"); outline-offset: 2px; border-radius: 6px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .num { font-family: theme("fontFamily.display"); font-variant-numeric: tabular-nums; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  .panel { @apply rounded-panel bg-paper shadow-lift; }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-chip px-4 py-2 text-[15px] font-bold
+      transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-violet text-white hover:bg-violet-dark; }
+  .btn-sun { @apply btn bg-sun text-ink hover:bg-sun-glow; }
+  .btn-ghost { @apply btn bg-transparent text-ink hover:bg-sky; }
+  .btn-quiet { @apply btn bg-sky text-ink hover:bg-sky-deep; }
+  .btn-danger { @apply btn bg-coral-soft text-coral-dark hover:bg-coral hover:text-white; }
+  .field { @apply block text-sm font-bold text-ink-soft; }
+  .input {
+    @apply mt-1 block w-full rounded-xl border border-line bg-paper px-3 py-2 text-[15px] text-ink
+      placeholder:text-ink-faint focus:border-violet focus:outline-none focus:ring-2 focus:ring-violet/30;
+  }
+  .chip { @apply inline-flex items-center gap-1 rounded-chip px-2.5 py-0.5 text-[13px] font-bold; }
+}
+
+@keyframes lamp-on {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.lamp-on { animation: lamp-on 420ms cubic-bezier(.2,.9,.3,1.4) both; }
