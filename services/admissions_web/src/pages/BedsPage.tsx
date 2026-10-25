@@ -147,7 +147,7 @@ function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
   );
   return (
     <div className="panel relative overflow-x-auto">
-      <table className="w-full min-w-[760px] text-[15px]">
+      <table className="w-full min-w-[880px] text-[15px]">
         <caption className="sr-only">Patients présents et sortie attendue</caption>
         <thead>
           <tr className="border-b border-line text-left text-[13px] text-ink-faint">
@@ -163,6 +163,7 @@ function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
                 Sortie sous 7 jours
               </button>
             </th>
+            <th className="px-3 py-3 font-normal">Soins</th>
             <th className="px-3 py-3 font-normal">Sortie prévue</th>
             <th className="px-5 py-3 font-normal">
               <span className="sr-only">Actions</span>
@@ -179,6 +180,8 @@ function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
   );
 }
 
+const CARE_LABELS: Record<number, string> = { 1: "1 · léger", 2: "2 · modéré", 3: "3 · lourd", 4: "4 · très lourd" };
+
 function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; canWrite: boolean }) {
   const queryClient = useQueryClient();
   const [planned, setPlanned] = useState(stay.planned_discharge_date ?? "");
@@ -187,6 +190,7 @@ function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; can
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["stays"] });
       void queryClient.invalidateQueries({ queryKey: ["forecast"] });
+      void queryClient.invalidateQueries({ queryKey: ["workload"] });
       void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       void queryClient.invalidateQueries({ queryKey: ["requests"] });
     }
@@ -212,6 +216,35 @@ function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; can
         <p className="text-[13px] text-ink-faint">
           {stay.median_discharge_day ? `Médiane : ${fmtDay(stay.median_discharge_day)}` : "Au-delà de 4 semaines"}
         </p>
+      </td>
+      <td className="px-3 py-3">
+        {canWrite ? (
+          <>
+            <label className="sr-only" htmlFor={`care-${stay.id}`}>
+              Niveau de soins de {stay.patient_ref}
+            </label>
+            <select
+              id={`care-${stay.id}`}
+              className={`input mt-0 w-[118px] py-1.5 ${stay.care_level === null ? "text-ink-faint" : ""}`}
+              value={stay.care_level ?? ""}
+              disabled={update.isPending}
+              onChange={(e) => e.target.value && update.mutate({ care_level: Number(e.target.value) })}
+            >
+              <option value="" disabled>
+                À coter
+              </option>
+              {[1, 2, 3, 4].map((n) => (
+                <option key={n} value={n}>
+                  {CARE_LABELS[n]}
+                </option>
+              ))}
+            </select>
+          </>
+        ) : (
+          <span className={stay.care_level === null ? "text-ink-faint" : ""}>
+            {stay.care_level ? CARE_LABELS[stay.care_level] : "Non coté"}
+          </span>
+        )}
       </td>
       <td className="px-3 py-3">
         {canWrite ? (
@@ -241,6 +274,11 @@ function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; can
           </form>
         ) : (
           fmtDate(stay.planned_discharge_date)
+        )}
+        {stay.plan_changes > 1 && (
+          <p className="mt-1 text-[13px] text-ink-faint" title="Chaque modification de la date prévue est historisée">
+            Date revue {stay.plan_changes - 1} fois
+          </p>
         )}
         {update.error && <p className="mt-1 text-[13px] text-coral-dark">{(update.error as Error).message}</p>}
       </td>

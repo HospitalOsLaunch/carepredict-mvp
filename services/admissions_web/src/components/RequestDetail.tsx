@@ -1,7 +1,9 @@
-import { ArrowLeft, Check, ClipboardCopy, MessageSquarePlus } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Bot, Check, ClipboardCopy, MessageSquarePlus, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
-import type { RequestDetail, Suggestion } from "../api/types";
+import { api } from "../api/client";
+import type { AgentTask, PortalReply, RequestDetail, Suggestion } from "../api/types";
 import { useAuth } from "../auth";
 import { fmtDateTime, fmtDay, fmtHours, fmtShort, isoDay } from "../lib/format";
 import { label, useVocabulary } from "../lib/queries";
@@ -249,6 +251,8 @@ function Detail({ request: r, onBack }: { request: RequestDetail; onBack: () => 
         </section>
       )}
 
+      {r.portal_reply && <PortalReplyPanel reply={r.portal_reply} requestId={r.id} source={label(vocab.data?.sources, r.source)} />}
+
       {(pickSite ?? r.best) && open && (
         <details className="border-b border-line px-6 py-4">
           <summary className="cursor-pointer font-display text-[17px] font-semibold">
@@ -453,3 +457,60 @@ function eventLabel(kind: string): string {
   return EVENT_LABELS[kind] ?? kind;
 }
 
+
+const REPLY_STATE: Record<string, { text: string; tone: string }> = {
+  pending: { text: "En file : l'agent va reporter la réponse sur le portail", tone: "bg-violet-soft text-violet-dark" },
+  running: { text: "L'agent saisit la réponse sur le portail", tone: "bg-violet-soft text-violet-dark" },
+  done: { text: "Réponse reportée et relue sur le portail", tone: "bg-lagoon-soft text-lagoon-dark" },
+  manual: { text: "Réponse saisie à la main sur le portail", tone: "bg-sky-deep text-ink-soft" },
+  needs_human: { text: "À reprendre à la main : l'agent n'a pas pu confirmer la saisie", tone: "bg-coral-soft text-coral-dark" },
+  failed: { text: "Échec de la saisie sur le portail", tone: "bg-coral-soft text-coral-dark" },
+  cancelled: { text: "Report annulé", tone: "bg-sky-deep text-ink-soft" }
+};
+
+function PortalReplyPanel({ reply, requestId, source }: { reply: PortalReply; requestId: number; source: string }) {
+  const { canWrite } = useAuth();
+  const queryClient = useQueryClient();
+  const act = useMutation({
+    mutationFn: (what: "retry" | "manual") => api<AgentTask>(`/agent/tasks/${reply.task_id}/${what}`, { method: "POST" }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["request", requestId] });
+      void queryClient.invalidateQueries({ queryKey: ["agent"] });
+    }
+  });
+  const state = REPLY_STATE[reply.status] ?? { text: reply.status, tone: "bg-sky-deep text-ink-soft" };
+  const stuck = reply.status === "needs_human" || reply.status === "failed";
+  const closed = ["done", "manual", "cancelled"].includes(reply.status);
+  return (
+    <section className="border-b border-line px-6 py-5" aria-labelledby="portal">
+      <h3 id="portal" className="flex items-center gap-2">
+        <Bot className="h-5 w-5 text-violet" aria-hidden /> Report sur {source}
+      </h3>
+      <p className={`mt-3 rounded-xl px-3 py-2 text-[15px] font-bold ${state.tone}`} role="status">
+        {state.text}
+      </p>
+      <p className="mt-2 text-[13px] text-ink-faint">
+        Mis à jour le {fmtDateTime(reply.updated_at)}
+        {reply.engine_used ? `, moteur : ${reply.engine_used}` : ""}
+      </p>
+      {reply.error && stuck && <p className="mt-2 text-[14px] text-ink-soft">{reply.error}</p>}
+      {canWrite && !closed && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {stuck && (
+            <button className="btn-quiet" disabled={act.isPending} onClick={() => act.mutate("retry")}>
+              <RotateCcw className="h-4 w-4" aria-hidden /> Relancer l'agent
+            </button>
+          )}
+          <button className="btn-quiet" disabled={act.isPending} onClick={() => act.mutate("manual")}>
+            <Check className="h-4 w-4" aria-hidden /> Je l'ai saisie à la main
+          </button>
+        </div>
+      )}
+      {act.error && (
+        <div className="mt-3">
+          <ErrorNote error={act.error} />
+        </div>
+      )}
+    </section>
+  );
+}

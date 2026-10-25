@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Lock, Plus, Unlock } from "lucide-react";
+import { BadgeCheck, Lock, Plus, Unlock } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { api } from "../api/client";
@@ -8,14 +8,17 @@ import { useAuth } from "../auth";
 import { ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
 import { fmtDate, fmtDateTime, fmtPct } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
+import { AgentTab } from "./AgentSettings";
 
-type Tab = "sites" | "utilisateurs" | "contrat" | "priorite" | "audit";
+type Tab = "sites" | "utilisateurs" | "contrat" | "priorite" | "charge" | "agent" | "audit";
 
 const TABS: Array<{ value: Tab; label: string }> = [
   { value: "sites", label: "Sites et lits" },
   { value: "utilisateurs", label: "Utilisateurs" },
   { value: "contrat", label: "Référence et contrat" },
   { value: "priorite", label: "Priorisation" },
+  { value: "charge", label: "Charge en soins" },
+  { value: "agent", label: "Agent et routage" },
   { value: "audit", label: "Journal d'audit" }
 ];
 
@@ -43,6 +46,8 @@ export function SettingsPage() {
       {tab === "utilisateurs" && <UsersTab />}
       {tab === "contrat" && <ContractTab />}
       {tab === "priorite" && <WeightsTab />}
+      {tab === "charge" && <CareMinutesTab />}
+      {tab === "agent" && <AgentTab />}
       {tab === "audit" && <AuditTab />}
     </>
   );
@@ -299,6 +304,7 @@ function UsersTab() {
   const invalidate = useInvalidateAll();
   const users = useQuery({ queryKey: ["users"], queryFn: () => api<User[]>("/users") });
   const [adding, setAdding] = useState(false);
+  const [linking, setLinking] = useState<User | null>(null);
   const toggle = useMutation({
     mutationFn: (u: User) => api<User>(`/users/${u.id}`, { method: "PATCH", json: { active: !u.active } }),
     onSuccess: invalidate
@@ -313,13 +319,14 @@ function UsersTab() {
       {users.error && <ErrorNote error={users.error} />}
       {toggle.error && <ErrorNote error={toggle.error} />}
       <div className="panel relative overflow-x-auto">
-        <table className="w-full min-w-[640px] text-[15px]">
+        <table className="w-full min-w-[760px] text-[15px]">
           <caption className="sr-only">Utilisateurs</caption>
           <thead>
             <tr className="border-b border-line text-left text-[13px] text-ink-faint">
               <th className="px-5 py-3 font-normal">Nom</th>
               <th className="px-3 py-3 font-normal">Rôle</th>
               <th className="px-3 py-3 font-normal">Périmètre</th>
+              <th className="px-3 py-3 font-normal">Identité fédérée</th>
               <th className="px-5 py-3 font-normal">
                 <span className="sr-only">Actions</span>
               </th>
@@ -334,6 +341,22 @@ function UsersTab() {
                 </td>
                 <td className="px-3 py-3">{label(vocab.data?.roles, u.role)}</td>
                 <td className="px-3 py-3">{u.role === "coordination" ? siteName(u.site_id) : "Tout le groupe"}</td>
+                <td className="px-3 py-3">
+                  {u.role === "ingestion" ? (
+                    <span className="text-[13px] text-ink-faint">Compte de service, mot de passe</span>
+                  ) : (
+                    <button className="btn-ghost -ml-2 px-2 py-1 text-left text-[14px]" onClick={() => setLinking(u)}>
+                      {u.oidc_subject ? (
+                        <span className="flex items-center gap-1.5">
+                          <BadgeCheck className="h-4 w-4 text-lagoon" aria-hidden />
+                          <span className="num">{u.oidc_subject}</span>
+                        </span>
+                      ) : (
+                        <span className="text-ink-faint">Lié à la 1re connexion</span>
+                      )}
+                    </button>
+                  )}
+                </td>
                 <td className="px-5 py-3 text-right">
                   {u.id !== me?.id && (
                     <button className="btn-quiet px-3 py-1.5 text-[14px]" onClick={() => toggle.mutate(u)}>
@@ -347,7 +370,59 @@ function UsersTab() {
         </table>
       </div>
       {adding && <UserModal onClose={() => setAdding(false)} />}
+      {linking && <IdentityModal user={linking} onClose={() => setLinking(null)} />}
     </div>
+  );
+}
+
+function IdentityModal({ user, onClose }: { user: User; onClose: () => void }) {
+  const invalidate = useInvalidateAll();
+  const [subject, setSubject] = useState(user.oidc_subject ?? "");
+  const save = useMutation({
+    mutationFn: (value: string | null) =>
+      api<User>(`/users/${user.id}`, { method: "PATCH", json: { oidc_subject: value ?? "" } }),
+    onSuccess: () => {
+      invalidate();
+      onClose();
+    }
+  });
+  return (
+    <Modal title={`Identité fédérée, ${user.full_name}`} onClose={onClose}>
+      <form
+        onSubmit={(e: FormEvent) => {
+          e.preventDefault();
+          save.mutate(subject.trim() || null);
+        }}
+      >
+        <p className="text-ink-soft">
+          Identifiant transmis par le fournisseur d'identité (Pro Santé Connect : identifiant national, RPPS précédé de 8 ;
+          annuaire de l'établissement : identifiant de l'agent). Laissez vide pour lier le compte automatiquement à la première
+          connexion, par l'adresse e-mail ou l'identifiant configuré.
+        </p>
+        <label className="field mt-4" htmlFor="oidc-sub">
+          Identifiant
+        </label>
+        <input id="oidc-sub" className="input num" maxLength={255} value={subject} onChange={(e) => setSubject(e.target.value)} />
+        {save.error && (
+          <div className="mt-3">
+            <ErrorNote error={save.error} />
+          </div>
+        )}
+        <div className="mt-6 flex flex-wrap justify-end gap-2">
+          {user.oidc_subject && (
+            <button type="button" className="btn-danger mr-auto" disabled={save.isPending} onClick={() => save.mutate(null)}>
+              Délier
+            </button>
+          )}
+          <button type="button" className="btn-ghost" onClick={onClose}>
+            Annuler
+          </button>
+          <button type="submit" className="btn-primary" disabled={save.isPending}>
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
@@ -669,6 +744,92 @@ function WeightsTab() {
         Enregistrer la priorisation
       </button>
       {save.isSuccess && <p className="mt-2 text-[14px] text-lagoon-dark" role="status">Priorisation enregistrée.</p>}
+    </section>
+  );
+}
+
+const CARE_KEYS: Array<{ key: string; label: string; hint: string }> = [
+  { key: "1", label: "Niveau 1, léger", hint: "autonome, surveillance simple" },
+  { key: "2", label: "Niveau 2, modéré", hint: "aide partielle aux actes de la vie quotidienne" },
+  { key: "3", label: "Niveau 3, lourd", hint: "aide totale, soins techniques fréquents" },
+  { key: "4", label: "Niveau 4, très lourd", hint: "dépendance totale, soins techniques lourds" },
+  { key: "entree", label: "Surcroît d'une entrée", hint: "accueil, recueil, installation" },
+  { key: "sortie", label: "Surcroît d'une sortie", hint: "préparation, transmissions, lit" }
+];
+
+function CareMinutesTab() {
+  const settings = useGroupSettings();
+  const invalidate = useInvalidateAll();
+  const [minutes, setMinutes] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (settings.data) setMinutes(Object.fromEntries(Object.entries(settings.data.care_minutes).map(([k, v]) => [k, String(v)])));
+  }, [settings.data]);
+  const save = useMutation({
+    mutationFn: () =>
+      api<GroupSettings>("/settings", {
+        method: "PUT",
+        json: { care_minutes: Object.fromEntries(Object.entries(minutes).map(([k, v]) => [k, Number(v)])) }
+      }),
+    onSuccess: invalidate
+  });
+  if (settings.isLoading) return <Spinner />;
+  if (settings.error) return <ErrorNote error={settings.error} />;
+  return (
+    <section className="panel max-w-3xl px-6 py-5">
+      <h2>Minutes de soins par jour et par patient</h2>
+      <p className="mt-1 text-ink-soft">
+        La charge prévue multiplie ces minutes par la probabilité de présence de chaque patient. Les valeurs de départ sont des
+        hypothèses : calez-les sur l'outil de mesure de charge de vos unités (temps soignant observé par niveau), puis vérifiez
+        l'écart dans le rejeu de la page Charge en soins.
+      </p>
+      <form
+        className="mt-5"
+        onSubmit={(e: FormEvent) => {
+          e.preventDefault();
+          save.mutate();
+        }}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          {CARE_KEYS.map((c) => (
+            <div key={c.key}>
+              <label className="field" htmlFor={`cm-${c.key}`}>
+                {c.label}
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id={`cm-${c.key}`}
+                  type="number"
+                  min={0}
+                  max={1440}
+                  step={5}
+                  required
+                  className="input num"
+                  value={minutes[c.key] ?? ""}
+                  onChange={(e) => setMinutes({ ...minutes, [c.key]: e.target.value })}
+                  aria-describedby={`cm-${c.key}-hint`}
+                />
+                <span className="mt-1 text-ink-soft">min</span>
+              </div>
+              <p id={`cm-${c.key}-hint`} className="mt-1 text-[13px] text-ink-faint">
+                {c.hint}
+              </p>
+            </div>
+          ))}
+        </div>
+        {save.error && (
+          <div className="mt-3">
+            <ErrorNote error={save.error} />
+          </div>
+        )}
+        <button className="btn-primary mt-6" type="submit" disabled={save.isPending}>
+          Enregistrer les minutes
+        </button>
+        {save.isSuccess && (
+          <p className="mt-2 text-[14px] text-lagoon-dark" role="status">
+            Minutes enregistrées. La charge prévue est recalculée.
+          </p>
+        )}
+      </form>
     </section>
   );
 }

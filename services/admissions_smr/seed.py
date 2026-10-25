@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from services.admissions_smr.models import (
     AdmissionRequest,
+    AgentState,
     BedPool,
     CapacityChange,
     Group,
@@ -307,21 +308,28 @@ def seed_demo(
 
     _add_open_requests(session, group, sites, today, zone, rng, coordinator.id, next_patient)
     _add_staffing(session, group, sites, today)
+    # The agent is declared but has never connected: replies to portal requests are queued
+    # and wait for it, which is what a group sees on the day it installs the agent.
+    session.add(AgentState(group_id=group.id, updated_at=now))
     session.commit()
     return group
 
 
 def _add_staffing(session: Session, group: Group, sites: dict[str, Site], today: date) -> None:
-    """Weekly care hours sized near the expected load, thinner at weekends, plus two gaps."""
+    """Weekly care hours sized to cover a near-full unit, thinner at weekends, plus two gaps.
+
+    The margin is set so that tension is the exception it should be in a staffed unit:
+    weekends and the two short-staffed days stand out, ordinary weekdays do not.
+    """
     mean_minutes = {
         m: sum(w * c for w, c in zip(ws, (45, 90, 150, 240), strict=True)) / 100
         for m, ws in CARE_LEVEL_WEIGHTS.items()
     }
     for site in sites.values():
         for pool in site.pools:
-            base = pool.beds_open * 0.9 * mean_minutes[pool.mention] / 60
+            base = pool.beds_open * mean_minutes[pool.mention] / 60
             for weekday in range(7):
-                factor = 0.9 if weekday >= 5 else 1.08
+                factor = 0.98 if weekday >= 5 else 1.12
                 session.add(
                     StaffPlan(
                         group_id=group.id,
@@ -333,6 +341,7 @@ def _add_staffing(session: Session, group: Group, sites: dict[str, Site], today:
                     )
                 )
     tilleuls = sites["SMR Les Tilleuls"]
+    geriatrie = next(p for p in tilleuls.pools if p.mention == "geriatrie")
     for k in (2, 3):
         session.add(
             StaffPlan(
@@ -340,7 +349,7 @@ def _add_staffing(session: Session, group: Group, sites: dict[str, Site], today:
                 site_id=tilleuls.id,
                 mention="geriatrie",
                 day=today + timedelta(days=k),
-                care_hours=round(40 * 0.9 * mean_minutes["geriatrie"] / 60 * 0.78, 1),
+                care_hours=round(geriatrie.beds_open * mean_minutes["geriatrie"] / 60 * 0.85, 1),
                 comment="Deux arrêts maladie non remplacés (démo)",
                 updated_at=datetime.now(UTC),
             )
