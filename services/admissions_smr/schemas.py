@@ -36,6 +36,7 @@ class UserOut(BaseModel):
     role: str
     site_id: int | None
     active: bool
+    oidc_subject: str | None = None
 
 
 class LoginOut(BaseModel):
@@ -65,6 +66,7 @@ class UserUpdate(Strict):
     site_id: int | None = None
     active: bool | None = None
     password: str | None = Field(default=None, min_length=10, max_length=200)
+    oidc_subject: str | None = Field(default=None, max_length=255)
 
     @field_validator("role")
     @classmethod
