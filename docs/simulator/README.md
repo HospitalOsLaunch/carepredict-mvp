@@ -15,6 +15,8 @@ réunies ; implémentation complète et qualification v0.3 à établir.**
 | Spécification, PR #23 | `844008eaf4d7ad8332840c2f24200009b7a8e64c` | `docs/simulator/spec-v0.3.md` |
 
 Depuis la racine : **`python3 demo.py`** (Python 3.11+, Node.js 22+ avec npm).
+Le [comparateur A0/A1](comparison.md) ajoute deux exécutions isolées, leur
+notation après clôture, les contrôles de neutralité et un export rejouable.
 Le [guide de lancement](dynamic-demo.md) décrit la préparation automatique, les
 ports, l'arrêt et les limites de la démo. Cette intégration ne clôture aucun
 jalon M1–M4 et n'attribue aucune qualification au simulateur complet.

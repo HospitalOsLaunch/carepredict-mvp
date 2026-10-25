@@ -21,6 +21,12 @@ SOURCE = "si-simule"
 LIMIT = 3 * 3600
 
 
+def indexed_duration(seed: int, mechanism: str, entity: str, support: tuple[int, ...]) -> int:
+    """One occurrence per entity/mechanism in this scenario; never a sequential RNG."""
+    key = f"demo-world-1|{seed}|{mechanism}|{entity}|0".encode()
+    return support[int.from_bytes(hashlib.sha256(key).digest()[:8], "big") % len(support)]
+
+
 @dataclass
 class PhysicalBed:
     id: str
@@ -116,9 +122,7 @@ class HospitalSimulation:
         self.journal.append(TruthEvent(self.second, kind, patient, bed))
 
     def _duration(self, mechanism: str, entity: str, support: tuple[int, ...]) -> int:
-        # One occurrence per mechanism/entity in this bounded scenario. No redraw on refusal.
-        key = f"demo-world-1|{self.seed}|{mechanism}|{entity}|0".encode()
-        return support[int.from_bytes(hashlib.sha256(key).digest()[:8], "big") % len(support)]
+        return indexed_duration(self.seed, mechanism, entity, support)
 
     def _observe(self) -> None:
         if self.feed_enabled:

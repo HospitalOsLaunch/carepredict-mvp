@@ -285,8 +285,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             view = request(f"{origin}/api/demo/evaluate", b"{}")
             if not view.get("can_apply") or not view.get("episode"):
                 raise DemoError("Le scénario initial n'a pas produit de proposition applicable.")
+            pair = request(
+                f"{origin}/api/demo/compare",
+                b'{"horizon_minutes":1,"policy":"disabled"}',
+            )
+            if (
+                pair.get("schema_version") != "PAIRED_DEMO_1"
+                or pair.get("waiting_patient_minutes_saved") != 0
+                or pair.get("physical_trajectories_identical") is not True
+            ):
+                raise DemoError("Le contrôle de neutralité A0/A1 a échoué.")
             say(
-                "Vérification réussie : cockpit → proxy → simulateur → planificateur. "
+                "Vérification réussie : cockpit → proxy → simulateur → planificateur, "
+                "comparaison A0/A1 neutre. "
                 "Arrêt des services."
             )
             return 0

@@ -1,0 +1,537 @@
+{
+  "schema_version": "PAIRED_DEMO_1",
+  "comparison_id": "6d6cf65ebc6ecdbd189044a44f7cea657c7f48b163fdc7e362c77e50a2edd4ee",
+  "scope": "fictional_scenario_only_no_effectiveness_claim",
+  "manifest": {
+    "scenario_version": "geriatric-three-beds-1",
+    "engine_version": "DYNAMIC_DEMO_1",
+    "baseline_policy": "observed-cleaning-bed-id-and-compatible-fifo-1",
+    "recommendation_policy": "hybrid-every-300s-from-30s-1",
+    "scorer_version": "truth-wait-integral-1",
+    "config": {
+      "seed": 7,
+      "horizon_minutes": 60,
+      "policy": "accept"
+    },
+    "starts_at": "2026-10-25T07:30:00Z",
+    "ends_at": "2026-10-25T08:30:00Z",
+    "first_assessment_second": 30,
+    "assessment_interval_seconds": 300,
+    "solicitation_seconds_per_command": 30,
+    "planning_options": {
+      "assumptions": {
+        "provenance": "synthetic_hypothesis",
+        "version": "release-allocate-v2",
+        "cleaning_minutes": [
+          15,
+          20,
+          25
+        ],
+        "departure_minutes": [
+          60,
+          120,
+          180
+        ],
+        "transport_minutes": [
+          30,
+          60,
+          90
+        ],
+        "transport_return_minutes": [
+          30,
+          60
+        ],
+        "load_multipliers": [
+          1
+        ]
+      },
+      "horizon_minutes": 120,
+      "scenarios": 16,
+      "seed": 7
+    },
+    "initial_state": {
+      "beds": [
+        {
+          "id": "G01",
+          "oxygen": false,
+          "occupant": null,
+          "hygiene": "dirty",
+          "opened": true,
+          "reserved_for": null
+        },
+        {
+          "id": "G02",
+          "oxygen": true,
+          "occupant": null,
+          "hygiene": "dirty",
+          "opened": true,
+          "reserved_for": null
+        },
+        {
+          "id": "G03",
+          "oxygen": false,
+          "occupant": "P-G00",
+          "hygiene": "ready",
+          "opened": true,
+          "reserved_for": null
+        }
+      ],
+      "patients": [
+        {
+          "id": "P-G00",
+          "since": -86400,
+          "oxygen": false,
+          "status": "admitted",
+          "bed": "G03",
+          "cleared": true
+        },
+        {
+          "id": "P-G01",
+          "since": 0,
+          "oxygen": true,
+          "status": "waiting",
+          "bed": null,
+          "cleared": false
+        }
+      ],
+      "cleaning_teams": 1,
+      "coordinators": 1,
+      "observation_interval_seconds": 60,
+      "observation_delivery_seconds": 30,
+      "first_cleaning_dispatch_second": 120,
+      "installation_seconds": 60
+    },
+    "exogenous_primitives": {
+      "demo-world-1|7|cleaning|G01|0": 1500,
+      "demo-world-1|7|cleaning|G02|0": 1200,
+      "demo-world-1|7|cleaning|G03|0": 900,
+      "arrival:P-G02:0:second": 600,
+      "departure:P-G00:0:second": 2400
+    },
+    "source_sha256": {
+      "operational/contract.py": "ea19d6bf8b2bf3984b6db1743848eda07cab4696de8da57ee4c1efd33a4763a0",
+      "simulator/__init__.py": "117b56dc44ec60317dff76479a9bf076e3b970af076d21cf4119ad5cfca8b040",
+      "simulator/comparison.py": "1955369508012d16e9646e4e1a552576ba005a474488fcd76e9cb7e408098c64",
+      "simulator/engine.py": "10581169e3f67caf4f729618df2c1d0a905fc7d1212210b4f48c438237181d1e",
+      "simulator/evaluation.py": "0519cca3758c72f7a2d19828df7a74d65301c03f315f018e2d11517df85b10d7",
+      "simulator/feed.py": "3cdf88de0a795e0b3dfab8a030154114f19ebd28b1ca1082d2d3ac8da5a539f4",
+      "simulator/session.py": "24ddec630eda7978dac73a656ab35dbe69e784f2370dbb9135858f9dcab1de62",
+      "hybrid/__init__.py": "01c9ec75edacec842955b31b1b19b4c7bb3d5ce68e887155d6aefb7cd47a22c2",
+      "hybrid/__main__.py": "dfcbc1cdae8a18ee4d07f1fe4cfae668c6a4b1e441cb551abfa5af030df63de0",
+      "hybrid/continuous.py": "ac7ff10615fecd2d87a43ffecb5f60fd28c7c514ea4cf67ab6908a5ff9c54089",
+      "hybrid/cusum.py": "c00f8f8297223fe5d092904ca3bba871b61bf7a3f7683da9f97d75fc8121fee0",
+      "hybrid/decision_benchmark.py": "bca57053d04beed06388c6211639aa4752382b342e4f8a89e1fd1cadaaee8ca4",
+      "hybrid/decision_cases.py": "067620eb0efc9a9c9b6e3d5094d35dc75690dd3cb38a7fe9c80bef8160dc09ed",
+      "hybrid/decision_guard.py": "acfd964cb65493a5a90d7c1260c372455e0d5d0c1e2981b4ee52c5a647b89eee",
+      "hybrid/demo.py": "637bf680b5757919616cb4cbd08f4730e877e0b8b5e2b9b2d0436b109e9b7f1c",
+      "hybrid/innovations.py": "673348e758fe5b4dd126318a31b57106d82562783fa014c3b9f15acf226a3fd6",
+      "hybrid/journal.py": "4c9710330eb2d21d0049cce78fd4c24b0861d048deff92c185b73985bf725a68",
+      "hybrid/learning_demo.py": "358a9f2fe75886ab6699c36613d8ac7997cbe94b932d116459c1ee3340c1cea4",
+      "hybrid/live_models.py": "ec611e2aef6fdc35890fe296872813c1379ea68c4c6c907011e4b3089fb932b7",
+      "hybrid/live_store.py": "5711661e6b4f0fb01c0c1d2b6d2095957611f5af432abbead2911ed2870f4225",
+      "hybrid/live_workflow.py": "693a208c1564d13726db2a06ac7685492c7d9cb0867b2c0b94b1cde33f0d2e28",
+      "hybrid/models.py": "93042e3cf3d4e8375d58b628ae4e063e1a8b48d318a3592182c3474c1f6d45c4",
+      "hybrid/pathway.py": "5317e5c75217adce809a1454db90373d453d2aadf8beeada4dfca2d390160edd",
+      "hybrid/planning.py": "cf9ff650b5752180709b0ba2320b3c49942908f5114653f3a5a41ff2c3348bd0",
+      "hybrid/preparation.py": "7a06b7c6a5d3b63c4c234ca6c188fbd091eb9c13ef7341890ce56c45299f42e3",
+      "hybrid/retrospective.py": "59dceb8586d4934074d3ef7f3065e4ab6c01a8a6be88938c9962c374ff0e9c15",
+      "hybrid/robustness_diagnostics.py": "20f24e50bebd3f4ed7561f0186ed60c0ba64e74ddb72f9155ffeed5ed17e6555",
+      "hybrid/robustness_models.py": "1f9501499da4f74952b7b25dc52dbd0bc2c98231dae0342ff0fe232d002d2bc9",
+      "hybrid/robustness_queue.py": "ab97e3b1e34fb544eb824a4369537be6f22f4b1bae812df62625455cb6222584",
+      "hybrid/robustness_report.py": "e02c495b5b8a914db2a8b1ef692013408b426a2b4078f9f23b6770c288398545",
+      "hybrid/robustness_v2.py": "370861c62cbfb534551cfe27c1933dadbe9e95c5a7040512c78852dd4e24840c",
+      "hybrid/scenarios.py": "81fa012d33758e895476b3dd57a0a0780174a5e7a34f6ace7ead87c11f7d26e5",
+      "hybrid/scoring.py": "2409c3f6859b15383564560b5ffd3773ca3c8cc3b2fdf87fb573da148d6d88ca",
+      "hybrid/shadow.py": "0af34f074c183140675abb7eb7957596f18bb8d80255aefce6b8df1969e634fa",
+      "hybrid/simulation.py": "c3e8d5ece8ff6cc303f5194214502b7b701a01a16e5ed0a3c006e0189b9705ee",
+      "hybrid/source_adapter.py": "7b08e7683827bf19281a514bea9d4bfcf3344cecde8b3fbdb468df139d135a45",
+      "hybrid/source_cli.py": "96e6f76053f8f5dde09ce337676a4c2d647bb50af0d4f7271356f43eb2f9ee28",
+      "hybrid/source_contract.py": "9270da5035efccfca6be3d12a05d569b26dcdd243f6c285986ac48e08c807c2f",
+      "hybrid/source_demo.py": "d6cef954580dfa6275b239d7224f7e38c24e0aff094a50fec9fb7ebc34728227",
+      "hybrid/stress_preparation.py": "8baf0be425dee20aae7aa6bd52ec35da9cdcbbf0bc9d74bfeebcc8b800c868ed",
+      "hybrid/survival.py": "9a1aa1add2bbb92f4f18d5ce1da5e256784214167208590c0a4824e0831f4282",
+      "hybrid/workflow.py": "7142b0babcfd07520579ad26305ac7f49cb6734e811702648719273659c7d600"
+    },
+    "runtime_versions": {
+      "python": "3.12.14",
+      "simpy": "4.1.2",
+      "pydantic": "2.14.1",
+      "numpy": "2.3.5",
+      "scikit-learn": "1.8.0"
+    }
+  },
+  "a0": {
+    "evaluation": {
+      "waiting_patient_minutes": 67.0,
+      "waiting_at_end": 0,
+      "admitted_at_end": 2,
+      "departed": 1,
+      "patients_total": 3,
+      "completed_cleanings": 2,
+      "coordination_tasks": 0,
+      "scope": "fictional_scenario_only_no_effectiveness_claim"
+    },
+    "installed_during_episode": 2,
+    "solicitation_seconds_requested": 0,
+    "decisions": [],
+    "commands": [],
+    "truth_journal": [
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-G00",
+        "bed": "G03"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-G01",
+        "bed": null
+      },
+      {
+        "second": 120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 600.0,
+        "kind": "arrived",
+        "patient": "P-G02",
+        "bed": null
+      },
+      {
+        "second": 1620.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 1620.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 1650.0,
+        "kind": "reserved",
+        "patient": "P-G02",
+        "bed": "G01"
+      },
+      {
+        "second": 1710.0,
+        "kind": "installed",
+        "patient": "P-G02",
+        "bed": "G01"
+      },
+      {
+        "second": 2400.0,
+        "kind": "departed",
+        "patient": "P-G00",
+        "bed": "G03"
+      },
+      {
+        "second": 2820.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 2820.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 2850.0,
+        "kind": "reserved",
+        "patient": "P-G01",
+        "bed": "G02"
+      },
+      {
+        "second": 2910.0,
+        "kind": "installed",
+        "patient": "P-G01",
+        "bed": "G02"
+      }
+    ]
+  },
+  "a1": {
+    "evaluation": {
+      "waiting_patient_minutes": 62.0,
+      "waiting_at_end": 0,
+      "admitted_at_end": 2,
+      "departed": 1,
+      "patients_total": 3,
+      "completed_cleanings": 2,
+      "coordination_tasks": 1,
+      "scope": "fictional_scenario_only_no_effectiveness_claim"
+    },
+    "installed_during_episode": 2,
+    "solicitation_seconds_requested": 30,
+    "decisions": [
+      {
+        "second": 30.0,
+        "snapshot_fingerprint": "9899e5c64d84bdefd0b2e7601dd79eb06bbe5096a0460e6a59085867c013e3b7",
+        "plan_id": "0cda8a21c354927d36e98013fe5d96ed5e41796346db36570a226a069cfea08f",
+        "decision": "recommend",
+        "action": "prioritize_cleaning",
+        "bed_id": "G02",
+        "patient_id": null,
+        "reasons": [
+          "lower_simulated_waiting_cost_requires_human_approval"
+        ],
+        "request_id": "paired-decision-0"
+      },
+      {
+        "second": 330.0,
+        "snapshot_fingerprint": "02d3150bcf8eb44d14715751f71d4ee6e9e98b010c2fad4f00e8a5948bd0958a",
+        "plan_id": "0528484184d30889d641558281bab6e1b0af0f729475ce34a0601947dd15015a",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 630.0,
+        "snapshot_fingerprint": "57991eb938e0af7d5c69628f39986ee1f504d905e9ffeba7509b3bae0db07a26",
+        "plan_id": "e6c29d57eedc66784938f54118611598424dd503ca20a91283c9af27a2ca3281",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 930.0,
+        "snapshot_fingerprint": "57991eb938e0af7d5c69628f39986ee1f504d905e9ffeba7509b3bae0db07a26",
+        "plan_id": "0a306ad991b16ec9f7ad59d94f4f1cb214d455426f136e3621d4ec05e8015d96",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 1230.0,
+        "snapshot_fingerprint": "57991eb938e0af7d5c69628f39986ee1f504d905e9ffeba7509b3bae0db07a26",
+        "plan_id": "a5fdac65639c547e6b8b7daa20bc410083995753e198c81ee0a18109164cca89",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 1530.0,
+        "snapshot_fingerprint": "c05e2126649a7979a0eabaffdb3291764a11eb2529e19b9ded484ad261854550",
+        "plan_id": "29fa921f3292760500067e518bbbc5f005bd7d06a5a1a903a57f5b9e674df5d7",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 1830.0,
+        "snapshot_fingerprint": "c05e2126649a7979a0eabaffdb3291764a11eb2529e19b9ded484ad261854550",
+        "plan_id": "0fcc77ef1683707d0845487cd24a117c82bae0798a8ad30a6998e3ce1462333a",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 2130.0,
+        "snapshot_fingerprint": "c05e2126649a7979a0eabaffdb3291764a11eb2529e19b9ded484ad261854550",
+        "plan_id": "84ff4fe51ee21ffa0f1587fbfdfb8b18e9094d52892879e392de83d3a6229349",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 2430.0,
+        "snapshot_fingerprint": "42bb34caf4364c67b0adc3f64c532bbc03587f28b196e765aa2e81f6cded225b",
+        "plan_id": "e5f3bce4700678ceec8faac5d7b373bcaa0df1ef374c76f7f480d46d92971e94",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 2730.0,
+        "snapshot_fingerprint": "42bb34caf4364c67b0adc3f64c532bbc03587f28b196e765aa2e81f6cded225b",
+        "plan_id": "6de95bd84c2a38ebb42966b25d70cdbc6f3b944ca3c8bf0d349fe1a1f2931b31",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 3030.0,
+        "snapshot_fingerprint": "d3ab004dd8eb8dc7ba9d78790f56243fa0ea835821ac3de1d8b48383f14a2d15",
+        "plan_id": "3bd040d8841c39f1ef1f142bc89b03dbd583abdb612f12d7ee8dae45ba068ac6",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      },
+      {
+        "second": 3330.0,
+        "snapshot_fingerprint": "d3ab004dd8eb8dc7ba9d78790f56243fa0ea835821ac3de1d8b48383f14a2d15",
+        "plan_id": "8f99c0e935086a7fedcb6d3def304e15b22634731bce2bcbc98ebe5cc4448f48",
+        "decision": "no_change",
+        "action": "no_op",
+        "bed_id": null,
+        "patient_id": null,
+        "reasons": [
+          "no_admissible_simulated_improvement"
+        ],
+        "request_id": null
+      }
+    ],
+    "commands": [
+      {
+        "request_id": "paired-decision-0",
+        "plan_id": "0cda8a21c354927d36e98013fe5d96ed5e41796346db36570a226a069cfea08f",
+        "at": "2026-10-25T07:30:30Z",
+        "status": "executed",
+        "outcome_at": "2026-10-25T07:31:00Z",
+        "processing_seconds": 30,
+        "effect_scope": "simulator_only"
+      }
+    ],
+    "truth_journal": [
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-G00",
+        "bed": "G03"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-G01",
+        "bed": null
+      },
+      {
+        "second": 30.0,
+        "kind": "coordination_requested",
+        "patient": null,
+        "bed": null
+      },
+      {
+        "second": 60.0,
+        "kind": "cleaning_prioritized",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 600.0,
+        "kind": "arrived",
+        "patient": "P-G02",
+        "bed": null
+      },
+      {
+        "second": 1320.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 1320.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 1350.0,
+        "kind": "reserved",
+        "patient": "P-G01",
+        "bed": "G02"
+      },
+      {
+        "second": 1410.0,
+        "kind": "installed",
+        "patient": "P-G01",
+        "bed": "G02"
+      },
+      {
+        "second": 2400.0,
+        "kind": "departed",
+        "patient": "P-G00",
+        "bed": "G03"
+      },
+      {
+        "second": 2820.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 2820.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 2850.0,
+        "kind": "reserved",
+        "patient": "P-G02",
+        "bed": "G01"
+      },
+      {
+        "second": 2910.0,
+        "kind": "installed",
+        "patient": "P-G02",
+        "bed": "G01"
+      }
+    ]
+  },
+  "waiting_patient_minutes_saved": 5.0,
+  "waiting_patient_hours_saved": 0.08333333333333333,
+  "physical_trajectories_identical": false
+}

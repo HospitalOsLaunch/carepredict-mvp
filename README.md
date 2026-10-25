@@ -19,6 +19,9 @@ les dépendances tant que leurs fichiers de référence n'ont pas changé.
 `.env` n'est nécessaire pour ce parcours.
 
 Dans le cockpit : **Évaluer le scénario → Appliquer dans le scénario → +5 minutes**.
+Le panneau **Sans / avec HospitalOS** lance aussi deux épisodes isolés A0/A1,
+mesure leur attente cumulée et exporte leurs paramètres, décisions et journaux.
+Voir le [protocole et le rejeu des comparaisons](docs/simulator/comparison.md).
 Le scénario porte sur trois lits fictifs ; il ne qualifie pas l'ensemble du moteur
 prévu par v0.3. Voir le [guide de lancement et de dépannage](docs/simulator/dynamic-demo.md)
 et la [provenance de l'intégration](docs/simulator/README.md#branche-commune).

@@ -2,6 +2,7 @@ import type { Simulation } from "../data/useSimulation";
 import type { CommandReceipt } from "../api/simulator";
 import { actionTitle, explain } from "../domain/labels";
 import { clock, longClock } from "../domain/view";
+import { ComparisonPanel } from "./Comparison";
 
 const STATUS: Record<CommandReceipt["status"], string> = {
   accepted: "Acceptée, traitement en cours",
@@ -17,6 +18,7 @@ export function SimulationPanel({ simulation }: { simulation: Simulation }) {
   const plan = view?.episode?.assessment.plan;
   const last = view?.commands.at(-1);
   return (
+    <>
     <section className="simulation-panel" aria-label="Piloter le scénario">
       <div className="simulation-panel__heading">
         <div>
@@ -66,6 +68,8 @@ export function SimulationPanel({ simulation }: { simulation: Simulation }) {
         <p>Recommencer reproduit les mêmes aléas. Les actions ne concernent que cette séance fictive.</p>
       </details>
     </section>
+    <ComparisonPanel />
+    </>
   );
 }
 

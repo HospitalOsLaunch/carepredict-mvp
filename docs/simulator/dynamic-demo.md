@@ -21,6 +21,17 @@ Prérequis : **Python 3.11+ et Node.js 22+ avec npm**. Depuis la racine du dép�
 python3 demo.py
 ```
 
+Pour récupérer ou mettre à jour cette branche depuis un clone initialement limité
+à `claude/cockpit-web` avec `--single-branch`, arrêter les anciens serveurs puis :
+
+```bash
+git remote set-branches --add origin codex/integrated-demo
+git fetch origin
+git switch codex/integrated-demo
+git pull --ff-only
+python3 demo.py
+```
+
 Le premier lancement crée `.venv-demo`, installe les dépendances et la pile numérique épinglées
 dans `requirements-demo.txt` et lance `npm ci` avec `web/package-lock.json`.
 Il nécessite un accès aux registres Python/npm. Les lancements suivants réutilisent
@@ -44,7 +55,7 @@ python3 demo.py --no-browser                       # afficher le lien sans ouvri
 python3 demo.py --port 5180 --api-port 8010         # autres ports locaux
 python3 demo.py --setup-only                       # préparer les dépendances seulement
 python3 demo.py --no-install                       # exiger une installation déjà préparée
-python3 demo.py --check                            # lancer, vérifier HTTP + planificateur, arrêter
+python3 demo.py --check                            # vérifier HTTP, planificateur et neutralité A0/A1
 ```
 
 Le script fonctionne aussi depuis un autre dossier en utilisant son chemin absolu.
@@ -57,6 +68,13 @@ Le paramètre `source=simulator` impose
 une source connectée : une indisponibilité du serveur produit une erreur visible,
 sans substitution par des fixtures. `npm run build:demo` reste l'aperçu statique
 historique ; ce fichier autonome ne contient pas de moteur Python.
+
+Le panneau **Sans / avec HospitalOS** lance une comparaison depuis le début du
+scénario, sans reprendre les décisions ni modifier la séance interactive.
+Choisir une graine, une durée et la réponse aux recommandations, puis **Comparer**.
+Les résultats mesurés après clôture sont exportables en JSON, avec les journaux
+et les empreintes du code. Le [protocole de comparaison](comparison.md) décrit
+la politique A0/A1, les coûts, les limites et le rejeu en ligne de commande.
 
 Pour travailler dans deux terminaux, après `python3 demo.py --setup-only` :
 

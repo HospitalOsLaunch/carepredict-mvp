@@ -3100,6 +3100,17 @@ textarea.input {
   align-self: center;
 }
 /* Connected simulation uses the same unit view, with explicit scenario controls. */
+.comparison-panel__settings { display: flex; align-items: end; flex-wrap: wrap; gap: 16px; border: 0; padding: 0; margin: 20px 0; min-width: 0; }
+.comparison-panel__settings label { display: flex; flex-direction: column; gap: 8px; font-size: .875rem; min-width: 0; max-width: 100%; }
+.comparison-panel__settings .select { max-width: 100%; }
+.comparison-panel__seed { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: inherit; color: var(--ink); background: var(--sheet); width: 150px; max-width: 100%; }
+.comparison-panel__outcome { background: var(--brand-wash); padding: 18px; border-radius: 12px; margin: 20px 0; }
+.comparison-panel__outcome strong { font-size: 1.15rem; }
+.comparison-panel__table { overflow-x: auto; }
+.comparison-panel table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.comparison-panel th, .comparison-panel td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+.comparison-panel td { font-variant-numeric: tabular-nums; }
+.comparison-panel tbody th { font-weight: 400; }
 .simulation-panel {
   margin: 0 0 24px;
   padding: 24px;

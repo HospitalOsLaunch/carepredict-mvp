@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
+from threading import Lock
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -10,12 +11,19 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from hospitalos.hybrid.live_models import LiveSnapshot, PlanningOptions, ShadowEpisode
+from hospitalos.simulator.comparison import (
+    ComparisonEnvironmentChanged,
+    ComparisonRequest,
+    ComparisonResult,
+    compare,
+)
 from hospitalos.simulator.session import ControlRequest, DecisionRequest, DemoSession, DemoView
 from services.api.hybrid_app import create_app as create_hybrid_app
 
 
 def create_app(session: DemoSession) -> FastAPI:
     app = create_hybrid_app()
+    comparison_lock = Lock()
     app.title = "HospitalOS - démonstration dynamique locale"
     app.add_middleware(
         TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "[::1]", "testserver"]
@@ -33,6 +41,20 @@ def create_app(session: DemoSession) -> FastAPI:
     @app.get("/demo/session", response_model=DemoView)
     def status() -> DemoView:
         return session.view()
+
+    @app.post("/demo/compare", response_model=ComparisonResult)
+    def compare_episodes(request: ComparisonRequest) -> ComparisonResult:
+        # Bound CPU work to one pair at a time; interactive state is never locked or changed.
+        if not comparison_lock.acquire(blocking=False):
+            raise HTTPException(status_code=429, detail="comparison_already_running")
+        try:
+            return compare(request)
+        except ComparisonEnvironmentChanged as error:
+            raise HTTPException(
+                status_code=503, detail="comparison_environment_changed_restart_required"
+            ) from error
+        finally:
+            comparison_lock.release()
 
     @app.post("/demo/evaluate", response_model=DemoView)
     def assess() -> DemoView:
