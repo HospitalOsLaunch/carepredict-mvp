@@ -178,6 +178,9 @@ class BrowserSession:
         x, y = self._inside(x, y)
         self.page.mouse.move(x, y)
         self.page.mouse.wheel(dx, dy)
+        # Wheel scrolling is applied asynchronously: let it land before the next screenshot,
+        # or the model would aim at where things were.
+        self.page.wait_for_timeout(200)
 
     def _settle(self) -> None:
         # A submitting click starts its navigation a few milliseconds after it returns: give
