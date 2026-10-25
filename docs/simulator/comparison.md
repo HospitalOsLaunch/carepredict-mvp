@@ -16,6 +16,30 @@ modifie pas cette séance. Une séance en lecture poursuit son horloge normale.
 Changer les paramètres efface le résultat affiché pour éviter une attribution
 à une mauvaise configuration. Une erreur ne produit aucun résultat de remplacement.
 
+### Dépannage du comparateur
+
+Une séance interactive terminée ne bloque pas la comparaison : les deux épisodes
+sont indépendants. En revanche, après un `git pull`, Vite peut actualiser le
+cockpit alors que le processus Python continue d'exécuter l'ancien backend.
+Arrêter la démo avec **Ctrl+C**, puis relancer **`python3.11 demo.py`** et recharger
+la page pour disposer des deux composants à jour.
+
+Le message d'erreur distingue maintenant : endpoint absent (HTTP 404/405),
+comparaison déjà en cours (429), exception interne du moteur (500), indisponibilité
+du moteur/proxy (502/503/504), provenance modifiée imposant un redémarrage,
+réponse incompatible et délai client de 120 secondes dépassé. Ce délai ne tue pas
+le calcul côté serveur : attendre sa fin avant de réessayer avec une heure simulée.
+
+Si l'erreur persiste après redémarrage, conserver le statut affiché et les lignes
+du terminal après `POST /demo/compare`. Pour vérifier rapidement l'endpoint,
+depuis un second terminal pendant que la démo tourne (port par défaut) :
+
+```bash
+curl -i -sS --max-time 30 -X POST http://127.0.0.1:8000/demo/compare \
+  -H 'Content-Type: application/json' \
+  -d '{"seed":7,"horizon_minutes":1,"policy":"disabled"}'
+```
+
 ## Politiques figées et informations disponibles
 
 | Branche / mode | Comportement |

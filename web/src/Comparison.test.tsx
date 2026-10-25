@@ -74,6 +74,34 @@ it.each([429, 503])("shows HTTP %s without substituting results", async (status)
   expect(screen.queryByRole("button", { name: /Exporter/ })).toBeNull();
 });
 
+it("identifies a missing comparison endpoint after a frontend-only update", async () => {
+  vi.mocked(fetch).mockResolvedValue(response({ detail: "Not Found" }, 404));
+  start();
+  const alert = await screen.findByRole("alert");
+  expect(alert.textContent).toMatch(/HTTP 404/);
+  expect(alert.textContent).toMatch(/ancien backend/);
+  expect(alert.textContent).toMatch(/Ctrl\+C/);
+  expect(screen.queryByRole("table")).toBeNull();
+});
+
+it("reports a backend exception without mislabeling it as a lost connection", async () => {
+  vi.mocked(fetch).mockResolvedValue(response({ detail: "Internal Server Error" }, 500));
+  start();
+  const alert = await screen.findByRole("alert");
+  expect(alert.textContent).toMatch(/erreur interne \(HTTP 500\)/);
+  expect(alert.textContent).toMatch(/POST \/demo\/compare/);
+  expect(screen.queryByRole("table")).toBeNull();
+});
+
+it("explains a client timeout without claiming that the server calculation stopped", async () => {
+  vi.mocked(fetch).mockRejectedValue(new DOMException("aborted", "AbortError"));
+  start();
+  const alert = await screen.findByRole("alert");
+  expect(alert.textContent).toMatch(/120 secondes/);
+  expect(alert.textContent).toMatch(/peut encore terminer/);
+  expect(screen.queryByRole("table")).toBeNull();
+});
+
 it("rejects an obsolete schema or a response for another configuration", async () => {
   const config = { seed: 7, horizon_minutes: 60, policy: "accept" as const };
   vi.mocked(fetch).mockResolvedValue(response({ ...result, schema_version: "old" }));

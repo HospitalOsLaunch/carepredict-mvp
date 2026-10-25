@@ -116,10 +116,14 @@ def test_running_server_rejects_code_changed_since_import(monkeypatch: pytest.Mo
         session.close()
 
 
-def test_api_is_isolated_from_interactive_state_and_rejects_invalid_inputs() -> None:
+@pytest.mark.parametrize("completed", [False, True])
+def test_api_is_isolated_from_interactive_state_and_rejects_invalid_inputs(completed: bool) -> None:
     session = DemoSession(monotonic=lambda: 0)
     try:
         session.engine.advance(600)
+        if completed:
+            session.engine.advance(10800 - session.engine.second)
+            session.completed = True
         before = session.view()
         journal = tuple(session.engine.journal)
         with TestClient(simulator_app.create_app(session)) as client:

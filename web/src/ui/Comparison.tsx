@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ApiError } from "../api/client";
-import { compareEpisodes, downloadComparison, type ComparisonConfig, type ComparisonResult } from "../api/comparison";
+import { compareEpisodes, comparisonError, downloadComparison, type ComparisonConfig, type ComparisonResult } from "../api/comparison";
 
 const number = (value: number) => value.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
 const policies = {
@@ -32,11 +31,7 @@ export function ComparisonPanel() {
       const next = await compareEpisodes({ seed: Number(seed), horizon_minutes: horizon, policy });
       if (token === generation.current) setResult(next);
     } catch (e) {
-      if (token === generation.current) setError(e instanceof ApiError && e.detail === "comparison_environment_changed_restart_required"
-        ? "Le code ou les dépendances ont changé. Arrêtez la démo puis relancez demo.py avant de comparer."
-        : e instanceof ApiError && e.status === 429
-        ? "Une comparaison est déjà en cours. Réessayez une fois son calcul terminé."
-        : "La comparaison n'a pas abouti. Vérifiez la connexion au simulateur puis réessayez. Aucun résultat de remplacement n'est affiché.");
+      if (token === generation.current) setError(comparisonError(e));
     } finally {
       if (token === generation.current) { pending.current = false; setBusy(false); }
     }
