@@ -1,0 +1,81 @@
+name: dynamic-demo
+
+on:
+  pull_request:
+    paths:
+      - 'src/hospitalos/simulator/**'
+      - 'src/hospitalos/virtual/**'
+      - 'services/api/virtual_app.py'
+      - 'tests/virtual/**'
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'services/api/simulator_app.py'
+      - 'tests/simulator/**'
+      - 'tests/hybrid/**'
+      - 'pyproject.toml'
+      - 'demo.py'
+      - 'requirements-demo.txt'
+      - 'Makefile'
+      - 'tests/demo/**'
+      - 'docs/simulator/**'
+      - 'web/**'
+      - '.github/workflows/dynamic-demo.yml'
+  push:
+    branches: ['main']
+    paths:
+      - 'src/hospitalos/simulator/**'
+      - 'src/hospitalos/virtual/**'
+      - 'services/api/virtual_app.py'
+      - 'tests/virtual/**'
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'services/api/simulator_app.py'
+      - 'tests/simulator/**'
+      - 'tests/hybrid/**'
+      - 'pyproject.toml'
+      - 'demo.py'
+      - 'requirements-demo.txt'
+      - 'Makefile'
+      - 'tests/demo/**'
+      - 'web/**'
+
+permissions:
+  contents: read
+
+jobs:
+  connected-scenario:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Prepare the same installation as the one-command demo
+        run: python demo.py --setup-only
+      - name: Install test tooling
+        run: .venv-demo/bin/python -m pip install httpx 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
+      - name: Python checks and hybrid regressions
+        run: |
+          .venv-demo/bin/python -m ruff check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator src/hospitalos/virtual services/api/virtual_app.py web/dev/serve_virtual_api.py tests/virtual
+          .venv-demo/bin/python -m ruff format --check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator src/hospitalos/virtual services/api/virtual_app.py web/dev/serve_virtual_api.py tests/virtual
+          PYTHONPATH=src:. .venv-demo/bin/python -m mypy --strict demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator src/hospitalos/virtual services/api/virtual_app.py web/dev/serve_virtual_api.py tests/virtual
+          PYTHONPATH=src:. .venv-demo/bin/python -m pytest -q tests/hybrid tests/simulator tests/demo tests/virtual
+      - name: Verify one-command launch and reuse on alternative ports
+        run: |
+          python demo.py --no-install --check
+          python demo.py --no-install --check --port 5180 --api-port 8010
+          python demo.py --no-install --check --lab --port 5180 --api-port 8010
+      - name: Cockpit checks
+        working-directory: web
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+          npm run build:demo

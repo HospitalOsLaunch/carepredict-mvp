@@ -1,5 +1,13 @@
 # Contributing
 
+## Démonstration intégrée (sans infrastructure)
+
+Avec Python 3.11+ et Node.js 22+ : `python3 demo.py` depuis la racine.
+Cette commande prépare ses dépendances puis lance le backend et le cockpit.
+`python3 demo.py --check` vérifie la connexion HTTP et arrête les deux services.
+Le [guide dédié](docs/simulator/dynamic-demo.md) décrit les options et limites.
+Le setup complet ci-dessous concerne les autres composants du dépôt.
+
 ## Setup local
 
 ```bash

@@ -1,0 +1,2882 @@
+{
+  "schema_version": "HOSPITAL_WORKSPACE_1",
+  "hospital_id": "X1",
+  "hospital_name": "Hôpital X1",
+  "unit_name": "Court séjour gériatrique",
+  "run_id": "8dbe8c8a513747568ba42a630a5987ec",
+  "revision": 0,
+  "now": "2026-10-25T07:30:30Z",
+  "clock_rate": 12.0,
+  "synthetic": true,
+  "snapshot": {
+    "schema_version": "LIVE_UNIT_SNAPSHOT_1",
+    "mode": "shadow",
+    "state": {
+      "hospital_id": "X1",
+      "at": "2026-10-25T07:30:30Z",
+      "fingerprint": "1650ba5c80cd864c662a31eab66754145ffbffeb69ce72a9688a893958fcc375",
+      "units": [
+        {
+          "kind": "unit",
+          "id": "geriatrie",
+          "staffed_beds": 14,
+          "cleaning_teams": 1
+        }
+      ],
+      "beds": [
+        {
+          "kind": "bed",
+          "id": "G01",
+          "unit_id": "geriatrie",
+          "state": "dirty",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G02",
+          "unit_id": "geriatrie",
+          "state": "dirty",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": null,
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G03",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I000",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G04",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I001",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G05",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I002",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G06",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I003",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G07",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I004",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G08",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I005",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G09",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I006",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G10",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I007",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G11",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I008",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G12",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I009",
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G13",
+          "unit_id": "geriatrie",
+          "state": "clean",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        },
+        {
+          "kind": "bed",
+          "id": "G14",
+          "unit_id": "geriatrie",
+          "state": "clean",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        }
+      ],
+      "patients": [
+        {
+          "kind": "patient",
+          "id": "P-I000",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G03",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I001",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G04",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I002",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G05",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I003",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G06",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I004",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G07",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I005",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G08",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I006",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G09",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I007",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G10",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I008",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G11",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-I009",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G12",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-W000",
+          "status": "waiting",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-25T07:30:00Z",
+          "bed_id": null,
+          "medically_cleared": null,
+          "downstream_confirmed": null
+        },
+        {
+          "kind": "patient",
+          "id": "P-W001",
+          "status": "waiting",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-25T07:25:00Z",
+          "bed_id": null,
+          "medically_cleared": null,
+          "downstream_confirmed": null
+        }
+      ],
+      "pools": [],
+      "discharges": [
+        {
+          "kind": "discharge",
+          "id": "P-I000",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I001",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I002",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I003",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I004",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I005",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I006",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I007",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I008",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        },
+        {
+          "kind": "discharge",
+          "id": "P-I009",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      ],
+      "issues": [],
+      "warnings": []
+    },
+    "manifest_version": 1,
+    "expected_entities": [
+      "bed:G01",
+      "bed:G02",
+      "bed:G03",
+      "bed:G04",
+      "bed:G05",
+      "bed:G06",
+      "bed:G07",
+      "bed:G08",
+      "bed:G09",
+      "bed:G10",
+      "bed:G11",
+      "bed:G12",
+      "bed:G13",
+      "bed:G14",
+      "discharge:P-I000",
+      "discharge:P-I001",
+      "discharge:P-I002",
+      "discharge:P-I003",
+      "discharge:P-I004",
+      "discharge:P-I005",
+      "discharge:P-I006",
+      "discharge:P-I007",
+      "discharge:P-I008",
+      "discharge:P-I009",
+      "patient:P-I000",
+      "patient:P-I001",
+      "patient:P-I002",
+      "patient:P-I003",
+      "patient:P-I004",
+      "patient:P-I005",
+      "patient:P-I006",
+      "patient:P-I007",
+      "patient:P-I008",
+      "patient:P-I009",
+      "patient:P-W000",
+      "patient:P-W001",
+      "unit:geriatrie"
+    ],
+    "events": [
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G01",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G01",
+          "unit_id": "geriatrie",
+          "state": "dirty",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G02",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G02",
+          "unit_id": "geriatrie",
+          "state": "dirty",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": null,
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G03",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G03",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I000",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G04",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G04",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I001",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G05",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G05",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I002",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G06",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G06",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I003",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G07",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G07",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I004",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G08",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G08",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I005",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G09",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G09",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I006",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G10",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G10",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I007",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G11",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G11",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [
+            "oxygen"
+          ],
+          "occupant": "P-I008",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G12",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G12",
+          "unit_id": "geriatrie",
+          "state": "occupied",
+          "capabilities": [],
+          "occupant": "P-I009",
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G13",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G13",
+          "unit_id": "geriatrie",
+          "state": "clean",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:bed:G14",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "bed",
+          "id": "G14",
+          "unit_id": "geriatrie",
+          "state": "clean",
+          "capabilities": [],
+          "occupant": null,
+          "reserved_for": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I000",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I000",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I001",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I001",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I002",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I002",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I003",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I003",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I004",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I004",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I005",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I005",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I006",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I006",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I007",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I007",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I008",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I008",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:discharge:P-I009",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "discharge",
+          "id": "P-I009",
+          "documents_ready": false,
+          "escort_required": false,
+          "escort_confirmed": null,
+          "downstream_required": false,
+          "downstream_pool_id": null,
+          "transport_required": false,
+          "transport_pool_id": null,
+          "transport_requested": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I000",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I000",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G03",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I001",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I001",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G04",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I002",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I002",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G05",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I003",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I003",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G06",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I004",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I004",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G07",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I005",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I005",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G08",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I006",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I006",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G09",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I007",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I007",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G10",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I008",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I008",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G11",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-I009",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-I009",
+          "status": "admitted",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-24T07:30:00Z",
+          "bed_id": "G12",
+          "medically_cleared": false,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-W000",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-W000",
+          "status": "waiting",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [
+            "oxygen"
+          ],
+          "priority": 2,
+          "waiting_since": "2026-10-25T07:30:00Z",
+          "bed_id": null,
+          "medically_cleared": null,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:patient:P-W001",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "patient",
+          "id": "P-W001",
+          "status": "waiting",
+          "compatible_units": [
+            "geriatrie"
+          ],
+          "requirements": [],
+          "priority": 1,
+          "waiting_since": "2026-10-25T07:25:00Z",
+          "bed_id": null,
+          "medically_cleared": null,
+          "downstream_confirmed": null
+        }
+      },
+      {
+        "schema_version": "HYBRID_MVP_2",
+        "hospital_id": "X1",
+        "event_id": "observation:1:unit:geriatrie",
+        "version": 1,
+        "source": "virtual-si-X1",
+        "event_time": "2026-10-25T07:30:00Z",
+        "available_at": "2026-10-25T07:30:30Z",
+        "fact": {
+          "kind": "unit",
+          "id": "geriatrie",
+          "staffed_beds": 14,
+          "cleaning_teams": 1
+        }
+      }
+    ],
+    "resources": [
+      {
+        "key": "cleaning:geriatrie",
+        "observed_available": 1,
+        "held": 0,
+        "remaining": 1,
+        "observations": [
+          {
+            "resource": "cleaning",
+            "target_id": "geriatrie",
+            "available": 1,
+            "source": "virtual-si-X1",
+            "observed_at": "2026-10-25T07:30:00Z",
+            "evidence_ref": "direct-observation:1:cleaning"
+          }
+        ],
+        "issues": []
+      },
+      {
+        "key": "staffed:geriatrie",
+        "observed_available": 4,
+        "held": 0,
+        "remaining": 4,
+        "observations": [
+          {
+            "resource": "staffed",
+            "target_id": "geriatrie",
+            "available": 4,
+            "source": "virtual-si-X1",
+            "observed_at": "2026-10-25T07:30:00Z",
+            "evidence_ref": "direct-observation:1:staffed"
+          }
+        ],
+        "issues": []
+      }
+    ],
+    "received_at_by_source": {
+      "virtual-si-X1": "2026-10-25T07:30:30+00:00"
+    },
+    "semantic_fingerprint": "d71db360b3afd0dab692c6e1672c9e1a2207b2f1bfe61956b99f5a567212ab54",
+    "policy_fingerprint": "356eccfa124ccb7d15194307bf7358990880a04b66c83feb6f91b64e0b323d98",
+    "issues": [],
+    "warnings": []
+  },
+  "episode": {
+    "schema_version": "SHADOW_EPISODE_1",
+    "episode_id": "8b3127e462d245b0825e0f65c40d3cb1",
+    "mode": "shadow_only_no_execution",
+    "assessment": {
+      "schema_version": "LIVE_ASSESSMENT_1",
+      "snapshot": {
+        "schema_version": "LIVE_UNIT_SNAPSHOT_1",
+        "mode": "shadow",
+        "state": {
+          "hospital_id": "X1",
+          "at": "2026-10-25T07:30:30Z",
+          "fingerprint": "1650ba5c80cd864c662a31eab66754145ffbffeb69ce72a9688a893958fcc375",
+          "units": [
+            {
+              "kind": "unit",
+              "id": "geriatrie",
+              "staffed_beds": 14,
+              "cleaning_teams": 1
+            }
+          ],
+          "beds": [
+            {
+              "kind": "bed",
+              "id": "G01",
+              "unit_id": "geriatrie",
+              "state": "dirty",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G02",
+              "unit_id": "geriatrie",
+              "state": "dirty",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": null,
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G03",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I000",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G04",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I001",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G05",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I002",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G06",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I003",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G07",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I004",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G08",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I005",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G09",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I006",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G10",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I007",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G11",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I008",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G12",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I009",
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G13",
+              "unit_id": "geriatrie",
+              "state": "clean",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            },
+            {
+              "kind": "bed",
+              "id": "G14",
+              "unit_id": "geriatrie",
+              "state": "clean",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            }
+          ],
+          "patients": [
+            {
+              "kind": "patient",
+              "id": "P-I000",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G03",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I001",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G04",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I002",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G05",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I003",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G06",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I004",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G07",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I005",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G08",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I006",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G09",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I007",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G10",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I008",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G11",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-I009",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G12",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-W000",
+              "status": "waiting",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-25T07:30:00Z",
+              "bed_id": null,
+              "medically_cleared": null,
+              "downstream_confirmed": null
+            },
+            {
+              "kind": "patient",
+              "id": "P-W001",
+              "status": "waiting",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-25T07:25:00Z",
+              "bed_id": null,
+              "medically_cleared": null,
+              "downstream_confirmed": null
+            }
+          ],
+          "pools": [],
+          "discharges": [
+            {
+              "kind": "discharge",
+              "id": "P-I000",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I001",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I002",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I003",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I004",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I005",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I006",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I007",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I008",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            },
+            {
+              "kind": "discharge",
+              "id": "P-I009",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          ],
+          "issues": [],
+          "warnings": []
+        },
+        "manifest_version": 1,
+        "expected_entities": [
+          "bed:G01",
+          "bed:G02",
+          "bed:G03",
+          "bed:G04",
+          "bed:G05",
+          "bed:G06",
+          "bed:G07",
+          "bed:G08",
+          "bed:G09",
+          "bed:G10",
+          "bed:G11",
+          "bed:G12",
+          "bed:G13",
+          "bed:G14",
+          "discharge:P-I000",
+          "discharge:P-I001",
+          "discharge:P-I002",
+          "discharge:P-I003",
+          "discharge:P-I004",
+          "discharge:P-I005",
+          "discharge:P-I006",
+          "discharge:P-I007",
+          "discharge:P-I008",
+          "discharge:P-I009",
+          "patient:P-I000",
+          "patient:P-I001",
+          "patient:P-I002",
+          "patient:P-I003",
+          "patient:P-I004",
+          "patient:P-I005",
+          "patient:P-I006",
+          "patient:P-I007",
+          "patient:P-I008",
+          "patient:P-I009",
+          "patient:P-W000",
+          "patient:P-W001",
+          "unit:geriatrie"
+        ],
+        "events": [
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G01",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G01",
+              "unit_id": "geriatrie",
+              "state": "dirty",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G02",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G02",
+              "unit_id": "geriatrie",
+              "state": "dirty",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": null,
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G03",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G03",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I000",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G04",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G04",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I001",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G05",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G05",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I002",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G06",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G06",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I003",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G07",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G07",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I004",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G08",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G08",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I005",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G09",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G09",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I006",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G10",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G10",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I007",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G11",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G11",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [
+                "oxygen"
+              ],
+              "occupant": "P-I008",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G12",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G12",
+              "unit_id": "geriatrie",
+              "state": "occupied",
+              "capabilities": [],
+              "occupant": "P-I009",
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G13",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G13",
+              "unit_id": "geriatrie",
+              "state": "clean",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:bed:G14",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "bed",
+              "id": "G14",
+              "unit_id": "geriatrie",
+              "state": "clean",
+              "capabilities": [],
+              "occupant": null,
+              "reserved_for": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I000",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I000",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I001",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I001",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I002",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I002",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I003",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I003",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I004",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I004",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I005",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I005",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I006",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I006",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I007",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I007",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I008",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I008",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:discharge:P-I009",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "discharge",
+              "id": "P-I009",
+              "documents_ready": false,
+              "escort_required": false,
+              "escort_confirmed": null,
+              "downstream_required": false,
+              "downstream_pool_id": null,
+              "transport_required": false,
+              "transport_pool_id": null,
+              "transport_requested": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I000",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I000",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G03",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I001",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I001",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G04",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I002",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I002",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G05",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I003",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I003",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G06",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I004",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I004",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G07",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I005",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I005",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G08",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I006",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I006",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G09",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I007",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I007",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G10",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I008",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I008",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G11",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-I009",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-I009",
+              "status": "admitted",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-24T07:30:00Z",
+              "bed_id": "G12",
+              "medically_cleared": false,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-W000",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-W000",
+              "status": "waiting",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [
+                "oxygen"
+              ],
+              "priority": 2,
+              "waiting_since": "2026-10-25T07:30:00Z",
+              "bed_id": null,
+              "medically_cleared": null,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:patient:P-W001",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "patient",
+              "id": "P-W001",
+              "status": "waiting",
+              "compatible_units": [
+                "geriatrie"
+              ],
+              "requirements": [],
+              "priority": 1,
+              "waiting_since": "2026-10-25T07:25:00Z",
+              "bed_id": null,
+              "medically_cleared": null,
+              "downstream_confirmed": null
+            }
+          },
+          {
+            "schema_version": "HYBRID_MVP_2",
+            "hospital_id": "X1",
+            "event_id": "observation:1:unit:geriatrie",
+            "version": 1,
+            "source": "virtual-si-X1",
+            "event_time": "2026-10-25T07:30:00Z",
+            "available_at": "2026-10-25T07:30:30Z",
+            "fact": {
+              "kind": "unit",
+              "id": "geriatrie",
+              "staffed_beds": 14,
+              "cleaning_teams": 1
+            }
+          }
+        ],
+        "resources": [
+          {
+            "key": "cleaning:geriatrie",
+            "observed_available": 1,
+            "held": 0,
+            "remaining": 1,
+            "observations": [
+              {
+                "resource": "cleaning",
+                "target_id": "geriatrie",
+                "available": 1,
+                "source": "virtual-si-X1",
+                "observed_at": "2026-10-25T07:30:00Z",
+                "evidence_ref": "direct-observation:1:cleaning"
+              }
+            ],
+            "issues": []
+          },
+          {
+            "key": "staffed:geriatrie",
+            "observed_available": 4,
+            "held": 0,
+            "remaining": 4,
+            "observations": [
+              {
+                "resource": "staffed",
+                "target_id": "geriatrie",
+                "available": 4,
+                "source": "virtual-si-X1",
+                "observed_at": "2026-10-25T07:30:00Z",
+                "evidence_ref": "direct-observation:1:staffed"
+              }
+            ],
+            "issues": []
+          }
+        ],
+        "received_at_by_source": {
+          "virtual-si-X1": "2026-10-25T07:30:30+00:00"
+        },
+        "semantic_fingerprint": "d71db360b3afd0dab692c6e1672c9e1a2207b2f1bfe61956b99f5a567212ab54",
+        "policy_fingerprint": "356eccfa124ccb7d15194307bf7358990880a04b66c83feb6f91b64e0b323d98",
+        "issues": [],
+        "warnings": []
+      },
+      "plan": {
+        "schema_version": "HYBRID_PLAN_4",
+        "evidence": "simulation_under_declared_assumptions",
+        "decision": "recommend",
+        "plan_id": "8789eba0cc9f71ceb263b807335391c2dce75850d968e31de16e2c77430bd7e9",
+        "hospital_id": "X1",
+        "state_fingerprint": "1650ba5c80cd864c662a31eab66754145ffbffeb69ce72a9688a893958fcc375",
+        "created_at": "2026-10-25T07:30:30Z",
+        "expires_at": "2026-10-25T07:45:30Z",
+        "selected": {
+          "kind": "prioritize_cleaning",
+          "bed_id": "G02",
+          "patient_id": null
+        },
+        "reasons": [
+          "lower_simulated_waiting_cost_requires_human_approval"
+        ],
+        "warnings": [],
+        "candidates": [
+          {
+            "action": {
+              "kind": "no_op",
+              "bed_id": null,
+              "patient_id": null
+            },
+            "mean_waiting_patient_minutes": 40.0,
+            "worst_decile_waiting_patient_minutes": 45.0,
+            "objective": 41.25,
+            "violations": [],
+            "scenarios_with_unserved_demand": 0,
+            "max_waiting_at_end": 0,
+            "max_arrived": 0,
+            "mean_staffed_pressure": 0.0,
+            "mean_cleaning_pressure": 0.0,
+            "mean_transport_pressure": 0.0,
+            "mean_downstream_pressure": 0.0,
+            "pressure_regression_scenarios": 0
+          },
+          {
+            "action": {
+              "kind": "prioritize_cleaning",
+              "bed_id": "G01",
+              "patient_id": null
+            },
+            "mean_waiting_patient_minutes": 40.0,
+            "worst_decile_waiting_patient_minutes": 45.0,
+            "objective": 41.25,
+            "violations": [],
+            "scenarios_with_unserved_demand": 0,
+            "max_waiting_at_end": 0,
+            "max_arrived": 0,
+            "mean_staffed_pressure": 0.0,
+            "mean_cleaning_pressure": 0.0,
+            "mean_transport_pressure": 0.0,
+            "mean_downstream_pressure": 0.0,
+            "pressure_regression_scenarios": 0
+          },
+          {
+            "action": {
+              "kind": "prioritize_cleaning",
+              "bed_id": "G02",
+              "patient_id": null
+            },
+            "mean_waiting_patient_minutes": 20.625,
+            "worst_decile_waiting_patient_minutes": 25.0,
+            "objective": 21.71875,
+            "violations": [],
+            "scenarios_with_unserved_demand": 0,
+            "max_waiting_at_end": 0,
+            "max_arrived": 0,
+            "mean_staffed_pressure": 0.0,
+            "mean_cleaning_pressure": 0.0,
+            "mean_transport_pressure": 0.0,
+            "mean_downstream_pressure": 0.0,
+            "pressure_regression_scenarios": 0
+          },
+          {
+            "action": {
+              "kind": "reserve_bed",
+              "bed_id": "G13",
+              "patient_id": "P-W001"
+            },
+            "mean_waiting_patient_minutes": 40.0,
+            "worst_decile_waiting_patient_minutes": 45.0,
+            "objective": 41.25,
+            "violations": [],
+            "scenarios_with_unserved_demand": 0,
+            "max_waiting_at_end": 0,
+            "max_arrived": 0,
+            "mean_staffed_pressure": 0.0,
+            "mean_cleaning_pressure": 0.0,
+            "mean_transport_pressure": 0.0,
+            "mean_downstream_pressure": 0.0,
+            "pressure_regression_scenarios": 0
+          },
+          {
+            "action": {
+              "kind": "reserve_bed",
+              "bed_id": "G14",
+              "patient_id": "P-W001"
+            },
+            "mean_waiting_patient_minutes": 40.0,
+            "worst_decile_waiting_patient_minutes": 45.0,
+            "objective": 41.25,
+            "violations": [],
+            "scenarios_with_unserved_demand": 0,
+            "max_waiting_at_end": 0,
+            "max_arrived": 0,
+            "mean_staffed_pressure": 0.0,
+            "mean_cleaning_pressure": 0.0,
+            "mean_transport_pressure": 0.0,
+            "mean_downstream_pressure": 0.0,
+            "pressure_regression_scenarios": 0
+          }
+        ],
+        "candidates_truncated": false,
+        "assumptions": {
+          "provenance": "synthetic_hypothesis",
+          "version": "release-allocate-v2",
+          "cleaning_minutes": [
+            15,
+            20,
+            25
+          ],
+          "departure_minutes": [
+            60,
+            120,
+            180
+          ],
+          "transport_minutes": [
+            30,
+            60,
+            90
+          ],
+          "transport_return_minutes": [
+            30,
+            60
+          ],
+          "load_multipliers": [
+            1
+          ]
+        },
+        "future": null,
+        "preparation": null,
+        "seed": 7,
+        "scenarios": 8,
+        "horizon_minutes": 120,
+        "tail_weight": 0.25,
+        "discharge_readiness": [
+          {
+            "patient_id": "P-I000",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I001",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I002",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I003",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I004",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I005",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I006",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I007",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I008",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          },
+          {
+            "patient_id": "P-I009",
+            "stage": "medical_not_confirmed",
+            "blockers": [
+              "medical_authorization_not_confirmed",
+              "documents_not_confirmed"
+            ]
+          }
+        ],
+        "service_status": "served_in_all_sampled_scenarios"
+      },
+      "gate_reasons": [],
+      "expires_at": "2026-10-25T07:32:30Z"
+    },
+    "commands_emitted": 0,
+    "causal_effect_established": false
+  },
+  "can_decide": true,
+  "decisions": [],
+  "activity": {
+    "admissions": 0,
+    "departures": 0,
+    "arrivals": 0
+  }
+}

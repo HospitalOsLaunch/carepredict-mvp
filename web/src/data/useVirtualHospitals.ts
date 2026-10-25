@@ -1,0 +1,73 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ApiError } from "../api/client";
+import { virtualApi, type Hospital, type HospitalView } from "../api/virtual";
+import { fromLive, unitSummary } from "../domain/view";
+import type { Store } from "./useAssessment";
+export interface Workspace {
+  view: HospitalView | null; hospitals: Hospital[]; store: Store;
+  decide: (accept: boolean, reason?: string) => void;
+}
+export function useVirtualHospitals(enabled: boolean): Workspace {
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [id, setId] = useState("");
+  const [view, setView] = useState<HospitalView | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const generation = useRef(0);
+  const pending = useRef<"read" | "mutation" | null>(null);
+  const current = useRef<HospitalView | null>(null);
+  const run = useCallback(async (operation: () => Promise<HospitalView>, mutation = false) => {
+    if (!enabled || !id || pending.current === "mutation" || (!mutation && pending.current)) return;
+    const token = ++generation.current;
+    pending.current = mutation ? "mutation" : "read";
+    if (mutation) setBusy(true);
+    try {
+      const next = await operation();
+      if (token !== generation.current || next.hospital_id !== id) return;
+      current.current = next; setView(next); setError(null);
+    } catch (e) {
+      if (token !== generation.current) return;
+      setError(e instanceof ApiError && e.status === 409
+        ? "La proposition a changé. La vue va être actualisée avant toute nouvelle décision."
+        : "Connexion à l’établissement interrompue. Les données affichées peuvent être anciennes. Le journal permettra de vérifier la réception d’une décision.");
+    } finally {
+      if (token === generation.current) { pending.current = null; setBusy(false); }
+    }
+  }, [enabled, id]);
+  const refresh = useCallback(() => { void run(() => virtualApi.read(id)); }, [run, id]);
+  useEffect(() => {
+    if (!enabled) return;
+    let active = true;
+    const load = async () => {
+      try { const catalog = await virtualApi.catalog(); if (active) { setHospitals(catalog); setId(old => old || catalog[0]!.id); } }
+      catch { if (active) setError("Impossible de joindre les établissements. Nouvelle tentative automatique."); }
+    };
+    void load(); const timer = window.setInterval(() => { void load(); }, 15000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [enabled]);
+  useEffect(() => {
+    if (!enabled || !id) return;
+    refresh(); const timer = window.setInterval(refresh, 1500);
+    return () => { window.clearInterval(timer); ++generation.current; pending.current = null; };
+  }, [enabled, id, refresh]);
+  const select = useCallback((next: string) => {
+    if (!hospitals.some(h => h.id === next) || next === id) return;
+    ++generation.current; pending.current = null; current.current = null;
+    setView(null); setError(null); setBusy(false); setId(next);
+  }, [hospitals, id]);
+  const decide = useCallback((accept: boolean, reason = "") => {
+    const v = current.current;
+    if (v && v.hospital_id === id && v.can_decide && !error)
+      void run(() => virtualApi.decide(v, accept, reason, crypto.randomUUID()), true);
+  }, [run, error, id]);
+  const episode = view?.episode;
+  const assessment = view ? fromLive(view.snapshot, episode?.assessment.plan ?? null,
+    view.snapshot.issues, "api-live", episode?.episode_id ?? null, episode?.assessment.expires_at ?? null) : null;
+  const name = hospitals.find(h => h.id === id)?.name ?? "Établissements";
+  const store: Store = { connection: "virtual", units: hospitals.map(h => ({ id: h.id, name: h.name, situations: [] })),
+    summaries: [unitSummary(id, name, assessment)], unitId: id, unitName: `${name} · ${view?.unit_name ?? "Gériatrie"}`,
+    setUnit: select, situations: [], situationId: "", setSituation: () => undefined,
+    assessment, awaitingEvaluation: !episode, busy, error, evaluate: refresh,
+    quality: null, shadowSummary: null, loadedAt: 0 };
+  return { view, hospitals, store, decide };
+}

@@ -1,0 +1,47 @@
+{
+ "report": {
+  "schema_version": "UNIT_SOURCE_QUALITY_1",
+  "status": "OBSERVATION_ONLY",
+  "receipt_at": "2026-10-24T06:30:40Z",
+  "evaluation_mode": "quality_only",
+  "state_ready": true,
+  "shadow_episode_created": false,
+  "profile_fingerprint": "77f8765cbde596ae69a40a57bcb94571296359e2f51507c15bea1776f7e46025",
+  "content_fingerprint": "a8f9b7921b336a73d44f2bfce7f1d517173d4cfca37038123798cd42aba730c9",
+  "records_by_kind": {
+   "unit": 1,
+   "bed": 14,
+   "patient": 14,
+   "pool": 2,
+   "discharge": 5,
+   "availability": 4
+  },
+  "expected_entities": 36,
+  "delivered_entities": 36,
+  "missing_values_by_field": {
+   "bed.fact.occupant": 4,
+   "bed.fact.reserved_for": 14,
+   "discharge.fact.documents_ready": 1,
+   "discharge.fact.downstream_pool_id": 3,
+   "discharge.fact.escort_confirmed": 5,
+   "discharge.fact.escort_required": 1,
+   "discharge.fact.transport_pool_id": 3,
+   "discharge.fact.transport_requested": 3,
+   "discharge.fact.transport_required": 1,
+   "patient.fact.bed_id": 4,
+   "patient.fact.downstream_confirmed": 13,
+   "patient.fact.medically_cleared": 10
+  },
+  "issues": [],
+  "state_gate_counts": {},
+  "max_fact_age_seconds": 280.0,
+  "max_source_delay_seconds": 0.0,
+  "max_resource_age_seconds": 100.0,
+  "export_transfer_seconds": 40.0,
+  "commands_emitted": 0,
+  "clinical_validation": false
+ },
+ "duplicate": false,
+ "current_state_assessed": true,
+ "episode_id": null
+}

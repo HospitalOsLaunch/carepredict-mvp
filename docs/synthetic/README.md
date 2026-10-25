@@ -1,5 +1,11 @@
 # Socle synthétique et générateur multi-pôles — lot 01
 
+> **Référence du nouveau banc mono-unité :**
+> [spécification consolidée v0.3](../simulator/spec-v0.3.md) et
+> [plan de raccordement à l'existant](../simulator/README.md).
+> Cette révision documentaire distingue ses jalons du moteur historique v0.4.1 ;
+> elle ne requalifie pas les lots ni leurs résultats.
+
 Le [lot 02](lot02.md) ajoute un pipeline séparé d'observations telles que connues
 et une référence de prévision à 24 h à partir des sorties décrites ici.
 Le [lot 03](lot03.md) ajoute le registre de cohortes et réserve des structures

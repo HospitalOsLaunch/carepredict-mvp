@@ -1,7 +1,7 @@
 COMPOSE ?= docker compose
 PYTHON ?= python3
 
-.PHONY: up down seed features test logs clean lint type-check docker-build
+.PHONY: up down seed features test logs clean lint type-check docker-build demo demo-legacy
 
 up:
 	$(COMPOSE) up -d --build
@@ -33,7 +33,10 @@ frontend-test:
 	npm --prefix services/dashboard run build
 	npm --prefix services/dashboard run test
 
-demo: up train
+demo:
+	$(PYTHON) demo.py
+
+demo-legacy: up train
 	@echo "API: http://localhost:8000/docs"
 	@echo "Dashboard: http://localhost:5173/dashboard"
 
@@ -54,3 +57,4 @@ type-check:
 
 docker-build:
 	$(COMPOSE) build
+

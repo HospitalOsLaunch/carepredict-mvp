@@ -1,5 +1,63 @@
 # HospitalOS / CarePredict MVP
 
+## Lancer le produit connecté aux hôpitaux virtuels
+
+Cette branche réunit le backend hybride, le cockpit, la
+[spécification v0.3](docs/simulator/spec-v0.3.md) et trois établissements autonomes.
+Prérequis : **Python 3.11+ et Node.js 22+ avec npm**.
+
+```bash
+python3 demo.py
+```
+
+Une commande prépare les dépendances et ouvre le cockpit métier : choisir
+**Hôpital X1, X2 ou X3**, consulter les lits et les patients, valider ou refuser une
+proposition, suivre son effet et le journal. Les établissements tournent en arrière-plan.
+**Ctrl+C arrête les services et conserve les décisions.** Aucun Docker ni entraînement ML.
+Les ports par défaut sont 5173/8000, avec sélection d’un voisin libre si nécessaire.
+
+Le [guide des hôpitaux virtuels](docs/simulator/virtual-hospitals.md) décrit la reprise,
+les hypothèses et les campagnes A0/A1 hors du parcours produit. Le laboratoire
+historique reste disponible par `python3 demo.py --lab` ; l’aperçu statique reste
+un mode distinct. Ces mondes fictifs servent à éprouver l’usage, sans prétendre
+qualifier l’ensemble de v0.3 ni démontrer un bénéfice hospitalier.
+
+`make demo` lance le même produit. `make demo-legacy` conserve l’ancien parcours Docker.
+
+## New MVP direction: explicit state, probabilistic simulation, assisted decisions
+
+The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:
+bitemporal patient/resource facts, constrained single-action proposals, joint
+scenario simulation, independent event-log scoring, and a persistent sandbox
+approval workflow. Its standalone local API does not load the TFT/RSSM stack.
+The release-to-allocation slice adds explicit discharge logistics, shared transport
+teams, finite downstream places and a sandbox transport-request action.
+Declared future scenarios now support synthetic arrivals, bed admission closures
+and capacity changes, paired across actions with independent ledger checks.
+A censor-aware preparation-time learner now compares a pooled hazard baseline
+with gradient boosting on four separate synthetic time windows. Its optional
+JSON distributions replace preparation delays while preserving resource queues.
+
+Start with `PYTHONPATH=src python -m hospitalos.hybrid --demo` and the
+[hybrid MVP scope, API, tests and next stages](docs/operational/hybrid-mvp.md).
+Run `PYTHONPATH=src python -m hospitalos.hybrid --demo-pathway --show-trace` for
+the [release-to-allocation pathway and its limits](docs/operational/release-allocate.md).
+Use `--demo-future --show-trace` for the
+[arrivals and perturbations slice](docs/operational/future-events.md).
+Use `--demo-learned --show-trace` for the
+[learned preparation contract and temporal protocol](docs/operational/learned-preparation.md).
+The [endpoint audit](docs/operational/preparation-endpoint-protocol.md) prepares
+retrospective labels from timestamped events. A [frozen stress suite](docs/operational/preparation-stress-protocol.md)
+checks changed mechanisms and explicitly reports the learner's limitations.
+The [decision benchmark](docs/operational/decision-robustness.md) compares the
+reference, boosting and a supervised mixture with delayed labels, paired actions
+and an independent arithmetic oracle. Its scientific result is inconclusive.
+The [v2 protocol](docs/operational/decision-v2-protocol.md) adds continuous correlated
+preparation, stronger baselines, stable-stream CUSUM calibration and paired
+trajectory inference. All policies remain research-only.
+This is a synthetic prototype with declared future hypotheses, not a validated hospital deployment.
+The forecasting and world-model research paths documented below remain separate.
+
 HospitalOS is building a hospital operations world model: an AI system that learns how hospital pressure evolves across care workload, staffing, beds, patient flow, and capacity.
 
 The current MVP, CarePredict, validates the first wedge of this vision by forecasting nursing workload from SIIPS-style operational time series. It includes a synthetic-data pipeline, FastAPI serving layer, and a v2 forecasting stack combining a TS-JEPA encoder, RSSM dynamics, and direct multi-horizon prediction.
@@ -14,6 +72,16 @@ what is in the repo, how to run the main paths, and where the authoritative
 measurement artifacts live.
 
 ## What To Review First
+
+### Hospital Simulator Specification
+
+- [Simulator specification v0.3](docs/simulator/spec-v0.3.md): consolidated
+  business, scientific and interface requirements for the geriatric unit simulator,
+  with milestones M1–M4 and twenty acceptance scenarios.
+- [Integration map and implementation sequence](docs/simulator/README.md):
+  reuse candidates in the synthetic foundation and draft PR #22, explicit gaps,
+  version boundaries and evidence still required. This is a documentary revision,
+  not a qualification of the complete simulator; the bounded dynamic demo is available above.
 
 ### Synthetic Research Foundation
 
@@ -303,3 +371,4 @@ License: TODO. No tracked license file is present in this checkout.
 
 Contact: TODO. Add the repository owner or project contact before sharing
 outside the private review group.
+

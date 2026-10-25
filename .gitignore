@@ -1,5 +1,6 @@
 .env
 .venv/
+.venv-demo/
 node_modules/
 __pycache__/
 *.py[cod]
@@ -64,3 +65,8 @@ artifacts/
 pyproject.toml.backup
 pyproject.toml.before_*
 runs/
+
+
+# Local fictional hospital persistence and research outputs
+.hospitalos-virtual/
+virtual-campaigns/
