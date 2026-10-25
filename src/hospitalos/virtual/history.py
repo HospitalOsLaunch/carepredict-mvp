@@ -6,7 +6,7 @@ import hashlib
 import json
 import math
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -96,6 +96,36 @@ class History:
                 json.dumps(rows, separators=(",", ":")).encode()
             ).hexdigest(),
         }
+        self.model["shift_models"] = []
+        cutoff = len(rows) - 169
+        for horizon in (8, 24):
+            train_x = np.array([self.features(row) for row in rows[: cutoff - horizon + 1]])
+            train_y = np.array([row[1] for row in rows[horizon : cutoff + 1]], dtype=float)
+            val_x = np.array([self.features(row) for row in rows[cutoff:-horizon]])
+            val_y = np.array([row[1] for row in rows[cutoff + horizon :]], dtype=float)
+            coef = np.linalg.solve(train_x.T @ train_x + penalty, train_x.T @ train_y)
+            predicted = np.clip(val_x @ coef, 0, self.capacity)
+            error = float(np.mean(np.abs(predicted - val_y)))
+            naive_error = float(np.mean(np.abs(val_x[:, 1] - val_y)))
+            selected = "ridge" if error < naive_error else "persistence"
+            chosen = predicted if selected == "ridge" else val_x[:, 1]
+            low, high = np.quantile(val_y - chosen, [0.1, 0.9])
+            self.model["shift_models"].append(
+                {
+                    "horizon_hours": horizon,
+                    "coefficients": coef.tolist(),
+                    "selected": selected,
+                    "mae_beds": round(error, 4),
+                    "persistence_mae_beds": round(naive_error, 4),
+                    "residual_low": float(low),
+                    "residual_high": float(high),
+                    "training_pairs": len(train_y),
+                    "validation_pairs": len(val_y),
+                    "train_target_until": rows[cutoff][0],
+                    "validation_target_from": rows[cutoff + horizon][0],
+                    "interval_label": "Plage empirique 10–90 % sur validation synthétique",
+                }
+            )
         with self.db:
             self.db.execute("INSERT INTO models VALUES (1, ?)", (json.dumps(self.model),))
 
@@ -106,6 +136,28 @@ class History:
         prediction = float(latest[1])
         if self.model["selected"] == "ridge":
             prediction = float(np.dot(self.features(latest), self.model["coefficients"]))
+        shifts = []
+        for model in self.model.get("shift_models", []):
+            expected = (
+                float(np.dot(self.features(latest), model["coefficients"]))
+                if model["selected"] == "ridge"
+                else float(latest[1])
+            )
+            expected = max(0, min(self.capacity, expected))
+            shifts.append(
+                {
+                    **model,
+                    "origin": latest[0],
+                    "at": (
+                        datetime.fromisoformat(latest[0]) + timedelta(hours=model["horizon_hours"])
+                    ).isoformat(),
+                    "occupied": round(expected, 1),
+                    "lower": round(max(0, min(self.capacity, expected + model["residual_low"])), 1),
+                    "upper": round(
+                        max(0, min(self.capacity, expected + model["residual_high"])), 1
+                    ),
+                }
+            )
         daily: dict[str, list[int]] = {}
         for row in rows:
             day = datetime.fromisoformat(row[0]).astimezone(PARIS).date().isoformat()
@@ -128,6 +180,7 @@ class History:
                 {"at": r[0], "occupied": r[1], "waiting": r[2], "ready": r[3]} for r in rows[-48:]
             ],
             "model": self.model,
+            "shift_forecasts": shifts,
             "forecast": {
                 "origin": latest[0],
                 "horizon_minutes": 60,

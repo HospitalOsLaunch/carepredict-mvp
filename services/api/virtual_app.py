@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from hospitalos.virtual.campus import CampusFleet
+from hospitalos.virtual.operations import Operation
 from hospitalos.virtual.runtime import Decision, HospitalRuntime, HospitalView, VirtualFleet
 
 
@@ -55,6 +56,30 @@ def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) 
             "schema_version": "HOSPITAL_WORKSPACE_1",
         }
 
+    @app.get("/product/hospitals/H1/workspace")
+    def workspace() -> dict[str, Any]:
+        if not isinstance(fleet, CampusFleet) or fleet.ops is None:
+            raise HTTPException(status_code=404, detail="unknown_workspace")
+        with fleet.lock:
+            if fleet.errors:
+                raise HTTPException(status_code=503, detail="hospital_feed_unavailable")
+            return fleet.ops.view()
+
+    @app.post("/product/hospitals/H1/operations")
+    def operate(operation: Operation) -> dict[str, Any]:
+        if not isinstance(fleet, CampusFleet) or fleet.ops is None:
+            raise HTTPException(status_code=404, detail="unknown_workspace")
+        try:
+            if fleet.errors:
+                raise RuntimeError("hospital_feed_unavailable")
+            return fleet.ops.submit(operation)
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail="unknown_unit_or_entity") from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        except RuntimeError as error:
+            raise HTTPException(status_code=503, detail="hospital_feed_unavailable") from error
+
     @app.get("/product/hospitals/H1/overview")
     def overview() -> dict[str, Any]:
         if not isinstance(fleet, CampusFleet):
@@ -66,7 +91,7 @@ def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) 
         if not isinstance(fleet, CampusFleet):
             raise HTTPException(status_code=404, detail="unknown_hospital")
         unit = hospital(unit_id)
-        with unit.lock:
+        with fleet.lock, unit.lock:
             return fleet.histories[unit_id].summary()
 
     @app.get("/product/hospitals/H1/units/{unit_id}/history/export")
@@ -77,7 +102,7 @@ def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) 
         if not isinstance(fleet, CampusFleet):
             raise HTTPException(status_code=404, detail="unknown_hospital")
         unit = hospital(unit_id)
-        with unit.lock:
+        with fleet.lock, unit.lock:
             stream = io.StringIO()
             writer = csv.DictWriter(stream, fieldnames=["at", "occupied", "waiting", "ready"])
             writer.writeheader()
@@ -92,7 +117,8 @@ def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) 
     def campus_unit(unit_id: str) -> HospitalView:
         if not isinstance(fleet, CampusFleet):
             raise HTTPException(status_code=404, detail="unknown_hospital")
-        return hospital(unit_id).view()
+        with fleet.lock:
+            return hospital(unit_id).view()
 
     @app.post("/product/hospitals/H1/units/{unit_id}/decisions", response_model=HospitalView)
     def campus_decide(unit_id: str, decision: Decision) -> HospitalView:
@@ -100,10 +126,7 @@ def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) 
             raise HTTPException(status_code=404, detail="unknown_hospital")
         if decision.unit_id != unit_id:
             raise HTTPException(status_code=409, detail="unit_mismatch")
-        try:
-            return hospital(unit_id).decide(decision)
-        except ValueError as error:
-            raise HTTPException(status_code=409, detail=str(error)) from error
+        raise HTTPException(status_code=409, detail="named_operator_workspace_required")
 
     @app.get("/product/hospitals")
     def catalog() -> dict[str, object]:

@@ -1,3 +1,4 @@
+import { WorkplacePanel } from "./ui/Workplace";
 import { useVirtualHospitals, type Workspace } from "./data/useVirtualHospitals";
 import { VirtualProposal, VirtualActivity, VirtualJournal, CampusOverview, HospitalHistory, ParisClock } from "./ui/VirtualHospital";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -258,7 +259,7 @@ export function App() {
         ) : route === "proposition" ? (
           <>{virtualMode ? <VirtualProposal key={store.unitId} workspace={workspace} /> : null}<ProposalDetail a={a} /></>
         ) : route === "journal" && virtualMode ? (
-          <VirtualJournal workspace={workspace} />
+          <><WorkplacePanel workspace={workspace} initialTab="tasks" /><VirtualJournal workspace={workspace} /></>
         ) : route === "journal" && simulationMode ? (
           <SimulationJournal simulation={simulation} />
         ) : route === "journal" ? (
@@ -400,7 +401,7 @@ function UnitPage(props: {
         </span>
       </h1>
       <TensionStrip a={a} onJump={jump} />
-      {props.workspace ? <><CampusOverview workspace={props.workspace} /><VirtualActivity workspace={props.workspace} /><VirtualProposal workspace={props.workspace} /></> : null}
+      {props.workspace ? <><CampusOverview workspace={props.workspace} /><WorkplacePanel workspace={props.workspace} /><VirtualActivity workspace={props.workspace} /><VirtualProposal workspace={props.workspace} /></> : null}
       {!props.simulation ? <Proposal {...props} /> : null}
       {!props.simulation ? <InProgress
         unitId={props.unit.id}

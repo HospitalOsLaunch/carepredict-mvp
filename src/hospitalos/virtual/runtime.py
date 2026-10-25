@@ -94,6 +94,8 @@ class HospitalRuntime:
         epoch: datetime = START,
         warmup_seconds: float = 0,
         history_receiver: Callable[[Frame], None] | None = None,
+        engine_type: type[VirtualEngine] = VirtualEngine,
+        managed: bool = False,
     ) -> None:
         self.lock = threading.RLock()
         self.config, self.seed, self.clock_rate = config, seed, clock_rate
@@ -111,6 +113,7 @@ class HospitalRuntime:
                 "config": config.model_dump(),
                 "seed": seed,
                 **({"epoch": epoch.isoformat()} if epoch != START else {}),
+                **({"mechanics": "WORKPLACE_1"} if managed else {}),
             },
             sort_keys=True,
         )
@@ -121,7 +124,9 @@ class HospitalRuntime:
         run = self.db.execute("SELECT value FROM meta WHERE key='run'").fetchone()
         self.run_id = str(run[0]) if run else uuid4().hex
         saved = self.db.execute("SELECT value FROM meta WHERE key='second'").fetchone()
-        target = max(float(saved[0]) if saved else config.delivery_seconds, warmup_seconds)
+        target = max(
+            float(saved[0]) if saved and not managed else config.delivery_seconds, warmup_seconds
+        )
         self.revision = 0
         self.offered: ShadowEpisode | None = None
         self.assessed_second = -1000.0
@@ -130,12 +135,12 @@ class HospitalRuntime:
         self.observed_status: dict[str, str] = {}
         self.activity = Activity()
         self.feed = VirtualFeed(lambda: self.engine.now, config, epoch=epoch)
-        self.engine = VirtualEngine(config, seed, self._receive, epoch=epoch)
+        self.engine = engine_type(config, seed, self._receive, epoch=epoch)
         self.replaying = True
         try:
             # Intents are replayed in original insertion order, including equal timestamps.
             for request_json, record_json in self.db.execute(
-                "SELECT request, record FROM decisions ORDER BY rowid"
+                "SELECT request, record FROM decisions WHERE ?=0 ORDER BY rowid", (int(managed),)
             ):
                 request = Decision.model_validate_json(request_json)
                 record = DecisionRecord.model_validate_json(record_json)

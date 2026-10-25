@@ -3185,3 +3185,30 @@ textarea.input {
 .history-table caption { text-align: left; padding: 12px 0; }
 @media(max-width: 900px) { .campus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .campus-heading { flex-direction: column; } }
 @media(max-width: 500px) { .campus-overview, .hospital-history { padding: 16px; } .campus-grid { gap: 8px; } .campus-unit { padding: 10px; } .history-metrics { grid-template-columns: 1fr; } }
+
+.workplace { background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 24px; margin: 20px 0; }
+.workplace h2 { margin: 4px 0 16px; font-size: 1.4rem; }
+.work-row { display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap; }
+.work-identity, .work-form label, .work-search { display: grid; gap: 6px; font-size: .85rem; }
+.work-identity small { max-width: 42ch; color: var(--ink-2); }
+.workplace select, .workplace input:not([type="checkbox"]) { min-width: 0; max-width: 100%; border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px; background: var(--sheet); color: var(--ink); font: inherit; }
+.work-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); padding: 12px 0; margin: 8px 0 16px; }
+.work-tabs button { border: 1px solid transparent; padding: 10px 14px; border-radius: 8px; background: transparent; color: var(--ink); font: inherit; cursor: pointer; }
+.work-tabs button[aria-selected="true"] { color: var(--brand); background: var(--brand-wash); border-color: var(--brand); }
+.work-card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 14px 0; overflow-wrap: anywhere; }
+.work-card p, .workplace > p { line-height: 1.6; }
+.work-card--alert { border-color: #b45c12; background: #fffbef; }
+.work-form { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; margin: 12px 0; }
+.work-form > label { flex: 1 1 180px; }
+.work-search { max-width: 540px; margin: 16px 0; }
+.work-check { display: flex; gap: 8px; align-items: center; }
+.workplace details { margin-top: 12px; }
+.workplace summary { cursor: pointer; padding: 6px 0; }
+.workplace li { padding: 6px 0; }
+.work-exclusions { font-size: .85rem; }
+.work-error { padding: 14px; border: 1px solid #b44138; border-radius: 8px; color: #802820; }
+.work-shift { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.work-shift article { padding: 16px; border-radius: 12px; background: var(--brand-wash); }
+.work-shift small { line-height: 1.5; display: block; }
+.work-risk { color: #743c08; font-weight: 600; }
+@media(max-width: 640px) { .workplace { padding: 16px; } .work-identity { width: 100%; } .work-tabs button { padding: 10px 8px; font-size: .85rem; } .work-shift { grid-template-columns: 1fr; } .work-form > * { max-width: 100%; } }

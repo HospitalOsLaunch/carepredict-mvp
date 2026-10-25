@@ -12,7 +12,9 @@ python3 demo.py
 
 Une commande prépare les dépendances et ouvre le cockpit métier : choisir
 une unité de **l’Hôpital Saint-Clair**, consulter les lits et les patients, valider ou refuser une
-proposition, suivre son effet et le journal. L’hôpital tourne à vitesse réelle et s’affiche à l’heure de Paris.
+proposition, suivre son effet et le journal. Le panneau **Travail du poste** ajoute
+la file hospitalière, l’accord du cadre receveur, les tâches de sortie, la relève,
+les admissions programmées et la capacité du poste. L’hôpital tourne à vitesse réelle et s’affiche à l’heure de Paris.
 **Ctrl+C arrête les services et conserve les décisions.** Le premier démarrage ajuste des modèles locaux de prévision d’occupation sur le passé observé.
 Les ports par défaut sont 5173/8000, avec sélection d’un voisin libre si nécessaire.
 

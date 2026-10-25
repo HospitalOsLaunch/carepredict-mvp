@@ -2,8 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "../api/client";
 import { virtualApi, type Hospital, type HospitalView, type HospitalOverview, type UnitHistory, viewKey } from "../api/virtual";
 import { fromLive, unitSummary } from "../domain/view";
+import { useOperations, type OperationsWorkspace } from "./useOperations";
 import type { Store } from "./useAssessment";
 export interface Workspace {
+  operations: OperationsWorkspace;
   overview: HospitalOverview | null; history: UnitHistory | null; historyError: string | null;
   view: HospitalView | null; hospitals: Hospital[]; store: Store;
   decide: (accept: boolean, reason?: string) => void;
@@ -72,11 +74,17 @@ export function useVirtualHospitals(enabled: boolean): Workspace {
     ++generation.current; pending.current = null; current.current = null;
     setView(null); setHistory(null); setError(null); setBusy(false); setId(next);
   }, [hospitals, id]);
+  const operations = useOperations(enabled && id.startsWith("H1/"), refresh);
   const decide = useCallback((accept: boolean, reason = "") => {
     const v = current.current;
+    if (v && viewKey(v) === id && v.can_decide && !error && v.hospital_id === "H1") {
+      operations.submit({kind: "plan_decision", unit_id: v.unit_id!, plan_id: v.episode?.assessment.plan?.plan_id,
+        accept_plan: accept, reason});
+      return;
+    }
     if (v && viewKey(v) === id && v.can_decide && !error)
       void run(() => virtualApi.decide(v, accept, reason, crypto.randomUUID()), true);
-  }, [run, error, id]);
+  }, [run, error, id, operations]);
   const episode = view?.episode;
   const assessment = view ? fromLive(view.snapshot, episode?.assessment.plan ?? null,
     view.snapshot.issues, "api-live", episode?.episode_id ?? null, episode?.assessment.expires_at ?? null) : null;
@@ -86,5 +94,5 @@ export function useVirtualHospitals(enabled: boolean): Workspace {
     setUnit: select, situations: [], situationId: "", setSituation: () => undefined,
     assessment, awaitingEvaluation: !episode, busy, error, evaluate: refresh,
     quality: null, shadowSummary: null, loadedAt: 0 };
-  return { view, hospitals, store, decide, overview, history, historyError };
+  return { view, hospitals, store, decide, overview, history, historyError, operations };
 }

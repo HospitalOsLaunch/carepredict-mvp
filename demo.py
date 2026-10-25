@@ -255,7 +255,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--state-dir",
         type=Path,
-        default=ROOT / ".hospitalos-campus",
+        default=ROOT / ".hospitalos-workplace",
         help="état persistant des établissements virtuels",
     )
     parser.add_argument(
