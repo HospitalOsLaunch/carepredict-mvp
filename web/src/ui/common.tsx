@@ -71,3 +71,8 @@ export function Toast({ toast, onDone }: { toast: ToastState | null; onDone: () 
 export function plural(n: number, one: string, many: string): string {
   return `${n} ${n > 1 ? many : one}`;
 }
+
+/** Keep scoped backend identity, display the local identifier inside a selected unit. */
+export function displayId(id: string): string {
+  return id.replace(/^(geriatrie|medecine|pneumologie|chirurgie)-/, "");
+}

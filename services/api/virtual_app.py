@@ -4,16 +4,18 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from typing import Any
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from hospitalos.virtual.campus import CampusFleet
 from hospitalos.virtual.runtime import Decision, HospitalRuntime, HospitalView, VirtualFleet
 
 
-def create_app(fleet: VirtualFleet, *, start_worker: bool = True) -> FastAPI:
+def create_app(fleet: VirtualFleet | CampusFleet, *, start_worker: bool = True) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         try:
@@ -53,8 +55,77 @@ def create_app(fleet: VirtualFleet, *, start_worker: bool = True) -> FastAPI:
             "schema_version": "HOSPITAL_WORKSPACE_1",
         }
 
+    @app.get("/product/hospitals/H1/overview")
+    def overview() -> dict[str, Any]:
+        if not isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unknown_hospital")
+        return fleet.overview()
+
+    @app.get("/product/hospitals/H1/units/{unit_id}/history")
+    def history(unit_id: str) -> dict[str, Any]:
+        if not isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unknown_hospital")
+        unit = hospital(unit_id)
+        with unit.lock:
+            return fleet.histories[unit_id].summary()
+
+    @app.get("/product/hospitals/H1/units/{unit_id}/history/export")
+    def export_history(unit_id: str) -> Response:
+        import csv
+        import io
+
+        if not isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unknown_hospital")
+        unit = hospital(unit_id)
+        with unit.lock:
+            stream = io.StringIO()
+            writer = csv.DictWriter(stream, fieldnames=["at", "occupied", "waiting", "ready"])
+            writer.writeheader()
+            writer.writerows(fleet.histories[unit_id].export_rows())
+        return Response(
+            stream.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="H1-{unit_id}-history.csv"'},
+        )
+
+    @app.get("/product/hospitals/H1/units/{unit_id}", response_model=HospitalView)
+    def campus_unit(unit_id: str) -> HospitalView:
+        if not isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unknown_hospital")
+        return hospital(unit_id).view()
+
+    @app.post("/product/hospitals/H1/units/{unit_id}/decisions", response_model=HospitalView)
+    def campus_decide(unit_id: str, decision: Decision) -> HospitalView:
+        if not isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unknown_hospital")
+        if decision.unit_id != unit_id:
+            raise HTTPException(status_code=409, detail="unit_mismatch")
+        try:
+            return hospital(unit_id).decide(decision)
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
     @app.get("/product/hospitals")
     def catalog() -> dict[str, object]:
+        if isinstance(fleet, CampusFleet):
+            return {
+                "schema_version": "HOSPITAL_WORKSPACE_1",
+                "synthetic": True,
+                "hospitals": [
+                    {
+                        "id": "H1",
+                        "name": "Hôpital Saint-Clair · virtuel",
+                        "units": [
+                            {
+                                "id": key,
+                                "name": unit.config.unit_name,
+                                "available": key not in fleet.errors,
+                            }
+                            for key, unit in fleet.units.items()
+                        ],
+                    }
+                ],
+            }
         return {
             "schema_version": "HOSPITAL_WORKSPACE_1",
             "synthetic": True,
@@ -71,10 +142,14 @@ def create_app(fleet: VirtualFleet, *, start_worker: bool = True) -> FastAPI:
 
     @app.get("/product/hospitals/{hospital_id}/unit", response_model=HospitalView)
     def unit_view(hospital_id: str) -> HospitalView:
+        if isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unit_route_required")
         return hospital(hospital_id).view()
 
     @app.post("/product/hospitals/{hospital_id}/decisions", response_model=HospitalView)
     def decide(hospital_id: str, decision: Decision) -> HospitalView:
+        if isinstance(fleet, CampusFleet):
+            raise HTTPException(status_code=404, detail="unit_route_required")
         try:
             return hospital(hospital_id).decide(decision)
         except ValueError as error:

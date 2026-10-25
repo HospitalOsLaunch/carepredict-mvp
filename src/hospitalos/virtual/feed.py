@@ -18,9 +18,14 @@ from .config import HospitalConfig
 
 
 class VirtualFeed:
-    def __init__(self, clock: Callable[[], datetime], config: HospitalConfig) -> None:
+    def __init__(
+        self, clock: Callable[[], datetime], config: HospitalConfig, *, epoch: datetime = START
+    ) -> None:
         self.clock, self.config = clock, config
-        self.source = f"virtual-si-{config.hospital_id}"
+        self.epoch = epoch
+        self.source = f"virtual-si-{config.hospital_id}" + (
+            f"-{config.unit_id}" if epoch != START else ""
+        )
         self.store = LiveStore(
             LivePolicy(
                 hospital_id=self.config.hospital_id,
@@ -98,7 +103,7 @@ class VirtualFeed:
                     compatible_units=(self.config.unit_id,),
                     requirements=("oxygen",) if p.oxygen else (),
                     priority=2 if p.oxygen else 1,
-                    waiting_since=START + timedelta(seconds=p.since),
+                    waiting_since=self.epoch + timedelta(seconds=p.since),
                     bed_id=p.bed,
                     medically_cleared=p.cleared if p.status == "admitted" else None,
                     downstream_confirmed=True if p.cleared else None,

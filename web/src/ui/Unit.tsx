@@ -15,7 +15,7 @@ import {
   situation,
   stayCount,
 } from "../domain/view";
-import { Fresh, plural } from "./common";
+import { displayId, Fresh, plural } from "./common";
 import { Check, Clock, Cross, Dash, Question } from "./icons";
 import { Empty, Illu } from "./illustrations";
 
@@ -101,8 +101,8 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
               return (
                 <li key={c.patient.id} className={`release${proposed ? " release--proposed" : ""}`}>
                   <div className="release__who">
-                    <span className="id">{c.patient.id}</span>
-                    <span className="bedtag">{c.bed?.id ?? "?"}</span>
+                    <span className="id" title={c.patient.id}>{displayId(c.patient.id)}</span>
+                    <span className="bedtag">{c.bed ? displayId(c.bed.id) : "?"}</span>
                     {f && (f.ageing || f.stale) ? (
                       <span className="release__age">
                         <Fresh f={f} />
@@ -199,7 +199,7 @@ export function Queue({ a }: { a: Assessment }) {
                   <span>{e.patient.priority}</span>
                 </span>
                 <span className="queue__who">
-                  <span className="id">{e.patient.id}</span>
+                  <span className="id" title={e.patient.id}>{displayId(e.patient.id)}</span>
                   <span className="queue__need">{needs.join(", ")}</span>
                 </span>
                 <span className="queue__wait">
@@ -346,7 +346,7 @@ export function BedBoard({ a }: { a: Assessment }) {
       bed.occupant && leavingIds.has(bed.occupant)
         ? (readiness.get(bed.occupant) ?? "logistics_blocked")
         : undefined;
-    const label = bed.reserved_for ? `→ ${bed.reserved_for}` : (bed.occupant ?? BED_STATE[bed.state]);
+    const label = bed.reserved_for ? `→ ${displayId(bed.reserved_for)}` : (bed.occupant ? displayId(bed.occupant) : BED_STATE[bed.state]);
     const description = [
       `Lit ${bed.id}`,
       bed.reserved_for ? `réservé pour ${bed.reserved_for}` : BED_STATE[bed.state].toLowerCase(),
@@ -362,9 +362,9 @@ export function BedBoard({ a }: { a: Assessment }) {
       <li key={bed.id} className={bedClass(bed, leaving, target === bed.id, f)} title={description}>
         <span className="visually-hidden">{description}</span>
         <span className="magnet__id" aria-hidden="true">
-          {bed.id}
+          {displayId(bed.id)}
         </span>
-        {bed.capabilities.includes("oxygene") ? (
+        {(bed.capabilities.includes("oxygene") || bed.capabilities.includes("oxygen")) ? (
           <span className="magnet__cap" aria-hidden="true">
             O₂
           </span>

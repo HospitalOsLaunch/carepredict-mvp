@@ -70,3 +70,5 @@ runs/
 # Local fictional hospital persistence and research outputs
 .hospitalos-virtual/
 virtual-campaigns/
+
+.hospitalos-campus/

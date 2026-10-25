@@ -1,5 +1,5 @@
 import { useVirtualHospitals, type Workspace } from "./data/useVirtualHospitals";
-import { VirtualProposal, VirtualActivity, VirtualJournal } from "./ui/VirtualHospital";
+import { VirtualProposal, VirtualActivity, VirtualJournal, CampusOverview, HospitalHistory, ParisClock } from "./ui/VirtualHospital";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
@@ -183,7 +183,7 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          {virtualMode ? <label className="hospital-switcher">Établissement<select aria-label="Établissement" value={store.unitId} onChange={e => selectUnit(e.target.value)}>{workspace.hospitals.map(h => <option key={h.id} value={h.id}>{h.name}{h.available ? "" : " · indisponible"}</option>)}</select></label> : <UnitSwitcher
+          {virtualMode ? <label className="hospital-switcher">{store.unitId.includes("/") ? "Unité" : "Établissement"}<select aria-label={store.unitId.includes("/") ? "Unité" : "Établissement"} value={store.unitId} onChange={e => selectUnit(e.target.value)}>{workspace.hospitals.map(h => <option key={h.id} value={h.id}>{h.name}{h.available ? "" : " · indisponible"}</option>)}</select></label> : <UnitSwitcher
             summaries={store.summaries}
             unitId={store.unitId}
             onSelect={selectUnit}
@@ -200,8 +200,8 @@ export function App() {
           <div className="topbar__end">
             {a ? (
               <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
-                <span className="stateclock__label">État</span>
-                <span className="stateclock__time num">{clock(a.state.at)}</span>
+                <span className="stateclock__label">{virtualMode ? "Paris" : "État"}</span>
+                <span className="stateclock__time num">{virtualMode && now ? <ParisClock now={now} stale={!!store.error} /> : clock(a.state.at)}</span>
               </span>
             ) : null}
             <span
@@ -209,7 +209,7 @@ export function App() {
               title={virtualMode ? "Patients fictifs, établissements autonomes en arrière-plan." : simulationMode ? "Commandes limitées au scénario fictif." : "Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."}
             >
               <span className="mode__dot" aria-hidden="true" />
-              <span className="mode__text">{virtualMode ? "Hôpitaux virtuels" : simulationMode ? "Simulation connectée" : "Observation seule"}</span>
+              <span className="mode__text">{virtualMode ? "Hôpital virtuel" : simulationMode ? "Simulation connectée" : "Observation seule"}</span>
               <span className="mode__short" aria-hidden="true">
                 {virtualMode ? "Virtuel" : simulationMode ? "Simulation" : "Observation"}
               </span>
@@ -290,7 +290,7 @@ export function App() {
       </main>
 
       <footer className="foot">
-        <span>{virtualMode ? `Patients fictifs · Actions limitées aux établissements virtuels · Temps ×${workspace.view?.clock_rate ?? 12}` : simulationMode ? "Actions limitées à l'hôpital simulé. Patients fictifs. Aucune commande hospitalière." : "HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes."}</span>
+        <span>{virtualMode ? `Patients fictifs · Europe/Paris · ${workspace.view?.clock_rate === 1 ? "Temps réel" : `Temps ×${workspace.view?.clock_rate ?? 1}`}` : simulationMode ? "Actions limitées à l'hôpital simulé. Patients fictifs. Aucune commande hospitalière." : "HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes."}</span>
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
@@ -400,7 +400,7 @@ function UnitPage(props: {
         </span>
       </h1>
       <TensionStrip a={a} onJump={jump} />
-      {props.workspace ? <><VirtualActivity workspace={props.workspace} /><VirtualProposal workspace={props.workspace} /></> : null}
+      {props.workspace ? <><CampusOverview workspace={props.workspace} /><VirtualActivity workspace={props.workspace} /><VirtualProposal workspace={props.workspace} /></> : null}
       {!props.simulation ? <Proposal {...props} /> : null}
       {!props.simulation ? <InProgress
         unitId={props.unit.id}
@@ -428,6 +428,7 @@ function UnitPage(props: {
         <BedBoard a={a} />
         <Queue a={a} />
       </div>
+      {props.workspace ? <HospitalHistory workspace={props.workspace} /> : null}
     </>
   );
 }

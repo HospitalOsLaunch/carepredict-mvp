@@ -1,9 +1,9 @@
 # HospitalOS / CarePredict MVP
 
-## Lancer le produit connecté aux hôpitaux virtuels
+## Lancer le produit connecté à l’hôpital virtuel
 
 Cette branche réunit le backend hybride, le cockpit, la
-[spécification v0.3](docs/simulator/spec-v0.3.md) et trois établissements autonomes.
+[spécification v0.3](docs/simulator/spec-v0.3.md) et un hôpital de quatre unités (78 lits), avec 28 jours d’historique synthétique.
 Prérequis : **Python 3.11+ et Node.js 22+ avec npm**.
 
 ```bash
@@ -11,13 +11,13 @@ python3 demo.py
 ```
 
 Une commande prépare les dépendances et ouvre le cockpit métier : choisir
-**Hôpital X1, X2 ou X3**, consulter les lits et les patients, valider ou refuser une
-proposition, suivre son effet et le journal. Les établissements tournent en arrière-plan.
-**Ctrl+C arrête les services et conserve les décisions.** Aucun Docker ni entraînement ML.
+une unité de **l’Hôpital Saint-Clair**, consulter les lits et les patients, valider ou refuser une
+proposition, suivre son effet et le journal. L’hôpital tourne à vitesse réelle et s’affiche à l’heure de Paris.
+**Ctrl+C arrête les services et conserve les décisions.** Le premier démarrage ajuste des modèles locaux de prévision d’occupation sur le passé observé.
 Les ports par défaut sont 5173/8000, avec sélection d’un voisin libre si nécessaire.
 
-Le [guide des hôpitaux virtuels](docs/simulator/virtual-hospitals.md) décrit la reprise,
-les hypothèses et les campagnes A0/A1 hors du parcours produit. Le laboratoire
+Le [guide de l’hôpital multi-unités](docs/simulator/hospital-campus.md) décrit la reprise,
+l’historique, l’apprentissage et leurs limites. Les campagnes A0/A1 restent hors du produit. Le laboratoire
 historique reste disponible par `python3 demo.py --lab` ; l’aperçu statique reste
 un mode distinct. Ces mondes fictifs servent à éprouver l’usage, sans prétendre
 qualifier l’ensemble de v0.3 ni démontrer un bénéfice hospitalier.
