@@ -72,60 +72,73 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
         <h2 className="panel__title" id="releases-title">
           <Illu name="door" size={36} />
           Libérer
+          <span className="count" aria-hidden="true">
+            {chains.length}
+          </span>
         </h2>
-        <span className="panel__aside">
-          {plural(chains.length, "sortie en préparation", "sorties en préparation")}
-        </span>
       </header>
       {chains.length === 0 ? (
         <Empty illu="suitcase" title="Aucune sortie en préparation.">
           Elles apparaîtront ici dès qu'une autorisation ou une logistique de sortie sera saisie.
         </Empty>
       ) : (
-        <ol className="releases">
-          {chains.map((c) => {
-            const proposed =
-              target?.patient_id === c.patient.id || (target?.bed_id && target.bed_id === c.bed?.id);
-            const f = fresh.get(`discharge:${c.patient.id}`) ?? fresh.get(`patient:${c.patient.id}`);
-            const next = nextStep(c.links);
-            const more = c.nextCandidates.length - 2;
-            return (
-              <li key={c.patient.id} className={`release${proposed ? " release--proposed" : ""}`}>
-                <div className="release__who">
-                  <span className="id">{c.patient.id}</span>
-                  <span className="bedtag">{c.bed?.id ?? "?"}</span>
-                  <span className="release__age">
-                    <Fresh f={f} />
-                  </span>
-                </div>
-                <ol className="chain" aria-label={`Étapes de sortie de ${c.patient.id}`}>
-                  {c.links.map((l) => (
-                    <LinkNode key={l.id} link={l} />
-                  ))}
-                </ol>
-                <p
-                  className={`release__next release__next--${next.tone}`}
-                  title={c.readiness?.blockers.map(explain).join(" ; ")}
-                >
-                  {next.text}
-                </p>
-                <p className="release__handoff">
-                  {c.nextCandidates.length
-                    ? `Libère ${c.bed?.id} pour ${c.nextCandidates
-                        .slice(0, 2)
-                        .map((p) => p.id)
-                        .join(", ")}${more > 0 ? ` et ${more} autre${more > 1 ? "s" : ""}` : ""}`
-                    : "Aucun patient en attente n'a besoin de ce lit"}
-                </p>
-              </li>
-            );
-          })}
-        </ol>
+        <>
+          <div className="chainhead" aria-hidden="true">
+            <span />
+            <span className="chainhead__labels">
+              {Object.values(SHORT).map((l) => (
+                <span key={l}>{l}</span>
+              ))}
+            </span>
+          </div>
+          <ol className="releases">
+            {chains.map((c) => {
+              const proposed =
+                target?.patient_id === c.patient.id || (target?.bed_id && target.bed_id === c.bed?.id);
+              const f = fresh.get(`discharge:${c.patient.id}`) ?? fresh.get(`patient:${c.patient.id}`);
+              const next = nextStep(c.links);
+              const more = c.nextCandidates.length - 2;
+              return (
+                <li key={c.patient.id} className={`release${proposed ? " release--proposed" : ""}`}>
+                  <div className="release__who">
+                    <span className="id">{c.patient.id}</span>
+                    <span className="bedtag">{c.bed?.id ?? "?"}</span>
+                    {f && (f.ageing || f.stale) ? (
+                      <span className="release__age">
+                        <Fresh f={f} />
+                      </span>
+                    ) : null}
+                  </div>
+                  <ol className="chain" aria-label={`Étapes de sortie de ${c.patient.id}`}>
+                    {c.links.map((l) => (
+                      <LinkNode key={l.id} link={l} />
+                    ))}
+                  </ol>
+                  <p
+                    className={`release__next release__next--${next.tone}`}
+                    title={c.readiness?.blockers.map(explain).join(" ; ")}
+                  >
+                    {next.text}
+                  </p>
+                  {proposed ? (
+                    <p className="release__handoff">
+                      {c.nextCandidates.length
+                        ? `Libère ${c.bed?.id} pour ${c.nextCandidates
+                            .slice(0, 2)
+                            .map((p) => p.id)
+                            .join(", ")}${more > 0 ? ` et ${more} autre${more > 1 ? "s" : ""}` : ""}`
+                        : "Aucun patient en attente n'a besoin de ce lit"}
+                    </p>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ol>
+        </>
       )}
       {stays > 0 ? (
         <p className="stays">
-          {plural(stays, "autre patient hospitalisé", "autres patients hospitalisés")} sans sortie prévue pour
-          l'instant.
+          + {plural(stays, "patient sans sortie prévue", "patients sans sortie prévue")}
         </p>
       ) : null}
     </section>
@@ -149,10 +162,10 @@ export function Queue({ a }: { a: Assessment }) {
         <h2 className="panel__title" id="queue-title">
           <Illu name="key" size={36} />
           Attribuer
+          <span className="count" aria-hidden="true">
+            {entries.length}
+          </span>
         </h2>
-        <span className="panel__aside">
-          {plural(entries.length, "patient à placer", "patients à placer")}
-        </span>
       </header>
       {entries.length === 0 ? (
         <Empty illu="boat" title="Belle accalmie.">
@@ -176,29 +189,27 @@ export function Queue({ a }: { a: Assessment }) {
                         text: `${targetBed.id} se libère avec la proposition`,
                         tone: "go",
                       }
-                    : { text: "Pas encore de lit compatible", tone: "none" };
+                    : null;
             return (
               <li key={e.patient.id}>
                 <span
                   className={`prio${e.patient.priority >= 4 ? " prio--high" : ""}`}
                   aria-label={`Priorité ${e.patient.priority} sur 5`}
                 >
-                  <span>
-                    {e.patient.priority}
-                    <small>/5</small>
-                  </span>
+                  <span>{e.patient.priority}</span>
                 </span>
                 <span className="queue__who">
                   <span className="id">{e.patient.id}</span>
-                  <span className="queue__need">
-                    {needs.length ? needs.join(", ") : "Sans besoin particulier"}
-                  </span>
+                  <span className="queue__need">{needs.join(", ")}</span>
                 </span>
                 <span className="queue__wait">
-                  <b className="num">{duration(e.waitedMinutes)}</b>
-                  <span>depuis {clock(e.patient.waiting_since)}</span>
+                  <b className="num" title={`En attente depuis ${clock(e.patient.waiting_since)}`}>
+                    {duration(e.waitedMinutes)}
+                  </b>
                 </span>
-                <span className={`queue__bed queue__bed--${bedLine.tone}`}>{bedLine.text}</span>
+                {bedLine ? (
+                  <span className={`queue__bed queue__bed--${bedLine.tone}`}>{bedLine.text}</span>
+                ) : null}
               </li>
             );
           })}
@@ -245,20 +256,20 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
       zone: "attribuer",
       label: "À placer",
       value: String(s.waiting),
-      detail: longest != null ? `le plus long : ${duration(longest)}` : "personne n'attend",
+      detail: longest != null ? `jusqu'à ${duration(longest)}` : "personne n'attend",
     },
     {
       zone: "lits",
       label: "Lits utilisables",
       value: String(s.usable),
-      detail: s.dirty ? `${s.dirty} à nettoyer` : "aucun à nettoyer",
+      detail: s.dirty ? `${s.dirty} à nettoyer` : "tous propres",
       tone: s.usable > 0 ? "go" : undefined,
     },
     {
       zone: "liberer",
-      label: "Sorties",
+      label: "Sorties prêtes",
       value: `${ready}/${chains.length}`,
-      detail: chains.length ? sortieDetail : "aucune en préparation",
+      detail: chains.length ? sortieDetail.replace(/^prêtes(, )?/, "") || "toutes prêtes" : "aucune prévue",
     },
     {
       zone: "donnees",
@@ -267,7 +278,7 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
       detail: checks
         ? `point${checks > 1 ? "s" : ""} à vérifier`
         : oldest
-          ? `à jour, la plus ancienne : ${duration(oldest.minutes)}`
+          ? `à jour (${duration(oldest.minutes)} max)`
           : "à jour",
       tone: checks ? "warn" : undefined,
     },
@@ -373,8 +384,8 @@ export function BedBoard({ a }: { a: Assessment }) {
         </h2>
         <span className="panel__aside">
           {unit?.staffed_beds != null
-            ? `${unit.staffed_beds} armés sur ${beds.length + ghosts.length}`
-            : "lits armés inconnus"}
+            ? `${unit.staffed_beds}/${beds.length + ghosts.length} armés`
+            : "armés : ?"}
         </span>
       </header>
       <ul className="board">
@@ -400,40 +411,10 @@ export function BedBoard({ a }: { a: Assessment }) {
       </ul>
       <div className="legend" aria-hidden="true">
         <span>
-          <i
-            style={{
-              background: "var(--bloc-wash)",
-              borderColor: "var(--bloc)",
-            }}
-          />{" "}
-          Propre
+          <i className="legend__leaving" /> Sortie en préparation
         </span>
         <span>
-          <i
-            style={{
-              background: "var(--sac-wash)",
-              borderColor: "var(--sac-mark)",
-            }}
-          />{" "}
-          À nettoyer
-        </span>
-        <span>
-          <i
-            style={{
-              background: "var(--magnet)",
-              borderColor: "var(--magnet)",
-            }}
-          />{" "}
-          Occupé
-        </span>
-        <span>
-          <i style={{ background: "var(--well)", borderStyle: "dashed" }} /> Fermé
-        </span>
-        <span>
-          <i style={{ background: "var(--sac-mark)", height: 3, border: 0 }} /> Sortie en préparation
-        </span>
-        <span>
-          <i style={{ outline: "3px solid var(--sun)", outlineOffset: 1 }} /> Touché par la proposition
+          <i className="legend__target" /> Concerné par la proposition
         </span>
       </div>
     </section>

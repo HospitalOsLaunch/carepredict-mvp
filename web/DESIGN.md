@@ -27,6 +27,20 @@ Chaleureuse, claire, encourageante : « Bonjour. Voici votre unité à 08:30. »
 l'instant. Mieux vaut ne rien proposer que se tromper. » Signature : « Libérer. Attribuer.
 Respirer. »
 
+## Sobriété sous tension
+
+Une seule chose forte par écran : la carte « Action suivante ». Tout le reste se lit en
+chiffres et en mots courts.
+
+- Pas de phrase là où un chiffre suffit : compteurs à côté des titres (« Libérer 5 »), bande de
+  tension en valeur + deux mots, fraîcheur de la proposition dans le bandeau.
+- Carte proposition : titre, deux faits concrets au plus, l'effet en grand, deux boutons. La
+  méthode de simulation passe en infobulle et dans le détail.
+- Étiquettes des maillons de sortie une seule fois en tête de colonne ; « Libère L02 pour… »
+  seulement sur la sortie concernée ; l'âge d'une information seulement quand elle vieillit.
+- Raccourcis clavier affichés seulement après la première touche utilisée (`?` les liste).
+- Démonstration signalée par une étiquette discrète, pied de page sur une ligne.
+
 ## Cycle de vie d'une proposition
 
 HospitalOS propose, la personne décide et agit ; l'outil garde la trace. Valider n'envoie rien.

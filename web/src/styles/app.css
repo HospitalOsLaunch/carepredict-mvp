@@ -2893,3 +2893,209 @@ textarea.input {
     flex: 1 1 140px;
   }
 }
+
+/* ---------------------------------------------------------------- calm layer
+   Less to read under pressure: counts instead of sentences, step labels once per
+   column, shortcut hints only once the keyboard is used, one strong focal card. */
+.btn .kbd,
+.chip .kbd,
+.switcher__kbd {
+  display: none;
+}
+:root[data-keys="on"] .btn .kbd,
+:root[data-keys="on"] .chip .kbd {
+  display: inline-grid;
+}
+:root[data-keys="on"] .switcher__kbd {
+  display: block;
+}
+@media (pointer: coarse) {
+  :root[data-keys="on"] .btn .kbd,
+  :root[data-keys="on"] .chip .kbd,
+  :root[data-keys="on"] .switcher__kbd {
+    display: none;
+  }
+}
+
+.demobar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  margin-bottom: var(--s3);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.demobar__tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--brand-wash);
+  color: var(--brand-strong);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.demobar__select {
+  margin-left: auto;
+}
+.demobar__select .select {
+  width: auto;
+  min-height: 32px;
+  font-size: var(--t-sm);
+  background-color: var(--sheet);
+}
+
+.hello {
+  font-size: var(--t-lg);
+  margin-bottom: var(--s3);
+}
+
+.strip__detail {
+  color: var(--ink-3);
+}
+.strip__cell {
+  box-shadow: none;
+  border-color: var(--line);
+}
+
+.proposal__band {
+  padding: var(--s2) var(--s5);
+}
+.proposal__main {
+  padding-top: var(--s4);
+  padding-bottom: var(--s4);
+}
+.proposal__title {
+  font-size: var(--t-2xl);
+  margin-bottom: var(--s2);
+}
+.facts {
+  gap: 2px;
+  font-size: var(--t-sm);
+}
+.effect__delta {
+  font-size: 44px;
+}
+.effect__lead {
+  font-family: var(--display);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  color: var(--bloc);
+}
+.effect__note {
+  margin-top: var(--s2);
+}
+.others {
+  padding-top: 0;
+}
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--well);
+  color: var(--ink-2);
+  font-family: var(--font);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+.panel__title .illu {
+  width: 30px;
+  height: 30px;
+}
+.flow .panel__head {
+  padding-bottom: var(--s2);
+}
+
+.chainhead {
+  display: grid;
+  grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+  gap: var(--s4);
+  padding: 0 var(--s5) var(--s1);
+  border-bottom: 1px solid var(--line-soft);
+}
+.chainhead__labels {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--s1);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.chainhead__labels span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.release .link-node__label {
+  display: none;
+}
+.release__next {
+  font-size: var(--t-sm);
+}
+.stays {
+  font-size: var(--t-xs);
+  padding-top: var(--s2);
+  padding-bottom: var(--s3);
+}
+
+.queue__bed {
+  margin-top: -6px;
+}
+
+.legend {
+  padding-top: var(--s2);
+  padding-bottom: var(--s3);
+  gap: var(--s4);
+}
+.legend__leaving {
+  height: 3px !important;
+  border: 0 !important;
+  background: var(--sac-mark);
+}
+.legend__target {
+  outline: 2px solid var(--sun);
+  outline-offset: 1px;
+  background: var(--sheet);
+}
+
+.foot {
+  padding-top: var(--s2);
+}
+
+@media (max-width: 760px) {
+  .chainhead {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 var(--s4) var(--s1);
+  }
+  .chainhead > span:first-child {
+    display: none;
+  }
+  .effect__delta {
+    font-size: 36px;
+  }
+  .proposal__title {
+    font-size: var(--t-xl);
+  }
+  .demobar__select {
+    margin-left: 0;
+    flex: 1 1 100%;
+  }
+  .demobar__select .select {
+    width: 100%;
+  }
+}
+.proposal {
+  margin-bottom: var(--s5);
+}
+.inprogress {
+  margin: calc(-1 * var(--s2)) 0 var(--s5);
+}
+.jsearch {
+  flex: 1 1 180px;
+}
+.jrow__end {
+  align-self: center;
+}

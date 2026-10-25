@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
-import { type Assessment, clock, longClock, oldestFact } from "./domain/view";
+import { type Assessment, clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { Journal } from "./ui/Journal";
 import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
-import { Fresh, Toast, type ToastState, useNow } from "./ui/common";
-import { Alert, BoardIcon, BookIcon, Info, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Toast, type ToastState, useNow } from "./ui/common";
+import { Alert, BoardIcon, BookIcon, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
 type Route = "unite" | "proposition" | "journal" | "donnees";
@@ -53,8 +53,8 @@ const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon:
 const ORIGIN: Record<Connection, string> = {
   probing: "Connexion…",
   "api-live": "API locale, unité en direct",
-  "api-plan": "API locale, unités fictives",
-  fixture: "Démonstration : unités et patients fictifs",
+  "api-plan": "API locale, patients fictifs",
+  fixture: "Patients fictifs, vrai planificateur",
 };
 
 const TITLES: Record<Route, string> = {
@@ -110,6 +110,8 @@ function useShortcuts(
         else if (store.units[digit - 1]) selectUnit(store.units[digit - 1]!.id);
         else return;
       } else return;
+      // Shortcut hints stay hidden until the person actually uses the keyboard.
+      document.documentElement.dataset.keys = "on";
       e.preventDefault();
     };
     window.addEventListener("keydown", on);
@@ -214,14 +216,12 @@ export function App() {
           </div>
         ) : null}
         {store.connection !== "api-live" && store.connection !== "probing" && a ? (
-          <div className="notice notice--demo">
-            <Info />
-            <span className="notice__text">
-              {ORIGIN[store.connection]}. Chaque proposition sort du vrai planificateur.
-            </span>
+          <div className="demobar">
+            <span className="demobar__tag">Démonstration</span>
+            <span className="demobar__text">{ORIGIN[store.connection]}</span>
             {store.situations.length > 1 ? (
-              <label className="notice__select">
-                <span>Situation</span>
+              <label className="demobar__select">
+                <span className="visually-hidden">Situation</span>
                 <select
                   id="situation"
                   className="select"
@@ -269,10 +269,7 @@ export function App() {
       </main>
 
       <footer className="foot">
-        <span>
-          HospitalOS propose, vous décidez. Mode observation : rien n'est envoyé au dossier patient.
-        </span>
-        <span>Identifiants pseudonymes, aucune donnée nominative.</span>
+        <span>HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes.</span>
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
@@ -353,7 +350,6 @@ function UnitPage(props: {
   onToast: ToastFn;
 }) {
   const { a } = props;
-  const oldest = oldestFact(a);
   const hour = parisHour(a.state.at);
   // Phone: one flow column at a time; the proposal decides which one opens first.
   const [zone, setZone] = useState<Zone>(() =>
@@ -375,7 +371,7 @@ function UnitPage(props: {
   return (
     <>
       <h1 className="hello">
-        <Illu name={momentIllu(hour)} size={56} className="hello__illu" />
+        <Illu name={momentIllu(hour)} size={44} className="hello__illu" />
         <span>
           {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
         </span>
@@ -388,15 +384,6 @@ function UnitPage(props: {
         now={props.now}
         onToast={props.onToast}
       />
-      <p className="freshline">
-        État reconstruit le {longClock(a.state.at)}.
-        {oldest ? (
-          <>
-            {" "}
-            Information la plus ancienne : <Fresh f={oldest} />.
-          </>
-        ) : null}
-      </p>
       <div className="flowtabs" role="tablist" aria-label="Colonne affichée">
         {ZONES.map(([id, label]) => (
           <button

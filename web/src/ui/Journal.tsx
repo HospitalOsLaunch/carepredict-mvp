@@ -27,14 +27,13 @@ import { Empty, Illu } from "./illustrations";
   3. What do I hand over? (Transmission: copy as text, export as CSV)
 */
 
-type Filter = "all" | "todo" | "done" | "refused" | "unanswered" | "abstained";
+type Filter = "all" | "todo" | "done" | "refused" | "unanswered";
 const FILTERS: Array<[Filter, string, Status[]]> = [
   ["all", "Toutes", []],
-  ["todo", "À faire ou en attente", ["validated", "pending"]],
+  ["todo", "À faire", ["validated", "pending"]],
   ["done", "Faites", ["done"]],
   ["refused", "Refusées", ["refused", "abandoned"]],
   ["unanswered", "Sans réponse", ["expired", "superseded"]],
-  ["abstained", "Pas de proposition", ["abstained"]],
 ];
 type Period = "12" | "24" | "168" | "all";
 const PERIODS: Array<[Period, string]> = [
@@ -180,10 +179,7 @@ export function Journal(props: {
           <Illu name="notebook" size={64} />
           Journal des décisions
         </h1>
-        <p>
-          Ce qui a été proposé, validé, refusé ou laissé passer : par qui, quand et pourquoi. Pour reprendre
-          une garde, relire une journée ou répondre à un collègue.
-        </p>
+        <p>Ce qui a été proposé et décidé : par qui, quand, pourquoi.</p>
         <SignedAs me={me} />
       </header>
 
@@ -195,7 +191,9 @@ export function Journal(props: {
               <h2 className="panel__title" id="follow-title">
                 <Illu name="clipboard" size={32} />À suivre
               </h2>
-              <span className="panel__aside">toutes unités</span>
+              <span className="count" aria-hidden="true">
+                {followUp.length}
+              </span>
             </header>
             {followUp.length ? (
               <ul className="jlist">
@@ -374,8 +372,6 @@ function Row({
         </span>
         <span className="jrow__end">
           <Pill s={s} />
-          {r.deltaRatio != null ? <span className="jrow__delta num">{deltaText(r.deltaRatio)}</span> : null}
-          {r.sample ? <span className="jrow__sample">exemple</span> : null}
         </span>
       </a>
       {quick && s === "validated" && !r.sample ? (
@@ -577,7 +573,6 @@ function Handover({
           <Illu name="envelope" size={32} />
           Transmission
         </h2>
-        <span className="panel__aside">selon les filtres</span>
       </header>
       <div className="panel__body">
         <ul className="htiles">
@@ -588,10 +583,6 @@ function Handover({
             </li>
           ))}
         </ul>
-        <p className="mute htext">
-          Un résumé prêt à coller dans vos transmissions : ce qui reste à faire, ce qui a été fait ou refusé,
-          et pourquoi.
-        </p>
         <div className="hactions">
           <button
             type="button"
@@ -619,10 +610,7 @@ function Handover({
             />
           </label>
         ) : null}
-        <p className="note">
-          Prototype : le journal est gardé sur ce poste. Le partage entre collègues et entre postes arrive
-          avec le journal côté serveur (auteur identifié, horodatage serveur).
-        </p>
+        <p className="note">Prototype : journal gardé sur ce poste.</p>
       </div>
     </section>
   );

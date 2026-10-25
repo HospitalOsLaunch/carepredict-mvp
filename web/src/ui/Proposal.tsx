@@ -28,8 +28,13 @@ import {
   pct,
   proposalContext,
 } from "../domain/view";
-import { Ban, Check, Clock, Info, Refresh } from "./icons";
+import { Ban, Check, Clock, Refresh } from "./icons";
 import { Illu, proposalIllu } from "./illustrations";
+
+const GENERIC = new Set([
+  "lower_simulated_waiting_cost_requires_human_approval",
+  "no_admissible_simulated_improvement",
+]);
 
 export type ToastFn = (message: string, undo?: () => void) => void;
 
@@ -65,7 +70,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
   if (awaitingEvaluation || (!plan && a.gateReasons.length === 0)) {
     return (
       <section className="panel proposal proposal--quiet" aria-labelledby="proposal-title">
-        <Band label="À évaluer" a={a} />
+        <Band label="À évaluer" />
         <div className="proposal__main">
           <div className="proposal__lead">
             <Illu name="plane" size={56} className="proposal__illu" />
@@ -74,9 +79,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                 Prêt à évaluer l'unité
               </h2>
               <p className="mute">
-                HospitalOS simule les prochaines heures avec et sans chaque action possible, puis vous propose
-                la plus utile. Rien n'est envoyé : l'évaluation est simplement gardée en mémoire
-                d'observation.
+                HospitalOS simule les prochaines heures et vous propose l'action la plus utile.
               </p>
             </div>
           </div>
@@ -95,7 +98,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
     const groups = gateGroups(codes);
     return (
       <section className="panel proposal proposal--abstain" aria-labelledby="proposal-title">
-        <Band label="Données à vérifier" a={a} />
+        <Band label="Données à vérifier" />
         <div className="proposal__main">
           <div className="proposal__lead">
             <Illu name="cloud" size={56} className="proposal__illu" />
@@ -104,8 +107,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                 Pas de proposition pour l'instant
               </h2>
               <p className="mute">
-                Mieux vaut ne rien proposer que se tromper. Quelques informations manquent, ont vieilli ou se
-                contredisent : mettez-les à jour à la source, puis réévaluez.
+                Mieux vaut ne rien proposer que se tromper. Mettez ces informations à jour, puis réévaluez.
               </p>
             </div>
           </div>
@@ -116,12 +118,12 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                   {g.title} ({g.codes.length})
                 </h3>
                 <ul>
-                  {g.codes.slice(0, 4).map((c) => (
+                  {g.codes.slice(0, 2).map((c) => (
                     <li key={c} title={c}>
                       {explain(c)}
                     </li>
                   ))}
-                  {g.codes.length > 4 ? <li className="mute">et {g.codes.length - 4} autres</li> : null}
+                  {g.codes.length > 2 ? <li className="mute">et {g.codes.length - 2} autres</li> : null}
                 </ul>
               </div>
             ))}
@@ -146,6 +148,13 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
   const end = clockPlus(plan.created_at, plan.horizon_minutes);
   const context = proposalContext(a.state, plan);
   const quiet = plan.decision === "no_change";
+  // Two lines at most: the concrete context first, then warnings. Generic planner reasons
+  // (« réduit l'attente simulée ») repeat what the effect already shows.
+  const facts = [
+    ...context,
+    ...plan.warnings.map(explain),
+    ...plan.reasons.filter((r) => !GENERIC.has(r)).map(explain),
+  ].slice(0, 2);
   const max = Math.max(
     cmp.baseline?.worst_decile_waiting_patient_minutes ?? 0,
     cmp.selected?.worst_decile_waiting_patient_minutes ?? 0,
@@ -154,7 +163,14 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
 
   return (
     <section className={`panel proposal${quiet ? " proposal--quiet" : ""}`} aria-labelledby="proposal-title">
-      <Band label={quiet ? "Rien à changer" : bandLabel(current, now)} a={a} />
+      <Band
+        label={quiet ? "Rien à changer" : bandLabel(current, now)}
+        right={
+          !quiet && current && statusOf(current, now) === "pending" ? (
+            <span className="expiry">Fraîche encore {duration(minutesLeft)}</span>
+          ) : null
+        }
+      />
       <div className="proposal__main">
         <div className="proposal__lead">
           <Illu name={proposalIllu(plan)} size={56} className="proposal__illu" />
@@ -162,21 +178,13 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             <h2 className="proposal__title" id="proposal-title">
               {actionTitle(plan.selected)}
             </h2>
-            <ul className="facts">
-              {plan.reasons.map((r) => (
-                <li key={r} title={r}>
-                  {explain(r)}
-                </li>
-              ))}
-              {context.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-              {plan.warnings.map((w) => (
-                <li key={w} title={w}>
-                  {explain(w)}
-                </li>
-              ))}
-            </ul>
+            {facts.length ? (
+              <ul className="facts">
+                {facts.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
         {cmp.baseline && cmp.selected && !quiet ? (
@@ -190,41 +198,35 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             <div
               className="pair"
               role="img"
+              title={`Attente cumulée en patient-minutes, moyenne de ${plan.scenarios} scénarios simulés sous hypothèses déclarées.`}
               aria-label={pairLabel(
                 cmp.baseline.mean_waiting_patient_minutes,
                 cmp.selected.mean_waiting_patient_minutes,
               )}
             >
-              <PairRow
-                label="Sans action"
-                mean={cmp.baseline.mean_waiting_patient_minutes}
-                tail={cmp.baseline.worst_decile_waiting_patient_minutes}
-                max={max}
-              />
+              <PairRow label="Sans action" mean={cmp.baseline.mean_waiting_patient_minutes} max={max} />
               <PairRow
                 label="Avec la proposition"
                 mean={cmp.selected.mean_waiting_patient_minutes}
-                tail={cmp.selected.worst_decile_waiting_patient_minutes}
                 max={max}
                 on
               />
             </div>
-            <p className="effect__note">
-              Attente cumulée en patient-minutes, moyenne de {plan.scenarios} scénarios. Le trait marque le
-              pire décile.{" "}
-              {plan.service_status === "served_in_all_sampled_scenarios"
-                ? `Tous les patients sont placés avant ${end} dans chaque scénario.`
-                : plan.service_status === "unserved_in_some_sampled_scenarios"
-                  ? `Dans ${cmp.selected.scenarios_with_unserved_demand} scénarios sur ${plan.scenarios}, au moins un patient attend encore à ${end}.`
-                  : null}
-            </p>
+            {plan.service_status === "served_in_all_sampled_scenarios" ? (
+              <p className="effect__note">Tous les patients placés avant {end}.</p>
+            ) : plan.service_status === "unserved_in_some_sampled_scenarios" ? (
+              <p className="effect__note">
+                Un patient attend encore à {end} dans {cmp.selected.scenarios_with_unserved_demand} scénarios
+                sur {plan.scenarios}.
+              </p>
+            ) : null}
           </div>
         ) : (
           <div className="effect">
+            <p className="effect__lead">Tout roule.</p>
             <p className="effect__note">
-              Tout roule. {plan.candidates.length - 1} actions possibles ont été simulées sur{" "}
-              {duration(plan.horizon_minutes)} : aucune ne ferait mieux sans surcharger une équipe. Rien ne
-              presse de ce côté.
+              Aucune des {plan.candidates.length - 1} actions simulées ne ferait mieux d'ici{" "}
+              {duration(plan.horizon_minutes)}.
             </p>
           </div>
         )}
@@ -232,13 +234,13 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
 
       {quiet ? (
         <div className="proposal__actions">
-          <a className="btn" href="#/proposition">
-            Voir les options comparées
-          </a>
-          <span className="spacer" />
-          <button className="btn btn--quiet" onClick={onEvaluate} disabled={busy}>
+          <button className="btn" onClick={onEvaluate} disabled={busy}>
             <Refresh /> {evaluateLabel}
           </button>
+          <span className="spacer" />
+          <a className="btn btn--quiet" href="#/proposition">
+            Options comparées
+          </a>
         </div>
       ) : (
         <Decision
@@ -273,7 +275,7 @@ function PairRow({
 }: {
   label: string;
   mean: number;
-  tail: number;
+  tail?: number;
   max: number;
   on?: boolean;
 }) {
@@ -285,23 +287,20 @@ function PairRow({
           className={`pair__bar${on ? " pair__bar--on" : ""}`}
           style={{ width: `${(mean / max) * 100}%` }}
         />
-        <span className="pair__tail" style={{ left: `calc(${(tail / max) * 100}% - 1px)` }} />
+        {tail != null ? (
+          <span className="pair__tail" style={{ left: `calc(${(tail / max) * 100}% - 1px)` }} />
+        ) : null}
       </span>
       <span className="pair__value num">{num(mean)}</span>
     </div>
   );
 }
 
-function Band({ label, a }: { label: string; a: Assessment }) {
+function Band({ label, right }: { label: string; right?: ReactNode }) {
   return (
     <div className="proposal__band">
-      <span>
-        <span className="proposal__kind">{label}</span>
-        {a.plan ? <> pour l'état de {clock(a.state.at)}</> : null}
-      </span>
-      <span title="Résultat d'une simulation sous hypothèses déclarées, pas une prédiction validée">
-        Simulation sous hypothèses synthétiques
-      </span>
+      <span className="proposal__kind">{label}</span>
+      {right}
     </div>
   );
 }
@@ -345,6 +344,13 @@ function Decision(p: DecisionProps) {
   const r = p.record;
   const status = statusOf(r, p.now);
   const [asking, setAsking] = useState<null | "refused" | "abandoned">(null);
+  const [noting, setNoting] = useState(false);
+  const noteButton =
+    status !== "expired" && status !== "superseded" && !r.events.some((e) => e.type === "note") ? (
+      <button className="btn btn--quiet" onClick={() => setNoting(true)}>
+        Ajouter une note
+      </button>
+    ) : null;
   const firstReason = useRef<HTMLButtonElement>(null);
   const options = useMemo(() => (p.a.plan ? otherOptions(p.a.plan) : []), [p.a.plan]);
 
@@ -417,6 +423,7 @@ function Decision(p: DecisionProps) {
         >
           Finalement non
         </button>
+        {noteButton}
         {undo}
       </Outcome>
     );
@@ -432,6 +439,7 @@ function Decision(p: DecisionProps) {
         <a className="btn btn--quiet" href="#/journal">
           Journal
         </a>
+        {noteButton}
         {undo}
       </Outcome>
     );
@@ -444,6 +452,7 @@ function Decision(p: DecisionProps) {
         line={`${stamp}.${options.length && status === "refused" ? " D'autres options sont possibles ci-dessous." : ""}`}
       >
         {reevaluate(false)}
+        {noteButton}
         {undo}
       </Outcome>
     );
@@ -480,13 +489,10 @@ function Decision(p: DecisionProps) {
           >
             Refuser <kbd className="kbd">N</kbd>
           </button>
+          <span className="spacer" />
           <a className="btn btn--quiet" href="#/proposition">
             Détail <kbd className="kbd">D</kbd>
           </a>
-          <span className="spacer" />
-          <span className="expiry">
-            Fraîche jusqu'à {clock(p.expiresAt)}, encore {duration(p.minutesLeft)}
-          </span>
         </div>
       ) : (
         outcome
@@ -516,8 +522,8 @@ function Decision(p: DecisionProps) {
           </div>
         </div>
       ) : null}
-      {status !== "pending" && status !== "expired" && status !== "superseded" ? (
-        <NoteField record={r} now={p.now} />
+      {noting || r.events.some((e) => e.type === "note") ? (
+        <NoteField record={r} now={p.now} startOpen={noting} onClose={() => setNoting(false)} />
       ) : null}
       {options.length ? (
         <Others
@@ -530,16 +536,9 @@ function Decision(p: DecisionProps) {
           onToast={p.onToast}
         />
       ) : null}
-      <p className="note proposal__note" id="decision-note">
-        <Info size={14} />
-        <span>
-          Valider ne déclenche rien : c'est vous qui agissez. HospitalOS garde la trace dans le{" "}
-          <a className="link" href="#/journal">
-            journal des décisions
-          </a>
-          .
-        </span>
-      </p>
+      <span className="visually-hidden" id="decision-note">
+        Valider ne déclenche rien : vous agissez, HospitalOS garde la trace dans le journal.
+      </span>
     </>
   );
 }
@@ -571,15 +570,23 @@ export function NoteField({
   now,
   compact,
   hideNotes,
+  startOpen,
+  onClose,
 }: {
   record: DecisionRecord;
   now: string;
   compact?: boolean;
+  startOpen?: boolean;
+  onClose?: () => void;
   /** The journal page already shows notes in its timeline. */
   hideNotes?: boolean;
 }) {
   const { me } = useJournal();
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(!!startOpen);
+  const setOpen = (v: boolean) => {
+    setOpenState(v);
+    if (!v) onClose?.();
+  };
   const [text, setText] = useState("");
   const notes = record.events.filter((e) => e.type === "note");
   const save = () => {
@@ -626,7 +633,7 @@ export function NoteField({
         </form>
       ) : (
         <button type="button" className="linkbtn" onClick={() => setOpen(true)}>
-          + Ajouter une note pour l'équipe
+          + Ajouter une note
         </button>
       )}
     </div>
@@ -712,10 +719,7 @@ function Others(props: {
               );
             })}
           </ul>
-          <p className="others__note">
-            Simulées une à une sur les mêmes scénarios : leurs effets ne s'additionnent pas. La première reste
-            la plus utile.
-          </p>
+          <p className="others__note">Effets simulés séparément : ils ne s'additionnent pas.</p>
         </div>
       ) : null}
     </div>
