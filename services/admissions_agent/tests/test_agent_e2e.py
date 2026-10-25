@@ -124,88 +124,63 @@ class ScriptedClaude:
         assert box is not None
         return [int(box["x"] + box["width"] / 2), int(box["y"] + box["height"] / 2)]
 
+    def scroll_to(self, selector: str, step_id: str) -> list[dict[str, Any]]:
+        """Scroll so that the element sits in the upper part of the viewport.
+
+        Computed from the live layout, like a model reading the screenshot would: font
+        metrics differ between machines (the CI runner renders taller text), so a fixed
+        amount is not portable.
+        """
+        box = self.sessions[-1].page.locator(selector).bounding_box()
+        assert box is not None
+        notches = max(0, int((box["y"] - 120) // 100))
+        return [
+            self.use(
+                step_id,
+                "scroll",
+                {"coordinate": [640, 400], "scroll_direction": "down", "scroll_amount": notches},
+            )
+        ]
+
+    @staticmethod
+    def use(step_id: str, name: str, args: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "type": "tool_use",
+            "id": step_id,
+            "name": name,
+            "toolset_name": "computer",
+            "input": args,
+        }
+
     def __call__(self, request: httpx.Request) -> httpx.Response:
         body = json.loads(request.content)
         self.calls.append({"headers": dict(request.headers), "body": body})
         turn = len(self.calls)
         usage = {"input_tokens": 3000, "output_tokens": 200}
-        if turn == 1:
-            content = [
-                {
-                    "type": "tool_use",
-                    "id": "t1",
-                    "name": "left_click",
-                    "toolset_name": "computer",
-                    "input": {"coordinate": self.center("#decision-accord")},
-                },
-                {
-                    "type": "tool_use",
-                    "id": "t2",
-                    "name": "left_click",
-                    "toolset_name": "computer",
-                    "input": {"coordinate": self.center("#date-entree")},
-                },
-                {
-                    "type": "tool_use",
-                    "id": "t3",
-                    "name": "type",
-                    "toolset_name": "computer",
-                    "input": {"text": self.date_to_type},
-                },
-            ]
-        elif turn == 2:
-            content = [
-                {
-                    "type": "tool_use",
-                    "id": "s1",
-                    "name": "scroll",
-                    "toolset_name": "computer",
-                    "input": {
-                        "coordinate": [640, 400],
-                        "scroll_direction": "down",
-                        "scroll_amount": 5,
-                    },
-                },
-            ]
-        elif turn == 3:
-            content = [
-                {
-                    "type": "tool_use",
-                    "id": "t4",
-                    "name": "left_click",
-                    "toolset_name": "computer",
-                    "input": {"coordinate": self.center("#message")},
-                },
-                {
-                    "type": "tool_use",
-                    "id": "t5",
-                    "name": "type",
-                    "toolset_name": "computer",
-                    "input": {"text": "Accord, entrée confirmée."},
-                },
-                {
-                    "type": "tool_use",
-                    "id": "t6",
-                    "name": "left_click",
-                    "toolset_name": "computer",
-                    "input": {"coordinate": self.center("#envoyer")},
-                },
-            ]
-        elif turn == 4:
-            content = [
-                {
-                    "type": "tool_use",
-                    "id": "t7",
-                    "name": "screenshot",
-                    "toolset_name": "computer",
-                    "input": {},
-                }
-            ]
+        click = "left_click"
+        steps: list[Callable[[], list[dict[str, Any]]]] = [
+            lambda: self.scroll_to("#decision-accord", "s0"),
+            lambda: [
+                self.use("t1", click, {"coordinate": self.center("#decision-accord")}),
+                self.use("t2", click, {"coordinate": self.center("#date-entree")}),
+                self.use("t3", "type", {"text": self.date_to_type}),
+            ],
+            lambda: self.scroll_to("#message", "s1"),
+            lambda: [
+                self.use("t4", click, {"coordinate": self.center("#message")}),
+                self.use("t5", "type", {"text": "Accord, entrée confirmée."}),
+                self.use("t6", click, {"coordinate": self.center("#envoyer")}),
+            ],
+            lambda: [self.use("t7", "screenshot", {})],
+        ]
+        if turn <= len(steps):
+            content = steps[turn - 1]()
+            stop = "tool_use"
         else:
             content = [
                 {"type": "text", "text": "La réponse est enregistrée. <resultat>TERMINE</resultat>"}
             ]
-        stop = "tool_use" if turn <= 4 else "end_turn"
+            stop = "end_turn"
         return httpx.Response(200, json={"content": content, "usage": usage, "stop_reason": stop})
 
 
@@ -261,8 +236,9 @@ def test_failed_playbook_escalates_to_claude_and_is_verified(
     agent.last_sync = time.monotonic()  # no inbox sync in this test
     assert agent.cycle() == 1
 
-    assert portal.get("/_test/state").json()["DOS-2026-0412"]["proposed"] == proposed
     task = api.get("/api/agent/tasks", headers=login(api, "admin@test.fr")).json()[0]
+    state = portal.get("/_test/state").json()["DOS-2026-0412"]
+    assert state["proposed"] == proposed, (state, task["error"], task["result"])
     assert task["status"] == "done" and task["engine_used"] == "closed_best"
     route = task["result"]["route"]
     assert [(step["engine"], step["decision"]) for step in route] == [
@@ -272,8 +248,8 @@ def test_failed_playbook_escalates_to_claude_and_is_verified(
     ]
     assert route[1]["reason"] == "désactivé dans la politique"
     assert task["result"]["verification"]["observed"]["status"] == "Accord donné"
-    # 5 calls x (3000 in at $4 + 200 out at $20) per million tokens
-    assert abs(task["cost_usd"] - 5 * (3000 * 4 + 200 * 20) / 1e6) < 1e-9
+    # 6 calls x (3000 in at $4 + 200 out at $20) per million tokens
+    assert abs(task["cost_usd"] - 6 * (3000 * 4 + 200 * 20) / 1e6) < 1e-9
 
     first = fake.calls[0]
     assert first["body"]["tools"] == [
@@ -285,10 +261,10 @@ def test_failed_playbook_escalates_to_claude_and_is_verified(
         and first["headers"]["anthropic-version"] == "2023-06-01"
     )
     assert first["body"]["messages"][0]["content"][1]["type"] == "image"
-    results = fake.calls[1]["body"]["messages"][-1]["content"]
+    results = fake.calls[2]["body"]["messages"][-1]["content"]
     assert [r["tool_use_id"] for r in results] == ["t1", "t2", "t3"]
     assert all(r["toolset_name"] == "computer" and r["content"] == "OK" for r in results)
-    shot = fake.calls[4]["body"]["messages"][-1]["content"][0]["content"][0]
+    shot = fake.calls[5]["body"]["messages"][-1]["content"][0]["content"][0]
     assert isinstance(shot, dict), f"capture attendue, reçu : {shot!r}"
     assert shot["type"] == "image" and shot["source"]["media_type"] == "image/png"
     status = api.get("/api/agent/status", headers=login(api, "admin@test.fr")).json()
@@ -311,9 +287,10 @@ def test_wrong_write_stops_for_a_human_without_escalating(
     agent.last_sync = time.monotonic()
     agent.cycle()
     task = api.get("/api/agent/tasks", headers=login(api, "admin@test.fr")).json()[0]
-    assert task["status"] == "needs_human"
+    state = portal.get("/_test/state").json()["DOS-2026-0412"]
+    assert task["status"] == "needs_human", (state, task["error"], task["result"])
     assert "relecture" in task["error"]
-    assert portal.get("/_test/state").json()["DOS-2026-0412"]["proposed"] == wrong
+    assert state["proposed"] == wrong, (state, task["error"], task["result"])
 
 
 def test_model_engines_are_refused_without_data_permission_or_budget(
