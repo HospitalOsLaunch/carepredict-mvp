@@ -1,3 +1,6 @@
+> Laboratoire historique. Le lancement sans `--lab` ouvre désormais le
+> [produit connecté aux hôpitaux virtuels](virtual-hospitals.md).
+
 # Première boucle de démonstration connectée
 
 25 octobre 2026. Statut : branche intégrée, tranche locale sur scénario fictif, non qualifiée.
@@ -18,7 +21,7 @@ repose sur `claude/cockpit-web`, dont le socle hybride correspond à la PR #22.
 Prérequis : **Python 3.11+ et Node.js 22+ avec npm**. Depuis la racine du dépôt :
 
 ```bash
-python3 demo.py
+python3 demo.py --lab
 ```
 
 Pour récupérer ou mettre à jour cette branche depuis un clone initialement limité
@@ -29,7 +32,7 @@ git remote set-branches --add origin codex/integrated-demo
 git fetch origin
 git switch codex/integrated-demo
 git pull --ff-only
-python3 demo.py
+python3 demo.py --lab
 ```
 
 Le premier lancement crée `.venv-demo`, installe les dépendances et la pile numérique épinglées
@@ -41,8 +44,8 @@ un verrou exhaustif de toutes les plateformes.
 
 Le lanceur attend que le simulateur réponde à travers le proxy du cockpit, puis
 ouvre **http://127.0.0.1:5173/?source=simulator**. **Ctrl+C arrête les deux services.**
-Il n'arrête jamais un serveur déjà présent sur un port : il affiche alors un message
-et quitte. Une défaillance d'un des services arrête l'autre.
+Il n’arrête jamais un serveur déjà présent : il choisit un port voisin libre
+ou échoue si un port explicitement demandé est occupé. Une défaillance d'un des services arrête l'autre.
 
 Aucune base hospitalière, aucun Docker, poids de modèle, GPU, fichier `.env` ou
 connexion à un SI n'est nécessaire. L'environnement `.venv` du dépôt n'est pas utilisé.
@@ -51,11 +54,11 @@ connexion à un SI n'est nécessaire. L'environnement `.venv` du dépôt n'est p
 Options utiles :
 
 ```bash
-python3 demo.py --no-browser                       # afficher le lien sans ouvrir de navigateur
-python3 demo.py --port 5180 --api-port 8010         # autres ports locaux
-python3 demo.py --setup-only                       # préparer les dépendances seulement
-python3 demo.py --no-install                       # exiger une installation déjà préparée
-python3 demo.py --check                            # vérifier HTTP, planificateur et neutralité A0/A1
+python3 demo.py --lab --no-browser                       # afficher le lien sans ouvrir de navigateur
+python3 demo.py --lab --port 5180 --api-port 8010         # autres ports locaux
+python3 demo.py --lab --setup-only                       # préparer les dépendances seulement
+python3 demo.py --lab --no-install                       # exiger une installation déjà préparée
+python3 demo.py --lab --check                            # vérifier HTTP, planificateur et neutralité A0/A1
 ```
 
 Le script fonctionne aussi depuis un autre dossier en utilisant son chemin absolu.
@@ -76,7 +79,7 @@ Les résultats mesurés après clôture sont exportables en JSON, avec les journ
 et les empreintes du code. Le [protocole de comparaison](comparison.md) décrit
 la politique A0/A1, les coûts, les limites et le rejeu en ligne de commande.
 
-Pour travailler dans deux terminaux, après `python3 demo.py --setup-only` :
+Pour travailler dans deux terminaux, après `python3 demo.py --lab --setup-only` :
 
 ```bash
 # Terminal 1, depuis la racine (macOS/Linux)
@@ -181,8 +184,8 @@ réalisées ne prouve aucune efficacité. Le résultat final concerne seulement 
 ## Vérifications et limites
 
 ```bash
-python3 demo.py --setup-only
-python3 demo.py --no-install --check
+python3 demo.py --lab --setup-only
+python3 demo.py --lab --no-install --check
 .venv-demo/bin/python -m pip install httpx 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
 PYTHONPATH=src:. .venv-demo/bin/python -m pytest -q tests/hybrid tests/simulator tests/demo
 .venv-demo/bin/python -m ruff check demo.py tests/demo src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator

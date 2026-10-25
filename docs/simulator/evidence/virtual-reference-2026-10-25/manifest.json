@@ -1,0 +1,208 @@
+{
+  "schema_version": "VIRTUAL_CAMPAIGN_1",
+  "configs": [
+    {
+      "schema_version": "VIRTUAL_HOSPITAL_1",
+      "hospital_id": "X1",
+      "name": "Hôpital X1",
+      "unit_id": "geriatrie",
+      "unit_name": "Court séjour gériatrique",
+      "regime": "nominal",
+      "beds": 14,
+      "staffed_beds": 14,
+      "cleaning_teams": 1,
+      "oxygen_beds": [
+        2,
+        5,
+        8,
+        11
+      ],
+      "initially_occupied": 10,
+      "initial_waiting": 2,
+      "observation_seconds": 60,
+      "delivery_seconds": 30,
+      "cleaning_seconds": [
+        900,
+        1200,
+        1500
+      ],
+      "interarrival_seconds": [
+        1200,
+        1800,
+        2400
+      ],
+      "peak_interarrival_seconds": [
+        480,
+        720,
+        900
+      ],
+      "clinical_stay_seconds": [
+        14400,
+        21600,
+        28800
+      ],
+      "departure_delay_seconds": 600,
+      "max_active_patients": 120
+    },
+    {
+      "schema_version": "VIRTUAL_HOSPITAL_1",
+      "hospital_id": "X2",
+      "name": "Hôpital X2",
+      "unit_id": "geriatrie",
+      "unit_name": "Court séjour gériatrique",
+      "regime": "influx",
+      "beds": 14,
+      "staffed_beds": 14,
+      "cleaning_teams": 1,
+      "oxygen_beds": [
+        2,
+        5,
+        8,
+        11
+      ],
+      "initially_occupied": 10,
+      "initial_waiting": 2,
+      "observation_seconds": 60,
+      "delivery_seconds": 45,
+      "cleaning_seconds": [
+        900,
+        1200,
+        1500
+      ],
+      "interarrival_seconds": [
+        1200,
+        1800,
+        2400
+      ],
+      "peak_interarrival_seconds": [
+        480,
+        720,
+        900
+      ],
+      "clinical_stay_seconds": [
+        14400,
+        21600,
+        28800
+      ],
+      "departure_delay_seconds": 600,
+      "max_active_patients": 120
+    },
+    {
+      "schema_version": "VIRTUAL_HOSPITAL_1",
+      "hospital_id": "X3",
+      "name": "Hôpital X3",
+      "unit_id": "geriatrie",
+      "unit_name": "Court séjour gériatrique",
+      "regime": "cleaning_constrained",
+      "beds": 14,
+      "staffed_beds": 14,
+      "cleaning_teams": 1,
+      "oxygen_beds": [
+        2,
+        5,
+        8,
+        11
+      ],
+      "initially_occupied": 10,
+      "initial_waiting": 2,
+      "observation_seconds": 60,
+      "delivery_seconds": 60,
+      "cleaning_seconds": [
+        1800,
+        2700,
+        3600
+      ],
+      "interarrival_seconds": [
+        1200,
+        1800,
+        2400
+      ],
+      "peak_interarrival_seconds": [
+        480,
+        720,
+        900
+      ],
+      "clinical_stay_seconds": [
+        14400,
+        21600,
+        28800
+      ],
+      "departure_delay_seconds": 600,
+      "max_active_patients": 120
+    }
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "hours": 6,
+  "policy": "accept",
+  "sources": {
+    "operational/contract.py": "ea19d6bf8b2bf3984b6db1743848eda07cab4696de8da57ee4c1efd33a4763a0",
+    "simulator/__init__.py": "117b56dc44ec60317dff76479a9bf076e3b970af076d21cf4119ad5cfca8b040",
+    "simulator/comparison.py": "1955369508012d16e9646e4e1a552576ba005a474488fcd76e9cb7e408098c64",
+    "simulator/engine.py": "10581169e3f67caf4f729618df2c1d0a905fc7d1212210b4f48c438237181d1e",
+    "simulator/evaluation.py": "0519cca3758c72f7a2d19828df7a74d65301c03f315f018e2d11517df85b10d7",
+    "simulator/feed.py": "3cdf88de0a795e0b3dfab8a030154114f19ebd28b1ca1082d2d3ac8da5a539f4",
+    "simulator/session.py": "24ddec630eda7978dac73a656ab35dbe69e784f2370dbb9135858f9dcab1de62",
+    "hybrid/__init__.py": "01c9ec75edacec842955b31b1b19b4c7bb3d5ce68e887155d6aefb7cd47a22c2",
+    "hybrid/__main__.py": "dfcbc1cdae8a18ee4d07f1fe4cfae668c6a4b1e441cb551abfa5af030df63de0",
+    "hybrid/continuous.py": "ac7ff10615fecd2d87a43ffecb5f60fd28c7c514ea4cf67ab6908a5ff9c54089",
+    "hybrid/cusum.py": "c00f8f8297223fe5d092904ca3bba871b61bf7a3f7683da9f97d75fc8121fee0",
+    "hybrid/decision_benchmark.py": "bca57053d04beed06388c6211639aa4752382b342e4f8a89e1fd1cadaaee8ca4",
+    "hybrid/decision_cases.py": "067620eb0efc9a9c9b6e3d5094d35dc75690dd3cb38a7fe9c80bef8160dc09ed",
+    "hybrid/decision_guard.py": "acfd964cb65493a5a90d7c1260c372455e0d5d0c1e2981b4ee52c5a647b89eee",
+    "hybrid/demo.py": "637bf680b5757919616cb4cbd08f4730e877e0b8b5e2b9b2d0436b109e9b7f1c",
+    "hybrid/innovations.py": "673348e758fe5b4dd126318a31b57106d82562783fa014c3b9f15acf226a3fd6",
+    "hybrid/journal.py": "4c9710330eb2d21d0049cce78fd4c24b0861d048deff92c185b73985bf725a68",
+    "hybrid/learning_demo.py": "358a9f2fe75886ab6699c36613d8ac7997cbe94b932d116459c1ee3340c1cea4",
+    "hybrid/live_models.py": "ec611e2aef6fdc35890fe296872813c1379ea68c4c6c907011e4b3089fb932b7",
+    "hybrid/live_store.py": "5711661e6b4f0fb01c0c1d2b6d2095957611f5af432abbead2911ed2870f4225",
+    "hybrid/live_workflow.py": "693a208c1564d13726db2a06ac7685492c7d9cb0867b2c0b94b1cde33f0d2e28",
+    "hybrid/models.py": "93042e3cf3d4e8375d58b628ae4e063e1a8b48d318a3592182c3474c1f6d45c4",
+    "hybrid/pathway.py": "5317e5c75217adce809a1454db90373d453d2aadf8beeada4dfca2d390160edd",
+    "hybrid/planning.py": "cf9ff650b5752180709b0ba2320b3c49942908f5114653f3a5a41ff2c3348bd0",
+    "hybrid/preparation.py": "7a06b7c6a5d3b63c4c234ca6c188fbd091eb9c13ef7341890ce56c45299f42e3",
+    "hybrid/retrospective.py": "59dceb8586d4934074d3ef7f3065e4ab6c01a8a6be88938c9962c374ff0e9c15",
+    "hybrid/robustness_diagnostics.py": "20f24e50bebd3f4ed7561f0186ed60c0ba64e74ddb72f9155ffeed5ed17e6555",
+    "hybrid/robustness_models.py": "1f9501499da4f74952b7b25dc52dbd0bc2c98231dae0342ff0fe232d002d2bc9",
+    "hybrid/robustness_queue.py": "ab97e3b1e34fb544eb824a4369537be6f22f4b1bae812df62625455cb6222584",
+    "hybrid/robustness_report.py": "e02c495b5b8a914db2a8b1ef692013408b426a2b4078f9f23b6770c288398545",
+    "hybrid/robustness_v2.py": "370861c62cbfb534551cfe27c1933dadbe9e95c5a7040512c78852dd4e24840c",
+    "hybrid/scenarios.py": "81fa012d33758e895476b3dd57a0a0780174a5e7a34f6ace7ead87c11f7d26e5",
+    "hybrid/scoring.py": "2409c3f6859b15383564560b5ffd3773ca3c8cc3b2fdf87fb573da148d6d88ca",
+    "hybrid/shadow.py": "0af34f074c183140675abb7eb7957596f18bb8d80255aefce6b8df1969e634fa",
+    "hybrid/simulation.py": "c3e8d5ece8ff6cc303f5194214502b7b701a01a16e5ed0a3c006e0189b9705ee",
+    "hybrid/source_adapter.py": "7b08e7683827bf19281a514bea9d4bfcf3344cecde8b3fbdb468df139d135a45",
+    "hybrid/source_cli.py": "96e6f76053f8f5dde09ce337676a4c2d647bb50af0d4f7271356f43eb2f9ee28",
+    "hybrid/source_contract.py": "9270da5035efccfca6be3d12a05d569b26dcdd243f6c285986ac48e08c807c2f",
+    "hybrid/source_demo.py": "d6cef954580dfa6275b239d7224f7e38c24e0aff094a50fec9fb7ebc34728227",
+    "hybrid/stress_preparation.py": "8baf0be425dee20aae7aa6bd52ec35da9cdcbbf0bc9d74bfeebcc8b800c868ed",
+    "hybrid/survival.py": "9a1aa1add2bbb92f4f18d5ce1da5e256784214167208590c0a4824e0831f4282",
+    "hybrid/workflow.py": "7142b0babcfd07520579ad26305ac7f49cb6734e811702648719273659c7d600",
+    "virtual/__init__.py": "2334af19307ccd694790b67db10ac18e32a79bd03f924a8d186625a304494d16",
+    "virtual/campaign.py": "4b723d47a4c3c57459b375c4175f957520d57d5979a5e6456095b429444bb370",
+    "virtual/config.py": "2e9920af2ff1a185023993d62ccb331dbed6d87251e3cd7d40862d5ea096d18b",
+    "virtual/engine.py": "29bcfc6e1226727f39647149b0975f0d9555f98daaa8d4fc4d4a041cd64cc8a6",
+    "virtual/feed.py": "37344e23711e6c08d175adec6d51fc7a53bceccf915452ea18696496bd6a9457",
+    "virtual/runtime.py": "a3fbc41b3e6cd5c888819539a6306cb051aae33ca07d94ba5b17d06cbd8e1200"
+  },
+  "runtime_versions": {
+    "python": "3.12.14",
+    "simpy": "4.1.2",
+    "pydantic": "2.14.1",
+    "numpy": "2.3.5",
+    "scikit-learn": "1.8.0"
+  },
+  "cadence_seconds": 300,
+  "replicates_fixed_before_execution": true,
+  "campaign_id": "98d1edd156f073189fac1eeb460eead43957b19a72e024ffc6516ec05ae11214"
+}

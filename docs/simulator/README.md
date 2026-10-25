@@ -150,3 +150,9 @@ SIM_GO_INTEGRATION, SIM_GO_PRETRAIN_RESEARCH et SIM_QUALIFIED_FOR_SCOPE exigent
 chacun les preuves et limites prévues au chapitre 10. Aucun résultat positif
 d'une politique, bénéfice terrain ou nouveau franchissement de porte de
 validation n'est revendiqué par cette livraison documentaire.
+
+## Parcours produit avec établissements virtuels
+
+Le lancement par défaut est désormais le [cockpit connecté à X1, X2 et X3](virtual-hospitals.md).
+Les mondes évoluent sans contrôle utilisateur du temps ; les campagnes restent un outil CLI.
+Le laboratoire trois lits est conservé sous `--lab`. Cette extension ne clôt pas les jalons v0.3.

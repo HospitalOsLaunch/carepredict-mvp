@@ -1,3 +1,5 @@
+import { useVirtualHospitals, type Workspace } from "./data/useVirtualHospitals";
+import { VirtualProposal, VirtualActivity, VirtualJournal } from "./ui/VirtualHospital";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
@@ -58,6 +60,7 @@ const ORIGIN: Record<Connection, string> = {
   "api-plan": "API locale, patients fictifs",
   fixture: "Patients fictifs, vrai planificateur",
   simulation: "Simulateur connecté",
+  virtual: "Hôpitaux virtuels",
 };
 
 const TITLES: Record<Route, string> = {
@@ -95,7 +98,7 @@ function useShortcuts(
       if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
       if (t?.closest('[role="listbox"], dialog[open]')) return;
       const k = e.key.toLowerCase();
-      if (store.connection === "simulation" && ["o", "n", "f"].includes(k)) return;
+      if (["simulation", "virtual"].includes(store.connection) && ["o", "n", "f"].includes(k)) return;
       const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
       const digit = Number(e.key);
       if (k === "u") openSwitcher();
@@ -125,9 +128,11 @@ function useShortcuts(
 
 export function App() {
   const [simulationMode] = useState(() => new URLSearchParams(window.location.search).get("source") === "simulator");
-  const observation = useAssessment(!simulationMode);
+  const [virtualMode] = useState(() => !__DEMO_ONLY__ && !["simulator", "observation"].includes(new URLSearchParams(window.location.search).get("source") ?? ""));
+  const workspace = useVirtualHospitals(virtualMode);
+  const observation = useAssessment(!simulationMode && !virtualMode);
   const simulation = useSimulation(simulationMode);
-  const store = simulationMode ? simulation.store : observation;
+  const store = virtualMode ? workspace.store : simulationMode ? simulation.store : observation;
   const { route, param } = useRoute();
   const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
@@ -136,20 +141,20 @@ export function App() {
   const openSwitcher = useCallback(() => setSwitcherSignal((n) => n + 1), []);
   const openHelp = useCallback(() => help.current?.showModal(), []);
   const a = store.assessment;
-  const observationNow = useNow(simulationMode ? null : a, store.loadedAt);
-  const now = simulationMode ? (simulation.view?.now ?? null) : observationNow;
+  const observationNow = useNow(simulationMode || virtualMode ? null : a, store.loadedAt);
+  const now = virtualMode ? (workspace.view?.now ?? null) : simulationMode ? (simulation.view?.now ?? null) : observationNow;
   const notify = useCallback((message: string, undo?: () => void) => setToast({ message, undo }), []);
   const { records, me } = useJournal();
-  const todo = now && !simulationMode ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
+  const todo = now && !simulationMode && !virtualMode ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
 
   // Demonstration: a plausible shift of earlier decisions, read-only, never stored.
   const stateAt = a?.state.at;
   useEffect(() => {
-    if (simulationMode) return;
+    if (simulationMode || virtualMode) return;
     if (store.connection === "fixture" || store.connection === "api-plan") {
       if (stateAt) journal.setSamples(demoHistory(stateAt, store.units));
     } else journal.setSamples([]);
-  }, [simulationMode, store.connection, stateAt, store.units]);
+  }, [simulationMode, virtualMode, store.connection, stateAt, store.units]);
 
   useEffect(() => {
     document.title = `${store.unitName} · ${TITLES[route]} · HospitalOS`;
@@ -178,12 +183,12 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          <UnitSwitcher
+          {virtualMode ? <label className="hospital-switcher">Établissement<select aria-label="Établissement" value={store.unitId} onChange={e => selectUnit(e.target.value)}>{workspace.hospitals.map(h => <option key={h.id} value={h.id}>{h.name}{h.available ? "" : " · indisponible"}</option>)}</select></label> : <UnitSwitcher
             summaries={store.summaries}
             unitId={store.unitId}
             onSelect={selectUnit}
             openSignal={switcherSignal}
-          />
+          />}
           <nav className="nav" aria-label="Sections">
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
@@ -201,14 +206,14 @@ export function App() {
             ) : null}
             <span
               className="mode"
-              title={simulationMode ? "Commandes limitées au scénario fictif." : "Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."}
+              title={virtualMode ? "Patients fictifs, établissements autonomes en arrière-plan." : simulationMode ? "Commandes limitées au scénario fictif." : "Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé."}
             >
               <span className="mode__dot" aria-hidden="true" />
-              <span className="mode__text">{simulationMode ? "Simulation connectée" : "Observation seule"}</span>
+              <span className="mode__text">{virtualMode ? "Hôpitaux virtuels" : simulationMode ? "Simulation connectée" : "Observation seule"}</span>
               <span className="mode__short" aria-hidden="true">
-                {simulationMode ? "Simulation" : "Observation"}
+                {virtualMode ? "Virtuel" : simulationMode ? "Simulation" : "Observation"}
               </span>
-              <span className="visually-hidden">{simulationMode ? ": patients fictifs uniquement" : ": aucune commande envoyée"}</span>
+              <span className="visually-hidden">{virtualMode ? ": décisions limitées aux hôpitaux virtuels" : simulationMode ? ": patients fictifs uniquement" : ": aucune commande envoyée"}</span>
             </span>
             <button type="button" className="helpbtn" onClick={openHelp} aria-label="Raccourcis clavier">
               ?
@@ -225,7 +230,7 @@ export function App() {
             <span>{store.error}</span>
           </div>
         ) : null}
-        {store.connection !== "simulation" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {!virtualMode && store.connection !== "simulation" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -251,7 +256,9 @@ export function App() {
         {!a || !now ? (
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />
         ) : route === "proposition" ? (
-          <ProposalDetail a={a} />
+          <>{virtualMode ? <VirtualProposal key={store.unitId} workspace={workspace} /> : null}<ProposalDetail a={a} /></>
+        ) : route === "journal" && virtualMode ? (
+          <VirtualJournal workspace={workspace} />
         ) : route === "journal" && simulationMode ? (
           <SimulationJournal simulation={simulation} />
         ) : route === "journal" ? (
@@ -276,13 +283,14 @@ export function App() {
             onEvaluate={store.evaluate}
             unit={{ id: store.unitId, name: store.unitName }}
             onToast={notify}
-            simulation={simulationMode}
+            simulation={simulationMode || virtualMode}
+            workspace={virtualMode ? workspace : undefined}
           />
         )}
       </main>
 
       <footer className="foot">
-        <span>{simulationMode ? "Actions limitées à l'hôpital simulé. Patients fictifs. Aucune commande hospitalière." : "HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes."}</span>
+        <span>{virtualMode ? `Patients fictifs · Actions limitées aux établissements virtuels · Temps ×${workspace.view?.clock_rate ?? 12}` : simulationMode ? "Actions limitées à l'hôpital simulé. Patients fictifs. Aucune commande hospitalière." : "HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes."}</span>
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
@@ -302,7 +310,7 @@ export function App() {
         <h2 id="help-title">Raccourcis pour aller vite</h2>
         <p className="help__lead">Une touche, une action. Vos mains restent où elles sont.</p>
         <dl>
-          {SHORTCUTS.filter(([k]) => !simulationMode || !["O", "N", "F"].includes(k)).map(([k, v]) => (
+          {SHORTCUTS.filter(([k]) => (!simulationMode && !virtualMode) || !["O", "N", "F", "U"].includes(k)).map(([k, v]) => (
             <div key={k}>
               <dt>
                 <kbd className="kbd">{k}</kbd>
@@ -362,6 +370,7 @@ function UnitPage(props: {
   unit: { id: string; name: string };
   onToast: ToastFn;
   simulation?: boolean;
+  workspace?: Workspace;
 }) {
   const { a } = props;
   const hour = parisHour(a.state.at);
@@ -391,6 +400,7 @@ function UnitPage(props: {
         </span>
       </h1>
       <TensionStrip a={a} onJump={jump} />
+      {props.workspace ? <><VirtualActivity workspace={props.workspace} /><VirtualProposal workspace={props.workspace} /></> : null}
       {!props.simulation ? <Proposal {...props} /> : null}
       {!props.simulation ? <InProgress
         unitId={props.unit.id}

@@ -1,0 +1,2079 @@
+{
+  "schema_version": "VIRTUAL_PAIR_1",
+  "scope": "fictional_hospital_only",
+  "config": {
+    "schema_version": "VIRTUAL_HOSPITAL_1",
+    "hospital_id": "X1",
+    "name": "Hôpital X1",
+    "unit_id": "geriatrie",
+    "unit_name": "Court séjour gériatrique",
+    "regime": "nominal",
+    "beds": 14,
+    "staffed_beds": 14,
+    "cleaning_teams": 1,
+    "oxygen_beds": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "initially_occupied": 10,
+    "initial_waiting": 2,
+    "observation_seconds": 60,
+    "delivery_seconds": 30,
+    "cleaning_seconds": [
+      900,
+      1200,
+      1500
+    ],
+    "interarrival_seconds": [
+      1200,
+      1800,
+      2400
+    ],
+    "peak_interarrival_seconds": [
+      480,
+      720,
+      900
+    ],
+    "clinical_stay_seconds": [
+      14400,
+      21600,
+      28800
+    ],
+    "departure_delay_seconds": 600,
+    "max_active_patients": 120
+  },
+  "seed": 3,
+  "hours": 6,
+  "policy": "accept",
+  "assessment_cadence_seconds": 300,
+  "a0": {
+    "evaluation": {
+      "waiting_patient_minutes": 56.5,
+      "waiting_at_end": 1,
+      "admitted_at_end": 13,
+      "departed": 10,
+      "patients_total": 24,
+      "completed_cleanings": 12,
+      "coordination_tasks": 0,
+      "scope": "fictional_scenario_only_no_effectiveness_claim"
+    },
+    "installed": 13,
+    "solicitation_seconds_requested": 0,
+    "assessments": [],
+    "commands": [],
+    "journal": [
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-W000",
+        "bed": null
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-W001",
+        "bed": null
+      },
+      {
+        "second": 30.0,
+        "kind": "reserved",
+        "patient": "P-W001",
+        "bed": "G13"
+      },
+      {
+        "second": 90.0,
+        "kind": "installed",
+        "patient": "P-W001",
+        "bed": "G13"
+      },
+      {
+        "second": 120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 600.0,
+        "kind": "medically_cleared",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 600.0,
+        "kind": "arrived",
+        "patient": "P-A000000",
+        "bed": null
+      },
+      {
+        "second": 630.0,
+        "kind": "reserved",
+        "patient": "P-A000000",
+        "bed": "G14"
+      },
+      {
+        "second": 690.0,
+        "kind": "installed",
+        "patient": "P-A000000",
+        "bed": "G14"
+      },
+      {
+        "second": 1020.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 1020.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 1200.0,
+        "kind": "departed",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 1500.0,
+        "kind": "medically_cleared",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 2100.0,
+        "kind": "departed",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 2220.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 2220.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 2250.0,
+        "kind": "reserved",
+        "patient": "P-W000",
+        "bed": "G02"
+      },
+      {
+        "second": 2310.0,
+        "kind": "installed",
+        "patient": "P-W000",
+        "bed": "G02"
+      },
+      {
+        "second": 2400.0,
+        "kind": "medically_cleared",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 2400.0,
+        "kind": "arrived",
+        "patient": "P-A000001",
+        "bed": null
+      },
+      {
+        "second": 2430.0,
+        "kind": "reserved",
+        "patient": "P-A000001",
+        "bed": "G01"
+      },
+      {
+        "second": 2490.0,
+        "kind": "installed",
+        "patient": "P-A000001",
+        "bed": "G01"
+      },
+      {
+        "second": 3000.0,
+        "kind": "departed",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 3300.0,
+        "kind": "medically_cleared",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 3420.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 3420.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G04"
+      },
+      {
+        "second": 3900.0,
+        "kind": "departed",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 4200.0,
+        "kind": "medically_cleared",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 4320.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G04"
+      },
+      {
+        "second": 4320.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G05"
+      },
+      {
+        "second": 4800.0,
+        "kind": "arrived",
+        "patient": "P-A000002",
+        "bed": null
+      },
+      {
+        "second": 4800.0,
+        "kind": "departed",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 4830.0,
+        "kind": "reserved",
+        "patient": "P-A000002",
+        "bed": "G03"
+      },
+      {
+        "second": 4890.0,
+        "kind": "installed",
+        "patient": "P-A000002",
+        "bed": "G03"
+      },
+      {
+        "second": 5100.0,
+        "kind": "medically_cleared",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 5220.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G05"
+      },
+      {
+        "second": 5220.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G06"
+      },
+      {
+        "second": 5700.0,
+        "kind": "departed",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 6000.0,
+        "kind": "medically_cleared",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 6120.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G06"
+      },
+      {
+        "second": 6120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G07"
+      },
+      {
+        "second": 6600.0,
+        "kind": "arrived",
+        "patient": "P-A000003",
+        "bed": null
+      },
+      {
+        "second": 6600.0,
+        "kind": "departed",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 6630.0,
+        "kind": "reserved",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 6690.0,
+        "kind": "installed",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 6900.0,
+        "kind": "medically_cleared",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 7020.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G07"
+      },
+      {
+        "second": 7020.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G08"
+      },
+      {
+        "second": 7500.0,
+        "kind": "departed",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 7800.0,
+        "kind": "medically_cleared",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 8400.0,
+        "kind": "departed",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 8520.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G08"
+      },
+      {
+        "second": 8520.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G09"
+      },
+      {
+        "second": 8700.0,
+        "kind": "medically_cleared",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 9000.0,
+        "kind": "arrived",
+        "patient": "P-A000004",
+        "bed": null
+      },
+      {
+        "second": 9030.0,
+        "kind": "reserved",
+        "patient": "P-A000004",
+        "bed": "G05"
+      },
+      {
+        "second": 9090.0,
+        "kind": "installed",
+        "patient": "P-A000004",
+        "bed": "G05"
+      },
+      {
+        "second": 9300.0,
+        "kind": "departed",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 9720.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G09"
+      },
+      {
+        "second": 9720.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G10"
+      },
+      {
+        "second": 10800.0,
+        "kind": "arrived",
+        "patient": "P-A000005",
+        "bed": null
+      },
+      {
+        "second": 10830.0,
+        "kind": "reserved",
+        "patient": "P-A000005",
+        "bed": "G06"
+      },
+      {
+        "second": 10890.0,
+        "kind": "installed",
+        "patient": "P-A000005",
+        "bed": "G06"
+      },
+      {
+        "second": 10920.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G10"
+      },
+      {
+        "second": 10920.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G11"
+      },
+      {
+        "second": 12120.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G11"
+      },
+      {
+        "second": 12120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G12"
+      },
+      {
+        "second": 13200.0,
+        "kind": "arrived",
+        "patient": "P-A000006",
+        "bed": null
+      },
+      {
+        "second": 13230.0,
+        "kind": "reserved",
+        "patient": "P-A000006",
+        "bed": "G08"
+      },
+      {
+        "second": 13290.0,
+        "kind": "installed",
+        "patient": "P-A000006",
+        "bed": "G08"
+      },
+      {
+        "second": 13620.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G12"
+      },
+      {
+        "second": 14400.0,
+        "kind": "arrived",
+        "patient": "P-A000007",
+        "bed": null
+      },
+      {
+        "second": 14430.0,
+        "kind": "reserved",
+        "patient": "P-A000007",
+        "bed": "G07"
+      },
+      {
+        "second": 14490.0,
+        "kind": "installed",
+        "patient": "P-A000007",
+        "bed": "G07"
+      },
+      {
+        "second": 15600.0,
+        "kind": "arrived",
+        "patient": "P-A000008",
+        "bed": null
+      },
+      {
+        "second": 15630.0,
+        "kind": "reserved",
+        "patient": "P-A000008",
+        "bed": "G09"
+      },
+      {
+        "second": 15690.0,
+        "kind": "installed",
+        "patient": "P-A000008",
+        "bed": "G09"
+      },
+      {
+        "second": 18000.0,
+        "kind": "arrived",
+        "patient": "P-A000009",
+        "bed": null
+      },
+      {
+        "second": 18030.0,
+        "kind": "reserved",
+        "patient": "P-A000009",
+        "bed": "G10"
+      },
+      {
+        "second": 18090.0,
+        "kind": "installed",
+        "patient": "P-A000009",
+        "bed": "G10"
+      },
+      {
+        "second": 19800.0,
+        "kind": "arrived",
+        "patient": "P-A000010",
+        "bed": null
+      },
+      {
+        "second": 19830.0,
+        "kind": "reserved",
+        "patient": "P-A000010",
+        "bed": "G11"
+      },
+      {
+        "second": 19890.0,
+        "kind": "installed",
+        "patient": "P-A000010",
+        "bed": "G11"
+      },
+      {
+        "second": 21090.0,
+        "kind": "medically_cleared",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 21600.0,
+        "kind": "arrived",
+        "patient": "P-A000011",
+        "bed": null
+      }
+    ],
+    "primitives": {
+      "virtual-world-1|X1|3|clinical_stay|P-W001|0": 21600,
+      "virtual-world-1|X1|3|cleaning|G01|0": 900,
+      "virtual-world-1|X1|3|oxygen|P-A000000|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|0": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000000|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G02|0": 1200,
+      "virtual-world-1|X1|3|cleaning|G03|0": 1200,
+      "virtual-world-1|X1|3|clinical_stay|P-W000|0": 21600,
+      "virtual-world-1|X1|3|oxygen|P-A000001|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|1": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000001|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G04|0": 900,
+      "virtual-world-1|X1|3|cleaning|G05|0": 900,
+      "virtual-world-1|X1|3|oxygen|P-A000002|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|2": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000002|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G06|0": 900,
+      "virtual-world-1|X1|3|cleaning|G07|0": 900,
+      "virtual-world-1|X1|3|oxygen|P-A000003|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|3": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000003|0": 14400,
+      "virtual-world-1|X1|3|cleaning|G08|0": 1500,
+      "virtual-world-1|X1|3|cleaning|G09|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000004|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|4": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000004|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G10|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000005|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|5": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000005|0": 21600,
+      "virtual-world-1|X1|3|cleaning|G11|0": 1200,
+      "virtual-world-1|X1|3|cleaning|G12|0": 1500,
+      "virtual-world-1|X1|3|oxygen|P-A000006|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|6": 1200,
+      "virtual-world-1|X1|3|clinical_stay|P-A000006|0": 28800,
+      "virtual-world-1|X1|3|oxygen|P-A000007|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|7": 1200,
+      "virtual-world-1|X1|3|clinical_stay|P-A000007|0": 14400,
+      "virtual-world-1|X1|3|oxygen|P-A000008|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|8": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000008|0": 21600,
+      "virtual-world-1|X1|3|oxygen|P-A000009|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|9": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000009|0": 14400,
+      "virtual-world-1|X1|3|oxygen|P-A000010|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|10": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000010|0": 21600,
+      "virtual-world-1|X1|3|oxygen|P-A000011|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|11": 2400
+    }
+  },
+  "a1": {
+    "evaluation": {
+      "waiting_patient_minutes": 41.5,
+      "waiting_at_end": 1,
+      "admitted_at_end": 13,
+      "departed": 10,
+      "patients_total": 24,
+      "completed_cleanings": 12,
+      "coordination_tasks": 1,
+      "scope": "fictional_scenario_only_no_effectiveness_claim"
+    },
+    "installed": 13,
+    "solicitation_seconds_requested": 30,
+    "assessments": [
+      {
+        "second": 30.0,
+        "snapshot_fingerprint": "d71db360b3afd0dab692c6e1672c9e1a2207b2f1bfe61956b99f5a567212ab54",
+        "decision": "recommend",
+        "action": {
+          "kind": "prioritize_cleaning",
+          "bed_id": "G02",
+          "patient_id": null
+        }
+      },
+      {
+        "second": 330.0,
+        "snapshot_fingerprint": "971c0210a2e153c7d6b50265dde2de0db46f9ca036c27505c32ecead60986311",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 630.0,
+        "snapshot_fingerprint": "009c04204eb787dca8916cb203cdd4bfc8bd44f4aa3689dc014f8a297fccec61",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 930.0,
+        "snapshot_fingerprint": "233950830f92d67ca51b53a47f2e698340e88e2dc4aeb4d7bfd125d71bd660cc",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 1230.0,
+        "snapshot_fingerprint": "a5d48b42e370960ecaa63705c38761dcb80641f19abf818ab3a0eb4e5d1623d0",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 1530.0,
+        "snapshot_fingerprint": "85c33b320ca319a0009211c364a094f5843035e0ae5e03ac28ec02c3a1de6513",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 1830.0,
+        "snapshot_fingerprint": "85c33b320ca319a0009211c364a094f5843035e0ae5e03ac28ec02c3a1de6513",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 2130.0,
+        "snapshot_fingerprint": "58ba4b607b45360391cb8c8fa6366ab9e820e3df205b8391ad06c79cb9578d67",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 2430.0,
+        "snapshot_fingerprint": "a8db027c79274954fc385fb64479ba1526712e91d3ea0dca45a986069a445ce8",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 2730.0,
+        "snapshot_fingerprint": "322e8fb3ff072b7346c63523253284a2f1fd56e4909817e7bf37205f0b519c5d",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 3030.0,
+        "snapshot_fingerprint": "1a621a698acf6ad55ed21812561cc77dd7774d358e430ff93953fb1b2d0da647",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 3330.0,
+        "snapshot_fingerprint": "f396412b2d7e2196fb1b5573af52ad1a5e7ee909657ea8ca6e10f16d422f4b1d",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 3630.0,
+        "snapshot_fingerprint": "069b354605c10cda33b0596bfeabca26db91322afd4eda5e5a03c514334b3966",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 3930.0,
+        "snapshot_fingerprint": "a02312f8db9424ecc97acd8968b078a5703616532f389ee3f517afbbd5274d2d",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 4230.0,
+        "snapshot_fingerprint": "524080cabdba6f7a6d2e3f36f0758a1689b27df8fd2044f76161b08127f978ba",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 4530.0,
+        "snapshot_fingerprint": "8f60363053f158432e872eacfa8a7d76227d40798557f6559174e65af8461fdd",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 4830.0,
+        "snapshot_fingerprint": "4faafc4e51b5c967221de1e76205e64fae0fa1d7e14ee07cf1834f145c72ca4a",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 5130.0,
+        "snapshot_fingerprint": "190c9b20f259b0f0f4e420400b8682587f831d68428741f6e776f261b82566e4",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 5430.0,
+        "snapshot_fingerprint": "df558f790b65e1a2fcdafb466f7a7cddda6a11b1f1a75a6365d873ec4cd9ff5f",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 5730.0,
+        "snapshot_fingerprint": "aba666cf8fbab91b4935cf90742913dba581669a2ba6800404621e2cf12b01fb",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 6030.0,
+        "snapshot_fingerprint": "52b7ae271c3adc91bf78f6556531027c6d5025fde5f1bb869692e4536fa82d2c",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 6330.0,
+        "snapshot_fingerprint": "13745418be9b8d14d5aa5b90e22fd068a6b1d9ae3adc9dd47d9cf46dfc32029d",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 6630.0,
+        "snapshot_fingerprint": "fe0db70b259ca4b3d6385c0d8f560ddc6d59c725cdd32308476611cfb0bced09",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 6930.0,
+        "snapshot_fingerprint": "7d0d35ae05638bf5310074ed146971f68edfd16d11e8882235fa90ed7d092f7f",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 7230.0,
+        "snapshot_fingerprint": "18bf352251ba41fe88e4ebf5772c45b1d4ea25d4ba683fb7b6f55e41fac73f09",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 7530.0,
+        "snapshot_fingerprint": "95e01df919494df09e41cd85f2f0d45ff2d07bc038eb3f68684385bd61f40f85",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 7830.0,
+        "snapshot_fingerprint": "259da42ff47e8eafa227dd1d1c94118f6aa2b716a69e019679310d17a062c143",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 8130.0,
+        "snapshot_fingerprint": "259da42ff47e8eafa227dd1d1c94118f6aa2b716a69e019679310d17a062c143",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 8430.0,
+        "snapshot_fingerprint": "d0db8c87515417678b4e0d378d5b276ac0be2d1a5af5276365b077dd4da55e37",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 8730.0,
+        "snapshot_fingerprint": "3e46de2c3adcde9a11a1987de7cff880a500d0335f71d1d6fb8086e1e629090c",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 9030.0,
+        "snapshot_fingerprint": "939419ec7fea5bc6eb5ecd35e2ad09ff9137386810600c4f65f9c77ab41d43ec",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 9330.0,
+        "snapshot_fingerprint": "dd55b976b740a199cc52a3108239bdbe565aa3ad73ac16ae8c16ecf1e1f158d9",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 9630.0,
+        "snapshot_fingerprint": "9ae88ec1527a48f9f77dfc13061dae632180505414c6bc0d054f38610a0dbc33",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 9930.0,
+        "snapshot_fingerprint": "a7ddb9f7759c8323756e5b04bd47951692407ce5f6f7e00940ecbac80603de95",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 10230.0,
+        "snapshot_fingerprint": "a7ddb9f7759c8323756e5b04bd47951692407ce5f6f7e00940ecbac80603de95",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 10530.0,
+        "snapshot_fingerprint": "a7ddb9f7759c8323756e5b04bd47951692407ce5f6f7e00940ecbac80603de95",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 10830.0,
+        "snapshot_fingerprint": "edc789e50d7ade3440ac9bb2f4f0aee053e893befd5787078ca8eeda6a61e2a3",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 11130.0,
+        "snapshot_fingerprint": "de4e090c74e4c1ef3c3db479186211ef77e8b5e31bc960490f7358cddb82b94e",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 11430.0,
+        "snapshot_fingerprint": "de4e090c74e4c1ef3c3db479186211ef77e8b5e31bc960490f7358cddb82b94e",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 11730.0,
+        "snapshot_fingerprint": "de4e090c74e4c1ef3c3db479186211ef77e8b5e31bc960490f7358cddb82b94e",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 12030.0,
+        "snapshot_fingerprint": "de4e090c74e4c1ef3c3db479186211ef77e8b5e31bc960490f7358cddb82b94e",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 12330.0,
+        "snapshot_fingerprint": "3c9e4ca391f45209e5236283b981ee37d3206106d89538acd3dae6a55234c5fd",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 12630.0,
+        "snapshot_fingerprint": "3c9e4ca391f45209e5236283b981ee37d3206106d89538acd3dae6a55234c5fd",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 12930.0,
+        "snapshot_fingerprint": "3c9e4ca391f45209e5236283b981ee37d3206106d89538acd3dae6a55234c5fd",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 13230.0,
+        "snapshot_fingerprint": "361f2382d3bbd6838dfb9b6e80a79321b11b99b0f5298665f41df204afb705e8",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 13530.0,
+        "snapshot_fingerprint": "5e737c76315d9834aea5053828006efa3426b0f55c2d5f6fb351cf4eed8b97a3",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 13830.0,
+        "snapshot_fingerprint": "5563cb2e63b8e11ff337abcf3548028eec26c8ce7bf496b8428f5d8d124c21c2",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 14130.0,
+        "snapshot_fingerprint": "5563cb2e63b8e11ff337abcf3548028eec26c8ce7bf496b8428f5d8d124c21c2",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 14430.0,
+        "snapshot_fingerprint": "a80b086c6cc829f7b708cf2cadf4fa71081b649cde2f2592fa1cca451f34eee7",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 14730.0,
+        "snapshot_fingerprint": "0d9c76415f50ecf31a052f84ab7c016a01dbcb593e43d971cf46307f85789755",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 15030.0,
+        "snapshot_fingerprint": "0d9c76415f50ecf31a052f84ab7c016a01dbcb593e43d971cf46307f85789755",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 15330.0,
+        "snapshot_fingerprint": "0d9c76415f50ecf31a052f84ab7c016a01dbcb593e43d971cf46307f85789755",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 15630.0,
+        "snapshot_fingerprint": "953ed7f6e9bf0bf1852ef461ef88a801123f159a253a473b3813890e514a1e98",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 15930.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 16230.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 16530.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 16830.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 17130.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 17430.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 17730.0,
+        "snapshot_fingerprint": "91df94a47f9b537b3277de569d81f1a24fc7870af97410dae045c80055d5b709",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 18030.0,
+        "snapshot_fingerprint": "03f125937e4ba03c28248b18fdb4d225431e379226e0f729ffcb78088d4cbd1b",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 18330.0,
+        "snapshot_fingerprint": "d44ab1d3d68e45e1e94a05c4661be087128e47b7a1fdef5ae23559270023e1ef",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 18630.0,
+        "snapshot_fingerprint": "d44ab1d3d68e45e1e94a05c4661be087128e47b7a1fdef5ae23559270023e1ef",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 18930.0,
+        "snapshot_fingerprint": "d44ab1d3d68e45e1e94a05c4661be087128e47b7a1fdef5ae23559270023e1ef",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 19230.0,
+        "snapshot_fingerprint": "d44ab1d3d68e45e1e94a05c4661be087128e47b7a1fdef5ae23559270023e1ef",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 19530.0,
+        "snapshot_fingerprint": "d44ab1d3d68e45e1e94a05c4661be087128e47b7a1fdef5ae23559270023e1ef",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 19830.0,
+        "snapshot_fingerprint": "b1f6338b715d4d93d270f713b60358c4cb8e326c9b3b6f86285eb783536f266c",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 20130.0,
+        "snapshot_fingerprint": "1bfd2fffb75f72fb8113ac6a239376ceb9c1fb597dcb197e79eb1b9e01942ece",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 20430.0,
+        "snapshot_fingerprint": "1bfd2fffb75f72fb8113ac6a239376ceb9c1fb597dcb197e79eb1b9e01942ece",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 20730.0,
+        "snapshot_fingerprint": "1bfd2fffb75f72fb8113ac6a239376ceb9c1fb597dcb197e79eb1b9e01942ece",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 21030.0,
+        "snapshot_fingerprint": "1bfd2fffb75f72fb8113ac6a239376ceb9c1fb597dcb197e79eb1b9e01942ece",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      },
+      {
+        "second": 21330.0,
+        "snapshot_fingerprint": "e281c5bf5ebcb756d10f0924f24d6ad387dcf66f6348c681b9185e5a42109678",
+        "decision": "no_change",
+        "action": {
+          "kind": "no_op",
+          "bed_id": null,
+          "patient_id": null
+        }
+      }
+    ],
+    "commands": [
+      {
+        "request_id": "campaign-1",
+        "plan_id": "8789eba0cc9f71ceb263b807335391c2dce75850d968e31de16e2c77430bd7e9",
+        "at": "2026-10-25T07:30:30Z",
+        "second": 30.0,
+        "action": "prioritize_cleaning",
+        "bed_id": "G02",
+        "patient_id": null,
+        "accepted": true,
+        "reason": "",
+        "actor": "Équipe de garde",
+        "status": "executed",
+        "outcome_at": "2026-10-25T07:31:30Z"
+      }
+    ],
+    "journal": [
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_admitted",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-W000",
+        "bed": null
+      },
+      {
+        "second": 0.0,
+        "kind": "initial_waiting",
+        "patient": "P-W001",
+        "bed": null
+      },
+      {
+        "second": 30.0,
+        "kind": "reserved",
+        "patient": "P-W001",
+        "bed": "G13"
+      },
+      {
+        "second": 30.0,
+        "kind": "coordination_requested",
+        "patient": null,
+        "bed": null
+      },
+      {
+        "second": 90.0,
+        "kind": "installed",
+        "patient": "P-W001",
+        "bed": "G13"
+      },
+      {
+        "second": 90.0,
+        "kind": "cleaning_prioritized",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 600.0,
+        "kind": "medically_cleared",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 600.0,
+        "kind": "arrived",
+        "patient": "P-A000000",
+        "bed": null
+      },
+      {
+        "second": 630.0,
+        "kind": "reserved",
+        "patient": "P-A000000",
+        "bed": "G14"
+      },
+      {
+        "second": 690.0,
+        "kind": "installed",
+        "patient": "P-A000000",
+        "bed": "G14"
+      },
+      {
+        "second": 1200.0,
+        "kind": "departed",
+        "patient": "P-I000",
+        "bed": "G03"
+      },
+      {
+        "second": 1320.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G02"
+      },
+      {
+        "second": 1320.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 1350.0,
+        "kind": "reserved",
+        "patient": "P-W000",
+        "bed": "G02"
+      },
+      {
+        "second": 1410.0,
+        "kind": "installed",
+        "patient": "P-W000",
+        "bed": "G02"
+      },
+      {
+        "second": 1500.0,
+        "kind": "medically_cleared",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 2100.0,
+        "kind": "departed",
+        "patient": "P-I001",
+        "bed": "G04"
+      },
+      {
+        "second": 2220.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G01"
+      },
+      {
+        "second": 2220.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 2400.0,
+        "kind": "medically_cleared",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 2400.0,
+        "kind": "arrived",
+        "patient": "P-A000001",
+        "bed": null
+      },
+      {
+        "second": 2430.0,
+        "kind": "reserved",
+        "patient": "P-A000001",
+        "bed": "G01"
+      },
+      {
+        "second": 2490.0,
+        "kind": "installed",
+        "patient": "P-A000001",
+        "bed": "G01"
+      },
+      {
+        "second": 3000.0,
+        "kind": "departed",
+        "patient": "P-I002",
+        "bed": "G05"
+      },
+      {
+        "second": 3300.0,
+        "kind": "medically_cleared",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 3420.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G03"
+      },
+      {
+        "second": 3420.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G04"
+      },
+      {
+        "second": 3900.0,
+        "kind": "departed",
+        "patient": "P-I003",
+        "bed": "G06"
+      },
+      {
+        "second": 4200.0,
+        "kind": "medically_cleared",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 4320.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G04"
+      },
+      {
+        "second": 4320.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G05"
+      },
+      {
+        "second": 4800.0,
+        "kind": "arrived",
+        "patient": "P-A000002",
+        "bed": null
+      },
+      {
+        "second": 4800.0,
+        "kind": "departed",
+        "patient": "P-I004",
+        "bed": "G07"
+      },
+      {
+        "second": 4830.0,
+        "kind": "reserved",
+        "patient": "P-A000002",
+        "bed": "G03"
+      },
+      {
+        "second": 4890.0,
+        "kind": "installed",
+        "patient": "P-A000002",
+        "bed": "G03"
+      },
+      {
+        "second": 5100.0,
+        "kind": "medically_cleared",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 5220.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G05"
+      },
+      {
+        "second": 5220.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G06"
+      },
+      {
+        "second": 5700.0,
+        "kind": "departed",
+        "patient": "P-I005",
+        "bed": "G08"
+      },
+      {
+        "second": 6000.0,
+        "kind": "medically_cleared",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 6120.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G06"
+      },
+      {
+        "second": 6120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G07"
+      },
+      {
+        "second": 6600.0,
+        "kind": "arrived",
+        "patient": "P-A000003",
+        "bed": null
+      },
+      {
+        "second": 6600.0,
+        "kind": "departed",
+        "patient": "P-I006",
+        "bed": "G09"
+      },
+      {
+        "second": 6630.0,
+        "kind": "reserved",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 6690.0,
+        "kind": "installed",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 6900.0,
+        "kind": "medically_cleared",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 7020.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G07"
+      },
+      {
+        "second": 7020.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G08"
+      },
+      {
+        "second": 7500.0,
+        "kind": "departed",
+        "patient": "P-I007",
+        "bed": "G10"
+      },
+      {
+        "second": 7800.0,
+        "kind": "medically_cleared",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 8400.0,
+        "kind": "departed",
+        "patient": "P-I008",
+        "bed": "G11"
+      },
+      {
+        "second": 8520.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G08"
+      },
+      {
+        "second": 8520.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G09"
+      },
+      {
+        "second": 8700.0,
+        "kind": "medically_cleared",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 9000.0,
+        "kind": "arrived",
+        "patient": "P-A000004",
+        "bed": null
+      },
+      {
+        "second": 9030.0,
+        "kind": "reserved",
+        "patient": "P-A000004",
+        "bed": "G05"
+      },
+      {
+        "second": 9090.0,
+        "kind": "installed",
+        "patient": "P-A000004",
+        "bed": "G05"
+      },
+      {
+        "second": 9300.0,
+        "kind": "departed",
+        "patient": "P-I009",
+        "bed": "G12"
+      },
+      {
+        "second": 9720.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G09"
+      },
+      {
+        "second": 9720.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G10"
+      },
+      {
+        "second": 10800.0,
+        "kind": "arrived",
+        "patient": "P-A000005",
+        "bed": null
+      },
+      {
+        "second": 10830.0,
+        "kind": "reserved",
+        "patient": "P-A000005",
+        "bed": "G06"
+      },
+      {
+        "second": 10890.0,
+        "kind": "installed",
+        "patient": "P-A000005",
+        "bed": "G06"
+      },
+      {
+        "second": 10920.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G10"
+      },
+      {
+        "second": 10920.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G11"
+      },
+      {
+        "second": 12120.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G11"
+      },
+      {
+        "second": 12120.0,
+        "kind": "cleaning_started",
+        "patient": null,
+        "bed": "G12"
+      },
+      {
+        "second": 13200.0,
+        "kind": "arrived",
+        "patient": "P-A000006",
+        "bed": null
+      },
+      {
+        "second": 13230.0,
+        "kind": "reserved",
+        "patient": "P-A000006",
+        "bed": "G08"
+      },
+      {
+        "second": 13290.0,
+        "kind": "installed",
+        "patient": "P-A000006",
+        "bed": "G08"
+      },
+      {
+        "second": 13620.0,
+        "kind": "cleaning_finished",
+        "patient": null,
+        "bed": "G12"
+      },
+      {
+        "second": 14400.0,
+        "kind": "arrived",
+        "patient": "P-A000007",
+        "bed": null
+      },
+      {
+        "second": 14430.0,
+        "kind": "reserved",
+        "patient": "P-A000007",
+        "bed": "G07"
+      },
+      {
+        "second": 14490.0,
+        "kind": "installed",
+        "patient": "P-A000007",
+        "bed": "G07"
+      },
+      {
+        "second": 15600.0,
+        "kind": "arrived",
+        "patient": "P-A000008",
+        "bed": null
+      },
+      {
+        "second": 15630.0,
+        "kind": "reserved",
+        "patient": "P-A000008",
+        "bed": "G09"
+      },
+      {
+        "second": 15690.0,
+        "kind": "installed",
+        "patient": "P-A000008",
+        "bed": "G09"
+      },
+      {
+        "second": 18000.0,
+        "kind": "arrived",
+        "patient": "P-A000009",
+        "bed": null
+      },
+      {
+        "second": 18030.0,
+        "kind": "reserved",
+        "patient": "P-A000009",
+        "bed": "G10"
+      },
+      {
+        "second": 18090.0,
+        "kind": "installed",
+        "patient": "P-A000009",
+        "bed": "G10"
+      },
+      {
+        "second": 19800.0,
+        "kind": "arrived",
+        "patient": "P-A000010",
+        "bed": null
+      },
+      {
+        "second": 19830.0,
+        "kind": "reserved",
+        "patient": "P-A000010",
+        "bed": "G11"
+      },
+      {
+        "second": 19890.0,
+        "kind": "installed",
+        "patient": "P-A000010",
+        "bed": "G11"
+      },
+      {
+        "second": 21090.0,
+        "kind": "medically_cleared",
+        "patient": "P-A000003",
+        "bed": "G04"
+      },
+      {
+        "second": 21600.0,
+        "kind": "arrived",
+        "patient": "P-A000011",
+        "bed": null
+      }
+    ],
+    "primitives": {
+      "virtual-world-1|X1|3|clinical_stay|P-W001|0": 21600,
+      "virtual-world-1|X1|3|cleaning|G02|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000000|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|0": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000000|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G01|0": 900,
+      "virtual-world-1|X1|3|clinical_stay|P-W000|0": 21600,
+      "virtual-world-1|X1|3|cleaning|G03|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000001|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|1": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000001|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G04|0": 900,
+      "virtual-world-1|X1|3|cleaning|G05|0": 900,
+      "virtual-world-1|X1|3|oxygen|P-A000002|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|2": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000002|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G06|0": 900,
+      "virtual-world-1|X1|3|cleaning|G07|0": 900,
+      "virtual-world-1|X1|3|oxygen|P-A000003|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|3": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000003|0": 14400,
+      "virtual-world-1|X1|3|cleaning|G08|0": 1500,
+      "virtual-world-1|X1|3|cleaning|G09|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000004|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|4": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000004|0": 28800,
+      "virtual-world-1|X1|3|cleaning|G10|0": 1200,
+      "virtual-world-1|X1|3|oxygen|P-A000005|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|5": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000005|0": 21600,
+      "virtual-world-1|X1|3|cleaning|G11|0": 1200,
+      "virtual-world-1|X1|3|cleaning|G12|0": 1500,
+      "virtual-world-1|X1|3|oxygen|P-A000006|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|6": 1200,
+      "virtual-world-1|X1|3|clinical_stay|P-A000006|0": 28800,
+      "virtual-world-1|X1|3|oxygen|P-A000007|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|7": 1200,
+      "virtual-world-1|X1|3|clinical_stay|P-A000007|0": 14400,
+      "virtual-world-1|X1|3|oxygen|P-A000008|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|8": 2400,
+      "virtual-world-1|X1|3|clinical_stay|P-A000008|0": 21600,
+      "virtual-world-1|X1|3|oxygen|P-A000009|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|9": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000009|0": 14400,
+      "virtual-world-1|X1|3|oxygen|P-A000010|0": 1,
+      "virtual-world-1|X1|3|interarrival|arrivals|10": 1800,
+      "virtual-world-1|X1|3|clinical_stay|P-A000010|0": 21600,
+      "virtual-world-1|X1|3|oxygen|P-A000011|0": 0,
+      "virtual-world-1|X1|3|interarrival|arrivals|11": 2400
+    }
+  },
+  "waiting_patient_minutes_saved": 15.0,
+  "result_id": "51a448c81540d48c73404ad3d56528d2349057d02a7d95b46c6f6fedfe059b3c"
+}

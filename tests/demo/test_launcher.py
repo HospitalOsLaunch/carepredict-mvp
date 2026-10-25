@@ -87,3 +87,15 @@ def test_failure_starting_cockpit_stops_backend(monkeypatch: pytest.MonkeyPatch)
         assert child.poll() is not None
     finally:
         demo.stop([child])
+
+
+def test_default_port_falls_back_without_stopping_listener() -> None:
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen()
+        port = listener.getsockname()[1]
+        selected = demo.choose_port(None, port)
+        assert selected != port
+        with socket.create_connection(("127.0.0.1", port), timeout=1):
+            pass
+        assert demo.choose_port(port, 5173) == port  # explicit port stays strict

@@ -10,7 +10,7 @@ beforeEach(() => {
   HTMLDialogElement.prototype.showModal = vi.fn();
   // No local API in tests: the cockpit must fall back to the bundled planner outputs.
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
-  window.history.replaceState(null, "", "/?situation=nominal");
+  window.history.replaceState(null, "", "/?source=observation&situation=nominal");
   window.location.hash = "";
 });
 
@@ -34,7 +34,7 @@ describe("cockpit", () => {
   });
 
   it("abstains instead of proposing on unreliable data", async () => {
-    window.history.replaceState(null, "", "/?situation=incomplete");
+    window.history.replaceState(null, "", "/?source=observation&situation=incomplete");
     render(<App />);
     expect(await screen.findByRole("heading", { name: /Pas de proposition/ })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();

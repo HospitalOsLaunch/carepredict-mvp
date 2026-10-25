@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare and launch the local HospitalOS simulator and cockpit with one command."""
+"""Launch HospitalOS with autonomous virtual hospitals; laboratory mode is explicit."""
 
 from __future__ import annotations
 
@@ -132,6 +132,22 @@ def check_ports(ports: Sequence[int]) -> None:
                 ) from error
 
 
+def choose_port(requested: int | None, default: int, excluded: int = 0) -> int:
+    if requested is not None:
+        return requested
+    for candidate in range(default, default + 20):
+        if candidate == excluded:
+            continue
+        try:
+            check_ports([candidate])
+        except DemoError:
+            continue
+        if candidate != default:
+            say(f"Port {default} occupé : utilisation du port libre {candidate}.")
+        return candidate
+    raise DemoError("Aucun port libre à proximité. Choisissez --port et --api-port.")
+
+
 def start(command: Sequence[str], cwd: Path, env: dict[str, str]) -> subprocess.Popen[bytes]:
     return subprocess.Popen(command, cwd=cwd, env=env, start_new_session=os.name != "nt")
 
@@ -152,12 +168,25 @@ def request(url: str, body: bytes | None = None) -> dict[str, Any]:
     return result
 
 
-def wait_ready(url: str, children: Sequence[subprocess.Popen[bytes]], timeout: float = 45) -> None:
+def wait_ready(
+    url: str,
+    children: Sequence[subprocess.Popen[bytes]],
+    timeout: float = 45,
+    virtual: bool = False,
+) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         alive(children)
         try:
             view = request(url)
+            if virtual:
+                if (
+                    view.get("schema_version") == "HOSPITAL_WORKSPACE_1"
+                    and view.get("synthetic") is True
+                    and view.get("hospitals")
+                ):
+                    return
+                raise DemoError("Le backend joint ne fournit pas les hôpitaux virtuels attendus.")
             if (
                 view.get("schema_version") == "DYNAMIC_DEMO_1"
                 and view.get("mode") == "simulation_sandbox"
@@ -167,7 +196,7 @@ def wait_ready(url: str, children: Sequence[subprocess.Popen[bytes]], timeout: f
         except (urllib.error.URLError, TimeoutError):
             time.sleep(0.2)
     raise DemoError(
-        "Le simulateur n'est pas prêt après 45 secondes. Voir les messages des services."
+        f"Le backend n’est pas prêt après {timeout:g} secondes. Voir les messages des services."
     )
 
 
@@ -209,8 +238,8 @@ def check_cockpit(origin: str) -> None:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--port", type=port_number, default=5173, help="port du cockpit (5173)")
-    parser.add_argument("--api-port", type=port_number, default=8000, help="port du backend (8000)")
+    parser.add_argument("--port", type=port_number, default=None, help="port du cockpit (5173)")
+    parser.add_argument("--api-port", type=port_number, default=None, help="port du backend (8000)")
     parser.add_argument("--seed", type=int, default=7, help="graine du scénario (7)")
     parser.add_argument("--no-browser", action="store_true", help="afficher le lien sans l'ouvrir")
     parser.add_argument(
@@ -222,7 +251,19 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--check", action="store_true", help="vérifier la boucle HTTP puis tout arrêter"
     )
+    parser.add_argument("--lab", action="store_true", help="ouvrir le laboratoire de simulation")
+    parser.add_argument(
+        "--state-dir",
+        type=Path,
+        default=ROOT / ".hospitalos-virtual",
+        help="état persistant des établissements virtuels",
+    )
+    parser.add_argument(
+        "--clock-rate", type=float, default=12, help="secondes virtuelles par seconde (12)"
+    )
     args = parser.parse_args(argv)
+    if not 0 < args.clock_rate <= 60:
+        parser.error("clock-rate doit être entre 0 (exclu) et 60")
     if not 0 <= args.seed <= 1_000_000_000:
         parser.error("seed doit être compris entre 0 et 1000000000")
     if args.setup_only and args.check:
@@ -234,6 +275,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise DemoError("Python 3.11 ou supérieur est nécessaire.")
         node, npm = tools()
         if not args.setup_only:
+            args.api_port = choose_port(args.api_port, 8000, args.port or 0)
+            args.port = choose_port(args.port, 5173, args.api_port)
             check_ports([args.port, args.api_port])
         python = prepare(npm, not args.no_install)
         if args.setup_only:
@@ -251,17 +294,36 @@ def main(argv: Sequence[str] | None = None) -> int:
             start(
                 [
                     str(python),
-                    str(WEB / "dev/serve_simulator_api.py"),
+                    str(
+                        WEB
+                        / ("dev/serve_simulator_api.py" if args.lab else "dev/serve_virtual_api.py")
+                    ),
                     "--port",
                     str(args.api_port),
                     "--seed",
                     str(args.seed),
+                    *(
+                        []
+                        if args.lab
+                        else [
+                            "--state-dir",
+                            str(args.state_dir.resolve()),
+                            "--clock-rate",
+                            str(args.clock_rate),
+                        ]
+                    ),
                 ],
                 ROOT,
                 env,
             )
         )
-        wait_ready(f"http://127.0.0.1:{args.api_port}/demo/session", children)
+        endpoint = "/demo/session" if args.lab else "/product/hospitals"
+        wait_ready(
+            f"http://127.0.0.1:{args.api_port}{endpoint}",
+            children,
+            45 if args.lab else 180,
+            not args.lab,
+        )
         children.append(
             start(
                 [
@@ -278,10 +340,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
         origin = f"http://127.0.0.1:{args.port}"
-        wait_ready(f"{origin}/api/demo/session", children)
-        url = f"{origin}/?source=simulator"
+        wait_ready(f"{origin}/api{endpoint}", children, 45 if args.lab else 180, not args.lab)
+        url = f"{origin}/?source={'simulator' if args.lab else 'virtual'}"
         if args.check:
             check_cockpit(origin)
+            if not args.lab:
+                catalog = request(f"{origin}/api/product/hospitals")
+                for hospital in catalog["hospitals"]:
+                    unit = request(f"{origin}/api/product/hospitals/{hospital['id']}/unit")
+                    if unit.get("hospital_id") != hospital["id"] or unit["snapshot"]["issues"]:
+                        raise DemoError("Flux hospitalier incomplet ou mal identifié.")
+                say("Vérification réussie : cockpit → proxy → trois hôpitaux virtuels. Arrêt.")
+                return 0
             view = request(f"{origin}/api/demo/evaluate", b"{}")
             if not view.get("can_apply") or not view.get("episode"):
                 raise DemoError("Le scénario initial n'a pas produit de proposition applicable.")
@@ -303,8 +373,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
         say(f"Démo prête : {url}")
         say(
-            "Évaluer le scénario, appliquer une décision, puis avancer le temps. "
-            "Ctrl+C arrête les deux services."
+            "Les établissements évoluent en arrière-plan. Choisissez votre hôpital. "
+            "Ctrl+C arrête les services et conserve les décisions."
+            if not args.lab
+            else "Laboratoire : évaluer, décider, avancer. Ctrl+C arrête les services."
         )
         if not args.no_browser:
             try:

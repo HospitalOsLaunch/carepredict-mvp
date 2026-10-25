@@ -1,32 +1,28 @@
 # HospitalOS / CarePredict MVP
 
-## Lancer la démonstration intégrée
+## Lancer le produit connecté aux hôpitaux virtuels
 
 Cette branche réunit le backend hybride, le cockpit, la
-[spécification v0.3](docs/simulator/spec-v0.3.md) et la
-[première boucle dynamique](docs/simulator/dynamic-demo.md).
+[spécification v0.3](docs/simulator/spec-v0.3.md) et trois établissements autonomes.
 Prérequis : **Python 3.11+ et Node.js 22+ avec npm**.
 
 ```bash
 python3 demo.py
 ```
 
-Au premier lancement, la commande prépare `.venv-demo` et les dépendances du
-cockpit. Elle démarre les deux services locaux et ouvre
-**http://127.0.0.1:5173/?source=simulator**. Les lancements suivants réutilisent
-les dépendances tant que leurs fichiers de référence n'ont pas changé.
-**Ctrl+C arrête les deux services.** Aucun Docker, entraînement ML ni fichier
-`.env` n'est nécessaire pour ce parcours.
+Une commande prépare les dépendances et ouvre le cockpit métier : choisir
+**Hôpital X1, X2 ou X3**, consulter les lits et les patients, valider ou refuser une
+proposition, suivre son effet et le journal. Les établissements tournent en arrière-plan.
+**Ctrl+C arrête les services et conserve les décisions.** Aucun Docker ni entraînement ML.
+Les ports par défaut sont 5173/8000, avec sélection d’un voisin libre si nécessaire.
 
-Dans le cockpit : **Évaluer le scénario → Appliquer dans le scénario → +5 minutes**.
-Le panneau **Sans / avec HospitalOS** lance aussi deux épisodes isolés A0/A1,
-mesure leur attente cumulée et exporte leurs paramètres, décisions et journaux.
-Voir le [protocole et le rejeu des comparaisons](docs/simulator/comparison.md).
-Le scénario porte sur trois lits fictifs ; il ne qualifie pas l'ensemble du moteur
-prévu par v0.3. Voir le [guide de lancement et de dépannage](docs/simulator/dynamic-demo.md)
-et la [provenance de l'intégration](docs/simulator/README.md#branche-commune).
-`make demo` lance le même parcours. L'ancien démarrage Docker et entraînement
-reste accessible avec `make demo-legacy`.
+Le [guide des hôpitaux virtuels](docs/simulator/virtual-hospitals.md) décrit la reprise,
+les hypothèses et les campagnes A0/A1 hors du parcours produit. Le laboratoire
+historique reste disponible par `python3 demo.py --lab` ; l’aperçu statique reste
+un mode distinct. Ces mondes fictifs servent à éprouver l’usage, sans prétendre
+qualifier l’ensemble de v0.3 ni démontrer un bénéfice hospitalier.
+
+`make demo` lance le même produit. `make demo-legacy` conserve l’ancien parcours Docker.
 
 ## New MVP direction: explicit state, probabilistic simulation, assisted decisions
 

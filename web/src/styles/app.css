@@ -3135,3 +3135,19 @@ textarea.input {
   .simulation-panel__heading { flex-direction: column; gap: 8px; }
   .simulation-panel__clock { flex-direction: row; align-items: center; gap: 12px; text-align: left; }
 }
+
+.hospital-switcher { display: grid; gap: .2rem; font-size: .75rem; color: var(--muted); }
+.hospital-switcher select { padding: .45rem; border: 1px solid #cbd5d0; border-radius: .5rem; background: white; color: #263c36; font: inherit; font-size: .9rem; }
+.virtual-proposal { padding: 1.5rem; margin: 1rem 0 1.5rem; border: 1px solid #cadbd1; border-radius: 1rem; background: #f5f9f6; }
+.virtual-proposal h2 { margin: .5rem 0; font-size: 1.35rem; }
+.virtual-proposal p { max-width: 75ch; line-height: 1.6; }
+.virtual-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+.virtual-proposal form { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; margin: 1rem 0; }
+.virtual-proposal label { display: grid; gap: .4rem; }
+.virtual-proposal input { padding: .7rem; border: 1px solid #adbeb5; border-radius: .4rem; }
+.virtual-refresh { margin-top: 1rem; }
+.virtual-activity { display: flex; gap: 1.5rem; flex-wrap: wrap; padding: .6rem 0; }
+.virtual-activity small { flex-basis: 100%; color: #58675f; }
+.virtual-journal { padding: 0; list-style: none; }
+.virtual-journal li { padding: 1rem; margin: .7rem 0; border: 1px solid #d5ded8; border-radius: .6rem; }
+@media (max-width: 640px) { .hospital-switcher { max-width: 10rem; } .virtual-proposal { padding: 1rem; } }

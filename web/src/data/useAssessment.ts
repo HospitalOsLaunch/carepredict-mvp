@@ -10,7 +10,7 @@ import { type FixtureBundle, type ScenarioFixture, loadFixtures } from "./fixtur
  * - "api-plan": local FastAPI without live store; demonstration requests sent to POST /hybrid/plan
  * - "fixture":  no API reachable; precomputed outputs of the same planner
  */
-export type Connection = "probing" | "api-live" | "api-plan" | "fixture" | "simulation";
+export type Connection = "probing" | "api-live" | "api-plan" | "fixture" | "simulation" | "virtual";
 
 export interface Option {
   id: string;

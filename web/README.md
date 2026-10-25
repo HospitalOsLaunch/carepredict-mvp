@@ -8,35 +8,28 @@ Conçu pour l'usage en tension : bande de tension lisible en un regard, une seul
 suivante, flux Libérer → Lits → Attribuer, changement d'unité sans ouvrir chaque unité, et
 tout au clavier (`?` affiche les raccourcis).
 
-Par défaut, prototype local en **mode observation** : l'interface n'émet aucune commande, ne
-réserve rien et n'expose aucun bouton d'exécution. Valider une proposition signifie « je
-m'en occupe » : la personne agit dans ses outils habituels, HospitalOS garde la trace (validée,
-faite, refusée avec motif, sans réponse, remplacée) dans le journal des décisions, conservé sur
-le poste dans ce prototype. Le mode explicite `?source=simulator` ajoute une
-boucle de décisions dont les effets sont limités à un hôpital fictif (voir ci-dessous).
+Par défaut, le cockpit se connecte aux **hôpitaux virtuels autonomes X1, X2, X3**.
+Les décisions sont transmises au backend de l’établissement choisi et conservées
+avec leurs preuves. Le journal local historique n’est pas utilisé dans ce mode.
+Aucun contrôle de scénario ou de campagne ne figure dans la navigation métier.
 
 ## Lancer
 
-### Démonstration dynamique connectée
+Depuis la racine : **`python3 demo.py`** (Python 3.11+, Node.js 22+).
+Ctrl+C arrête les services et conserve l’état. Voir le
+[guide des hôpitaux virtuels](../docs/simulator/virtual-hospitals.md).
 
-Depuis la racine, **`python3 demo.py`** prépare les dépendances et lance le backend
-et ce cockpit dans un seul terminal. Le navigateur s'ouvre avec **`?source=simulator`**.
-Ctrl+C arrête les deux services. Prérequis : Python 3.11+ et Node.js 22+ avec npm.
-
-La [première boucle simulée](../docs/simulator/dynamic-demo.md) alimente le même
-backend avec une unité gériatrique qui évolue. Les contrôles explicites de ce mode
-appliquent les décisions uniquement dans le scénario et partagent son horloge.
-Une panne du serveur est affichée ; aucun repli sur les données précalculées.
+Le laboratoire reste explicite : `python3 demo.py --lab`, puis `?source=simulator`.
 
 ### Démonstration d'observation historique
 
 ```bash
 cd web
 npm ci
-npm run dev                 # http://localhost:5173
+npm run dev                 # http://localhost:5173/?source=observation
 ```
 
-Sans API joignable, le cockpit bascule sur les **données de démonstration** :
+Dans ce mode explicite `?source=observation`, sans API joignable, le cockpit bascule sur les **données de démonstration** :
 sorties du vrai planificateur sur une unité fictive (`src/fixtures`, générées).
 
 Avec l'API locale (depuis la racine du dépôt) :
