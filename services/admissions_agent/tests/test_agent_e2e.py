@@ -289,6 +289,7 @@ def test_failed_playbook_escalates_to_claude_and_is_verified(
     assert [r["tool_use_id"] for r in results] == ["t1", "t2", "t3"]
     assert all(r["toolset_name"] == "computer" and r["content"] == "OK" for r in results)
     shot = fake.calls[4]["body"]["messages"][-1]["content"][0]["content"][0]
+    assert isinstance(shot, dict), f"capture attendue, reçu : {shot!r}"
     assert shot["type"] == "image" and shot["source"]["media_type"] == "image/png"
     status = api.get("/api/agent/status", headers=login(api, "admin@test.fr")).json()
     spend = {s["engine"]: s for s in status["spend_30d"]}

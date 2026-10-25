@@ -112,11 +112,38 @@ class BrowserSession:
         host = urlparse(url).hostname or ""
         if host not in self.allowed_hosts:
             raise BlockedNavigation(f"hôte non autorisé : {host}")
-        self.page.goto(url, wait_until="domcontentloaded")
+        # A form the previous step submitted may still be navigating. Going elsewhere now
+        # would race it, and the read-back that verifies a write could then read the page
+        # before the write landed. Let it finish, and retry once if it still interrupts us.
+        with contextlib.suppress(Exception):
+            self.page.wait_for_load_state("networkidle", timeout=5000)
+        try:
+            self.page.goto(url, wait_until="domcontentloaded")
+        except Exception as exc:
+            if "interrupted by another navigation" not in str(exc):
+                raise
+            with contextlib.suppress(Exception):
+                self.page.wait_for_load_state("load", timeout=5000)
+            self.page.goto(url, wait_until="domcontentloaded")
 
     def screenshot(self) -> Screenshot:
-        png = self.page.screenshot(type="png")
-        return Screenshot(png, self.viewport[0], self.viewport[1])
+        """Capture the viewport, tolerating a page that is still navigating.
+
+        Right after a click that submits a form, the page may be between two documents:
+        a capture then fails or waits. Wait for the new document, and retry once, rather
+        than handing the model an error it can do nothing about.
+        """
+        last: Exception | None = None
+        for _ in range(2):
+            with contextlib.suppress(Exception):
+                self.page.wait_for_load_state("load", timeout=5000)
+            try:
+                png = self.page.screenshot(type="png", timeout=10_000, animations="disabled")
+                return Screenshot(png, self.viewport[0], self.viewport[1])
+            except Exception as exc:  # noqa: BLE001 - retried once, then raised
+                last = exc
+        assert last is not None
+        raise last
 
     # --- pixel-space actions for model engines ------------------------------------
 
@@ -153,9 +180,14 @@ class BrowserSession:
         self.page.mouse.wheel(dx, dy)
 
     def _settle(self) -> None:
-        # A click that does not navigate simply times out here, which is fine.
+        # A submitting click starts its navigation a few milliseconds after it returns: give
+        # it that time, then wait for the new document. A click that does not navigate costs
+        # the short pause only.
+        # "networkidle" also covers a form POST still in flight, which "load" on the
+        # previous document would not.
         with contextlib.suppress(Exception):
-            self.page.wait_for_load_state("domcontentloaded", timeout=5000)
+            self.page.wait_for_timeout(300)
+            self.page.wait_for_load_state("networkidle", timeout=5000)
 
     def close(self) -> None:
         try:
