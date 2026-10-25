@@ -43,6 +43,7 @@ from services.admissions_smr.vocab import (
     MENTIONS,
     OPEN_STATUSES,
     REFUSAL_REASONS,
+    REQUEST_SOURCES,
 )
 
 router = APIRouter(tags=["demandes"])
@@ -138,7 +139,7 @@ def create_request(ctx: Ctx, body: RequestCreate, kind: str = "recue") -> Admiss
             actor_user_id=ctx.user.id,
             kind=kind,
             to_status="nouvelle",
-            detail=f"Source : {body.source}",
+            detail=f"Reçue par {REQUEST_SOURCES[body.source]}",
         )
     )
     ctx.session.add(req)

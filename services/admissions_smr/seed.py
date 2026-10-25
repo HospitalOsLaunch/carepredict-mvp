@@ -29,6 +29,7 @@ from services.admissions_smr.models import (
     User,
 )
 from services.admissions_smr.security import hash_password
+from services.admissions_smr.vocab import REQUEST_SOURCES
 
 HISTORY_DAYS = 900
 
@@ -423,7 +424,10 @@ def _add_handled_request(
     req.events.extend(
         [
             RequestEvent(
-                at=received, kind="recue", to_status="nouvelle", detail=f"Source : {req.source}"
+                at=received,
+                kind="recue",
+                to_status="nouvelle",
+                detail=f"Reçue par {REQUEST_SOURCES[req.source]}",
             ),
             RequestEvent(
                 at=response,
@@ -557,7 +561,10 @@ def _add_open_requests(
             )
             req.events.append(
                 RequestEvent(
-                    at=received, kind="recue", to_status="nouvelle", detail=f"Source : {req.source}"
+                    at=received,
+                    kind="recue",
+                    to_status="nouvelle",
+                    detail=f"Reçue par {REQUEST_SOURCES[req.source]}",
                 )
             )
             if status == "nouvelle" and rng.random() < 0.3:
