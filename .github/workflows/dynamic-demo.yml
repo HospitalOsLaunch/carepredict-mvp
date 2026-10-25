@@ -1,0 +1,60 @@
+name: dynamic-demo
+
+on:
+  pull_request:
+    paths:
+      - 'src/hospitalos/simulator/**'
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'services/api/simulator_app.py'
+      - 'tests/simulator/**'
+      - 'tests/hybrid/**'
+      - 'pyproject.toml'
+      - 'web/**'
+      - '.github/workflows/dynamic-demo.yml'
+  push:
+    branches: ['main']
+    paths:
+      - 'src/hospitalos/simulator/**'
+      - 'src/hospitalos/hybrid/**'
+      - 'src/hospitalos/operational/contract.py'
+      - 'services/api/hybrid_app.py'
+      - 'services/api/simulator_app.py'
+      - 'tests/simulator/**'
+      - 'tests/hybrid/**'
+      - 'pyproject.toml'
+      - 'web/**'
+
+permissions:
+  contents: read
+
+jobs:
+  connected-scenario:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install isolated demo dependencies
+        run: python -m pip install 'simpy>=4.1,<5' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' fastapi httpx uvicorn pytest ruff mypy
+      - name: Python checks and hybrid regressions
+        run: |
+          ruff check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          ruff format --check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          PYTHONPATH=src:. mypy --strict src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+          PYTHONPATH=src:. pytest -q tests/hybrid tests/simulator
+      - name: Cockpit checks
+        working-directory: web
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+          npm run build
+          npm run build:demo

@@ -8,13 +8,25 @@ Conçu pour l'usage en tension : bande de tension lisible en un regard, une seul
 suivante, flux Libérer → Lits → Attribuer, changement d'unité sans ouvrir chaque unité, et
 tout au clavier (`?` affiche les raccourcis).
 
-Prototype local en **mode observation** : l'interface n'émet aucune commande, ne
+Par défaut, prototype local en **mode observation** : l'interface n'émet aucune commande, ne
 réserve rien et n'expose aucun bouton d'exécution. Valider une proposition signifie « je
 m'en occupe » : la personne agit dans ses outils habituels, HospitalOS garde la trace (validée,
 faite, refusée avec motif, sans réponse, remplacée) dans le journal des décisions, conservé sur
-le poste dans ce prototype.
+le poste dans ce prototype. Le mode explicite `?source=simulator` ajoute une
+boucle de décisions dont les effets sont limités à un hôpital fictif (voir ci-dessous).
 
 ## Lancer
+
+### Démonstration dynamique connectée
+
+La [première boucle simulée](../docs/simulator/dynamic-demo.md) alimente le même
+backend avec une unité gériatrique qui évolue. Lancer
+`PYTHONPATH=src:. python web/dev/serve_simulator_api.py` depuis la racine, puis
+ouvrir le cockpit avec **`?source=simulator`**. Les contrôles explicites de ce mode
+appliquent les décisions uniquement dans le scénario et partagent son horloge.
+Une panne du serveur est affichée ; aucun repli sur les données précalculées.
+
+### Démonstration d'observation historique
 
 ```bash
 cd web
@@ -50,7 +62,7 @@ flux s'est interrompu (abstention). L'API locale ne sert qu'une unité à la foi
 s'adapte.
 
 ```bash
-npm run typecheck && npm test   # 66 tests : vocabulaire, dérivations, rendu, unités, raccourcis, cycle de décision, journal
+npm run typecheck && npm test   # régressions du cockpit et scénario connecté
 npm run build                   # dist/ pour l'API locale
 npm run build:demo              # dist-demo/index.html autonome (aperçu partageable)
 npm run fixtures                # régénère src/fixtures depuis le planificateur
@@ -88,6 +100,7 @@ ne fait pas.
 - **Horloge** : l'interface ancre le temps sur l'instant reconstruit par le serveur
   (`state.at`) plus le temps écoulé, jamais sur l'horloge du poste. Une proposition
   live expire au TTL de l'évaluation (120 s par défaut), un plan à 15 min.
+  En mode simulateur, elle utilise directement l'horloge du scénario, y compris en pause.
 
 Système visuel : `DESIGN.md`.
 

@@ -1,0 +1,159 @@
+# Première boucle de démonstration connectée
+
+25 octobre 2026. Statut : tranche locale sur scénario fictif, non qualifiée.
+
+Un patient attend un lit avec oxygène. Le vrai planificateur hybride propose de
+prioriser le nettoyage du lit G02. Le cockpit transmet une décision à une
+passerelle réservée au simulateur ; une tâche de coordination précède son effet.
+Après nettoyage, réservation et transfert, l'installation du patient apparaît
+dans les observations retardées du cockpit.
+
+Cette tranche met en œuvre le raccordement décrit dans la
+[spécification documentaire v0.3, PR #23](https://github.com/HospitalOsLaunch/carepredict-mvp/blob/844008eaf4d7ad8332840c2f24200009b7a8e64c/docs/simulator/spec-v0.3.md).
+Elle ne constitue ni le moteur v0.3 complet ni la clôture de M1–M4. Le cockpit
+repose sur `claude/cockpit-web`, dont le socle hybride correspond à la PR #22.
+
+## Lancer depuis cette branche
+
+Python 3.11+ et Node 22. Aucune base hospitalière, poids de modèle, GPU ou connexion
+à un SI n'est nécessaire pour cette tranche. Dans un environnement Python dédié :
+
+```bash
+python -m pip install 'simpy>=4.1,<5' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' fastapi uvicorn
+PYTHONPATH=src:. python web/dev/serve_simulator_api.py --seed 7
+```
+
+Dans un second terminal :
+
+```bash
+cd web
+npm ci
+npm run dev
+```
+
+Ouvrir **http://localhost:5173/?source=simulator**. Le proxy Vite transmet les
+appels au serveur local 127.0.0.1:8000. Le paramètre `source=simulator` impose
+une source connectée : une indisponibilité du serveur produit une erreur visible,
+sans substitution par des fixtures. `npm run build:demo` reste l'aperçu statique
+historique ; ce fichier autonome ne contient pas de moteur Python.
+
+La session démarre en pause. Cliquer « Évaluer le scénario », puis « Appliquer
+dans le scénario ». Avancer le temps avec +1/+5 minutes ou « Lire ×60 » ; la pause
+et les expirations reposent sur la même horloge serveur. La priorité change
+l'ordre des tâches en attente, pas leur durée. Observer ensuite G02 et P-G01.
+« Terminer et mesurer » ferme l'épisode et rend accessible son évaluation.
+« Recommencer » crée une nouvelle identité de séance avec les mêmes aléas.
+
+## Raccordement et séparation des accès
+
+| Composant | Chemin | Responsabilité |
+| --- | --- | --- |
+| Monde physique SimPy | `src/hospitalos/simulator/engine.py` | Lits, patients, événements, ressources, tâches et vérité privée |
+| Projection déclarée | `src/hospitalos/simulator/feed.py` | Exports JSON complets d'observations, puis `SourceAdapter` et `LiveStore` existants |
+| Session et commandes | `src/hospitalos/simulator/session.py` | Horloge, identités, revalidation, déduplication et passerelle vers le seul monde simulé |
+| API locale distincte | `services/api/simulator_app.py` | Routes de démonstration et lecture hybride ; aucune destination hospitalière configurable |
+| Cockpit connecté | `web/src/data/useSimulation.ts`, `web/src/ui/Simulation.tsx` | Affichage des observations, commandes explicitement simulées et erreurs de connexion |
+| Notateur | `src/hospitalos/simulator/evaluation.py` | Reconstruction de l'intégrale d'attente depuis le journal après clôture |
+
+Le moteur de vérité n'importe pas le planificateur. Les professionnels de
+référence choisissent à partir des observations livrées, puis vérifient les
+préconditions physiques. La vérité, les durées tirées, la graine et les prochains
+événements ne sont pas transmis aux routes de lecture ou de planification.
+L'évaluation n'est visible qu'après clôture ; aucun nouvel arbitrage ne peut alors
+être appliqué à cet épisode.
+
+La projection vers HYBRID_MVP_2 est volontairement bornée : un lit en nettoyage
+reste déclaré sale et la disponibilité de l'équipe passe à zéro lors de son
+observation. Ce contrat ne représente pas la tâche de nettoyage en cours ni son
+temps restant. Le planificateur peut donc s'abstenir ou ne proposer aucun changement
+pendant cette phase ; il ne reçoit pas une durée de fin cachée.
+
+## Contrat HTTP
+
+| Route | Effet |
+| --- | --- |
+| `GET /demo/session` | Horloge courante, instantané déclaré, proposition encore valide, reçus d'action et évaluation éventuelle |
+| `POST /demo/evaluate` | Épisode du planificateur réel sous hypothèses déclarées ; aucune exécution |
+| `POST /demo/control` | Avancer, lecture, pause, couper/rétablir la source, terminer ou recommencer |
+| `POST /demo/decision` | Accepter/refuser la proposition enregistrée dans la session, avec coût et contrôle physique différés |
+| `GET /hybrid/live` | Même instantané du `LiveStore` en mode shadow |
+| `POST /hybrid/shadow` | Évaluation seule, toujours zéro commande émise par cette route |
+
+Les commandes de contrôle et de décision portent `run_id`, `revision` et `request_id`. La décision porte
+aussi `plan_id`, l'empreinte sémantique de l'instantané et un booléen `accept`.
+Aucun champ d'action libre n'est accepté. Un rejet de version, de validité ou de
+précondition impose une réévaluation ; il n'est pas réessayé automatiquement.
+
+Un même identifiant et un même contenu sont idempotents dans la session. Réutiliser
+un identifiant avec un autre contenu est refusé. Une seule décision consomme une
+proposition. Les mutations concurrentes sont sérialisées. Après un redémarrage ou
+un reset, les anciens identifiants de séance sont refusés, y compris le rejeu du
+reset : ils ne peuvent pas agir sur le nouveau monde.
+
+Une acceptation n'est pas une preuve d'exécution. La passerelle conserve
+`accepted`/`refusal_recorded`, puis `executed`/`refused`/`failed`. `executed`
+signifie que la priorité ou réservation est appliquée ; la fin de nettoyage et
+l'installation restent des événements ultérieurs. Les validations historiques
+du journal local du cockpit restent réservées au mode observation. Le mode
+simulé possède ses propres contrôles et son journal serveur.
+
+## Hypothèses de cette tranche
+
+Toutes les valeurs sont des hypothèses d'ingénierie du scénario `demo-world-1`.
+
+- Trois lits et trois places armées ; G02 possède l'oxygène. Un patient attend
+  dès le début, un patient est déjà hospitalisé et un autre arrive à dix minutes.
+- Une équipe de nettoyage. Première prise en charge à deux minutes, puis examen
+  de la file chaque minute. Durées de 15, 20 ou 25 minutes, tirées par graine,
+  mécanisme et lit. La priorité ne préempte pas un nettoyage commencé.
+- Une sortie préautorisée à quarante minutes, suivie du besoin de nettoyage.
+  Aucune décision médicale nouvelle ni amélioration clinique due à une action.
+- Un coordinateur : 30 secondes pour lire/traiter une décision, y compris refus,
+  partagées avec le lancement des affectations. Installation en 60 secondes après
+  réservation ; vérification physique à la réservation et à l'installation.
+- Observation directe synthétique de l'unité chaque minute ; livraison 30 secondes
+  plus tard. Ce recensement exogène n'est pas un modèle calibré de travail soignant.
+  En panne, les nouvelles livraisons sont supprimées ; le dernier état vieillit.
+- Horloge UTC ancrée au 25 octobre 2026, affichage Europe/Paris. Événements à la
+  borne d'un pas inclus, ordre SimPy stable. Durée maximale : trois heures.
+- L'avancement automatique est calculé à partir de l'horloge monotone serveur
+  lors des requêtes ; l'interface interroge chaque seconde. Il n'y a pas de worker
+  autonome : après une interruption des requêtes, le calcul rattrape le temps
+  écoulé au prochain accès, jusqu'à la borne de trois heures.
+
+Les hypothèses du planificateur sont déclarées séparément. Elles ne sont pas les
+tirages réalisés du monde physique. La comparaison de valeurs prédites et
+réalisées ne prouve aucune efficacité. Le résultat final concerne seulement cet
+épisode et inclut les patients qui attendent encore à la clôture.
+
+## Vérifications et limites
+
+```bash
+python -m pip install pytest httpx ruff mypy
+PYTHONPATH=src:. pytest -q tests/hybrid tests/simulator
+ruff check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+ruff format --check src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+PYTHONPATH=src:. mypy --strict src/hospitalos/simulator services/api/simulator_app.py web/dev/serve_simulator_api.py tests/simulator
+cd web
+npm run typecheck
+npm test
+npm run build
+```
+
+Les cas couvrent la boucle avec le vrai planificateur, le retard de déclaration,
+la réservation/installation, le refus coûteux, les échecs physiques après
+acceptation, l'expiration, la concurrence, les doublons, les anciennes séances,
+la panne/reprise, l'horloge accélérée, le rejeu et l'évaluation d'attentes inachevées.
+Le notateur rejette les journaux falsifiés sur ses invariants vérifiés. Les tests
+du cockpit couvrent le mode connecté et l'absence de repli silencieux.
+
+Cette application est mono-processus, en mémoire et sur loopback. Les sessions
+ne sont pas persistées après arrêt ; le seed permet de rejouer le scénario.
+Ne pas lancer plusieurs workers partageant une prétendue session. Les origines
+web externes sont rejetées ; cela ne constitue pas une authentification ni une
+architecture de déploiement distant.
+
+Restent hors de cette tranche : modèle clinique complet, minutes par rôle du
+chapitre 6, PAM/FHIR/écrans du faux SI, aval territorial, campagne de 1 000 jours,
+apprentissage et qualifications C1–C6/I1/U1. Aucun statut SIM_GO_* ni bénéfice
+hospitalier n'est déclaré acquis.

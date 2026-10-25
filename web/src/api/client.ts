@@ -1,7 +1,8 @@
 import type { LiveSnapshot, Plan, PlanRequest, PlanningOptions, ShadowEpisode } from "./types";
 
 // Local FastAPI hybrid app, proxied by Vite under /api (see vite.config.ts).
-// The API has no authentication and no execution endpoint by design.
+// The observation API has no execution endpoint. Explicit simulated decisions
+// use the separate local simulator gateway from simulator.ts.
 const BASE = (import.meta.env.VITE_HOSPITALOS_API as string | undefined) ?? "/api";
 
 export class ApiError extends Error {
@@ -13,7 +14,7 @@ export class ApiError extends Error {
   }
 }
 
-async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Promise<T> {
+export async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
