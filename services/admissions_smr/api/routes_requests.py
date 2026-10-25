@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy import or_, select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, Ctx, IngestCtx, ReadCtx, WriteCtx
+from services.admissions_smr.api.routes_agent import enqueue_portal_reply
 from services.admissions_smr.domain.scoring import SiteCandidate
 from services.admissions_smr.models import AdmissionRequest, RequestEvent, Stay
 from services.admissions_smr.schemas import (
@@ -33,6 +34,7 @@ from services.admissions_smr.service import (
     get_site,
     join_codes,
     prioritise_request,
+    record_plan,
     request_detail,
     request_out,
     site_candidates,
@@ -230,6 +232,7 @@ def accord(request_id: int, body: AccordIn, ctx: WriteCtx) -> RequestDetailOut:
     req.proposed_date = body.proposed_date
     req.refusal_reason = None
     transition(ctx, req, "accord", "accord", f"Entrée proposée le {body.proposed_date:%d/%m/%Y}")
+    enqueue_portal_reply(ctx, req)
     ctx.session.commit()
     return _detail(ctx, req)
 
@@ -241,6 +244,7 @@ def refuse(request_id: int, body: RefuseIn, ctx: WriteCtx) -> RequestDetailOut:
     req.proposed_date = None
     detail = REFUSAL_REASONS[body.reason] + (f" — {body.comment}" if body.comment else "")
     transition(ctx, req, "refusee", "refus", detail)
+    enqueue_portal_reply(ctx, req)
     ctx.session.commit()
     return _detail(ctx, req)
 
@@ -279,12 +283,14 @@ def admit(request_id: int, body: AdmitIn, ctx: WriteCtx) -> RequestDetailOut:
         mention=req.mention_requested,
         patient_ref=req.patient_ref,
         admission_date=body.admission_date,
-        planned_discharge_date=body.planned_discharge_date,
+        care_level=body.care_level or req.care_level,
         request_id=req.id,
         created_at=ctx.clock.now(),
         updated_at=ctx.clock.now(),
     )
     ctx.session.add(stay)
+    if body.planned_discharge_date is not None:
+        record_plan(ctx, stay, body.planned_discharge_date, "admission")
     ctx.session.flush()
     ctx.audit("sejour.create", "stay", stay.id, f"depuis la demande {req.id}")
     ctx.session.commit()

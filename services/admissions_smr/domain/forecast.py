@@ -8,8 +8,9 @@ Method (deliberately simple, inspectable and calibratable):
    at risk at a given LOS, the hazard falls back to all mentions pooled, then
    to a constant tail hazard.
 2. A stay with a planned discharge date that is today or later follows that
-   date shifted by a slip distribution (a stated prior until the pilot data
-   measures it).
+   date shifted by a slip distribution: measured from the history of planned
+   dates once at least ``MIN_SLIP_SAMPLES`` discharges can be compared with the
+   plan known beforehand, a stated prior until then.
 3. For each day, the number of discharges by the end of that day is a sum of
    independent Bernoulli variables (Poisson-binomial); its distribution is
    computed exactly, which gives intervals for discharges and free beds.
@@ -29,8 +30,10 @@ DEFAULT_MIN_AT_RISK = 20
 DEFAULT_TAIL_HAZARD = 1.0 / 30.0
 MAX_LOS_DAYS = 365
 
-# Prior on (actual discharge - planned discharge), in days. Measured in pilot.
+# Prior on (actual discharge - planned discharge), in days, used until measured.
 DEFAULT_PLAN_SLIP: Mapping[int, float] = {0: 0.6, 1: 0.15, 2: 0.1, 3: 0.05, 5: 0.05, 7: 0.05}
+MIN_SLIP_SAMPLES = 30
+SLIP_RANGE = (-7, 21)
 
 
 @dataclass(frozen=True)
@@ -43,6 +46,141 @@ class StayRecord:
     admission_date: date
     discharge_date: date | None = None
     planned_discharge_date: date | None = None
+    care_level: int | None = None
+
+
+@dataclass(frozen=True)
+class PlanSlip:
+    """Distribution of (actual discharge - plan known beforehand), in days."""
+
+    weights: Mapping[int, float]
+    samples: int
+    measured: bool
+
+
+PlanHistory = Mapping[int, Sequence[tuple[date, date | None]]]
+"""Per stay id: (day the plan was recorded, planned discharge date or None if cleared)."""
+
+
+def plan_known_at(history: Sequence[tuple[date, date | None]], as_of: date) -> date | None:
+    """Latest plan recorded strictly before ``as_of`` (what the team knew that morning)."""
+    known: date | None = None
+    for recorded_on, planned in sorted(history, key=lambda h: h[0]):
+        if recorded_on < as_of:
+            known = planned
+    return known
+
+
+def estimate_plan_slip(
+    stays: Iterable[StayRecord], history: PlanHistory, as_of: date, lead_days: int = 1
+) -> PlanSlip:
+    """Measure the slip on stays discharged before ``as_of``.
+
+    For each discharged stay, the plan used is the latest one recorded at least
+    ``lead_days`` before the actual discharge: a plan typed on the day of the
+    discharge says nothing about the forecasting ability of the teams.
+    """
+    counts: dict[int, int] = defaultdict(int)
+    n = 0
+    for stay in stays:
+        if stay.discharge_date is None or stay.discharge_date >= as_of:
+            continue
+        plan = plan_known_at(
+            history.get(stay.stay_id, ()), stay.discharge_date - timedelta(days=lead_days - 1)
+        )
+        if plan is None:
+            continue
+        slip = (stay.discharge_date - plan).days
+        slip = max(SLIP_RANGE[0], min(SLIP_RANGE[1], slip))
+        counts[slip] += 1
+        n += 1
+    if n < MIN_SLIP_SAMPLES:
+        return PlanSlip(DEFAULT_PLAN_SLIP, n, False)
+    return PlanSlip({k: v / n for k, v in sorted(counts.items())}, n, True)
+
+
+ELAPSED_BANDS = (7, 14, 28, 56, 10_000)
+LANDMARK_HORIZON = 28
+LANDMARK_WEEKS = 52
+MIN_LANDMARK_SAMPLES = 40
+
+
+def elapsed_band(elapsed: int) -> int:
+    return next(i for i, upper in enumerate(ELAPSED_BANDS) if elapsed <= upper)
+
+
+@dataclass
+class LandmarkModel:
+    """P(discharge on day k after a morning | no plan known that morning, mention, time spent).
+
+    Estimated on past mornings ("landmarks") whose outcome over ``horizon`` days
+    is fully known. Needed because teams enter a planned date mostly when the
+    discharge is near: patients without a plan leave less often than the
+    overall length-of-stay curve suggests.
+    """
+
+    horizon: int
+    pmf: dict[tuple[str, int], list[float]]
+    samples: dict[tuple[str, int], int]
+
+    def cdf(self, mention: str, elapsed: int, horizon: int) -> list[float] | None:
+        if horizon > self.horizon:
+            return None
+        band = elapsed_band(elapsed)
+        for key in ((mention, band), ("*", band)):
+            if self.samples.get(key, 0) >= MIN_LANDMARK_SAMPLES:
+                acc = 0.0
+                out = []
+                for k in range(horizon):
+                    acc += self.pmf[key][k]
+                    out.append(min(1.0, acc))
+                return out
+        return None
+
+
+def fit_landmarks(
+    stays: Sequence[StayRecord],
+    plans: PlanHistory,
+    as_of: date,
+    horizon: int = LANDMARK_HORIZON,
+    weeks: int = LANDMARK_WEEKS,
+) -> LandmarkModel:
+    counts: dict[tuple[str, int], list[int]] = defaultdict(lambda: [0] * horizon)
+    samples: dict[tuple[str, int], int] = defaultdict(int)
+    # "No plan" only means something once teams were entering plans: landmarks start
+    # two weeks after the first recorded plan.
+    recorded = [day for history in plans.values() for day, _ in history if day < as_of]
+    if not recorded:
+        return LandmarkModel(horizon, {}, {})
+    plans_start = min(recorded) + timedelta(days=14)
+    first = as_of - timedelta(days=horizon + 7 * (weeks - 1))
+    last = as_of - timedelta(days=horizon)
+    window = [
+        s
+        for s in stays
+        if s.admission_date <= last and (s.discharge_date is None or s.discharge_date >= first)
+    ]
+    for j in range(weeks):
+        landmark = as_of - timedelta(days=horizon + 7 * j)
+        if landmark < plans_start:
+            break
+        for s in window:
+            if s.admission_date > landmark:
+                continue
+            if s.discharge_date is not None and s.discharge_date < landmark:
+                continue
+            plan = plan_known_at(plans.get(s.stay_id, ()), landmark)
+            if plan is not None and plan >= landmark:
+                continue  # had a usable plan that morning: covered by the slip model
+            band = elapsed_band((landmark - s.admission_date).days)
+            for key in ((s.mention, band), ("*", band)):
+                samples[key] += 1
+                if s.discharge_date is not None:
+                    k = (s.discharge_date - landmark).days
+                    if k < horizon:
+                        counts[key][k] += 1
+    pmf = {key: [c / samples[key] for c in counts[key]] for key in samples}
+    return LandmarkModel(horizon, pmf, dict(samples))
 
 
 @dataclass
@@ -52,6 +190,7 @@ class HazardModel:
     tail_hazard: float
     n_stays: dict[str, int] = field(default_factory=dict)
     n_completed: dict[str, int] = field(default_factory=dict)
+    landmarks: LandmarkModel | None = None
 
     def hazard(self, mention: str, t: int) -> float:
         own = self.by_mention.get(mention)
@@ -66,6 +205,7 @@ def fit_hazard(
     stays: Iterable[StayRecord],
     as_of: date,
     min_at_risk: int = DEFAULT_MIN_AT_RISK,
+    plans: PlanHistory | None = None,
 ) -> HazardModel:
     """Fit discrete-time LOS hazards using only information available at ``as_of``.
 
@@ -78,6 +218,7 @@ def fit_hazard(
     n_stays: dict[str, int] = defaultdict(int)
     n_completed: dict[str, int] = defaultdict(int)
 
+    stays = list(stays)
     for stay in stays:
         if stay.admission_date >= as_of:
             continue
@@ -123,6 +264,7 @@ def fit_hazard(
         tail_hazard=tail_hazard,
         n_stays=dict(n_stays),
         n_completed=dict(n_completed),
+        landmarks=fit_landmarks(stays, plans, as_of) if plans else None,
     )
 
 
@@ -148,9 +290,10 @@ def discharge_cdf(
         pmf = [0.0] * horizon
         total = 0.0
         for slip, weight in plan_slip.items():
-            day = (planned - as_of).days + slip
+            # A plan that slips "into the past" means the patient leaves today.
+            day = max(0, (planned - as_of).days + slip)
             total += weight
-            if 0 <= day < horizon:
+            if day < horizon:
                 pmf[day] += weight
         cdf: list[float] = []
         acc = 0.0
@@ -158,6 +301,11 @@ def discharge_cdf(
             acc += pmf[k] / total if total > 0 else 0.0
             cdf.append(min(1.0, acc))
         return cdf
+
+    if model.landmarks is not None:
+        conditional = model.landmarks.cdf(stay.mention, elapsed, horizon)
+        if conditional is not None:
+            return conditional
 
     cdf = []
     survive = 1.0
@@ -273,9 +421,13 @@ class StayOutlook:
 
 
 def stay_outlook(
-    stay: StayRecord, as_of: date, model: HazardModel, horizon: int = 28
+    stay: StayRecord,
+    as_of: date,
+    model: HazardModel,
+    horizon: int = 28,
+    plan_slip: Mapping[int, float] = DEFAULT_PLAN_SLIP,
 ) -> StayOutlook:
-    cdf = discharge_cdf(stay, as_of, horizon, model)
+    cdf = discharge_cdf(stay, as_of, horizon, model, plan_slip)
     median = next((as_of + timedelta(days=k) for k, p in enumerate(cdf) if p >= 0.5), None)
     return StayOutlook(
         stay_id=stay.stay_id,
@@ -307,20 +459,30 @@ def backtest(
     as_of_dates: Iterable[date],
     today: date,
     horizon: int = 7,
+    plans: PlanHistory | None = None,
 ) -> BacktestResult:
     """Replay the forecast at past dates using only data known at each date.
 
-    Planned discharge dates are ignored in the replay because their history is
-    not stored: this measures the LOS model alone, a conservative lower bound.
+    When ``plans`` is given, each stay uses the planned discharge date known
+    the morning of the replayed date, and the slip distribution is measured on
+    discharges before that date. Without it, the LOS model alone is measured.
     """
     points: list[BacktestPoint] = []
     for as_of in as_of_dates:
         end = as_of + timedelta(days=horizon - 1)
         if end >= today:
             continue
-        model = fit_hazard(stays, as_of)
+        model = fit_hazard(stays, as_of, plans=plans)
+        slip = estimate_plan_slip(stays, plans, as_of).weights if plans else DEFAULT_PLAN_SLIP
         active = [
-            StayRecord(s.stay_id, s.site_id, s.mention, s.admission_date)
+            StayRecord(
+                s.stay_id,
+                s.site_id,
+                s.mention,
+                s.admission_date,
+                None,
+                plan_known_at(plans.get(s.stay_id, ()), as_of) if plans else None,
+            )
             for s in stays
             if s.admission_date < as_of and (s.discharge_date is None or s.discharge_date >= as_of)
         ]
@@ -333,7 +495,7 @@ def backtest(
             and s.discharge_date is not None
             and as_of <= s.discharge_date <= end
         )
-        probs = [discharge_cdf(s, as_of, horizon, model)[horizon - 1] for s in active]
+        probs = [discharge_cdf(s, as_of, horizon, model, slip)[horizon - 1] for s in active]
         dist = poisson_binomial(probs)
         points.append(
             BacktestPoint(

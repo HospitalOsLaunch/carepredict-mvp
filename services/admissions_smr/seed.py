@@ -25,7 +25,9 @@ from services.admissions_smr.models import (
     Group,
     RequestEvent,
     Site,
+    StaffPlan,
     Stay,
+    StayPlanChange,
     User,
 )
 from services.admissions_smr.security import hash_password
@@ -304,8 +306,45 @@ def seed_demo(
                     )
 
     _add_open_requests(session, group, sites, today, zone, rng, coordinator.id, next_patient)
+    _add_staffing(session, group, sites, today)
     session.commit()
     return group
+
+
+def _add_staffing(session: Session, group: Group, sites: dict[str, Site], today: date) -> None:
+    """Weekly care hours sized near the expected load, thinner at weekends, plus two gaps."""
+    mean_minutes = {
+        m: sum(w * c for w, c in zip(ws, (45, 90, 150, 240), strict=True)) / 100
+        for m, ws in CARE_LEVEL_WEIGHTS.items()
+    }
+    for site in sites.values():
+        for pool in site.pools:
+            base = pool.beds_open * 0.9 * mean_minutes[pool.mention] / 60
+            for weekday in range(7):
+                factor = 0.9 if weekday >= 5 else 1.08
+                session.add(
+                    StaffPlan(
+                        group_id=group.id,
+                        site_id=site.id,
+                        mention=pool.mention,
+                        weekday=weekday,
+                        care_hours=round(base * factor, 1),
+                        updated_at=datetime.now(UTC),
+                    )
+                )
+    tilleuls = sites["SMR Les Tilleuls"]
+    for k in (2, 3):
+        session.add(
+            StaffPlan(
+                group_id=group.id,
+                site_id=tilleuls.id,
+                mention="geriatrie",
+                day=today + timedelta(days=k),
+                care_hours=round(40 * 0.9 * mean_minutes["geriatrie"] / 60 * 0.78, 1),
+                comment="Deux arrêts maladie non remplacés (démo)",
+                updated_at=datetime.now(UTC),
+            )
+        )
 
 
 def _poisson(rng: random.Random, lam: float) -> int:
@@ -317,6 +356,17 @@ def _poisson(rng: random.Random, lam: float) -> int:
         if p <= limit:
             return k
         k += 1
+
+
+CARE_LEVEL_WEIGHTS = {
+    "geriatrie": [10, 30, 40, 20],
+    "neuro": [5, 25, 40, 30],
+    "polyvalent": [20, 40, 30, 10],
+    "locomoteur": [30, 45, 20, 5],
+    "cardio": [35, 45, 15, 5],
+    "pneumo": [20, 45, 25, 10],
+}
+SLIP_DRAW = ([0, 1, 2, 3, 5, 7, -1, -2], [50, 15, 10, 7, 5, 4, 7, 2])
 
 
 def _add_stay(
@@ -331,10 +381,6 @@ def _add_stay(
     rng: random.Random,
 ) -> Stay:
     known = discharge <= today
-    planned: date | None = None
-    if not known and (discharge - today).days <= 21 and rng.random() < 0.55:
-        planned = discharge + timedelta(days=rng.choice([0, 0, 0, 0, 1, 2, -1]))
-        planned = max(planned, today)
     stay = Stay(
         group_id=group.id,
         site_id=site.id,
@@ -342,10 +388,31 @@ def _add_stay(
         patient_ref=patient,
         admission_date=admit,
         discharge_date=discharge if known else None,
-        planned_discharge_date=planned,
+        care_level=rng.choices([1, 2, 3, 4], CARE_LEVEL_WEIGHTS[mention])[0],
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
     )
+    # Teams enter a planned discharge a few days ahead for about 6 stays in 10;
+    # the actual discharge then slips from it (the demo's "true" slip distribution).
+    horizon_start = today - timedelta(days=200)
+    if discharge >= horizon_start and rng.random() < 0.6:
+        lead = rng.randint(2, 10)
+        recorded_on = discharge - timedelta(days=lead)
+        if recorded_on > admit and recorded_on < today:
+            slip = rng.choices(*SLIP_DRAW)[0]
+            planned = discharge - timedelta(days=slip)
+            if not known:
+                planned = max(planned, today)
+            stay.plan_changes.append(
+                StayPlanChange(
+                    recorded_at=datetime.combine(recorded_on, time(10, 0), tzinfo=UTC),
+                    recorded_on=recorded_on,
+                    planned_date=planned,
+                    source="saisie",
+                )
+            )
+            if not known:
+                stay.planned_discharge_date = planned
     session.add(stay)
     return stay
 

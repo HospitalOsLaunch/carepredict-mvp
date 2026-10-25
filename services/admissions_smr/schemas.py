@@ -254,11 +254,20 @@ class EventOut(BaseModel):
     actor: str | None
 
 
+class PortalReplyOut(BaseModel):
+    task_id: int
+    status: str
+    engine_used: str | None
+    error: str | None
+    updated_at: datetime
+
+
 class RequestDetailOut(RequestOut):
     suggestions: list[SuggestionOut]
     events: list[EventOut]
     draft_message: str | None
     stay_id: int | None
+    portal_reply: PortalReplyOut | None = None
 
 
 class StartIn(Strict):
@@ -301,6 +310,7 @@ class ConfirmIn(Strict):
 class AdmitIn(Strict):
     admission_date: date
     planned_discharge_date: date | None = None
+    care_level: int | None = Field(default=None, ge=1, le=4)
 
 
 class ReorientIn(Strict):
@@ -328,8 +338,10 @@ class StayOut(BaseModel):
     planned_discharge_date: date | None
     discharge_date: date | None
     length_of_stay: int
+    care_level: int | None
     prob_within_7_days: float | None
     median_discharge_day: date | None
+    plan_changes: int
 
 
 class StayCreate(Strict):
@@ -338,6 +350,7 @@ class StayCreate(Strict):
     patient_ref: str = Field(min_length=3, max_length=64, pattern=r"^[A-Za-z0-9_\-.]+$")
     admission_date: date
     planned_discharge_date: date | None = None
+    care_level: int | None = Field(default=None, ge=1, le=4)
 
     @field_validator("mention")
     @classmethod
@@ -351,6 +364,7 @@ class StayUpdate(Strict):
     planned_discharge_date: date | None = None
     discharge_date: date | None = None
     clear_planned: bool = False
+    care_level: int | None = Field(default=None, ge=1, le=4)
 
 
 # --- forecast & dashboard -------------------------------------------------
@@ -385,6 +399,7 @@ class ForecastBasis(BaseModel):
     completed_stays_used: int
     low_data_mentions: list[str]
     plan_slip_is_prior: bool
+    plan_slip_samples: int
 
 
 class ForecastOut(BaseModel):
@@ -509,13 +524,100 @@ class GroupSettingsOut(BaseModel):
     value_per_bed_day: float
     success_fee_rate: float
     scoring_weights: dict[str, float]
+    care_minutes: dict[str, float]
     baseline: BaselineOut
+
+
+CARE_MINUTE_KEYS = ("1", "2", "3", "4", "entree", "sortie")
 
 
 class GroupSettingsIn(Strict):
     value_per_bed_day: float | None = Field(default=None, ge=0, le=5000)
     success_fee_rate: float | None = Field(default=None, ge=0, le=1)
     scoring_weights: dict[str, float] | None = None
+    care_minutes: dict[str, float] | None = None
+
+    @field_validator("care_minutes")
+    @classmethod
+    def _care(cls, value: dict[str, float] | None) -> dict[str, float] | None:
+        if value is None:
+            return None
+        unknown = set(value) - set(CARE_MINUTE_KEYS)
+        if unknown:
+            raise ValueError(f"clés inconnues : {sorted(unknown)}")
+        if any(v < 0 or v > 1440 for v in value.values()):
+            raise ValueError("minutes entre 0 et 1440")
+        return value
+
+
+# --- predictions ----------------------------------------------------------
+
+
+class WorkloadDayOut(BaseModel):
+    day: date
+    census_expected: float
+    known_admissions: int
+    expected_new_admissions: float
+    care_minutes_expected: float
+    care_minutes_p10: float
+    care_minutes_p90: float
+    staff_minutes: float | None
+    load_ratio: float | None
+    prob_over_capacity: float | None
+    tension: str
+
+
+class PoolWorkloadOut(BaseModel):
+    site_id: int
+    site_name: str
+    mention: str
+    beds_open: int
+    occupied_now: int
+    staffing_configured: bool
+    days: list[WorkloadDayOut]
+
+
+class WorkloadOut(BaseModel):
+    as_of: date
+    horizon: int
+    care_minutes: dict[str, float]
+    plan_slip_is_prior: bool
+    plan_slip_samples: int
+    care_level_known_share: float | None
+    pools: list[PoolWorkloadOut]
+
+
+class StaffPoolOut(BaseModel):
+    site_id: int
+    site_name: str
+    mention: str
+    weekly_hours: list[float | None]
+    overrides: dict[str, float]
+
+
+class WeeklyStaffIn(Strict):
+    hours: list[float | None] = Field(min_length=7, max_length=7)
+    comment: str | None = Field(default=None, max_length=300)
+
+    @field_validator("hours")
+    @classmethod
+    def _hours(cls, value: list[float | None]) -> list[float | None]:
+        if any(v is not None and (v < 0 or v > 2000) for v in value):
+            raise ValueError("heures entre 0 et 2000")
+        return value
+
+
+class DayStaffIn(Strict):
+    care_hours: float | None = Field(default=None, ge=0, le=2000)
+    comment: str | None = Field(default=None, max_length=300)
+
+
+class WorkloadBacktestOut(BaseModel):
+    points: list[dict[str, float | str]]
+    mape: float | None
+    bias_pct: float | None
+    coverage_80: float | None
+    note: str
 
 
 class BaselineIn(Strict):

@@ -24,6 +24,7 @@ MENTIONS: Final[dict[str, str]] = {
 
 REQUEST_SOURCES: Final[dict[str, str]] = {
     "viatrajectoire": "ViaTrajectoire",
+    "portail": "Autre portail d'orientation",
     "mail": "Mail",
     "fax": "Fax",
     "telephone": "Téléphone",

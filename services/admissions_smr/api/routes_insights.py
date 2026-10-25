@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadCtx
+from services.admissions_smr.api.routes_predictions import care_minutes_dict, care_minutes_of
 from services.admissions_smr.domain.forecast import StayRecord, backtest
 from services.admissions_smr.domain.metrics import (
     CapacityPoint,
@@ -49,6 +50,7 @@ from services.admissions_smr.service import (
     build_forecast,
     get_site,
     group_sites,
+    plan_history,
     stay_records,
     weights_of,
 )
@@ -89,11 +91,15 @@ def forecast(
         as_of=today,
         horizon=horizon,
         basis=ForecastBasis(
-            method="Kaplan-Meier discret par mention + dates de sortie prévues",
+            method=(
+                "Kaplan-Meier discret par mention + dates de sortie prévues "
+                + ("(glissement mesuré)" if fc.slip.measured else "(glissement a priori)")
+            ),
             stays_used=sum(fc.model.n_stays.values()),
             completed_stays_used=sum(fc.model.n_completed.values()),
             low_data_mentions=fc.low_data_mentions,
-            plan_slip_is_prior=True,
+            plan_slip_is_prior=not fc.slip.measured,
+            plan_slip_samples=fc.slip.samples,
         ),
         pools=pools,
     )
@@ -412,7 +418,8 @@ def forecast_backtest(
         target = records
     horizon = 7
     as_of_dates = [today - timedelta(days=horizon + 7 * k) for k in range(weeks)][::-1]
-    result = backtest(target, as_of_dates, today, horizon)
+    plans = plan_history(ctx.session, ctx.group.id)
+    result = backtest(target, as_of_dates, today, horizon, plans=plans or None)
     return BacktestOut(
         horizon_days=result.horizon_days,
         points=[BacktestPointOut(**p.__dict__) for p in result.points],
@@ -420,8 +427,12 @@ def forecast_backtest(
         bias=result.bias,
         coverage_80=result.coverage_80,
         note=(
-            "Rejeu à dates passées sans les dates de sortie prévues (historique non conservé) : "
-            "mesure le modèle de durée de séjour seul. Couverture attendue de l'intervalle : 80 %."
+            "Rejeu à dates passées avec, pour chaque patient, la date de sortie prévue connue le "
+            "matin même (historique des saisies) et le glissement mesuré avant cette date. "
+            "Couverture attendue de l'intervalle : 80 %."
+            if plans
+            else "Rejeu sans dates de sortie prévues (aucun historique de saisie encore) : mesure "
+            "le modèle de durée de séjour seul. Couverture attendue de l'intervalle : 80 %."
         ),
     )
 
@@ -433,6 +444,7 @@ def _settings_out(ctx: Ctx) -> GroupSettingsOut:
         value_per_bed_day=g.value_per_bed_day,
         success_fee_rate=g.success_fee_rate,
         scoring_weights=weights_of(ctx),
+        care_minutes=care_minutes_dict(care_minutes_of(ctx)),
         baseline=BaselineOut(
             start=g.baseline_start, end=g.baseline_end, frozen_at=g.baseline_frozen_at
         ),
@@ -462,6 +474,8 @@ def put_settings(body: GroupSettingsIn, ctx: AdminCtx) -> GroupSettingsOut:
         if unknown or any(v < 0 for v in body.scoring_weights.values()):
             raise HTTPException(UNPROCESSABLE, "Pondérations invalides")
         g.scoring_weights_json = json.dumps(body.scoring_weights)
+    if body.care_minutes is not None:
+        g.care_minutes_json = json.dumps(body.care_minutes)
     ctx.audit("parametres.update", "group", g.id, json.dumps(body.model_dump(exclude_none=True)))
     ctx.session.commit()
     return _settings_out(ctx)
