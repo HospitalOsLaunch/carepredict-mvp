@@ -1,11 +1,24 @@
+import { useQuery } from "@tanstack/react-query";
+import { ShieldCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
+
+import { api } from "../api/client";
 
 import { useAuth } from "../auth";
 import { Mark } from "../components/Mark";
 import { ErrorNote } from "../components/ui";
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { login, oidcError } = useAuth();
+  const methods = useQuery({
+    queryKey: ["auth-methods"],
+    queryFn: () => api<{ password: boolean; oidc_label: string | null }>("/auth/methods"),
+    staleTime: Infinity,
+    retry: false
+  });
+  const oidcLabel = methods.data?.oidc_label ?? null;
+  // Until the server answers, show the password form: it is the safe default.
+  const passwordAllowed = methods.data?.password ?? true;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<unknown>(null);
@@ -36,8 +49,8 @@ export function LoginPage() {
             Chaque lit qui se libère trouve son patient.
           </p>
           <p className="mt-5 max-w-md text-[17px] text-white/80">
-            Les demandes d'admission en SMR, priorisées et prêtes à recevoir une réponse, avec les lits qui se
-            libèrent sur les quinze prochains jours.
+            Les demandes d'admission en SMR, priorisées et prêtes à recevoir une réponse, avec les lits qui se libèrent
+            sur les quinze prochains jours.
           </p>
         </div>
         <div aria-hidden className="flex gap-2">
@@ -64,38 +77,70 @@ export function LoginPage() {
           </div>
           <h1>Connexion</h1>
           <p className="mt-2 text-ink-soft">Coordination des admissions SMR</p>
-          <label className="field mt-8" htmlFor="email">
-            Adresse e-mail
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="username"
-            required
-            className="input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label className="field mt-4" htmlFor="password">
-            Mot de passe
-          </label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            className="input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {error !== null && (
-            <div className="mt-4">
-              <ErrorNote error={error} />
+          {oidcError && (
+            <div className="mt-6">
+              <ErrorNote error={new Error(oidcError)} />
             </div>
           )}
-          <button type="submit" className="btn-primary mt-6 w-full py-3" disabled={busy}>
-            {busy ? "Connexion…" : "Se connecter"}
-          </button>
+          {oidcLabel && (
+            <>
+              <a href="/api/auth/oidc/login" className="btn-primary mt-8 w-full py-3">
+                <ShieldCheck className="h-5 w-5" aria-hidden /> Se connecter avec {oidcLabel}
+              </a>
+              {passwordAllowed && (
+                <p className="mt-6 flex items-center gap-3 text-[13px] text-ink-faint" aria-hidden>
+                  <span className="h-px flex-1 bg-line" /> ou avec un mot de passe{" "}
+                  <span className="h-px flex-1 bg-line" />
+                </p>
+              )}
+            </>
+          )}
+          {passwordAllowed ? (
+            <>
+              <label className={`field ${oidcLabel ? "mt-4" : "mt-8"}`} htmlFor="email">
+                Adresse e-mail
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="username"
+                required
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <label className="field mt-4" htmlFor="password">
+                Mot de passe
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {error !== null && (
+                <div className="mt-4">
+                  <ErrorNote error={error} />
+                </div>
+              )}
+              <button
+                type="submit"
+                className={`${oidcLabel ? "btn-quiet" : "btn-primary"} mt-6 w-full py-3`}
+                disabled={busy}
+              >
+                {busy ? "Connexion…" : "Se connecter"}
+              </button>
+            </>
+          ) : (
+            !oidcLabel && (
+              <p className="mt-8 text-ink-soft">
+                Aucun mode de connexion n'est configuré. Contactez l'administrateur du groupe.
+              </p>
+            )
+          )}
           <p className="mt-6 text-[13px] text-ink-faint">
             Données pseudonymisées. Chaque action est tracée dans le journal d'audit.
           </p>

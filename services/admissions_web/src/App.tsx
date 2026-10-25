@@ -1,4 +1,4 @@
-import { BedDouble, Building2, FileUp, Gauge, Inbox, LogOut, Settings } from "lucide-react";
+import { Activity, BedDouble, Building2, FileUp, Gauge, Inbox, LogOut, Settings } from "lucide-react";
 import { lazy, Suspense, type ComponentType } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 
@@ -12,6 +12,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { RequestsPage } from "./pages/RequestsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
+const ChargePage = lazy(() => import("./pages/ChargePage").then((m) => ({ default: m.ChargePage })));
 const MetricsPage = lazy(() => import("./pages/MetricsPage").then((m) => ({ default: m.MetricsPage })));
 
 interface NavItem {
@@ -24,6 +25,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: "/demandes", label: "Demandes", icon: Inbox },
   { to: "/lits", label: "Lits et sorties", icon: BedDouble },
+  { to: "/charge", label: "Charge en soins", icon: Activity },
   { to: "/groupe", label: "Vue groupe", icon: Building2 },
   { to: "/indicateurs", label: "Indicateurs pilote", icon: Gauge },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
@@ -105,6 +107,14 @@ export function App() {
           <Route path="/demandes" element={<RequestsPage />} />
           <Route path="/demandes/:id" element={<RequestsPage />} />
           <Route path="/lits" element={<BedsPage />} />
+          <Route
+            path="/charge"
+            element={
+              <Suspense fallback={<Spinner />}>
+                <ChargePage />
+              </Suspense>
+            }
+          />
           <Route path="/groupe" element={<GroupPage />} />
           <Route
             path="/indicateurs"

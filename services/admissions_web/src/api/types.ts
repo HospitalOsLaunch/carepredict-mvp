@@ -7,6 +7,7 @@ export interface User {
   role: Role;
   site_id: number | null;
   active: boolean;
+  oidc_subject?: string | null;
 }
 
 export interface LoginResponse {
@@ -117,6 +118,7 @@ export interface RequestDetail extends AdmissionRequest {
   events: RequestEvent[];
   draft_message: string | null;
   stay_id: number | null;
+  portal_reply: PortalReply | null;
 }
 
 export interface Stay {
@@ -129,8 +131,10 @@ export interface Stay {
   planned_discharge_date: string | null;
   discharge_date: string | null;
   length_of_stay: number;
+  care_level: number | null;
   prob_within_7_days: number | null;
   median_discharge_day: string | null;
+  plan_changes: number;
 }
 
 export interface DayForecast {
@@ -165,6 +169,7 @@ export interface Forecast {
     completed_stays_used: number;
     low_data_mentions: string[];
     plan_slip_is_prior: boolean;
+    plan_slip_samples: number;
   };
   pools: PoolForecast[];
 }
@@ -280,6 +285,7 @@ export interface GroupSettings {
   value_per_bed_day: number;
   success_fee_rate: number;
   scoring_weights: Record<string, number>;
+  care_minutes: Record<string, number>;
   baseline: Baseline;
 }
 
@@ -300,4 +306,120 @@ export interface AuditEntry {
   entity: string;
   entity_id: string | null;
   detail: string | null;
+}
+
+export interface PortalReply {
+  task_id: number;
+  status: string;
+  engine_used: string | null;
+  error: string | null;
+  updated_at: string;
+}
+
+export interface WorkloadDay {
+  day: string;
+  census_expected: number;
+  known_admissions: number;
+  expected_new_admissions: number;
+  care_minutes_expected: number;
+  care_minutes_p10: number;
+  care_minutes_p90: number;
+  staff_minutes: number | null;
+  load_ratio: number | null;
+  prob_over_capacity: number | null;
+  tension: "inconnue" | "normale" | "vigilance" | "tension";
+}
+
+export interface PoolWorkload {
+  site_id: number;
+  site_name: string;
+  mention: string;
+  beds_open: number;
+  occupied_now: number;
+  staffing_configured: boolean;
+  days: WorkloadDay[];
+}
+
+export interface Workload {
+  as_of: string;
+  horizon: number;
+  care_minutes: Record<string, number>;
+  plan_slip_is_prior: boolean;
+  plan_slip_samples: number;
+  care_level_known_share: number | null;
+  pools: PoolWorkload[];
+}
+
+export interface StaffPool {
+  site_id: number;
+  site_name: string;
+  mention: string;
+  weekly_hours: Array<number | null>;
+  overrides: Record<string, number>;
+}
+
+export interface WorkloadBacktest {
+  points: Array<{ as_of: string; k: number; predicted_hours: number; actual_hours: number }>;
+  mape: number | null;
+  bias_pct: number | null;
+  coverage_80: number | null;
+  note: string;
+}
+
+export interface EnginePolicy {
+  label: string;
+  kind: "playbook" | "openai_compatible" | "anthropic";
+  enabled: boolean;
+  model: string | null;
+  open_weights: boolean;
+  identifiable_data_allowed: boolean;
+  input_usd_per_mtok: number;
+  output_usd_per_mtok: number;
+  usd_per_hour: number;
+  min_calibration: number | null;
+}
+
+export interface AgentPolicy {
+  engines: Record<string, EnginePolicy>;
+  routes: Record<string, string[]>;
+  daily_budget_usd: number;
+  task_budget_usd: Record<string, number>;
+  sync_interval_minutes: number;
+  max_attempts: number;
+  write_requires_verification: boolean;
+}
+
+export interface AgentTask {
+  id: number;
+  kind: string;
+  request_id: number | null;
+  payload: Record<string, unknown>;
+  status: string;
+  attempts: number;
+  engine_used: string | null;
+  cost_usd: number;
+  error: string | null;
+  result: {
+    route?: Array<{ engine: string; decision: string; reason?: string; cost_usd?: number; steps?: number; error?: string | null }>;
+    created?: number;
+    already_known?: number;
+  } | null;
+  created_at: string;
+  updated_at: string;
+  finished_at: string | null;
+}
+
+export interface AgentStatus {
+  paused: boolean;
+  online: boolean;
+  last_heartbeat_at: string | null;
+  agent_id: string | null;
+  agent_version: string | null;
+  engines: Array<{ name: string; configured: boolean; detail: string | null }>;
+  policy: AgentPolicy;
+  counts: Record<string, number>;
+  spent_today_usd: number;
+  spend_30d: Array<{ engine: string; attempts: number; successes: number; cost_usd: number }>;
+  calibrations: Record<string, { model: string; hit_rate: number; trials: number; at: string; convention: string | null }>;
+  recent: AgentTask[];
 }
