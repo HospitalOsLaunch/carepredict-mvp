@@ -1,0 +1,6 @@
+# Runtime dependencies of the Admissions SMR service only (no torch, dagster or feast).
+fastapi>=0.111,<1
+sqlalchemy>=2.0,<3
+pydantic>=2.7,<3
+uvicorn[standard]>=0.30,<1
+psycopg[binary]>=3.1,<4
