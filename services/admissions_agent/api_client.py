@@ -107,7 +107,9 @@ class HospitalOSClient:
 
     def claim(self, agent_id: str, limit: int = 1) -> list[dict[str, Any]]:
         result: list[dict[str, Any]] = self._call(
-            "POST", "/api/agent/tasks/claim", {"agent_id": agent_id, "limit": limit}
+            "POST",
+            "/api/agent/tasks/claim",
+            {"protocol_version": 2, "agent_id": agent_id, "limit": limit},
         )
         for task in result:
             self.leases[int(task["id"])] = {
