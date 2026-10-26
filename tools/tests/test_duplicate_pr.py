@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.duplicate_pr import DuplicationError, duplicate
+from tools.duplicate_pr import DuplicationError, already_absent, duplicate, previous_head, record
 
 SCOPE = ("services/admissions_agent/",)
 AGENT = "services/admissions_agent/agent.py"
@@ -122,3 +122,22 @@ def test_refuses_a_dirty_work_tree(repo: Path) -> None:
     write(repo, AGENT, "uncommitted\n")
     with pytest.raises(DuplicationError, match="modifications"):
         duplicate(repo, commits, "mvp", "dup/pr-4", SCOPE)
+
+
+def test_the_ledger_lets_the_next_run_resume_after_the_recorded_head(repo: Path) -> None:
+    commits = make_pr(repo)
+    report = duplicate(repo, commits, "mvp", "dup/pr-5", SCOPE, pr=5)
+    record(repo, report, "Titre", commits[-1], "https://example.org/pull/5")
+    assert previous_head(repo, "dup/pr-5", 5) == commits[-1]
+    assert previous_head(repo, "dup/pr-5", 6) is None
+    ledger = (repo / "DUPLICATIONS.md").read_text()
+    assert "[#5 Titre](https://example.org/pull/5)" in ledger and commits[-1] in ledger
+
+
+def test_commits_already_on_the_mvp_are_skipped(repo: Path) -> None:
+    write(repo, "services/admissions_agent/only_mvp.py", "Y = 2\n")
+    scoped = commit(repo, "fix: change inside the MVP only")
+    run(repo, "checkout", "-q", "mvp")
+    duplicate(repo, [scoped], "mvp", "dup/pr-7", SCOPE, pr=7)
+    assert already_absent(repo, "dup/pr-7", [scoped]) == []
+    assert already_absent(repo, "mvp", [scoped]) == [scoped]

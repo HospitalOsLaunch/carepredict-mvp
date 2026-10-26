@@ -217,13 +217,52 @@ def record(repo: Path, report: Report, title: str, head: str, url: str) -> None:
     if len(dropped) > 400:
         dropped = f"{len(report.dropped)} fichiers hors du MVP"
     line = (
-        f"| {datetime.now(UTC):%Y-%m-%d} | [#{report.pr} {title}]({url}) | `{head[:8]}` "
+        f"| {datetime.now(UTC):%Y-%m-%d} | [#{report.pr} {title}]({url}) | `{head}` "
         f"| {len(report.applied)} | {dropped} |\n"
     )
     with ledger.open("a", encoding="utf-8") as fh:
         fh.write(line)
     git(repo, "add", LEDGER)
     git(repo, "commit", "-q", "-m", f"chore: duplication de la PR #{report.pr} consignée")
+
+
+def _is_ancestor(repo: Path, ancestor: str, descendant: str) -> bool:
+    return (
+        subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=repo,
+            capture_output=True,
+            check=False,
+        ).returncode
+        == 0
+    )
+
+
+def previous_head(repo: Path, onto: str, pr: int) -> str | None:
+    """Source head recorded by the last duplication of this PR, if any."""
+    ledger = git(repo, "show", f"{onto}:{LEDGER}", check=False)
+    found = None
+    for line in ledger.splitlines():
+        cells = [c.strip() for c in line.split("|")]
+        if len(cells) > 3 and cells[2].startswith(f"[#{pr} "):
+            found = cells[3].strip("`")
+    if not found:
+        return None
+    full = git(repo, "rev-parse", "--verify", "--quiet", f"{found}^{{commit}}", check=False)
+    return full or None
+
+
+def already_absent(repo: Path, onto: str, commits: Sequence[str]) -> list[str]:
+    """Drop the commits whose change is already on the MVP branch (same patch-id)."""
+    if not commits:
+        return []
+    present: set[str] = set()
+    out = git(repo, "cherry", onto, commits[-1], f"{commits[0]}^", check=False)
+    for line in out.splitlines():
+        sign, _, sha = line.partition(" ")
+        if sign == "-":
+            present.add(sha)
+    return [c for c in commits if c not in present]
 
 
 def gh_json(path: str) -> dict[str, object]:
@@ -245,6 +284,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--allow-stacked",
         action="store_true",
         help="dupliquer même si la PR est empilée sur une autre branche",
+    )
+    parser.add_argument("--since", default=None, help="ne reprendre que les commits après celui-ci")
+    parser.add_argument(
+        "--all", action="store_true", help="ignorer DUPLICATIONS.md et reprendre toute la PR"
     )
     parser.add_argument("--push", action="store_true")
     parser.add_argument("--open-pr", action="store_true")
@@ -278,10 +321,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     git(ROOT, "fetch", "-q", args.remote, f"pull/{args.pr}/head:refs/dup/pr-{args.pr}")
     git(ROOT, "fetch", "-q", args.remote, f"{base['sha']}")
-    commits = git(
-        ROOT, "rev-list", "--reverse", "--topo-order", f"{base['sha']}..refs/dup/pr-{args.pr}"
-    ).split()
+    head_ref = f"refs/dup/pr-{args.pr}"
+    since = args.since or (None if args.all else previous_head(ROOT, args.onto, args.pr))
+    start = str(base["sha"])
+    if since:
+        if _is_ancestor(ROOT, since, head_ref):
+            start = since
+            print(
+                f"PR #{args.pr} déjà dupliquée jusqu'à {since[:8]} : reprise des commits suivants."
+            )
+        else:
+            print(f"{since[:8]} n'est plus dans la PR (historique réécrit ?) : reprise complète.")
+    commits = already_absent(
+        ROOT,
+        args.onto,
+        git(ROOT, "rev-list", "--reverse", "--topo-order", f"{start}..{head_ref}").split(),
+    )
     branch = f"dup/pr-{args.pr}"
+    if not commits:
+        print(f"PR #{args.pr} : rien de nouveau depuis la dernière duplication.")
+        return 0
     report = duplicate(
         ROOT, commits, args.onto, branch, load_scope(), args.include_outside, args.pr, args.repo
     )
