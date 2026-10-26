@@ -176,7 +176,8 @@ politique). Changer de modèle ou de convention impose une nouvelle calibration.
 ## Mise à jour depuis la migration 0001
 
 1. Arrêter les anciens agents avant de migrer l'API, puis déployer API et agents ensemble.
-   Les anciens clients ne savent pas présenter les nouveaux jetons de réservation.
+   Les prises de tâche exigent `protocol_version: 2` : les anciens clients sont refusés
+   avant de réserver une tâche. Les anciens agents déjà en cours doivent néanmoins être arrêtés.
 2. Exécuter `python -m services.admissions_smr.cli migrate`. La migration 0002 conserve
    demandes et essais. Les réponses auparavant en cours passent à vérifier ; les anciennes
    tâches sans version de décision sont écartées à la prise de tâche. Vérifier et traiter

@@ -74,6 +74,7 @@ class HeartbeatOut(BaseModel):
 
 
 class ClaimIn(BaseModel):
+    protocol_version: Literal[2]
     agent_id: str = Field(min_length=1, max_length=120)
     kinds: list[str] = Field(default_factory=lambda: list(TASK_KINDS))
     limit: int = Field(default=1, ge=1, le=20)

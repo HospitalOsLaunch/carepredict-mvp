@@ -29,7 +29,9 @@ class Queue:
 
     def claim(self, worker: str = "worker") -> list[dict[str, Any]]:
         response = self.client.post(
-            "/api/agent/tasks/claim", headers=self.agent, json={"agent_id": worker}
+            "/api/agent/tasks/claim",
+            headers=self.agent,
+            json={"protocol_version": 2, "agent_id": worker},
         )
         assert response.status_code == 200, response.text
         result: list[dict[str, Any]] = response.json()
@@ -275,3 +277,11 @@ def test_frozen_reference_survives_historical_edits_and_retains_versions(
     assert frozen["snapshot_id"] != refrozen["snapshot_id"]
     assert frozen["digest"] != refrozen["digest"]
     assert len(list(db.scalars(select(BaselineSnapshot)))) == 2
+
+
+def test_legacy_agent_is_rejected_before_claiming(queue: Queue) -> None:
+    result = queue.client.post(
+        "/api/agent/tasks/claim", headers=queue.agent, json={"agent_id": "old-worker"}
+    )
+    assert result.status_code == 422
+    assert len(queue.claim()) == 1
