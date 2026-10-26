@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from services.admissions_agent.api_client import ApiError, HospitalOSClient
+from services.admissions_agent.api_client import ApiError, HospitalOSClient, TaskInterrupted
 from services.admissions_agent.browser import BrowserSession
 from services.admissions_agent.config import AgentSettings
 from services.admissions_agent.engines.base import (
@@ -32,7 +32,14 @@ from services.admissions_agent.engines.base import (
     reply_goal,
     sync_goal,
 )
-from services.admissions_agent.playbook import PARIS, Playbook, PlaybookError, Transforms, render
+from services.admissions_agent.playbook import (
+    PARIS,
+    Playbook,
+    PlaybookError,
+    Transforms,
+    render,
+    same_text,
+)
 
 EngineFactory = Callable[[str, dict[str, Any]], VisionEngine | None]
 SessionFactory = Callable[[], BrowserSession]
@@ -125,10 +132,22 @@ class Router:
         daily_left = float(policy["daily_budget_usd"]) - float(
             heartbeat.get("spent_today_usd", 0.0)
         )
-        task_left = float(policy.get("task_budget_usd", {}).get(kind, 1.0))
+        task_left = float(policy.get("task_budget_usd", {}).get(kind, 1.0)) - float(
+            task.get("cost_usd", 0.0)
+        )
         calibrations: dict[str, float] = heartbeat.get("calibrations", {})
         route: list[dict[str, Any]] = []
+        if kind == "reply_portal" and not self.playbook.verification_ready(task["payload"]):
+            return TaskOutcome(
+                "needs_human",
+                None,
+                error=(
+                    "Relecture du dossier, de la décision et du message non configurée : "
+                    "aucune écriture effectuée"
+                ),
+            )
         session = self.session_factory()
+        writing = False
         try:
             try:
                 self.playbook.login(
@@ -143,9 +162,37 @@ class Router:
                     "failed", None, {"route": route}, f"connexion au portail : {exc}"
                 )
 
+            session.checkpoint = lambda: self.api.checkpoint(task["id"])
+            session.checkpoint()
             before: dict[str, Any] | None = None
             if kind == "reply_portal":
                 before = self._read_back(session, task["payload"])
+                if before is None:
+                    return TaskOutcome(
+                        "needs_human",
+                        None,
+                        error="Relecture préalable impossible : aucune écriture effectuée",
+                    )
+                if self._compare(before, before, task["payload"]) == "done":
+                    return TaskOutcome(
+                        "done",
+                        "playbook",
+                        {
+                            "route": route,
+                            "verification": {"observed": before},
+                            "already_applied": True,
+                        },
+                    )
+                if task.get("reconcile_only"):
+                    return TaskOutcome(
+                        "needs_human",
+                        None,
+                        {"verification": {"observed": before}},
+                        (
+                            "Réponse précédente incertaine : "
+                            "vérifiez le portail avant toute nouvelle saisie"
+                        ),
+                    )
 
             for name in chain:
                 engine = policy["engines"].get(name)
@@ -153,9 +200,34 @@ class Router:
                     continue
                 budget_left = min(task_left, daily_left)
                 reason = self.skip_reason(name, engine, kind, budget_left, calibrations)
+                if reason is None and engine["kind"] == "openai_compatible":
+                    detail = heartbeat.get("calibration_details", {}).get(name, {})
+                    endpoint = self.settings.engines.get(name)
+                    model = (endpoint.model if endpoint else None) or engine.get("model")
+                    if (
+                        not endpoint
+                        or detail.get("model") != model
+                        or detail.get("convention") != endpoint.coordinates
+                        or detail.get("trials", 0) < 20
+                    ):
+                        reason = (
+                            "calibration absente pour ce modèle et cette convention "
+                            "(20 essais requis)"
+                        )
                 if reason:
                     route.append({"engine": name, "decision": "ignoré", "reason": reason})
                     continue
+                try:
+                    authorized_budget = self.api.authorize(task["id"], name)
+                except ApiError as exc:
+                    # The policy/budget can change while another engine is working.
+                    route.append({"engine": name, "decision": "ignoré", "reason": str(exc)})
+                    continue
+                if engine["kind"] != "playbook":
+                    budget_left = min(budget_left, authorized_budget)
+                if kind == "reply_portal":
+                    self.api.begin_write(task["id"])
+                    writing = True
                 result = self._run(name, engine, kind, task, session, budget_left)
                 task_left -= result.cost_usd
                 daily_left -= result.cost_usd
@@ -177,12 +249,15 @@ class Router:
                             return TaskOutcome(
                                 "done", name, {"route": route, "verification": after}
                             )
-                        if verdict == "changed":
+                        if verdict in ("changed", "unknown"):
                             return TaskOutcome(
                                 "needs_human",
                                 name,
                                 {"route": route, "verification": after},
-                                "le portail a été modifié sans correspondre à la réponse attendue",
+                                (
+                                    "relecture impossible ou réponse modifiée : "
+                                    "vérifier le portail avant une autre tentative"
+                                ),
                             )
                     continue
                 if kind == "sync_inbox":
@@ -193,6 +268,10 @@ class Router:
                 None,
                 {"route": route},
                 "aucun moteur n'a pu traiter la tâche : à faire à la main",
+            )
+        except (ApiError, TaskInterrupted) as exc:
+            return TaskOutcome(
+                "needs_human" if writing else "failed", None, {"route": route}, str(exc)
             )
         finally:
             session.close()
@@ -214,6 +293,8 @@ class Router:
                     return EngineResult("success", data, 0.0, 1, time.monotonic() - started)
                 self.playbook.reply(session, task["payload"])
                 return EngineResult("success", None, 0.0, 1, time.monotonic() - started)
+            except TaskInterrupted:
+                raise
             except Exception as exc:  # noqa: BLE001 - layout change, timeout, missing field
                 return EngineResult("failure", None, 0.0, 1, time.monotonic() - started, str(exc))
         vision = self.engine_factory(name, engine)
@@ -224,14 +305,21 @@ class Router:
             session.goto(self.playbook.spec["sync_inbox"]["list"]["goto"])
         try:
             return vision.run(session, goal, self.settings.max_steps, budget_left)
+        except TaskInterrupted:
+            raise
         except BudgetExceeded as exc:
             return EngineResult(
-                "failure", None, budget_left, 0, time.monotonic() - started, str(exc)
+                "failure", None, exc.cost_usd, 0, time.monotonic() - started, str(exc)
             )
         except Exception as exc:  # noqa: BLE001 - network, model, browser
             return EngineResult(
                 "failure", None, 0.0, 0, time.monotonic() - started, f"{type(exc).__name__}: {exc}"
             )
+
+        finally:
+            close = getattr(vision, "close", None)
+            if close is not None:
+                close()
 
     def _report(self, task_id: int, engine: str, result: EngineResult) -> None:
         self.api.attempt(
@@ -252,7 +340,11 @@ class Router:
         try:
             _, info = self.playbook.verify(session, payload, self.transforms)
             observed: dict[str, Any] = info["observed"]
+            if observed.get("external_ref") != payload.get("external_ref"):
+                return None
             return observed
+        except TaskInterrupted:
+            raise
         except Exception:  # noqa: BLE001
             return None
 
@@ -264,8 +356,8 @@ class Router:
         expected = self.playbook.spec["verify_reply"]["expect"].get(
             str(payload.get("decision")), {}
         )
-        wanted = {k: render(str(v), {"payload": payload}) for k, v in expected.items()}
-        if wanted and all(str(after.get(k, "")) == v for k, v in wanted.items()):
+        wanted = {k: render(str(v), {"payload": payload}).strip() for k, v in expected.items()}
+        if wanted and all(same_text(after.get(k, ""), v) for k, v in wanted.items()):
             return "done"
         return "unchanged" if after == before else "changed"
 
@@ -276,14 +368,17 @@ class Router:
         payload: dict[str, Any],
         route: list[dict[str, Any]],
     ) -> TaskOutcome:
-        if not self.playbook.can_verify:
+        try:
+            ok, info = self.playbook.verify(session, payload, self.transforms)
+        except TaskInterrupted:
+            raise
+        except Exception:  # noqa: BLE001 - submitted writes must never be retried blindly
             return TaskOutcome(
                 "needs_human",
                 engine,
                 {"route": route},
-                "réponse saisie mais non vérifiable automatiquement : contrôlez-la dans le portail",
+                "Réponse peut-être envoyée, relecture impossible : vérifiez le portail",
             )
-        ok, info = self.playbook.verify(session, payload, self.transforms)
         if ok:
             return TaskOutcome("done", engine, {"route": route, "verification": info})
         return TaskOutcome(

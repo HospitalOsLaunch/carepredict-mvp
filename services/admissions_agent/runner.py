@@ -9,14 +9,14 @@ from typing import Any
 import httpx
 
 from services.admissions_agent import __version__
-from services.admissions_agent.api_client import HospitalOSClient
+from services.admissions_agent.api_client import ApiError, HospitalOSClient
 from services.admissions_agent.browser import BrowserSession
 from services.admissions_agent.config import AgentSettings
 from services.admissions_agent.engines.anthropic_cu import AnthropicComputerUse
 from services.admissions_agent.engines.base import VisionEngine
 from services.admissions_agent.engines.openai_vlm import OpenWeightsVision
 from services.admissions_agent.playbook import Playbook, Transforms
-from services.admissions_agent.router import Router
+from services.admissions_agent.router import Router, TaskOutcome
 
 log = logging.getLogger("admissions_agent")
 
@@ -113,10 +113,24 @@ class Agent:
             if not tasks:
                 break
             for task in tasks:
-                outcome = self.router.handle(task, beat)
-                self.api.complete(
-                    task["id"], outcome.status, outcome.engine, outcome.result, outcome.error
-                )
+                try:
+                    outcome = self.router.handle(task, beat)
+                except Exception as exc:  # noqa: BLE001 - isolate a broken task from the queue
+                    log.exception("exécution interrompue de la tâche %s", task["id"])
+                    outcome = TaskOutcome(
+                        "needs_human" if task["kind"] == "reply_portal" else "failed",
+                        None,
+                        error=f"Exécution interrompue : {type(exc).__name__}",
+                    )
+                try:
+                    self.api.complete(
+                        task["id"], outcome.status, outcome.engine, outcome.result, outcome.error
+                    )
+                except ApiError:
+                    # A revoked/expired lease cannot be completed by its former worker.
+                    log.warning("fin de tâche %s non confirmée par HospitalOS", task["id"])
+                finally:
+                    self.api.leases.pop(task["id"], None)
                 log.info(
                     "tâche %s %s : %s (%s)",
                     task["id"],

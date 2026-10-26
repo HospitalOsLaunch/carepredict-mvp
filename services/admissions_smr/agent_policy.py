@@ -32,7 +32,7 @@ EngineKind = Literal["playbook", "openai_compatible", "anthropic"]
 
 
 class EnginePolicy(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
     label: str
     kind: EngineKind
@@ -47,7 +47,7 @@ class EnginePolicy(BaseModel):
 
 
 class AgentPolicy(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
     engines: dict[str, EnginePolicy]
     routes: dict[str, list[str]]
@@ -62,9 +62,27 @@ class AgentPolicy(BaseModel):
         unknown_engines = set(self.engines) - set(ENGINE_NAMES)
         if unknown_engines:
             raise ValueError(f"moteurs inconnus : {sorted(unknown_engines)}")
+        for name, engine in self.engines.items():
+            expected = (
+                "playbook"
+                if name == "playbook"
+                else "openai_compatible"
+                if name.startswith("open_")
+                else "anthropic"
+            )
+            if engine.kind != expected:
+                raise ValueError(f"type de moteur invalide pour {name}")
+            if engine.kind == "openai_compatible" and (
+                engine.min_calibration is None or engine.min_calibration < 0.9
+            ):
+                raise ValueError("les moteurs ouverts nécessitent une calibration d'au moins 90 %")
+        if any(kind not in TASK_KINDS or value < 0 for kind, value in self.task_budget_usd.items()):
+            raise ValueError("budgets de tâche invalides")
         for kind, chain in self.routes.items():
             if kind not in TASK_KINDS:
                 raise ValueError(f"type de tâche inconnu : {kind}")
+            if len(chain) != len(set(chain)):
+                raise ValueError("un moteur ne peut apparaître deux fois dans une route")
             missing = [e for e in chain if e not in self.engines]
             if missing:
                 raise ValueError(f"route {kind} : moteurs absents {missing}")

@@ -8,12 +8,13 @@ is recorded with its cost, so routing decisions and budgets are auditable.
 from __future__ import annotations
 
 import json
+import secrets
 from datetime import UTC, datetime, time, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field, ValidationError
-from sqlalchemy import case, func, select
+from sqlalchemy import Select, case, func, or_, select
 
 from services.admissions_smr.agent_policy import (
     ENGINE_NAMES,
@@ -39,6 +40,7 @@ from services.admissions_smr.models import (
     AgentTask,
     Site,
 )
+from services.admissions_smr.task_state import decision_is_current
 from services.admissions_smr.vocab import REFUSAL_REASONS
 
 router = APIRouter(prefix="/agent", tags=["agent"])
@@ -68,6 +70,7 @@ class HeartbeatOut(BaseModel):
     policy: AgentPolicy
     spent_today_usd: float
     calibrations: dict[str, float]
+    calibration_details: dict[str, dict[str, Any]]
 
 
 class ClaimIn(BaseModel):
@@ -90,22 +93,43 @@ class TaskOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     finished_at: datetime | None
+    available_at: datetime | None
+    reconcile_only: bool
 
 
-class AttemptIn(BaseModel):
+class ClaimedTaskOut(TaskOut):
+    # A capability, returned ONLY to the worker that claimed the task, never to readers.
+    lease_token: str
+
+
+class LeaseIn(BaseModel):
+    agent_id: str = Field(min_length=1, max_length=120)
+    lease_token: str = Field(min_length=32, max_length=64)
+
+
+class AttemptIn(LeaseIn):
+    report_key: str = Field(min_length=1, max_length=80)
     engine: str
     outcome: Literal["success", "failure", "refused"]
-    cost_usd: float = Field(default=0.0, ge=0)
+    cost_usd: float = Field(default=0.0, ge=0, allow_inf_nan=False)
     steps: int = Field(default=0, ge=0)
     duration_s: float = Field(default=0.0, ge=0)
     error: str | None = Field(default=None, max_length=4000)
 
 
-class CompleteIn(BaseModel):
+class CompleteIn(LeaseIn):
     status: Literal["done", "failed", "needs_human"]
     engine: str | None = None
     result: dict[str, Any] | None = None
     error: str | None = Field(default=None, max_length=4000)
+
+
+class AuthorizeIn(LeaseIn):
+    engine: str
+
+
+class AuthorizationOut(BaseModel):
+    budget_usd: float
 
 
 class CalibrationIn(BaseModel):
@@ -169,6 +193,8 @@ def task_out(t: AgentTask) -> TaskOut:
         created_at=t.created_at,
         updated_at=t.updated_at,
         finished_at=t.finished_at,
+        available_at=t.available_at,
+        reconcile_only=t.write_started_at is not None,
     )
 
 
@@ -190,16 +216,54 @@ def latest_calibrations(ctx: Ctx) -> dict[str, AgentCalibration]:
     for c in ctx.session.scalars(
         select(AgentCalibration)
         .where(AgentCalibration.group_id == ctx.group.id)
-        .order_by(AgentCalibration.at)
+        .order_by(AgentCalibration.at, AgentCalibration.id)
     ):
         out[c.engine] = c
     return out
 
 
+def scoped_tasks(ctx: Ctx) -> Select[Any]:
+    query = select(AgentTask).where(AgentTask.group_id == ctx.group.id)
+    if ctx.site_scope is not None:
+        query = query.where(
+            AgentTask.request_id.in_(
+                select(AdmissionRequest.id).where(
+                    AdmissionRequest.group_id == ctx.group.id,
+                    or_(
+                        AdmissionRequest.site_id == ctx.site_scope,
+                        AdmissionRequest.site_id.is_(None),
+                    ),
+                )
+            )
+        )
+    return query
+
+
 def get_task(ctx: Ctx, task_id: int) -> AgentTask:
-    task = ctx.session.get(AgentTask, task_id)
-    if task is None or task.group_id != ctx.group.id:
+    task: AgentTask | None = ctx.session.scalar(scoped_tasks(ctx).where(AgentTask.id == task_id))
+    if task is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Tâche introuvable")
+    return task
+
+
+def owned_task(ctx: Ctx, task_id: int, body: LeaseIn, *, check_work: bool = True) -> AgentTask:
+    task = get_task(ctx, task_id)
+    if (
+        task.status != "running"
+        or task.claimed_by != body.agent_id
+        or task.claimed_user_id != ctx.user.id
+        or task.lease_until is None
+        or task.lease_until <= ctx.clock.now()
+        or task.lease_token is None
+        or not secrets.compare_digest(task.lease_token, body.lease_token)
+    ):
+        raise HTTPException(409, "Tâche expirée ou attribuée à un autre agent")
+    if check_work:
+        state = get_state(ctx, create=False)
+        if state is not None and state.paused:
+            raise HTTPException(409, "Agent en pause")
+        if not decision_is_current(ctx, task):
+            raise HTTPException(409, "Décision remplacée : ne pas écrire sur le portail")
     return task
 
 
@@ -227,7 +291,7 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
         previous.finished_at = now
     site = ctx.session.get(Site, req.site_id) if req.site_id else None
     site_name = site.name if site else "notre établissement"
-    if req.status == "accord":
+    if req.status in ("accord", "confirmee"):
         assert req.proposed_date is not None
         payload = {
             "external_ref": req.external_ref,
@@ -235,6 +299,7 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
             "proposed_date": req.proposed_date.isoformat(),
             "proposed_date_fr": f"{req.proposed_date:%d/%m/%Y}",
             "site_name": site_name,
+            "site_id": req.site_id,
             "message": accord_message(
                 site_name,
                 req.mention_requested,
@@ -251,6 +316,7 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
             "reason_code": reason,
             "reason_label": REFUSAL_REASONS.get(reason, reason),
             "site_name": site_name,
+            "site_id": req.site_id,
             "message": refusal_message(site_name, reason, req.patient_ref, None, None),
         }
     else:
@@ -259,6 +325,7 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
         group_id=ctx.group.id,
         kind="reply_portal",
         request_id=req.id,
+        decision_version=req.decision_version,
         payload_json=json.dumps(payload, ensure_ascii=False),
         status="pending",
         created_at=now,
@@ -287,57 +354,166 @@ def heartbeat(body: HeartbeatIn, ctx: IngestCtx) -> HeartbeatOut:
         policy=policy_of(state),
         spent_today_usd=round(spent_since(ctx, local_midnight(ctx)), 4),
         calibrations={k: v.hit_rate for k, v in latest_calibrations(ctx).items()},
+        calibration_details={
+            k: {
+                "model": v.model,
+                "convention": v.convention,
+                "hit_rate": v.hit_rate,
+                "trials": v.trials,
+            }
+            for k, v in latest_calibrations(ctx).items()
+        },
     )
 
 
-@router.post("/tasks/claim", response_model=list[TaskOut])
-def claim(body: ClaimIn, ctx: IngestCtx) -> list[TaskOut]:
+@router.post("/tasks/claim", response_model=list[ClaimedTaskOut])
+def claim(body: ClaimIn, ctx: IngestCtx) -> list[ClaimedTaskOut]:
+    # All mutations hold the tenant lock from deps.require, including decision changes.
     state = get_state(ctx)
     assert state is not None
     if state.paused:
         return []
-    policy = policy_of(state)
-    now = ctx.clock.now()
+    policy, now = policy_of(state), ctx.clock.now()
+    expired = list(
+        ctx.session.scalars(
+            select(AgentTask).where(
+                AgentTask.group_id == ctx.group.id,
+                AgentTask.status == "running",
+                AgentTask.lease_until < now,
+            )
+        )
+    )
+    for task in expired:
+        task.status = "needs_human" if task.write_started_at else "pending"
+        task.error = (
+            "Agent interrompu : vérifier le portail"
+            if task.write_started_at
+            else "Agent interrompu : reprise autorisée"
+        )
+        task.lease_token = task.lease_until = None
+        # Keep a reservation after an ambiguous paid attempt: its cost may still be incurred.
+        if task.write_started_at is None:
+            task.budget_reserved_usd = 0.0
+        task.updated_at = now
+        if task.status == "needs_human":
+            task.finished_at = now
+        ctx.audit("agent.bail_expire", "agent_task", task.id, task.status)
+    ctx.session.flush()
     candidates = ctx.session.scalars(
         select(AgentTask)
         .where(
             AgentTask.group_id == ctx.group.id,
             AgentTask.kind.in_(body.kinds),
-            (AgentTask.status == "pending")
-            | ((AgentTask.status == "running") & (AgentTask.lease_until < now)),
+            AgentTask.status == "pending",
+            or_(AgentTask.available_at.is_(None), AgentTask.available_at <= now),
         )
-        .order_by(AgentTask.created_at)
-        .limit(body.limit * 3)
+        .order_by(
+            case((AgentTask.kind == "reply_portal", 0), else_=1), AgentTask.created_at, AgentTask.id
+        )
     )
-    claimed: list[AgentTask] = []
+    claimed: list[ClaimedTaskOut] = []
     for task in candidates:
-        if task.attempts >= policy.max_attempts:
-            task.status = "needs_human"
-            task.error = (task.error or "") + " Nombre maximal de tentatives atteint."
-            task.updated_at = now
+        if not decision_is_current(ctx, task):
+            task.status, task.error = (
+                "cancelled",
+                "Décision remplacée ou créée par une ancienne version de l'agent",
+            )
+            task.finished_at = task.updated_at = now
+            task.budget_reserved_usd = 0.0
             continue
-        task.status = "running"
-        task.claimed_by = body.agent_id
+        if task.attempts >= policy.max_attempts:
+            task.status, task.error = "needs_human", "Nombre maximal de tentatives atteint"
+            task.finished_at = task.updated_at = now
+            continue
+        task.status, task.claimed_by = "running", body.agent_id
+        task.claimed_user_id = ctx.user.id
+        task.lease_token = secrets.token_hex(32)
         task.lease_until = now + timedelta(minutes=LEASE_MINUTES)
         task.attempts += 1
         task.updated_at = now
-        claimed.append(task)
+        claimed.append(ClaimedTaskOut(**task_out(task).model_dump(), lease_token=task.lease_token))
         if len(claimed) >= body.limit:
             break
     ctx.session.commit()
-    return [task_out(t) for t in claimed]
+    return claimed
+
+
+@router.post("/tasks/{task_id}/renew", response_model=TaskOut)
+def renew(task_id: int, body: LeaseIn, ctx: IngestCtx) -> TaskOut:
+    task = owned_task(ctx, task_id, body)
+    task.lease_until = ctx.clock.now() + timedelta(minutes=LEASE_MINUTES)
+    ctx.session.commit()
+    return task_out(task)
+
+
+@router.post("/tasks/{task_id}/begin-write", response_model=TaskOut)
+def begin_write(task_id: int, body: LeaseIn, ctx: IngestCtx) -> TaskOut:
+    task = owned_task(ctx, task_id, body)
+    if task.kind != "reply_portal":
+        raise HTTPException(409, "Cette tâche n'autorise aucune réponse sur le portail")
+    if task.write_started_at is not None and task.write_lease_token != body.lease_token:
+        raise HTTPException(
+            409, "Reprise en vérification seule : aucune nouvelle écriture autorisée"
+        )
+    if task.write_started_at is None:
+        task.write_started_at = ctx.clock.now()
+        task.write_lease_token = body.lease_token
+        ctx.audit("agent.ecriture", "agent_task", task.id, "décision vérifiée, écriture autorisée")
+    task.lease_until = ctx.clock.now() + timedelta(minutes=LEASE_MINUTES)
+    ctx.session.commit()
+    return task_out(task)
+
+
+@router.post("/tasks/{task_id}/authorize", response_model=AuthorizationOut)
+def authorize(task_id: int, body: AuthorizeIn, ctx: IngestCtx) -> AuthorizationOut:
+    """Reserve a budget atomically across workers before invoking a paid engine."""
+    task = owned_task(ctx, task_id, body)
+    policy = policy_of(get_state(ctx, create=False))
+    engine = policy.engines.get(body.engine)
+    if engine is None or not engine.enabled or body.engine not in policy.routes.get(task.kind, []):
+        raise HTTPException(409, "Moteur désactivé ou absent de la route")
+    if engine.kind == "playbook":
+        return AuthorizationOut(budget_usd=0.0)
+    if not engine.identifiable_data_allowed:
+        raise HTTPException(409, "Moteur non autorisé à voir les écrans du portail")
+    reserved = float(
+        ctx.session.scalar(
+            select(func.coalesce(func.sum(AgentTask.budget_reserved_usd), 0.0)).where(
+                AgentTask.group_id == ctx.group.id,
+                AgentTask.id != task.id,
+            )
+        )
+        or 0.0
+    )
+    left = min(
+        policy.task_budget_usd.get(task.kind, 1.0) - task.cost_usd,
+        policy.daily_budget_usd - spent_since(ctx, local_midnight(ctx)) - reserved,
+    )
+    if left <= 0:
+        raise HTTPException(409, "Budget épuisé ou réservé par un autre agent")
+    task.budget_reserved_usd = left
+    ctx.session.commit()
+    return AuthorizationOut(budget_usd=left)
 
 
 @router.post("/tasks/{task_id}/attempts", response_model=TaskOut)
 def record_attempt(task_id: int, body: AttemptIn, ctx: IngestCtx) -> TaskOut:
-    task = get_task(ctx, task_id)
+    task = owned_task(ctx, task_id, body, check_work=False)
     if body.engine not in ENGINE_NAMES:
         raise HTTPException(UNPROCESSABLE, "Moteur inconnu")
+    existing = ctx.session.scalar(
+        select(AgentAttempt).where(
+            AgentAttempt.task_id == task.id, AgentAttempt.report_key == body.report_key
+        )
+    )
+    if existing is not None:
+        return task_out(task)
     now = ctx.clock.now()
     ctx.session.add(
         AgentAttempt(
             group_id=ctx.group.id,
             task_id=task.id,
+            report_key=body.report_key,
             engine=body.engine,
             outcome=body.outcome,
             cost_usd=body.cost_usd,
@@ -348,6 +524,7 @@ def record_attempt(task_id: int, body: AttemptIn, ctx: IngestCtx) -> TaskOut:
         )
     )
     task.cost_usd += body.cost_usd
+    task.budget_reserved_usd = 0.0
     task.lease_until = now + timedelta(minutes=LEASE_MINUTES)
     task.updated_at = now
     ctx.session.commit()
@@ -357,18 +534,49 @@ def record_attempt(task_id: int, body: AttemptIn, ctx: IngestCtx) -> TaskOut:
 @router.post("/tasks/{task_id}/complete", response_model=TaskOut)
 def complete(task_id: int, body: CompleteIn, ctx: IngestCtx) -> TaskOut:
     task = get_task(ctx, task_id)
-    if task.status != "running":
-        raise HTTPException(status.HTTP_409_CONFLICT, f"Tâche à l'état {task.status}")
+    # A lost HTTP response must not turn a successfully completed task into a retry.
+    if (
+        task.lease_until is None
+        and (
+            task.status == body.status
+            or (body.status == "failed" and task.status in ("pending", "needs_human"))
+        )
+        and task.claimed_by == body.agent_id
+        and task.claimed_user_id == ctx.user.id
+        and task.lease_token
+        and secrets.compare_digest(task.lease_token, body.lease_token)
+    ):
+        return task_out(task)
+    task = owned_task(ctx, task_id, body, check_work=False)
     now = ctx.clock.now()
-    task.status = "pending" if body.status == "failed" else body.status
+    if (
+        body.status == "done"
+        and task.kind == "reply_portal"
+        and (not decision_is_current(ctx, task) or not (body.result or {}).get("verification"))
+    ):
+        raise HTTPException(
+            409, "Une réponse ne peut être terminée sans décision valide et relecture"
+        )
+    task.status = body.status
+    if body.status == "failed":
+        if (
+            task.write_started_at
+            or task.attempts >= policy_of(get_state(ctx, create=False)).max_attempts
+        ):
+            task.status = "needs_human"
+        else:
+            task.status = "pending"
+            task.available_at = now + timedelta(seconds=min(30 * 2 ** (task.attempts - 1), 900))
     task.engine_used = body.engine
     task.result_json = json.dumps(body.result, ensure_ascii=False) if body.result else None
     task.error = body.error
     task.lease_until = None
     task.updated_at = now
-    if body.status in ("done", "needs_human"):
+    if task.status in ("done", "needs_human"):
         task.finished_at = now
-    ctx.audit(f"agent.{body.status}", "agent_task", task.id, body.engine or "")
+    if task.status == "done":
+        task.budget_reserved_usd = 0.0
+    ctx.audit(f"agent.{task.status}", "agent_task", task.id, body.engine or "")
     ctx.session.commit()
     return task_out(task)
 
@@ -429,12 +637,7 @@ def agent_status(ctx: ReadCtx) -> AgentStatusOut:
         )
         for engine, n, ok, cost in rows
     ]
-    recent = ctx.session.scalars(
-        select(AgentTask)
-        .where(AgentTask.group_id == ctx.group.id)
-        .order_by(AgentTask.updated_at.desc())
-        .limit(20)
-    )
+    recent = ctx.session.scalars(scoped_tasks(ctx).order_by(AgentTask.updated_at.desc()).limit(20))
     engines = [EngineReport(**e) for e in json.loads(state.engines_json)] if state else []
     return AgentStatusOut(
         paused=state.paused if state else False,
@@ -502,6 +705,10 @@ def resume(ctx: AdminCtx) -> AgentStatusOut:
 
 @router.post("/sync", response_model=TaskOut, status_code=201)
 def sync_now(ctx: SyncCtx) -> TaskOut:
+    if ctx.site_scope is not None:
+        raise HTTPException(
+            403, "La synchronisation du groupe est réservée à la coordination groupe"
+        )
     get_state(ctx)
     existing = ctx.session.scalar(
         select(AgentTask).where(
@@ -533,7 +740,7 @@ def list_tasks(
     status_filter: str | None = Query(default=None, alias="status"),
     limit: int = Query(100, ge=1, le=500),
 ) -> list[TaskOut]:
-    query = select(AgentTask).where(AgentTask.group_id == ctx.group.id)
+    query = scoped_tasks(ctx)
     if status_filter:
         query = query.where(AgentTask.status == status_filter)
     return [
@@ -547,7 +754,11 @@ def retry(task_id: int, ctx: WriteCtx) -> TaskOut:
     task = get_task(ctx, task_id)
     if task.status not in ("needs_human", "failed"):
         raise HTTPException(status.HTTP_409_CONFLICT, "Seule une tâche en échec peut être relancée")
+    if not decision_is_current(ctx, task):
+        raise HTTPException(409, "Décision remplacée : cette tâche ne peut pas être relancée")
     task.status = "pending"
+    task.available_at = None
+    task.lease_token = None
     task.attempts = 0
     task.error = None
     task.finished_at = None
@@ -562,7 +773,11 @@ def done_by_hand(task_id: int, ctx: WriteCtx) -> TaskOut:
     task = get_task(ctx, task_id)
     if task.status in ("done", "cancelled", "manual"):
         raise HTTPException(status.HTTP_409_CONFLICT, "Tâche déjà close")
+    if task.status == "running" and task.lease_until and task.lease_until > ctx.clock.now():
+        raise HTTPException(409, "Un agent travaille encore sur cette tâche : attendez son arrêt")
     task.status = "manual"
+    task.lease_token = task.lease_until = None
+    task.budget_reserved_usd = 0.0
     task.finished_at = ctx.clock.now()
     task.updated_at = ctx.clock.now()
     ctx.audit("agent.manuel", "agent_task", task.id, "saisie faite à la main")

@@ -87,6 +87,7 @@ export function AgentTab() {
 }
 
 function StatusPanel({ status: s }: { status: AgentStatus }) {
+  const { user, isAdmin, canWrite } = useAuth();
   const queryClient = useQueryClient();
   const refresh = () => void queryClient.invalidateQueries({ queryKey: ["agent"] });
   const toggle = useMutation({
@@ -133,17 +134,17 @@ function StatusPanel({ status: s }: { status: AgentStatus }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <button className="btn-quiet" onClick={() => sync.mutate()} disabled={sync.isPending || s.paused}>
+          {canWrite && !(user?.role === "coordination" && user.site_id !== null) && <button className="btn-quiet" onClick={() => sync.mutate()} disabled={sync.isPending || s.paused}>
             <RefreshCw className="h-4 w-4" aria-hidden /> Relever le portail maintenant
-          </button>
-          <button
+          </button>}
+          {isAdmin && <button
             className={s.paused ? "btn-primary" : "btn-quiet"}
             onClick={() => toggle.mutate()}
             disabled={toggle.isPending}
           >
             {s.paused ? <Play className="h-4 w-4" aria-hidden /> : <Pause className="h-4 w-4" aria-hidden />}
             {s.paused ? "Reprendre" : "Mettre en pause"}
-          </button>
+          </button>}
         </div>
       </div>
       {(toggle.error || sync.error) && (
@@ -726,6 +727,8 @@ function RecentTasks({ tasks }: { tasks: AgentTask[] }) {
                     </td>
                     <td className="px-2 py-3">
                       <span className={`chip ${st.tone}`}>{st.text}</span>
+                      {t.status === "pending" && t.available_at && <p className="mt-1 text-[12px] text-ink-soft">Nouvel essai après {fmtDateTime(t.available_at)}</p>}
+                      {stuck && t.reconcile_only && <p className="mt-1 max-w-[260px] text-[12px] text-ink-soft">La reprise vérifie la réponse enregistrée, sans la renvoyer.</p>}
                       {t.error && stuck && <p className="mt-1 max-w-[260px] text-[12px] text-ink-soft">{t.error}</p>}
                     </td>
                     <td className="px-2 py-3">
@@ -757,7 +760,7 @@ function RecentTasks({ tasks }: { tasks: AgentTask[] }) {
                             disabled={act.isPending}
                             onClick={() => act.mutate({ id: t.id, what: "retry" })}
                           >
-                            <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Relancer
+                            <RotateCcw className="h-3.5 w-3.5" aria-hidden /> {t.reconcile_only ? "Vérifier le portail" : "Relancer"}
                           </button>
                           <button
                             className="btn-quiet px-3 py-1.5 text-[13px]"

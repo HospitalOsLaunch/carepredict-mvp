@@ -46,7 +46,7 @@ reply_portal:
   - when: {decision: refus}
     steps:
       - check: "#decision-refus"
-      - select: {selector: "#motif-refus", label: "{{ payload.reason_label }}", fallback: "Autre motif"}
+      - select: {selector: "#motif-refus", label: "{{ payload.reason_label }}"}
   - fill: {selector: "#message", value: "{{ payload.message }}"}
   - click: "#envoyer"
   - wait_for: "#confirmation"
@@ -54,8 +54,11 @@ reply_portal:
 verify_reply:
   goto: "/dossiers/{{ payload.external_ref }}"
   fields:
+    external_ref: {selector: "#ref"}
+    message: {selector: "#message-envoye"}
+    refusal_reason: {selector: "#refus-envoye"}
     status: {selector: "#statut"}
     proposed_date: {selector: "#date-proposee", transform: date_fr, optional: true}
   expect:
-    accord: {status: "Accord donné", proposed_date: "{{ payload.proposed_date }}"}
-    refus: {status: "Refusé"}
+    accord: {external_ref: "{{ payload.external_ref }}", status: "Accord donné", proposed_date: "{{ payload.proposed_date }}", message: "{{ payload.message }}"}
+    refus: {external_ref: "{{ payload.external_ref }}", status: "Refusé", refusal_reason: "{{ payload.reason_label }}", message: "{{ payload.message }}"}

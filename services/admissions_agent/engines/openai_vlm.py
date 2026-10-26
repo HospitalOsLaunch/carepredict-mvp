@@ -22,6 +22,7 @@ from typing import Any
 
 import httpx
 
+from services.admissions_agent.api_client import TaskInterrupted
 from services.admissions_agent.browser import BrowserSession
 from services.admissions_agent.engines.base import (
     SYSTEM_PROMPT,
@@ -113,6 +114,7 @@ class OpenWeightsVision:
         self.output_price = output_usd_per_mtok
         self.usd_per_hour = usd_per_hour
         self.max_tokens = max_tokens
+        self.incurred_cost = 0.0
 
     def to_pixels(self, session: BrowserSession, x: float, y: float) -> tuple[float, float]:
         if self.convention == "normalized_1000":
@@ -160,7 +162,27 @@ class OpenWeightsVision:
             raise ValueError(f"action inconnue : {name}")
         return "OK"
 
+    def close(self) -> None:
+        self.http.close()
+
     def run(
+        self, session: BrowserSession, goal: Goal, max_steps: int, budget_usd: float
+    ) -> EngineResult:
+        self.incurred_cost = 0.0
+        started = time.monotonic()
+        try:
+            return self._run(session, goal, max_steps, budget_usd)
+        except (TaskInterrupted, BudgetExceeded):
+            raise
+        except Exception as exc:  # noqa: BLE001 - preserve already billed calls on failure
+            return EngineResult(
+                "failure",
+                cost_usd=self.incurred_cost,
+                duration_s=time.monotonic() - started,
+                error=f"{type(exc).__name__}: {exc}",
+            )
+
+    def _run(
         self, session: BrowserSession, goal: Goal, max_steps: int, budget_usd: float
     ) -> EngineResult:
         started = time.monotonic()
@@ -173,6 +195,7 @@ class OpenWeightsVision:
         token_cost = 0.0
         trace: list[str] = []
         for step in range(1, max_steps + 1):
+            session.checkpoint()
             self._trim(messages)
             response = self.http.post(
                 "/v1/chat/completions",
@@ -208,6 +231,11 @@ class OpenWeightsVision:
             )
             # Self-hosted engines cost GPU time; hosted ones cost tokens. Both are counted.
             cost = token_cost + elapsed_h * self.usd_per_hour
+            self.incurred_cost = cost
+            if cost > budget_usd:
+                raise BudgetExceeded(
+                    f"{self.name} : budget de la tâche dépassé ({cost:.3f} $)", cost
+                )
             message = body["choices"][0]["message"]
             calls = message.get("tool_calls") or []
             messages.append(
@@ -224,9 +252,17 @@ class OpenWeightsVision:
                     error,
                     trace,
                 )
-            if cost > budget_usd:
-                raise BudgetExceeded(f"{self.name} : budget de la tâche dépassé ({cost:.3f} $)")
+            failed = False
             for call in calls:
+                if failed:
+                    messages.append(
+                        {
+                            "role": "tool",
+                            "tool_call_id": call.get("id", ""),
+                            "content": "Non exécuté : l'action précédente a échoué.",
+                        }
+                    )
+                    continue
                 fn = call.get("function", {})
                 try:
                     args = json.loads(fn.get("arguments") or "{}")
@@ -246,8 +282,11 @@ class OpenWeightsVision:
                 try:
                     outcome = self._act(session, str(fn.get("name")), args)
                     trace.append(f"{fn.get('name')} {args}")
+                except TaskInterrupted:
+                    raise
                 except Exception as exc:  # noqa: BLE001 - reported to the model
                     outcome = f"Erreur : {exc}"
+                    failed = True
                 messages.append(
                     {"role": "tool", "tool_call_id": call.get("id", ""), "content": outcome}
                 )

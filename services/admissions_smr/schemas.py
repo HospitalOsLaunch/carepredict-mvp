@@ -489,6 +489,8 @@ class BaselineOut(BaseModel):
     start: date | None
     end: date | None
     frozen_at: datetime | None
+    snapshot_id: int | None = None
+    digest: str | None = None
 
 
 class PilotMetricsOut(BaseModel):

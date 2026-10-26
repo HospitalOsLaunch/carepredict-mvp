@@ -14,6 +14,7 @@ import os
 import secrets
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -56,8 +57,8 @@ REFUSAL_LABELS = [
 
 
 def sample(today: date | None = None) -> dict[str, Dossier]:
-    d = today or date.today()
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = datetime.now(ZoneInfo("Europe/Paris")).replace(second=0, microsecond=0)
+    d = today or now.date()
     rows = [
         Dossier(
             "DOS-2026-0412",
@@ -229,6 +230,8 @@ def detail(ref: str, request: Request, ok: int = 0) -> HTMLResponse | RedirectRe
         <dt>Entrée souhaitée</dt><dd id="date-souhaitee">{d.desired:%d/%m/%Y}</dd>
         <dt>Statut</dt><dd id="statut">{esc(d.status)}</dd>
         <dt>Date proposée</dt><dd id="date-proposee">{proposed}</dd>
+        <dt>Motif de refus envoyé</dt><dd id="refus-envoye">{esc(d.refusal_reason or "")}</dd>
+        <dt>Message envoyé</dt><dd id="message-envoye">{esc(d.message or "")}</dd>
       </dl>
       <form class="reply" method="post" action="/dossiers/{esc(d.ref)}/reponse">
         <h2>Répondre</h2>
