@@ -2,18 +2,8 @@ name: admissions-smr
 
 on:
   pull_request:
-    paths:
-      - "services/admissions_smr/**"
-      - "services/admissions_agent/**"
-      - "services/admissions_web/**"
-      - "docker-compose.admissions.yml"
-      - ".github/workflows/admissions-smr.yml"
   push:
-    branches: ["main"]
-    paths:
-      - "services/admissions_smr/**"
-      - "services/admissions_agent/**"
-      - "services/admissions_web/**"
+    branches: ["mvp/computer-use", "main"]
 
 jobs:
   python:
@@ -42,16 +32,18 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Lint and format
         run: |
-          ruff check services/admissions_smr services/admissions_agent
-          ruff format --check services/admissions_smr services/admissions_agent
+          ruff check services tools
+          ruff format --check services tools
       - name: Type-check --strict
-        run: mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
+        run: mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent tools
       - name: Migrations match the models
         run: python -m pytest -q -p no:cacheprovider services/admissions_smr/tests/test_migrations.py
       - name: API tests on PostgreSQL (includes North Star calibration checks)
         run: pytest -q -p no:cacheprovider services/admissions_smr/tests
       - name: API tests on SQLite
         run: ADM_TEST_DATABASE_URL= pytest -q -p no:cacheprovider services/admissions_smr/tests
+      - name: PR duplication tool
+        run: pytest -q -p no:cacheprovider tools/tests
       - name: Agent end-to-end tests (real browser, fictional portal, scripted models)
         run: |
           # Failures are also emitted as annotations, readable without downloading the logs.
@@ -85,6 +77,9 @@ jobs:
     needs: [python, web]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - uses: docker/setup-buildx-action@v3
       - name: API
         run: docker build -f services/admissions_smr/Dockerfile -t hospitalos/admissions-api:ci .
@@ -101,3 +96,17 @@ jobs:
           curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health
           docker compose -f docker-compose.admissions.yml logs api | tail -20
           docker compose -f docker-compose.admissions.yml down -v
+      - name: Computer-use demo end to end (portal, agent, API, web in containers)
+        run: |
+          python -m pip install "httpx>=0.27,<1"
+          docker compose -f docker-compose.demo.yml up -d --build
+          set +e
+          python tools/demo_check.py --web http://127.0.0.1:8080 --portal http://127.0.0.1:8020 --timeout 300
+          status=$?
+          if [ $status -ne 0 ]; then
+            for svc in api agent portal; do
+              docker compose -f docker-compose.demo.yml logs --tail 60 $svc | sed "s/^/::error title=$svc::/" | tail -25
+            done
+          fi
+          docker compose -f docker-compose.demo.yml down -v
+          exit $status
