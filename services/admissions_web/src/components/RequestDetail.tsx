@@ -1,3 +1,4 @@
+import { EngineJourney } from "./EngineJourney";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Bot, Check, ClipboardCopy, MessageSquarePlus, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -493,12 +494,14 @@ function PortalReplyPanel({ reply, requestId, source }: { reply: PortalReply; re
         Mis à jour le {fmtDateTime(reply.updated_at)}
         {reply.engine_used ? `, moteur : ${reply.engine_used}` : ""}
       </p>
-      {reply.error && stuck && <p className="mt-2 text-[14px] text-ink-soft">{reply.error}</p>}
+      {reply.summary && stuck && <p className="mt-2 text-[14px] text-ink-soft">{reply.summary}</p>}
+      <EngineJourney steps={reply.route ?? []} cost={reply.cost_usd ?? 0} />
+      {stuck && reply.reconcile_only && <p className="mt-2 text-[13px] text-ink-soft">La reprise vérifie le portail sans renvoyer la réponse. Pour essayer un moteur nouvellement activé, traitez un autre dossier.</p>}
       {canWrite && !closed && (
         <div className="mt-3 flex flex-wrap gap-2">
           {stuck && (
             <button className="btn-quiet" disabled={act.isPending} onClick={() => act.mutate("retry")}>
-              <RotateCcw className="h-4 w-4" aria-hidden /> Relancer l'agent
+              <RotateCcw className="h-4 w-4" aria-hidden /> {reply.reconcile_only ? "Vérifier le portail" : "Relancer l’agent"}
             </button>
           )}
           <button className="btn-quiet" disabled={act.isPending} onClick={() => act.mutate("manual")}>

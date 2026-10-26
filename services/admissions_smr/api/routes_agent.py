@@ -22,6 +22,7 @@ from services.admissions_smr.agent_policy import (
     AgentPolicy,
     parse_policy,
 )
+from services.admissions_smr.agent_trace import RouteStepOut, public_route, safe_reason
 from services.admissions_smr.api.deps import (
     UNPROCESSABLE,
     AdminCtx,
@@ -81,6 +82,8 @@ class ClaimIn(BaseModel):
 
 
 class TaskOut(BaseModel):
+    route: list[RouteStepOut] = Field(default_factory=list)
+    summary: str | None = None
     id: int
     kind: str
     request_id: int | None
@@ -182,6 +185,8 @@ def policy_of(state: AgentState | None) -> AgentPolicy:
 def task_out(t: AgentTask) -> TaskOut:
     return TaskOut(
         id=t.id,
+        route=public_route(t.result_json, t.status),
+        summary=safe_reason(t.error) if t.error else None,
         kind=t.kind,
         request_id=t.request_id,
         payload=json.loads(t.payload_json or "{}"),

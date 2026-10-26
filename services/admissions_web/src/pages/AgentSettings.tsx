@@ -1,3 +1,4 @@
+import { EngineJourney } from "../components/EngineJourney";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Check, Lock, Pause, Play, RefreshCw, RotateCcw, ShieldAlert, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -729,27 +730,10 @@ function RecentTasks({ tasks }: { tasks: AgentTask[] }) {
                       <span className={`chip ${st.tone}`}>{st.text}</span>
                       {t.status === "pending" && t.available_at && <p className="mt-1 text-[12px] text-ink-soft">Nouvel essai après {fmtDateTime(t.available_at)}</p>}
                       {stuck && t.reconcile_only && <p className="mt-1 max-w-[260px] text-[12px] text-ink-soft">La reprise vérifie la réponse enregistrée, sans la renvoyer.</p>}
-                      {t.error && stuck && <p className="mt-1 max-w-[260px] text-[12px] text-ink-soft">{t.error}</p>}
+                      {t.summary && stuck && <p className="mt-1 max-w-[260px] text-[12px] text-ink-soft">{t.summary}</p>}
                     </td>
                     <td className="px-2 py-3">
-                      <ol className="flex flex-wrap items-center gap-1 text-[12px]">
-                        {(t.result?.route ?? []).map((step, i) => (
-                          <li
-                            key={i}
-                            title={step.reason ?? step.error ?? undefined}
-                            className={`chip ${
-                              step.decision === "success"
-                                ? "bg-lagoon-soft text-lagoon-dark"
-                                : step.decision === "ignoré"
-                                  ? "bg-sky text-ink-faint line-through"
-                                  : "bg-coral-soft text-coral-dark"
-                            }`}
-                          >
-                            {step.engine}
-                          </li>
-                        ))}
-                        {!t.result?.route?.length && <li className="text-ink-faint">—</li>}
-                      </ol>
+                      <EngineJourney steps={t.route ?? []} cost={t.cost_usd} />
                     </td>
                     <td className="num px-2 py-3 text-right">{t.cost_usd ? fmtUsd(t.cost_usd, 3) : "0"}</td>
                     <td className="px-5 py-3 text-right">
