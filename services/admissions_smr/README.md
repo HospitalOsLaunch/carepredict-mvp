@@ -4,8 +4,8 @@ Pilote d'admissions et d'occupation pour les **groupes SMR privés**. Le produit
 fait une chose : remplir chaque lit libérable avec le bon patient, en répondant
 plus vite à l'adresseur.
 
-- `services/admissions_smr/` : API FastAPI, isolée du reste du monorepo
-  (aucune dépendance à torch, Dagster ou Feast).
+- `services/admissions_smr/` : API FastAPI, autonome (aucune dépendance à torch, Dagster
+  ou Feast).
 - `services/admissions_web/` : application React (Vite, TypeScript, Tailwind).
 
 ## Ce que fait la V1
