@@ -1,0 +1,9 @@
+# Chemins partagés entre le MVP computer use et le dépôt carepredict-mvp (préfixes).
+# Une PR dupliquée n'apporte que les changements sur ces chemins, sauf --include-outside.
+# Les fichiers propres au MVP (README racine, pyproject, tools/, docker-compose.demo.yml)
+# ne sont jamais modifiés par une duplication.
+services/admissions_smr/
+services/admissions_agent/
+services/admissions_web/
+docker-compose.admissions.yml
+.github/workflows/admissions-smr.yml
