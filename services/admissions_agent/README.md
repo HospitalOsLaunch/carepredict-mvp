@@ -91,13 +91,26 @@ python -m services.admissions_agent once                       # un cycle
 python -m services.admissions_agent run                        # en continu
 ```
 
-Servir un modèle ouvert, par exemple :
+Servir Holo4-35B-A3B (commande de la documentation de H Company, vLLM 0.28 ou plus récent ;
+variante FP8, 37,6 Go de poids, plus l'encodeur d'images et le cache) :
 
 ```bash
-vllm serve Hcompany/Holo4-35B-A3B --enable-auto-tool-choice --tool-call-parser hermes
+vllm serve Hcompany/Holo4-35B-A3B-FP8 \
+  --served-model-name holo4-35b-a3b \
+  --max-model-len 32768 \
+  --enable-prefix-caching \
+  --chat-template-content-format openai \
+  --enable-auto-tool-choice \
+  --tool-call-parser qwen3_coder \
+  --reasoning-parser qwen3 \
+  --limit-mm-per-prompt '{"image": 5, "video": 0}'
 ```
 
-Le bon analyseur d'appels d'outils dépend du modèle : se référer à sa fiche.
+Puis, côté agent : `OPEN_LIGHT_URL=http://<serveur>:8000` (sans `/v1`, l'agent l'ajoute),
+`OPEN_LIGHT_MODEL=holo4-35b-a3b` (le `--served-model-name`), et calibrer avant d'activer.
+H Company documente un contexte de 262 144 jetons ; 32 768 suffisent ici (l'agent garde
+deux captures, le portail en accepte cinq) et laissent de la mémoire au cache. Pour un
+autre modèle, l'analyseur d'appels d'outils dépend de sa fiche.
 
 ## Écrire le script d'un portail
 

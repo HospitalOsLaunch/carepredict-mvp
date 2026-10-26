@@ -8,9 +8,13 @@ convention) or ``pixels`` (screenshot pixels). The calibration test
 (``python -m services.admissions_agent calibrate``) measures which one a deployed model
 follows; the router refuses an open engine that has not passed it.
 
-Serve the model with tool calling enabled, for example:
-    vllm serve Hcompany/Holo4-35B-A3B --enable-auto-tool-choice --tool-call-parser hermes
-(the right parser depends on the model's chat template: check its model card).
+Serve the model with tool calling enabled. For Holo4-35B-A3B (H Company's documentation,
+vLLM >= 0.28):
+    vllm serve Hcompany/Holo4-35B-A3B-FP8 --served-model-name holo4-35b-a3b \
+      --max-model-len 32768 --enable-prefix-caching --chat-template-content-format openai \
+      --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3 \
+      --limit-mm-per-prompt '{"image": 5, "video": 0}'
+Other models need the parser their model card names.
 """
 
 from __future__ import annotations
