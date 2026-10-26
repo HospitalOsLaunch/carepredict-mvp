@@ -49,6 +49,7 @@ from services.admissions_smr.schemas import (
     RequestOut,
     SuggestionOut,
 )
+from services.admissions_smr.task_state import decision_changed
 from services.admissions_smr.vocab import ALLOWED_TRANSITIONS, REQUEST_STATUSES
 
 HORIZON_DAYS = 14
@@ -439,6 +440,7 @@ def transition(
             f"à « {REQUEST_STATUSES[to_status]} »",
         )
     now = ctx.clock.now()
+    decision_changed(ctx, req)
     from_status = req.status
     req.status = to_status
     req.updated_at = now

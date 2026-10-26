@@ -20,6 +20,7 @@ from typing import Any
 
 import httpx
 
+from services.admissions_agent.api_client import TaskInterrupted
 from services.admissions_agent.browser import BrowserSession
 from services.admissions_agent.engines.base import (
     SYSTEM_PROMPT,
@@ -55,6 +56,7 @@ class AnthropicComputerUse:
         self.input_price = input_usd_per_mtok
         self.output_price = output_usd_per_mtok
         self.max_tokens = max_tokens
+        self.incurred_cost = 0.0
         self.cursor = (0.0, 0.0)
 
     def _screenshot_block(self, session: BrowserSession) -> dict[str, Any]:
@@ -127,7 +129,27 @@ class AnthropicComputerUse:
                         if seen > KEEP_SCREENSHOTS:
                             parts[i] = {"type": "text", "text": "[capture plus ancienne retirée]"}
 
+    def close(self) -> None:
+        self.http.close()
+
     def run(
+        self, session: BrowserSession, goal: Goal, max_steps: int, budget_usd: float
+    ) -> EngineResult:
+        self.incurred_cost = 0.0
+        started = time.monotonic()
+        try:
+            return self._run(session, goal, max_steps, budget_usd)
+        except (TaskInterrupted, BudgetExceeded):
+            raise
+        except Exception as exc:  # noqa: BLE001 - preserve already billed calls on failure
+            return EngineResult(
+                "failure",
+                cost_usd=self.incurred_cost,
+                duration_s=time.monotonic() - started,
+                error=f"{type(exc).__name__}: {exc}",
+            )
+
+    def _run(
         self, session: BrowserSession, goal: Goal, max_steps: int, budget_usd: float
     ) -> EngineResult:
         started = time.monotonic()
@@ -143,6 +165,7 @@ class AnthropicComputerUse:
         cost = 0.0
         trace: list[str] = []
         for step in range(1, max_steps + 1):
+            session.checkpoint()
             self._trim(messages)
             response = self.http.post(
                 "/v1/messages",
@@ -177,6 +200,11 @@ class AnthropicComputerUse:
                 self.input_price,
                 self.output_price,
             )
+            self.incurred_cost = cost
+            if cost > budget_usd:
+                raise BudgetExceeded(
+                    f"{self.name} : budget de la tâche dépassé ({cost:.3f} $)", cost
+                )
             content = body.get("content", [])
             messages.append({"role": "assistant", "content": content})
             calls = [b for b in content if b.get("type") == "tool_use"]
@@ -192,8 +220,6 @@ class AnthropicComputerUse:
                     error,
                     trace,
                 )
-            if cost > budget_usd:
-                raise BudgetExceeded(f"{self.name} : budget de la tâche dépassé ({cost:.3f} $)")
             results: list[dict[str, Any]] = []
             failed = False
             for call in calls:
@@ -214,6 +240,8 @@ class AnthropicComputerUse:
                             session, call["name"], call.get("input") or {}
                         )
                         trace.append(f"{call['name']} {call.get('input') or ''}")
+                    except TaskInterrupted:
+                        raise
                     except Exception as exc:  # noqa: BLE001 - reported to the model, not raised
                         result["content"] = f"Erreur : {exc}"
                         result["is_error"] = True

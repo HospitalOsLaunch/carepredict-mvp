@@ -9,7 +9,7 @@ import httpx
 from fastapi import APIRouter, HTTPException, Query, Request, status
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from services.admissions_smr.api.deps import (
     UNPROCESSABLE,
@@ -307,7 +307,10 @@ def oidc_callback(
         match = settings.oidc.match_claim
         value = claim_value(claims, match)
         if value is None and tokens.get("access_token"):
-            claims = {**provider.userinfo(str(tokens["access_token"])), **claims}
+            info = provider.userinfo(str(tokens["access_token"]))
+            if info.get("sub") != claims["sub"]:
+                return fail("L'identité UserInfo ne correspond pas au jeton")
+            claims = {**info, **claims}
             value = claim_value(claims, match)
     except (OidcError, InvalidToken) as exc:
         return fail(str(exc))
@@ -315,7 +318,15 @@ def oidc_callback(
     user = session.scalar(select(User).where(User.oidc_subject == subject))
     if user is None and value is not None:
         if match == "email":
+            if claims.get("email_verified") is not True:
+                return fail(
+                    "Le fournisseur doit vérifier votre adresse email avant le rattachement"
+                )
             user = session.scalar(select(User).where(User.email == value.lower()))
+            if user is not None and user.oidc_subject not in (None, subject):
+                return fail(
+                    "Ce compte est déjà lié à une autre identité : contactez votre administrateur"
+                )
         else:
             # e.g. the RPPS number entered by the administrator for this professional
             user = session.scalar(select(User).where(User.oidc_subject == value))
@@ -324,7 +335,16 @@ def oidc_callback(
             "Aucun compte actif ne correspond à cette identité : contactez votre administrateur"
         )
     if user.oidc_subject != subject and match in ("email", "sub"):
-        user.oidc_subject = subject
+        # Compare-and-set also prevents two first logins from rebinding the same email.
+        linked = session.execute(
+            update(User)
+            .where(User.id == user.id, User.oidc_subject.is_(None))
+            .values(oidc_subject=subject)
+            .returning(User.id)
+        ).scalar_one_or_none()
+        if linked is None:
+            session.rollback()
+            return fail("Identité déjà liée : contactez votre administrateur")
     session.add(
         AuditEntry(
             group_id=user.group_id,

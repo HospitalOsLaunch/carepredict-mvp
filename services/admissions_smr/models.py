@@ -14,6 +14,7 @@ from sqlalchemy import (
     Date,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -65,6 +66,20 @@ class Site(Base):
     pools: Mapped[list[BedPool]] = relationship(
         back_populates="site", cascade="all, delete-orphan", order_by="BedPool.mention"
     )
+
+
+class BaselineSnapshot(Base):
+    """Immutable, versioned inputs to the baseline and placebo windows. No patient identity."""
+
+    __tablename__ = "baseline_snapshots"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    start: Mapped[date] = mapped_column(Date)
+    end: Mapped[date] = mapped_column(Date)
+    digest: Mapped[str] = mapped_column(String(64))
+    payload_json: Mapped[str] = mapped_column(Text)
 
 
 class BedPool(Base):
@@ -203,6 +218,7 @@ class AdmissionRequest(Base):
     refusal_reason: Mapped[str | None] = mapped_column(String(40), nullable=True)
     loss_reason: Mapped[str | None] = mapped_column(String(40), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    decision_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
@@ -272,6 +288,13 @@ class AgentTask(Base):
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     claimed_by: Mapped[str | None] = mapped_column(String(120), nullable=True)
     lease_until: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    lease_token: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    claimed_user_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    decision_version: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    write_started_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    write_lease_token: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    available_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True, index=True)
+    budget_reserved_usd: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
     engine_used: Mapped[str | None] = mapped_column(String(60), nullable=True)
     cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -285,10 +308,12 @@ class AgentAttempt(Base):
     """One engine's try at a task, with its cost: the basis of routing and budget control."""
 
     __tablename__ = "agent_attempts"
+    __table_args__ = (Index("uq_agent_attempt_report", "task_id", "report_key", unique=True),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
     task_id: Mapped[int] = mapped_column(ForeignKey("agent_tasks.id"), index=True)
+    report_key: Mapped[str | None] = mapped_column(String(80), nullable=True)
     engine: Mapped[str] = mapped_column(String(60))
     outcome: Mapped[str] = mapped_column(String(20))  # success | failure | refused
     cost_usd: Mapped[float] = mapped_column(Float, default=0.0)

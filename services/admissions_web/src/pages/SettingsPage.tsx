@@ -601,7 +601,7 @@ function ContractTab() {
         </div>
         <p className="mt-2 text-ink-soft">
           {frozen
-            ? `Gelée le ${fmtDateTime(s.baseline.frozen_at)}. La période, la valeur de la journée et le taux d'intéressement ne peuvent plus changer : c'est ce qui rend le résultat opposable. Dégeler est tracé dans le journal d'audit.`
+            ? `Gelée le ${fmtDateTime(s.baseline.frozen_at)}. Les données historiques, les capacités et les termes du contrat utilisés comme référence sont conservés. Les corrections ultérieures ne changent pas cette référence. Dégeler est tracé dans le journal d'audit.`
             : "Fixez la période de référence et les termes du contrat avant le démarrage du pilote, puis gelez-les avec l'établissement. Tant qu'elle n'est pas gelée, le résultat reste indicatif."}
         </p>
         {freeze.error && <ErrorNote error={freeze.error} />}

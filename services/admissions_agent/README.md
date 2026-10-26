@@ -126,3 +126,65 @@ d'utilisation et accord de son opérateur.
 ```bash
 pytest -q services/admissions_agent/tests   # portail fictif, Chromium réel, modèles scriptés
 ```
+
+## Réservations, reprises et décisions à jour
+
+Les réponses aux adresseurs passent avant les relèves de boîte de réception. Une tâche
+est réservée à un seul poste et à son compte de service pour dix minutes, avec un jeton
+renouvelé à chaque réservation. L'agent renouvelle cette réservation avant ses actions et
+ses appels de modèle ; une pause, une décision remplacée ou une réservation perdue arrête
+les actions suivantes. Les mutations d'un groupe sont sérialisées en base (verrou de
+ligne PostgreSQL ; transaction d'écriture SQLite), sans appel réseau sous le verrou.
+
+Chaque réponse contient la version de la décision validée par la coordination. Une
+perte, réorientation, confirmation ou autre transition invalide les tâches antérieures ;
+une confirmation remet en file la date effectivement confirmée. Dès qu'une écriture peut
+être partie, la décision ne peut plus être remplacée tant que son résultat reste incertain.
+
+La relecture doit couvrir la référence du dossier, le statut, le message complet et la
+date proposée ou le motif exact de refus. Seuls les espaces et retours à la ligne sont
+normalisés. Si la réponse existe déjà, l'agent termine sans la renvoyer. Après un échec,
+une relecture impossible ou un changement inattendu interrompt l'escalade ; une relecture
+complète inchangée permet de passer au moteur suivant pendant la même exécution.
+
+Après interruption d'une écriture, la tâche passe en vérification humaine. **Vérifier le
+portail** relance seulement une lecture : aucune nouvelle écriture n'est autorisée par
+l'API sur cette reprise. La coordination vérifie et, si nécessaire, corrige la réponse
+sur le portail, puis utilise **Fait à la main** une fois le travail terminé. Ce choix
+privilégie une reprise explicite lorsqu'on ne peut pas prouver le résultat du premier envoi.
+Il ne constitue pas une transaction distribuée : une requête déjà envoyée au portail ne
+peut pas être annulée par HospitalOS et un portail à enregistrement différé nécessite
+un playbook qui attend une confirmation durable avant sa relecture.
+
+Les échecs sans écriture sont réessayés après 30 secondes, puis avec un délai exponentiel
+plafonné à 15 minutes et le nombre d'essais de la politique. Les rapports d'essai portent
+une clé d'idempotence : une réponse HTTP perdue ne double pas le coût. Les réservations de
+budget empêchent deux postes de consommer simultanément le même solde ; les coûts cumulés
+restent attachés à la tâche après relance. Le coût déjà engagé est conservé en cas d'erreur
+ultérieure du modèle. Le budget est contrôlé après chaque réponse de modèle, y compris
+la réponse finale ; un appel déjà facturé peut dépasser le solde et son coût réel est
+alors enregistré, sans exécuter ses actions. Si le fournisseur ne renvoie aucune
+information de facturation (par exemple après une coupure), le coût de cet appel reste
+inconnu : rapprocher les montants du relevé fournisseur ; ce contrôle ne garantit pas
+un plafond de facturation absolu. Une réservation associée à une écriture
+interrompue reste bloquée jusqu'à sa vérification ou sa clôture manuelle.
+
+Une calibration ouverte n'est valable que pour **le modèle déployé et sa convention de
+coordonnées**, avec au moins 20 essais et 90 % de réussite (ou le seuil supérieur de la
+politique). Changer de modèle ou de convention impose une nouvelle calibration.
+
+## Mise à jour depuis la migration 0001
+
+1. Arrêter les anciens agents avant de migrer l'API, puis déployer API et agents ensemble.
+   Les anciens clients ne savent pas présenter les nouveaux jetons de réservation.
+2. Exécuter `python -m services.admissions_smr.cli migrate`. La migration 0002 conserve
+   demandes et essais. Les réponses auparavant en cours passent à vérifier ; les anciennes
+   tâches sans version de décision sont écartées à la prise de tâche. Vérifier et traiter
+   ces réponses dans le portail avant de reprendre le fonctionnement habituel.
+3. Les anciens gels ne contenaient pas d'instantané : ils sont retirés et tracés dans
+   l'audit. Vérifier les données de référence puis regeler avec l'établissement. Les nouveaux
+   gels conservent les séries historiques d'occupation et de capacité, sans identité patient,
+   avec identifiant de version et empreinte SHA-256 ; les corrections ultérieures des séjours
+   ne modifient plus la référence. Dégeler puis regeler conserve les versions précédentes.
+4. Mettre à jour les playbooks pour les champs de relecture obligatoires et recalibrer les
+   modèles ouverts avant activation. Valider ensuite les scénarios sur le portail cible.

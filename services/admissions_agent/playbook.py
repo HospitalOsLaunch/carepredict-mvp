@@ -39,6 +39,11 @@ def render(value: str, context: dict[str, Any]) -> str:
     return _TEMPLATE.sub(lookup, value)
 
 
+def same_text(left: object, right: object) -> bool:
+    """HTML may collapse line breaks; keep every word, accent and punctuation exact."""
+    return " ".join(str(left).split()) == " ".join(str(right).split())
+
+
 def fold(text: str) -> str:
     plain = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", " ", plain.lower()).strip()
@@ -104,11 +109,19 @@ class Playbook:
     def can_verify(self) -> bool:
         return "verify_reply" in self.spec
 
+    def verification_ready(self, payload: dict[str, Any]) -> bool:
+        spec = self.spec.get("verify_reply", {})
+        expected = spec.get("expect", {}).get(payload.get("decision"), {})
+        required = {"external_ref", "status", "message"}
+        required.add("proposed_date" if payload.get("decision") == "accord" else "refusal_reason")
+        return required <= set(expected) and required <= set(spec.get("fields", {}))
+
     # --- steps --------------------------------------------------------------------
 
     def run_steps(self, session: BrowserSession, steps: list[Any], context: dict[str, Any]) -> None:
         page = session.page
         for step in steps:
+            session.checkpoint()
             if not isinstance(step, dict) or (len(step) != 1 and "when" not in step):
                 raise PlaybookError(f"étape invalide : {step}")
             try:
@@ -196,8 +209,8 @@ class Playbook:
         session.goto(render(spec["goto"], context))
         observed = self.read_fields(session, spec["fields"], transforms)
         expected = {
-            k: render(str(v), context)
+            k: render(str(v), context).strip()
             for k, v in spec["expect"].get(str(payload.get("decision")), {}).items()
         }
-        ok = bool(expected) and all(str(observed.get(k, "")) == v for k, v in expected.items())
+        ok = bool(expected) and all(same_text(observed.get(k, ""), v) for k, v in expected.items())
         return ok, {"observed": observed, "expected": expected}

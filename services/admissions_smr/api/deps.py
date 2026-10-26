@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException, Request, status
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.clock import Clock
@@ -97,14 +98,27 @@ def _authenticate(
 
 def require(roles: frozenset[str]) -> Callable[..., Ctx]:
     def dependency(
+        request: Request,
         session: SessionDep,
         settings: SettingsDep,
         clock: ClockDep,
         authorization: Annotated[str | None, Header()] = None,
     ) -> Ctx:
+        writing = request.method not in ("GET", "HEAD", "OPTIONS")
+        # SQLite has no row locks; reserve the writer before the first read. PostgreSQL
+        # serializes only mutations within this tenant. No network I/O under this lock.
+        if writing and session.get_bind().dialect.name == "sqlite":
+            session.execute(text("BEGIN IMMEDIATE"))
         user, group = _authenticate(session, settings, clock, authorization)
         if user.role not in roles:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "Action non autorisée pour ce rôle")
+        if writing:
+            group = session.scalars(
+                select(Group)
+                .where(Group.id == group.id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            ).one()
         return Ctx(session=session, user=user, group=group, clock=clock, settings=settings)
 
     return dependency

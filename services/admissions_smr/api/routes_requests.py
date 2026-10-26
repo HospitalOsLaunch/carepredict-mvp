@@ -40,6 +40,7 @@ from services.admissions_smr.service import (
     site_candidates,
     transition,
 )
+from services.admissions_smr.task_state import decision_changed
 from services.admissions_smr.vocab import (
     LOSS_REASONS,
     MENTIONS,
@@ -263,6 +264,7 @@ def confirm(request_id: int, body: ConfirmIn, ctx: WriteCtx) -> RequestDetailOut
         "confirmation",
         f"Entrée prévue le {req.proposed_date:%d/%m/%Y}" if req.proposed_date else None,
     )
+    enqueue_portal_reply(ctx, req)
     ctx.session.commit()
     return _detail(ctx, req)
 
@@ -334,6 +336,7 @@ def reorient(request_id: int, body: ReorientIn, ctx: WriteCtx) -> RequestDetailO
         req.loss_reason = None
         transition(ctx, req, "en_etude", "reorientation", f"Vers {site_name}")
     else:
+        decision_changed(ctx, req)
         add_event(ctx, req, "reorientation", f"Vers {site_name}")
     ctx.session.commit()
     return _detail(ctx, req)

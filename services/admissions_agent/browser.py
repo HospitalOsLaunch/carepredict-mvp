@@ -9,6 +9,7 @@ screenshot pixel space; playbooks act through CSS selectors.
 from __future__ import annotations
 
 import contextlib
+from collections.abc import Callable
 from dataclasses import dataclass
 from urllib.parse import urljoin, urlparse
 
@@ -77,6 +78,7 @@ class BrowserSession:
         viewport: tuple[int, int] = (1280, 800),
         headless: bool = True,
     ) -> None:
+        self.checkpoint: Callable[[], None] = lambda: None
         self.base_url = base_url.rstrip("/")
         self.allowed_hosts = set(allowed_hosts)
         self.viewport = viewport
@@ -87,6 +89,7 @@ class BrowserSession:
             locale="fr-FR",
             timezone_id="Europe/Paris",
             accept_downloads=False,
+            service_workers="block",
         )
         self._context.route("**/*", self._guard)
         self.page: Page = self._context.new_page()
@@ -104,6 +107,7 @@ class BrowserSession:
     # --- navigation shared by all engines -----------------------------------------
 
     def goto(self, path_or_url: str) -> None:
+        self.checkpoint()
         url = (
             urljoin(self.base_url + "/", path_or_url.lstrip("/"))
             if "://" not in path_or_url
@@ -133,6 +137,7 @@ class BrowserSession:
         a capture then fails or waits. Wait for the new document, and retry once, rather
         than handing the model an error it can do nothing about.
         """
+        self.checkpoint()
         last: Exception | None = None
         for _ in range(2):
             with contextlib.suppress(Exception):
@@ -154,20 +159,24 @@ class BrowserSession:
         return x, y
 
     def click(self, x: float, y: float, button: str = "left", count: int = 1) -> None:
+        self.checkpoint()
         x, y = self._inside(x, y)
         self.page.mouse.click(x, y, button=button, click_count=count)  # type: ignore[arg-type]
         self._settle()
 
     def move(self, x: float, y: float) -> None:
+        self.checkpoint()
         x, y = self._inside(x, y)
         self.page.mouse.move(x, y)
 
     def type_text(self, text: str) -> None:
+        self.checkpoint()
         if len(text) > 4000:
             raise ValueError("texte trop long")
         self.page.keyboard.type(text)
 
     def key(self, combo: str, repeat: int = 1) -> None:
+        self.checkpoint()
         if combo not in ALLOWED_KEYS:
             raise ValueError(f"touche non autorisée : {combo}")
         for _ in range(max(1, min(repeat, 20))):
@@ -175,6 +184,7 @@ class BrowserSession:
         self._settle()
 
     def scroll(self, x: float, y: float, dx: float, dy: float) -> None:
+        self.checkpoint()
         x, y = self._inside(x, y)
         self.page.mouse.move(x, y)
         self.page.mouse.wheel(dx, dy)

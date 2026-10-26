@@ -94,7 +94,9 @@ Chaque groupe est un tenant isolé ; chaque action est écrite dans le journal d
   l'utilisateur, la première connexion lie l'identité (par e-mail, `sub`, ou un
   identifiant professionnel comme le `SubjectNameID` RPPS de Pro Santé Connect,
   lu dans le jeton ou dans `userinfo`). Le jeton de session revient dans le
-  fragment d'URL, jamais dans un journal serveur.
+  fragment d'URL, jamais dans un journal serveur. Le rattachement par e-mail exige
+  `email_verified: true` (booléen) et ne remplace jamais une identité déjà liée.
+  Si `userinfo` fournit des attributs, son `sub` doit correspondre à celui du jeton.
 - **Mot de passe** : désactivable pour les personnes (`ADM_PASSWORD_LOGIN=0`) ;
   les comptes de service le gardent.
 

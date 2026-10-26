@@ -168,7 +168,11 @@ class ScriptedClaude:
             lambda: self.scroll_to("#message", "s1"),
             lambda: [
                 self.use("t4", click, {"coordinate": self.center("#message")}),
-                self.use("t5", "type", {"text": "Accord, entrée confirmée."}),
+                self.use(
+                    "t5",
+                    "type",
+                    {"text": body["messages"][0]["content"][0]["text"].split("\n---\n")[1]},
+                ),
                 self.use("t6", click, {"coordinate": self.center("#envoyer")}),
             ],
             lambda: [self.use("t7", "screenshot", {})],
@@ -320,7 +324,9 @@ def test_model_engines_are_refused_without_data_permission_or_budget(
     assert retry.status_code == 200
     agent.cycle()
     task = api.get("/api/agent/tasks", headers=login(api, "admin@test.fr")).json()[0]
-    assert task["result"]["route"][-1]["reason"] == "budget épuisé"
+    assert task["reconcile_only"] is True
+    assert "Réponse précédente incertaine" in task["error"]
+    assert task["status"] == "needs_human"
 
 
 def test_open_weights_engine_reads_the_inbox(

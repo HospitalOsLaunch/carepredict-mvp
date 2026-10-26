@@ -33,7 +33,9 @@ class Goal:
 
 
 class BudgetExceeded(RuntimeError):
-    pass
+    def __init__(self, message: str, cost_usd: float) -> None:
+        super().__init__(message)
+        self.cost_usd = cost_usd
 
 
 class VisionEngine(Protocol):
@@ -88,7 +90,7 @@ def reply_goal(payload: dict[str, Any]) -> Goal:
     else:
         what = (
             f"REFUSER avec le motif « {payload.get('reason_label')} » "
-            "(ou « Autre motif » s'il n'existe pas)"
+            "(arrête-toi si ce motif exact est absent)"
         )
     return Goal(
         kind="reply_portal",

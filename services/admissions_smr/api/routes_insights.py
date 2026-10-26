@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+from collections import Counter
 from datetime import UTC, date, datetime, time, timedelta
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -26,7 +28,12 @@ from services.admissions_smr.domain.metrics import (
     summarise_requests,
 )
 from services.admissions_smr.domain.scoring import DEFAULT_WEIGHTS
-from services.admissions_smr.models import AdmissionRequest, CapacityChange, RequestEvent
+from services.admissions_smr.models import (
+    AdmissionRequest,
+    BaselineSnapshot,
+    CapacityChange,
+    RequestEvent,
+)
 from services.admissions_smr.schemas import (
     BacktestOut,
     BacktestPointOut,
@@ -258,6 +265,119 @@ def _occupancy_out(
     return OccupancyOut(**summarise_occupancy(occ, cap).__dict__)
 
 
+class FrozenPool(BaseModel):
+    site_id: int
+    mention: str
+    key: str
+    # day -> occupied, installed, open, closure reason. No patient-level data.
+    days: dict[date, tuple[int, int, int, str]]
+
+
+class FrozenReference(BaseModel):
+    history_start: date
+    pools: list[FrozenPool]
+
+
+def _snapshot(ctx: Ctx) -> BaselineSnapshot | None:
+    if ctx.group.baseline_frozen_at is None:
+        return None
+    return ctx.session.scalar(
+        select(BaselineSnapshot)
+        .where(
+            BaselineSnapshot.group_id == ctx.group.id,
+            BaselineSnapshot.created_at == ctx.group.baseline_frozen_at,
+        )
+        .order_by(BaselineSnapshot.id.desc())
+        .limit(1)
+    )
+
+
+def _baseline_out(ctx: Ctx) -> BaselineOut:
+    snap = _snapshot(ctx)
+    return BaselineOut(
+        start=ctx.group.baseline_start,
+        end=ctx.group.baseline_end,
+        frozen_at=ctx.group.baseline_frozen_at,
+        snapshot_id=snap.id if snap else None,
+        digest=snap.digest if snap else None,
+    )
+
+
+def _capture_reference(ctx: Ctx) -> BaselineSnapshot:
+    g = ctx.group
+    assert g.baseline_start is not None and g.baseline_end is not None
+    site_ids = [s.id for s in group_sites(ctx, include_inactive=True)]
+    records = stay_records(ctx.session, g.id, site_ids)
+    first = min((r.admission_date for r in records), default=g.baseline_start)
+    start = min(g.baseline_start, first + timedelta(days=HISTORY_BURN_IN_DAYS))
+    changes, current, names = _capacity_inputs(ctx, site_ids)
+    caps = pool_capacity(changes, current, start, g.baseline_end)
+    pools = []
+    for pool in current:
+        key = (pool.site_id, pool.mention)
+        occ = daily_occupancy(
+            [r for r in records if (r.site_id, r.mention) == key], start, g.baseline_end
+        )
+        pools.append(
+            FrozenPool(
+                site_id=pool.site_id,
+                mention=pool.mention,
+                key=f"{names[pool.site_id]} — {MENTIONS.get(pool.mention, pool.mention)}",
+                days={d: (occ[d], *v) for d, v in caps[key].items()},
+            )
+        )
+    payload = FrozenReference(history_start=start, pools=pools).model_dump_json()
+    return BaselineSnapshot(
+        group_id=g.id,
+        created_at=ctx.clock.now(),
+        start=g.baseline_start,
+        end=g.baseline_end,
+        payload_json=payload,
+        digest=hashlib.sha256(payload.encode()).hexdigest(),
+    )
+
+
+def _frozen_inputs(
+    ctx: Ctx, snap: BaselineSnapshot, site_ids: list[int], records: list[StayRecord], end: date
+) -> tuple[dict[date, int], dict[date, tuple[int, int, dict[str, int]]], list[PoolSeries], date]:
+    frozen = FrozenReference.model_validate_json(snap.payload_json)
+    baseline_days = date_range(snap.start, snap.end)
+    occ = dict.fromkeys(baseline_days, 0)
+    cap: dict[date, tuple[int, int, dict[str, int]]] = {d: (0, 0, {}) for d in baseline_days}
+    saved = {(p.site_id, p.mention): p for p in frozen.pools if p.site_id in site_ids}
+    for frozen_pool in saved.values():
+        for day in baseline_days:
+            day_occupied, installed, day_open, reason = frozen_pool.days[day]
+            occ[day] += day_occupied
+            inst, op, closed = cap[day]
+            reasons = Counter(closed)
+            reasons[reason] += max(0, installed - day_open)
+            cap[day] = inst + installed, op + day_open, {k: v for k, v in reasons.items() if v}
+    changes, current, names = _capacity_inputs(ctx, site_ids)
+    live_start = snap.end + timedelta(days=1)
+    live_caps = pool_capacity(changes, current, live_start, end)
+    series = []
+    for pool in current:
+        key = (pool.site_id, pool.mention)
+        historical = saved.get(key)
+        occupied = {d: v[0] for d, v in historical.days.items()} if historical else {}
+        opened = {d: v[2] for d, v in historical.days.items()} if historical else {}
+        occupied.update(
+            daily_occupancy([r for r in records if (r.site_id, r.mention) == key], live_start, end)
+        )
+        opened.update({d: v[1] for d, v in live_caps[key].items()})
+        series.append(
+            PoolSeries(
+                key=historical.key
+                if historical
+                else f"{names[pool.site_id]} — {MENTIONS.get(pool.mention, pool.mention)}",
+                occupied=occupied,
+                open_beds=opened,
+            )
+        )
+    return occ, cap, series, frozen.history_start
+
+
 @router.get("/metrics/pilot", response_model=PilotMetricsOut, tags=["indicateurs"])
 def pilot_metrics(
     ctx: ReadCtx,
@@ -322,9 +442,7 @@ def pilot_metrics(
     summary = summarise_requests(req_records)
 
     group = ctx.group
-    baseline = BaselineOut(
-        start=group.baseline_start, end=group.baseline_end, frozen_at=group.baseline_frozen_at
-    )
+    baseline = _baseline_out(ctx)
     baseline_occ_out: OccupancyOut | None = None
     ns_out: NorthStarOut | None = None
     reason: str | None = None
@@ -335,12 +453,15 @@ def pilot_metrics(
     else:
         b_occ = daily_occupancy(records, group.baseline_start, group.baseline_end)
         b_cap = _capacity(ctx, site_ids, group.baseline_start, group.baseline_end)
-        baseline_occ_out = _occupancy_out(b_occ, b_cap)
         # Stays admitted before the first imported month are missing, so early census is
         # under-counted: history starts after a burn-in of about two lengths of stay.
         first = min((r.admission_date for r in records), default=group.baseline_start)
         history_start = min(group.baseline_start, first + timedelta(days=HISTORY_BURN_IN_DAYS))
         series = _pool_series(ctx, site_ids, records, history_start, end)
+        snap = _snapshot(ctx)
+        if snap is not None:
+            b_occ, b_cap, series, history_start = _frozen_inputs(ctx, snap, site_ids, records, end)
+        baseline_occ_out = _occupancy_out(b_occ, b_cap)
         result = north_star(
             series,
             (group.baseline_start, group.baseline_end),
@@ -356,8 +477,9 @@ def pilot_metrics(
             )
         else:
             ns_out = NorthStarOut(**result.__dict__)
-            if group.baseline_frozen_at is None:
-                reason = "Référence non gelée : résultat indicatif, non opposable."
+            if snap is None:
+                ns_out.success_fee_eur = 0.0
+                reason = "Référence sans instantané gelé : résultat indicatif, non opposable."
 
     weekly: list[dict[str, float | str | None]] = []
     week_start = start
@@ -445,9 +567,7 @@ def _settings_out(ctx: Ctx) -> GroupSettingsOut:
         success_fee_rate=g.success_fee_rate,
         scoring_weights=weights_of(ctx),
         care_minutes=care_minutes_dict(care_minutes_of(ctx)),
-        baseline=BaselineOut(
-            start=g.baseline_start, end=g.baseline_end, frozen_at=g.baseline_frozen_at
-        ),
+        baseline=_baseline_out(ctx),
     )
 
 
@@ -505,13 +625,17 @@ def freeze_baseline(ctx: AdminCtx) -> GroupSettingsOut:
         raise HTTPException(status.HTTP_409_CONFLICT, "Définissez la période de référence")
     if g.baseline_frozen_at is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "Référence déjà gelée")
-    g.baseline_frozen_at = ctx.clock.now()
+    snapshot = _capture_reference(ctx)
+    ctx.session.add(snapshot)
+    ctx.session.flush()
+    g.baseline_frozen_at = snapshot.created_at
     ctx.audit(
         "reference.freeze",
         "group",
         g.id,
         f"{g.baseline_start} → {g.baseline_end}, {g.value_per_bed_day} €/j, "
-        f"intéressement {g.success_fee_rate:.0%}",
+        f"intéressement {g.success_fee_rate:.0%}, instantané {snapshot.id}, "
+        f"sha256 {snapshot.digest}",
     )
     ctx.session.commit()
     return _settings_out(ctx)

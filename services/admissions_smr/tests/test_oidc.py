@@ -34,7 +34,11 @@ class FakeIdp:
     def __init__(self) -> None:
         self.challenge = ""
         self.nonce_override: str | None = None
-        self.claims: dict[str, Any] = {"sub": "psc-123", "email": "coord@g.fr"}
+        self.claims: dict[str, Any] = {
+            "sub": "psc-123",
+            "email": "coord@g.fr",
+            "email_verified": True,
+        }
         self.audience = CLIENT
         self.nonce = ""
 
@@ -79,7 +83,9 @@ class FakeIdp:
             )
             return httpx.Response(200, json={"id_token": token, "access_token": "at"})
         if path.endswith("/userinfo"):
-            return httpx.Response(200, json={"SubjectNameID": "810000000001"})
+            return httpx.Response(
+                200, json={"sub": self.claims["sub"], "SubjectNameID": "810000000001"}
+            )
         return httpx.Response(404)
 
 
@@ -226,3 +232,34 @@ def test_disabled_when_not_configured(tmp_path: Path) -> None:
     with TestClient(create_app(settings, Clock())) as client:
         assert client.get("/api/auth/methods").json() == {"password": True, "oidc_label": None}
         assert client.get("/api/auth/oidc/login", follow_redirects=False).status_code == 404
+
+
+@pytest.mark.parametrize("verified", [None, False, "true", 1])
+def test_email_link_requires_boolean_verified(tmp_path: Path, idp: FakeIdp, verified: Any) -> None:
+    idp.claims["email_verified"] = verified
+    with make_client(tmp_path, idp) as client:
+        assert "#oidc_error=" in finish(client, start(client, idp))
+
+
+def test_email_cannot_rebind_an_existing_identity(tmp_path: Path, idp: FakeIdp) -> None:
+    with make_client(tmp_path, idp) as client:
+        assert "#oidc_token=" in finish(client, start(client, idp))
+        idp.claims["sub"] = "another-person"
+        assert "#oidc_error=" in finish(client, start(client, idp))
+
+
+def test_userinfo_subject_must_match_id_token(tmp_path: Path, idp: FakeIdp) -> None:
+    idp.claims = {"sub": "psc-999"}
+    with make_client(tmp_path, idp, match_claim="SubjectNameID") as client:
+        provider = client.app.state.oidc_http  # type: ignore[attr-defined]
+        provider.close()
+
+        def mismatched(request: httpx.Request) -> httpx.Response:
+            if request.url.path.endswith("/userinfo"):
+                return httpx.Response(200, json={"sub": "other", "SubjectNameID": "810000000001"})
+            return idp(request)
+
+        client.app.state.oidc_http = httpx.Client(  # type: ignore[attr-defined]
+            transport=httpx.MockTransport(mismatched)
+        )
+        assert "#oidc_error=" in finish(client, start(client, idp))

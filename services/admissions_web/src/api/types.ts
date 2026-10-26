@@ -249,6 +249,8 @@ export interface Baseline {
   start: string | null;
   end: string | null;
   frozen_at: string | null;
+  snapshot_id?: number | null;
+  digest?: string | null;
 }
 
 export interface PilotMetrics {
@@ -407,6 +409,8 @@ export interface AgentTask {
   created_at: string;
   updated_at: string;
   finished_at: string | null;
+  available_at: string | null;
+  reconcile_only: boolean;
 }
 
 export interface AgentStatus {
