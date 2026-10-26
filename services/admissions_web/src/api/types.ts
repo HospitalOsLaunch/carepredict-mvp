@@ -310,7 +310,18 @@ export interface AuditEntry {
   detail: string | null;
 }
 
+export interface EngineStep {
+  engine: string;
+  decision: "success" | "failure" | "skipped" | "unverified";
+  reason: string;
+  cost_usd: number;
+}
+
 export interface PortalReply {
+  route: EngineStep[];
+  cost_usd: number;
+  reconcile_only: boolean;
+  summary: string | null;
   task_id: number;
   status: string;
   engine_used: string | null;
@@ -392,6 +403,8 @@ export interface AgentPolicy {
 }
 
 export interface AgentTask {
+  route: EngineStep[];
+  summary: string | null;
   id: number;
   kind: string;
   request_id: number | null;

@@ -11,6 +11,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.agent_trace import public_route, safe_reason
 from services.admissions_smr.api.deps import Ctx
 from services.admissions_smr.domain.forecast import (
     DEFAULT_MIN_AT_RISK,
@@ -411,6 +412,10 @@ def request_detail(
         stay_id=stay_id,
         portal_reply=PortalReplyOut(
             task_id=reply.id,
+            route=public_route(reply.result_json, reply.status),
+            cost_usd=reply.cost_usd,
+            reconcile_only=reply.write_started_at is not None,
+            summary=safe_reason(reply.error) if reply.error else None,
             status=reply.status,
             engine_used=reply.engine_used,
             error=reply.error,

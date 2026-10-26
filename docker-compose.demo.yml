@@ -69,6 +69,7 @@ services:
     entrypoint: ["uvicorn", "services.admissions_agent.demo_portal.app:app", "--host", "0.0.0.0", "--port", "8020"]
     command: []
     environment:
+      DEMO_PORTAL_VARIANT: ${DEMO_PORTAL_VARIANT:-v1}
       DEMO_PORTAL_ARRIVAL_MINUTES: ${DEMO_ARRIVAL_MINUTES:-3}
     ports:
       - "${DEMO_PORTAL_PORT:-8020}:8020"

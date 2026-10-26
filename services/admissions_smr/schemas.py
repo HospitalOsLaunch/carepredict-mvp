@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from services.admissions_smr.agent_trace import RouteStepOut
 from services.admissions_smr.vocab import (
     CAPACITY_REASONS,
     LOSS_REASONS,
@@ -257,6 +258,10 @@ class EventOut(BaseModel):
 
 
 class PortalReplyOut(BaseModel):
+    route: list[RouteStepOut] = Field(default_factory=list)
+    cost_usd: float = 0.0
+    reconcile_only: bool = False
+    summary: str | None = None
     task_id: int
     status: str
     engine_used: str | None
