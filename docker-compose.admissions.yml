@@ -1,0 +1,81 @@
+# HospitalOS Admissions SMR: API + web + PostgreSQL (+ the computer-use agent, optional).
+#   ADM_SECRET_KEY=$(openssl rand -hex 32) ADM_DB_PASSWORD=... \
+#     docker compose -f docker-compose.admissions.yml up -d --build
+# Production must run on HDS-certified hosting with TLS terminated in front of "web".
+name: hospitalos_admissions
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: admissions
+      POSTGRES_USER: admissions
+      POSTGRES_PASSWORD: ${ADM_DB_PASSWORD:?ADM_DB_PASSWORD is required}
+    volumes:
+      - admissions-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admissions -d admissions"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+      dockerfile: services/admissions_smr/Dockerfile
+    environment:
+      ADM_ENV: ${ADM_ENV:-production}
+      ADM_DATABASE_URL: postgresql+psycopg://admissions:${ADM_DB_PASSWORD}@db:5432/admissions
+      ADM_SECRET_KEY: ${ADM_SECRET_KEY:?ADM_SECRET_KEY is required}
+      ADM_TIMEZONE: Europe/Paris
+      ADM_CORS_ORIGINS: ""
+      # Sign-in through Pro Santé Connect or the establishment's identity provider (optional).
+      ADM_OIDC_ISSUER: ${ADM_OIDC_ISSUER:-}
+      ADM_OIDC_CLIENT_ID: ${ADM_OIDC_CLIENT_ID:-}
+      ADM_OIDC_CLIENT_SECRET: ${ADM_OIDC_CLIENT_SECRET:-}
+      ADM_OIDC_REDIRECT_URI: ${ADM_OIDC_REDIRECT_URI:-}
+      ADM_OIDC_SCOPES: ${ADM_OIDC_SCOPES:-openid email profile}
+      ADM_OIDC_ACR_VALUES: ${ADM_OIDC_ACR_VALUES:-}
+      ADM_OIDC_MATCH_CLAIM: ${ADM_OIDC_MATCH_CLAIM:-email}
+      ADM_OIDC_LABEL: ${ADM_OIDC_LABEL:-Pro Santé Connect}
+      ADM_FRONTEND_URL: ${ADM_FRONTEND_URL:-/}
+      ADM_PASSWORD_LOGIN: ${ADM_PASSWORD_LOGIN:-1}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: services/admissions_web/Dockerfile
+    ports:
+      - "${ADM_WEB_PORT:-8080}:8080"
+    depends_on:
+      - api
+
+  # Computer-use agent, started only on request:
+  #   docker compose -f docker-compose.admissions.yml --profile agent up -d agent
+  # In production it usually runs on a machine inside the establishment's network instead,
+  # next to the portals; it only needs outbound access to the API, the portals and the
+  # model endpoints that the routing policy allows.
+  agent:
+    profiles: ["agent"]
+    build:
+      context: .
+      dockerfile: services/admissions_agent/Dockerfile
+    environment:
+      AGENT_API_URL: http://api:8010
+      AGENT_API_EMAIL: ${AGENT_API_EMAIL:-}
+      AGENT_API_PASSWORD: ${AGENT_API_PASSWORD:-}
+      AGENT_PORTAL_URL: ${AGENT_PORTAL_URL:-}
+      AGENT_PORTAL_USERNAME: ${AGENT_PORTAL_USERNAME:-}
+      AGENT_PORTAL_PASSWORD: ${AGENT_PORTAL_PASSWORD:-}
+      AGENT_PLAYBOOK: ${AGENT_PLAYBOOK:-}
+      OPEN_LIGHT_URL: ${OPEN_LIGHT_URL:-}
+      OPEN_HEAVY_URL: ${OPEN_HEAVY_URL:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      - api
+
+volumes:
+  admissions-db:

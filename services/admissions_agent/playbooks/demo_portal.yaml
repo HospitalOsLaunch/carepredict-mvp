@@ -1,0 +1,64 @@
+# Playbook of the fictional demo portal. It is also the template for a real portal:
+# copy it, then replace the selectors after inspecting that portal's pages.
+# Rules:
+#   - selectors only (no coordinates): a playbook never "guesses" where to click;
+#   - credentials come from environment secrets and are never shown to a model engine;
+#   - only the fields listed under sync_inbox.fields leave the portal. The patient's
+#     name is never read: the pseudonymous patient reference is the dossier number.
+name: Portail d'orientation (démonstration)
+
+login:
+  - goto: /login
+  - fill: {selector: "#identifiant", value: "{{ secrets.username }}"}
+  - fill: {selector: "#mot-de-passe", value: "{{ secrets.password }}"}
+  - click: "button[type=submit]"
+  - wait_for: "[data-testid=liste-dossiers]"
+
+sync_inbox:
+  list:
+    goto: /dossiers?statut=en_attente
+    rows: "tr[data-ref]"
+    ref_attribute: data-ref
+    detail_path: "/dossiers/{{ ref }}"
+  fields:
+    external_ref: {selector: "#ref"}
+    received_at: {selector: "#recu-le", transform: datetime_fr}
+    referrer_facility: {selector: "#etablissement"}
+    referrer_unit: {selector: "#service", optional: true}
+    patient_age: {selector: "#age", transform: int, optional: true}
+    patient_sex: {selector: "#sexe", transform: sex_fr, optional: true}
+    mention_requested: {selector: "#mention", transform: mention_label}
+    clinical_category: {selector: "#motif", optional: true}
+    care_level: {selector: "#dependance", transform: int, optional: true}
+    isolation_required: {selector: "#isolement", transform: bool_fr, optional: true}
+    special_needs: {selector: "#besoins", transform: needs_labels, optional: true}
+    desired_date: {selector: "#date-souhaitee", transform: date_fr, optional: true}
+  constants:
+    source: portail
+  patient_ref_from: external_ref
+
+reply_portal:
+  - goto: "/dossiers/{{ payload.external_ref }}"
+  - when: {decision: accord}
+    steps:
+      - check: "#decision-accord"
+      - fill: {selector: "#date-entree", value: "{{ payload.proposed_date_fr }}"}
+  - when: {decision: refus}
+    steps:
+      - check: "#decision-refus"
+      - select: {selector: "#motif-refus", label: "{{ payload.reason_label }}"}
+  - fill: {selector: "#message", value: "{{ payload.message }}"}
+  - click: "#envoyer"
+  - wait_for: "#confirmation"
+
+verify_reply:
+  goto: "/dossiers/{{ payload.external_ref }}"
+  fields:
+    external_ref: {selector: "#ref"}
+    message: {selector: "#message-envoye"}
+    refusal_reason: {selector: "#refus-envoye"}
+    status: {selector: "#statut"}
+    proposed_date: {selector: "#date-proposee", transform: date_fr, optional: true}
+  expect:
+    accord: {external_ref: "{{ payload.external_ref }}", status: "Accord donné", proposed_date: "{{ payload.proposed_date }}", message: "{{ payload.message }}"}
+    refus: {external_ref: "{{ payload.external_ref }}", status: "Refusé", refusal_reason: "{{ payload.reason_label }}", message: "{{ payload.message }}"}

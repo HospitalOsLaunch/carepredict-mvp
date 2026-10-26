@@ -1,0 +1,151 @@
+import { useQuery } from "@tanstack/react-query";
+import { ShieldCheck } from "lucide-react";
+import { useState, type FormEvent } from "react";
+
+import { api } from "../api/client";
+
+import { useAuth } from "../auth";
+import { Mark } from "../components/Mark";
+import { ErrorNote } from "../components/ui";
+
+export function LoginPage() {
+  const { login, oidcError } = useAuth();
+  const methods = useQuery({
+    queryKey: ["auth-methods"],
+    queryFn: () => api<{ password: boolean; oidc_label: string | null }>("/auth/methods"),
+    staleTime: Infinity,
+    retry: false
+  });
+  const oidcLabel = methods.data?.oidc_label ?? null;
+  // Until the server answers, show the password form: it is the safe default.
+  const passwordAllowed = methods.data?.password ?? true;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<unknown>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await login(email.trim(), password);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
+      <section className="relative hidden overflow-hidden bg-violet px-14 py-16 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="flex items-center gap-3">
+          <Mark className="h-10 w-10" />
+          <span className="font-display text-xl font-bold">HospitalOS</span>
+        </div>
+        <div>
+          <p className="max-w-md font-display text-[44px] font-bold leading-[1.05] tracking-tight">
+            Chaque lit qui se libère trouve son patient.
+          </p>
+          <p className="mt-5 max-w-md text-[17px] text-white/80">
+            Les demandes d'admission en SMR, priorisées et prêtes à recevoir une réponse, avec les lits qui se libèrent
+            sur les quinze prochains jours.
+          </p>
+        </div>
+        <div aria-hidden className="flex gap-2">
+          {[1, 1, 0.5, 1, 0, 0.5, 1, 1, 1, 0.5, 0, 1, 1, 1].map((v, i) => (
+            <span
+              key={i}
+              style={{ animationDelay: `${300 + i * 70}ms` }}
+              className={`lamp-on h-6 w-6 rounded-full ${
+                v === 1
+                  ? "bg-sun shadow-[0_0_16px_rgba(255,178,30,0.8)]"
+                  : v === 0.5
+                    ? "bg-sun/30 ring-2 ring-inset ring-sun"
+                    : "bg-white/10"
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+      <section className="flex items-center justify-center px-6 py-12">
+        <form onSubmit={submit} className="w-full max-w-sm">
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <Mark className="h-9 w-9" />
+            <span className="font-display text-xl font-bold">HospitalOS</span>
+          </div>
+          <h1>Connexion</h1>
+          <p className="mt-2 text-ink-soft">Coordination des admissions SMR</p>
+          {oidcError && (
+            <div className="mt-6">
+              <ErrorNote error={new Error(oidcError)} />
+            </div>
+          )}
+          {oidcLabel && (
+            <>
+              <a href="/api/auth/oidc/login" className="btn-primary mt-8 w-full py-3">
+                <ShieldCheck className="h-5 w-5" aria-hidden /> Se connecter avec {oidcLabel}
+              </a>
+              {passwordAllowed && (
+                <p className="mt-6 flex items-center gap-3 text-[13px] text-ink-faint" aria-hidden>
+                  <span className="h-px flex-1 bg-line" /> ou avec un mot de passe{" "}
+                  <span className="h-px flex-1 bg-line" />
+                </p>
+              )}
+            </>
+          )}
+          {passwordAllowed ? (
+            <>
+              <label className={`field ${oidcLabel ? "mt-4" : "mt-8"}`} htmlFor="email">
+                Adresse e-mail
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="username"
+                required
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <label className="field mt-4" htmlFor="password">
+                Mot de passe
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {error !== null && (
+                <div className="mt-4">
+                  <ErrorNote error={error} />
+                </div>
+              )}
+              <button
+                type="submit"
+                className={`${oidcLabel ? "btn-quiet" : "btn-primary"} mt-6 w-full py-3`}
+                disabled={busy}
+              >
+                {busy ? "Connexion…" : "Se connecter"}
+              </button>
+            </>
+          ) : (
+            !oidcLabel && (
+              <p className="mt-8 text-ink-soft">
+                Aucun mode de connexion n'est configuré. Contactez l'administrateur du groupe.
+              </p>
+            )
+          )}
+          <p className="mt-6 text-[13px] text-ink-faint">
+            Données pseudonymisées. Chaque action est tracée dans le journal d'audit.
+          </p>
+        </form>
+      </section>
+    </div>
+  );
+}

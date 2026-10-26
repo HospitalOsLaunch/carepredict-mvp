@@ -1,0 +1,103 @@
+name: admissions-smr
+
+on:
+  pull_request:
+    paths:
+      - "services/admissions_smr/**"
+      - "services/admissions_agent/**"
+      - "services/admissions_web/**"
+      - "docker-compose.admissions.yml"
+      - ".github/workflows/admissions-smr.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "services/admissions_smr/**"
+      - "services/admissions_agent/**"
+      - "services/admissions_web/**"
+
+jobs:
+  python:
+    name: API and agent (PostgreSQL)
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: adm
+          POSTGRES_PASSWORD: adm
+          POSTGRES_DB: admissions_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U adm" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      ADM_TEST_DATABASE_URL: postgresql+psycopg://adm:adm@127.0.0.1:5432/admissions_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install (API, agent and dev tools)
+        run: |
+          python -m pip install -r services/admissions_smr/requirements-dev.txt
+          python -m playwright install --with-deps chromium
+      - name: Lint and format
+        run: |
+          ruff check services/admissions_smr services/admissions_agent
+          ruff format --check services/admissions_smr services/admissions_agent
+      - name: Type-check --strict
+        run: mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
+      - name: Migrations match the models
+        run: python -m pytest -q -p no:cacheprovider services/admissions_smr/tests/test_migrations.py
+      - name: API tests on PostgreSQL (includes North Star calibration checks)
+        run: pytest -q -p no:cacheprovider services/admissions_smr/tests
+      - name: API tests on SQLite
+        run: ADM_TEST_DATABASE_URL= pytest -q -p no:cacheprovider services/admissions_smr/tests
+      - name: Agent end-to-end tests (real browser, fictional portal, scripted models)
+        run: |
+          # Failures are also emitted as annotations, readable without downloading the logs.
+          set +e
+          pytest -q -p no:cacheprovider -rfE --tb=short services/admissions_agent/tests 2>&1 | tee agent-tests.txt
+          status=${PIPESTATUS[0]}
+          grep -E "^(FAILED|ERROR|E  )" agent-tests.txt | head -40 | sed 's/^/::error title=agent tests::/'
+          exit $status
+
+  web:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: services/admissions_web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: services/admissions_web/package-lock.json
+      - run: npm ci
+      - name: Type-check and build
+        run: npm run build
+      - name: Tests
+        run: npm test
+
+  images:
+    name: Docker images
+    runs-on: ubuntu-24.04
+    needs: [python, web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: API
+        run: docker build -f services/admissions_smr/Dockerfile -t hospitalos/admissions-api:ci .
+      - name: Web
+        run: docker build -f services/admissions_web/Dockerfile -t hospitalos/admissions-web:ci .
+      - name: Agent
+        run: docker build -f services/admissions_agent/Dockerfile -t hospitalos/admissions-agent:ci .
+      - name: Smoke test (compose, migrations at start-up, health through nginx)
+        env:
+          ADM_DB_PASSWORD: ci-only-password
+          ADM_SECRET_KEY: ci-only-secret-key-not-for-production-0123456789
+        run: |
+          docker compose -f docker-compose.admissions.yml up -d --build db api web
+          curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health
+          docker compose -f docker-compose.admissions.yml logs api | tail -20
+          docker compose -f docker-compose.admissions.yml down -v

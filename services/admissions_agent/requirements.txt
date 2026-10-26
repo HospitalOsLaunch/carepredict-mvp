@@ -1,0 +1,9 @@
+# Computer-use agent (runs next to the portals, separately from the API).
+httpx>=0.27,<1
+pydantic>=2.7,<3
+pyyaml>=6,<7
+playwright>=1.48,<2
+# Only for the fictional demo portal used in tests and demos:
+fastapi>=0.111,<1
+uvicorn>=0.30,<1
+python-multipart>=0.0.9

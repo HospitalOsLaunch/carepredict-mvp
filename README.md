@@ -15,6 +15,12 @@ measurement artifacts live.
 
 ## What To Review First
 
+### Admissions SMR pilot (product)
+
+- [Admissions SMR](services/admissions_smr/README.md): admissions and occupancy
+  pilot for private SMR groups (API + web app), with the North Star method and its
+  calibration on synthetic data.
+
 ### Synthetic Research Foundation
 
 - [Dated organisation changes, lot 08](docs/synthetic/lot08.md): temporary/permanent
