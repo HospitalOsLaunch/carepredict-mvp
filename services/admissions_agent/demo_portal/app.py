@@ -5,13 +5,19 @@ identifiable patient data (a name, on purpose, to test that the agent never copi
 and a reply form. It imitates no real product: generic look, invented names.
 
     uvicorn services.admissions_agent.demo_portal.app:app --port 8020
+
+With DEMO_PORTAL_ARRIVAL_MINUTES=N (N > 0), a new fictional request arrives every N
+minutes, so that an agent left running has real work to do. POST /_test/arrive adds one
+at once. Both are demonstration helpers that no real portal has.
 """
 
 from __future__ import annotations
 
 import html
 import os
+import random
 import secrets
+import time
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -109,10 +115,73 @@ def sample(today: date | None = None) -> dict[str, Dossier]:
     return {r.ref: r for r in rows}
 
 
+ARRIVAL_MINUTES = float(os.getenv("DEMO_PORTAL_ARRIVAL_MINUTES", "0") or 0)
+ARRIVAL_SEED = int(os.getenv("DEMO_PORTAL_SEED", "7"))
+
+# Invented values only. Pairs of (requesting unit, SMR mention, reason).
+_FACILITIES = [
+    "CH des Monts d'Or",
+    "Hôpital Saint-Rambert",
+    "Hôpital Croix-Pâquet",
+    "Clinique du Val Fictif",
+    "CHU de Ville-Imaginaire",
+]
+_CASES = [
+    ("Médecine polyvalente", "Gériatrie", "Perte d'autonomie après pneumopathie"),
+    ("Orthopédie", "Locomoteur", "Fracture du col fémoral opérée"),
+    ("Neurologie", "Système nerveux", "AVC ischémique"),
+    ("Cardiologie", "Cardio-vasculaire", "Décompensation cardiaque"),
+    ("Pneumologie", "Pneumologie", "Exacerbation de BPCO"),
+    ("Chirurgie viscérale", "Polyvalent", "Suites de colectomie"),
+]
+_NEEDS = [[], [], [], ["Oxygénothérapie"], ["Nutrition entérale"], ["Trachéotomie"]]
+_FIRST = ["Jeanne", "Paul", "Lina", "Marc", "Odette", "René", "Aïcha", "Louis", "Rose", "Henri"]
+_LAST = ["Exemple", "Fictif", "Imaginaire", "Modèle", "Spécimen", "Inventé", "Démo", "Témoin"]
+
+
+def invented(index: int, now: datetime) -> Dossier:
+    """The index-th generated request, identical for a given seed (reproducible demos)."""
+    rng = random.Random(ARRIVAL_SEED * 100_003 + index)
+    unit, mention, reason = rng.choice(_CASES)
+    sex = rng.choice(["F", "M"])
+    title = "Mme" if sex == "F" else "M."
+    return Dossier(
+        f"DOS-2026-{1000 + index:04d}",
+        now.replace(second=0, microsecond=0),
+        rng.choice(_FACILITIES),
+        unit,
+        f"{title} {rng.choice(_FIRST)} {rng.choice(_LAST)}",
+        rng.randint(58, 94),
+        sex,
+        mention,
+        reason,
+        rng.randint(1, 4),
+        rng.random() < 0.12,
+        rng.choice(_NEEDS),
+        now.date() + timedelta(days=rng.randint(1, 7)),
+    )
+
+
 @dataclass
 class Store:
     dossiers: dict[str, Dossier] = field(default_factory=sample)
     sessions: set[str] = field(default_factory=set)
+    started: float = field(default_factory=time.monotonic)
+    generated: int = 0
+
+    def add_generated(self) -> Dossier:
+        dossier = invented(self.generated, datetime.now(ZoneInfo("Europe/Paris")))
+        self.generated += 1
+        self.dossiers[dossier.ref] = dossier
+        return dossier
+
+    def catch_up(self) -> None:
+        """Deliver the requests due since start-up; computed on access, no background job."""
+        if ARRIVAL_MINUTES <= 0:
+            return
+        due = int((time.monotonic() - self.started) // (ARRIVAL_MINUTES * 60))
+        while self.generated < due:
+            self.add_generated()
 
 
 store = Store()
@@ -180,6 +249,7 @@ def login(
 def list_dossiers(request: Request, statut: str | None = None) -> HTMLResponse | RedirectResponse:
     if not logged_in(request):
         return RedirectResponse("/login", status_code=303)
+    store.catch_up()
     rows = [
         d for d in store.dossiers.values() if statut != "en_attente" or d.status == "En attente"
     ]
@@ -286,7 +356,14 @@ def reply(
 def reset() -> JSONResponse:
     store.dossiers = sample()
     store.sessions = set()
+    store.started = time.monotonic()
+    store.generated = 0
     return JSONResponse({"ok": True})
+
+
+@app.post("/_test/arrive")
+def arrive() -> JSONResponse:
+    return JSONResponse({"ref": store.add_generated().ref})
 
 
 @app.get("/_test/state")

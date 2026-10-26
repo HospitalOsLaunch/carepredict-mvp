@@ -1,0 +1,102 @@
+# MVP computer use, tout en local et sans aucune donnée réelle :
+#   docker compose -f docker-compose.demo.yml up -d --build
+#   puis http://localhost:8080 (admin@demo.hospitalos.fr / demo-hospitalos-2026)
+#
+# - api    : groupe de démonstration synthétique chargé au premier démarrage
+# - portal : portail d'orientation fictif, une nouvelle demande toutes les
+#            DEMO_ARRIVAL_MINUTES minutes (http://localhost:8020, demo / demo-portail)
+# - agent  : relève le portail et y reporte les réponses décidées dans HospitalOS
+#
+# Le script (playbook) suffit à tout faire. Pour essayer les moteurs à modèle sur le portail
+# fictif, renseigner ANTHROPIC_API_KEY ou OPEN_LIGHT_URL / OPEN_HEAVY_URL, puis les activer
+# dans Paramètres → Agent et routage (les écrans du portail fictif ne contiennent que des
+# identités inventées). Jamais avec un vrai portail sans hébergement et contrat adaptés.
+#
+# Développement uniquement : clé et mots de passe de démonstration, rien à exposer.
+name: hospitalos_cu_demo
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: admissions
+      POSTGRES_USER: admissions
+      POSTGRES_PASSWORD: demo-only
+    volumes:
+      - cu-demo-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admissions -d admissions"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: services/admissions_smr/Dockerfile
+    environment:
+      ADM_ENV: development
+      ADM_DATABASE_URL: postgresql+psycopg://admissions:demo-only@db:5432/admissions
+      ADM_CORS_ORIGINS: ""
+      ADM_TIMEZONE: Europe/Paris
+    # Seed once (refused, harmlessly, when the group already exists), then serve.
+    command: >
+      sh -c "python -m services.admissions_smr.cli seed-demo || true;
+             exec uvicorn services.admissions_smr.main:app --host 0.0.0.0 --port 8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: services/admissions_web/Dockerfile
+    ports:
+      - "${DEMO_WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  portal:
+    build:
+      context: .
+      dockerfile: services/admissions_agent/Dockerfile
+    entrypoint: ["uvicorn", "services.admissions_agent.demo_portal.app:app", "--host", "0.0.0.0", "--port", "8020"]
+    command: []
+    environment:
+      DEMO_PORTAL_ARRIVAL_MINUTES: ${DEMO_ARRIVAL_MINUTES:-3}
+    ports:
+      - "${DEMO_PORTAL_PORT:-8020}:8020"
+
+  agent:
+    build:
+      context: .
+      dockerfile: services/admissions_agent/Dockerfile
+    command: ["run"]
+    environment:
+      AGENT_ID: agent-demo
+      AGENT_API_URL: http://api:8010
+      AGENT_API_EMAIL: agent@demo.hospitalos.fr
+      AGENT_API_PASSWORD: demo-hospitalos-2026
+      AGENT_PORTAL_URL: http://portal:8020
+      AGENT_PORTAL_USERNAME: demo
+      AGENT_PORTAL_PASSWORD: demo-portail
+      AGENT_HEARTBEAT_SECONDS: ${DEMO_AGENT_CYCLE_SECONDS:-20}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPEN_LIGHT_URL: ${OPEN_LIGHT_URL:-}
+      OPEN_LIGHT_MODEL: ${OPEN_LIGHT_MODEL:-}
+      OPEN_HEAVY_URL: ${OPEN_HEAVY_URL:-}
+      OPEN_HEAVY_MODEL: ${OPEN_HEAVY_MODEL:-}
+    depends_on:
+      api:
+        condition: service_healthy
+      portal:
+        condition: service_started
+
+volumes:
+  cu-demo-db:

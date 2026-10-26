@@ -79,6 +79,7 @@ réel de l'heure GPU.
 | `OPEN_HEAVY_URL`, `OPEN_HEAVY_MODEL`, `OPEN_HEAVY_API_KEY`, `OPEN_HEAVY_COORDINATES` | moteur ouvert puissant |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL` | moteurs propriétaires |
 | `AGENT_HEADLESS`, `AGENT_MAX_STEPS` | navigateur sans fenêtre (défaut), nombre maximal d'actions par moteur |
+| `AGENT_HEARTBEAT_SECONDS` | pause entre deux cycles (défaut 60, minimum 5) |
 
 Un moteur sans point d'accès configuré est « non configuré » et toujours sauté, même
 s'il est activé dans la politique.

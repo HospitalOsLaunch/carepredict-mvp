@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.agent_policy import default_policy
 from services.admissions_smr.models import (
     AdmissionRequest,
     AgentState,
@@ -309,8 +310,10 @@ def seed_demo(
     _add_open_requests(session, group, sites, today, zone, rng, coordinator.id, next_patient)
     _add_staffing(session, group, sites, today)
     # The agent is declared but has never connected: replies to portal requests are queued
-    # and wait for it, which is what a group sees on the day it installs the agent.
-    session.add(AgentState(group_id=group.id, updated_at=now))
+    # and wait for it, which is what a group sees on the day it installs the agent. The demo
+    # portal receives requests every few minutes, so the demo reads it every 2 minutes.
+    policy = default_policy().model_copy(update={"sync_interval_minutes": 2})
+    session.add(AgentState(group_id=group.id, policy_json=policy.model_dump_json(), updated_at=now))
     session.commit()
     return group
 

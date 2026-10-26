@@ -77,6 +77,7 @@ def load_settings() -> AgentSettings:
         allowed_hosts=allowed,
         headless=os.getenv("AGENT_HEADLESS", "1") != "0",
         max_steps=int(os.getenv("AGENT_MAX_STEPS", "40")),
+        heartbeat_seconds=max(5, int(os.getenv("AGENT_HEARTBEAT_SECONDS", "60"))),
         engines={
             "open_light": _endpoint("OPEN_LIGHT"),
             "open_heavy": _endpoint("OPEN_HEAVY"),
