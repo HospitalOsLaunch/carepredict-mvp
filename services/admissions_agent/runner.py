@@ -19,6 +19,8 @@ from services.admissions_agent.playbook import Playbook, Transforms
 from services.admissions_agent.router import Router, TaskOutcome
 
 log = logging.getLogger("admissions_agent")
+SYNC_KINDS = ("sync_inbox", "sync_movements")
+AGENT_KINDS = (*SYNC_KINDS, "reply_portal")
 
 
 def default_engine_factory(settings: AgentSettings) -> Any:
@@ -72,6 +74,8 @@ class Agent:
             self.new_session,
         )
         self.last_sync = 0.0
+        # Only the task kinds this machine's playbook knows: an agent sits next to one tool.
+        self.kinds = [k for k in AGENT_KINDS if self.playbook.supports(k)]
 
     def new_session(self) -> BrowserSession:
         return BrowserSession(
@@ -105,11 +109,13 @@ class Agent:
             return 0
         interval = int(beat["policy"]["sync_interval_minutes"]) * 60
         if time.monotonic() - self.last_sync >= interval or self.last_sync == 0.0:
-            self.api.request_sync()
+            for kind in SYNC_KINDS:
+                if kind in self.kinds:
+                    self.api.request_sync(kind)
             self.last_sync = time.monotonic()
         handled = 0
         while True:
-            tasks = self.api.claim(self.settings.agent_id, limit=1)
+            tasks = self.api.claim(self.settings.agent_id, limit=1, kinds=self.kinds)
             if not tasks:
                 break
             for task in tasks:

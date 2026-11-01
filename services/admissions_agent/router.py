@@ -62,6 +62,27 @@ REQUEST_FIELDS = {
 }
 
 
+# What may leave the bed-management screen: never a name or a birth date. The clear IPP and
+# NDA are pseudonymised by HospitalOS on receipt.
+MOVEMENT_FIELDS = {
+    "source_system",
+    "movement_ref",
+    "event",
+    "action",
+    "occurred_at",
+    "encounter_id",
+    "patient_id",
+    "patient_class",
+    "uf_code",
+    "room",
+    "bed",
+    "facility_finess",
+    "sex",
+    "age",
+    "outcome",
+}
+
+
 @dataclass
 class TaskOutcome:
     status: str  # done | failed | needs_human
@@ -111,6 +132,8 @@ class Router:
             return "désactivé dans la politique"
         if engine["kind"] == "playbook" and not self.playbook.supports(kind):
             return "pas de script pour cette tâche"
+        if engine["kind"] != "playbook" and kind == "sync_movements":
+            return "relevé des mouvements réservé au script"
         if not self.configured(name, engine):
             return "non configuré sur cette machine"
         if engine["kind"] != "playbook" and not engine.get("identifiable_data_allowed"):
@@ -262,6 +285,8 @@ class Router:
                     continue
                 if kind == "sync_inbox":
                     return self._finish_sync(name, result.data, route)
+                if kind == "sync_movements":
+                    return self._finish_movements(name, result.data, route)
                 return self._finish_reply(name, session, task["payload"], route)
             return TaskOutcome(
                 "needs_human",
@@ -290,6 +315,9 @@ class Router:
             try:
                 if kind == "sync_inbox":
                     data = self.playbook.sync_inbox(session, self.transforms)
+                    return EngineResult("success", data, 0.0, 1, time.monotonic() - started)
+                if kind == "sync_movements":
+                    data = self.playbook.read_listing(session, kind, self.transforms)
                     return EngineResult("success", data, 0.0, 1, time.monotonic() - started)
                 self.playbook.reply(session, task["payload"])
                 return EngineResult("success", None, 0.0, 1, time.monotonic() - started)
@@ -439,3 +467,43 @@ class Router:
                 "needs_human", engine, result, f"{len(rejected)} demande(s) rejetée(s)"
             )
         return TaskOutcome("done", engine, result)
+
+    # --- movements ------------------------------------------------------------------------
+
+    def movements(self, item: dict[str, Any]) -> list[dict[str, Any]]:
+        """Allowed fields only. A row already cancelled on screen becomes its entry then its
+        cancellation, so that seeing it for the first time cancelled still nets to nothing."""
+        clean = {k: v for k, v in item.items() if k in MOVEMENT_FIELDS and v not in (None, "")}
+        if clean.get("sex") not in ("F", "M", None):
+            clean["sex"] = "U"
+        if clean.get("action") == "CANCEL":
+            return [{**clean, "action": "INSERT"}, clean]
+        return [clean]
+
+    def _finish_movements(
+        self, engine: str, items: Any, route: list[dict[str, Any]]
+    ) -> TaskOutcome:
+        batch = [m for item in items or [] for m in self.movements(item)]
+        # Received order is applied order: chronological, a cancellation right after its entry.
+        batch.sort(key=lambda m: (_instant(m.get("occurred_at")), m.get("action") == "CANCEL"))
+        answers = self.api.ingest_movements(batch) if batch else []
+        counts: dict[str, int] = {}
+        for answer in answers:
+            counts[answer["status"]] = counts.get(answer["status"], 0) + 1
+        rejected = [
+            f"{a['movement_ref']}: {a['message']}" for a in answers if a["status"] == "rejected"
+        ]
+        result = {"route": route, "movements": counts, "rejected": rejected}
+        if rejected:
+            return TaskOutcome(
+                "needs_human", engine, result, f"{len(rejected)} mouvement(s) rejeté(s)"
+            )
+        return TaskOutcome("done", engine, result)
+
+
+def _instant(value: Any) -> datetime:
+    try:
+        stamp = datetime.fromisoformat(str(value))
+    except ValueError:
+        return datetime.max.replace(tzinfo=PARIS)  # the API will reject it with a reason
+    return stamp if stamp.tzinfo else stamp.replace(tzinfo=PARIS)

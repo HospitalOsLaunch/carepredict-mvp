@@ -1,0 +1,45 @@
+# Playbook of the fictional bed-management software (demo_bedsoft). Template for a real one:
+# copy it, then replace the selectors and the label maps after inspecting its screens.
+# Rules:
+#   - selectors only, no coordinates; credentials come from the agent's environment;
+#   - only the fields listed below leave the screen. The patient's name and birth date are
+#     shown by the software and are never read. IPP and venue number are pseudonymised by
+#     HospitalOS on receipt (HMAC), never stored in clear.
+name: Gestion des lits (démonstration)
+
+login:
+  - goto: /connexion
+  - fill: {selector: "#utilisateur", value: "{{ secrets.username }}"}
+  - fill: {selector: "#mdp", value: "{{ secrets.password }}"}
+  - click: "button[type=submit]"
+  - wait_for: "[data-testid=mouvements]"
+
+sync_movements:
+  list:
+    goto: /mouvements
+    rows: "tr[data-id]"
+    ref_attribute: data-id
+    detail_path: "/mouvements/{{ ref }}"
+  fields:
+    movement_ref: {selector: "#id-mouvement"}
+    event:
+      selector: "#type"
+      map:
+        Entrée: A01
+        Mutation: A02
+        Sortie: A03
+        Arrivée aux urgences: A04
+        Hospitalisation depuis les urgences: A06
+        Absence provisoire: A21
+        Retour d'absence: A22
+    action: {selector: "#statut", map: {Validé: INSERT, Annulé: CANCEL}}
+    occurred_at: {selector: "#date-heure", transform: datetime_fr}
+    encounter_id: {selector: "#venue"}
+    patient_id: {selector: "#ipp"}
+    sex: {selector: "#sexe", transform: sex_fr, optional: true}
+    age: {selector: "#age", transform: int, optional: true}
+    uf_code: {selector: "#uf"}
+    room: {selector: "#chambre", optional: true}
+    bed: {selector: "#lit", optional: true}
+  constants:
+    source_system: demo_bedsoft
