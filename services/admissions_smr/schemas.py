@@ -9,11 +9,11 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from services.admissions_smr.vocab import (
     CAPACITY_REASONS,
     LOSS_REASONS,
-    MENTIONS,
     REFUSAL_REASONS,
     REQUEST_SOURCES,
     ROLES,
     SPECIAL_NEEDS,
+    UNIT_CODES,
 )
 
 
@@ -177,7 +177,7 @@ class RequestCreate(Strict):
     @field_validator("mention_requested")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in MENTIONS:
+        if value not in UNIT_CODES:
             raise ValueError("mention inconnue")
         return value
 
@@ -357,7 +357,7 @@ class StayCreate(Strict):
     @field_validator("mention")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in MENTIONS:
+        if value not in UNIT_CODES:
             raise ValueError("mention inconnue")
         return value
 
@@ -671,6 +671,17 @@ class VocabularyOut(BaseModel):
     capacity_reasons: dict[str, str]
     special_needs: dict[str, str]
     roles: dict[str, str]
+    # LISCOP (added; existing clients ignore them).
+    unit_codes: dict[str, str] = Field(default_factory=dict)
+    unit_types: dict[str, str] = Field(default_factory=dict)
+    liscop_disciplines: dict[str, str] = Field(default_factory=dict)
+    unit_kinds: dict[str, tuple[str, str]] = Field(default_factory=dict)
+    bed_statuses: dict[str, str] = Field(default_factory=dict)
+    sex_constraints: dict[str, str] = Field(default_factory=dict)
+    stay_sources: dict[str, str] = Field(default_factory=dict)
+    admission_modes: dict[str, str] = Field(default_factory=dict)
+    ed_outcomes: dict[str, str] = Field(default_factory=dict)
+    tension_kinds: dict[str, str] = Field(default_factory=dict)
 
 
 # --- Maquette d'export vers le ROR (aucun envoi) ------------------------------------------

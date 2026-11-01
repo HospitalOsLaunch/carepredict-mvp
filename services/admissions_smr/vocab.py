@@ -105,3 +105,94 @@ ROLES: Final[dict[str, str]] = {
 
 WRITE_ROLES: Final[frozenset[str]] = frozenset({"admin_groupe", "coordination"})
 READ_ROLES: Final[frozenset[str]] = frozenset({"admin_groupe", "coordination", "direction"})
+
+# --- LISCOP / ROR: MCO units, beds, emergency department, tension --------------------------
+
+# Kind of unit (bed_pools.unit_type). SMR units keep "smr".
+UNIT_TYPES: Final[dict[str, str]] = {
+    "smr": "Soins médicaux et de réadaptation",
+    "medecine": "Médecine",
+    "chirurgie": "Chirurgie",
+    "soins_critiques": "Soins critiques",
+    "urgences": "Urgences",
+    "perinatalite": "Périnatalité",
+    "sante_mentale": "Santé mentale",
+    "medico_social": "Médico-social",
+}
+
+# The seven disciplines LISCOP displays (bed_pools.discipline).
+LISCOP_DISCIPLINES: Final[dict[str, str]] = {
+    "soins_critiques": "Soins critiques",
+    "perinatalite": "Périnatalité",
+    "chirurgie": "Chirurgie",
+    "medecine": "Médecine",
+    "sante_mentale": "Santé mentale",
+    "smr": "SMR",
+    "medico_social": "Médico-social (grand âge)",
+}
+
+# MCO unit codes (bed_pools.mention for an MCO unit).
+MCO_UNITS: Final[dict[str, str]] = {
+    "urgences": "Urgences",
+    "medecine_polyvalente": "Médecine polyvalente",
+    "court_sejour_geriatrique": "Court séjour gériatrique",
+    "cardiologie": "Cardiologie",
+    "chirurgie_viscerale": "Chirurgie viscérale",
+    "chirurgie_orthopedique": "Chirurgie orthopédique",
+    "reanimation": "Réanimation",
+}
+
+# MCO unit code -> (unit_type, discipline). An SMR mention is ("smr", "smr").
+UNIT_KINDS: Final[dict[str, tuple[str, str]]] = {
+    "urgences": ("urgences", "medecine"),
+    "medecine_polyvalente": ("medecine", "medecine"),
+    "court_sejour_geriatrique": ("medecine", "medecine"),
+    "cardiologie": ("medecine", "medecine"),
+    "chirurgie_viscerale": ("chirurgie", "chirurgie"),
+    "chirurgie_orthopedique": ("chirurgie", "chirurgie"),
+    "reanimation": ("soins_critiques", "soins_critiques"),
+}
+
+# Every code a unit (bed_pools.mention, stays.mention) may carry.
+UNIT_CODES: Final[dict[str, str]] = MENTIONS | MCO_UNITS
+
+BED_STATUSES: Final[dict[str, str]] = {
+    "libre": "Libre",
+    "occupe": "Occupé",
+    "a_nettoyer": "À nettoyer",
+    "bloque": "Bloqué",
+    "reserve": "Réservé",
+}
+
+SEX_CONSTRAINTS: Final[dict[str, str]] = {
+    "X": "Indifférencié",
+    "F": "Femmes",
+    "M": "Hommes",
+}
+
+STAY_SOURCES: Final[dict[str, str]] = {
+    "saisie": "Saisie",
+    "hl7": "Mouvement HL7",
+    "agent": "Agent",
+    "import": "Import",
+}
+
+ADMISSION_MODES: Final[dict[str, str]] = {
+    "urgences": "Par les urgences",
+    "programme": "Programmée",
+    "mutation": "Mutation interne",
+    "transfert": "Transfert d'un autre établissement",
+}
+
+ED_OUTCOMES: Final[dict[str, str]] = {
+    "hospitalise": "Hospitalisé",
+    "sortie": "Retour à domicile",
+    "transfert": "Transféré",
+    "fugue": "Parti sans attendre",
+    "deces": "Décédé",
+}
+
+TENSION_KINDS: Final[dict[str, str]] = {
+    "het": "Hôpital en tension",
+    "plan_blanc": "Plan blanc",
+}

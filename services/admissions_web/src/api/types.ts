@@ -25,6 +25,17 @@ export interface Vocabulary {
   capacity_reasons: Record<string, string>;
   special_needs: Record<string, string>;
   roles: Record<string, string>;
+  // LISCOP: MCO units, beds, emergency department, tension.
+  unit_codes?: Record<string, string>;
+  unit_types?: Record<string, string>;
+  liscop_disciplines?: Record<string, string>;
+  unit_kinds?: Record<string, [unitType: string, discipline: string]>;
+  bed_statuses?: Record<string, string>;
+  sex_constraints?: Record<string, string>;
+  stay_sources?: Record<string, string>;
+  admission_modes?: Record<string, string>;
+  ed_outcomes?: Record<string, string>;
+  tension_kinds?: Record<string, string>;
 }
 
 export interface Pool {

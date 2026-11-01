@@ -45,14 +45,24 @@ from services.admissions_smr.security import (
     verify_password,
 )
 from services.admissions_smr.vocab import (
+    ADMISSION_MODES,
+    BED_STATUSES,
     CAPACITY_REASONS,
+    ED_OUTCOMES,
+    LISCOP_DISCIPLINES,
     LOSS_REASONS,
     MENTIONS,
     REFUSAL_REASONS,
     REQUEST_SOURCES,
     REQUEST_STATUSES,
     ROLES,
+    SEX_CONSTRAINTS,
     SPECIAL_NEEDS,
+    STAY_SOURCES,
+    TENSION_KINDS,
+    UNIT_CODES,
+    UNIT_KINDS,
+    UNIT_TYPES,
 )
 
 router = APIRouter()
@@ -113,6 +123,16 @@ def vocabulary() -> VocabularyOut:
         capacity_reasons=CAPACITY_REASONS,
         special_needs=SPECIAL_NEEDS,
         roles=ROLES,
+        unit_codes=UNIT_CODES,
+        unit_types=UNIT_TYPES,
+        liscop_disciplines=LISCOP_DISCIPLINES,
+        unit_kinds=UNIT_KINDS,
+        bed_statuses=BED_STATUSES,
+        sex_constraints=SEX_CONSTRAINTS,
+        stay_sources=STAY_SOURCES,
+        admission_modes=ADMISSION_MODES,
+        ed_outcomes=ED_OUTCOMES,
+        tension_kinds=TENSION_KINDS,
     )
 
 
