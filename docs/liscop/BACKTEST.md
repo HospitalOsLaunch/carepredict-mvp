@@ -134,4 +134,93 @@ Rien d'autre n'a été modifié. Les critères (a) à (d) sont inchangés.
 
 ## Résultats
 
-À venir (ajoutés après exécution, sans retoucher ce qui précède).
+Exécution unique du 1er novembre 2026, après le commit du protocole (`dd50540`) et de
+son amendement (`a226172`), avec `python -m services.forecast_engine backtest --group 1`
+sur la démo `seed-demo-mco` générée le même jour. Rien n'a été modifié après avoir vu ces
+chiffres. Rappel : **données synthétiques de notre propre simulateur** ; ces résultats
+prouvent la chaîne et la calibration sur ce générateur, pas la précision sur un hôpital
+réel.
+
+Démo générée pour le 2026-11-01 ; dernier jour complet 2026-10-31 ; 21 origines du 2026-06-06 au 2026-10-24 ; durée 263.4 s.
+
+| Critère | Résultat |
+|---|---|
+| (a) MAE arrivées / SeasonalNaive < 1 à chaque horizon | réussi |
+| (b) Couverture 80 % dans [75 %, 85 %] (arrivées et lits) | échoué |
+| (c) Rupture de régime : ACI à ±5 points, statique < 75 % | réussi |
+| (d) MAE lits brancards à 10 h / SeasonalNaive < 1 | réussi |
+
+### Par horizon
+
+| Horizon | Arrivées : MAE / réf. | Arrivées : couverture | Lits disponibles : couverture | Lits dispo : MAE (persistance) | Brancards 10 h : MAE / réf. |
+|---|---|---|---|---|---|
+| J+1 | 0.796 | 91.7 % | 91.1 % | 1.83 (2.24) | 0.545 |
+| J+2 | 0.853 | 71.4 % | 87.5 % | 2.66 (3.13) | 0.950 |
+| J+3 | 0.783 | 77.4 % | 89.3 % | 2.91 (3.08) | 0.997 |
+| J+4 | 0.731 | 80.4 % | 89.9 % | 3.09 (3.31) | 0.722 |
+| J+5 | 0.785 | 78.0 % | 94.0 % | 2.80 (2.99) | 0.929 |
+| J+6 | 0.694 | 76.2 % | 94.0 % | 2.69 (3.18) | 0.937 |
+| J+7 | 0.703 | 90.5 % | 97.0 % | 2.76 (3.15) | 1.085 |
+| **Poolé** | **0.762** | **80.8 %** | **91.8 %** | **2.68 (3.01)** | **0.868** |
+
+### Par unité (J+1 à J+7 poolés)
+
+| Unité | Arrivées : MAE (réf.) | MAE / réf. | Couverture arrivées | Lits dispo : MAE (persistance) | Couverture lits |
+|---|---|---|---|---|---|
+| Médecine polyvalente | 1.82 (2.33) | 0.784 | 78.2 % | 3.59 (4.67) | 87.8 % |
+| Court séjour gériatrique | 1.41 (1.82) | 0.775 | 83.7 % | 3.33 (3.48) | 89.8 % |
+| Cardiologie | 1.95 (2.78) | 0.704 | 83.7 % | 3.27 (3.68) | 88.4 % |
+| Chirurgie viscérale | 1.60 (2.05) | 0.784 | 83.7 % | 2.84 (3.87) | 90.5 % |
+| Chirurgie orthopédique | 1.90 (2.66) | 0.716 | 81.0 % | 2.94 (3.51) | 92.5 % |
+| Réanimation | 1.13 (1.36) | 0.829 | 80.3 % | 2.01 (1.96) | 91.2 % |
+| SMR polyvalent | 0.93 (1.19) | 0.781 | 78.2 % | 1.97 (1.53) | 98.0 % |
+| SMR gériatrie | 0.91 (1.13) | 0.805 | 77.5 % | 1.48 (1.39) | 96.6 % |
+
+Passages aux urgences (informatif) : MAE 9.02 contre 11.84 pour la référence (rapport 0.762), couverture 79.6 %.
+
+### Rupture de régime (×1.5 du 2026-09-13 au 2026-10-03, 9 séries, 1323 prévisions)
+
+| Horizon | Statique | ACI |
+|---|---|---|
+| J+1 | 67.2 % | 77.2 % |
+| J+2 | 65.6 % | 79.4 % |
+| J+3 | 65.1 % | 78.3 % |
+| J+4 | 66.7 % | 76.2 % |
+| J+5 | 66.7 % | 73.5 % |
+| J+6 | 65.6 % | 73.0 % |
+| J+7 | 65.1 % | 73.0 % |
+| **Poolé** | **66.0 %** | **75.8 %** |
+
+Modèles retenus (toutes origines) :
+
+- `arrivals` : AutoETS 82, AutoTheta 55, MSTL 31
+- `ed_arrivals` : AutoETS 12, AutoTheta 9
+- `boarding_10h` : AutoETS 1, AutoTheta 14, MSTL 6
+
+Mesure informative (amendement A3, sans critère) : lits disponibles, couverture par PIT
+randomisé **82,7 %** poolée (de 78,6 % à J+4 à 86,3 % à J+6), contre 91,8 % en
+intervalle inclusif ; dans 23,0 % des cas, q10 = 0 et 0 lit disponible réalisé.
+
+### Lecture
+
+- **(a) réussi.** Le modèle retenu bat la référence saisonnière à chaque horizon, de
+  0,69 (J+6) à 0,85 (J+2) en rapport de MAE, et dans chaque unité (0,70 à 0,83). AutoETS
+  est le plus souvent retenu, puis AutoTheta et MSTL ; aucune série n'a eu besoin du repli.
+- **(b) échoué.** Les arrivées sont bien calibrées (80,8 % poolé ; 71 à 92 % selon
+  l'horizon). Les **lits disponibles sur-couvrent : 91,8 %**, hors de [75 %, 85 %]. Les
+  fourchettes sont donc prudentes, trop larges au sens de ce critère, surtout dans les
+  unités presque toujours pleines (SMR : 97-98 %). La mesure par PIT randomisé (82,7 %)
+  indique qu'une grande part de l'écart vient de l'atome à 0 lit (unité pleine) et non
+  d'une loi trop dispersée ; mais le critère pré-enregistré est l'intervalle inclusif,
+  et il échoue. Pistes, à valider sur une nouvelle période et non sur celle-ci : contraindre
+  les arrivées par la place disponible (le surplus attend aux urgences, ce qui est la
+  réalité des lits brancards), ou publier pour les unités pleines « P(au moins 1 lit) »
+  plutôt qu'une fourchette.
+- **(c) réussi.** Sous une hausse de 50 % des arrivées pendant trois semaines,
+  l'intervalle gelé tombe à 66,0 % de couverture ; l'ACI tient 75,8 % poolé (77-79 % de
+  J+1 à J+3, 73 % à J+6-J+7, car l'information arrive plus tard aux horizons longs). C'est
+  à la limite basse de la tolérance (±5 points).
+- **(d) réussi.** Lits brancards à 10 h : rapport de MAE 0,87 poolé ; 1,09 à J+7, donc au
+  bout de la semaine la référence saisonnière fait aussi bien.
+- Informatif : la MAE des lits disponibles est inférieure à la persistance à chaque
+  horizon (2,68 contre 3,01 poolé), sauf en réanimation et en SMR où rien ne bouge beaucoup.
