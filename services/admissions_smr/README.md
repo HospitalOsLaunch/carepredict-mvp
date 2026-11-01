@@ -307,3 +307,37 @@ ruff check services/admissions_smr services/admissions_agent
 mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
 cd services/admissions_web && npm test && npm run build
 ```
+
+## Plan des lits, urgences et tension (LISCOP)
+
+Pages « Plan des lits » (`/plan-des-lits`) et « Urgences et tension » (`/urgences`).
+Logique pure dans `domain/beds.py`, `domain/ed.py`, `domain/tension.py` ; chaque
+définition y est documentée.
+
+- **Lit utilisable** : actif, libre (ni occupé, ni réservé, ni bloqué, ni à nettoyer)
+  et qu'au moins un sexe peut occuper. Un lit à nettoyer est compté « bientôt ».
+- **Genre** (ROR, TRE_R332 / JDV_J190 ; définitions ANS « Capacité en lits » v1.0.1
+  §2.2-2.4) : partition des lits utilisables en *femme* (chambre partagée déjà occupée
+  par une femme, ou lit réservé aux femmes), *homme* (idem) et *indifférencié* (une
+  femme ou un homme peut y être placé ; code ROR 04 « Indéterminé » depuis le
+  28/08/2025). Un lit libre dans une chambre où un homme et une femme sont déjà
+  installés n'est pas utilisable (`sex_conflict`).
+- **Isolement** : lits utilisables en chambre d'isolement. **Fermés** : le plus grand
+  des lits bloqués et des fermetures déclarées sur l'unité.
+- **Lits brancards à 10 h** : patients présents aux urgences à 10:00 (heure de
+  Paris) avec une décision d'hospitalisation, arrivés avant 08:00 le jour même ou la
+  veille. Définition HospitalOS **à valider avec l'ARS** (constantes `BOARDING_HOUR`,
+  `BOARDING_ARRIVED_BEFORE`). Avant 10:00, la valeur du jour est provisoire.
+- **Déclaration manuelle** (repli sans flux) : la dernière déclaration du jour
+  remplace le calcul pour ce jour ; le calcul reste affiché à côté.
+- **Aide HET** : quatre critères transparents (lits brancards à 10 h ≥ 5, en attente
+  de lit ≥ 10, attente la plus longue ≥ 12 h, part des unités MCO critiques ≥ 25 %) ;
+  aucun critère → aucun signal, un → vigilance, deux ou plus → déclaration à
+  envisager. Seuils par défaut à calibrer. La déclaration HET / Plan blanc reste une
+  décision de la direction, enregistrée par la coordination ou un administrateur
+  (la direction est en lecture seule dans ce produit).
+
+API : `GET /api/beds`, `PATCH /api/beds/{id}` (nettoyé, bloquer avec motif, débloquer,
+réserver ; jamais un lit occupé), `GET /api/beds/availability`, `GET /api/ed/census`,
+`GET /api/ed/boarding?days=90`, `GET|POST /api/ed/snapshots`, `GET /api/tension/status`,
+`GET|POST|PATCH /api/tension/declarations`.
