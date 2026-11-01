@@ -80,7 +80,7 @@ class UnitView:
 def bed_states(session: Session, beds: Sequence[Bed]) -> list[BedState]:
     stay_ids = [b.stay_id for b in beds if b.stay_id is not None]
     rows = session.execute(select(Stay.id, Stay.patient_sex).where(Stay.id.in_(stay_ids)))
-    sexes = dict(rows.tuples().all())
+    sexes = dict(rows.all())
     return [
         BedState(
             id=b.id,
