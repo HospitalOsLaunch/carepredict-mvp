@@ -1,4 +1,4 @@
-import { Activity, BedDouble, Building2, FileUp, Gauge, Inbox, LogOut, Settings } from "lucide-react";
+import { Activity, BedDouble, Building2, FileUp, Gauge, Inbox, LogOut, RadioTower, Settings } from "lucide-react";
 import { lazy, Suspense, type ComponentType } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 
@@ -10,6 +10,7 @@ import { GroupPage } from "./pages/GroupPage";
 import { ImportsPage } from "./pages/ImportsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RequestsPage } from "./pages/RequestsPage";
+import { RorPage } from "./pages/RorPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
 const ChargePage = lazy(() => import("./pages/ChargePage").then((m) => ({ default: m.ChargePage })));
@@ -28,6 +29,7 @@ const NAV: NavItem[] = [
   { to: "/charge", label: "Charge en soins", icon: Activity },
   { to: "/groupe", label: "Vue groupe", icon: Building2 },
   { to: "/indicateurs", label: "Indicateurs pilote", icon: Gauge },
+  { to: "/ror", label: "Remontée ROR", icon: RadioTower },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
   { to: "/parametres", label: "Paramètres", icon: Settings, admin: true }
 ];
@@ -124,6 +126,7 @@ export function App() {
               </Suspense>
             }
           />
+          <Route path="/ror" element={<RorPage />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
           <Route path="*" element={<Navigate to="/demandes" replace />} />

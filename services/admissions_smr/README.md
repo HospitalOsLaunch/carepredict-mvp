@@ -17,6 +17,7 @@ plus vite à l'adresseur.
 | Charge en soins | Minutes de soins attendues sur 14 jours par unité, face aux heures soignantes prévues : grille des journées en tension, détail jour par jour avec fourchette, saisie de la semaine type et des jours particuliers, rejeu de fiabilité. |
 | Vue groupe | Occupation, demandes en attente, sorties à 7 jours et lits fermés, site par site. |
 | Indicateurs pilote | North Star (journées-lits récupérées) avec intervalle, délai de réponse, parcours des demandes, motifs de refus et de perte, lits fermés par motif, fiabilité de la prévision. |
+| Remontée ROR (maquette) | Ce que le pilote pourrait remonter au ROR national, unité par unité : lits par statut ROR (installés, disponibles, occupés, réservés, fermés avec leur type), niveau de tension, lits libres attendus à J+1, J+2, J+7 et ancienneté du dernier mouvement saisi. Lecture seule, rien n'est envoyé ; JSON téléchargeable. Voir plus bas. |
 | Imports | CSV des lits, des séjours (avec niveau de soins) et des demandes ; vérification complète avant import. |
 | Paramètres | Sites et lits, utilisateurs et identité fédérée, période de référence et termes du contrat (gel), priorisation, minutes de soins par niveau, agent et routage des moteurs, journal d'audit. |
 
@@ -249,6 +250,24 @@ Conséquences pour le contrat :
   **avant** le démarrage ; tout dégel est motivé et tracé.
 - Ces taux ont été mesurés sur des données synthétiques : ils doivent être
   re-mesurés sur l'historique réel du groupe avant signature.
+
+## Remontée vers le ROR (maquette)
+
+`GET /api/ror/export` (et l'écran « Remontée ROR ») traduit ce que le pilote sait déjà dans
+le vocabulaire de capacité du ROR, pour montrer aux équipes régionales qui lisent le ROR
+(LISCOP en Hauts-de-France) ce qu'une alimentation automatique, sans double saisie,
+pourrait leur apporter. **Aucun envoi** : pas de connexion au ROR, rien n'est écrit.
+
+- Statuts : jeu de valeurs ANS `JDV_J188_TypeStatutCapacite_ROR`. Disponible = ouverts −
+  présents − admissions accordées pour aujourd'hui ou demain.
+- Fermetures : `JDV_J191_TypeFermetureCapacite_ROR`, déduit du motif saisi (personnel et
+  saisonnier → réactivable, travaux → non réactivable, autre → indéterminé) : à valider.
+- Prévisionnel J+1, J+2, J+7 avec fourchette à 80 % : pas un statut ROR, il reprend les
+  colonnes affichées par LISCOP.
+- Tension : seuils de la légende LISCOP (normal ≥ 20 % de lits installés disponibles,
+  critique à 0), à confirmer.
+- Non suivi : disponibilité par genre, capacité supplémentaire, identifiant ROR des unités.
+  Un envoi réel demande aussi l'habilitation au flux d'alimentation du ROR (ANS, ARS).
 
 ## Ce qui reste à faire avant un pilote réel
 

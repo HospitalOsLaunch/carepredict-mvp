@@ -671,3 +671,69 @@ class VocabularyOut(BaseModel):
     capacity_reasons: dict[str, str]
     special_needs: dict[str, str]
     roles: dict[str, str]
+
+
+# --- Maquette d'export vers le ROR (aucun envoi) ------------------------------------------
+# Field names are in French on purpose: this payload mirrors a French national flow and is
+# read as is by the regional teams it is shown to.
+
+
+class RorCode(BaseModel):
+    code: str
+    libelle: str
+
+
+class RorCapaciteOut(BaseModel):
+    statut: RorCode
+    nombre: int | None
+    remarque: str | None = None
+
+
+class RorFermetureOut(BaseModel):
+    type_fermeture: RorCode
+    nombre: int
+    motif_interne: str
+
+
+class RorPrevisionOut(BaseModel):
+    echeance: str
+    date: date
+    lits_disponibles_attendus: float
+    fourchette_80: tuple[int, int]
+
+
+class RorTensionOut(BaseModel):
+    niveau: str
+    taux_disponibilite: float | None
+
+
+class RorUniteOut(BaseModel):
+    site_id: int
+    etablissement: str
+    finess_geographique: str | None
+    identifiant_unite_ror: str | None
+    mention: str
+    libelle_unite: str
+    capacites: list[RorCapaciteOut]
+    fermetures: list[RorFermetureOut]
+    previsionnel: list[RorPrevisionOut]
+    tension: RorTensionOut
+    dernier_mouvement_saisi: datetime | None
+    a_completer: list[str]
+
+
+class RorReferentielOut(BaseModel):
+    nom: str
+    url: str
+
+
+class RorExportOut(BaseModel):
+    maquette: bool = True
+    avertissement: str
+    emetteur: str
+    genere_le: datetime
+    date_situation: date
+    referentiels: list[RorReferentielOut]
+    hypotheses: list[str]
+    non_suivi_dans_le_pilote: list[str]
+    unites: list[RorUniteOut]
