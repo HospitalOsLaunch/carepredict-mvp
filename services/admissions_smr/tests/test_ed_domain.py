@@ -133,3 +133,10 @@ def test_latest_declaration_of_the_day_replaces_the_computed_values() -> None:
 
     assert (point.boarding, point.computed_boarding, point.source) == (7, 1, "declaration")
     assert (point.present, point.waiting_bed, point.hosted_elsewhere) == (41, 10, 3)
+
+
+def test_before_10h_the_count_is_provisional_at_the_given_instant() -> None:
+    visits = [waiting(paris(DAY, 6), left=paris(DAY, 9, 30)), waiting(paris(DAY, 7))]
+
+    assert boarding_10h(visits, DAY, PARIS, as_of=paris(DAY, 9)) == 2
+    assert boarding_10h(visits, DAY, PARIS) == 1

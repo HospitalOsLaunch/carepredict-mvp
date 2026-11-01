@@ -109,8 +109,13 @@ def census(visits: Sequence[Visit], t: datetime) -> Census:
     )
 
 
-def boarding_10h(visits: Sequence[Visit], day: date, zone: ZoneInfo) -> int:
+def boarding_10h(
+    visits: Sequence[Visit], day: date, zone: ZoneInfo, as_of: datetime | None = None
+) -> int:
+    """Boarding at 10:00 of ``day``; before 10:00, ``as_of`` gives the provisional count."""
     t = local_time(day, BOARDING_HOUR, zone)
+    if as_of is not None:
+        t = min(t, as_of)
     cutoff = local_time(day, BOARDING_ARRIVED_BEFORE, zone)
     return sum(is_waiting_bed(v, t) and v.arrived_at < cutoff for v in visits)
 
