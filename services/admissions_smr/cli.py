@@ -3,6 +3,7 @@
     python -m services.admissions_smr.cli init-group --name "Groupe X" \
         --admin-email admin@groupe-x.fr --admin-name "Nom Prénom"
     python -m services.admissions_smr.cli seed-demo        # development only
+    python -m services.admissions_smr.cli seed-demo-mco    # development only (LISCOP demo)
 """
 
 from __future__ import annotations
@@ -36,8 +37,14 @@ def main(argv: list[str] | None = None) -> int:
     demo = sub.add_parser("seed-demo", help="Charger le groupe de démonstration (synthétique)")
     demo.add_argument("--password", default=os.getenv("ADM_DEMO_PASSWORD", "demo-hospitalos-2026"))
 
+    mco = sub.add_parser("seed-demo-mco", help="Charger l'hôpital MCO de démonstration (LISCOP)")
+    mco.add_argument("--password", default=os.getenv("ADM_DEMO_PASSWORD", "demo-hospitalos-2026"))
+
     args = parser.parse_args(argv)
     settings = get_settings()
+    if args.command == "seed-demo-mco" and settings.is_production:
+        print("Refusé : jeu de démonstration interdit en production", file=sys.stderr)
+        return 1
     engine = make_engine(settings.database_url)
     upgrade(engine)
     if args.command == "migrate":
@@ -83,6 +90,23 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(f"Groupe de démonstration créé (id {group.id}).")
         print("Comptes : admin@, coordination@, tilleuls@, direction@, agent@demo.hospitalos.fr")
+        return 0
+
+    if args.command == "seed-demo-mco":
+        from services.admissions_smr.seed_mco import EMAIL_DOMAIN, GROUP_NAME, seed_demo_mco
+
+        try:
+            if session.scalar(select(Group.id).where(Group.name == GROUP_NAME)):
+                print("Le groupe de démonstration MCO existe déjà", file=sys.stderr)
+                return 1
+            group = seed_demo_mco(
+                session, clock.now(), args.password, settings.password_iterations, settings.timezone
+            )
+        finally:  # no transaction left open (it would block a schema change on PostgreSQL)
+            session.close()
+            engine.dispose()
+        print(f"Hôpital MCO de démonstration créé (id {group.id}).")
+        print(f"Comptes : bedmanager@, cadre@, direction@, admin@, agent@{EMAIL_DOMAIN}")
         return 0
     return 2
 
