@@ -278,6 +278,29 @@ pourrait leur apporter. **Aucun envoi** : pas de connexion au ROR, rien n'est é
 - Non suivi : disponibilité par genre, capacité supplémentaire, identifiant ROR des unités.
   Un envoi réel demande aussi l'habilitation au flux d'alimentation du ROR (ANS, ARS).
 
+## Mouvements patients (HL7 IHE PAM France)
+
+Les entrées, mutations, sorties et passages aux urgences arrivent sans saisie, du SI
+(GAM ou EAI) en HL7 v2.5 IHE PAM France, ou de l'agent qui lit l'écran du logiciel de
+gestion des lits. Détails, sources et hypothèses : `docs/liscop/HL7_PAM.md`.
+
+- `POST /api/ingest/hl7` : un message ER7 (`text/plain` ou `x-application/hl7-v2+er7`,
+  encadrement MLLP toléré, 64 Ko au plus : `ADM_HL7_MAX_BYTES`), compte de service
+  `ingestion` uniquement. Réponse : l'ACK HL7 (AA → 200, AE → 422, AR → 400, trop gros → 413).
+- `POST /api/ingest/movements` : les mêmes mouvements en JSON (agent), 500 au plus par lot.
+- `GET /api/movements` : journal paginé, pseudonymisé, avec le taux de rejet sur 24 h.
+- Événements : A01, A02, A03, A04, A06, A07, A11, A12, A13, A21, A22, A52, A53, Z99 ; les
+  autres sont accusés et journalisés `ignored`. Un message renvoyé est sans effet.
+- IPP et NDA deviennent des HMAC (`ADM_PSEUDONYM_SECRET`) ; noms, INS/NIR, dates de
+  naissance, adresses et téléphones ne sont ni lus ni stockés (test qui inspecte toutes
+  les tables). Le journal garde une empreinte SHA-256, jamais le message.
+- Les unités sont reconnues par leur code UF (`bed_pools.uf_code`), le site par son
+  FINESS : les renseigner avant de brancher le flux.
+
+Flux de démonstration : `python -m tools.his_simulator --dry-run` affiche des messages ;
+`python -m tools.his_simulator --url http://localhost:8110 --rate 12` les envoie
+(compte `agent@ch-demo.hospitalos.fr` ; `--database-url` pour viser des lits libres).
+
 ## Ce qui reste à faire avant un pilote réel
 
 Fait dans cette version : migrations Alembic, PostgreSQL testé, connexion OIDC,

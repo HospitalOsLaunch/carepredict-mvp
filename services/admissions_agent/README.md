@@ -6,6 +6,7 @@ L'agent fait sur les portails d'orientation ce qu'une coordinatrice y fait à la
 | --- | --- | --- |
 | `sync_inbox` | Lit la liste des dossiers reçus et dépose chaque demande dans HospitalOS (idempotent). | Lecture seule |
 | `reply_portal` | Reporte sur le portail l'accord (avec la date d'entrée) ou le refus décidé dans HospitalOS. | Écriture chez un tiers |
+| `sync_movements` | Relève les mouvements du jour du logiciel de gestion des lits et les dépose dans HospitalOS (idempotent). | Lecture seule |
 
 Il tourne **dans le réseau de l'établissement**, à côté des portails, avec un compte de
 service `ingestion`. Il ne reçoit aucune connexion entrante : il appelle l'API HospitalOS,
@@ -120,6 +121,27 @@ champs à lire, transformations vers le vocabulaire HospitalOS), `reply_portal` 
 `wait_for`, `when`. Le script de ViaTrajectoire n'est pas fourni : il ne peut être
 écrit qu'avec un accès au portail, après vérification de ses conditions
 d'utilisation et accord de son opérateur.
+
+## Relever les mouvements patients (`sync_movements`)
+
+Quand le SI ne peut pas envoyer de flux HL7, l'agent lit l'écran « mouvements du jour »
+du logiciel de gestion des lits et poste les mouvements à `/api/ingest/movements` ; ils
+suivent ensuite exactement le chemin des messages HL7 (pseudonymisation, idempotence,
+annulations ; voir `docs/liscop/HL7_PAM.md`).
+
+- Un poste ne réserve que les tâches que son playbook sait faire : un agent placé à côté
+  du logiciel de gestion des lits (`AGENT_PLAYBOOK=playbooks/demo_bedsoft.yaml`,
+  `AGENT_PORTAL_URL` = ce logiciel) demande et traite seulement `sync_movements`.
+- Script seul : aucun modèle ne lit cet écran (route par défaut `["playbook"]`).
+- Seuls les champs du playbook quittent l'écran, puis une liste blanche les filtre encore ;
+  le nom et la date de naissance affichés ne sont jamais lus. Les libellés du logiciel
+  (« Entrée », « Mutation »…) sont traduits par une table `map` déclarée dans le playbook.
+- Un mouvement vu déjà annulé est envoyé comme son entrée suivie de son annulation : le
+  résultat est nul, et un nouveau relevé ne change rien.
+
+Logiciel fictif pour la démonstration et les tests :
+`uvicorn services.admissions_agent.demo_bedsoft.app:app --port 8120` (utilisateur
+`cadre`, mot de passe `demo-lits`).
 
 ## Limites honnêtes
 
