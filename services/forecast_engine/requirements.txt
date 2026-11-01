@@ -1,0 +1,4 @@
+# Forecast engine only (never installed in the API image). Approved in docs/liscop/SPEC.md.
+-r ../admissions_smr/requirements.txt
+statsforecast>=2.1,<3  # Nixtla, Apache-2.0: SeasonalNaive, AutoETS, AutoTheta, MSTL
+holidays>=0.60,<1  # MIT: French public holidays
