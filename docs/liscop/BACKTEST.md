@@ -102,7 +102,35 @@ python -m services.forecast_engine backtest --group <id>
 
 ## Amendements
 
-Aucun à ce jour.
+### 1er novembre 2026, avant toute exécution sur la fenêtre d'évaluation
+
+Contrôle sur la **période de développement** seulement : 10 origines hebdomadaires du
+2026-03-21 au 2026-05-23 (leur J+7 précède `o₁` = 2026-06-06), rupture injectée du
+2026-05-01 au 2026-05-21. Constats et changements, figés ici :
+
+- **A1. Report des sorties du week-end.** Les lits disponibles à J+1 (un dimanche : les
+  origines tombent un samedi) étaient mal calibrés (couverture 57,5 %, MAE 4,21 contre
+  1,86 pour la persistance) alors que J+2 à J+7 allaient bien. Cause : le modèle de
+  sorties (Kaplan-Meier par durée de séjour) ignore le jour de la semaine, alors que les
+  sorties du week-end sont reportées au lundi (dans le générateur comme dans les
+  hôpitaux). Changement : dans le Monte Carlo, une part des sorties de chaque jour est
+  reportée au lendemain pour reproduire le profil hebdomadaire observé des sorties des
+  12 semaines précédant l'origine (toutes unités ; `capacity.weekday_retention`). Après :
+  J+1 à 92,5 %, MAE 1,70.
+- **A2. Pas de l'ACI γ = 0,2** (au lieu de 0,05). Règle fixée avant de regarder : le plus
+  petit γ de la grille {0,05 ; 0,1 ; 0,2 ; 0,3} dont la couverture ACI poolée reste à
+  ±5 points de 80 % sur la rupture de développement. Résultats de développement
+  (statique 62,7 %) : ACI 70,4 / 72,3 / 75,3 / 76,2 %. γ = 0,2 est donc retenu ; il
+  s'applique aussi aux intervalles en production.
+- **A3. Mesure informative ajoutée, sans critère** : couverture à 80 % par PIT
+  randomisé (Czado, Gneiting & Held, *Biometrics* 2009) pour les lits disponibles, et la
+  part des cas « q10 = 0 et réalisé = 0 ». Raison : une unité pleine a un atome à 0 lit
+  disponible ; l'intervalle [q10, q90] bornes incluses sur-couvre alors par construction
+  (en développement : 94,1 % en inclusif contre 83,8 % en PIT randomisé, 22 % des cas
+  sont « 0 prévu en q10, 0 réalisé »). Le critère (b) reste **inchangé** (couverture
+  inclusive dans [75 %, 85 %]) et sera jugé tel quel.
+
+Rien d'autre n'a été modifié. Les critères (a) à (d) sont inchangés.
 
 ## Résultats
 
