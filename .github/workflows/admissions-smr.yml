@@ -91,6 +91,7 @@ jobs:
         env:
           ADM_DB_PASSWORD: ci-only-password
           ADM_SECRET_KEY: ci-only-secret-key-not-for-production-0123456789
+          ADM_PSEUDONYM_SECRET: ci-only-pseudonym-secret-not-for-production-0123
         run: |
           docker compose -f docker-compose.admissions.yml up -d --build db api web
           curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health

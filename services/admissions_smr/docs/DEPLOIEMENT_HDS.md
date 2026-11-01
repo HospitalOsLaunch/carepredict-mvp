@@ -56,6 +56,7 @@ de HospitalOS pour l'activité 5 est probablement nécessaire.
 | `ADM_ENV` | `production` (l'API refuse alors SQLite et la clé de développement) |
 | `ADM_DATABASE_URL` | `postgresql+psycopg://…@<hôte privé>/admissions?sslmode=require` |
 | `ADM_SECRET_KEY` | 32 caractères aléatoires au moins, dans le coffre de secrets de l'hébergeur |
+| `ADM_PSEUDONYM_SECRET` | Clé HMAC des IPP / NDA reçus en HL7 : 32 caractères aléatoires au moins, distincte de `ADM_SECRET_KEY`, jamais changée (sinon les références ne correspondent plus) |
 | `ADM_CORS_ORIGINS` | vide (même origine derrière nginx) |
 | `ADM_OIDC_*`, `ADM_FRONTEND_URL` | voir le README du module |
 | `ADM_PASSWORD_LOGIN` | `0` une fois l'OIDC en place (les comptes de service gardent le mot de passe) |

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 _DEV_SECRET = "dev-only-secret-change-me"
+_DEV_PSEUDONYM_SECRET = "dev-only-pseudonym-secret-change-me"
 
 
 class ConfigurationError(RuntimeError):
@@ -44,6 +45,9 @@ class Settings:
     oidc: OidcSettings | None = None
     # Service accounts (role "ingestion") always keep password sign-in.
     password_login: bool = True
+    # HMAC key that turns IPP / NDA into pseudonymous references. Separate from secret_key:
+    # rotating the token key must not change every stored reference.
+    pseudonym_secret: str = _DEV_PSEUDONYM_SECRET
 
     @property
     def is_production(self) -> bool:
@@ -86,11 +90,20 @@ def load_settings() -> Settings:
         ),
         oidc=load_oidc(),
         password_login=os.getenv("ADM_PASSWORD_LOGIN", "1") != "0",
+        pseudonym_secret=os.getenv("ADM_PSEUDONYM_SECRET", _DEV_PSEUDONYM_SECRET),
     )
     if settings.is_production:
         if settings.secret_key == _DEV_SECRET or len(settings.secret_key) < 32:
             raise ConfigurationError(
                 "ADM_SECRET_KEY must be set to a 32+ char secret in production"
+            )
+        if (
+            settings.pseudonym_secret == _DEV_PSEUDONYM_SECRET
+            or len(settings.pseudonym_secret) < 32
+            or settings.pseudonym_secret == settings.secret_key
+        ):
+            raise ConfigurationError(
+                "ADM_PSEUDONYM_SECRET must be set to its own 32+ char secret in production"
             )
         if settings.database_url.startswith("sqlite"):
             raise ConfigurationError("SQLite is not allowed in production; use PostgreSQL (HDS)")

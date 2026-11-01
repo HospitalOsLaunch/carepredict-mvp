@@ -46,4 +46,32 @@ def test_production_refuses_default_secret_and_sqlite(monkeypatch: pytest.Monkey
     with pytest.raises(ConfigurationError):
         load_settings()
     monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@db/adm")
+    monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
     assert load_settings().is_production
+
+
+def test_production_requires_its_own_pseudonymisation_secret(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ADM_ENV", "production")
+    monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
+    monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@db/adm")
+    monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
+    with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
+        load_settings()
+    monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "short")
+    with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
+        load_settings()
+    monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "k" * 40)  # same as the token key
+    with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
+        load_settings()
+    monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    assert load_settings().pseudonym_secret == "p" * 40
+
+
+def test_development_has_a_pseudonymisation_secret_by_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ADM_ENV", "development")
+    monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
+    assert len(load_settings().pseudonym_secret) >= 16
