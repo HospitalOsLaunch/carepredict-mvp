@@ -31,7 +31,7 @@ import numpy as np
 import numpy.typing as npt
 
 ALPHA = 0.2  # 80 % intervals (q10, q90)
-GAMMA = 0.05  # ACI step size
+GAMMA = 0.2  # ACI step size (amendment A2 of docs/liscop/BACKTEST.md)
 WINDOW = 56  # calibration residuals kept (8 weeks of daily forecasts)
 MIN_CALIBRATION = 10
 

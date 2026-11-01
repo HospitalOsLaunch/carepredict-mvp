@@ -20,6 +20,9 @@ For one unit, with D the discharges and A the arrivals, day k = 0..H-1 (J+0..J+7
 - Promised admissions (accepted requests, emergency patients already waiting for this
   unit) are a floor on cumulative arrivals: A_cum = max(promised_cum, sampled A_cum), i.e.
   available = open − occupied − promised + discharges − arrivals not already promised.
+- Weekday practice (fewer discharges at weekends, more on Monday) is not in the discharge
+  model; a share of each day's discharges is postponed to the next day so that the
+  observed weekday profile is reproduced (``weekday_retention``).
 - Patients arriving within the horizon may also leave within it: each day's arrivals
   leave on the following days by a multinomial draw from the length-of-stay law of a new
   stay of the unit (same discharge model, time spent = 0).
@@ -88,6 +91,26 @@ def sample_counts(
     return rng.poisson(lam).astype(np.int64)
 
 
+def weekday_retention(factors: Sequence[float], rounds: int = 4) -> list[float]:
+    """Share of the discharges due on each weekday that happen that day (Monday first).
+
+    ``factors`` is the observed discharge profile (mean discharges on each weekday over the
+    overall daily mean). The discharge model has no calendar: it spreads discharges evenly
+    over the week. Postponing, on each day, the part above what that day usually sees to
+    the next day reproduces the profile (weekend discharges done on Monday) while keeping
+    the weekly total. Solved by going round the week until the carried part settles.
+    """
+    f = [max(0.0, x) for x in factors]
+    carry = 0.0  # carried in, in units of one average day
+    keep = [1.0] * 7
+    for _ in range(rounds):
+        for d in range(7):
+            due = 1.0 + carry
+            keep[d] = min(1.0, f[d] / due)
+            carry = due * (1.0 - keep[d])
+    return keep
+
+
 def common_shock_variance(relative_errors: Iterable[FloatArray]) -> float:
     """Mean covariance between the relative errors of different series (aligned by date).
 
@@ -114,6 +137,7 @@ class UnitInputs:
     arrivals_centre: Sequence[float] | FloatArray
     arrivals_q10: Sequence[float] | FloatArray
     arrivals_q90: Sequence[float] | FloatArray
+    discharge_retention: Sequence[float] = ()  # per day; empty = no weekday postponement
 
 
 @dataclass(frozen=True)
@@ -159,6 +183,13 @@ def simulate_unit(
         pvals = np.append(pmf[:span], max(0.0, 1.0 - pmf[:span].sum()))
         moved = rng.multinomial(arrivals[:, j], pvals / pvals.sum())
         discharges[:, j:] += moved[:, :span]
+
+    # Weekday practice: a discharge not kept on its day moves to the next day.
+    carry = np.zeros(draws, dtype=np.int64)
+    for k, keep in enumerate(unit.discharge_retention):
+        due = discharges[:, k] + carry
+        discharges[:, k] = rng.binomial(due, min(1.0, max(0.0, keep)))
+        carry = due - discharges[:, k]
 
     occupied = unit.occupied + arrivals_cum - np.cumsum(discharges, axis=1)
     open_beds = np.asarray(unit.open_beds, dtype=np.int64)

@@ -16,6 +16,7 @@ from services.forecast_engine.capacity import (
     simulate_unit,
     summarise,
     tension_probabilities,
+    weekday_retention,
 )
 
 DAYS = 8
@@ -155,3 +156,34 @@ def test_tension_probabilities_follow_the_liscop_thresholds() -> None:
     p_tension, p_critique = tension_probabilities(available, [20])
 
     assert p_tension.tolist() == [0.5] and p_critique.tolist() == [0.25]
+
+
+def test_weekday_retention_reproduces_a_weekend_profile() -> None:
+    # Arrange: 60 % of weekend discharges done on Monday (Monday first).
+    profile = [2.2, 1.0, 1.0, 1.0, 1.0, 0.4, 0.4]
+
+    # Act
+    keep = weekday_retention(profile)
+
+    # Assert: even daily discharges, postponed as computed, give back the profile.
+    carry, seen = 0.0, []
+    for _ in range(3):
+        for d in range(7):
+            due = 1.0 + carry
+            seen.append(due * keep[d])
+            carry = due - seen[-1]
+    assert seen[-7:] == pytest.approx(profile, abs=1e-6)
+
+
+def test_postponed_discharges_move_to_the_next_day() -> None:
+    rng = np.random.default_rng(8)
+    nobody = {"arrivals_centre": [0.0] * DAYS, "arrivals_q10": [0.0] * DAYS}
+    everyone_today = np.tile(np.ones(DAYS), (18, 1))
+
+    out = simulate_unit(
+        unit(discharge_cdfs=everyone_today, discharge_retention=[0.0, 1.0] + [1.0] * 6, **nobody),
+        rng,
+    )
+
+    assert np.all(out.discharges[:, 0] == 0) and np.all(out.discharges[:, 1] == 18)
+    assert np.all(out.available[:, 0] == 2) and np.all(out.available[:, 1] == 20)
