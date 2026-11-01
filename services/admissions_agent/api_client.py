@@ -47,6 +47,7 @@ class HospitalOSClient:
                 "/begin-write",
                 "/authorize",
                 "/ingest/requests",
+                "/ingest/movements",
             )
         )
         for attempt in range(3 if safe else 1):
@@ -105,12 +106,13 @@ class HospitalOSClient:
         )
         return result
 
-    def claim(self, agent_id: str, limit: int = 1) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = self._call(
-            "POST",
-            "/api/agent/tasks/claim",
-            {"protocol_version": 2, "agent_id": agent_id, "limit": limit},
-        )
+    def claim(
+        self, agent_id: str, limit: int = 1, kinds: list[str] | None = None
+    ) -> list[dict[str, Any]]:
+        body: dict[str, Any] = {"protocol_version": 2, "agent_id": agent_id, "limit": limit}
+        if kinds is not None:
+            body["kinds"] = kinds
+        result: list[dict[str, Any]] = self._call("POST", "/api/agent/tasks/claim", body)
         for task in result:
             self.leases[int(task["id"])] = {
                 "agent_id": agent_id,
@@ -151,8 +153,12 @@ class HospitalOSClient:
         result: dict[str, Any] = self._call("POST", "/api/ingest/requests", request)
         return result
 
-    def request_sync(self) -> dict[str, Any]:
-        result: dict[str, Any] = self._call("POST", "/api/agent/sync")
+    def request_sync(self, kind: str = "sync_inbox") -> dict[str, Any]:
+        result: dict[str, Any] = self._call("POST", f"/api/agent/sync?kind={kind}")
+        return result
+
+    def ingest_movements(self, movements: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        result: list[dict[str, Any]] = self._call("POST", "/api/ingest/movements", movements)
         return result
 
     def calibration(

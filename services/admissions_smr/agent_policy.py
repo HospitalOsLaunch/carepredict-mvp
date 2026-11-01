@@ -25,7 +25,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-TASK_KINDS = ("sync_inbox", "reply_portal")
+TASK_KINDS = ("sync_inbox", "reply_portal", "sync_movements")
 ENGINE_NAMES = ("playbook", "open_light", "open_heavy", "closed_fast", "closed_best")
 
 EngineKind = Literal["playbook", "openai_compatible", "anthropic"]
@@ -135,6 +135,8 @@ def default_policy() -> AgentPolicy:
         routes={
             "sync_inbox": ["playbook", "open_light", "closed_fast"],
             "reply_portal": ["playbook", "open_heavy", "closed_best"],
+            # Movements are read by script only: no model goal exists for that screen yet.
+            "sync_movements": ["playbook"],
         },
         task_budget_usd={"sync_inbox": 0.5, "reply_portal": 1.0},
     )
@@ -143,4 +145,7 @@ def default_policy() -> AgentPolicy:
 def parse_policy(raw: str | None) -> AgentPolicy:
     if not raw or raw.strip() in ("", "{}"):
         return default_policy()
-    return AgentPolicy.model_validate_json(raw)
+    policy = AgentPolicy.model_validate_json(raw)
+    for kind, chain in default_policy().routes.items():  # task kinds added after it was saved
+        policy.routes.setdefault(kind, chain)
+    return policy

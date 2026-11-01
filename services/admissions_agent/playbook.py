@@ -170,8 +170,12 @@ class Playbook:
             if not raw.strip() and spec.get("optional"):
                 continue
             try:
+                if "map" in spec:  # screen label -> code, declared in the playbook
+                    choices = {fold(str(k)): v for k, v in spec["map"].items()}
+                    out[name] = choices[fold(raw)]
+                    continue
                 out[name] = transforms.apply(spec.get("transform"), raw)
-            except (ValueError, PlaybookError) as exc:
+            except (ValueError, KeyError, PlaybookError) as exc:
                 raise PlaybookError(f"champ {name} illisible : « {raw.strip()} » ({exc})") from exc
         return out
 
@@ -180,21 +184,30 @@ class Playbook:
     def login(self, session: BrowserSession, secrets: dict[str, str]) -> None:
         self.run_steps(session, self.spec.get("login", []), {"secrets": secrets})
 
-    def sync_inbox(self, session: BrowserSession, transforms: Transforms) -> list[dict[str, Any]]:
-        spec = self.spec["sync_inbox"]
+    def read_listing(
+        self, session: BrowserSession, task: str, transforms: Transforms
+    ) -> list[dict[str, Any]]:
+        """Open each row of a list and read the playbook's fields (and only those)."""
+        spec = self.spec[task]
         listing = spec["list"]
         session.goto(listing["goto"])
         refs = [
             r.get_attribute(listing["ref_attribute"]) or ""
             for r in session.page.locator(listing["rows"]).all()
         ]
-        requests: list[dict[str, Any]] = []
+        items: list[dict[str, Any]] = []
         for ref in [r for r in refs if r]:
             session.goto(render(listing["detail_path"], {"ref": ref}))
             fields = self.read_fields(session, spec["fields"], transforms)
             fields.update(spec.get("constants", {}))
-            fields["patient_ref"] = fields[spec.get("patient_ref_from", "external_ref")]
-            requests.append(fields)
+            items.append(fields)
+        return items
+
+    def sync_inbox(self, session: BrowserSession, transforms: Transforms) -> list[dict[str, Any]]:
+        requests = self.read_listing(session, "sync_inbox", transforms)
+        key = self.spec["sync_inbox"].get("patient_ref_from", "external_ref")
+        for fields in requests:
+            fields["patient_ref"] = fields[key]
         return requests
 
     def reply(self, session: BrowserSession, payload: dict[str, Any]) -> None:

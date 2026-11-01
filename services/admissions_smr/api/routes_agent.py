@@ -705,7 +705,7 @@ def resume(ctx: AdminCtx) -> AgentStatusOut:
 
 
 @router.post("/sync", response_model=TaskOut, status_code=201)
-def sync_now(ctx: SyncCtx) -> TaskOut:
+def sync_now(ctx: SyncCtx, kind: Literal["sync_inbox", "sync_movements"] = "sync_inbox") -> TaskOut:
     if ctx.site_scope is not None:
         raise HTTPException(
             403, "La synchronisation du groupe est réservée à la coordination groupe"
@@ -714,7 +714,7 @@ def sync_now(ctx: SyncCtx) -> TaskOut:
     existing = ctx.session.scalar(
         select(AgentTask).where(
             AgentTask.group_id == ctx.group.id,
-            AgentTask.kind == "sync_inbox",
+            AgentTask.kind == kind,
             AgentTask.status.in_(("pending", "running")),
         )
     )
@@ -723,14 +723,14 @@ def sync_now(ctx: SyncCtx) -> TaskOut:
     now = ctx.clock.now()
     task = AgentTask(
         group_id=ctx.group.id,
-        kind="sync_inbox",
+        kind=kind,
         payload_json="{}",
         status="pending",
         created_at=now,
         updated_at=now,
     )
     ctx.session.add(task)
-    ctx.audit("agent.synchro", "agent", None, "demandée")
+    ctx.audit("agent.synchro", "agent", None, f"demandée ({kind})")
     ctx.session.commit()
     return task_out(task)
 
