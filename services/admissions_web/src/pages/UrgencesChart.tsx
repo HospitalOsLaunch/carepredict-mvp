@@ -1,4 +1,4 @@
-import { Bar, CartesianGrid, Cell, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, Bar, CartesianGrid, Cell, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ErrorNote, Spinner } from "../components/ui";
 import { fmtNum, fmtShort } from "../lib/format";
@@ -23,7 +23,7 @@ export function BoardingChart({ siteId }: { siteId: number }) {
       ) : series.error ? (
         <ErrorNote error={series.error} />
       ) : (
-        <div className="mt-3 h-64" role="img" aria-label={`Histogramme des lits brancards à 10 h sur ${days.length} jours, pic à ${peak}.`}>
+        <div className="mt-3 h-72" role="img" aria-label={`Histogramme des lits brancards à 10 h sur ${days.length} jours, pic à ${peak}.`}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
               <CartesianGrid stroke="#D9E0F5" vertical={false} />
@@ -36,19 +36,19 @@ export function BoardingChart({ siteId }: { siteId: number }) {
                   return p?.source === "declaration" ? `${label} (déclaré)` : String(label);
                 }}
               />
+              <Area
+                dataKey="waiting_bed"
+                name="En attente de lit à 10 h"
+                type="stepAfter"
+                fill="#ECE8FF"
+                stroke="#B9AAFB"
+                isAnimationActive={false}
+              />
               <Bar dataKey="boarding" name="Lits brancards à 10 h" radius={[4, 4, 0, 0]} isAnimationActive={false}>
                 {data.map((d) => (
                   <Cell key={d.day} fill={d.source === "declaration" ? "#FFB21E" : "#FF6B57"} />
                 ))}
               </Bar>
-              <Line
-                dataKey="waiting_bed"
-                name="En attente de lit à 10 h"
-                stroke="#5B3DF5"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-              />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -61,7 +61,7 @@ export function BoardingChart({ siteId }: { siteId: number }) {
           <span className="h-3 w-3 rounded-sm bg-sun" aria-hidden /> déclaré à la main
         </span>
         <span className="inline-flex items-center gap-1">
-          <span className="h-0.5 w-4 bg-violet" aria-hidden /> en attente de lit à 10 h
+          <span className="h-3 w-3 rounded-sm border border-violet/40 bg-violet-soft" aria-hidden /> en attente de lit à 10 h
         </span>
       </p>
     </section>

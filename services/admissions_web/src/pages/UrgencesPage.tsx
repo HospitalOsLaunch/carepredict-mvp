@@ -94,7 +94,7 @@ function CensusCards({ census }: { census: EdCensus }) {
       ? "Calculé à 10:00 à partir des mouvements"
       : "Provisoire : 10:00 n'est pas encore passé";
   return (
-    <section aria-label={`Recensement, ${census.site_name}`} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section aria-label={`Recensement, ${census.site_name}`} className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       <Card value={fmtNum(now.present)} label="présents aux urgences" note={`Au ${fmtDateTime(now.at)}`} tone="before:bg-violet" />
       <Card
         value={fmtNum(now.waiting_bed)}
