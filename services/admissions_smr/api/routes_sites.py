@@ -11,7 +11,7 @@ from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadC
 from services.admissions_smr.models import BedPool, CapacityChange, Site, Stay
 from services.admissions_smr.schemas import PoolOut, PoolUpsert, SiteCreate, SiteOut, SiteUpdate
 from services.admissions_smr.service import get_site, group_sites, join_codes, split_codes
-from services.admissions_smr.vocab import MENTIONS
+from services.admissions_smr.vocab import UNIT_CODES, UNIT_KINDS
 
 router = APIRouter(tags=["sites"])
 
@@ -99,8 +99,8 @@ def update_site(site_id: int, body: SiteUpdate, ctx: AdminCtx) -> SiteOut:
 
 @router.put("/sites/{site_id}/pools/{mention}", response_model=SiteOut)
 def upsert_pool(site_id: int, mention: str, body: PoolUpsert, ctx: WriteCtx) -> SiteOut:
-    if mention not in MENTIONS:
-        raise HTTPException(UNPROCESSABLE, "Mention inconnue")
+    if mention not in UNIT_CODES:
+        raise HTTPException(UNPROCESSABLE, "Code d'unité inconnu")
     site = get_site(ctx, site_id)
     if not ctx.can_see_site(site.id):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Site hors de votre périmètre")
@@ -112,7 +112,15 @@ def upsert_pool(site_id: int, mention: str, body: PoolUpsert, ctx: WriteCtx) -> 
             raise HTTPException(
                 status.HTTP_403_FORBIDDEN, "Seul un administrateur crée une mention"
             )
-        pool = BedPool(site_id=site.id, mention=mention, beds_installed=0, beds_open=0)
+        unit_type, discipline = UNIT_KINDS.get(mention, ("smr", "smr"))
+        pool = BedPool(
+            site_id=site.id,
+            mention=mention,
+            beds_installed=0,
+            beds_open=0,
+            unit_type=unit_type,
+            discipline=discipline,
+        )
         site.pools.append(pool)
     elif body.beds_installed != pool.beds_installed and ctx.user.role != "admin_groupe":
         raise HTTPException(
