@@ -41,6 +41,7 @@ pip install -r services/admissions_smr/requirements-dev.txt
 
 export ADM_DATABASE_URL=sqlite:///./admissions_demo.db
 python -m services.admissions_smr.cli seed-demo          # groupe synthétique
+python -m services.admissions_smr.cli seed-demo-mco      # hôpital MCO fictif (LISCOP)
 uvicorn services.admissions_smr.main:app --port 8010      # API : http://localhost:8010/api/docs
 
 cd services/admissions_web && npm ci && npm run dev       # http://localhost:5174
@@ -62,6 +63,14 @@ AGENT_PORTAL_USERNAME=demo AGENT_PORTAL_PASSWORD=demo-portail \
 Comptes de démonstration (mot de passe `demo-hospitalos-2026`, ou `ADM_DEMO_PASSWORD`) :
 `admin@`, `coordination@`, `tilleuls@` (limité à un site), `direction@` (lecture),
 `agent@` (compte de service) `demo.hospitalos.fr`.
+
+Hôpital MCO de démonstration (`seed-demo-mco`, même mot de passe) : « Centre hospitalier
+des Deux-Rivières (fictif) », département 59, un site MCO avec urgences et un site SMR,
+environ 250 lits en chambres simples et doubles, un an de passages aux urgences et de
+séjours (références pseudonymes aléatoires, aucune identité). Comptes `bedmanager@` et
+`cadre@` (coordination), `direction@` (lecture), `admin@`, `agent@` (compte de service)
+`ch-demo.hospitalos.fr`. En production, `ADM_PSEUDONYM_SECRET` (clé HMAC des IPP / NDA,
+32 caractères au moins, distincte de `ADM_SECRET_KEY`) est obligatoire.
 
 Premier groupe réel :
 
