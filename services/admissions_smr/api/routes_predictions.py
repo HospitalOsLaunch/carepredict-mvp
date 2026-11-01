@@ -35,7 +35,7 @@ from services.admissions_smr.service import (
     group_sites,
     reserved_arrivals,
 )
-from services.admissions_smr.vocab import MENTIONS
+from services.admissions_smr.vocab import UNIT_CODES
 
 router = APIRouter(tags=["predictions"])
 
@@ -188,8 +188,8 @@ def list_staffing(ctx: ReadCtx, site_id: int | None = None) -> list[StaffPoolOut
 
 
 def _pool_site(ctx: Ctx, site_id: int, mention: str) -> Site:
-    if mention not in MENTIONS:
-        raise HTTPException(UNPROCESSABLE, "Mention inconnue")
+    if mention not in UNIT_CODES:
+        raise HTTPException(UNPROCESSABLE, "Code d'unité inconnu")
     site = get_site(ctx, site_id)
     if not ctx.can_see_site(site.id):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Site hors de votre périmètre")
