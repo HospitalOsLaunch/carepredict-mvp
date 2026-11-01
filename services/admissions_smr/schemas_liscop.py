@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import AwareDatetime, BaseModel, Field
 
 from services.admissions_smr.schemas import Strict
 
@@ -243,14 +243,7 @@ class TensionDeclarationPatch(Strict):
 
 # --- movement-ingest ---
 
-MOVEMENT_BATCH_MAX = 500  # items per POST /api/ingest/movements (also splits import blocks)
-
-from datetime import datetime  # noqa: E402
-from typing import Literal  # noqa: E402
-
-from pydantic import AwareDatetime, BaseModel, Field  # noqa: E402
-
-from services.admissions_smr.schemas import Strict  # noqa: E402
+MOVEMENT_BATCH_MAX = 500  # items per POST /api/ingest/movements
 
 
 class MovementIn(Strict):
