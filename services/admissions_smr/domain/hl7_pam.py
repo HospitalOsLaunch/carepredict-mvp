@@ -128,6 +128,7 @@ class ParsedMovement:
     # Clear identifiers: memory only, pseudonymised before anything is written.
     encounter_id: str = field(default="", repr=False)
     patient_id: str = field(default="", repr=False)
+    header: Header | None = field(default=None, repr=False, compare=False)
 
     @property
     def supported(self) -> bool:
@@ -241,7 +242,7 @@ def parse(raw: bytes, zone: ZoneInfo, max_bytes: int = DEFAULT_MAX_BYTES) -> Par
     """Validate and read one ADT message. Raises ``Hl7Error`` (with the header when known)."""
     message, header = parse_header(decode(raw, max_bytes))
     try:
-        return _movement(message, header, zone, digest(raw))
+        return replace(_movement(message, header, zone, digest(raw)), header=header)
     except Hl7Error as exc:
         exc.header = header
         raise

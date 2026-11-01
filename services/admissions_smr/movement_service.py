@@ -442,3 +442,38 @@ def _sex_warnings(session: Session, bed: Bed, stay: Stay) -> list[str]:
     if any(s in ("F", "M") and s != sex for s in roommates):
         out.append(f"Chambre {bed.room} partagée avec un patient de l'autre sexe")
     return out
+
+
+def record_rejection(
+    session: Session,
+    group: Group,
+    source_system: str,
+    control_id: str,
+    event: str,
+    error: str,
+    now: datetime,
+    message_digest: str,
+) -> Movement | None:
+    """Journal a message refused before it could be read (keeps the rejection rate honest).
+
+    A control id already accepted is left untouched: that message was a resend.
+    """
+    row = session.scalar(
+        select(Movement).where(
+            Movement.group_id == group.id,
+            Movement.source_system == source_system,
+            Movement.message_control_id == control_id,
+        )
+    )
+    if row is not None and row.status != "rejected":
+        return None
+    row = row or Movement(
+        group_id=group.id, source_system=source_system, message_control_id=control_id
+    )
+    row.event, row.action, row.occurred_at = event[:7] or "?", "INSERT", now
+    row.encounter_ref = row.patient_ref = ""
+    row.status, row.error = "rejected", error
+    row.message_digest, row.received_at = message_digest, now
+    session.add(row)
+    session.flush()
+    return row
