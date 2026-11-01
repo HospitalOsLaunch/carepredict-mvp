@@ -12,6 +12,10 @@ from services.admissions_smr import __version__
 from services.admissions_smr.api import (
     routes_agent,
     routes_auth,
+    routes_beds,
+    routes_ed,
+    routes_forecast_store,
+    routes_hl7,
     routes_imports,
     routes_insights,
     routes_predictions,
@@ -69,6 +73,10 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
         routes_predictions,
         routes_ror,
         routes_imports,
+        routes_beds,
+        routes_ed,
+        routes_hl7,
+        routes_forecast_store,
     ):
         api.include_router(module.router)
     app.include_router(api)
