@@ -22,6 +22,11 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
+# The LISCOP tension legend lives in domain.tension; re-exported for existing callers.
+from services.admissions_smr.domain.tension import TENSION_NORMAL_MIN as TENSION_NORMAL_MIN
+from services.admissions_smr.domain.tension import Tension as Tension
+from services.admissions_smr.domain.tension import tension_of as tension_of
+
 # --- ANS vocabularies -------------------------------------------------------------------
 
 STATUS_INSTALLED = ("01", "Installé")
@@ -45,10 +50,6 @@ CLOSURE_TYPE_BY_REASON: dict[str, tuple[str, str]] = {
 
 # Forecast horizons shown by LISCOP next to the capacity: day offsets from today.
 FORECAST_OFFSETS: tuple[int, ...] = (1, 2, 7)
-
-# Tension levels of the LISCOP legend for health-care units ("sanitaire"): available
-# beds over installed beds. Taken from the LISCOP service presentation; to confirm.
-TENSION_NORMAL_MIN = 0.20
 
 # Fields the ROR knows that the pilot does not record yet.
 NOT_RECORDED: tuple[str, ...] = (
@@ -112,12 +113,6 @@ class ForecastLine:
 
 
 @dataclass(frozen=True)
-class Tension:
-    level: str  # normal | tension | critique
-    availability_rate: float | None
-
-
-@dataclass(frozen=True)
 class UnitExport:
     site_id: int
     site_name: str
@@ -141,19 +136,6 @@ def available_beds(beds_open: int, occupied: int, reserved_24h: int) -> int:
     """J188 "disponible": a patient can be placed now, with staff, and the bed is not
     promised to an identified patient within 24 hours. Open beds are taken as staffed."""
     return max(0, beds_open - occupied - reserved_24h)
-
-
-def tension_of(available: int, installed: int) -> Tension:
-    if installed <= 0:
-        return Tension(level="normal", availability_rate=None)
-    rate = available / installed
-    if available <= 0:
-        level = "critique"
-    elif rate < TENSION_NORMAL_MIN:
-        level = "tension"
-    else:
-        level = "normal"
-    return Tension(level=level, availability_rate=round(rate, 4))
 
 
 def unit_export(pool: PoolSnapshot, as_of: date) -> UnitExport:
