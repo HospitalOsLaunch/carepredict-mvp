@@ -306,6 +306,7 @@ def compute(
 
 
 PROFILE_WEEKS = 12
+RECENT_DAYS = 28  # observed values kept with the run, for the charts
 
 
 def discharge_profile(history: History, pools: Iterable[int], last_day: date) -> list[float]:
@@ -361,8 +362,17 @@ def run_metrics(
             m: int(history.unit_series[f"arrivals_{m}"][pool_id][start:stop].sum())
             for m in ("urgences", "programme", "mutation", "transfert", "autre")
         }
+    recent: dict[str, dict[str, float]] = {}
+    for key, values in series.items():
+        if key.startswith(("arrivals:", "boarding_10h:", f"{ED_ARRIVALS}:")):
+            tail = values[-RECENT_DAYS:]
+            first = last_day - timedelta(days=len(tail) - 1)
+            recent[key] = {
+                (first + timedelta(days=i)).isoformat(): float(v) for i, v in enumerate(tail)
+            }
     return {
         "history": {"first_day": history.first_day.isoformat(), "last_day": last_day.isoformat()},
+        "recent_observed": recent,
         "series": per_series,
         "models_chosen": dict(chosen),
         "fallback_series": sorted(k for k, fc in forecasts.items() if fc.fallback),

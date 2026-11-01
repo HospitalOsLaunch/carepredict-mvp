@@ -63,3 +63,35 @@ def utcnow() -> datetime:
 def load_json(text: str) -> dict[str, Any]:
     value = json.loads(text or "{}")
     return value if isinstance(value, dict) else {}
+
+
+def save_backtest(session: Session, group_id: int, report: dict[str, Any], now: datetime) -> None:
+    """The backtest headline, as a run with status ``backtest`` (no values), for the page."""
+    arrivals, beds = report["arrivals"]["pooled"], report["available_beds"]["pooled"]
+    boarding = report["boarding_10h"].get("pooled", {})
+    headline = {
+        "gates": report["gates"],
+        "origins": len(report["origins"]),
+        "arrivals_mae_ratio": arrivals["mae_ratio"],
+        "arrivals_coverage_80": arrivals["coverage_80"],
+        "beds_coverage_80": beds["coverage_80"],
+        "beds_coverage_80_randomised": beds.get("coverage_80_randomised"),
+        "boarding_mae_ratio": boarding.get("mae_ratio"),
+        "regime_shift": {
+            "static": report["regime_shift"]["static"]["pooled"],
+            "aci": report["regime_shift"]["aci"]["pooled"],
+        },
+    }
+    session.add(
+        ForecastRun(
+            group_id=group_id,
+            created_at=now,
+            as_of=date.fromisoformat(report["last_full_day"]),
+            model_version=report.get("model_version", ""),
+            horizon_days=HORIZON,
+            status="backtest",
+            params_json="{}",
+            metrics_json=json.dumps(headline, ensure_ascii=False),
+        )
+    )
+    session.commit()

@@ -26,7 +26,7 @@ from services.admissions_smr.models import Group
 from services.forecast_engine import MODEL_VERSION
 from services.forecast_engine.data import load_history
 from services.forecast_engine.pipeline import compute
-from services.forecast_engine.store import save_failure, save_run, utcnow
+from services.forecast_engine.store import save_backtest, save_failure, save_run, utcnow
 
 log = logging.getLogger("forecast_engine")
 
@@ -56,8 +56,10 @@ def main(argv: list[str] | None = None) -> int:
 
             with factory() as session:
                 report = run_backtest(session, args.group, clock.today(), settings.timezone)
+                report["model_version"] = MODEL_VERSION
+                save_backtest(session, args.group, report, utcnow())
             if args.out:
-                args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2))
+                args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str))
             print(render_markdown(report))
             return 0
         with factory() as session:
