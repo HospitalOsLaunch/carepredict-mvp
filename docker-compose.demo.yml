@@ -98,5 +98,28 @@ services:
       portal:
         condition: service_started
 
+  # Prévision LISCOP (démo) : charge l'hôpital MCO fictif s'il manque, calcule les
+  # prévisions de tous les groupes au démarrage puis toutes les FORECAST_EVERY_HOURS heures.
+  forecast:
+    build:
+      context: .
+      dockerfile: services/forecast_engine/Dockerfile
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        python -m services.admissions_smr.cli seed-demo-mco || true;
+        while true; do
+          python -m services.forecast_engine run --all;
+          sleep $$(( $${FORECAST_EVERY_HOURS:-6} * 3600 ));
+        done
+    environment:
+      ADM_ENV: development
+      ADM_DATABASE_URL: postgresql+psycopg://admissions:demo-only@db:5432/admissions
+      ADM_TIMEZONE: Europe/Paris
+      FORECAST_EVERY_HOURS: ${FORECAST_EVERY_HOURS:-6}
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   cu-demo-db:
