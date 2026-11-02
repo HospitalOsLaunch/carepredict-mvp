@@ -284,3 +284,28 @@ def test_another_tenant_sees_nothing(
     assert (census.status_code, snapshot.status_code, patch.status_code) == (404, 404, 404)
     assert app_client.get("/api/tension/declarations", headers=other).json() == []
     assert app_client.get("/api/tension/status", headers=other).json()["aid"] is None
+
+
+def test_boarding_series_and_snapshots_stay_within_the_tenant_and_site_scope(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """T-13: /ed/boarding and GET /ed/snapshots."""
+    make_group("g1")
+    site = with_ed(app_client, db, login)
+    declared = app_client.post(
+        "/api/ed/snapshots",
+        json={"site_id": site.id, "present": 5, "waiting_bed": 2, "boarding": 1},
+        headers=login("coord@g1.fr"),
+    )
+    assert declared.status_code == 201, declared.text
+    make_group("g2")
+    other = login("admin@g2.fr")
+    scoped = login("siteb@g1.fr")  # coordinator restricted to site B, which has no ED
+
+    for path in ("/api/ed/boarding", "/api/ed/snapshots"):
+        assert app_client.get(f"{path}?site_id={site.id}", headers=other).status_code == 404
+        assert app_client.get(path, headers=other).status_code == 404  # no ED of their own
+        assert app_client.get(f"{path}?site_id={site.id}", headers=scoped).status_code == 403
+        assert app_client.get(path, headers=scoped).status_code == 404
+    mine = app_client.get("/api/ed/snapshots", headers=login("dir@g1.fr")).json()
+    assert [s["id"] for s in mine] == [declared.json()["id"]]

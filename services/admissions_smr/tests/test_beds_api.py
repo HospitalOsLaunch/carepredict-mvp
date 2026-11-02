@@ -200,3 +200,25 @@ def test_another_tenant_cannot_see_or_touch_the_beds(
     assert board["sites"] == []
     assert by_site.status_code == 404
     assert patch.status_code == 404
+
+
+def test_availability_stays_within_the_tenant_and_site_scope(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """T-13: /beds/availability."""
+    add_beds(db, make_group("g1"))
+    make_group("g2")
+    site_a = db.scalars(select(Site).where(Site.name == "g1 A")).one()
+    other, scoped = login("admin@g2.fr"), login("siteb@g1.fr")
+
+    mine = app_client.get("/api/beds/availability", headers=login("dir@g1.fr")).json()
+    theirs = app_client.get("/api/beds/availability", headers=other).json()
+    by_site = app_client.get(f"/api/beds/availability?site_id={site_a.id}", headers=other)
+    scoped_all = app_client.get("/api/beds/availability", headers=scoped).json()
+    scoped_a = app_client.get(f"/api/beds/availability?site_id={site_a.id}", headers=scoped)
+
+    assert {u["site_name"] for u in mine["units"]} == {"g1 A", "g1 B"}
+    assert theirs["units"] == [] and theirs["sites"] == []
+    assert by_site.status_code == 404
+    assert {u["site_name"] for u in scoped_all["units"]} <= {"g1 B"}
+    assert scoped_a.status_code == 403
