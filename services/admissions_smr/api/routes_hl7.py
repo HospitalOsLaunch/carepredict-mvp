@@ -112,6 +112,8 @@ def ingest_hl7(
     except Hl7Error as exc:
         header = exc.header
         movement_id = None
+        if header is not None and not source_allowed(ctx, header.source_system):
+            return _source_refused(media, header, ctx)
         if header is not None:
             row = record_rejection(
                 ctx.session,
@@ -137,6 +139,8 @@ def ingest_hl7(
             exc.location,
             413 if too_large else None,
         )
+    if not source_allowed(ctx, parsed.source_system):
+        return _source_refused(media, parsed.header, ctx)
     result = apply_movement(
         ctx.session,
         ctx.group,
@@ -157,6 +161,28 @@ def ingest_hl7(
         result.hl7_code,
         result.location,
     )
+
+
+def source_allowed(ctx: Ctx, source_system: str) -> bool:
+    """REVIEW S-H1: an ingestion account posts only for its sending systems
+    (``users.allowed_sources``, JSON list; empty or NULL = any, for the demo)."""
+    try:
+        allowed = json.loads(ctx.user.allowed_sources or "[]")
+    except ValueError:
+        return False  # unreadable setting: fail closed
+    if not isinstance(allowed, list):
+        return False
+    return not allowed or source_system in allowed
+
+
+SOURCE_REFUSED = "Système émetteur non autorisé pour ce compte d'ingestion"
+
+
+def _source_refused(media: str, header: Header | None, ctx: Ctx) -> Response:
+    """Not journaled: the account must not write under another system's identifiers."""
+    ctx.audit("hl7.source_refusee", "movement", None, "AR 207")
+    ctx.session.commit()
+    return _ack_response(media, header, "AR", SOURCE_REFUSED, ctx, 207, "MSH^1^3", 403)
 
 
 def _hl7_digest(ctx: Ctx, raw: bytes) -> str:
@@ -193,7 +219,9 @@ def _structured(item: MovementIn, ctx: Ctx) -> ParsedMovement:
     # Keyed digest of the item with its identifiers already replaced by their pseudonyms.
     secret = ctx.settings.pseudonym_secret
     encounter, patient = references(secret, ctx.group.id, parsed)
-    canonical = item.model_dump(mode="json") | {"encounter_id": encounter, "patient_id": patient}
+    # The age shown on screen depends on the day it is read: not part of the content.
+    canonical = item.model_dump(mode="json", exclude={"age"})
+    canonical |= {"encounter_id": encounter, "patient_id": patient}
     payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode()
     return replace(parsed, digest=keyed_digest(secret, ctx.group.id, payload))
 
@@ -205,6 +233,12 @@ def ingest_movements(
     """Idempotent: a movement already received (same system, reference, action) is skipped."""
     out = []
     for item in items:
+        if not source_allowed(ctx, item.source_system):
+            out.append(MovementResultOut(
+                movement_ref=item.movement_ref, status="rejected", message=SOURCE_REFUSED,
+                movement_id=None,
+            ))  # fmt: skip
+            continue
         result = apply_movement(
             ctx.session,
             ctx.group,

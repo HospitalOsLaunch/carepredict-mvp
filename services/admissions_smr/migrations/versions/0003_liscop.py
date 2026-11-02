@@ -92,6 +92,8 @@ def upgrade() -> None:
         unique=True,
     )
 
+    op.add_column("users", sa.Column("allowed_sources", sa.Text()))
+
     op.create_table(
         "movements",
         _id(),
@@ -223,6 +225,7 @@ def downgrade() -> None:
         "movements",
     ):
         op.drop_table(table)
+    op.drop_column("users", "allowed_sources")
     op.drop_index("uq_stays_encounter", table_name="stays")
     for name in (
         "admission_mode",

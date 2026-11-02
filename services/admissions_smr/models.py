@@ -142,6 +142,9 @@ class User(Base):
     # Subject of the identity provider (Pro Santé Connect / SSO), linked on first login.
     oidc_subject: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    # Ingestion accounts: JSON list of the sending systems (MSH-3/MSH-4, or the agent's
+    # source_system) this account may post for. Empty or NULL: any source (demo only).
+    allowed_sources: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class Stay(Base):

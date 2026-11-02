@@ -15,6 +15,7 @@ from typing import Literal
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.domain.hl7_pam import (
@@ -32,6 +33,10 @@ from services.admissions_smr.domain.pseudonym import pseudonym
 from services.admissions_smr.models import Bed, BedPool, EdVisit, Group, Movement, Site, Stay
 
 LEAVE_REASON = "Absence provisoire (lit conservé)"
+REUSED_ID = (
+    "MSH-10 réutilisé avec un contenu différent",
+    "Mouvement déjà reçu avec un contenu différent (même identifiant, même action)",
+)
 PATIENT_MISMATCH = (
     "Patient (PID-3) différent de celui déjà enregistré pour cette venue (PV1-19) : "
     "vérifiez l'identifiant et son domaine"
@@ -67,15 +72,9 @@ def apply_movement(
     zone: ZoneInfo,
     source: str = "hl7",
 ) -> ApplyResult:
-    existing = session.scalar(
-        select(Movement).where(
-            Movement.group_id == group.id,
-            Movement.source_system == parsed.source_system,
-            Movement.message_control_id == parsed.control_id,
-        )
-    )
+    existing = _by_control_id(session, group.id, parsed.source_system, parsed.control_id)
     if existing is not None and existing.status != "rejected":
-        return ApplyResult("duplicate", "AA", "Message déjà reçu, sans effet", existing.id)
+        return _resent(session, group, parsed, existing, now, source)
 
     encounter, patient = references(secret, group.id, parsed)
     row = existing or Movement(
@@ -89,7 +88,19 @@ def apply_movement(
     row.encounter_ref, row.patient_ref = encounter, patient
     row.message_digest, row.received_at = parsed.digest, now
     row.site_id = row.pool_id = row.bed_id = None
-    row.error = None
+    row.status, row.error = "rejected", None  # until the outcome is known
+    if existing is None:
+        # Claim the control id first: a concurrent request with the same MSH-10 that
+        # committed after our lookup makes this insert fail, never the movement (T-17).
+        try:
+            with session.begin_nested():
+                session.add(row)
+                session.flush()
+        except IntegrityError:
+            winner = _by_control_id(session, group.id, parsed.source_system, parsed.control_id)
+            if winner is None:
+                raise
+            return _resent(session, group, parsed, winner, now, source)
 
     def record(status: str, error: str | None = None) -> Movement:
         row.status, row.error = status, error
@@ -121,6 +132,44 @@ def apply_movement(
     record(status, "; ".join(warnings) or None)
     message = "Mouvement appliqué" + (f" ({'; '.join(warnings)})" if warnings else "")
     return ApplyResult(status, "AA", message, row.id)
+
+
+def _by_control_id(
+    session: Session, group_id: int, source_system: str, control_id: str
+) -> Movement | None:
+    return session.scalar(
+        select(Movement).where(
+            Movement.group_id == group_id,
+            Movement.source_system == source_system,
+            Movement.message_control_id == control_id,
+        )
+    )
+
+
+def _resent(
+    session: Session,
+    group: Group,
+    parsed: ParsedMovement,
+    existing: Movement,
+    now: datetime,
+    source: str,
+) -> ApplyResult:
+    """Same control id as a message already handled: a resend only if the content is the
+    same (REVIEW S-H1); otherwise refuse it rather than lose the movement silently."""
+    if existing.message_digest == parsed.digest:
+        return ApplyResult("duplicate", "AA", "Message déjà reçu, sans effet", existing.id)
+    error = REUSED_ID[source == "agent"]
+    row = record_rejection(
+        session,
+        group,
+        parsed.source_system,
+        parsed.control_id,
+        parsed.event,
+        error,
+        now,
+        parsed.digest,
+    )
+    return ApplyResult("rejected", "AE", error, row.id if row else None, 207, "MSH^1^10")
 
 
 def references(secret: str, group_id: int, parsed: ParsedMovement) -> tuple[str, str]:
@@ -490,23 +539,23 @@ def record_rejection(
     now: datetime,
     message_digest: str,
 ) -> Movement | None:
-    """Journal a message refused before it could be read (keeps the rejection rate honest).
+    """Journal a refused message (keeps the rejection rate honest).
 
-    A control id already accepted is left untouched: that message was a resend.
+    A control id already accepted with the same digest is left untouched (a resend). With
+    another digest the control id was reused: the rejection gets its own line, under the
+    control id suffixed with the start of the digest (the original line stays as it was).
     """
-    row = session.scalar(
-        select(Movement).where(
-            Movement.group_id == group.id,
-            Movement.source_system == source_system,
-            Movement.message_control_id == control_id,
-        )
-    )
+    row = _by_control_id(session, group.id, source_system, control_id)
     if row is not None and row.status != "rejected":
-        return None
+        if row.message_digest == message_digest:
+            return None
+        control_id = f"{control_id[:51]}~{message_digest[:8]}"
+        row = _by_control_id(session, group.id, source_system, control_id)
     row = row or Movement(
         group_id=group.id, source_system=source_system, message_control_id=control_id
     )
     row.event, row.action, row.occurred_at = event[:7] or "?", "INSERT", now
+    row.movement_ref = row.site_id = row.pool_id = row.bed_id = None
     row.encounter_ref = row.patient_ref = ""
     row.status, row.error = "rejected", error
     row.message_digest, row.received_at = message_digest, now

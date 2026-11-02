@@ -156,5 +156,5 @@ def test_ack_error_has_err_segment_and_escapes_separators() -> None:
     segments = ack.rstrip("\r").split("\r")
     assert len(segments) == 3
     assert segments[1].startswith("MSA|AR||Illisible \\F\\ \\S\\ \\T\\ \\R\\ \\E\\")
-    assert segments[2].startswith("ERR||MSH\\S\\1\\S\\9|100^")
+    assert segments[2].startswith("ERR||MSH^1^9|100^")  # ERR-2 components, not escaped
     assert segments[2].endswith("^HL70357|E")

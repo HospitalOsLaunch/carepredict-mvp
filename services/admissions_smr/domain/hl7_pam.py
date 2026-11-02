@@ -362,7 +362,8 @@ def build_ack(
     segments = [msh, "|".join(["MSA", code, _escape(h.control_id), _escape(text[:80])])]
     if code != "AA":
         severity = "E"
-        segments.append(f"ERR||{_escape(location)}|{hl7_code}^{_escape(text)}^HL70357|{severity}")
+        where = "^".join(_escape(part) for part in location.split("^"))  # ERL components
+        segments.append(f"ERR||{where}|{hl7_code}^{_escape(text)}^HL70357|{severity}")
     return "\r".join(segments) + "\r"
 
 
