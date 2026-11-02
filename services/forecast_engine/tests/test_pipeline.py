@@ -10,10 +10,9 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 import pytest
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, inspect, select
 from sqlalchemy.orm import Session
 
-from services.admissions_smr.config import get_settings
 from services.admissions_smr.db import make_engine, make_session_factory
 from services.admissions_smr.migrate import upgrade
 from services.admissions_smr.models import (
@@ -27,7 +26,7 @@ from services.admissions_smr.models import (
 )
 from services.admissions_smr.seed_mco import GROUP_NAME
 from services.admissions_smr.tests.conftest import test_database_url as database_url
-from services.forecast_engine.__main__ import main
+from services.forecast_engine.__main__ import SCHEMA_BEHIND, main
 from services.forecast_engine.data import load_history
 from services.forecast_engine.pipeline import compute
 from services.forecast_engine.store import save_run
@@ -147,18 +146,34 @@ def test_command_line_runs_and_stores_a_forecast(
 ) -> None:
     url, group_id = tiny
     monkeypatch.setenv("ADM_DATABASE_URL", url)
-    get_settings.cache_clear()
-    try:
-        code = main(["run", "--group", str(group_id), "--as-of", AS_OF.isoformat()])
-        missing = main(["run", "--group", "999"])
-    finally:
-        get_settings.cache_clear()
+    # The engine reads no secret: even "production" without them is fine (S-M4).
+    monkeypatch.setenv("ADM_ENV", "production")
+    monkeypatch.delenv("ADM_SECRET_KEY", raising=False)
+    monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
+
+    code = main(["run", "--group", str(group_id), "--as-of", AS_OF.isoformat()])
+    missing = main(["run", "--group", "999"])
 
     assert (code, missing) == (0, 1)
     engine = make_engine(url)
     with make_session_factory(engine)() as session:
         runs = session.scalars(select(ForecastRun)).all()
         assert [r.status for r in runs] == ["ok"]
+    engine.dispose()
+
+
+def test_command_line_refuses_a_schema_that_is_not_migrated(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    url = f"sqlite:///{tmp_path / 'empty.db'}"
+    monkeypatch.setenv("ADM_DATABASE_URL", url)
+
+    code = main(["run", "--all"])
+
+    assert code == SCHEMA_BEHIND
+    assert "migrations" in caplog.text
+    engine = make_engine(url)
+    assert inspect(engine).get_table_names() == []  # nothing created: no migration run
     engine.dispose()
 
 

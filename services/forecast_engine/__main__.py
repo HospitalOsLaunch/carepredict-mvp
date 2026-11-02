@@ -3,6 +3,11 @@
 python -m services.forecast_engine run --group 1 [--as-of 2026-11-02]
 python -m services.forecast_engine run --all
 python -m services.forecast_engine backtest --group 1 [--out docs/liscop/backtest.json]
+
+Settings: ``ADM_DATABASE_URL`` and ``ADM_TIMEZONE`` only (no token or pseudonymisation
+secret). The engine never migrates the database: the API does it at start-up (or
+``python -m services.admissions_smr.cli migrate``); the engine stops when the schema is
+not at the expected revision. Database role: see services/forecast_engine/README.md.
 """
 
 from __future__ import annotations
@@ -10,18 +15,20 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 import time
+from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from services.admissions_smr.clock import Clock
-from services.admissions_smr.config import get_settings
 from services.admissions_smr.db import make_engine, make_session_factory
-from services.admissions_smr.migrate import upgrade
+from services.admissions_smr.migrate import is_current
 from services.admissions_smr.models import Group
 from services.forecast_engine import MODEL_VERSION
 from services.forecast_engine.data import load_history
@@ -29,6 +36,23 @@ from services.forecast_engine.pipeline import compute
 from services.forecast_engine.store import save_backtest, save_failure, save_run, utcnow
 
 log = logging.getLogger("forecast_engine")
+SCHEMA_BEHIND = 2  # exit code: the database schema is not at the expected revision
+
+
+@dataclass(frozen=True)
+class EngineSettings:
+    database_url: str
+    timezone: str
+
+
+def load_settings() -> EngineSettings:
+    """What the engine needs, and nothing else: no ADM_SECRET_KEY, no ADM_PSEUDONYM_SECRET."""
+    timezone = os.getenv("ADM_TIMEZONE", "Europe/Paris")
+    ZoneInfo(timezone)  # fails early on an unknown zone
+    return EngineSettings(
+        database_url=os.getenv("ADM_DATABASE_URL", "sqlite:///./admissions_smr.db"),
+        timezone=timezone,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -45,12 +69,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", stream=sys.stderr)
-    settings = get_settings()
+    settings = load_settings()
     engine = make_engine(settings.database_url)
-    upgrade(engine)
-    factory = make_session_factory(engine)
-    clock = Clock(settings.timezone)
     try:
+        if not is_current(engine):
+            log.error(
+                "Schéma de la base absent ou pas à jour : lancer d'abord les migrations "
+                "(démarrage de l'API, ou python -m services.admissions_smr.cli migrate)"
+            )
+            return SCHEMA_BEHIND
+        factory = make_session_factory(engine)
+        clock = Clock(settings.timezone)
         if args.command == "backtest":
             from services.forecast_engine.backtest import render_markdown, run_backtest
 

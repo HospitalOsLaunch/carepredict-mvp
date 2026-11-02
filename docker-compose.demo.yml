@@ -39,9 +39,14 @@ services:
       ADM_DATABASE_URL: postgresql+psycopg://admissions:demo-only@db:5432/admissions
       ADM_CORS_ORIGINS: ""
       ADM_TIMEZONE: Europe/Paris
-    # Seed once (refused, harmlessly, when the group already exists), then serve.
+      # Demonstration values only (never reuse them): explicit, so no development key is used.
+      ADM_SECRET_KEY: demo-only-secret-key-not-for-production-0123456789
+      ADM_PSEUDONYM_SECRET: demo-only-pseudonym-secret-not-for-production-0123
+    # Migrate and seed once (refused, harmlessly, when the group already exists), then serve:
+    # the SMR group for the computer-use demo, the MCO hospital for LISCOP.
     command: >
       sh -c "python -m services.admissions_smr.cli seed-demo || true;
+             python -m services.admissions_smr.cli seed-demo-mco || true;
              exec uvicorn services.admissions_smr.main:app --host 0.0.0.0 --port 8010"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/health')"]
@@ -98,8 +103,9 @@ services:
       portal:
         condition: service_started
 
-  # Prévision LISCOP (démo) : charge l'hôpital MCO fictif s'il manque, calcule les
-  # prévisions de tous les groupes au démarrage puis toutes les FORECAST_EVERY_HOURS heures.
+  # Prévision LISCOP (démo) : calcule les prévisions de tous les groupes au démarrage puis
+  # toutes les FORECAST_EVERY_HOURS heures. Le schéma et l'hôpital MCO fictif viennent de
+  # l'API (le moteur ne migre pas et ne lit aucun secret) ; en production, rôle base dédié.
   forecast:
     build:
       context: .
@@ -107,13 +113,11 @@ services:
     entrypoint: ["sh", "-c"]
     command:
       - >
-        python -m services.admissions_smr.cli seed-demo-mco || true;
         while true; do
           python -m services.forecast_engine run --all;
           sleep $$(( $${FORECAST_EVERY_HOURS:-6} * 3600 ));
         done
     environment:
-      ADM_ENV: development
       ADM_DATABASE_URL: postgresql+psycopg://admissions:demo-only@db:5432/admissions
       ADM_TIMEZONE: Europe/Paris
       FORECAST_EVERY_HOURS: ${FORECAST_EVERY_HOURS:-6}
