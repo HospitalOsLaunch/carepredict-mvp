@@ -59,3 +59,16 @@ export function relativeDay(iso: string, today: string): string {
 export function plural(n: number, one: string, many: string): string {
   return `${n} ${Math.abs(n) >= 2 ? many : one}`;
 }
+
+const RELATIVE = new Intl.RelativeTimeFormat("fr-FR", { numeric: "auto" });
+
+/** "il y a 4 minutes", "dans 12 minutes", "hier"; within 45 s either way: "à l'instant". */
+export function fmtRelative(iso: string | null | undefined, now = Date.now()): string {
+  if (!iso) return "—";
+  const seconds = (new Date(iso).getTime() - now) / 1000;
+  const abs = Math.abs(seconds);
+  if (abs < 45) return "à l'instant";
+  if (abs < 3600) return RELATIVE.format(Math.round(seconds / 60), "minute");
+  if (abs < 86_400) return RELATIVE.format(Math.round(seconds / 3600), "hour");
+  return RELATIVE.format(Math.round(seconds / 86_400), "day");
+}

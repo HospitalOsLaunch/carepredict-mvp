@@ -6,6 +6,7 @@ import { api } from "../api/client";
 import type { AgentPolicy, AgentStatus, AgentTask, EnginePolicy } from "../api/types";
 import { useAuth } from "../auth";
 import { ErrorNote, Meter, Spinner } from "../components/ui";
+import { TASK_STATUS } from "../lib/agent";
 import { fmtDateTime, fmtNum, fmtPct, plural } from "../lib/format";
 
 const TASKS: Record<string, { title: string; lead: string }> = {
@@ -52,16 +53,6 @@ const PRESETS: Record<Preset, { title: string; lead: string; routes: Record<stri
       reply_portal: ["playbook", "closed_best"]
     }
   }
-};
-
-const TASK_STATUS: Record<string, { text: string; tone: string }> = {
-  pending: { text: "En file", tone: "bg-violet-soft text-violet-dark" },
-  running: { text: "En cours", tone: "bg-violet text-white" },
-  done: { text: "Faite", tone: "bg-lagoon-soft text-lagoon-dark" },
-  manual: { text: "Faite à la main", tone: "bg-sky-deep text-ink-soft" },
-  needs_human: { text: "À reprendre", tone: "bg-coral text-white" },
-  failed: { text: "Échec", tone: "bg-coral-soft text-coral-dark" },
-  cancelled: { text: "Annulée", tone: "bg-sky-deep text-ink-soft" }
 };
 
 function useAgentStatus() {
