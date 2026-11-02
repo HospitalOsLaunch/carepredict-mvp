@@ -36,6 +36,7 @@ from services.admissions_smr.models import (
     AuditEntry,
     BedPool,
     CapacityChange,
+    ForecastValue,
     Group,
     RorOutbox,
     Site,
@@ -298,6 +299,52 @@ def test_without_a_run_the_discharge_forecast_is_labelled_as_such(
         low, high = p["fourchette_80"]
         assert 0 <= low <= high and p["p_tension"] is None
     assert {r["temporalityCapacity"]["code"] for r in unit["ror_capacites"]} == {"01"}
+
+
+def test_page_and_export_label_a_stale_run_from_today_alike(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """C-6 / T-11: J+n counts from today on the forecast page and in the ROR export."""
+    group = make_group("g1")
+    add_run(db, group, as_of=TODAY - timedelta(days=1), created=NOW - timedelta(days=1))
+    headers = login("dir@g1.fr")
+
+    page = app_client.get(
+        "/api/forecast/liscop", params={"target": "available_beds"}, headers=headers
+    ).json()
+    export = app_client.get("/api/ror/export", headers=headers).json()
+
+    assert page["run"]["stale"] is True and export["prevision"]["perimee"] is True
+    values = page["series"][0]["values"]
+    assert [v["horizon"] for v in values] == [f"J{k:+d}" for k in range(-1, 7)]
+    page_days = {v["horizon"]: v["day"] for v in values}
+    unit = unit_of(export, "g1 A", "geriatrie")
+    export_days = {p["echeance"]: p["date"] for p in unit["previsionnel"]}
+    assert list(export_days) == ["J+1", "J+2"]  # J+7 lies beyond the run of yesterday
+    assert export_days == {k: page_days[k] for k in export_days}
+    assert export_days["J+1"] == (TODAY + timedelta(days=1)).isoformat()
+
+
+def test_units_missing_from_the_run_fall_back_to_the_discharge_forecast(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    group = make_group("g1")
+    run = add_run(db, group)
+    site_a = db.scalars(select(Site).where(Site.name == "g1 A")).one()
+    missing = next(p for p in site_a.pools if p.mention == "polyvalent")
+    for row in db.scalars(select(ForecastValue).where(ForecastValue.pool_id == missing.id)):
+        db.delete(row)
+    db.commit()
+
+    body = app_client.get("/api/ror/export", headers=login("dir@g1.fr")).json()
+
+    assert body["prevision"]["id"] == run.id
+    covered = unit_of(body, "g1 A", "geriatrie")
+    absent = unit_of(body, "g1 A", "polyvalent")
+    assert covered["previsionnel_nature"]["nature"] == "disponibles_attendus"
+    assert absent["previsionnel_nature"]["nature"] == "liberes_non_promis"
+    assert absent["previsionnel_nature"]["modele"] != run.model_version
+    assert {r["temporalityCapacity"]["code"] for r in absent["ror_capacites"]} == {"01"}
 
 
 def test_export_respects_site_scope_roles_and_tenants(

@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, ReadCtx
+from services.admissions_smr.clock import horizon_label
 from services.admissions_smr.models import BedPool, ForecastRun, ForecastValue, Site
 from services.admissions_smr.schemas_liscop import (
     BacktestHeadlineOut,
@@ -74,7 +75,7 @@ def liscop_forecast(
     unknown = sorted(set(targets) - set(FORECAST_TARGETS))
     if unknown:
         raise HTTPException(UNPROCESSABLE, f"Cible inconnue : {', '.join(unknown)}")
-    now = ctx.clock.now()
+    now, today = ctx.clock.now(), ctx.clock.today()
     synthetic = ctx.group.name in SYNTHETIC_GROUPS
     runs = select(ForecastRun).where(ForecastRun.group_id == ctx.group.id)
     latest = ctx.session.scalars(
@@ -115,7 +116,7 @@ def liscop_forecast(
         model_version=latest.model_version,
         horizon_days=latest.horizon_days,
         age_hours=round(age, 1),
-        stale=latest.as_of != ctx.clock.today() or age > FORECAST_STALE_AFTER_HOURS,
+        stale=latest.as_of != today or age > FORECAST_STALE_AFTER_HOURS,
         models_chosen={str(k): int(v) for k, v in metrics.get("models_chosen", {}).items()},
         fallback_series=len(metrics.get("fallback_series", [])),
         common_shock_variance=_float(metrics.get("common_shock_variance")),
@@ -158,7 +159,7 @@ def liscop_forecast(
                 values=[
                     ForecastDayOut(
                         day=v.day,
-                        horizon=f"J+{(v.day - latest.as_of).days}",
+                        horizon=horizon_label(v.day, today),
                         mean=v.mean,
                         q10=v.q10,
                         q50=v.q50,

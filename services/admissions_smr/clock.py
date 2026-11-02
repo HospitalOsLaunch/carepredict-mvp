@@ -16,6 +16,12 @@ def local_day(at: datetime, zone: ZoneInfo) -> date:
     return at.astimezone(zone).date()
 
 
+def horizon_label(day: date, today: date) -> str:
+    """ "J+n" counted from today, never from a run's own date: a day of a stale run that is
+    already past reads "J-1", so the forecast page and the ROR export always agree."""
+    return f"J{(day - today).days:+d}"
+
+
 class Clock:
     def __init__(self, timezone: str = "Europe/Paris") -> None:
         self.zone = ZoneInfo(timezone)

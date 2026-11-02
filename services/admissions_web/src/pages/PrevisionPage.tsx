@@ -226,7 +226,8 @@ function Freshness({ data }: { data: LiscopForecast }) {
   return (
     <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-ink-soft">
       <span>
-        Calculée le {fmtDateTime(run.created_at)} (il y a {fmtHours(run.age_hours)}), J+0 = {fmtDay(run.as_of)}
+        Calculée le {fmtDateTime(run.created_at)} (il y a {fmtHours(run.age_hours)}) pour le{" "}
+        {fmtDay(run.as_of)} ; J+1, J+2… comptés depuis aujourd'hui
       </span>
       {run.stale && (
         <span className="chip bg-sun-soft text-ink">
