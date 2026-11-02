@@ -226,4 +226,91 @@ export interface LiscopForecast {
 
 // --- ror-oru-export ---
 
-export {};
+export interface RorCode {
+  code: string;
+  libelle: string;
+}
+
+export type RorForecastNature = "disponibles_attendus" | "liberes_non_promis" | "aucune";
+
+export interface RorPrevision {
+  echeance: string;
+  date: string;
+  temporalite: RorCode;
+  moyenne: number;
+  fourchette_80: [number, number];
+  p_tension: number | null;
+  p_critique: number | null;
+}
+
+export interface RorCapaciteFhir {
+  capacityType: RorCode;
+  capacityStatus: RorCode;
+  temporalityCapacity: RorCode;
+  nbCapacity: number;
+  genderCapacityAvailable: RorCode | null;
+  capacityClosingType: RorCode | null;
+  capacityUpdateDate: string | null;
+}
+
+export interface RorUnite {
+  site_id: number;
+  etablissement: string;
+  finess_geographique: string | null;
+  pool_id: number;
+  identifiant_unite_ror: string | null;
+  mention: string;
+  libelle_unite: string;
+  type_unite: string;
+  discipline: string;
+  capacites: { statut: RorCode; nombre: number; remarque: string | null }[];
+  fermetures: { type_fermeture: RorCode; nombre: number; motif_interne: string }[];
+  disponibles_par_genre: {
+    femme: number | null;
+    homme: number | null;
+    indetermine: number | null;
+    total: number;
+    isolement: number | null;
+    niveau: "lit" | "unite";
+  };
+  operationnel: { en_service: number; reactivables: number; supplementaires: number };
+  reserves_crise_sse: number;
+  previsionnel: RorPrevision[];
+  previsionnel_nature: {
+    nature: RorForecastNature;
+    libelle: string;
+    modele: string | null;
+    date_de_calcul: string | null;
+    calcule_le: string | null;
+  };
+  tension: { niveau: TensionLevel; taux_disponibilite: number | null };
+  fraicheur: { le: string; source: string; libelle: string; age_heures: number } | null;
+  dernier_mouvement_saisi: string | null;
+  ror_capacites: RorCapaciteFhir[];
+  a_completer: string[];
+}
+
+export interface RorExport {
+  maquette: boolean;
+  avertissement: string;
+  emetteur: string;
+  genere_le: string;
+  date_situation: string;
+  synthetique: boolean;
+  prevision: { id: number; date_de_calcul: string; calcule_le: string; modele: string; perimee: boolean } | null;
+  referentiels: { nom: string; url: string }[];
+  hypotheses: string[];
+  non_suivi_dans_le_pilote: string[];
+  unites: RorUnite[];
+}
+
+export interface RorOutboxEntry {
+  id: number;
+  cree_le: string;
+  type: string;
+  statut: string;
+  empreinte_sha256: string;
+  unites: number;
+  prepare_par: string | null;
+  contenu: RorExport | null;
+}
