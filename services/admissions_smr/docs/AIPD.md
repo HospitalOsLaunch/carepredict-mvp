@@ -22,7 +22,12 @@ Aide à la coordination des admissions dans un groupe d'établissements SMR :
 - réponse à l'adresseur et, en option, report automatique de cette réponse sur le
   portail d'orientation par un agent logiciel (« computer use ») ;
 - indicateurs de pilotage (occupation, délais de réponse) et mesure contractuelle
-  du résultat (journées-lits récupérées).
+  du résultat (journées-lits récupérées) ;
+- **module LISCOP (MCO)** : réception des mouvements patients du dossier patient
+  (HL7 v2 IHE PAM, ou relevés de l'agent), plan des lits, recensement des urgences
+  (présents, en attente de lit, lits brancards à 10 h), déclarations « hôpital en
+  tension » et plan blanc, prévision des lits disponibles à J+1..J+7 (moteur séparé),
+  maquette d'export vers le ROR et indicateurs ORU (**rien n'est envoyé** à un tiers).
 
 ### 1.2 Acteurs
 
@@ -52,6 +57,13 @@ requise. **[À DÉCIDER]** confirmation par le DPO.
 | Utilisateurs | Nom, e-mail, rôle, site, identifiant fédéré (ex. identifiant national Pro Santé Connect), empreinte du mot de passe (PBKDF2) | Administrateur, fournisseur d'identité | |
 | Traces | Journal d'audit : qui, quoi, quand, sur quel objet | Application | |
 | Agent | Tâches, parcours des moteurs, coûts, erreurs | Agent | Les erreurs ne doivent pas recopier de donnée patient (consigne donnée aux modèles) |
+| **Pseudonymes (LISCOP)** | `patient_ref` et `encounter_ref` : HMAC-SHA256 de l'IPP et du NDA reçus, avec une clé propre (`ADM_PSEUDONYM_SECRET`, distincte de la clé des jetons) | Mouvements HL7, agent | IPP et NDA en clair jamais stockés ; la clé permet de recalculer un pseudonyme à partir d'un IPP connu : elle est un secret de production (coffre de l'hébergeur) |
+| **Journal des mouvements** | Par message : système émetteur, identifiant du message (MSH-10) et du mouvement (ZBE-1), événement (A01, A02…), horodatage du mouvement et de réception, pseudonymes, site, unité, lit, statut, motif de rejet, empreinte du message | Dossier patient (HL7), agent | Pas de nom, d'adresse, de date de naissance ni de téléphone : le message reçu n'est pas conservé, seule son empreinte |
+| **Passages aux urgences** | Pseudonymes, site, heure d'arrivée, de décision d'hospitalisation et de départ, issue (hospitalisé, retour à domicile…), unité visée | Mouvements | Horodatages à la minute : quasi-identifiants, voir section 6 |
+| **Séjours (ajouts LISCOP)** | Sexe, âge en années (jamais la date de naissance), heures d'entrée et de sortie, mode d'admission, lit occupé | Mouvements, saisie | Le sexe sert au placement en chambre double |
+| **Lits** | Statut, contrainte de sexe, isolement, motif de blocage codé et précision courte facultative (80 caractères, consigne : sans nom de patient), séjour occupant | Saisie, mouvements | Le journal d'audit ne garde que le code du motif |
+| **Déclarations** | Recensement manuel des urgences (nombres), déclarations HET / plan blanc (niveau, dates), commentaire libre, auteur | Saisie | Commentaire libre : consigne de ne pas y écrire de donnée patient ; effacé à 13 mois (section 3.3) |
+| **Prévisions et exports** | `forecast_runs` / `forecast_values` : nombres par unité, site, groupe, GHT, département ; file d'envoi ROR simulée : capacités agrégées par unité | Moteur de prévision, API | Agrégats sans donnée individuelle |
 
 **Important.** Des données pseudonymisées restent des données personnelles : la
 table de correspondance entre référence et identité est détenue par l'établissement,
@@ -71,6 +83,7 @@ moteur à voir des écrans identifiants (désactivé par défaut pour tous les m
 | --- | --- | --- | --- |
 | Coordination des admissions, prévision des lits et de la charge | **[À DÉCIDER]** mission d'intérêt public (ESPIC) ou intérêt légitime (établissement privé lucratif) | Art. 9.2.h : gestion des systèmes et services de soins | À confirmer selon le statut de chaque établissement |
 | Indicateurs de pilotage et mesure contractuelle | Intérêt légitime | Art. 9.2.h | Données agrégées dans les écrans |
+| Pilotage de la tension et des lits (LISCOP) : plan des lits, urgences, prévision, préparation des remontées ROR / ORU | **[À DÉCIDER]** mission d'intérêt public (remontées demandées par l'ARS) ou intérêt légitime | Art. 9.2.h (gestion des services de soins) ; 9.2.i (santé publique) pour les indicateurs régionaux, à confirmer | Les remontées elles-mêmes ne sont pas faites par le logiciel (maquette) |
 | Sécurité, traçabilité | Obligation légale / intérêt légitime | — | |
 
 Pas d'usage pour entraîner des modèles : les données du client ne servent qu'au
@@ -87,14 +100,44 @@ autorisé.
 
 ### 3.3 Durées de conservation
 
-**Écart actuel : aucune purge automatique n'est codée.** À définir puis implémenter :
+**Écart actuel : aucune purge automatique n'est codée.** La purge des données LISCOP
+est une **tâche d'exploitation documentée** (requête ci-dessous), à planifier par
+l'exploitant ; les autres durées restent à définir puis implémenter :
 
 | Données | Proposition à valider |
 | --- | --- |
 | Demandes et séjours | **[À DÉCIDER]** durée utile au pilotage et à la mesure contractuelle (par ex. 3 ans après la sortie ou la clôture), puis anonymisation par agrégation |
+| Journal des mouvements | **13 mois glissants** après réception : le temps de rejouer une année et de traiter une réclamation ; au-delà, seuls les séjours et les agrégats restent |
+| Passages aux urgences | **13 mois glissants** après le départ (à défaut, l'arrivée) : la prévision apprend sur un an d'historique |
+| Commentaires libres des déclarations | Effacés à **13 mois** ; les nombres déclarés restent avec les agrégats |
+| Prévisions, file d'envoi ROR simulée, déclarations (nombres) | Agrégats : **[À DÉCIDER]** par ex. 5 ans (comparaisons d'une année sur l'autre, preuves contractuelles) |
 | Journal d'audit | **[À DÉCIDER]** par ex. 1 an glissant, ou selon la politique de traçabilité de l'établissement |
 | Comptes utilisateurs | Désactivation au départ ; suppression après **[À DÉCIDER]** |
 | Tâches de l'agent | **[À DÉCIDER]** par ex. 90 jours |
+
+**Purge LISCOP (tâche d'exploitation, PostgreSQL, mensuelle)**, durées ci-dessus, dans
+une transaction, avec un rôle qui a le droit de supprimer (pas celui du moteur de
+prévision) ; noter la date et le nombre de lignes supprimées dans le registre
+d'exploitation :
+
+```sql
+BEGIN;
+DELETE FROM movements WHERE received_at < now() - interval '13 months';
+DELETE FROM ed_visits WHERE coalesce(left_at, arrived_at) < now() - interval '13 months';
+UPDATE ed_snapshots SET comment = NULL
+    WHERE comment IS NOT NULL AND at < now() - interval '13 months';
+UPDATE tension_declarations SET comment = NULL
+    WHERE comment IS NOT NULL AND started_at < now() - interval '13 months';
+-- Agrégats (5 ans proposés, [À DÉCIDER]) :
+DELETE FROM forecast_values WHERE run_id IN
+    (SELECT id FROM forecast_runs WHERE created_at < now() - interval '5 years');
+DELETE FROM forecast_runs WHERE created_at < now() - interval '5 years';
+DELETE FROM ror_outbox WHERE created_at < now() - interval '5 years';
+COMMIT;
+```
+
+Aucune autre table ne référence `movements` ni `ed_visits` : la purge ne casse ni les
+séjours ni le plan des lits. Les séjours suivent leur propre durée (première ligne).
 
 ### 3.4 Information et droits des personnes
 
@@ -145,7 +188,9 @@ avec le DPO.
 | Mauvaise réponse reportée sur le portail | Erreur de l'agent, injection dans la page | Patient orienté à tort, retard de prise en charge | Importante | Limitée | Relecture indépendante, reprise humaine, pas d'escalade après écriture inattendue |
 | Prévision erronée | Données incomplètes, hypothèses de minutes | Lit promis indisponible, tension mal anticipée | Limitée | Importante | Fourchettes affichées, rejeu de fiabilité visible, décision humaine |
 | Disparition des données | Panne, suppression | Perte de l'historique et des preuves contractuelles | Limitée | Limitée | Sauvegardes HDS, restauration testée |
-| Conservation excessive | Absence de purge | Exposition prolongée | Limitée | Importante tant que la purge n'existe pas | Implémenter les durées de la section 3.3 |
+| Conservation excessive | Absence de purge | Exposition prolongée | Limitée | Importante tant que la purge n'existe pas | Implémenter les durées de la section 3.3 ; LISCOP : purge mensuelle documentée |
+| Réidentification par les mouvements | Horodatages à la minute, âge, sexe, unité et lit recoupés avec une autre source | Identification d'un patient et de son parcours | Importante | Limitée | Pseudonymes HMAC à clé secrète, aucune donnée d'identité reçue n'est stockée, cloisonnement, journal limité à 13 mois, rôle base du moteur en lecture |
+| Nom saisi dans un champ libre | Précision d'un blocage de lit, commentaire d'une déclaration | Donnée identifiante hors périmètre prévu | Limitée | Limitée | Motifs codés, précision limitée à 80 caractères et hors audit, consigne à l'écran, effacement des commentaires à 13 mois |
 
 ## 7. Plan d'action
 
@@ -153,6 +198,7 @@ avec le DPO.
 | --- | --- | --- |
 | Valider bases légales et qualification des acteurs | DPO du client | Avant pilote |
 | Implémenter purge et anonymisation selon les durées validées | HospitalOS | Avant pilote |
+| Valider les durées LISCOP (13 mois, agrégats) et planifier la purge documentée (section 3.3) | DPO + exploitant HDS | Avant réception de mouvements réels |
 | Export par référence patient dans l'interface | HospitalOS | Avant pilote |
 | Contrats art. 28 (client, hébergeur, fournisseurs de modèles éventuels) | HospitalOS + client | Avant pilote |
 | Hébergement HDS en production | HospitalOS | Avant pilote |

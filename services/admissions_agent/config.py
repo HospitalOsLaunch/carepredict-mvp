@@ -6,6 +6,7 @@ stores them, and model engines never see the portal credentials.
 
 from __future__ import annotations
 
+import ipaddress
 import os
 from dataclasses import dataclass, field
 from urllib.parse import urlparse
@@ -52,6 +53,24 @@ def _endpoint(prefix: str) -> EngineEndpoint:
     )
 
 
+def checked_api_url(url: str) -> str:
+    """HTTPS, except to this machine or to an internal name without a dot (a compose
+    service such as ``api``): the service account's password travels on it (REVIEW S-L2)."""
+    parsed = urlparse(url)
+    host = parsed.hostname or ""
+    try:
+        loopback = host == "localhost" or ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        loopback = False
+    internal = bool(host) and "." not in host and ":" not in host
+    if parsed.scheme == "https" or (parsed.scheme == "http" and (loopback or internal)):
+        return url
+    raise ValueError(
+        "AGENT_API_URL doit être en https (http accepté seulement vers la machine locale "
+        "ou un nom de service interne)"
+    )
+
+
 def load_settings() -> AgentSettings:
     portal_url = os.getenv("AGENT_PORTAL_URL", "http://127.0.0.1:8020")
     hosts = os.getenv("AGENT_ALLOWED_HOSTS", "")
@@ -63,7 +82,7 @@ def load_settings() -> AgentSettings:
         api_key=os.getenv("ANTHROPIC_API_KEY") or None,
     )
     return AgentSettings(
-        api_url=os.getenv("AGENT_API_URL", "http://127.0.0.1:8010"),
+        api_url=checked_api_url(os.getenv("AGENT_API_URL", "http://127.0.0.1:8010")),
         api_email=os.getenv("AGENT_API_EMAIL", ""),
         api_password=os.getenv("AGENT_API_PASSWORD", ""),
         agent_id=os.getenv("AGENT_ID", os.uname().nodename),

@@ -19,6 +19,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -61,6 +62,9 @@ class Site(Base):
     capabilities: Mapped[str] = mapped_column(String(400), default="")
     active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    ght: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    departement: Mapped[str | None] = mapped_column(String(3), nullable=True)
+    territory: Mapped[str | None] = mapped_column(String(120), nullable=True)  # TAS
 
     group: Mapped[Group] = relationship(back_populates="sites")
     pools: Mapped[list[BedPool]] = relationship(
@@ -83,7 +87,7 @@ class BaselineSnapshot(Base):
 
 
 class BedPool(Base):
-    """Beds of one site for one SMR mention."""
+    """One unit of a site. ``mention`` holds the unit code: an SMR mention or an MCO unit."""
 
     __tablename__ = "bed_pools"
     __table_args__ = (UniqueConstraint("site_id", "mention"),)
@@ -95,6 +99,13 @@ class BedPool(Base):
     beds_open: Mapped[int] = mapped_column(Integer)
     isolation_rooms: Mapped[int] = mapped_column(Integer, default=0)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    unit_type: Mapped[str] = mapped_column(String(30), default="smr", server_default="smr")
+    discipline: Mapped[str] = mapped_column(String(30), default="smr", server_default="smr")
+    label: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    uf_code: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    ror_unit_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    extra_beds: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    crisis_reserved_beds: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     site: Mapped[Site] = relationship(back_populates="pools")
 
@@ -132,11 +143,28 @@ class User(Base):
     # Subject of the identity provider (Pro Santé Connect / SSO), linked on first login.
     oidc_subject: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    # Ingestion accounts: JSON list of the sending systems (MSH-3/MSH-4, or the agent's
+    # source_system) this account may post for. Empty or NULL: any source (demo only).
+    allowed_sources: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 class Stay(Base):
     __tablename__ = "stays"
-    __table_args__ = (UniqueConstraint("site_id", "patient_ref", "admission_date"),)
+    # Manual and imported stays (no encounter): one per patient, site and day. HL7 stays are
+    # bound to their encounter instead, so a same-day readmission is a second stay (C-2).
+    # NULLs are distinct in unique indexes (SQLite and PostgreSQL).
+    __table_args__ = (
+        Index(
+            "uq_stays_site_patient_day",
+            "site_id",
+            "patient_ref",
+            "admission_date",
+            unique=True,
+            sqlite_where=text("encounter_ref IS NULL"),
+            postgresql_where=text("encounter_ref IS NULL"),
+        ),
+        Index("uq_stays_encounter", "group_id", "encounter_ref", "site_id", "mention", unique=True),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
@@ -152,6 +180,17 @@ class Stay(Base):
     )
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    # beds.stay_id points back here: use_alter breaks the cycle for DDL ordering.
+    bed_id: Mapped[int | None] = mapped_column(
+        ForeignKey("beds.id", use_alter=True, name="fk_stays_bed_id"), nullable=True
+    )
+    source: Mapped[str] = mapped_column(String(20), default="saisie", server_default="saisie")
+    encounter_ref: Mapped[str | None] = mapped_column(String(64), nullable=True)  # HMAC of NDA
+    patient_sex: Mapped[str | None] = mapped_column(String(1), nullable=True)
+    patient_age: Mapped[int | None] = mapped_column(Integer, nullable=True)  # years only
+    admitted_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    discharged_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    admission_mode: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     plan_changes: Mapped[list[StayPlanChange]] = relationship(
         back_populates="stay", cascade="all, delete-orphan", order_by="StayPlanChange.recorded_at"
@@ -336,3 +375,166 @@ class AgentCalibration(Base):
     hit_rate: Mapped[float] = mapped_column(Float)
     trials: Mapped[int] = mapped_column(Integer)
     at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+# --- LISCOP: beds, movements, emergency department, tension, forecasts, ROR outbox ---------
+
+
+class Bed(Base):
+    """One physical bed. ``stay_id`` is the stay currently in it (status ``occupe``)."""
+
+    __tablename__ = "beds"
+    __table_args__ = (UniqueConstraint("site_id", "label"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    site_id: Mapped[int] = mapped_column(ForeignKey("sites.id"), index=True)
+    pool_id: Mapped[int] = mapped_column(ForeignKey("bed_pools.id"), index=True)
+    room: Mapped[str] = mapped_column(String(40))
+    label: Mapped[str] = mapped_column(String(40))
+    sex_constraint: Mapped[str] = mapped_column(String(1), default="X")
+    isolation: Mapped[bool] = mapped_column(Boolean, default=False)
+    status: Mapped[str] = mapped_column(String(20), default="libre")
+    status_reason: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    stay_id: Mapped[int | None] = mapped_column(ForeignKey("stays.id"), nullable=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+class Movement(Base):
+    """Journal of received patient movements (HL7 PAM). Never the raw message."""
+
+    __tablename__ = "movements"
+    __table_args__ = (
+        UniqueConstraint("group_id", "source_system", "message_control_id"),
+        # Replays of an encounter and duplicate / cancellation lookups (REVIEW C-4).
+        Index("ix_movements_group_encounter", "group_id", "encounter_ref"),
+        Index("ix_movements_group_source_ref", "group_id", "source_system", "movement_ref"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    source_system: Mapped[str] = mapped_column(String(60))
+    message_control_id: Mapped[str] = mapped_column(String(60))  # MSH-10
+    movement_ref: Mapped[str | None] = mapped_column(String(60), nullable=True)  # ZBE-1
+    event: Mapped[str] = mapped_column(String(7))
+    action: Mapped[str] = mapped_column(String(10))
+    occurred_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    encounter_ref: Mapped[str] = mapped_column(String(64))  # HMAC of NDA
+    patient_ref: Mapped[str] = mapped_column(String(64))  # HMAC of IPP
+    site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
+    pool_id: Mapped[int | None] = mapped_column(ForeignKey("bed_pools.id"), nullable=True)
+    bed_id: Mapped[int | None] = mapped_column(ForeignKey("beds.id"), nullable=True)
+    status: Mapped[str] = mapped_column(String(20))
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    message_digest: Mapped[str] = mapped_column(String(64))  # keyed HMAC-SHA256
+    received_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+class EdVisit(Base):
+    """One emergency department visit, from arrival to departure."""
+
+    __tablename__ = "ed_visits"
+    __table_args__ = (UniqueConstraint("group_id", "encounter_ref"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    site_id: Mapped[int] = mapped_column(ForeignKey("sites.id"), index=True)
+    encounter_ref: Mapped[str] = mapped_column(String(64))
+    patient_ref: Mapped[str] = mapped_column(String(64))
+    arrived_at: Mapped[datetime] = mapped_column(UTCDateTime, index=True)
+    admit_decision_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    left_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    outcome: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    target_pool_id: Mapped[int | None] = mapped_column(ForeignKey("bed_pools.id"), nullable=True)
+    source: Mapped[str] = mapped_column(String(20))
+
+
+class EdSnapshot(Base):
+    """Emergency department census at a point in time, computed or declared."""
+
+    __tablename__ = "ed_snapshots"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    site_id: Mapped[int] = mapped_column(ForeignKey("sites.id"), index=True)
+    at: Mapped[datetime] = mapped_column(UTCDateTime, index=True)
+    present: Mapped[int] = mapped_column(Integer)
+    waiting_bed: Mapped[int] = mapped_column(Integer)  # admission decided, no bed yet
+    boarding: Mapped[int] = mapped_column(Integer)  # "lits brancards"
+    hosted_elsewhere: Mapped[int] = mapped_column(Integer)  # outside their target unit
+    source: Mapped[str] = mapped_column(String(20))  # calcul | declaration
+    declared_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class TensionDeclaration(Base):
+    """HET or Plan blanc, declared by a person (the product only suggests)."""
+
+    __tablename__ = "tension_declarations"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
+    kind: Mapped[str] = mapped_column(String(20))
+    level: Mapped[str] = mapped_column(String(20))
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime)
+    ended_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    declared_by: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class ForecastRun(Base):
+    """One run of the forecast engine for a group."""
+
+    __tablename__ = "forecast_runs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    as_of: Mapped[date] = mapped_column(Date)
+    model_version: Mapped[str] = mapped_column(String(60))
+    horizon_days: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    params_json: Mapped[str] = mapped_column(Text, default="{}")
+    metrics_json: Mapped[str] = mapped_column(Text, default="{}")
+
+    values: Mapped[list[ForecastValue]] = relationship(
+        back_populates="run", cascade="all, delete-orphan"
+    )
+
+
+class ForecastValue(Base):
+    __tablename__ = "forecast_values"
+    __table_args__ = (Index("ix_forecast_values_run_target_day", "run_id", "target", "day"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("forecast_runs.id"))
+    site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
+    pool_id: Mapped[int | None] = mapped_column(ForeignKey("bed_pools.id"), nullable=True)
+    scope: Mapped[str] = mapped_column(String(20))
+    scope_key: Mapped[str] = mapped_column(String(120))
+    target: Mapped[str] = mapped_column(String(30))
+    day: Mapped[date] = mapped_column(Date)
+    mean: Mapped[float] = mapped_column(Float)
+    q10: Mapped[float] = mapped_column(Float)
+    q50: Mapped[float] = mapped_column(Float)
+    q90: Mapped[float] = mapped_column(Float)
+    p_tension: Mapped[float | None] = mapped_column(Float, nullable=True)
+    p_critique: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    run: Mapped[ForecastRun] = relationship(back_populates="values")
+
+
+class RorOutbox(Base):
+    """Export payloads waiting to be sent. ``simulated`` only until the link is authorised."""
+
+    __tablename__ = "ror_outbox"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    kind: Mapped[str] = mapped_column(String(30))
+    payload_json: Mapped[str] = mapped_column(Text)
+    digest: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(20), default="simulated")

@@ -96,7 +96,23 @@ def _authenticate(
     return user, group
 
 
-def require(roles: frozenset[str]) -> Callable[..., Ctx]:
+def lock_tenant(session: Session, group_id: int) -> Group:
+    """Take the tenant's write lock: SQLite reserves the writer, PostgreSQL locks the group
+    row. Call it on a session with no transaction open (start of request or after a
+    rollback). No network I/O under this lock."""
+    if session.get_bind().dialect.name == "sqlite":
+        session.execute(text("BEGIN IMMEDIATE"))
+    return session.scalars(
+        select(Group)
+        .where(Group.id == group_id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    ).one()
+
+
+def require(roles: frozenset[str], lock: bool = True) -> Callable[..., Ctx]:
+    """``lock=False``: a writing route that takes the lock itself, late (``lock_tenant``)."""
+
     def dependency(
         request: Request,
         session: SessionDep,
@@ -104,7 +120,7 @@ def require(roles: frozenset[str]) -> Callable[..., Ctx]:
         clock: ClockDep,
         authorization: Annotated[str | None, Header()] = None,
     ) -> Ctx:
-        writing = request.method not in ("GET", "HEAD", "OPTIONS")
+        writing = lock and request.method not in ("GET", "HEAD", "OPTIONS")
         # SQLite has no row locks; reserve the writer before the first read. PostgreSQL
         # serializes only mutations within this tenant. No network I/O under this lock.
         if writing and session.get_bind().dialect.name == "sqlite":
@@ -127,5 +143,7 @@ def require(roles: frozenset[str]) -> Callable[..., Ctx]:
 ReadCtx = Annotated[Ctx, Depends(require(READ_ROLES))]
 WriteCtx = Annotated[Ctx, Depends(require(WRITE_ROLES))]
 AdminCtx = Annotated[Ctx, Depends(require(frozenset({"admin_groupe"})))]
+# Admin route that reads first and locks only around its writes (lock_tenant).
+AdminLateLockCtx = Annotated[Ctx, Depends(require(frozenset({"admin_groupe"}), lock=False))]
 IngestCtx = Annotated[Ctx, Depends(require(frozenset({"ingestion", "admin_groupe"})))]
 SyncCtx = Annotated[Ctx, Depends(require(WRITE_ROLES | {"ingestion"}))]

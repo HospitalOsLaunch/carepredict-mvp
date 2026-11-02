@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time
 from zoneinfo import ZoneInfo
 
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.vocab import MENTIONS, REQUEST_SOURCES, SPECIAL_NEEDS
 
 TEMPLATES: dict[str, list[str]] = {
@@ -399,7 +400,7 @@ def _datetime(
     except ValueError:
         errors.append(RowError(line, col, f"Date/heure invalide : « {value} »"))
         return None
-    return datetime.combine(day, time(9, 0), tzinfo=zone).astimezone(UTC)
+    return local_time(day, time(9, 0), zone)
 
 
 def _bool(value: str, line: int, errors: list[RowError]) -> bool:

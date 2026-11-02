@@ -13,6 +13,26 @@ class ApiError(RuntimeError):
     pass
 
 
+def _reason(response: httpx.Response) -> str:
+    """What may be said of an error: the API's own message, or the fields and rules a
+    validation error names. Never the body as such, which may quote a value read on a
+    screen (REVIEW S-M2)."""
+    try:
+        detail = response.json().get("detail")
+    except (ValueError, AttributeError):
+        return ""
+    if isinstance(detail, str):
+        return f" {detail[:200]}"
+    if isinstance(detail, list):
+        parts = [
+            f"{'.'.join(str(p) for p in d.get('loc', []))} : {d.get('msg', '')}"
+            for d in detail[:5]
+            if isinstance(d, dict)
+        ]
+        return f" ({'; '.join(parts)})"[:300]
+    return ""
+
+
 class TaskInterrupted(RuntimeError):
     """The worker can no longer prove it owns the current decision."""
 
@@ -47,6 +67,7 @@ class HospitalOSClient:
                 "/begin-write",
                 "/authorize",
                 "/ingest/requests",
+                "/ingest/movements",
             )
         )
         for attempt in range(3 if safe else 1):
@@ -59,7 +80,7 @@ class HospitalOSClient:
                     time.sleep(0.2 * 2**attempt)
                     continue
                 if r.status_code >= 400:
-                    raise ApiError(f"{method} {path} : {r.status_code} {r.text[:300]}")
+                    raise ApiError(f"{method} {path} : {r.status_code}{_reason(r)}")
                 return r.json() if r.content else None
             except httpx.TransportError as exc:
                 if not safe or attempt == 2:
@@ -105,12 +126,13 @@ class HospitalOSClient:
         )
         return result
 
-    def claim(self, agent_id: str, limit: int = 1) -> list[dict[str, Any]]:
-        result: list[dict[str, Any]] = self._call(
-            "POST",
-            "/api/agent/tasks/claim",
-            {"protocol_version": 2, "agent_id": agent_id, "limit": limit},
-        )
+    def claim(
+        self, agent_id: str, limit: int = 1, kinds: list[str] | None = None
+    ) -> list[dict[str, Any]]:
+        body: dict[str, Any] = {"protocol_version": 2, "agent_id": agent_id, "limit": limit}
+        if kinds is not None:
+            body["kinds"] = kinds
+        result: list[dict[str, Any]] = self._call("POST", "/api/agent/tasks/claim", body)
         for task in result:
             self.leases[int(task["id"])] = {
                 "agent_id": agent_id,
@@ -151,8 +173,12 @@ class HospitalOSClient:
         result: dict[str, Any] = self._call("POST", "/api/ingest/requests", request)
         return result
 
-    def request_sync(self) -> dict[str, Any]:
-        result: dict[str, Any] = self._call("POST", "/api/agent/sync")
+    def request_sync(self, kind: str = "sync_inbox") -> dict[str, Any]:
+        result: dict[str, Any] = self._call("POST", f"/api/agent/sync?kind={kind}")
+        return result
+
+    def ingest_movements(self, movements: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        result: list[dict[str, Any]] = self._call("POST", "/api/ingest/movements", movements)
         return result
 
     def calibration(

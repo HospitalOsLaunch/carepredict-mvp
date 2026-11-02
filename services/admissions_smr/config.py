@@ -7,6 +7,10 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 _DEV_SECRET = "dev-only-secret-change-me"
+_DEV_PSEUDONYM_SECRET = "dev-only-pseudonym-secret-change-me"
+# The only environments (exact, case-sensitive) where the built-in development keys and
+# the demo seeds are accepted: anything else fails closed (REVIEW S-M3).
+DEV_ENVIRONMENTS = frozenset({"development", "test"})
 
 
 class ConfigurationError(RuntimeError):
@@ -44,10 +48,29 @@ class Settings:
     oidc: OidcSettings | None = None
     # Service accounts (role "ingestion") always keep password sign-in.
     password_login: bool = True
+    # HMAC key that turns IPP / NDA into pseudonymous references. Separate from secret_key:
+    # rotating the token key must not change every stored reference.
+    pseudonym_secret: str = _DEV_PSEUDONYM_SECRET
+    # Accepted movement dates, relative to reception: older or later movements get an AE.
+    movement_max_age_days: int = 400
+    movement_max_future_hours: int = 24
 
     @property
     def is_production(self) -> bool:
         return self.environment == "production"
+
+    @property
+    def dev_defaults_allowed(self) -> bool:
+        """Development keys and demo seeds: ADM_ENV exactly development or test."""
+        return self.environment in DEV_ENVIRONMENTS
+
+
+def ensure_demo_allowed(settings: Settings) -> None:
+    """Demo seeds (known passwords, synthetic patients) never reach a real database."""
+    if not settings.dev_defaults_allowed:
+        raise ConfigurationError(
+            "Jeu de démonstration refusé : ADM_ENV doit valoir exactement development ou test"
+        )
 
 
 def load_oidc() -> OidcSettings | None:
@@ -86,14 +109,27 @@ def load_settings() -> Settings:
         ),
         oidc=load_oidc(),
         password_login=os.getenv("ADM_PASSWORD_LOGIN", "1") != "0",
+        pseudonym_secret=os.getenv("ADM_PSEUDONYM_SECRET", _DEV_PSEUDONYM_SECRET),
+        movement_max_age_days=int(os.getenv("ADM_MOVEMENT_MAX_AGE_DAYS", "400")),
+        movement_max_future_hours=int(os.getenv("ADM_MOVEMENT_MAX_FUTURE_HOURS", "24")),
     )
-    if settings.is_production:
+    if not settings.dev_defaults_allowed:
         if settings.secret_key == _DEV_SECRET or len(settings.secret_key) < 32:
             raise ConfigurationError(
-                "ADM_SECRET_KEY must be set to a 32+ char secret in production"
+                "ADM_SECRET_KEY must be set to a 32+ char secret: development keys are only "
+                "accepted with ADM_ENV=development or test"
             )
-        if settings.database_url.startswith("sqlite"):
-            raise ConfigurationError("SQLite is not allowed in production; use PostgreSQL (HDS)")
+        if (
+            settings.pseudonym_secret == _DEV_PSEUDONYM_SECRET
+            or len(settings.pseudonym_secret) < 32
+            or settings.pseudonym_secret == settings.secret_key
+        ):
+            raise ConfigurationError(
+                "ADM_PSEUDONYM_SECRET must be set to its own 32+ char secret: development "
+                "keys are only accepted with ADM_ENV=development or test"
+            )
+    if settings.is_production and settings.database_url.startswith("sqlite"):
+        raise ConfigurationError("SQLite is not allowed in production; use PostgreSQL (HDS)")
     return settings
 
 

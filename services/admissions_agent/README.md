@@ -6,6 +6,7 @@ L'agent fait sur les portails d'orientation ce qu'une coordinatrice y fait à la
 | --- | --- | --- |
 | `sync_inbox` | Lit la liste des dossiers reçus et dépose chaque demande dans HospitalOS (idempotent). | Lecture seule |
 | `reply_portal` | Reporte sur le portail l'accord (avec la date d'entrée) ou le refus décidé dans HospitalOS. | Écriture chez un tiers |
+| `sync_movements` | Relève les mouvements du jour du logiciel de gestion des lits et les dépose dans HospitalOS (idempotent). | Lecture seule |
 
 Il tourne **dans le réseau de l'établissement**, à côté des portails, avec un compte de
 service `ingestion`. Il ne reçoit aucune connexion entrante : il appelle l'API HospitalOS,
@@ -70,7 +71,7 @@ réel de l'heure GPU.
 
 | Variable | Rôle |
 | --- | --- |
-| `AGENT_API_URL`, `AGENT_API_EMAIL`, `AGENT_API_PASSWORD` | API HospitalOS et compte `ingestion` |
+| `AGENT_API_URL`, `AGENT_API_EMAIL`, `AGENT_API_PASSWORD` | API HospitalOS et compte `ingestion` ; l'URL doit être en `https`, sauf vers la machine locale ou un nom de service interne sans point (`http://api:8010` en compose) |
 | `AGENT_ID` | nom du poste, affiché dans l'interface |
 | `AGENT_PORTAL_URL`, `AGENT_PORTAL_USERNAME`, `AGENT_PORTAL_PASSWORD` | portail d'orientation |
 | `AGENT_PLAYBOOK` | script YAML du portail (défaut : portail de démonstration) |
@@ -120,6 +121,34 @@ champs à lire, transformations vers le vocabulaire HospitalOS), `reply_portal` 
 `wait_for`, `when`. Le script de ViaTrajectoire n'est pas fourni : il ne peut être
 écrit qu'avec un accès au portail, après vérification de ses conditions
 d'utilisation et accord de son opérateur.
+
+## Relever les mouvements patients (`sync_movements`)
+
+Quand le SI ne peut pas envoyer de flux HL7, l'agent lit l'écran « mouvements du jour »
+du logiciel de gestion des lits et poste les mouvements à `/api/ingest/movements` ; ils
+suivent ensuite exactement le chemin des messages HL7 (pseudonymisation, idempotence,
+annulations ; voir `docs/liscop/HL7_PAM.md`).
+
+- Un poste ne réserve que les tâches que son playbook sait faire : un agent placé à côté
+  du logiciel de gestion des lits (`AGENT_PLAYBOOK=playbooks/demo_bedsoft.yaml`,
+  `AGENT_PORTAL_URL` = ce logiciel) demande et traite seulement `sync_movements`.
+- Script seul : aucun modèle ne lit cet écran (route par défaut `["playbook"]`).
+- Seuls les champs du playbook quittent l'écran, puis une liste blanche les filtre encore ;
+  le nom et la date de naissance affichés ne sont jamais lus. Les libellés du logiciel
+  (« Entrée », « Mutation »…) sont traduits par une table `map` déclarée dans le playbook.
+- Un mouvement vu déjà annulé est envoyé comme son entrée suivie de son annulation : le
+  résultat est nul, et un nouveau relevé ne change rien.
+- Une ligne refusée par HospitalOS (format, unité inconnue…) n'arrête pas le relevé : les
+  autres sont appliquées et la tâche passe « à reprendre » avec une note par ligne
+  (référence du mouvement si c'est un identifiant simple, sinon numéro de ligne, et la
+  raison). Aucune erreur de l'agent ne recopie une valeur lue à l'écran : seulement le
+  nom du champ et le format attendu.
+- Le compte `ingestion` utilisé peut être limité à ce logiciel (`source_system` du
+  playbook, ici `demo_bedsoft`) : voir `users.allowed_sources` dans le README de l'API.
+
+Logiciel fictif pour la démonstration et les tests :
+`uvicorn services.admissions_agent.demo_bedsoft.app:app --port 8120` (utilisateur
+`cadre`, mot de passe `demo-lits`).
 
 ## Limites honnêtes
 

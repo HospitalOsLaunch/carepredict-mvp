@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import secrets
-from datetime import UTC, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -31,6 +31,7 @@ from services.admissions_smr.api.deps import (
     SyncCtx,
     WriteCtx,
 )
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.messages import accord_message, refusal_message
 from services.admissions_smr.models import (
     AdmissionRequest,
@@ -209,7 +210,7 @@ def spent_since(ctx: Ctx, since: datetime) -> float:
 
 
 def local_midnight(ctx: Ctx) -> datetime:
-    return datetime.combine(ctx.clock.today(), time.min, tzinfo=ctx.clock.zone).astimezone(UTC)
+    return local_time(ctx.clock.today(), time.min, ctx.clock.zone)
 
 
 def latest_calibrations(ctx: Ctx) -> dict[str, AgentCalibration]:
@@ -705,7 +706,7 @@ def resume(ctx: AdminCtx) -> AgentStatusOut:
 
 
 @router.post("/sync", response_model=TaskOut, status_code=201)
-def sync_now(ctx: SyncCtx) -> TaskOut:
+def sync_now(ctx: SyncCtx, kind: Literal["sync_inbox", "sync_movements"] = "sync_inbox") -> TaskOut:
     if ctx.site_scope is not None:
         raise HTTPException(
             403, "La synchronisation du groupe est réservée à la coordination groupe"
@@ -714,7 +715,7 @@ def sync_now(ctx: SyncCtx) -> TaskOut:
     existing = ctx.session.scalar(
         select(AgentTask).where(
             AgentTask.group_id == ctx.group.id,
-            AgentTask.kind == "sync_inbox",
+            AgentTask.kind == kind,
             AgentTask.status.in_(("pending", "running")),
         )
     )
@@ -723,14 +724,14 @@ def sync_now(ctx: SyncCtx) -> TaskOut:
     now = ctx.clock.now()
     task = AgentTask(
         group_id=ctx.group.id,
-        kind="sync_inbox",
+        kind=kind,
         payload_json="{}",
         status="pending",
         created_at=now,
         updated_at=now,
     )
     ctx.session.add(task)
-    ctx.audit("agent.synchro", "agent", None, "demandée")
+    ctx.audit("agent.synchro", "agent", None, f"demandée ({kind})")
     ctx.session.commit()
     return task_out(task)
 

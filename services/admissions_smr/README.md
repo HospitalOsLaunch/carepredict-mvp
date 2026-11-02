@@ -17,6 +17,7 @@ plus vite à l'adresseur.
 | Charge en soins | Minutes de soins attendues sur 14 jours par unité, face aux heures soignantes prévues : grille des journées en tension, détail jour par jour avec fourchette, saisie de la semaine type et des jours particuliers, rejeu de fiabilité. |
 | Vue groupe | Occupation, demandes en attente, sorties à 7 jours et lits fermés, site par site. |
 | Indicateurs pilote | North Star (journées-lits récupérées) avec intervalle, délai de réponse, parcours des demandes, motifs de refus et de perte, lits fermés par motif, fiabilité de la prévision. |
+| Remontée ROR (maquette) | Ce que HospitalOS pourrait remonter au ROR national, unité par unité, au format LISCOP : disponibles par genre, prévisionnel J+1, J+2, J+7, opérationnel, crise-SSE, tension, fraîcheur ; indicateurs quotidiens pour l'ORU (CSV, JSON) ; envoi en simulation seulement. Voir plus bas. |
 | Imports | CSV des lits, des séjours (avec niveau de soins) et des demandes ; vérification complète avant import. |
 | Paramètres | Sites et lits, utilisateurs et identité fédérée, période de référence et termes du contrat (gel), priorisation, minutes de soins par niveau, agent et routage des moteurs, journal d'audit. |
 
@@ -40,6 +41,7 @@ pip install -r services/admissions_smr/requirements-dev.txt
 
 export ADM_DATABASE_URL=sqlite:///./admissions_demo.db
 python -m services.admissions_smr.cli seed-demo          # groupe synthétique
+python -m services.admissions_smr.cli seed-demo-mco      # hôpital MCO fictif (LISCOP)
 uvicorn services.admissions_smr.main:app --port 8010      # API : http://localhost:8010/api/docs
 
 cd services/admissions_web && npm ci && npm run dev       # http://localhost:5174
@@ -61,6 +63,14 @@ AGENT_PORTAL_USERNAME=demo AGENT_PORTAL_PASSWORD=demo-portail \
 Comptes de démonstration (mot de passe `demo-hospitalos-2026`, ou `ADM_DEMO_PASSWORD`) :
 `admin@`, `coordination@`, `tilleuls@` (limité à un site), `direction@` (lecture),
 `agent@` (compte de service) `demo.hospitalos.fr`.
+
+Hôpital MCO de démonstration (`seed-demo-mco`, même mot de passe) : « Centre hospitalier
+des Deux-Rivières (fictif) », département 59, un site MCO avec urgences et un site SMR,
+environ 250 lits en chambres simples et doubles, un an de passages aux urgences et de
+séjours (références pseudonymes aléatoires, aucune identité). Comptes `bedmanager@` et
+`cadre@` (coordination), `direction@` (lecture), `admin@`, `agent@` (compte de service)
+`ch-demo.hospitalos.fr`. En production, `ADM_PSEUDONYM_SECRET` (clé HMAC des IPP / NDA,
+32 caractères au moins, distincte de `ADM_SECRET_KEY`) est obligatoire.
 
 Premier groupe réel :
 
@@ -250,6 +260,70 @@ Conséquences pour le contrat :
 - Ces taux ont été mesurés sur des données synthétiques : ils doivent être
   re-mesurés sur l'historique réel du groupe avant signature.
 
+## Remontée vers le ROR et indicateurs ORU (maquette)
+
+L'écran « Remontée ROR » et les routes ci-dessous traduisent ce que HospitalOS sait (plan
+des lits, fermetures, prévisions stockées, recensement des urgences) dans le vocabulaire
+de capacité du ROR, pour les équipes régionales qui le lisent (LISCOP en Hauts-de-France,
+via Inéa). **Aucun envoi** : le module n'importe aucun client HTTP et n'ouvre aucune
+connexion ; un test le vérifie. Correspondance champ par champ, sources et questions à
+Inéa : [`docs/liscop/ROR_ORU.md`](../../docs/liscop/ROR_ORU.md).
+
+| Route | Rôles | Contenu |
+|---|---|---|
+| `GET /api/ror/export[?site_id=]` | lecture, périmètre du site | par unité : statuts J188 (dont supplémentaires), disponibles par genre J190 (01 femme, 02 homme, 04 indéterminé) et isolement, fermetures typées J191, opérationnel (en service, réactivables, supplémentaires), réservés crise-SSE, tension, fraîcheur, prévisionnel J+1/J+2/J+7 (J189 03/04/05), enregistrements au format de l'extension FHIR `supported-capacity` |
+| `GET /api/oru/indicators?start=&end=&format=json\|csv[&site_id=]` | lecture, périmètre du site | par site et par jour (366 jours au plus, fin ≤ J+7) : passages, présents / en attente de lit / lits brancards / hébergés à 10 h (déclaré ou calculé, les deux visibles), unités en tension et critiques, HET et Plan blanc actifs, prévision des lits brancards ; CSV UTF-8 avec BOM, `;`, virgule décimale |
+| `POST /api/ror/outbox` | `admin_groupe` | fige l'export courant dans `ror_outbox` (statut `simulated`, SHA-256 du JSON canonique), journalisé ; ne transmet rien |
+| `GET /api/ror/outbox` | `admin_groupe` | 50 derniers envois simulés (sans le contenu), avec leur auteur |
+| `PUT /api/ror/units/{pool_id}` | `admin_groupe` | `ror_unit_id` (lettres, chiffres, `. _ : -`, 64 caractères ; format à confirmer), `extra_beds`, `crisis_reserved_beds` ; journalisé |
+
+- Prévisionnel : « disponibles attendus » de la dernière prévision stockée (moteur
+  `services/forecast_engine`, moyenne, fourchette à 80 %, probabilités de tension et de
+  critique). Sans prévision pour l'unité, la prévision des sorties est affichée sous le
+  libellé « libérés non promis » et n'est jamais transmise comme disponibilité ROR.
+- Unités sans plan des lits : calcul à l'unité (ouverts − présents − promis 24 h), genre
+  inconnu (`null`).
+- Fraîcheur : le plus récent de dernier mouvement reçu, changement de statut de lit,
+  changement de capacité et séjour saisi ; la source est indiquée.
+
+## Mouvements patients (HL7 IHE PAM France)
+
+Les entrées, mutations, sorties et passages aux urgences arrivent sans saisie, du SI
+(GAM ou EAI) en HL7 v2.5 IHE PAM France, ou de l'agent qui lit l'écran du logiciel de
+gestion des lits. Détails, sources et hypothèses : `docs/liscop/HL7_PAM.md`.
+
+- `POST /api/ingest/hl7` : un message ER7 (`text/plain` ou `x-application/hl7-v2+er7`,
+  encadrement MLLP toléré, 64 Ko au plus : `ADM_HL7_MAX_BYTES`), compte de service
+  `ingestion` uniquement. Réponse : l'ACK HL7 (AA → 200, AE → 422, AR → 400, trop gros → 413).
+- `POST /api/ingest/movements` : les mêmes mouvements en JSON (agent), 500 au plus par lot,
+  validés un par un : un résultat par élément (`applied`, `duplicate`, `ignored`,
+  `rejected` avec la raison), une ligne invalide ne bloque pas les autres.
+- `GET /api/movements` : journal paginé, pseudonymisé, avec le taux de rejet sur 24 h.
+- Événements : A01, A02, A03, A04, A06, A07, A11, A12, A13, A21, A22, A52, A53, Z99 ; les
+  autres sont accusés et journalisés `ignored`. Un message renvoyé à l'identique est sans
+  effet ; le même MSH-10 avec un autre contenu est refusé (AE) et journalisé.
+- Chaque compte `ingestion` peut être lié à ses systèmes émetteurs : `users.allowed_sources`,
+  liste JSON des `source_system` (`MSH-3/MSH-4`, ou le `source_system` de l'agent) ; un
+  autre émetteur reçoit AR (403), sans journalisation. Vide ou nul : tout émetteur
+  (rétrocompatibilité de démo) ; le compte agent de `seed-demo-mco` est lié aux émetteurs
+  de la démo. À renseigner pour tout compte réel (pas encore d'écran : base ou script).
+- IPP et NDA deviennent des HMAC avec une clé par groupe dérivée de `ADM_PSEUDONYM_SECRET`
+  (HKDF-SHA256), en incluant le domaine d'identification (autorité d'affectation, sinon le
+  système émetteur) ; noms, INS/NIR, dates de naissance, adresses et téléphones ne sont ni
+  lus ni stockés (test qui inspecte toutes les tables). Le journal garde une empreinte
+  HMAC (clé dérivée distincte), jamais le message.
+- Dates de mouvement acceptées : de 400 jours avant à 24 h après la réception
+  (`ADM_MOVEMENT_MAX_AGE_DAYS`, `ADM_MOVEMENT_MAX_FUTURE_HOURS`), sinon AE.
+- Clés : hors `ADM_ENV=development` ou `test` (valeur exacte), `ADM_SECRET_KEY` et
+  `ADM_PSEUDONYM_SECRET` doivent être fournies (32 caractères au moins, distinctes) ; les
+  clés de développement intégrées sont refusées.
+- Les unités sont reconnues par leur code UF (`bed_pools.uf_code`), le site par son
+  FINESS : les renseigner avant de brancher le flux.
+
+Flux de démonstration : `python -m tools.his_simulator --dry-run` affiche des messages ;
+`python -m tools.his_simulator --url http://localhost:8110 --rate 12` les envoie
+(compte `agent@ch-demo.hospitalos.fr` ; `--database-url` pour viser des lits libres).
+
 ## Ce qui reste à faire avant un pilote réel
 
 Fait dans cette version : migrations Alembic, PostgreSQL testé, connexion OIDC,
@@ -279,3 +353,37 @@ ruff check services/admissions_smr services/admissions_agent
 mypy --config-file services/admissions_smr/mypy.ini services/admissions_smr services/admissions_agent
 cd services/admissions_web && npm test && npm run build
 ```
+
+## Plan des lits, urgences et tension (LISCOP)
+
+Pages « Plan des lits » (`/plan-des-lits`) et « Urgences et tension » (`/urgences`).
+Logique pure dans `domain/beds.py`, `domain/ed.py`, `domain/tension.py` ; chaque
+définition y est documentée.
+
+- **Lit utilisable** : actif, libre (ni occupé, ni réservé, ni bloqué, ni à nettoyer)
+  et qu'au moins un sexe peut occuper. Un lit à nettoyer est compté « bientôt ».
+- **Genre** (ROR, TRE_R332 / JDV_J190 ; définitions ANS « Capacité en lits » v1.0.1
+  §2.2-2.4) : partition des lits utilisables en *femme* (chambre partagée déjà occupée
+  par une femme, ou lit réservé aux femmes), *homme* (idem) et *indifférencié* (une
+  femme ou un homme peut y être placé ; code ROR 04 « Indéterminé » depuis le
+  28/08/2025). Un lit libre dans une chambre où un homme et une femme sont déjà
+  installés n'est pas utilisable (`sex_conflict`).
+- **Isolement** : lits utilisables en chambre d'isolement. **Fermés** : le plus grand
+  des lits bloqués et des fermetures déclarées sur l'unité.
+- **Lits brancards à 10 h** : patients présents aux urgences à 10:00 (heure de
+  Paris) avec une décision d'hospitalisation, arrivés avant 08:00 le jour même ou la
+  veille. Définition HospitalOS **à valider avec l'ARS** (constantes `BOARDING_HOUR`,
+  `BOARDING_ARRIVED_BEFORE`). Avant 10:00, la valeur du jour est provisoire.
+- **Déclaration manuelle** (repli sans flux) : la dernière déclaration du jour
+  remplace le calcul pour ce jour ; le calcul reste affiché à côté.
+- **Aide HET** : quatre critères transparents (lits brancards à 10 h ≥ 5, en attente
+  de lit ≥ 10, attente la plus longue ≥ 12 h, part des unités MCO critiques ≥ 25 %) ;
+  aucun critère → aucun signal, un → vigilance, deux ou plus → déclaration à
+  envisager. Seuils par défaut à calibrer. La déclaration HET / Plan blanc reste une
+  décision de la direction, enregistrée par la coordination ou un administrateur
+  (la direction est en lecture seule dans ce produit).
+
+API : `GET /api/beds`, `PATCH /api/beds/{id}` (nettoyé, bloquer avec motif, débloquer,
+réserver ; jamais un lit occupé), `GET /api/beds/availability`, `GET /api/ed/census`,
+`GET /api/ed/boarding?days=90`, `GET|POST /api/ed/snapshots`, `GET /api/tension/status`,
+`GET|POST|PATCH /api/tension/declarations`.

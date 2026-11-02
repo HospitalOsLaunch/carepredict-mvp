@@ -1,16 +1,33 @@
-import { Activity, BedDouble, Building2, FileUp, Gauge, Inbox, LogOut, Settings } from "lucide-react";
+import {
+  Activity,
+  BedDouble,
+  BedSingle,
+  Building2,
+  FileUp,
+  Gauge,
+  Inbox,
+  LogOut,
+  RadioTower,
+  Settings,
+  Siren,
+  TrendingUp
+} from "lucide-react";
 import { lazy, Suspense, type ComponentType } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 
 import { useAuth } from "./auth";
 import { Mark } from "./components/Mark";
 import { Spinner } from "./components/ui";
+import { BedBoardPage } from "./pages/BedBoardPage";
 import { BedsPage } from "./pages/BedsPage";
 import { GroupPage } from "./pages/GroupPage";
 import { ImportsPage } from "./pages/ImportsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { PrevisionPage } from "./pages/PrevisionPage";
 import { RequestsPage } from "./pages/RequestsPage";
+import { RorPage } from "./pages/RorPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { UrgencesPage } from "./pages/UrgencesPage";
 
 const ChargePage = lazy(() => import("./pages/ChargePage").then((m) => ({ default: m.ChargePage })));
 const MetricsPage = lazy(() => import("./pages/MetricsPage").then((m) => ({ default: m.MetricsPage })));
@@ -25,9 +42,13 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: "/demandes", label: "Demandes", icon: Inbox },
   { to: "/lits", label: "Lits et sorties", icon: BedDouble },
+  { to: "/plan-des-lits", label: "Plan des lits", icon: BedSingle },
+  { to: "/urgences", label: "Urgences et tension", icon: Siren },
+  { to: "/prevision", label: "Prévision", icon: TrendingUp },
   { to: "/charge", label: "Charge en soins", icon: Activity },
   { to: "/groupe", label: "Vue groupe", icon: Building2 },
   { to: "/indicateurs", label: "Indicateurs pilote", icon: Gauge },
+  { to: "/ror", label: "Remontée ROR", icon: RadioTower },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
   { to: "/parametres", label: "Paramètres", icon: Settings, admin: true }
 ];
@@ -107,6 +128,9 @@ export function App() {
           <Route path="/demandes" element={<RequestsPage />} />
           <Route path="/demandes/:id" element={<RequestsPage />} />
           <Route path="/lits" element={<BedsPage />} />
+          <Route path="/plan-des-lits" element={<BedBoardPage />} />
+          <Route path="/urgences" element={<UrgencesPage />} />
+          <Route path="/prevision" element={<PrevisionPage />} />
           <Route
             path="/charge"
             element={
@@ -124,6 +148,7 @@ export function App() {
               </Suspense>
             }
           />
+          <Route path="/ror" element={<RorPage />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
           <Route path="*" element={<Navigate to="/demandes" replace />} />

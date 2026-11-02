@@ -5,17 +5,25 @@ uvicorn services.admissions_smr.main:app --port 8010
 
 from __future__ import annotations
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from services.admissions_smr import __version__
 from services.admissions_smr.api import (
     routes_agent,
     routes_auth,
+    routes_beds,
+    routes_ed,
+    routes_forecast_store,
+    routes_hl7,
     routes_imports,
     routes_insights,
     routes_predictions,
     routes_requests,
+    routes_ror,
     routes_sites,
     routes_stays,
 )
@@ -45,6 +53,16 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
     app.state.session_factory = make_session_factory(engine)
     app.state.clock = clock or Clock(settings.timezone)
 
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(_request: Request, exc: RequestValidationError) -> JSONResponse:
+        """422 without ``input`` / ``ctx``: a rejected value (a name typed in the wrong
+        field, a value read on a screen) is never echoed back or logged (REVIEW S-M2)."""
+        detail = [
+            {key: error[key] for key in ("loc", "msg", "type") if key in error}
+            for error in exc.errors()
+        ]
+        return JSONResponse(status_code=422, content={"detail": jsonable_encoder(detail)})
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
@@ -66,7 +84,12 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
         routes_stays,
         routes_insights,
         routes_predictions,
+        routes_ror,
         routes_imports,
+        routes_beds,
+        routes_ed,
+        routes_hl7,
+        routes_forecast_store,
     ):
         api.include_router(module.router)
     app.include_router(api)

@@ -7,9 +7,11 @@ from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
 from sqlalchemy import MetaData, select
+from sqlalchemy.orm import Session
 
 from services.admissions_smr.db import Base, make_engine
 from services.admissions_smr.migrate import alembic_config, is_current, upgrade
+from services.admissions_smr.models import Bed, BedPool, Group, Site, Stay
 from services.admissions_smr.tests.conftest import test_database_url as database_url
 
 
@@ -136,3 +138,231 @@ def test_upgrade_preserves_linked_rows_and_quarantines_legacy_writes(tmp_path: P
             == 0
         )
     engine.dispose()
+
+
+LISCOP_TABLES = {
+    "beds",
+    "movements",
+    "ed_visits",
+    "ed_snapshots",
+    "tension_declarations",
+    "forecast_runs",
+    "forecast_values",
+    "ror_outbox",
+}
+
+
+def test_liscop_upgrade_keeps_existing_rows_and_backfills_defaults(tmp_path: Path) -> None:
+    engine = make_engine(database_url(tmp_path))
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    now = datetime.now(UTC)
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.upgrade(config, "0002")
+        old = MetaData()
+        old.reflect(bind=connection)
+        connection.execute(
+            old.tables["groups"]
+            .insert()
+            .values(
+                id=1,
+                name="Legacy",
+                created_at=now,
+                value_per_bed_day=0,
+                success_fee_rate=0,
+                scoring_weights_json="{}",
+                care_minutes_json="{}",
+            )
+        )
+        connection.execute(
+            old.tables["sites"]
+            .insert()
+            .values(id=1, group_id=1, name="SMR", capabilities="", active=True, created_at=now)
+        )
+        connection.execute(
+            old.tables["bed_pools"]
+            .insert()
+            .values(
+                id=1,
+                site_id=1,
+                mention="geriatrie",
+                beds_installed=10,
+                beds_open=10,
+                isolation_rooms=1,
+                updated_at=now,
+            )
+        )
+        connection.execute(
+            old.tables["stays"]
+            .insert()
+            .values(
+                id=1,
+                group_id=1,
+                site_id=1,
+                mention="geriatrie",
+                patient_ref="P-1",
+                admission_date=now.date(),
+                created_at=now,
+                updated_at=now,
+            )
+        )
+        connection.execute(
+            old.tables["stay_plan_changes"]
+            .insert()
+            .values(id=1, stay_id=1, recorded_at=now, recorded_on=now.date(), source="saisie")
+        )
+    upgrade(engine)
+    with engine.connect() as connection:
+        current = MetaData()
+        current.reflect(bind=connection)
+        assert set(current.tables) >= LISCOP_TABLES
+        pool = connection.execute(select(current.tables["bed_pools"])).mappings().one()
+        assert (pool["unit_type"], pool["discipline"]) == ("smr", "smr")
+        assert (pool["extra_beds"], pool["crisis_reserved_beds"]) == (0, 0)
+        stay = connection.execute(select(current.tables["stays"])).mappings().one()
+        assert stay["source"] == "saisie" and stay["bed_id"] is None
+        assert connection.execute(select(current.tables["stay_plan_changes"].c.stay_id)).scalar()
+        stay_fks = {fk.column.table.name for fk in current.tables["stays"].c.bed_id.foreign_keys}
+        assert stay_fks == {"beds"}
+    engine.dispose()
+
+
+def test_liscop_downgrade_then_upgrade_on_empty_database(tmp_path: Path) -> None:
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0002")
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        assert not LISCOP_TABLES & set(tables.tables)
+        assert "bed_id" not in tables.tables["stays"].c
+    upgrade(engine)
+    assert is_current(engine)
+    engine.dispose()
+
+
+def test_liscop_downgrade_with_a_stay_in_its_bed_and_a_same_day_readmission(
+    tmp_path: Path,
+) -> None:
+    """REVIEW C-2 / T-19: the partial unique index is created and removed; a stay linked to
+    a bed does not block the downgrade (SQLite copies ``stays``)."""
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    now = datetime.now(UTC)
+    with engine.begin() as connection:
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        t = tables.tables
+        connection.execute(
+            t["groups"].insert().values(
+                id=1, name="G", created_at=now, value_per_bed_day=0, success_fee_rate=0,
+                scoring_weights_json="{}", care_minutes_json="{}",
+            )
+        )  # fmt: skip
+        connection.execute(
+            t["sites"].insert().values(id=1, group_id=1, name="S", capabilities="", active=True,
+                                       created_at=now)
+        )  # fmt: skip
+        connection.execute(
+            t["bed_pools"].insert().values(
+                id=1, site_id=1, mention="medecine_polyvalente", beds_installed=1, beds_open=1,
+                isolation_rooms=0, updated_at=now,
+            )
+        )  # fmt: skip
+        for stay_id, encounter in ((1, "E1"), (2, "E2")):  # same patient, site and day
+            connection.execute(
+                t["stays"].insert().values(
+                    id=stay_id, group_id=1, site_id=1, mention="medecine_polyvalente",
+                    patient_ref="P", admission_date=now.date(), created_at=now, updated_at=now,
+                    encounter_ref=encounter, source="hl7",
+                )
+            )  # fmt: skip
+        connection.execute(
+            t["beds"].insert().values(
+                id=1, group_id=1, site_id=1, pool_id=1, room="1", label="1", sex_constraint="X",
+                isolation=False, status="occupe", stay_id=2, active=True, updated_at=now,
+            )
+        )  # fmt: skip
+        connection.execute(t["stays"].update().where(t["stays"].c.id == 2).values(bed_id=1))
+        connection.execute(t["stays"].delete().where(t["stays"].c.id == 1))  # old index
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0002")
+    with engine.connect() as connection:
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        assert "beds" not in tables.tables
+        assert connection.execute(select(tables.tables["stays"].c.id)).scalars().all() == [2]
+    upgrade(engine)
+    assert is_current(engine)
+    engine.dispose()
+
+
+def test_liscop_downgrade_keeps_a_stay_linked_to_a_bed(tmp_path: Path) -> None:
+    """T-19: stays.bed_id ↔ beds.stay_id reference each other; the downgrade still runs."""
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    now = datetime.now(UTC)
+    with Session(engine) as session:
+        group = Group(name="G", created_at=now)
+        session.add(group)
+        session.flush()
+        site = Site(group_id=group.id, name="S", capabilities="", created_at=now)
+        session.add(site)
+        session.flush()
+        pool = BedPool(
+            site_id=site.id,
+            mention="medecine_polyvalente",
+            beds_installed=1,
+            beds_open=1,
+            unit_type="medecine",
+            discipline="medecine",
+            updated_at=now,
+        )
+        session.add(pool)
+        session.flush()
+        stay = Stay(
+            group_id=group.id,
+            site_id=site.id,
+            mention="medecine_polyvalente",
+            patient_ref="P-1",
+            admission_date=now.date(),
+            source="hl7",
+            created_at=now,
+            updated_at=now,
+        )
+        session.add(stay)
+        session.flush()
+        bed = Bed(
+            group_id=group.id,
+            site_id=site.id,
+            pool_id=pool.id,
+            room="101",
+            label="101",
+            status="occupe",
+            stay_id=stay.id,
+            updated_at=now,
+        )
+        session.add(bed)
+        session.flush()
+        stay.bed_id = bed.id
+        session.commit()
+        stay_id = stay.id
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0002")
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        assert "beds" not in tables.tables and "bed_id" not in tables.tables["stays"].c
+        stays = tables.tables["stays"]
+        assert connection.execute(select(stays.c.id, stays.c.patient_ref)).all() == [
+            (stay_id, "P-1")
+        ]
+    upgrade(engine)
+    assert is_current(engine)
+    with Session(engine) as session:
+        assert session.get(Stay, stay_id).bed_id is None  # type: ignore[union-attr]

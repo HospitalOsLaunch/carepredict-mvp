@@ -14,6 +14,7 @@ from services.admissions_smr.vocab import (
     REQUEST_SOURCES,
     ROLES,
     SPECIAL_NEEDS,
+    UNIT_CODES,
 )
 
 
@@ -177,16 +178,15 @@ class RequestCreate(Strict):
     @field_validator("mention_requested")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in MENTIONS:
+        if value not in MENTIONS:  # SMR referrals only; MCO unit codes are for stays
             raise ValueError("mention inconnue")
         return value
 
     @field_validator("special_needs")
     @classmethod
     def _needs(cls, value: list[str]) -> list[str]:
-        unknown = [v for v in value if v not in SPECIAL_NEEDS]
-        if unknown:
-            raise ValueError(f"besoins inconnus : {unknown}")
+        if any(v not in SPECIAL_NEEDS for v in value):  # never echo the value (REVIEW S-M2)
+            raise ValueError("besoins inconnus : codes du vocabulaire special_needs attendus")
         return sorted(set(value))
 
     @field_validator("patient_ref")
@@ -357,7 +357,7 @@ class StayCreate(Strict):
     @field_validator("mention")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in MENTIONS:
+        if value not in UNIT_CODES:
             raise ValueError("mention inconnue")
         return value
 
@@ -671,3 +671,15 @@ class VocabularyOut(BaseModel):
     capacity_reasons: dict[str, str]
     special_needs: dict[str, str]
     roles: dict[str, str]
+    # LISCOP (added; existing clients ignore them).
+    unit_codes: dict[str, str] = Field(default_factory=dict)
+    unit_types: dict[str, str] = Field(default_factory=dict)
+    liscop_disciplines: dict[str, str] = Field(default_factory=dict)
+    unit_kinds: dict[str, tuple[str, str]] = Field(default_factory=dict)
+    bed_statuses: dict[str, str] = Field(default_factory=dict)
+    bed_block_reasons: dict[str, str] = Field(default_factory=dict)
+    sex_constraints: dict[str, str] = Field(default_factory=dict)
+    stay_sources: dict[str, str] = Field(default_factory=dict)
+    admission_modes: dict[str, str] = Field(default_factory=dict)
+    ed_outcomes: dict[str, str] = Field(default_factory=dict)
+    tension_kinds: dict[str, str] = Field(default_factory=dict)

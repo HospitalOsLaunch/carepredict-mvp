@@ -56,6 +56,7 @@ de HospitalOS pour l'activité 5 est probablement nécessaire.
 | `ADM_ENV` | `production` (l'API refuse alors SQLite et la clé de développement) |
 | `ADM_DATABASE_URL` | `postgresql+psycopg://…@<hôte privé>/admissions?sslmode=require` |
 | `ADM_SECRET_KEY` | 32 caractères aléatoires au moins, dans le coffre de secrets de l'hébergeur |
+| `ADM_PSEUDONYM_SECRET` | Clé HMAC des IPP / NDA reçus en HL7 : 32 caractères aléatoires au moins, distincte de `ADM_SECRET_KEY`, jamais changée (sinon les références ne correspondent plus) |
 | `ADM_CORS_ORIGINS` | vide (même origine derrière nginx) |
 | `ADM_OIDC_*`, `ADM_FRONTEND_URL` | voir le README du module |
 | `ADM_PASSWORD_LOGIN` | `0` une fois l'OIDC en place (les comptes de service gardent le mot de passe) |
@@ -63,6 +64,13 @@ de HospitalOS pour l'activité 5 est probablement nécessaire.
 Le schéma est migré par Alembic au démarrage de l'API. Pour un déploiement contrôlé,
 lancer `python -m services.admissions_smr.cli migrate` comme étape distincte avant de
 démarrer la nouvelle version.
+
+**Moteur de prévision LISCOP** (`services/forecast_engine`, tâche planifiée, image à
+part) : il ne lit que `ADM_DATABASE_URL` et `ADM_TIMEZONE` (aucun secret de l'API) et ne
+migre jamais la base ; il s'arrête (code 2) si le schéma n'est pas à jour, donc le
+lancer après l'API ou l'étape `migrate`. Il se connecte avec un **rôle PostgreSQL
+dédié** : `SELECT` sur les tables qu'il lit, `SELECT` + `INSERT` sur `forecast_runs` et
+`forecast_values`, rien d'autre (script SQL dans `services/forecast_engine/README.md`).
 
 ## 4. Liste de contrôle
 
@@ -84,6 +92,7 @@ démarrer la nouvelle version.
 **Application**
 - [ ] `ADM_ENV=production`, secret fort, OIDC configuré, mot de passe désactivé pour les personnes.
 - [ ] Compte `ingestion` dédié à chaque agent, mot de passe long, rotation planifiée.
+- [ ] Moteur de prévision sur son rôle base dédié (lecture + `INSERT` dans `forecast_*`), jamais celui de l'API.
 - [ ] Journaux applicatifs sans données patient, conservés selon la politique du client.
 - [ ] Supervision de `/api/health` et alerte quand l'agent est signalé hors ligne (aucun signal depuis 5 minutes).
 

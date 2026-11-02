@@ -1,0 +1,11 @@
+# Forecast engine only (never installed in the API image). Approved in docs/liscop/SPEC.md.
+# Exact versions, resolved for the Python 3.11 image (numpy 2.5 and scipy 1.18 need 3.12).
+-r ../admissions_smr/requirements.txt
+statsforecast==2.1.1  # Nixtla, Apache-2.0: SeasonalNaive, AutoETS, AutoTheta, MSTL
+coreforecast==0.0.19  # Nixtla, Apache-2.0 (statsforecast core)
+utilsforecast==0.2.17  # Nixtla, Apache-2.0
+statsmodels==0.15.0  # BSD-3-Clause
+numpy==2.4.6  # BSD-3-Clause
+scipy==1.17.1  # BSD-3-Clause
+pandas==2.3.3  # BSD-3-Clause
+holidays==0.107  # MIT: French public holidays

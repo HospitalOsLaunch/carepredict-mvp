@@ -1,5 +1,6 @@
 # HospitalOS Admissions SMR: API + web + PostgreSQL (+ the computer-use agent, optional).
-#   ADM_SECRET_KEY=$(openssl rand -hex 32) ADM_DB_PASSWORD=... \
+#   ADM_SECRET_KEY=$(openssl rand -hex 32) ADM_PSEUDONYM_SECRET=$(openssl rand -hex 32) \
+#     ADM_DB_PASSWORD=... \
 #     docker compose -f docker-compose.admissions.yml up -d --build
 # Production must run on HDS-certified hosting with TLS terminated in front of "web".
 name: hospitalos_admissions
@@ -27,6 +28,7 @@ services:
       ADM_ENV: ${ADM_ENV:-production}
       ADM_DATABASE_URL: postgresql+psycopg://admissions:${ADM_DB_PASSWORD}@db:5432/admissions
       ADM_SECRET_KEY: ${ADM_SECRET_KEY:?ADM_SECRET_KEY is required}
+      ADM_PSEUDONYM_SECRET: ${ADM_PSEUDONYM_SECRET:?ADM_PSEUDONYM_SECRET is required}
       ADM_TIMEZONE: Europe/Paris
       ADM_CORS_ORIGINS: ""
       # Sign-in through Pro Santé Connect or the establishment's identity provider (optional).
