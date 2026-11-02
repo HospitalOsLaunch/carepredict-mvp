@@ -213,6 +213,7 @@ def test_cli_seeds_once_and_refuses_twice(
         monkeypatch.setenv("ADM_ENV", "production")
         monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
         monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+        monkeypatch.setenv("ADM_CONNECTOR_KEY", "c" * 40)
         monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@127.0.0.1:1/x")
         get_settings.cache_clear()
         # Refused before touching the database.
@@ -233,6 +234,7 @@ def test_cli_refuses_demo_seeds_outside_development_and_test(
     monkeypatch.setenv("ADM_ENV", env)
     monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
     monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    monkeypatch.setenv("ADM_CONNECTOR_KEY", "c" * 40)
     monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@127.0.0.1:1/x")
     get_settings.cache_clear()
     try:
