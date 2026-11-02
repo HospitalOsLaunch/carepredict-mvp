@@ -1,10 +1,14 @@
 # Playbook of the fictional bed-management software (demo_bedsoft). Template for a real one:
 # copy it, then replace the selectors and the label maps after inspecting its screens.
 # Rules:
-#   - selectors only, no coordinates; credentials come from the agent's environment;
+#   - selectors only, no coordinates; credentials come from the connection (or from the
+#     agent's environment in legacy mode);
 #   - only the fields listed below leave the screen. The patient's name and birth date are
 #     shown by the software and are never read. IPP and venue number are pseudonymised by
 #     HospitalOS on receipt (HMAC), never stored in clear.
+# Catalogue header: the name a connection picks in HospitalOS, and the kind of software.
+id: demo_bedsoft
+kind: gestion_lits
 name: Gestion des lits (démonstration)
 
 login:

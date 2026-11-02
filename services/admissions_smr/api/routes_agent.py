@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy import Select, case, func, or_, select
 
+from services.admissions_smr import agent_connections as connections
 from services.admissions_smr.agent_policy import (
     ENGINE_NAMES,
     TASK_KINDS,
@@ -32,13 +33,16 @@ from services.admissions_smr.api.deps import (
     WriteCtx,
 )
 from services.admissions_smr.clock import local_time
+from services.admissions_smr.domain.connector_secrets import SecretError, decrypt
 from services.admissions_smr.domain.messages import accord_message, refusal_message
 from services.admissions_smr.models import (
     AdmissionRequest,
     AgentAttempt,
     AgentCalibration,
+    AgentConnection,
     AgentState,
     AgentTask,
+    AgentWorker,
     Site,
 )
 from services.admissions_smr.task_state import decision_is_current
@@ -60,10 +64,39 @@ class EngineReport(BaseModel):
     detail: str | None = None
 
 
+ConnectionKind = Literal["portail_orientation", "gestion_lits"]
+TaskKind = Literal["sync_inbox", "reply_portal", "sync_movements"]
+
+
+class PlaybookInfo(BaseModel):
+    """One playbook bundled with a worker: what a connection may name."""
+
+    name: str = Field(pattern=r"^[A-Za-z0-9_.-]{1,80}$")
+    label: str = Field(max_length=200)
+    kind: ConnectionKind
+    tasks: list[TaskKind] = Field(max_length=3)
+
+
 class HeartbeatIn(BaseModel):
     agent_id: str = Field(min_length=1, max_length=120)
     version: str = Field(max_length=40)
     engines: list[EngineReport] = Field(default_factory=list)
+    playbooks: list[PlaybookInfo] = Field(default_factory=list, max_length=50)
+
+
+class HeartbeatConnection(BaseModel):
+    """A connection this worker runs or may run. Never a secret nor an identifier."""
+
+    id: int
+    kind: str
+    playbook: str
+    tasks: list[str]
+    status: str
+    interval_minutes: int
+    active_from: str | None  # "HH:MM", local time
+    active_to: str | None
+    days: list[int]
+    next_run_at: datetime | None
 
 
 class HeartbeatOut(BaseModel):
@@ -72,6 +105,7 @@ class HeartbeatOut(BaseModel):
     spent_today_usd: float
     calibrations: dict[str, float]
     calibration_details: dict[str, dict[str, Any]]
+    connections: list[HeartbeatConnection] = Field(default_factory=list)
 
 
 class ClaimIn(BaseModel):
@@ -79,6 +113,9 @@ class ClaimIn(BaseModel):
     agent_id: str = Field(min_length=1, max_length=120)
     kinds: list[str] = Field(default_factory=lambda: list(TASK_KINDS))
     limit: int = Field(default=1, ge=1, le=20)
+    # True: this worker also runs tasks without connection (portal configured with its own
+    # environment variables). Absent from older agents, hence True by default.
+    legacy: bool = True
 
 
 class TaskOut(BaseModel):
@@ -97,11 +134,25 @@ class TaskOut(BaseModel):
     finished_at: datetime | None
     available_at: datetime | None
     reconcile_only: bool
+    connection_id: int | None = None
+
+
+class ClaimedConnection(BaseModel):
+    """Everything the worker needs to run the task. The secret is decrypted HERE ONLY."""
+
+    id: int
+    url: str
+    allowed_hosts: list[str]
+    username: str | None
+    secret: str | None
+    playbook: str
+    source_system: str | None
 
 
 class ClaimedTaskOut(TaskOut):
     # A capability, returned ONLY to the worker that claimed the task, never to readers.
     lease_token: str
+    connection: ClaimedConnection | None = None
 
 
 class LeaseIn(BaseModel):
@@ -197,6 +248,7 @@ def task_out(t: AgentTask) -> TaskOut:
         finished_at=t.finished_at,
         available_at=t.available_at,
         reconcile_only=t.write_started_at is not None,
+        connection_id=t.connection_id,
     )
 
 
@@ -266,6 +318,10 @@ def owned_task(ctx: Ctx, task_id: int, body: LeaseIn, *, check_work: bool = True
             raise HTTPException(409, "Agent en pause")
         if not decision_is_current(ctx, task):
             raise HTTPException(409, "Décision remplacée : ne pas écrire sur le portail")
+        if task.connection_id is not None:
+            conn = ctx.session.get(AgentConnection, task.connection_id)
+            if conn is None or conn.status != "active" or conn.archived_at is not None:
+                raise HTTPException(409, "Connexion en pause, arrêtée ou archivée")
     return task
 
 
@@ -273,12 +329,13 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
     """Queue the answer the coordinator just gave, so the agent types it into the portal.
 
     Only for requests that came from a portal, and only once an agent has been set up for
-    the group (otherwise the coordinator keeps answering in the portal by hand).
+    the group (otherwise the coordinator keeps answering in the portal by hand). The task
+    goes to the portal connection of the request's site when the group has one.
     """
     if req.source not in PORTAL_SOURCES or not req.external_ref:
         return None
-    state = get_state(ctx, create=False)
-    if state is None:
+    conn = connections.portal_connection_for(ctx, req.site_id)
+    if conn is None and get_state(ctx, create=False) is None:
         return None
     now = ctx.clock.now()
     for previous in ctx.session.scalars(
@@ -332,6 +389,7 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
         status="pending",
         created_at=now,
         updated_at=now,
+        connection_id=conn.id if conn else None,
     )
     ctx.session.add(task)
     ctx.audit("agent.tache", "agent_task", None, f"réponse portail pour la demande {req.id}")
@@ -343,15 +401,48 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
 
 @router.post("/heartbeat", response_model=HeartbeatOut)
 def heartbeat(body: HeartbeatIn, ctx: IngestCtx) -> HeartbeatOut:
+    now = ctx.clock.now()
     state = get_state(ctx)
     assert state is not None
-    state.last_heartbeat_at = ctx.clock.now()
+    state.last_heartbeat_at = now
     state.agent_id = body.agent_id
     state.agent_version = body.version
     state.engines_json = json.dumps([e.model_dump() for e in body.engines])
-    state.updated_at = ctx.clock.now()
+    state.updated_at = now
+    worker = ctx.session.scalar(
+        select(AgentWorker).where(
+            AgentWorker.group_id == ctx.group.id, AgentWorker.agent_id == body.agent_id
+        )
+    )
+    if worker is None:
+        worker = AgentWorker(group_id=ctx.group.id, agent_id=body.agent_id, created_at=now)
+        ctx.session.add(worker)
+        ctx.audit("agent.poste", "agent_worker", body.agent_id, "premier signal")
+    worker.site_id = ctx.user.site_id
+    worker.version = body.version
+    worker.engines_json = state.engines_json
+    worker.playbooks_json = json.dumps([p.model_dump() for p in body.playbooks])
+    worker.last_heartbeat_at = now
+    ctx.session.flush()
+    connections.schedule_due(ctx, worker, state.paused)
+    assigned = [
+        HeartbeatConnection(
+            id=c.id,
+            kind=c.kind,
+            playbook=c.playbook,
+            tasks=connections.tasks_of(c),
+            status=c.status,
+            interval_minutes=c.interval_minutes,
+            active_from=connections.hhmm(c.active_from),
+            active_to=connections.hhmm(c.active_to),
+            days=connections.days_of(c),
+            next_run_at=c.next_run_at,
+        )
+        for c in connections.worker_connections(ctx, worker)
+    ]
     ctx.session.commit()
     return HeartbeatOut(
+        connections=assigned,
         paused=state.paused,
         policy=policy_of(state),
         spent_today_usd=round(spent_since(ctx, local_midnight(ctx)), 4),
@@ -408,6 +499,7 @@ def claim(body: ClaimIn, ctx: IngestCtx) -> list[ClaimedTaskOut]:
             AgentTask.kind.in_(body.kinds),
             AgentTask.status == "pending",
             or_(AgentTask.available_at.is_(None), AgentTask.available_at <= now),
+            connections.claimable(ctx, body.agent_id, body.legacy),
         )
         .order_by(
             case((AgentTask.kind == "reply_portal", 0), else_=1), AgentTask.created_at, AgentTask.id
@@ -427,17 +519,49 @@ def claim(body: ClaimIn, ctx: IngestCtx) -> list[ClaimedTaskOut]:
             task.status, task.error = "needs_human", "Nombre maximal de tentatives atteint"
             task.finished_at = task.updated_at = now
             continue
+        block: ClaimedConnection | None = None
+        if task.connection_id is not None:
+            block = claimed_connection(ctx, task.connection_id)
+            if block is None:
+                continue  # unreadable secret: the connection card says so
         task.status, task.claimed_by = "running", body.agent_id
         task.claimed_user_id = ctx.user.id
         task.lease_token = secrets.token_hex(32)
         task.lease_until = now + timedelta(minutes=LEASE_MINUTES)
         task.attempts += 1
         task.updated_at = now
-        claimed.append(ClaimedTaskOut(**task_out(task).model_dump(), lease_token=task.lease_token))
+        claimed.append(
+            ClaimedTaskOut(
+                **task_out(task).model_dump(), lease_token=task.lease_token, connection=block
+            )
+        )
         if len(claimed) >= body.limit:
             break
     ctx.session.commit()
     return claimed
+
+
+def claimed_connection(ctx: Ctx, connection_id: int) -> ClaimedConnection | None:
+    conn = ctx.session.get(AgentConnection, connection_id)
+    assert conn is not None and conn.group_id == ctx.group.id
+    secret = None
+    if conn.secret_ciphertext:
+        try:
+            secret = decrypt(
+                ctx.settings.connector_key, ctx.group.id, conn.id, conn.secret_ciphertext
+            )
+        except SecretError:
+            conn.last_error = "Mot de passe illisible avec la clé actuelle : ressaisissez-le"
+            return None
+    return ClaimedConnection(
+        id=conn.id,
+        url=conn.url,
+        allowed_hosts=connections.loads(conn.allowed_hosts_json, []),
+        username=conn.username,
+        secret=secret,
+        playbook=conn.playbook,
+        source_system=conn.source_system,
+    )
 
 
 @router.post("/tasks/{task_id}/renew", response_model=TaskOut)
@@ -578,6 +702,7 @@ def complete(task_id: int, body: CompleteIn, ctx: IngestCtx) -> TaskOut:
         task.finished_at = now
     if task.status == "done":
         task.budget_reserved_usd = 0.0
+    connections.record_run(ctx, task, body.status if task.status == "pending" else task.status)
     ctx.audit(f"agent.{task.status}", "agent_task", task.id, body.engine or "")
     ctx.session.commit()
     return task_out(task)
@@ -712,11 +837,30 @@ def sync_now(ctx: SyncCtx, kind: Literal["sync_inbox", "sync_movements"] = "sync
             403, "La synchronisation du groupe est réservée à la coordination groupe"
         )
     get_state(ctx)
+    # A group that reads this software through connections: the task goes to them.
+    configured = [
+        c
+        for c in ctx.session.scalars(
+            select(AgentConnection)
+            .where(AgentConnection.group_id == ctx.group.id, AgentConnection.archived_at.is_(None))
+            .order_by(AgentConnection.id)
+        )
+        if kind in connections.tasks_of(c)
+    ]
+    if configured:
+        active = [c for c in configured if c.status == "active"]
+        if not active:
+            raise HTTPException(409, "Aucune connexion active pour cette relève")
+        tasks = [connections.create_sync_task(ctx, c, kind) for c in active]
+        ctx.audit("agent.synchro", "agent", None, f"demandée ({kind}, connexions)")
+        ctx.session.commit()
+        return task_out(tasks[0])
     existing = ctx.session.scalar(
         select(AgentTask).where(
             AgentTask.group_id == ctx.group.id,
             AgentTask.kind == kind,
             AgentTask.status.in_(("pending", "running")),
+            AgentTask.connection_id.is_(None),
         )
     )
     if existing is not None:

@@ -1,4 +1,4 @@
-import { fmtHours, fmtPct, plural, relativeDay } from "../lib/format";
+import { fmtHours, fmtPct, fmtRelative, plural, relativeDay } from "../lib/format";
 
 describe("format", () => {
   it("formats waiting times the way coordinators say them", () => {
@@ -13,6 +13,16 @@ describe("format", () => {
     expect(plural(1, "demande", "demandes")).toBe("1 demande");
     expect(plural(0, "lit", "lits")).toBe("0 lit");
     expect(plural(3, "lit", "lits")).toBe("3 lits");
+  });
+
+  it("says how long ago or how soon a moment is", () => {
+    const now = new Date("2026-11-02T10:00:00Z").getTime();
+    expect(fmtRelative("2026-11-02T09:59:40Z", now)).toBe("à l'instant");
+    expect(fmtRelative("2026-11-02T09:56:00Z", now)).toBe("il y a 4 minutes");
+    expect(fmtRelative("2026-11-02T10:12:00Z", now)).toBe("dans 12 minutes");
+    expect(fmtRelative("2026-11-02T07:00:00Z", now)).toBe("il y a 3 heures");
+    expect(fmtRelative("2026-10-31T10:00:00Z", now)).toBe("avant-hier");
+    expect(fmtRelative(null, now)).toBe("—");
   });
 
   it("names relative days", () => {

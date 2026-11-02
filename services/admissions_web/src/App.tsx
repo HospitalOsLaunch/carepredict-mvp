@@ -7,6 +7,7 @@ import {
   Gauge,
   Inbox,
   LogOut,
+  MousePointerClick,
   RadioTower,
   Settings,
   Siren,
@@ -20,6 +21,7 @@ import { Mark } from "./components/Mark";
 import { Spinner } from "./components/ui";
 import { BedBoardPage } from "./pages/BedBoardPage";
 import { BedsPage } from "./pages/BedsPage";
+import { ComputerUsePage } from "./pages/ComputerUsePage";
 import { GroupPage } from "./pages/GroupPage";
 import { ImportsPage } from "./pages/ImportsPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -49,6 +51,7 @@ const NAV: NavItem[] = [
   { to: "/groupe", label: "Vue groupe", icon: Building2 },
   { to: "/indicateurs", label: "Indicateurs pilote", icon: Gauge },
   { to: "/ror", label: "Remontée ROR", icon: RadioTower },
+  { to: "/computer-use", label: "Computer use", icon: MousePointerClick },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
   { to: "/parametres", label: "Paramètres", icon: Settings, admin: true }
 ];
@@ -149,6 +152,7 @@ export function App() {
             }
           />
           <Route path="/ror" element={<RorPage />} />
+          <Route path="/computer-use" element={<ComputerUsePage />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
           <Route path="*" element={<Navigate to="/demandes" replace />} />

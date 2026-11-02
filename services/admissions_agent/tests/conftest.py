@@ -12,16 +12,19 @@ import httpx
 import pytest
 import uvicorn
 from fastapi.testclient import TestClient
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from services.admissions_agent.api_client import HospitalOSClient
 from services.admissions_agent.browser import BrowserSession
 from services.admissions_agent.config import AgentSettings, EngineEndpoint
+from services.admissions_agent.demo_bedsoft import app as bedsoft_module
 from services.admissions_agent.demo_portal import app as portal_module
 from services.admissions_agent.runner import Agent
 from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import Settings
 from services.admissions_smr.main import create_app
-from services.admissions_smr.models import BedPool, Group, Site, User
+from services.admissions_smr.models import Bed, BedPool, Group, Site, User
 from services.admissions_smr.security import hash_password
 
 PASSWORD = "mot-de-passe-solide"
@@ -149,3 +152,83 @@ def make_agent(api: TestClient, portal_url: str) -> Callable[..., Agent]:
         return agent
 
     return factory
+
+
+@pytest.fixture(scope="session")
+def bedsoft_url() -> Iterator[str]:
+    port = free_port()
+    server = uvicorn.Server(
+        uvicorn.Config(bedsoft_module.app, host="127.0.0.1", port=port, log_level="warning")
+    )
+    threading.Thread(target=server.run, daemon=True).start()
+    deadline = time.time() + 10
+    while not server.started and time.time() < deadline:
+        time.sleep(0.05)
+    yield f"http://127.0.0.1:{port}"
+    server.should_exit = True
+
+
+@pytest.fixture
+def bedsoft(bedsoft_url: str) -> Iterator[httpx.Client]:
+    # REVIEW T-18: the screen's clock is frozen for the test, at noon of the API's day, so
+    # every movement of the sample is in the past and within the accepted date window.
+    noon = datetime.now(bedsoft_module.PARIS).replace(hour=12, minute=0, second=0, microsecond=0)
+    previous = bedsoft_module.store.clock
+    bedsoft_module.store.clock = lambda: noon
+    with httpx.Client(base_url=bedsoft_url) as client:
+        client.post("/_test/reset")
+        yield client
+    bedsoft_module.store.clock = previous
+
+
+def db(api: TestClient) -> Session:
+    session: Session = api.app.state.session_factory()  # type: ignore[attr-defined]
+    return session
+
+
+@pytest.fixture
+def mco(api: TestClient) -> None:
+    """Give the test site the demo's units (by UF code) and the beds the software shows."""
+    session = db(api)
+    site = session.scalars(select(Site)).one()
+    now = datetime.now(UTC)
+    geriatrie = session.scalars(select(BedPool).where(BedPool.mention == "geriatrie")).one()
+    geriatrie.uf_code = "5201"
+    pools = {"5201": geriatrie}
+    for code, unit_type, uf in (
+        ("urgences", "urgences", "1001"),
+        ("medecine_polyvalente", "medecine", "2101"),
+        ("cardiologie", "medecine", "2301"),
+    ):
+        pools[uf] = BedPool(
+            site_id=site.id,
+            mention=code,
+            beds_installed=4,
+            beds_open=4,
+            unit_type=unit_type,
+            uf_code=uf,
+            updated_at=now,
+        )
+        session.add(pools[uf])
+    session.flush()
+    for uf, room, label in (
+        ("2101", "2103", "2103"),
+        ("2301", "2302", "2302"),
+        ("2101", "2116", "2116A"),
+        ("2101", "2116", "2116B"),
+        ("5201", "5203", "5203"),
+        ("2101", "2104", "2104"),
+    ):
+        session.add(
+            Bed(
+                group_id=site.group_id,
+                site_id=site.id,
+                pool_id=pools[uf].id,
+                room=room,
+                label=label,
+                status="libre",
+                updated_at=now,
+            )
+        )
+    session.commit()
+    session.close()

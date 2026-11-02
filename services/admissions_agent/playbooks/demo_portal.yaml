@@ -2,9 +2,13 @@
 # copy it, then replace the selectors after inspecting that portal's pages.
 # Rules:
 #   - selectors only (no coordinates): a playbook never "guesses" where to click;
-#   - credentials come from environment secrets and are never shown to a model engine;
+#   - credentials come from the connection (or environment secrets in legacy mode)
+#     and are never shown to a model engine;
 #   - only the fields listed under sync_inbox.fields leave the portal. The patient's
 #     name is never read: the pseudonymous patient reference is the dossier number.
+# Catalogue header: the name a connection picks in HospitalOS, and the kind of software.
+id: demo_portal
+kind: portail_orientation
 name: Portail d'orientation (démonstration)
 
 login:

@@ -117,19 +117,39 @@ class HospitalOSClient:
         return data
 
     def heartbeat(
-        self, agent_id: str, version: str, engines: list[dict[str, Any]]
+        self,
+        agent_id: str,
+        version: str,
+        engines: list[dict[str, Any]],
+        playbooks: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         result: dict[str, Any] = self._call(
             "POST",
             "/api/agent/heartbeat",
-            {"agent_id": agent_id, "version": version, "engines": engines},
+            {
+                "agent_id": agent_id,
+                "version": version,
+                "engines": engines,
+                "playbooks": playbooks or [],
+            },
         )
         return result
 
     def claim(
-        self, agent_id: str, limit: int = 1, kinds: list[str] | None = None
+        self,
+        agent_id: str,
+        limit: int = 1,
+        kinds: list[str] | None = None,
+        legacy: bool = True,
     ) -> list[dict[str, Any]]:
-        body: dict[str, Any] = {"protocol_version": 2, "agent_id": agent_id, "limit": limit}
+        """Claimed tasks of a connection carry its ``connection`` block, password included:
+        the caller keeps it in memory for the task only."""
+        body: dict[str, Any] = {
+            "protocol_version": 2,
+            "agent_id": agent_id,
+            "limit": limit,
+            "legacy": legacy,
+        }
         if kinds is not None:
             body["kinds"] = kinds
         result: list[dict[str, Any]] = self._call("POST", "/api/agent/tasks/claim", body)

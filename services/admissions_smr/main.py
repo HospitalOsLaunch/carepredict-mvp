@@ -16,6 +16,7 @@ from services.admissions_smr.api import (
     routes_agent,
     routes_auth,
     routes_beds,
+    routes_connections,
     routes_ed,
     routes_forecast_store,
     routes_hl7,
@@ -78,6 +79,7 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
 
     for module in (
         routes_agent,
+        routes_connections,
         routes_auth,
         routes_sites,
         routes_requests,

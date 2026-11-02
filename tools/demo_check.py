@@ -9,15 +9,18 @@ Computer use (skipped with --liscop-only):
 2. a coordinator gives an accord in HospitalOS;
 3. the agent writes that reply on the portal and it is verified ("done");
 4. the portal shows the reply;
-5. a new request arriving on the portal reaches HospitalOS.
+5. the admin pauses the portal connection: a new request arriving on the portal does not
+   reach HospitalOS and no task of that connection is claimed while paused; the admin
+   resumes it and the request arrives;
+6. the MCO worker has read the fictional bed software (its connection has a last run).
 
 LISCOP (fictional MCO hospital, seed-demo-mco):
 
-6. an HL7 ADT^A04 message (from the test fixture, with fresh identifiers) posted with the
+7. an HL7 ADT^A04 message (from the test fixture, with fresh identifiers) posted with the
    ingestion account is acknowledged MSA|AA;
-7. a forecast run is stored (the forecast job ran): /api/forecast/liscop has a run;
-8. the ROR export has a unit forecast as "disponibles attendus";
-9. /api/ed/census and /api/beds/availability answer 200.
+8. a forecast run is stored (the forecast job ran): /api/forecast/liscop has a run;
+9. the ROR export has a unit forecast as "disponibles attendus";
+10. /api/ed/census and /api/beds/availability answer 200.
 
 Exit code 0 when every step passed, 1 otherwise. Used by the CI and by hand.
 """
@@ -115,11 +118,61 @@ def check_liscop(api: httpx.Client, timeout: float) -> None:
         print(f"ok  {path} répond 200")
 
 
+def check_pause_resume(api: httpx.Client, portal: httpx.Client, seconds: float) -> str:
+    """Pause the SMR portal connection, check that nothing runs for it, then resume it.
+    Returns the reference of the request that arrived on the portal during the pause."""
+    admin = login(api, "admin@demo.hospitalos.fr")
+    if admin is None:
+        raise SystemExit("échec : connexion au compte admin de démonstration")
+    connections = api.get("/agent/connections", headers=admin).raise_for_status().json()
+    conn = next(c for c in connections if c["kind"] == "portail_orientation")
+    paused = api.post(f"/agent/connections/{conn['id']}/pause", headers=admin)
+    paused.raise_for_status()
+    if paused.json()["status"] != "en_pause":
+        raise SystemExit("échec : la connexion du portail n'est pas en pause")
+    print(f"ok  connexion « {conn['name']} » mise en pause")
+    refused = api.post(f"/agent/connections/{conn['id']}/sync", headers=admin).status_code
+    if refused != 409:
+        raise SystemExit(f"échec : relève acceptée sur une connexion en pause ({refused})")
+    runs_url = f"/agent/connections/{conn['id']}/runs"
+    before = {r["id"]: r["status"] for r in api.get(runs_url, headers=admin).json()}
+    new_ref = str(portal.post("/_test/arrive").json()["ref"])
+    time.sleep(seconds)
+    after = {r["id"]: r["status"] for r in api.get(runs_url, headers=admin).json()}
+    moved = [i for i, s in after.items() if s in ("running", "done") and before.get(i) != s]
+    rows = api.get("/requests", params={"scope": "toutes"}, headers=admin).json()
+    if moved or any(r["external_ref"] == new_ref for r in rows):
+        raise SystemExit("échec : l'agent a travaillé pour une connexion en pause")
+    print(f"ok  rien de relevé ni réservé pendant {seconds:.0f} s de pause")
+    resumed = api.post(f"/agent/connections/{conn['id']}/resume", headers=admin)
+    resumed.raise_for_status()
+    print("ok  connexion reprise")
+    return new_ref
+
+
+def check_bed_connection(api: httpx.Client, timeout: float) -> None:
+    admin = wait("compte admin MCO", lambda: login(api, f"admin@{MCO_DOMAIN}"), timeout)
+
+    def ran() -> dict[str, Any] | None:
+        rows = api.get("/agent/connections", headers=admin).json()
+        beds = next((c for c in rows if c["kind"] == "gestion_lits"), None)
+        return beds if beds and beds["last_run_at"] else None
+
+    beds = wait("logiciel de gestion des lits relevé par le poste MCO", ran, timeout)
+    print(f"    dernier passage : {beds['last_outcome']} {beds['last_error'] or ''}".rstrip())
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--web", default="http://localhost:8080")
     parser.add_argument("--portal", default="http://localhost:8020")
     parser.add_argument("--timeout", type=float, default=300)
+    parser.add_argument(
+        "--pause-seconds",
+        type=float,
+        default=50,
+        help="Durée d'observation d'une connexion en pause (plus de deux cycles d'agent)",
+    )
     parser.add_argument(
         "--liscop-only", action="store_true", help="Contrôles LISCOP seulement (sans agent)"
     )
@@ -176,14 +229,13 @@ def main() -> int:
         return bool(state["status"] == "Accord donné" and state["proposed"] == day)
 
     wait("le portail affiche l'accord à la bonne date", shown, 30)
-    new_ref = portal.post("/_test/arrive").json()["ref"]
-    r = api.post("/agent/sync", headers=headers)
-    r.raise_for_status()
+    new_ref = check_pause_resume(api, portal, args.pause_seconds)
     wait(
-        f"nouvelle demande {new_ref} arrivée dans HospitalOS",
+        f"nouvelle demande {new_ref} arrivée dans HospitalOS après la reprise",
         lambda: any(x["external_ref"] == new_ref for x in from_portal()),
         args.timeout,
     )
+    check_bed_connection(api, args.timeout)
     print("Démo computer use : tout fonctionne.")
     check_liscop(api, args.timeout)
     print("Démo LISCOP : tout fonctionne.")
