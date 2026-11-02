@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from services.admissions_smr.vocab import (
     CAPACITY_REASONS,
     LOSS_REASONS,
+    MENTIONS,
     REFUSAL_REASONS,
     REQUEST_SOURCES,
     ROLES,
@@ -177,7 +178,7 @@ class RequestCreate(Strict):
     @field_validator("mention_requested")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in UNIT_CODES:
+        if value not in MENTIONS:  # SMR referrals only; MCO unit codes are for stays
             raise ValueError("mention inconnue")
         return value
 
