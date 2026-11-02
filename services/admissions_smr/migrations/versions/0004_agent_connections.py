@@ -106,7 +106,8 @@ def downgrade() -> None:
         with _sqlite_table_copy(), op.batch_alter_table("agent_tasks") as b:
             b.drop_column("connection_id")
     else:
-        op.drop_constraint("fk_agent_tasks_connection_id", "agent_tasks", type_="foreignkey")
+        # PostgreSQL drops the column's foreign key with it (its name comes from the inline
+        # REFERENCES of the upgrade: agent_tasks_connection_id_fkey).
         op.drop_column("agent_tasks", "connection_id")
     op.drop_index("ix_agent_connections_group_id", table_name="agent_connections")
     op.drop_table("agent_connections")
