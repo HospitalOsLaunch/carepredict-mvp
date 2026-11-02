@@ -175,6 +175,9 @@ def oru_day(
     )
 
 
+FORMULA_STARTS = frozenset({"=", "+", "-", "@", "\t", "\r"})
+
+
 def _cell(value: object) -> str:
     if value is None:
         return ""
@@ -185,8 +188,9 @@ def _cell(value: object) -> str:
     if isinstance(value, date):
         return value.isoformat()
     text = str(value)
-    # A cell starting with = + - @ would run as a formula in a spreadsheet (CSV injection).
-    return f"'{text}" if text[:1] in ("=", "+", "-", "@") else text
+    # A cell starting with = + - @, or with a tab or carriage return (which spreadsheets
+    # skip before reading a formula), would run as a formula (CSV injection, OWASP).
+    return f"'{text}" if text[:1] in FORMULA_STARTS else text
 
 
 def to_csv(rows: Sequence[OruDay], labels: Mapping[str, str] | None = None) -> str:
