@@ -15,7 +15,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from services.admissions_smr.api import routes_ror
+from services.admissions_smr.api import deps, routes_ror
 from services.admissions_smr.domain.beds import Availability
 from services.admissions_smr.domain.ror import (
     MODE_EXPECTED,
@@ -400,6 +400,31 @@ def test_simulated_send_stores_a_digest_audits_and_never_opens_a_socket(
     history = app_client.get("/api/ror/outbox", headers=admin).json()
     assert [h["id"] for h in history] == [second.json()["id"], out["id"]]
     assert history[0]["prepare_par"] == "admin@g1.fr" and history[0]["contenu"] is None
+
+
+def test_simulated_send_builds_the_export_before_taking_the_write_lock(
+    app_client: TestClient, make_group: MakeGroup, login: Login, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    make_group("g1")
+    calls: list[str] = []
+    build = routes_ror.export_out
+
+    def export_out(ctx: Any, sites: Any) -> Any:
+        calls.append("export")
+        return build(ctx, sites)
+
+    def lock_tenant(session: Session, group_id: int) -> Group:
+        calls.append("lock")
+        return deps.lock_tenant(session, group_id)
+
+    monkeypatch.setattr(routes_ror, "export_out", export_out)
+    monkeypatch.setattr(routes_ror, "lock_tenant", lock_tenant)
+
+    response = app_client.post("/api/ror/outbox", headers=login("admin@g1.fr"))
+
+    assert response.status_code == 201, response.text
+    assert calls == ["export", "lock"]
+    assert response.json()["prepare_par"] == "admin@g1.fr"
 
 
 def test_the_export_module_has_no_way_to_reach_the_network() -> None:

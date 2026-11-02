@@ -21,7 +21,14 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 
-from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadCtx
+from services.admissions_smr.api.deps import (
+    UNPROCESSABLE,
+    AdminCtx,
+    AdminLateLockCtx,
+    Ctx,
+    ReadCtx,
+    lock_tenant,
+)
 from services.admissions_smr.api.routes_beds import unit_label, unit_views, visible_sites
 from services.admissions_smr.api.routes_ed import (
     as_declared,
@@ -491,12 +498,18 @@ def outbox_out(row: RorOutbox, by: str | None, content: RorExportOut | None) -> 
 
 
 @router.post("/ror/outbox", response_model=RorOutboxOut, status_code=201, tags=["ror"])
-def prepare_send(ctx: AdminCtx) -> RorOutboxOut:
-    """Stores the current export as a simulated send. Never sends anything."""
+def prepare_send(ctx: AdminLateLockCtx) -> RorOutboxOut:
+    """Stores the current export as a simulated send. Never sends anything.
+
+    The export (the discharge model may be fitted) is built in a read transaction; the
+    tenant write lock is taken only for the insert and its audit entry (C-8).
+    """
     content = export_out(ctx, group_sites(ctx))
     payload = json.dumps(
         content.model_dump(mode="json"), ensure_ascii=False, sort_keys=True, separators=(",", ":")
     )
+    ctx.session.rollback()  # end the read transaction; nothing was written
+    ctx.group = lock_tenant(ctx.session, ctx.group.id)
     row = RorOutbox(
         group_id=ctx.group.id,
         created_at=ctx.clock.now(),
