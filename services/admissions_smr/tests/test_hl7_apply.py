@@ -21,6 +21,7 @@ from services.admissions_smr.security import hash_password
 FIXTURES = Path(__file__).parent / "fixtures" / "hl7"
 PARIS = ZoneInfo("Europe/Paris")
 NOW = datetime(2026, 10, 25, 8, 30, tzinfo=UTC)
+RECEIVED = datetime(2026, 10, 28, 12, 0, tzinfo=UTC)  # after every fixture movement
 SECRET = "p" * 40  # Settings default in tests is the dev secret; any value works here
 PASSWORD = "mot-de-passe-solide"
 
@@ -118,7 +119,7 @@ def hospital(db: Session) -> Group:
 def apply(db: Session, hospital: Group) -> Apply:
     def run(name_or_parsed: str | ParsedMovement) -> ApplyResult:
         parsed = fixture(name_or_parsed) if isinstance(name_or_parsed, str) else name_or_parsed
-        result = apply_movement(db, hospital, parsed, NOW, secret=SECRET, zone=PARIS)
+        result = apply_movement(db, hospital, parsed, RECEIVED, secret=SECRET, zone=PARIS)
         db.commit()
         return result
 

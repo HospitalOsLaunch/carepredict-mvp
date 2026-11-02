@@ -149,6 +149,7 @@ def ingest_hl7(
         secret=ctx.settings.pseudonym_secret,
         zone=ctx.clock.zone,
         source="hl7",
+        **_window(ctx),
     )
     ctx.audit("hl7.recu", "movement", result.movement_id, f"{parsed.event} {result.status}")
     ctx.session.commit()
@@ -183,6 +184,14 @@ def _source_refused(media: str, header: Header | None, ctx: Ctx) -> Response:
     ctx.audit("hl7.source_refusee", "movement", None, "AR 207")
     ctx.session.commit()
     return _ack_response(media, header, "AR", SOURCE_REFUSED, ctx, 207, "MSH^1^3", 403)
+
+
+def _window(ctx: Ctx) -> dict[str, timedelta]:
+    """Accepted movement dates around reception (REVIEW S-M1), from the settings."""
+    return {
+        "max_past": timedelta(days=ctx.settings.movement_max_age_days),
+        "max_future": timedelta(hours=ctx.settings.movement_max_future_hours),
+    }
 
 
 def _hl7_digest(ctx: Ctx, raw: bytes) -> str:
@@ -247,6 +256,7 @@ def ingest_movements(
             secret=ctx.settings.pseudonym_secret,
             zone=ctx.clock.zone,
             source="agent",
+            **_window(ctx),
         )
         out.append(
             MovementResultOut(

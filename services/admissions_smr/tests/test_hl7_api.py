@@ -10,8 +10,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import MetaData, select
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.clock import FrozenClock
 from services.admissions_smr.models import EdVisit, Group, Movement, Stay
-from services.admissions_smr.tests.test_hl7_apply import PASSWORD, build_hospital
+from services.admissions_smr.tests.test_hl7_apply import PASSWORD, RECEIVED, build_hospital
 
 FIXTURES = Path(__file__).parent / "fixtures" / "hl7"
 HL7 = {"Content-Type": "x-application/hl7-v2+er7"}
@@ -23,7 +24,8 @@ CLEAR_VALUES = [
 
 
 @pytest.fixture
-def hospital(db: Session) -> Group:
+def hospital(app_client: TestClient, db: Session) -> Group:
+    app_client.app.state.clock = FrozenClock(RECEIVED)  # type: ignore[attr-defined]
     return build_hospital(db)
 
 

@@ -10,7 +10,7 @@ back from the journal itself. Never commits: the caller owns the transaction.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
 
@@ -26,6 +26,7 @@ from services.admissions_smr.domain.hl7_pam import (
     Fact,
     MovementConflict,
     ParsedMovement,
+    code_token,
     local_date,
     project,
 )
@@ -71,6 +72,8 @@ def apply_movement(
     secret: str,
     zone: ZoneInfo,
     source: str = "hl7",
+    max_past: timedelta = timedelta(days=400),
+    max_future: timedelta = timedelta(days=1),
 ) -> ApplyResult:
     existing = _by_control_id(session, group.id, parsed.source_system, parsed.control_id)
     if existing is not None and existing.status != "rejected":
@@ -84,7 +87,8 @@ def apply_movement(
     )
     row.movement_ref = parsed.movement_ref
     row.event, row.action = parsed.event, parsed.action
-    row.occurred_at = parsed.occurred_at
+    in_window = now - max_past <= parsed.occurred_at <= now + max_future
+    row.occurred_at = parsed.occurred_at if in_window else now  # never store an odd date
     row.encounter_ref, row.patient_ref = encounter, patient
     row.message_digest, row.received_at = parsed.digest, now
     row.site_id = row.pool_id = row.bed_id = None
@@ -108,6 +112,14 @@ def apply_movement(
         session.flush()
         return row
 
+    if not in_window:
+        days, hours = max_past.days, round(max_future.total_seconds() / 3600)
+        error = (
+            f"Date du mouvement hors de la plage acceptée ({days} jours avant, "
+            f"{hours} h après la réception)"
+        )
+        record("rejected", error)
+        return ApplyResult("rejected", "AE", error, row.id, 207)
     if (
         not parsed.supported
         or (parsed.event == "A07" and parsed.action == "INSERT")
@@ -294,7 +306,7 @@ def _apply(
             raise MovementConflict("Mouvement à corriger introuvable (ZBE-1)")
         if parsed.original_event and parsed.original_event != corrected.event:
             raise MovementConflict(
-                f"ZBE-6 ({parsed.original_event}) ne correspond pas au mouvement {corrected.event}"
+                f"ZBE-6 ne correspond pas au mouvement corrigé ({corrected.event})"
             )
         corrected.occurred_at = parsed.occurred_at
         if parsed.uf_code and corrected.event not in ("A03", "A21", "A22"):
@@ -354,10 +366,11 @@ def resolve_location(session: Session, group_id: int, parsed: ParsedMovement) ->
     if parsed.facility:
         site = next((s for s in sites if s.finess == parsed.facility), None)
         if site is None:
-            raise MovementConflict(f"FINESS {parsed.facility} inconnu dans ce groupe")
+            raise MovementConflict(f"FINESS {code_token(parsed.facility)} inconnu dans ce groupe")
     elif len(sites) == 1:
         site = sites[0]
     pool: BedPool | None = None
+    uf = " ".join(("UF", code_token(parsed.uf_code or ""))).strip()  # never a raw value
     if parsed.uf_code:
         candidates = list(
             session.scalars(
@@ -368,13 +381,13 @@ def resolve_location(session: Session, group_id: int, parsed: ParsedMovement) ->
             )
         )
         if len(candidates) > 1:
-            raise MovementConflict(f"UF {parsed.uf_code} ambiguë : précisez le FINESS (PV1-3)")
+            raise MovementConflict(f"{uf} ambiguë : précisez le FINESS (PV1-3)")
         if candidates:
             pool = candidates[0]
             site = next(s for s in sites if s.id == pool.site_id)
     if pool is None and parsed.event in NEEDS_UNIT:
         raise MovementConflict(
-            f"UF {parsed.uf_code} inconnue : renseignez-la sur l'unité dans HospitalOS"
+            f"{uf} inconnue : renseignez-la sur l'unité dans HospitalOS"
             if parsed.uf_code
             else "UF manquante (PV1-3)"
         )
@@ -387,7 +400,8 @@ def resolve_location(session: Session, group_id: int, parsed: ParsedMovement) ->
             select(Bed).where(Bed.site_id == site.id, Bed.label.in_(labels), Bed.active)
         )
         if bed is None:
-            warning = f"Lit {parsed.bed or parsed.room} inconnu : séjour enregistré sans lit"
+            label = code_token(parsed.bed or parsed.room or "")
+            warning = f"Lit {label} inconnu (PV1-3) : séjour enregistré sans lit".replace("  ", " ")
         else:
             bed_id = bed.id
     return Location(site.id, pool.id if pool else None, bed_id, warning)

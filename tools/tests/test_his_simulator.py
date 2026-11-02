@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -50,7 +50,8 @@ def test_a_long_stream_is_fully_accepted_and_keeps_beds_consistent(tmp_path: Pat
         timezone="Europe/Paris",
         cors_origins=(),
     )
-    app = create_app(settings, FrozenClock(START))
+    # Received after the whole stream (300 messages, 5 minutes apart): none in the future.
+    app = create_app(settings, FrozenClock(START + timedelta(hours=26)))
     with TestClient(app) as client:
         session = app.state.session_factory()
         group = Group(name="Simulation", created_at=START)

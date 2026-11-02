@@ -8,6 +8,7 @@ import os
 import threading
 from collections.abc import Callable
 from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -15,6 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from services.admissions_smr import movement_service
+from services.admissions_smr.domain.hl7_pam import Hl7Error, parse, parse_ts
 from services.admissions_smr.domain.pseudonym import keyed_digest, pseudonym
 from services.admissions_smr.models import EdVisit, Group, Movement, Stay, User
 from services.admissions_smr.movement_service import apply_movement
@@ -248,3 +250,97 @@ def test_t17_two_threads_post_the_same_message_on_postgresql(
     assert all("MSA|AA|MSG-A01" in a for a in answers), answers
     assert sum("déjà reçu" in a for a in answers) == 3
     assert db.query(Movement).count() == 1 and db.query(Stay).count() == 1
+
+
+# --- S-M1 / T-16 / T-15: timestamps, control characters, date window ------------------------
+
+
+def a01_with(old: bytes, new: bytes) -> bytes:
+    raw = a01()
+    assert old in raw
+    return raw.replace(old, new)
+
+
+@pytest.mark.parametrize(
+    "stamp",
+    [b"20261025090000+9999", b"00001025090000", b"99991231235959-1400", b"20261025090000+2400"],
+)
+def test_s_m1_extreme_timestamps_are_ae_102_not_a_crash(stamp: bytes) -> None:
+    with pytest.raises(Hl7Error) as caught:
+        parse(a01_with(b"|20261025090000||INSERT", b"|" + stamp + b"||INSERT"), PARIS)
+    assert (caught.value.ack_code, caught.value.hl7_code) == ("AE", 102)
+    assert caught.value.location == "ZBE^1^2" and stamp.decode() not in caught.value.message
+
+
+@pytest.mark.parametrize("char", [b"\x00", b"\x01", b"\x1b", b"\t"])
+def test_s_m1_control_characters_are_refused_with_an_ack(
+    app_client: TestClient, db: Session, hospital: Group, char: bytes
+) -> None:
+    code, ack = send_raw(app_client, a01_with(b"DUPONTEL", b"DUPON" + char + b"TEL"))
+
+    assert code == 400 and "MSA|AR|" in ack and "contrôle" in ack
+    assert db.query(Movement).count() == 0
+
+
+def test_t15_nonexistent_spring_forward_hour_reads_with_the_winter_offset() -> None:
+    # 29 March 2026, 02:30 does not exist in Paris: read as 01:30 UTC (03:30 summer time).
+    # (PEP 495: compare in UTC, inter-zone == is always False for times in a gap or fold.)
+    spring, autumn = parse_ts("20260329023000", PARIS), parse_ts("20261025023000", PARIS)
+    assert spring is not None and autumn is not None
+    assert spring.astimezone(UTC) == datetime(2026, 3, 29, 1, 30, tzinfo=UTC)
+    assert autumn.astimezone(UTC) == datetime(2026, 10, 25, 0, 30, tzinfo=UTC)  # first 02:30
+
+
+@pytest.mark.parametrize(
+    ("delta", "status"),
+    [
+        (timedelta(days=-401), "rejected"),
+        (timedelta(days=-399), "applied"),
+        (timedelta(hours=23), "applied"),
+        (timedelta(days=2), "rejected"),  # T-16: a movement dated in the future
+    ],
+)
+def test_s_m1_t16_movement_date_window(
+    db: Session, hospital: Group, delta: timedelta, status: str
+) -> None:
+    parsed = replace(fixture("a01_admission"), occurred_at=NOW + delta)
+
+    result = apply_movement(db, hospital, parsed, NOW, secret=SECRET, zone=PARIS)
+
+    assert result.status == status
+    if status == "rejected":
+        assert result.ack_code == "AE" and "plage" in result.message
+        assert db.scalars(select(Movement)).one().occurred_at == NOW  # never the odd date
+        assert db.query(Stay).count() == 0
+
+
+def test_s_m1_window_is_a_setting(db: Session, hospital: Group) -> None:
+    parsed = replace(fixture("a01_admission"), occurred_at=NOW + timedelta(hours=2))
+
+    result = apply_movement(
+        db, hospital, parsed, NOW, secret=SECRET, zone=PARIS, max_future=timedelta(hours=1)
+    )
+
+    assert result.status == "rejected"
+
+
+# --- S-L1: no raw sender value echoed in ACK or journal --------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "leak"),
+    [
+        (b"ADT^A01^ADT_A01", b"ADT^A01^ADT_A01".replace(b"ADT^", b"MME DUPONT^"), "MME DUPONT"),
+        (b"||INSERT|N|", b"||INSERT MME DUPONT|N|", "MME DUPONT"),
+        (b"PV1||I|2101^", b"PV1||I|MME DUPONT 2101^", "MME DUPONT"),
+        (b"^2102A^", b"^Mme Dupont lit A^", "Mme Dupont"),
+    ],
+)
+def test_s_l1_ack_and_journal_never_echo_raw_values(
+    app_client: TestClient, db: Session, hospital: Group, old: bytes, new: bytes, leak: str
+) -> None:
+    code, ack = send_raw(app_client, a01_with(old, new))
+
+    journal = " ".join(str(m.error) for m in db.scalars(select(Movement)))
+    assert leak not in ack and leak not in journal
+    assert leak.upper().replace(" ", "") not in ack.replace("\\S\\", "")
