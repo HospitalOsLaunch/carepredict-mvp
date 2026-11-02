@@ -13,7 +13,6 @@ Pure functions, no I/O. Sources and assumptions: ``docs/liscop/HL7_PAM.md``.
 
 from __future__ import annotations
 
-import hashlib
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
@@ -124,7 +123,10 @@ class ParsedMovement:
     outcome: str | None = None  # emergency department outcome on A03
     original_event: str | None = None  # ZBE-6, for Z99
     historic: bool = False  # ZBE-5
-    digest: str = ""
+    digest: str = ""  # keyed digest, set by the caller (domain.pseudonym.keyed_digest)
+    # Identification domains (assigning authorities PV1-19.4 / PID-3.4), may be empty.
+    encounter_domain: str = ""
+    patient_domain: str = ""
     # Clear identifiers: memory only, pseudonymised before anything is written.
     encounter_id: str = field(default="", repr=False)
     patient_id: str = field(default="", repr=False)
@@ -149,10 +151,6 @@ def decode(raw: bytes, max_bytes: int = DEFAULT_MAX_BYTES) -> str:
     text = text.strip().lstrip("\x0b").rstrip("\x1c\r\n").strip()
     text = text.replace("\r\n", "\r").replace("\n", "\r")
     return "\r".join(line for line in text.split("\r") if line.strip())
-
-
-def digest(raw: bytes) -> str:
-    return hashlib.sha256(raw).hexdigest()
 
 
 def _get(segment: Any, field_num: int, component: int = 1, sub: int = 1, rep: int = 1) -> str:
@@ -242,13 +240,18 @@ def parse(raw: bytes, zone: ZoneInfo, max_bytes: int = DEFAULT_MAX_BYTES) -> Par
     """Validate and read one ADT message. Raises ``Hl7Error`` (with the header when known)."""
     message, header = parse_header(decode(raw, max_bytes))
     try:
-        return replace(_movement(message, header, zone, digest(raw)), header=header)
+        return replace(_movement(message, header, zone), header=header)
     except Hl7Error as exc:
         exc.header = header
         raise
 
 
-def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedMovement:
+def _authority(segment: Any, field_num: int, rep: int = 1) -> str:
+    """CX-4 assigning authority (HD): universal id (HD-2), else namespace id (HD-1)."""
+    return (_get(segment, field_num, 4, 2, rep) or _get(segment, field_num, 4, 1, rep))[:60]
+
+
+def _movement(message: Any, header: Header, zone: ZoneInfo) -> ParsedMovement:
     event = header.trigger
     evn, pid, pv1, zbe = (_segment(message, s) for s in ("EVN", "PID", "PV1", "ZBE"))
     msh = message.segment("MSH")
@@ -263,7 +266,7 @@ def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedM
         raise Hl7Error("AE", "Date du mouvement absente (ZBE-2, EVN-6, EVN-2, MSH-7)", 101)
     base = ParsedMovement(header.source_system, header.control_id, event, "INSERT", None, occurred)
     if event not in SUPPORTED_EVENTS:
-        return replace(base, digest=sha)  # recorded as ignored, nothing else is read
+        return base  # recorded as ignored, nothing else is read
     if pid is None or pv1 is None:
         raise Hl7Error("AE", "Segments PID et PV1 obligatoires", 100)
 
@@ -275,14 +278,14 @@ def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedM
     if action != expected:
         raise Hl7Error("AE", f"ZBE-4 = {action} incohérent avec {event}", 103, "ZBE^1^4")
 
-    patient_id = ""
+    patient_id = patient_domain = ""
     for rep in range(1, _repetitions(pid, 3) + 1):
         kind = _get(pid, 3, 5, rep=rep).upper()
         if kind in _NATIONAL_ID_TYPES:
             continue
         value = _get(pid, 3, 1, rep=rep)
         if value and (kind == "PI" or not patient_id):
-            patient_id = value
+            patient_id, patient_domain = value, _authority(pid, 3, rep)
     encounter_id = _get(pv1, 19)
     if not patient_id:
         raise Hl7Error("AE", "PID-3 : identifiant patient (IPP) manquant", 101, "PID^1^3")
@@ -313,7 +316,8 @@ def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedM
         outcome=ED_OUTCOME_BY_DISCHARGE_MODE.get(_get(pv1, 36)),
         original_event=original or None,
         historic=(_get(zbe, 5).upper() == "Y") if zbe is not None else False,
-        digest=sha,
+        encounter_domain=_authority(pv1, 19),
+        patient_domain=patient_domain,
         encounter_id=encounter_id[:64],
         patient_id=patient_id[:64],
     )

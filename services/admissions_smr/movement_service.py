@@ -32,6 +32,10 @@ from services.admissions_smr.domain.pseudonym import pseudonym
 from services.admissions_smr.models import Bed, BedPool, EdVisit, Group, Movement, Site, Stay
 
 LEAVE_REASON = "Absence provisoire (lit conservé)"
+PATIENT_MISMATCH = (
+    "Patient (PID-3) différent de celui déjà enregistré pour cette venue (PV1-19) : "
+    "vérifiez l'identifiant et son domaine"
+)
 NEEDS_UNIT = frozenset({"A01", "A02", "A06"})
 
 
@@ -42,6 +46,7 @@ class ApplyResult:
     message: str
     movement_id: int | None = None
     hl7_code: int = 0
+    location: str = ""  # ERR-2, when the error points at one field
 
 
 @dataclass(frozen=True)
@@ -72,10 +77,7 @@ def apply_movement(
     if existing is not None and existing.status != "rejected":
         return ApplyResult("duplicate", "AA", "Message déjà reçu, sans effet", existing.id)
 
-    encounter = (
-        pseudonym(secret, group.id, "nda", parsed.encounter_id) if parsed.encounter_id else ""
-    )
-    patient = pseudonym(secret, group.id, "ipp", parsed.patient_id) if parsed.patient_id else ""
+    encounter, patient = references(secret, group.id, parsed)
     row = existing or Movement(
         group_id=group.id,
         source_system=parsed.source_system,
@@ -102,6 +104,9 @@ def apply_movement(
     ):
         record("ignored", "Événement non utilisé pour la gestion des lits")
         return ApplyResult("ignored", "AA", "Événement reçu, non utilisé", row.id)
+    if _other_patient(session, row):
+        record("rejected", PATIENT_MISMATCH)
+        return ApplyResult("rejected", "AE", PATIENT_MISMATCH, row.id, 207, "PID^1^3")
     if parsed.action == "INSERT" and parsed.movement_ref and _already_applied(session, row):
         record("duplicate", "Mouvement déjà reçu sous un autre identifiant de message")
         return ApplyResult("duplicate", "AA", "Mouvement déjà reçu, sans effet", row.id)
@@ -116,6 +121,37 @@ def apply_movement(
     record(status, "; ".join(warnings) or None)
     message = "Mouvement appliqué" + (f" ({'; '.join(warnings)})" if warnings else "")
     return ApplyResult(status, "AA", message, row.id)
+
+
+def references(secret: str, group_id: int, parsed: ParsedMovement) -> tuple[str, str]:
+    """(encounter, patient) pseudonyms; the domain is the assigning authority, else the
+    sending system (REVIEW S-H2)."""
+    nda_domain = parsed.encounter_domain or parsed.source_system
+    ipp_domain = parsed.patient_domain or parsed.source_system
+    encounter = parsed.encounter_id and pseudonym(
+        secret, group_id, "nda", nda_domain, parsed.encounter_id
+    )
+    patient = parsed.patient_id and pseudonym(
+        secret, group_id, "ipp", ipp_domain, parsed.patient_id
+    )
+    return encounter, patient
+
+
+def _other_patient(session: Session, row: Movement) -> bool:
+    """The encounter is already recorded for another patient (never say which)."""
+    if not row.encounter_ref or not row.patient_ref:
+        return False
+    known = session.scalar(
+        select(Movement.patient_ref)
+        .where(
+            Movement.group_id == row.group_id,
+            Movement.encounter_ref == row.encounter_ref,
+            Movement.status.in_(("applied", "cancelled")),
+            Movement.patient_ref != "",
+        )
+        .limit(1)
+    )
+    return known is not None and known != row.patient_ref
 
 
 def _already_applied(session: Session, row: Movement) -> bool:

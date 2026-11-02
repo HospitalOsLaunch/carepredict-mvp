@@ -8,14 +8,16 @@
 * ``GET /api/movements``: the journal, pseudonymous, with the rejection rate.
 
 Only the ``ingestion`` service account may post. Neither the message nor any clear
-identifier is logged or stored: the journal keeps a SHA-256 digest.
+identifier is logged or stored: the journal keeps a keyed digest (HMAC-SHA256, group key
+derived for this purpose, see ``domain/pseudonym.py``).
 """
 
 from __future__ import annotations
 
-import hashlib
+import json
 import os
 import secrets
+from dataclasses import replace
 from datetime import timedelta
 from typing import Annotated, Literal
 
@@ -33,10 +35,16 @@ from services.admissions_smr.domain.hl7_pam import (
     Hl7Error,
     ParsedMovement,
     build_ack,
+    decode,
     parse,
 )
+from services.admissions_smr.domain.pseudonym import keyed_digest
 from services.admissions_smr.models import Bed, BedPool, Movement
-from services.admissions_smr.movement_service import apply_movement, record_rejection
+from services.admissions_smr.movement_service import (
+    apply_movement,
+    record_rejection,
+    references,
+)
 from services.admissions_smr.schemas_liscop import (
     MOVEMENT_BATCH_MAX,
     MovementIn,
@@ -98,9 +106,9 @@ def ingest_hl7(
     message: Annotated[tuple[str, bytes], Depends(hl7_body)], ctx: IngestOnly
 ) -> Response:
     media, raw = message
-    digest = hashlib.sha256(raw).hexdigest()
+    digest = _hl7_digest(ctx, raw)
     try:
-        parsed = parse(raw, ctx.clock.zone, MAX_BYTES)
+        parsed = replace(parse(raw, ctx.clock.zone, MAX_BYTES), digest=digest)
     except Hl7Error as exc:
         header = exc.header
         movement_id = None
@@ -141,16 +149,30 @@ def ingest_hl7(
     ctx.audit("hl7.recu", "movement", result.movement_id, f"{parsed.event} {result.status}")
     ctx.session.commit()
     return _ack_response(
-        media, parsed.header, result.ack_code, result.message, ctx, result.hl7_code
+        media,
+        parsed.header,
+        result.ack_code,
+        result.message,
+        ctx,
+        result.hl7_code,
+        result.location,
     )
 
 
-def _structured(item: MovementIn) -> ParsedMovement:
+def _hl7_digest(ctx: Ctx, raw: bytes) -> str:
+    """Keyed digest of the ER7 message (MLLP framing and line endings normalised)."""
+    try:
+        payload = decode(raw, MAX_BYTES).encode()
+    except Hl7Error:
+        payload = raw
+    return keyed_digest(ctx.settings.pseudonym_secret, ctx.group.id, payload)
+
+
+def _structured(item: MovementIn, ctx: Ctx) -> ParsedMovement:
     cancel = item.action == "CANCEL"
     event = CANCEL_EVENT[item.event] if cancel else item.event
     patient_class = item.patient_class or (ED_CLASS if item.event == "A04" else None)
-    canonical = item.model_dump_json().encode()
-    return ParsedMovement(
+    parsed = ParsedMovement(
         source_system=item.source_system,
         control_id=f"{item.movement_ref}:{item.action}",
         event=event,
@@ -165,10 +187,15 @@ def _structured(item: MovementIn) -> ParsedMovement:
         sex=item.sex,
         age=item.age,
         outcome=item.outcome,
-        digest=hashlib.sha256(canonical).hexdigest(),
         encounter_id=item.encounter_id,
         patient_id=item.patient_id,
     )
+    # Keyed digest of the item with its identifiers already replaced by their pseudonyms.
+    secret = ctx.settings.pseudonym_secret
+    encounter, patient = references(secret, ctx.group.id, parsed)
+    canonical = item.model_dump(mode="json") | {"encounter_id": encounter, "patient_id": patient}
+    payload = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode()
+    return replace(parsed, digest=keyed_digest(secret, ctx.group.id, payload))
 
 
 @router.post("/ingest/movements", response_model=list[MovementResultOut])
@@ -181,7 +208,7 @@ def ingest_movements(
         result = apply_movement(
             ctx.session,
             ctx.group,
-            _structured(item),
+            _structured(item, ctx),
             ctx.clock.now(),
             secret=ctx.settings.pseudonym_secret,
             zone=ctx.clock.zone,

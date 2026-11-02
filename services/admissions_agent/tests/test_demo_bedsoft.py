@@ -119,7 +119,7 @@ def bedsoft_agent(api: TestClient, url: str) -> Agent:
 
 
 def stay(session: Session, group_id: int, venue: str) -> Stay | None:
-    ref = pseudonym("dev-only-pseudonym-secret-change-me", group_id, "nda", venue)
+    ref = pseudonym("dev-only-pseudonym-secret-change-me", group_id, "nda", "demo_bedsoft", venue)
     return session.scalar(select(Stay).where(Stay.encounter_ref == ref))
 
 

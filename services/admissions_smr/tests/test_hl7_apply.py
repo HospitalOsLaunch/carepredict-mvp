@@ -126,7 +126,7 @@ def apply(db: Session, hospital: Group) -> Apply:
 
 
 def stay_of(db: Session, group: Group, nda: str) -> Stay | None:
-    ref = pseudonym(SECRET, group.id, "nda", nda)
+    ref = pseudonym(SECRET, group.id, "nda", "GAM", nda)
     return db.scalar(select(Stay).where(Stay.encounter_ref == ref))
 
 
@@ -151,14 +151,14 @@ def test_admission_creates_a_pseudonymous_stay_in_its_bed(
     stay = stay_of(db, hospital, "900001")
     assert stay is not None and stay.source == "hl7"
     assert stay.mention == "medecine_polyvalente" and stay.admission_date == date(2026, 10, 25)
-    assert stay.patient_ref == pseudonym(SECRET, hospital.id, "ipp", "IPP4242")
+    assert stay.patient_ref == pseudonym(SECRET, hospital.id, "ipp", "GAM", "IPP4242")
     assert (stay.patient_sex, stay.patient_age) == ("F", 76)
     assert stay.admitted_at == datetime(2026, 10, 25, 9, 0, tzinfo=PARIS)
     occupied = bed(db, "2102A")
     assert (occupied.status, occupied.stay_id, stay.bed_id) == ("occupe", stay.id, occupied.id)
     journal = db.scalars(select(Movement)).one()
     assert (journal.status, journal.event, journal.movement_ref) == ("applied", "A01", "MVT-1")
-    assert journal.bed_id == occupied.id and len(journal.message_digest) == 64
+    assert journal.bed_id == occupied.id
 
 
 def test_resending_the_same_message_has_no_effect(db: Session, apply: Apply) -> None:
@@ -273,7 +273,7 @@ def test_leave_of_absence_keeps_the_bed_and_cancellations_restore(
 def test_emergency_visit_decision_then_hospitalisation_then_cancellation(
     db: Session, hospital: Group, apply: Apply
 ) -> None:
-    ref = pseudonym(SECRET, hospital.id, "nda", "900002")
+    ref = pseudonym(SECRET, hospital.id, "nda", "GAM", "900002")
     cardio = db.scalar(select(BedPool).where(BedPool.uf_code == "2301"))
     assert cardio is not None
 
