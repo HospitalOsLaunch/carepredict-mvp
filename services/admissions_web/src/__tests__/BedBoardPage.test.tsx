@@ -127,17 +127,33 @@ describe("BedBoardPage", () => {
     expect(api).toHaveBeenCalledWith("/beds/4", { method: "PATCH", json: { action: "nettoye" } });
   });
 
-  it("asks for a reason before blocking a bed", async () => {
+  it("asks for a coded reason before blocking a bed, with an optional short note", async () => {
     renderPage();
     await userEvent.click(await screen.findByRole("button", { name: /Lit 2301 · Libre/ }));
     await userEvent.click(screen.getByRole("button", { name: "Bloquer" }));
     const confirm = screen.getByRole("button", { name: "Confirmer le blocage" });
     expect(confirm).toBeDisabled();
+    expect(screen.getByLabelText("Précision (facultatif)")).toHaveAttribute("maxLength", "80");
 
-    await userEvent.type(screen.getByLabelText("Motif du blocage"), "Fuite d'eau");
+    await userEvent.selectOptions(screen.getByLabelText("Motif du blocage"), "Équipement en panne");
+    await userEvent.type(screen.getByLabelText("Précision (facultatif)"), "Fuite d'eau");
     await userEvent.click(confirm);
 
-    expect(api).toHaveBeenCalledWith("/beds/1", { method: "PATCH", json: { action: "bloquer", reason: "Fuite d'eau" } });
+    expect(api).toHaveBeenCalledWith("/beds/1", {
+      method: "PATCH",
+      json: { action: "bloquer", reason: "equipement", note: "Fuite d'eau" }
+    });
+  });
+
+  it("blocks without a note when none is given", async () => {
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: /Lit 2301 · Libre/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Bloquer" }));
+
+    await userEvent.selectOptions(screen.getByLabelText("Motif du blocage"), "travaux");
+    await userEvent.click(screen.getByRole("button", { name: "Confirmer le blocage" }));
+
+    expect(api).toHaveBeenCalledWith("/beds/1", { method: "PATCH", json: { action: "bloquer", reason: "travaux" } });
   });
 
   it("never offers to free an occupied bed", async () => {

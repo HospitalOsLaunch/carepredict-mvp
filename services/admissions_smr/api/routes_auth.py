@@ -46,6 +46,7 @@ from services.admissions_smr.security import (
 )
 from services.admissions_smr.vocab import (
     ADMISSION_MODES,
+    BED_BLOCK_REASONS,
     BED_STATUSES,
     CAPACITY_REASONS,
     ED_OUTCOMES,
@@ -128,6 +129,7 @@ def vocabulary() -> VocabularyOut:
         liscop_disciplines=LISCOP_DISCIPLINES,
         unit_kinds=UNIT_KINDS,
         bed_statuses=BED_STATUSES,
+        bed_block_reasons=BED_BLOCK_REASONS,
         sex_constraints=SEX_CONSTRAINTS,
         stay_sources=STAY_SOURCES,
         admission_modes=ADMISSION_MODES,

@@ -40,7 +40,7 @@ from services.admissions_smr.schemas_liscop import (
     UnitBoardOut,
 )
 from services.admissions_smr.service import get_site, group_sites
-from services.admissions_smr.vocab import UNIT_CODES
+from services.admissions_smr.vocab import BED_BLOCK_REASONS, UNIT_CODES
 
 router = APIRouter(tags=["lits"])
 
@@ -282,13 +282,21 @@ def act_on_bed(bed_id: int, body: BedActionIn, ctx: WriteCtx) -> BedOut:
     allowed, target = TRANSITIONS[body.action]
     if bed.status not in allowed:
         raise HTTPException(status.HTTP_409_CONFLICT, "Action impossible dans l'état actuel du lit")
-    if body.action == "bloquer" and not body.reason:
-        raise HTTPException(UNPROCESSABLE, "Indiquez le motif du blocage")
+    blocking = body.action == "bloquer"
+    if blocking and body.reason not in BED_BLOCK_REASONS:
+        raise HTTPException(UNPROCESSABLE, "Choisissez le motif du blocage dans la liste")
+    note = (body.note or "").strip() or None
     before = bed.status
     bed.status = target
-    bed.status_reason = body.reason if target in ("bloque", "reserve") else None
+    if blocking:
+        assert body.reason is not None
+        label = BED_BLOCK_REASONS[body.reason]
+        bed.status_reason = f"{label} : {note}" if note else label
+    else:
+        bed.status_reason = note if target == "reserve" else None
     bed.updated_at = ctx.clock.now()
-    detail = f"{before} → {target}" + (f" ({body.reason})" if body.reason else "")
+    # The audit keeps the code only: the free note may hold a name.
+    detail = f"{before} → {target}" + (f" ({body.reason})" if blocking else "")
     ctx.audit(f"lit.{body.action}", "bed", bed.id, detail)
     ctx.session.commit()
     [state] = bed_states(ctx.session, [bed])

@@ -677,6 +677,7 @@ class VocabularyOut(BaseModel):
     liscop_disciplines: dict[str, str] = Field(default_factory=dict)
     unit_kinds: dict[str, tuple[str, str]] = Field(default_factory=dict)
     bed_statuses: dict[str, str] = Field(default_factory=dict)
+    bed_block_reasons: dict[str, str] = Field(default_factory=dict)
     sex_constraints: dict[str, str] = Field(default_factory=dict)
     stay_sources: dict[str, str] = Field(default_factory=dict)
     admission_modes: dict[str, str] = Field(default_factory=dict)

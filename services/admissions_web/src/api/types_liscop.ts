@@ -5,6 +5,16 @@
 
 export type BedStatus = "libre" | "occupe" | "a_nettoyer" | "bloque" | "reserve";
 export type BedAction = "nettoye" | "bloquer" | "debloquer" | "reserver" | "annuler_reservation";
+// Coded reasons for blocking a bed: same codes as vocab.BED_BLOCK_REASONS on the API.
+export const BED_BLOCK_REASONS = {
+  travaux: "Travaux",
+  equipement: "Équipement en panne",
+  hygiene_isolement: "Hygiène, isolement",
+  personnel: "Manque de personnel",
+  autre: "Autre"
+} as const;
+export type BedBlockReason = keyof typeof BED_BLOCK_REASONS;
+export const BED_NOTE_MAX = 80;
 export type TensionLevel = "normal" | "tension" | "critique";
 
 export interface Bed {

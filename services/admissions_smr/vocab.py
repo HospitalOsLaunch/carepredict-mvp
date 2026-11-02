@@ -164,6 +164,18 @@ BED_STATUSES: Final[dict[str, str]] = {
     "reserve": "Réservé",
 }
 
+# Why a bed is blocked: a code, never free text, so no patient name ends up on the board
+# or in the audit log. A short optional note (BED_NOTE_MAX characters) is shown on the
+# board but kept out of the audit detail.
+BED_BLOCK_REASONS: Final[dict[str, str]] = {
+    "travaux": "Travaux",
+    "equipement": "Équipement en panne",
+    "hygiene_isolement": "Hygiène, isolement",
+    "personnel": "Manque de personnel",
+    "autre": "Autre",
+}
+BED_NOTE_MAX: Final = 80
+
 SEX_CONSTRAINTS: Final[dict[str, str]] = {
     "X": "Indifférencié",
     "F": "Femmes",

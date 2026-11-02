@@ -12,6 +12,7 @@ from typing import Literal
 from pydantic import AwareDatetime, BaseModel, Field
 
 from services.admissions_smr.schemas import Strict
+from services.admissions_smr.vocab import BED_NOTE_MAX
 
 # --- beds-ed ---
 
@@ -34,7 +35,10 @@ class BedOut(BaseModel):
 
 class BedActionIn(Strict):
     action: BedAction
-    reason: str | None = Field(default=None, min_length=3, max_length=200)
+    # Code of vocab.BED_BLOCK_REASONS, required to block a bed.
+    reason: str | None = None
+    # Optional short text shown on the board (never in the audit log).
+    note: str | None = Field(default=None, max_length=BED_NOTE_MAX)
 
 
 class TensionOut(BaseModel):
