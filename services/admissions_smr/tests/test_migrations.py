@@ -406,10 +406,15 @@ def test_connections_downgrade_keeps_tasks_and_their_attempts(tmp_path: Path) ->
     config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
     with engine.begin() as connection:
         config.attributes["connection"] = connection
+        command.downgrade(config, "0004")
+    # 0004's SQLite table copy needs PRAGMA foreign_keys = OFF, effective only at the start
+    # of a transaction: run it on its own, after the later downgrades.
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
         command.downgrade(config, "0003")
         old = MetaData()
         old.reflect(bind=connection)
-        assert not {"agent_connections", "agent_workers"} & set(old.tables)
+        assert not {"agent_connections", "agent_workers", "agent_task_steps"} & set(old.tables)
         assert "connection_id" not in old.tables["agent_tasks"].c
         assert connection.execute(select(old.tables["agent_attempts"].c.task_id)).scalar() == 1
         assert connection.execute(select(old.tables["agent_tasks"].c.id)).scalar() == 1
