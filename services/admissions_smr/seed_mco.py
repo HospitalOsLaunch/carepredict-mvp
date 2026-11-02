@@ -13,6 +13,7 @@ until a bed of the target unit is free (discharges happen during the day), so bo
 from __future__ import annotations
 
 import heapq
+import json
 import math
 import random
 from dataclasses import dataclass
@@ -181,6 +182,9 @@ STAFF = [
     ("admin", "Administration (démo)", "admin_groupe"),
     ("agent", "Agent d'ingestion", "ingestion"),
 ]
+# Sending systems the demo ingestion account may post for (REVIEW S-H1): the HL7 test
+# fixtures (tools/demo_check.py), the HIS simulator and the fictional bed software.
+INGESTION_SOURCES = ["GAM_FICTIF/CHDR_FICTIF", "GAM_SIM/CHDR_SIM", "demo_bedsoft"]
 
 
 def _season(day: date) -> float:
@@ -463,6 +467,7 @@ def seed_demo_mco(
                 password_hash=hash_password(password, password_iterations),
                 role=role,
                 created_at=now,
+                allowed_sources=json.dumps(INGESTION_SOURCES) if role == "ingestion" else None,
             )
         )
     session.commit()

@@ -6,6 +6,8 @@ Revises: 0002
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import contextmanager, nullcontext
 from typing import Any
 
 import sqlalchemy as sa
@@ -25,6 +27,40 @@ def _id() -> sa.Column[int]:
 
 def _fk(name: str, target: str, nullable: bool = False) -> sa.Column[int]:
     return sa.Column(name, sa.Integer(), sa.ForeignKey(f"{target}.id"), nullable=nullable)
+
+
+STAY_DAY = ["site_id", "patient_ref", "admission_date"]
+OLD_STAY_UNIQUE = "stays_site_id_patient_ref_admission_date_key"  # PostgreSQL default name
+
+
+@contextmanager
+def _sqlite_table_copy() -> Iterator[None]:
+    """Batch mode copies ``stays`` and drops the original, which rows of other tables
+    reference (stay_plan_changes, beds). Foreign keys are checked once the copy has its
+    name back: deferred inside a transaction, switched off outside one (pysqlite runs DDL
+    in autocommit until the first write), then verified."""
+    op.execute("PRAGMA defer_foreign_keys = ON")
+    op.execute("PRAGMA foreign_keys = OFF")  # no-op inside a transaction
+    yield
+    op.execute("PRAGMA foreign_keys = ON")
+    if op.get_bind().exec_driver_sql("PRAGMA foreign_key_check").first() is not None:
+        raise RuntimeError("0003: foreign key violation after copying the stays table")
+
+
+def _drop_old_stay_unique() -> None:
+    bind = op.get_bind()
+    name = next(
+        uc["name"]
+        for uc in sa.inspect(bind).get_unique_constraints("stays")
+        if uc["column_names"] == STAY_DAY
+    )
+    if bind.dialect.name != "sqlite":
+        op.drop_constraint(name or OLD_STAY_UNIQUE, "stays", type_="unique")
+        return
+    # Inline and unnamed when created by 0001: named on reflection, then the table is copied.
+    convention = {"uq": "uq_%(table_name)s_%(column_0_name)s"}
+    with _sqlite_table_copy(), op.batch_alter_table("stays", naming_convention=convention) as b:
+        b.drop_constraint(name or "uq_stays_site_id", type_="unique")
 
 
 def upgrade() -> None:
@@ -91,6 +127,18 @@ def upgrade() -> None:
         ["group_id", "encounter_ref", "site_id", "mention"],
         unique=True,
     )
+    # REVIEW C-2: the 0001 constraint (site, patient, day) now binds only stays without an
+    # encounter (manual, imported); HL7 stays are bound by uq_stays_encounter, so a
+    # same-day readmission is a second stay.
+    _drop_old_stay_unique()
+    op.create_index(
+        "uq_stays_site_patient_day",
+        "stays",
+        STAY_DAY,
+        unique=True,
+        sqlite_where=sa.text("encounter_ref IS NULL"),
+        postgresql_where=sa.text("encounter_ref IS NULL"),
+    )
 
     op.add_column("users", sa.Column("allowed_sources", sa.Text()))
 
@@ -116,6 +164,10 @@ def upgrade() -> None:
         sa.UniqueConstraint("group_id", "source_system", "message_control_id"),
     )
     op.create_index("ix_movements_group_id", "movements", ["group_id"])
+    op.create_index("ix_movements_group_encounter", "movements", ["group_id", "encounter_ref"])
+    op.create_index(
+        "ix_movements_group_source_ref", "movements", ["group_id", "source_system", "movement_ref"]
+    )
 
     op.create_table(
         "ed_visits",
@@ -227,6 +279,7 @@ def downgrade() -> None:
         op.drop_table(table)
     op.drop_column("users", "allowed_sources")
     op.drop_index("uq_stays_encounter", table_name="stays")
+    op.drop_index("uq_stays_site_patient_day", table_name="stays")
     for name in (
         "admission_mode",
         "discharged_at",
@@ -237,9 +290,14 @@ def downgrade() -> None:
         "source",
     ):
         op.drop_column("stays", name)
-    # SQLite cannot DROP a column used by a foreign key: batch mode copies the table.
-    with op.batch_alter_table("stays") as batch:
-        batch.drop_column("bed_id")
+    # SQLite cannot DROP a column used by a foreign key: batch mode copies the table, and
+    # dropping the old copy must not orphan beds.stay_id (beds is dropped just after).
+    op.execute("UPDATE beds SET stay_id = NULL")
+    sqlite = op.get_bind().dialect.name == "sqlite"
+    with _sqlite_table_copy() if sqlite else nullcontext(), op.batch_alter_table("stays") as b:
+        b.drop_column("bed_id")
+        # Fails if same-day readmissions were recorded since: they cannot fit the old rule.
+        b.create_unique_constraint(OLD_STAY_UNIQUE, STAY_DAY)
     op.drop_table("beds")
     for name in (
         "crisis_reserved_beds",

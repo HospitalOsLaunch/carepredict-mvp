@@ -460,16 +460,6 @@ def _reconcile(
     pool = session.get(BedPool, target.pool_id)
     assert pool is not None
     admission_date = local_date(target.unit_entry_at, zone)
-    clash = session.scalar(
-        select(Stay.id).where(
-            Stay.site_id == target.site_id,
-            Stay.patient_ref == row.patient_ref,
-            Stay.admission_date == admission_date,
-            Stay.id != (stay.id if stay else -1),
-        )
-    )
-    if clash is not None:
-        raise MovementConflict("Un autre séjour de ce patient commence le même jour sur ce site")
     if stay is None:
         stay = Stay(
             group_id=group.id,

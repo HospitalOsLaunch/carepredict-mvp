@@ -19,6 +19,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -149,9 +150,19 @@ class User(Base):
 
 class Stay(Base):
     __tablename__ = "stays"
-    # NULLs are distinct in unique indexes (SQLite and PostgreSQL): only HL7 stays are bound.
+    # Manual and imported stays (no encounter): one per patient, site and day. HL7 stays are
+    # bound to their encounter instead, so a same-day readmission is a second stay (C-2).
+    # NULLs are distinct in unique indexes (SQLite and PostgreSQL).
     __table_args__ = (
-        UniqueConstraint("site_id", "patient_ref", "admission_date"),
+        Index(
+            "uq_stays_site_patient_day",
+            "site_id",
+            "patient_ref",
+            "admission_date",
+            unique=True,
+            sqlite_where=text("encounter_ref IS NULL"),
+            postgresql_where=text("encounter_ref IS NULL"),
+        ),
         Index("uq_stays_encounter", "group_id", "encounter_ref", "site_id", "mention", unique=True),
     )
 
@@ -394,7 +405,12 @@ class Movement(Base):
     """Journal of received patient movements (HL7 PAM). Never the raw message."""
 
     __tablename__ = "movements"
-    __table_args__ = (UniqueConstraint("group_id", "source_system", "message_control_id"),)
+    __table_args__ = (
+        UniqueConstraint("group_id", "source_system", "message_control_id"),
+        # Replays of an encounter and duplicate / cancellation lookups (REVIEW C-4).
+        Index("ix_movements_group_encounter", "group_id", "encounter_ref"),
+        Index("ix_movements_group_source_ref", "group_id", "source_system", "movement_ref"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
@@ -411,7 +427,7 @@ class Movement(Base):
     bed_id: Mapped[int | None] = mapped_column(ForeignKey("beds.id"), nullable=True)
     status: Mapped[str] = mapped_column(String(20))
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    message_digest: Mapped[str] = mapped_column(String(64))  # SHA-256
+    message_digest: Mapped[str] = mapped_column(String(64))  # keyed HMAC-SHA256
     received_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
 

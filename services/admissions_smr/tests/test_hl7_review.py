@@ -14,13 +14,14 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from services.admissions_smr import movement_service
 from services.admissions_smr.api import deps, routes_hl7
 from services.admissions_smr.domain.hl7_pam import Hl7Error, parse, parse_ts
 from services.admissions_smr.domain.pseudonym import keyed_digest, pseudonym
-from services.admissions_smr.models import EdVisit, Group, Movement, Stay, User
+from services.admissions_smr.models import EdVisit, Group, Movement, Site, Stay, User
 from services.admissions_smr.movement_service import apply_movement
 from services.admissions_smr.schemas_liscop import MovementIn
 from services.admissions_smr.tests.test_api import new_request
@@ -413,3 +414,51 @@ def test_s_m2_validation_errors_carry_no_input_on_any_route(
     assert "Durand" not in r.text
     for error in r.json()["detail"]:
         assert set(error) <= {"loc", "msg", "type"} and error["loc"]
+
+
+def test_s_h1_mco_demo_ingestion_account_is_bound_to_the_demo_senders() -> None:
+    from services.admissions_agent.demo_bedsoft.app import sample
+    from services.admissions_smr.seed_mco import INGESTION_SOURCES
+    from tools.his_simulator import Simulator
+
+    fixture_source = parse(a01(), PARIS).source_system  # tools/demo_check.py sends a fixture
+    simulator_source = parse(next(Simulator().messages()).encode(), PARIS).source_system
+    assert sample()  # the fictional bed software, read by the agent as "demo_bedsoft"
+    assert {fixture_source, simulator_source, "demo_bedsoft"} == set(INGESTION_SOURCES)
+
+
+# --- C-2: same-day readmission; manual stays keep their guarantee ---------------------------
+
+
+def test_c2_same_day_readmission_is_a_second_stay(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    apply("a01_admission")
+    apply(replace(fixture("a03_discharge"), occurred_at=datetime(2026, 10, 25, 11, tzinfo=PARIS)))
+    back = replace(
+        fixture("a01_admission"),
+        control_id="MSG-A01-R",
+        movement_ref="MVT-R",
+        encounter_id="900099",
+        occurred_at=datetime(2026, 10, 25, 18, tzinfo=PARIS),
+    )
+
+    result = apply(back)
+
+    assert result.status == "applied", result.message
+    assert db.query(Stay).count() == 2  # same patient, site and day, two encounters
+
+
+def test_c2_manual_stays_still_unique_per_patient_site_and_day(
+    db: Session, hospital: Group
+) -> None:
+    site = db.scalars(select(Site)).first()
+    assert site is not None
+    for _ in range(2):
+        db.add(
+            Stay(group_id=hospital.id, site_id=site.id, mention="polyvalent",
+                 patient_ref="P-1", admission_date=NOW.date(), created_at=NOW, updated_at=NOW)
+        )  # fmt: skip
+    with pytest.raises(IntegrityError):
+        db.commit()
+    db.rollback()
