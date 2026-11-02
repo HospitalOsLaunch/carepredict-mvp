@@ -10,17 +10,22 @@ to rehearse how to present a spurious signal.
 
 from __future__ import annotations
 
+import json
 import random
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.agent_policy import default_policy
+from services.admissions_smr.config import DEV_CONNECTOR_KEY
+from services.admissions_smr.domain.connector_secrets import encrypt
 from services.admissions_smr.models import (
     AdmissionRequest,
+    AgentConnection,
     AgentState,
     BedPool,
     CapacityChange,
@@ -36,6 +41,9 @@ from services.admissions_smr.security import hash_password
 from services.admissions_smr.vocab import REQUEST_SOURCES
 
 HISTORY_DAYS = 900
+# Fictional portal of docker-compose.demo.yml (services/admissions_agent/demo_portal).
+DEMO_PORTAL_URL = "http://portal:8020"
+DEMO_PORTAL_SECRET = "demo-portail"
 
 # Mean length of stay (days) and gamma shape per mention, for the simulation only.
 LOS = {
@@ -151,6 +159,8 @@ def seed_demo(
     password_iterations: int,
     timezone: str = "Europe/Paris",
     seed: int = 2,
+    connector_key: str = DEV_CONNECTOR_KEY,
+    portal_url: str = DEMO_PORTAL_URL,
 ) -> Group:
     rng = random.Random(seed)
     zone = ZoneInfo(timezone)
@@ -314,6 +324,27 @@ def seed_demo(
     # portal receives requests every few minutes, so the demo reads it every 2 minutes.
     policy = default_policy().model_copy(update={"sync_interval_minutes": 2})
     session.add(AgentState(group_id=group.id, policy_json=policy.model_dump_json(), updated_at=now))
+    # The fictional portal is read through a connection, started: the agent of the demo
+    # only knows the API address, its account and its name.
+    portal = AgentConnection(
+        group_id=group.id,
+        name="Portail d'orientation (démonstration)",
+        kind="portail_orientation",
+        url=portal_url,
+        allowed_hosts_json=json.dumps([urlparse(portal_url).hostname]),
+        username="demo",
+        playbook="demo_portal",
+        tasks_json=json.dumps(["sync_inbox", "reply_portal"]),
+        interval_minutes=2,
+        status="active",
+        next_run_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    session.add(portal)
+    session.flush()
+    portal.secret_ciphertext = encrypt(connector_key, group.id, portal.id, DEMO_PORTAL_SECRET)
+    portal.secret_updated_at = now
     session.commit()
     return group
 

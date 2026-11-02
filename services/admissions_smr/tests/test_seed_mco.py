@@ -242,3 +242,21 @@ def test_cli_refuses_demo_seeds_outside_development_and_test(
         assert "ADM_ENV" in capsys.readouterr().err
     finally:
         get_settings.cache_clear()
+
+
+def test_bed_software_connection_is_started_with_an_encrypted_secret(db: Session) -> None:
+    from services.admissions_smr.config import DEV_CONNECTOR_KEY
+    from services.admissions_smr.domain.connector_secrets import decrypt
+    from services.admissions_smr.models import AgentConnection
+
+    group = db.scalars(select(Group).where(Group.name == GROUP_NAME)).one()
+    conn = db.scalars(select(AgentConnection).where(AgentConnection.group_id == group.id)).one()
+    agent = db.scalars(
+        select(User).where(User.group_id == group.id, User.role == "ingestion")
+    ).one()
+
+    assert (conn.kind, conn.status, conn.playbook) == ("gestion_lits", "active", "demo_bedsoft")
+    assert conn.url == "http://bedsoft:8120" and conn.source_system
+    assert conn.source_system in (agent.allowed_sources or "")
+    assert conn.secret_ciphertext and "demo-lits" not in conn.secret_ciphertext
+    assert decrypt(DEV_CONNECTOR_KEY, group.id, conn.id, conn.secret_ciphertext) == "demo-lits"

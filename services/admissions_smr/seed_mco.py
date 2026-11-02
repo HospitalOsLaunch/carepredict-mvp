@@ -19,12 +19,16 @@ import random
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.config import DEV_CONNECTOR_KEY
+from services.admissions_smr.domain.connector_secrets import encrypt
 from services.admissions_smr.models import (
+    AgentConnection,
     Bed,
     BedPool,
     CapacityChange,
@@ -184,7 +188,11 @@ STAFF = [
 ]
 # Sending systems the demo ingestion account may post for (REVIEW S-H1): the HL7 test
 # fixtures (tools/demo_check.py), the HIS simulator and the fictional bed software.
-INGESTION_SOURCES = ["GAM_FICTIF/CHDR_FICTIF", "GAM_SIM/CHDR_SIM", "demo_bedsoft"]
+# Fictional bed software of docker-compose.demo.yml (services/admissions_agent/demo_bedsoft).
+DEMO_BEDSOFT_URL = "http://bedsoft:8120"
+DEMO_BEDSOFT_SOURCE = "demo_bedsoft"  # playbooks/demo_bedsoft.yaml constants.source_system
+DEMO_BEDSOFT_SECRET = "demo-lits"
+INGESTION_SOURCES = ["GAM_FICTIF/CHDR_FICTIF", "GAM_SIM/CHDR_SIM", DEMO_BEDSOFT_SOURCE]
 
 
 def _season(day: date) -> float:
@@ -228,6 +236,8 @@ def seed_demo_mco(
     password_iterations: int,
     timezone: str = "Europe/Paris",
     seed: int = 59,
+    connector_key: str = DEV_CONNECTOR_KEY,
+    bedsoft_url: str = DEMO_BEDSOFT_URL,
 ) -> Group:
     rng = random.Random(seed)
     zone = ZoneInfo(timezone)
@@ -470,6 +480,27 @@ def seed_demo_mco(
                 allowed_sources=json.dumps(INGESTION_SOURCES) if role == "ingestion" else None,
             )
         )
+    # The fictional bed software, read by the agent through a started connection.
+    beds = AgentConnection(
+        group_id=group.id,
+        name="Gestion des lits (démonstration)",
+        kind="gestion_lits",
+        url=bedsoft_url,
+        allowed_hosts_json=json.dumps([urlparse(bedsoft_url).hostname]),
+        username="cadre",
+        playbook="demo_bedsoft",
+        tasks_json=json.dumps(["sync_movements"]),
+        source_system=DEMO_BEDSOFT_SOURCE,
+        interval_minutes=5,
+        status="active",
+        next_run_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    session.add(beds)
+    session.flush()
+    beds.secret_ciphertext = encrypt(connector_key, group.id, beds.id, DEMO_BEDSOFT_SECRET)
+    beds.secret_updated_at = now
     session.commit()
     return group
 

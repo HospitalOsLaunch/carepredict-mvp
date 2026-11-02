@@ -493,3 +493,28 @@ def test_reply_goes_to_the_portal_connection_of_the_request_site(g: G) -> None:
     g.beat()
     claimed = [t for t in g.claim() if t["kind"] == "reply_portal"]
     assert claimed and claimed[0]["connection"]["id"] == portal_b["id"]
+
+
+def test_smr_demo_seed_starts_its_portal_connection(tmp_path: Any) -> None:
+    from services.admissions_smr.config import DEV_CONNECTOR_KEY
+    from services.admissions_smr.db import make_engine, make_session_factory
+    from services.admissions_smr.domain.connector_secrets import decrypt
+    from services.admissions_smr.migrate import upgrade
+    from services.admissions_smr.seed import seed_demo
+    from services.admissions_smr.tests.conftest import test_database_url
+
+    engine = make_engine(test_database_url(tmp_path))
+    upgrade(engine)
+    with make_session_factory(engine)() as session:
+        group = seed_demo(session, TODAY, "mot-de-passe-demo", 1000)
+        conn = session.scalars(select(AgentConnection)).one()
+        assert (conn.kind, conn.status, conn.url) == (
+            "portail_orientation",
+            "active",
+            "http://portal:8020",
+        )
+        assert conn.secret_ciphertext is not None
+        assert (
+            decrypt(DEV_CONNECTOR_KEY, group.id, conn.id, conn.secret_ciphertext) == "demo-portail"
+        )
+    engine.dispose()

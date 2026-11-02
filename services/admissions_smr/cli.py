@@ -36,9 +36,15 @@ def main(argv: list[str] | None = None) -> int:
 
     demo = sub.add_parser("seed-demo", help="Charger le groupe de démonstration (synthétique)")
     demo.add_argument("--password", default=os.getenv("ADM_DEMO_PASSWORD", "demo-hospitalos-2026"))
+    demo.add_argument(
+        "--portal-url", default=os.getenv("ADM_DEMO_PORTAL_URL", "http://portal:8020")
+    )
 
     mco = sub.add_parser("seed-demo-mco", help="Charger l'hôpital MCO de démonstration (LISCOP)")
     mco.add_argument("--password", default=os.getenv("ADM_DEMO_PASSWORD", "demo-hospitalos-2026"))
+    mco.add_argument(
+        "--bedsoft-url", default=os.getenv("ADM_DEMO_BEDSOFT_URL", "http://bedsoft:8120")
+    )
 
     args = parser.parse_args(argv)
     settings = get_settings()
@@ -86,7 +92,13 @@ def main(argv: list[str] | None = None) -> int:
             print("Le groupe de démonstration existe déjà", file=sys.stderr)
             return 1
         group = seed_demo(
-            session, clock.today(), args.password, settings.password_iterations, settings.timezone
+            session,
+            clock.today(),
+            args.password,
+            settings.password_iterations,
+            settings.timezone,
+            connector_key=settings.connector_key,
+            portal_url=args.portal_url,
         )
         print(f"Groupe de démonstration créé (id {group.id}).")
         print("Comptes : admin@, coordination@, tilleuls@, direction@, agent@demo.hospitalos.fr")
@@ -100,7 +112,13 @@ def main(argv: list[str] | None = None) -> int:
                 print("Le groupe de démonstration MCO existe déjà", file=sys.stderr)
                 return 1
             group = seed_demo_mco(
-                session, clock.now(), args.password, settings.password_iterations, settings.timezone
+                session,
+                clock.now(),
+                args.password,
+                settings.password_iterations,
+                settings.timezone,
+                connector_key=settings.connector_key,
+                bedsoft_url=args.bedsoft_url,
             )
         finally:  # no transaction left open (it would block a schema change on PostgreSQL)
             session.close()

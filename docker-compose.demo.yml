@@ -5,7 +5,16 @@
 # - api    : groupe de démonstration synthétique chargé au premier démarrage
 # - portal : portail d'orientation fictif, une nouvelle demande toutes les
 #            DEMO_ARRIVAL_MINUTES minutes (http://localhost:8020, demo / demo-portail)
-# - agent  : relève le portail et y reporte les réponses décidées dans HospitalOS
+# - agent  : poste agent du groupe SMR ; relève le portail et y reporte les réponses
+#            décidées dans HospitalOS
+# - bedsoft : logiciel de gestion des lits fictif du CH MCO (http://localhost:8120,
+#            cadre / demo-lits)
+# - agent-mco : poste agent du CH MCO ; relève les mouvements du logiciel de gestion des lits
+#
+# Les postes agents ne connaissent que l'adresse de l'API, leur compte et leur nom : les
+# logiciels à lire, leurs identifiants (chiffrés par ADM_CONNECTOR_KEY), les scripts et le
+# rythme sont des connexions de HospitalOS (Computer use), créées et démarrées par les
+# jeux de démonstration.
 #
 # Le script (playbook) suffit à tout faire. Pour essayer les moteurs à modèle sur le portail
 # fictif, renseigner ANTHROPIC_API_KEY ou OPEN_LIGHT_URL / OPEN_HEAVY_URL, puis les activer
@@ -42,6 +51,7 @@ services:
       # Demonstration values only (never reuse them): explicit, so no development key is used.
       ADM_SECRET_KEY: demo-only-secret-key-not-for-production-0123456789
       ADM_PSEUDONYM_SECRET: demo-only-pseudonym-secret-not-for-production-0123
+      ADM_CONNECTOR_KEY: demo-only-connector-key-not-for-production-01234
     # Migrate and seed once (refused, harmlessly, when the group already exists), then serve:
     # the SMR group for the computer-use demo, the MCO hospital for LISCOP.
     command: >
@@ -88,9 +98,6 @@ services:
       AGENT_API_URL: http://api:8010
       AGENT_API_EMAIL: agent@demo.hospitalos.fr
       AGENT_API_PASSWORD: demo-hospitalos-2026
-      AGENT_PORTAL_URL: http://portal:8020
-      AGENT_PORTAL_USERNAME: demo
-      AGENT_PORTAL_PASSWORD: demo-portail
       AGENT_HEARTBEAT_SECONDS: ${DEMO_AGENT_CYCLE_SECONDS:-20}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPEN_LIGHT_URL: ${OPEN_LIGHT_URL:-}
@@ -101,6 +108,32 @@ services:
       api:
         condition: service_healthy
       portal:
+        condition: service_started
+
+  bedsoft:
+    build:
+      context: .
+      dockerfile: services/admissions_agent/Dockerfile
+    entrypoint: ["uvicorn", "services.admissions_agent.demo_bedsoft.app:app", "--host", "0.0.0.0", "--port", "8120"]
+    command: []
+    ports:
+      - "${DEMO_BEDSOFT_PORT:-8120}:8120"
+
+  agent-mco:
+    build:
+      context: .
+      dockerfile: services/admissions_agent/Dockerfile
+    command: ["run"]
+    environment:
+      AGENT_ID: agent-mco
+      AGENT_API_URL: http://api:8010
+      AGENT_API_EMAIL: agent@ch-demo.hospitalos.fr
+      AGENT_API_PASSWORD: demo-hospitalos-2026
+      AGENT_HEARTBEAT_SECONDS: ${DEMO_AGENT_CYCLE_SECONDS:-20}
+    depends_on:
+      api:
+        condition: service_healthy
+      bedsoft:
         condition: service_started
 
   # Prévision LISCOP (démo) : calcule les prévisions de tous les groupes au démarrage puis
