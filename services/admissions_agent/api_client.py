@@ -13,6 +13,26 @@ class ApiError(RuntimeError):
     pass
 
 
+def _reason(response: httpx.Response) -> str:
+    """What may be said of an error: the API's own message, or the fields and rules a
+    validation error names. Never the body as such, which may quote a value read on a
+    screen (REVIEW S-M2)."""
+    try:
+        detail = response.json().get("detail")
+    except (ValueError, AttributeError):
+        return ""
+    if isinstance(detail, str):
+        return f" {detail[:200]}"
+    if isinstance(detail, list):
+        parts = [
+            f"{'.'.join(str(p) for p in d.get('loc', []))} : {d.get('msg', '')}"
+            for d in detail[:5]
+            if isinstance(d, dict)
+        ]
+        return f" ({'; '.join(parts)})"[:300]
+    return ""
+
+
 class TaskInterrupted(RuntimeError):
     """The worker can no longer prove it owns the current decision."""
 
@@ -60,7 +80,7 @@ class HospitalOSClient:
                     time.sleep(0.2 * 2**attempt)
                     continue
                 if r.status_code >= 400:
-                    raise ApiError(f"{method} {path} : {r.status_code} {r.text[:300]}")
+                    raise ApiError(f"{method} {path} : {r.status_code}{_reason(r)}")
                 return r.json() if r.content else None
             except httpx.TransportError as exc:
                 if not safe or attempt == 2:
