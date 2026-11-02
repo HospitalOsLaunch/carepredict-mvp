@@ -326,7 +326,8 @@ function ForecastValue({ unit, horizon }: { unit: RorUnite; horizon: string }) {
         <span className="block text-[11px] italic text-ink-faint">libérés</span>
       ) : (
         p.p_tension !== null && (
-          <span className={`chip mt-0.5 px-1.5 text-[11px] ${level.chip}`} title={`${level.label} probable`}>
+          <span className={`chip mt-0.5 whitespace-nowrap px-1.5 text-[11px] ${level.chip}`} title={`${level.label} probable`}>
+            <span className="sr-only">risque de tension </span>
             {fmtPct(p.p_tension)}
           </span>
         )
@@ -364,7 +365,7 @@ function RorId({ unit }: { unit: RorUnite }) {
   return unit.identifiant_unite_ror ? (
     <span className="chip bg-lagoon-soft text-lagoon-dark">{unit.identifiant_unite_ror}</span>
   ) : (
-    <span className="chip bg-coral-soft text-coral-dark">à rattacher</span>
+    <span className="chip whitespace-nowrap bg-coral-soft text-coral-dark">à rattacher</span>
   );
 }
 

@@ -127,7 +127,7 @@ describe("RorPage", () => {
     const row = within(table).getByRole("row", { name: /Médecine polyvalente/ });
     const cells = within(row).getAllByRole("cell").map((c) => c.textContent);
     expect(cells.slice(0, 4)).toEqual(["1", "2", "2", "5"]);
-    expect(within(row).getByText("62 %")).toBeInTheDocument();
+    expect(within(row).getByText(/risque de tension/).parentElement).toHaveTextContent("risque de tension 62 %");
     expect(within(row).getByText("2 à 7")).toBeInTheDocument();
     expect(cells).toContain("27");
     expect(cells).toContain("4");

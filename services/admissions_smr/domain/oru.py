@@ -68,9 +68,9 @@ class OruDay:
     computed_boarding_10h: int | None
     boarding_source: str | None  # calcul | declaration
     hosted_elsewhere_10h: int | None
-    units: int
-    units_tension: int
-    units_critique: int
+    units: int | None  # None for a day not reached yet
+    units_tension: int | None
+    units_critique: int | None
     het: str | None
     plan_blanc: str | None
     forecast_boarding_mean: float | None
@@ -147,7 +147,7 @@ def oru_day(
     today: date,
     ed: DayPoint | None,
     arrivals: int | None,
-    levels: UnitLevels,
+    levels: UnitLevels | None,
     declared: Mapping[str, str],
     forecast: BoardingForecast | None,
 ) -> OruDay:
@@ -163,9 +163,9 @@ def oru_day(
         computed_boarding_10h=ed.computed_boarding if ed else None,
         boarding_source=ed.source if ed else None,
         hosted_elsewhere_10h=ed.hosted_elsewhere if ed else None,
-        units=levels.units,
-        units_tension=levels.tension,
-        units_critique=levels.critique,
+        units=levels.units if levels else None,
+        units_tension=levels.tension if levels else None,
+        units_critique=levels.critique if levels else None,
         het=declared.get("het"),
         plan_blanc=declared.get("plan_blanc"),
         forecast_boarding_mean=round(forecast.mean, 1) if forecast else None,

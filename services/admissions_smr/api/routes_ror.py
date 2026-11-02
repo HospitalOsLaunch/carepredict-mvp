@@ -648,10 +648,12 @@ def oru_rows(ctx: Ctx, sites: Sequence[Site], start: date, end: date) -> list[or
         mine = [d for sid, d in declarations if sid is None or sid == site.id]
         keys = [(site.id, p.mention) for p in site.pools]
         for day in days:
-            levels = oru.count_levels(
-                oru.unit_levels(occupancy[k], caps[k], day) if day <= today else None
-                for k in keys
-                if k in caps
+            levels = (
+                oru.count_levels(
+                    oru.unit_levels(occupancy[k], caps[k], day) for k in keys if k in caps
+                )
+                if day <= today
+                else None
             )
             rows.append(
                 oru.oru_day(

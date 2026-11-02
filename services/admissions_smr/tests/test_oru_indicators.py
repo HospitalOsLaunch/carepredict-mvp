@@ -83,8 +83,9 @@ def test_a_declared_day_keeps_the_computed_boarding_next_to_it() -> None:
     r = row()
     assert (r.boarding_10h, r.computed_boarding_10h, r.boarding_source) == (4, 3, "declaration")
     assert r.complete is True and r.forecast_boarding_mean == 4.2
-    empty = oru.oru_day(1, "S", TODAY, TODAY, None, None, oru.UnitLevels(0, 0, 0), {}, None)
+    empty = oru.oru_day(1, "S", TODAY, TODAY, None, None, None, {}, None)
     assert empty.present_10h is None and empty.boarding_source is None and not empty.complete
+    assert empty.units is None
 
 
 def test_csv_is_utf8_with_bom_semicolons_french_headers_and_no_formula() -> None:
@@ -165,6 +166,7 @@ def test_indicators_per_site_and_day_with_declared_override_and_forecast(
     assert today["forecast_boarding_mean"] == 5.0
     future = by_day[(TODAY + timedelta(days=2)).isoformat()]
     assert future["ed_arrivals"] is None and future["forecast_boarding_high"] == 9.0
+    assert future["units"] is None and future["units_critique"] is None
     site_b = next(d for d in body["days"] if d["site_name"] == "g1 B")
     assert site_b["ed_arrivals"] is None and site_b["present_10h"] is None
 

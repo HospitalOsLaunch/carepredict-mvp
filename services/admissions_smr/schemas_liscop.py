@@ -540,9 +540,9 @@ class OruDayOut(BaseModel):
     computed_boarding_10h: int | None
     boarding_source: Literal["calcul", "declaration"] | None
     hosted_elsewhere_10h: int | None
-    units: int
-    units_tension: int
-    units_critique: int
+    units: int | None
+    units_tension: int | None
+    units_critique: int | None
     het: str | None
     plan_blanc: str | None
     forecast_boarding_mean: float | None
