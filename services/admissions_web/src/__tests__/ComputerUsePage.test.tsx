@@ -69,6 +69,7 @@ function connection(extra: Partial<ConnectionOut> = {}): ConnectionOut {
     needs_human: 2,
     can_control: true,
     can_edit: true,
+    running_task_id: null,
     ...extra
   };
 }
