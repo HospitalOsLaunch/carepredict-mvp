@@ -16,7 +16,7 @@ import sys
 from sqlalchemy import select
 
 from services.admissions_smr.clock import Clock
-from services.admissions_smr.config import get_settings
+from services.admissions_smr.config import ConfigurationError, ensure_demo_allowed, get_settings
 from services.admissions_smr.db import make_engine, make_session_factory
 from services.admissions_smr.migrate import upgrade
 from services.admissions_smr.models import Group, User
@@ -42,9 +42,12 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     settings = get_settings()
-    if args.command == "seed-demo-mco" and settings.is_production:
-        print("Refusé : jeu de démonstration interdit en production", file=sys.stderr)
-        return 1
+    if args.command in ("seed-demo", "seed-demo-mco"):
+        try:
+            ensure_demo_allowed(settings)  # before touching the database (REVIEW S-M3)
+        except ConfigurationError as exc:
+            print(f"Refusé : {exc}", file=sys.stderr)
+            return 1
     engine = make_engine(settings.database_url)
     upgrade(engine)
     if args.command == "migrate":
@@ -77,9 +80,6 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "seed-demo":
-        if settings.is_production:
-            print("Refusé : jeu de démonstration interdit en production", file=sys.stderr)
-            return 1
         from services.admissions_smr.seed import seed_demo
 
         if session.scalar(select(Group.id).where(Group.name == "Groupe Démo Réadaptation")):

@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from services.admissions_smr.vocab import (
     CAPACITY_REASONS,
     LOSS_REASONS,
+    MENTIONS,
     REFUSAL_REASONS,
     REQUEST_SOURCES,
     ROLES,
@@ -177,16 +178,15 @@ class RequestCreate(Strict):
     @field_validator("mention_requested")
     @classmethod
     def _mention(cls, value: str) -> str:
-        if value not in UNIT_CODES:
+        if value not in MENTIONS:  # SMR referrals only; MCO unit codes are for stays
             raise ValueError("mention inconnue")
         return value
 
     @field_validator("special_needs")
     @classmethod
     def _needs(cls, value: list[str]) -> list[str]:
-        unknown = [v for v in value if v not in SPECIAL_NEEDS]
-        if unknown:
-            raise ValueError(f"besoins inconnus : {unknown}")
+        if any(v not in SPECIAL_NEEDS for v in value):  # never echo the value (REVIEW S-M2)
+            raise ValueError("besoins inconnus : codes du vocabulaire special_needs attendus")
         return sorted(set(value))
 
     @field_validator("patient_ref")

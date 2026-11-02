@@ -16,6 +16,7 @@ Writes to the portal (``reply_portal``) follow three safety rules:
 
 from __future__ import annotations
 
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -455,7 +456,7 @@ class Router:
                 else:
                     existing += 1
             except (ApiError, PlaybookError, KeyError, ValueError) as exc:
-                rejected.append(f"{item.get('external_ref', '?')}: {exc}")
+                rejected.append(f"{_safe_ref(item.get('external_ref'))}: {exc}")
         result = {
             "route": route,
             "created": created,
@@ -490,8 +491,12 @@ class Router:
         counts: dict[str, int] = {}
         for answer in answers:
             counts[answer["status"]] = counts.get(answer["status"], 0) + 1
+        # One note per rejected row, never a value read on screen (REVIEW C-7, S-M2): the
+        # movement reference when it is a plain identifier, else the row number.
         rejected = [
-            f"{a['movement_ref']}: {a['message']}" for a in answers if a["status"] == "rejected"
+            f"{_safe_ref(a.get('movement_ref'), f'ligne {n}')}: {a.get('message', '')}"
+            for n, a in enumerate(answers, start=1)
+            if a.get("status") == "rejected"
         ]
         result = {"route": route, "movements": counts, "rejected": rejected}
         if rejected:
@@ -499,6 +504,13 @@ class Router:
                 "needs_human", engine, result, f"{len(rejected)} mouvement(s) rejeté(s)"
             )
         return TaskOutcome("done", engine, result)
+
+
+_REF = re.compile(r"^[A-Za-z0-9_.:-]{1,50}$")
+
+
+def _safe_ref(value: Any, fallback: str = "?") -> str:
+    return value if isinstance(value, str) and _REF.match(value) else fallback
 
 
 def _instant(value: Any) -> datetime:

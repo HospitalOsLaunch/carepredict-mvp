@@ -13,11 +13,10 @@ Pure functions, no I/O. Sources and assumptions: ``docs/liscop/HL7_PAM.md``.
 
 from __future__ import annotations
 
-import hashlib
 import re
 from collections.abc import Sequence
 from dataclasses import dataclass, field, replace
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta, timezone
 from typing import Any, Literal
 from zoneinfo import ZoneInfo
 
@@ -67,6 +66,9 @@ _HL7_TS = re.compile(
 )
 _TRIGGER = re.compile(r"^[A-Z]\d{2}$")
 _FINESS = re.compile(r"^\d{2}[0-9AB]\d{6}$")
+_CODE = re.compile(r"^(?=.*\d)[A-Z0-9]{1,12}$")
+# C0 control characters, segment separator excepted (after decoding and normalisation).
+_CONTROL = re.compile(r"[\x00-\x0c\x0e-\x1f]")
 # PID-3 identifier types that are national identifiers (INS, NIR): never used, never kept.
 _NATIONAL_ID_TYPES = frozenset({"INS", "INS-C", "INS-NIR", "INS-NIA", "NH", "SS", "NNFRA"})
 
@@ -124,7 +126,10 @@ class ParsedMovement:
     outcome: str | None = None  # emergency department outcome on A03
     original_event: str | None = None  # ZBE-6, for Z99
     historic: bool = False  # ZBE-5
-    digest: str = ""
+    digest: str = ""  # keyed digest, set by the caller (domain.pseudonym.keyed_digest)
+    # Identification domains (assigning authorities PV1-19.4 / PID-3.4), may be empty.
+    encounter_domain: str = ""
+    patient_domain: str = ""
     # Clear identifiers: memory only, pseudonymised before anything is written.
     encounter_id: str = field(default="", repr=False)
     patient_id: str = field(default="", repr=False)
@@ -148,11 +153,15 @@ def decode(raw: bytes, max_bytes: int = DEFAULT_MAX_BYTES) -> str:
         text = raw.decode("latin-1")  # many French ADT feeds are ISO 8859-1
     text = text.strip().lstrip("\x0b").rstrip("\x1c\r\n").strip()
     text = text.replace("\r\n", "\r").replace("\n", "\r")
+    if _CONTROL.search(text):  # NUL and friends: refused before anything is read or stored
+        raise Hl7Error("AR", "Caractère de contrôle interdit dans le message", 100)
     return "\r".join(line for line in text.split("\r") if line.strip())
 
 
-def digest(raw: bytes) -> str:
-    return hashlib.sha256(raw).hexdigest()
+def code_token(value: str) -> str:
+    """A sender value echoed in an ACK or the journal only if it looks like a code
+    (``[A-Z0-9]``, at most 12, with a digit): never a name typed in the wrong field."""
+    return value if _CODE.match(value) else ""
 
 
 def _get(segment: Any, field_num: int, component: int = 1, sub: int = 1, rep: int = 1) -> str:
@@ -187,11 +196,17 @@ def parse_ts(value: str, zone: ZoneInfo) -> datetime | None:
         naive = datetime(int(y), int(mo), int(d), int(h or 0), int(mi or 0), int(s or 0))
     except ValueError:
         return None
-    if offset:
-        sign = 1 if offset[0] == "+" else -1
-        minutes = int(offset[1:3]) * 60 + int(offset[3:5])
-        return naive.replace(tzinfo=timezone(sign * timedelta(minutes=minutes)))
-    return naive.replace(tzinfo=zone)
+    try:
+        if offset:
+            sign = 1 if offset[0] == "+" else -1
+            minutes = int(offset[1:3]) * 60 + int(offset[3:5])
+            stamp = naive.replace(tzinfo=timezone(sign * timedelta(minutes=minutes)))
+        else:
+            stamp = naive.replace(tzinfo=zone)
+        stamp.astimezone(UTC)  # must be representable in UTC (stored as UTC)
+    except (ValueError, OverflowError):
+        return None
+    return stamp
 
 
 def _age(birth: str, at: datetime, zone: ZoneInfo) -> int | None:
@@ -228,13 +243,7 @@ def parse_header(text: str) -> tuple[Any, Header]:
     if not header.version.startswith("2."):
         raise Hl7Error("AR", "Version HL7 non prise en charge", 203, "MSH^1^12", header)
     if header.message_type != "ADT" or not _TRIGGER.match(header.trigger):
-        raise Hl7Error(
-            "AR",
-            f"Type de message non pris en charge : {header.message_type}^{header.trigger}",
-            200,
-            "MSH^1^9",
-            header,
-        )
+        raise Hl7Error("AR", "Type de message non pris en charge (MSH-9)", 200, "MSH^1^9", header)
     return message, header
 
 
@@ -242,28 +251,35 @@ def parse(raw: bytes, zone: ZoneInfo, max_bytes: int = DEFAULT_MAX_BYTES) -> Par
     """Validate and read one ADT message. Raises ``Hl7Error`` (with the header when known)."""
     message, header = parse_header(decode(raw, max_bytes))
     try:
-        return replace(_movement(message, header, zone, digest(raw)), header=header)
+        return replace(_movement(message, header, zone), header=header)
     except Hl7Error as exc:
         exc.header = header
         raise
 
 
-def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedMovement:
+def _authority(segment: Any, field_num: int, rep: int = 1) -> str:
+    """CX-4 assigning authority (HD): universal id (HD-2), else namespace id (HD-1)."""
+    return (_get(segment, field_num, 4, 2, rep) or _get(segment, field_num, 4, 1, rep))[:60]
+
+
+def _movement(message: Any, header: Header, zone: ZoneInfo) -> ParsedMovement:
     event = header.trigger
     evn, pid, pv1, zbe = (_segment(message, s) for s in ("EVN", "PID", "PV1", "ZBE"))
     msh = message.segment("MSH")
     occurred = None
-    for segment, number in ((zbe, 2), (evn, 6), (evn, 2), (msh, 7)):
+    sources = (("ZBE", zbe, 2), ("EVN", evn, 6), ("EVN", evn, 2), ("MSH", msh, 7))
+    for name, segment, number in sources:
         if segment is not None and (stamp := _get(segment, number)):
             occurred = parse_ts(stamp, zone)
             if occurred is None:
-                raise Hl7Error("AE", f"Date invalide : « {stamp[:20]} »", 102)
+                where = f"{name}^1^{number}"
+                raise Hl7Error("AE", f"Date invalide ({name}-{number})", 102, where)
             break
     if occurred is None:
         raise Hl7Error("AE", "Date du mouvement absente (ZBE-2, EVN-6, EVN-2, MSH-7)", 101)
     base = ParsedMovement(header.source_system, header.control_id, event, "INSERT", None, occurred)
     if event not in SUPPORTED_EVENTS:
-        return replace(base, digest=sha)  # recorded as ignored, nothing else is read
+        return base  # recorded as ignored, nothing else is read
     if pid is None or pv1 is None:
         raise Hl7Error("AE", "Segments PID et PV1 obligatoires", 100)
 
@@ -273,16 +289,19 @@ def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedM
         expected = "INSERT"  # an A07 that is not a cancellation: hospitalised -> outpatient
     action = action or expected
     if action != expected:
-        raise Hl7Error("AE", f"ZBE-4 = {action} incohérent avec {event}", 103, "ZBE^1^4")
+        raise Hl7Error("AE", f"ZBE-4 incohérent avec l'événement {event}", 103, "ZBE^1^4")
+    historic = (_get(zbe, 5).upper() == "Y") if zbe is not None else False
+    if historic and event != "Z99":  # REVIEW T-4: only a correction may touch the past
+        raise Hl7Error("AE", "Mouvement historique (ZBE-5 = Y) non pris en charge", 103, "ZBE^1^5")
 
-    patient_id = ""
+    patient_id = patient_domain = ""
     for rep in range(1, _repetitions(pid, 3) + 1):
         kind = _get(pid, 3, 5, rep=rep).upper()
         if kind in _NATIONAL_ID_TYPES:
             continue
         value = _get(pid, 3, 1, rep=rep)
         if value and (kind == "PI" or not patient_id):
-            patient_id = value
+            patient_id, patient_domain = value, _authority(pid, 3, rep)
     encounter_id = _get(pv1, 19)
     if not patient_id:
         raise Hl7Error("AE", "PID-3 : identifiant patient (IPP) manquant", 101, "PID^1^3")
@@ -312,8 +331,9 @@ def _movement(message: Any, header: Header, zone: ZoneInfo, sha: str) -> ParsedM
         age=_age(_get(pid, 7), occurred, zone),
         outcome=ED_OUTCOME_BY_DISCHARGE_MODE.get(_get(pv1, 36)),
         original_event=original or None,
-        historic=(_get(zbe, 5).upper() == "Y") if zbe is not None else False,
-        digest=sha,
+        historic=historic,
+        encounter_domain=_authority(pv1, 19),
+        patient_domain=patient_domain,
         encounter_id=encounter_id[:64],
         patient_id=patient_id[:64],
     )
@@ -358,7 +378,8 @@ def build_ack(
     segments = [msh, "|".join(["MSA", code, _escape(h.control_id), _escape(text[:80])])]
     if code != "AA":
         severity = "E"
-        segments.append(f"ERR||{_escape(location)}|{hl7_code}^{_escape(text)}^HL70357|{severity}")
+        where = "^".join(_escape(part) for part in location.split("^"))  # ERL components
+        segments.append(f"ERR||{where}|{hl7_code}^{_escape(text)}^HL70357|{severity}")
     return "\r".join(segments) + "\r"
 
 
@@ -429,7 +450,9 @@ def project(facts: Sequence[Fact], ed_pools: frozenset[int]) -> EncounterState:
                 raise MovementConflict("Unité d'hospitalisation introuvable")
             if ed is not None and open_ed:
                 ed.left_at, ed.left_by = f.occurred_at, f.event
-                ed.target_pool_id = f.pool_id
+                # REVIEW C-1: admitted elsewhere than decided = hosted; keep the decision's
+                # target unit (the admission unit only when there was no decision).
+                ed.target_pool_id = ed.target_pool_id or f.pool_id
                 ed.admit_decision_at = ed.admit_decision_at or f.occurred_at
             from_ed = f.event == "A06" or ed is not None
             state.stay = StayState(

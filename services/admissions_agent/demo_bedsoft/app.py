@@ -17,6 +17,7 @@ from __future__ import annotations
 import html
 import os
 import secrets
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
@@ -84,11 +85,16 @@ def sample() -> dict[str, Row]:
     return {r.id: r for r in rows}
 
 
+def wall_clock() -> datetime:
+    return datetime.now(PARIS)
+
+
 @dataclass
 class Store:
     rows: dict[str, Row] = field(default_factory=sample)
     sessions: set[str] = field(default_factory=set)
     added: int = 0
+    clock: Callable[[], datetime] = wall_clock  # tests freeze it (REVIEW T-18)
 
 
 store = Store()
@@ -155,7 +161,7 @@ def login(utilisateur: str = Form(...), mdp: str = Form(...)) -> HTMLResponse | 
 def movements(request: Request) -> HTMLResponse | RedirectResponse:
     if not logged_in(request):
         return RedirectResponse("/connexion", status_code=303)
-    today = datetime.now(PARIS).date()
+    today = store.clock().date()
     body = "".join(
         f"<tr data-id='{esc(r.id)}' class='{'annule' if r.cancelled else ''}'>"
         f"<td>{r.at(today):%H:%M}</td><td>{esc(TYPES[r.type])}</td><td>{esc(r.name)}</td>"
@@ -180,7 +186,7 @@ def detail(row_id: str, request: Request) -> HTMLResponse | RedirectResponse:
     r = store.rows.get(row_id)
     if r is None:
         return page("Introuvable", "<p>Mouvement introuvable</p>")
-    today = datetime.now(PARIS).date()
+    today = store.clock().date()
     return page(
         r.id,
         f"""<h1>Mouvement <span id="id-mouvement">{esc(r.id)}</span></h1>
@@ -215,7 +221,7 @@ def reset() -> JSONResponse:
 def arrive() -> JSONResponse:
     store.added += 1
     n = store.added
-    now = datetime.now(PARIS)
+    now = store.clock()
     row = Row(
         f"BS-{100 + n:04d}",
         "A01",

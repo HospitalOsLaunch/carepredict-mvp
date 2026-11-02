@@ -10,8 +10,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import MetaData, select
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.clock import FrozenClock
 from services.admissions_smr.models import EdVisit, Group, Movement, Stay
-from services.admissions_smr.tests.test_hl7_apply import PASSWORD, build_hospital
+from services.admissions_smr.tests.test_hl7_apply import PASSWORD, RECEIVED, build_hospital
 
 FIXTURES = Path(__file__).parent / "fixtures" / "hl7"
 HL7 = {"Content-Type": "x-application/hl7-v2+er7"}
@@ -23,7 +24,8 @@ CLEAR_VALUES = [
 
 
 @pytest.fixture
-def hospital(db: Session) -> Group:
+def hospital(app_client: TestClient, db: Session) -> Group:
+    app_client.app.state.clock = FrozenClock(RECEIVED)  # type: ignore[attr-defined]
     return build_hospital(db)
 
 
@@ -169,14 +171,17 @@ def test_structured_movements_from_the_agent(
 
 
 def test_structured_movements_refuse_extra_fields(
-    app_client: TestClient, headers: Callable[[str], dict[str, str]]
+    app_client: TestClient, headers: Callable[[str], dict[str, str]], db: Session
 ) -> None:
     r = app_client.post(
         "/api/ingest/movements",
         json=[agent_item(patient_name="Mme Exemple")],
         headers=headers("agent"),
     )
-    assert r.status_code == 422
+    assert r.status_code == 200  # REVIEW C-7: refused item by item
+    (result,) = r.json()
+    assert result["status"] == "rejected" and "patient_name" in result["message"]
+    assert "Exemple" not in r.text and db.query(Movement).count() == 0
 
 
 def test_journal_is_paginated_pseudonymous_and_reports_rejections(

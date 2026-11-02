@@ -295,13 +295,28 @@ gestion des lits. Détails, sources et hypothèses : `docs/liscop/HL7_PAM.md`.
 - `POST /api/ingest/hl7` : un message ER7 (`text/plain` ou `x-application/hl7-v2+er7`,
   encadrement MLLP toléré, 64 Ko au plus : `ADM_HL7_MAX_BYTES`), compte de service
   `ingestion` uniquement. Réponse : l'ACK HL7 (AA → 200, AE → 422, AR → 400, trop gros → 413).
-- `POST /api/ingest/movements` : les mêmes mouvements en JSON (agent), 500 au plus par lot.
+- `POST /api/ingest/movements` : les mêmes mouvements en JSON (agent), 500 au plus par lot,
+  validés un par un : un résultat par élément (`applied`, `duplicate`, `ignored`,
+  `rejected` avec la raison), une ligne invalide ne bloque pas les autres.
 - `GET /api/movements` : journal paginé, pseudonymisé, avec le taux de rejet sur 24 h.
 - Événements : A01, A02, A03, A04, A06, A07, A11, A12, A13, A21, A22, A52, A53, Z99 ; les
-  autres sont accusés et journalisés `ignored`. Un message renvoyé est sans effet.
-- IPP et NDA deviennent des HMAC (`ADM_PSEUDONYM_SECRET`) ; noms, INS/NIR, dates de
-  naissance, adresses et téléphones ne sont ni lus ni stockés (test qui inspecte toutes
-  les tables). Le journal garde une empreinte SHA-256, jamais le message.
+  autres sont accusés et journalisés `ignored`. Un message renvoyé à l'identique est sans
+  effet ; le même MSH-10 avec un autre contenu est refusé (AE) et journalisé.
+- Chaque compte `ingestion` peut être lié à ses systèmes émetteurs : `users.allowed_sources`,
+  liste JSON des `source_system` (`MSH-3/MSH-4`, ou le `source_system` de l'agent) ; un
+  autre émetteur reçoit AR (403), sans journalisation. Vide ou nul : tout émetteur
+  (rétrocompatibilité de démo) ; le compte agent de `seed-demo-mco` est lié aux émetteurs
+  de la démo. À renseigner pour tout compte réel (pas encore d'écran : base ou script).
+- IPP et NDA deviennent des HMAC avec une clé par groupe dérivée de `ADM_PSEUDONYM_SECRET`
+  (HKDF-SHA256), en incluant le domaine d'identification (autorité d'affectation, sinon le
+  système émetteur) ; noms, INS/NIR, dates de naissance, adresses et téléphones ne sont ni
+  lus ni stockés (test qui inspecte toutes les tables). Le journal garde une empreinte
+  HMAC (clé dérivée distincte), jamais le message.
+- Dates de mouvement acceptées : de 400 jours avant à 24 h après la réception
+  (`ADM_MOVEMENT_MAX_AGE_DAYS`, `ADM_MOVEMENT_MAX_FUTURE_HOURS`), sinon AE.
+- Clés : hors `ADM_ENV=development` ou `test` (valeur exacte), `ADM_SECRET_KEY` et
+  `ADM_PSEUDONYM_SECRET` doivent être fournies (32 caractères au moins, distinctes) ; les
+  clés de développement intégrées sont refusées.
 - Les unités sont reconnues par leur code UF (`bed_pools.uf_code`), le site par son
   FINESS : les renseigner avant de brancher le flux.
 

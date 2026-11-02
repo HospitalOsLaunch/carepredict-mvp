@@ -219,3 +219,24 @@ def test_cli_seeds_once_and_refuses_twice(
         assert cli.main(["seed-demo-mco"]) == 1
     finally:
         get_settings.cache_clear()
+
+
+@pytest.mark.parametrize("env", ["staging", "Production", "prod"])
+@pytest.mark.parametrize("command", ["seed-demo", "seed-demo-mco"])
+def test_cli_refuses_demo_seeds_outside_development_and_test(
+    env: str,
+    command: str,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """REVIEW S-M3: known demo passwords never reach a non-development database."""
+    monkeypatch.setenv("ADM_ENV", env)
+    monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
+    monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@127.0.0.1:1/x")
+    get_settings.cache_clear()
+    try:
+        assert cli.main([command]) == 1  # refused before touching the (unreachable) database
+        assert "ADM_ENV" in capsys.readouterr().err
+    finally:
+        get_settings.cache_clear()

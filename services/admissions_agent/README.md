@@ -71,7 +71,7 @@ réel de l'heure GPU.
 
 | Variable | Rôle |
 | --- | --- |
-| `AGENT_API_URL`, `AGENT_API_EMAIL`, `AGENT_API_PASSWORD` | API HospitalOS et compte `ingestion` |
+| `AGENT_API_URL`, `AGENT_API_EMAIL`, `AGENT_API_PASSWORD` | API HospitalOS et compte `ingestion` ; l'URL doit être en `https`, sauf vers la machine locale ou un nom de service interne sans point (`http://api:8010` en compose) |
 | `AGENT_ID` | nom du poste, affiché dans l'interface |
 | `AGENT_PORTAL_URL`, `AGENT_PORTAL_USERNAME`, `AGENT_PORTAL_PASSWORD` | portail d'orientation |
 | `AGENT_PLAYBOOK` | script YAML du portail (défaut : portail de démonstration) |
@@ -138,6 +138,13 @@ annulations ; voir `docs/liscop/HL7_PAM.md`).
   (« Entrée », « Mutation »…) sont traduits par une table `map` déclarée dans le playbook.
 - Un mouvement vu déjà annulé est envoyé comme son entrée suivie de son annulation : le
   résultat est nul, et un nouveau relevé ne change rien.
+- Une ligne refusée par HospitalOS (format, unité inconnue…) n'arrête pas le relevé : les
+  autres sont appliquées et la tâche passe « à reprendre » avec une note par ligne
+  (référence du mouvement si c'est un identifiant simple, sinon numéro de ligne, et la
+  raison). Aucune erreur de l'agent ne recopie une valeur lue à l'écran : seulement le
+  nom du champ et le format attendu.
+- Le compte `ingestion` utilisé peut être limité à ce logiciel (`source_system` du
+  playbook, ici `demo_bedsoft`) : voir `users.allowed_sources` dans le README de l'API.
 
 Logiciel fictif pour la démonstration et les tests :
 `uvicorn services.admissions_agent.demo_bedsoft.app:app --port 8120` (utilisateur

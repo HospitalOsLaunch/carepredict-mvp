@@ -45,9 +45,15 @@ def bedsoft_url() -> Iterator[str]:
 
 @pytest.fixture
 def bedsoft(bedsoft_url: str) -> Iterator[httpx.Client]:
+    # REVIEW T-18: the screen's clock is frozen for the test, at noon of the API's day, so
+    # every movement of the sample is in the past and within the accepted date window.
+    noon = datetime.now(bedsoft_module.PARIS).replace(hour=12, minute=0, second=0, microsecond=0)
+    previous = bedsoft_module.store.clock
+    bedsoft_module.store.clock = lambda: noon
     with httpx.Client(base_url=bedsoft_url) as client:
         client.post("/_test/reset")
         yield client
+    bedsoft_module.store.clock = previous
 
 
 def db(api: TestClient) -> Session:
@@ -119,7 +125,7 @@ def bedsoft_agent(api: TestClient, url: str) -> Agent:
 
 
 def stay(session: Session, group_id: int, venue: str) -> Stay | None:
-    ref = pseudonym("dev-only-pseudonym-secret-change-me", group_id, "nda", venue)
+    ref = pseudonym("dev-only-pseudonym-secret-change-me", group_id, "nda", "demo_bedsoft", venue)
     return session.scalar(select(Stay).where(Stay.encounter_ref == ref))
 
 
@@ -202,3 +208,20 @@ def test_a_policy_saved_before_sync_movements_still_routes_it_to_the_script() ->
     policy = parse_policy(old.model_dump_json())
 
     assert policy.routes["sync_movements"] == ["playbook"]
+
+
+def test_t18_the_fictional_software_reads_an_injectable_clock() -> None:
+    frozen = datetime(2026, 3, 29, 12, 0, tzinfo=bedsoft_module.PARIS)
+    previous = bedsoft_module.store.clock
+    bedsoft_module.store.clock = lambda: frozen
+    try:
+        with TestClient(bedsoft_module.app) as client:
+            client.post("/connexion", data={"utilisateur": "cadre", "mdp": "demo-lits"})
+            listing = client.get("/mouvements").text
+            detail = client.get("/mouvements/BS-0003").text
+            added = client.post("/_test/arrive").json()["id"]
+            client.post("/_test/reset")
+    finally:
+        bedsoft_module.store.clock = previous
+    assert "29/03/2026" in listing and "29/03/2026 08:05" in detail
+    assert added == "BS-0101"

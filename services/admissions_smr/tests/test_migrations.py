@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-import os
 from datetime import UTC, datetime
 from pathlib import Path
 
-import pytest
 from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
 from sqlalchemy import MetaData, select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.db import Base, make_engine
@@ -246,16 +243,64 @@ def test_liscop_downgrade_then_upgrade_on_empty_database(tmp_path: Path) -> None
     engine.dispose()
 
 
-# Reproduced: on SQLite the batch copy of `stays` drops the old table while beds.stay_id
-# still points at it (FOREIGN KEY constraint failed). The fix belongs to migration 0003
-# (owner: fix-ingest), e.g. clear beds.stay_id or drop `beds` before the batch. Strict:
-# the test fails as soon as the migration is fixed, so this marker is then removed.
-@pytest.mark.xfail(
-    not os.getenv("ADM_TEST_DATABASE_URL"),
-    reason="0003 downgrade fails on SQLite with a stay linked to a bed",
-    raises=IntegrityError,
-    strict=True,
-)
+def test_liscop_downgrade_with_a_stay_in_its_bed_and_a_same_day_readmission(
+    tmp_path: Path,
+) -> None:
+    """REVIEW C-2 / T-19: the partial unique index is created and removed; a stay linked to
+    a bed does not block the downgrade (SQLite copies ``stays``)."""
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    now = datetime.now(UTC)
+    with engine.begin() as connection:
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        t = tables.tables
+        connection.execute(
+            t["groups"].insert().values(
+                id=1, name="G", created_at=now, value_per_bed_day=0, success_fee_rate=0,
+                scoring_weights_json="{}", care_minutes_json="{}",
+            )
+        )  # fmt: skip
+        connection.execute(
+            t["sites"].insert().values(id=1, group_id=1, name="S", capabilities="", active=True,
+                                       created_at=now)
+        )  # fmt: skip
+        connection.execute(
+            t["bed_pools"].insert().values(
+                id=1, site_id=1, mention="medecine_polyvalente", beds_installed=1, beds_open=1,
+                isolation_rooms=0, updated_at=now,
+            )
+        )  # fmt: skip
+        for stay_id, encounter in ((1, "E1"), (2, "E2")):  # same patient, site and day
+            connection.execute(
+                t["stays"].insert().values(
+                    id=stay_id, group_id=1, site_id=1, mention="medecine_polyvalente",
+                    patient_ref="P", admission_date=now.date(), created_at=now, updated_at=now,
+                    encounter_ref=encounter, source="hl7",
+                )
+            )  # fmt: skip
+        connection.execute(
+            t["beds"].insert().values(
+                id=1, group_id=1, site_id=1, pool_id=1, room="1", label="1", sex_constraint="X",
+                isolation=False, status="occupe", stay_id=2, active=True, updated_at=now,
+            )
+        )  # fmt: skip
+        connection.execute(t["stays"].update().where(t["stays"].c.id == 2).values(bed_id=1))
+        connection.execute(t["stays"].delete().where(t["stays"].c.id == 1))  # old index
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0002")
+    with engine.connect() as connection:
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        assert "beds" not in tables.tables
+        assert connection.execute(select(tables.tables["stays"].c.id)).scalars().all() == [2]
+    upgrade(engine)
+    assert is_current(engine)
+    engine.dispose()
+
+
 def test_liscop_downgrade_keeps_a_stay_linked_to_a_bed(tmp_path: Path) -> None:
     """T-19: stays.bed_id ↔ beds.stay_id reference each other; the downgrade still runs."""
     engine = make_engine(database_url(tmp_path))
@@ -321,4 +366,3 @@ def test_liscop_downgrade_keeps_a_stay_linked_to_a_bed(tmp_path: Path) -> None:
     assert is_current(engine)
     with Session(engine) as session:
         assert session.get(Stay, stay_id).bed_id is None  # type: ignore[union-attr]
-    engine.dispose()

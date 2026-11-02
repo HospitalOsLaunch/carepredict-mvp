@@ -37,7 +37,8 @@ def test_admission_is_read_into_a_typed_movement() -> None:
     assert m.facility == "590000017" and m.sex == "F" and m.age == 76
     assert m.patient_id == "IPP4242"  # the PI identifier, never the INS
     assert m.encounter_id == "900001"
-    assert len(m.digest) == 64
+    assert (m.encounter_domain, m.patient_domain) == ("GAM", "GAM")
+    assert m.digest == ""  # keyed by the caller, with the group key
 
 
 def test_repr_never_shows_clear_identifiers() -> None:
@@ -155,5 +156,5 @@ def test_ack_error_has_err_segment_and_escapes_separators() -> None:
     segments = ack.rstrip("\r").split("\r")
     assert len(segments) == 3
     assert segments[1].startswith("MSA|AR||Illisible \\F\\ \\S\\ \\T\\ \\R\\ \\E\\")
-    assert segments[2].startswith("ERR||MSH\\S\\1\\S\\9|100^")
+    assert segments[2].startswith("ERR||MSH^1^9|100^")  # ERR-2 components, not escaped
     assert segments[2].endswith("^HL70357|E")
