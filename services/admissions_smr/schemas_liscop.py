@@ -371,3 +371,190 @@ class LiscopForecastOut(BaseModel):
 
 
 # --- ror-oru-export ---
+
+
+class RorCode(BaseModel):
+    code: str
+    libelle: str
+
+
+class RorCapaciteOut(BaseModel):
+    statut: RorCode  # JDV_J188
+    nombre: int
+    remarque: str | None = None
+
+
+class RorFermetureOut(BaseModel):
+    type_fermeture: RorCode  # JDV_J191
+    nombre: int
+    motif_interne: str
+
+
+class RorGenreOut(BaseModel):
+    """Available beds by JDV_J190 gender; null when the unit has no bed plan."""
+
+    femme: int | None  # 01
+    homme: int | None  # 02
+    indetermine: int | None  # 04
+    total: int
+    isolement: int | None
+    niveau: Literal["lit", "unite"]
+
+
+class RorOperationnelOut(BaseModel):
+    en_service: int
+    reactivables: int
+    supplementaires: int
+
+
+class RorPrevisionOut(BaseModel):
+    echeance: str
+    date: date
+    temporalite: RorCode  # JDV_J189
+    moyenne: float
+    fourchette_80: tuple[int, int]
+    p_tension: float | None
+    p_critique: float | None
+
+
+class RorPrevisionNatureOut(BaseModel):
+    nature: Literal["disponibles_attendus", "liberes_non_promis", "aucune"]
+    libelle: str
+    modele: str | None
+    date_de_calcul: date | None
+    calcule_le: datetime | None
+
+
+class RorTensionOut(BaseModel):
+    niveau: Literal["normal", "tension", "critique"]
+    taux_disponibilite: float | None
+
+
+class RorFraicheurOut(BaseModel):
+    le: datetime
+    source: str
+    libelle: str
+    age_heures: float
+
+
+class RorCapaciteFhirOut(BaseModel):
+    """One ``ror-location-supported-capacity`` extension (ROR FHIR IG names)."""
+
+    capacityType: RorCode  # JDV_J187
+    capacityStatus: RorCode  # JDV_J188
+    temporalityCapacity: RorCode  # JDV_J189
+    nbCapacity: int
+    genderCapacityAvailable: RorCode | None  # JDV_J190
+    capacityClosingType: RorCode | None  # JDV_J191
+    capacityUpdateDate: datetime | None
+    capacitySourceType: RorCode | None = None  # JDV_J193, codes not checked
+    additionalBedType: RorCode | None = None  # JDV_J192, codes not checked
+    crisisType: RorCode | None = None  # JDV_J194, codes not checked
+    temporaryAssignement: RorCode | None = None  # JDV_J195, codes not checked
+
+
+class RorUniteOut(BaseModel):
+    site_id: int
+    etablissement: str
+    finess_geographique: str | None
+    pool_id: int
+    identifiant_unite_ror: str | None
+    mention: str  # unit code
+    libelle_unite: str
+    type_unite: str
+    discipline: str
+    capacites: list[RorCapaciteOut]
+    fermetures: list[RorFermetureOut]
+    disponibles_par_genre: RorGenreOut
+    operationnel: RorOperationnelOut
+    reserves_crise_sse: int
+    previsionnel: list[RorPrevisionOut]
+    previsionnel_nature: RorPrevisionNatureOut
+    tension: RorTensionOut
+    fraicheur: RorFraicheurOut | None
+    dernier_mouvement_saisi: datetime | None  # = fraicheur.le, kept for older readers
+    ror_capacites: list[RorCapaciteFhirOut]
+    a_completer: list[str]
+
+
+class RorReferentielOut(BaseModel):
+    nom: str
+    url: str
+
+
+class RorPrevisionRunOut(BaseModel):
+    id: int
+    date_de_calcul: date
+    calcule_le: datetime
+    modele: str
+    perimee: bool
+
+
+class RorExportOut(BaseModel):
+    maquette: bool = True
+    avertissement: str
+    emetteur: str
+    genere_le: datetime
+    date_situation: date
+    synthetique: bool
+    prevision: RorPrevisionRunOut | None
+    referentiels: list[RorReferentielOut]
+    hypotheses: list[str]
+    non_suivi_dans_le_pilote: list[str]
+    unites: list[RorUniteOut]
+
+
+class RorOutboxOut(BaseModel):
+    id: int
+    cree_le: datetime
+    type: str
+    statut: str
+    empreinte_sha256: str
+    unites: int
+    prepare_par: str | None
+    contenu: RorExportOut | None = None  # only in the answer to the creation
+
+
+class RorUnitSettingsIn(Strict):
+    ror_unit_id: str | None = Field(default=None, max_length=64)
+    extra_beds: int | None = Field(default=None, ge=0, le=500)
+    crisis_reserved_beds: int | None = Field(default=None, ge=0, le=500)
+
+
+class RorUnitSettingsOut(BaseModel):
+    pool_id: int
+    ror_unit_id: str | None
+    extra_beds: int
+    crisis_reserved_beds: int
+
+
+class OruDayOut(BaseModel):
+    day: date
+    site_id: int
+    site_name: str
+    complete: bool
+    ed_arrivals: int | None
+    present_10h: int | None
+    waiting_bed_10h: int | None
+    boarding_10h: int | None
+    computed_boarding_10h: int | None
+    boarding_source: Literal["calcul", "declaration"] | None
+    hosted_elsewhere_10h: int | None
+    units: int
+    units_tension: int
+    units_critique: int
+    het: str | None
+    plan_blanc: str | None
+    forecast_boarding_mean: float | None
+    forecast_boarding_low: float | None
+    forecast_boarding_high: float | None
+    forecast_as_of: date | None
+
+
+class OruIndicatorsOut(BaseModel):
+    start: date
+    end: date
+    generated_at: datetime
+    synthetic: bool
+    definitions: list[str]
+    days: list[OruDayOut]
