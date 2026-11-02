@@ -260,3 +260,46 @@ def test_bed_software_connection_is_started_with_an_encrypted_secret(db: Session
     assert conn.source_system in (agent.allowed_sources or "")
     assert conn.secret_ciphertext and "demo-lits" not in conn.secret_ciphertext
     assert decrypt(DEV_CONNECTOR_KEY, group.id, conn.id, conn.secret_ciphertext) == "demo-lits"
+
+
+@pytest.mark.parametrize(
+    ("command", "playbook"), [("seed-demo", "demo_portal"), ("seed-demo-mco", "demo_bedsoft")]
+)
+def test_cli_repairs_a_demo_database_seeded_before_connections(
+    command: str,
+    playbook: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A demo volume created before connections existed: the usual start-up command adds the
+    started demo connection once, then leaves the group alone."""
+    from services.admissions_smr.models import AgentConnection
+
+    url = database_url(tmp_path)
+    monkeypatch.setenv("ADM_DATABASE_URL", url)
+    monkeypatch.setenv("ADM_ENV", "development")
+    monkeypatch.setenv("ADM_PASSWORD_ITERATIONS", "1000")
+    get_settings.cache_clear()
+    try:
+        assert cli.main([command]) == 0
+        engine = make_engine(url)
+        with Session(engine) as session:  # simulate the old database: no connection yet
+            for connection in session.scalars(select(AgentConnection)):
+                session.delete(connection)
+            session.commit()
+        capsys.readouterr()
+
+        assert cli.main([command]) == 0
+        assert "connexion de démonstration ajoutée" in capsys.readouterr().out
+        with Session(engine) as session:
+            connections = session.scalars(select(AgentConnection)).all()
+            assert [
+                (c.playbook, c.status, c.secret_ciphertext is not None) for c in connections
+            ] == [(playbook, "active", True)]
+        assert cli.main([command]) == 1  # already has a connection: untouched
+        with Session(engine) as session:
+            assert len(session.scalars(select(AgentConnection)).all()) == 1
+        engine.dispose()
+    finally:
+        get_settings.cache_clear()

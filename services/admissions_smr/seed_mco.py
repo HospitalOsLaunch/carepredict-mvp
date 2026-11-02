@@ -22,7 +22,7 @@ from typing import Any
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.config import DEV_CONNECTOR_KEY
@@ -480,7 +480,29 @@ def seed_demo_mco(
                 allowed_sources=json.dumps(INGESTION_SOURCES) if role == "ingestion" else None,
             )
         )
-    # The fictional bed software, read by the agent through a started connection.
+    add_demo_bedsoft_connection(session, group, connector_key, bedsoft_url, now)
+    session.commit()
+    return group
+
+
+def add_demo_bedsoft_connection(
+    session: Session,
+    group: Group,
+    connector_key: str = DEV_CONNECTOR_KEY,
+    bedsoft_url: str = DEMO_BEDSOFT_URL,
+    now: datetime | None = None,
+) -> AgentConnection:
+    """The fictional bed software, read by the agent through a started connection. Also
+    used to repair a demo database seeded before connections existed: the group's
+    ingestion accounts limited to a list of sources get the bed software's source."""
+    now = now or datetime.now(UTC)
+    for user in session.scalars(
+        select(User).where(User.group_id == group.id, User.role == "ingestion")
+    ):
+        if user.allowed_sources:
+            sources = json.loads(user.allowed_sources)
+            if DEMO_BEDSOFT_SOURCE not in sources:
+                user.allowed_sources = json.dumps([*sources, DEMO_BEDSOFT_SOURCE])
     beds = AgentConnection(
         group_id=group.id,
         name="Gestion des lits (démonstration)",
@@ -501,8 +523,7 @@ def seed_demo_mco(
     session.flush()
     beds.secret_ciphertext = encrypt(connector_key, group.id, beds.id, DEMO_BEDSOFT_SECRET)
     beds.secret_updated_at = now
-    session.commit()
-    return group
+    return beds
 
 
 def _add_capacity_history(

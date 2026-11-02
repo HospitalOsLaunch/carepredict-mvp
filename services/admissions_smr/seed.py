@@ -324,8 +324,22 @@ def seed_demo(
     # portal receives requests every few minutes, so the demo reads it every 2 minutes.
     policy = default_policy().model_copy(update={"sync_interval_minutes": 2})
     session.add(AgentState(group_id=group.id, policy_json=policy.model_dump_json(), updated_at=now))
-    # The fictional portal is read through a connection, started: the agent of the demo
-    # only knows the API address, its account and its name.
+    add_demo_portal_connection(session, group, connector_key, portal_url, now)
+    session.commit()
+    return group
+
+
+def add_demo_portal_connection(
+    session: Session,
+    group: Group,
+    connector_key: str = DEV_CONNECTOR_KEY,
+    portal_url: str = DEMO_PORTAL_URL,
+    now: datetime | None = None,
+) -> AgentConnection:
+    """The fictional portal, read through a started connection: the demo agent only knows
+    the API address, its account and its name. Also used to repair a demo database seeded
+    before connections existed."""
+    now = now or datetime.now(UTC)
     portal = AgentConnection(
         group_id=group.id,
         name="Portail d'orientation (démonstration)",
@@ -345,8 +359,7 @@ def seed_demo(
     session.flush()
     portal.secret_ciphertext = encrypt(connector_key, group.id, portal.id, DEMO_PORTAL_SECRET)
     portal.secret_updated_at = now
-    session.commit()
-    return group
+    return portal
 
 
 def _add_staffing(session: Session, group: Group, sites: dict[str, Site], today: date) -> None:
