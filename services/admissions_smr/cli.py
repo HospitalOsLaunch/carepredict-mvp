@@ -12,14 +12,16 @@ import argparse
 import getpass
 import os
 import sys
+from collections.abc import Callable
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import ConfigurationError, ensure_demo_allowed, get_settings
 from services.admissions_smr.db import make_engine, make_session_factory
 from services.admissions_smr.migrate import upgrade
-from services.admissions_smr.models import Group, User
+from services.admissions_smr.models import AgentConnection, Group, User
 from services.admissions_smr.security import hash_password
 
 
@@ -86,11 +88,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "seed-demo":
-        from services.admissions_smr.seed import seed_demo
+        from services.admissions_smr.seed import add_demo_portal_connection, seed_demo
 
-        if session.scalar(select(Group.id).where(Group.name == "Groupe Démo Réadaptation")):
-            print("Le groupe de démonstration existe déjà", file=sys.stderr)
-            return 1
+        existing = session.scalar(select(Group).where(Group.name == "Groupe Démo Réadaptation"))
+        if existing is not None:
+            return _repair_demo_connections(
+                session,
+                existing,
+                lambda g: add_demo_portal_connection(
+                    session, g, settings.connector_key, args.portal_url
+                ),
+                "Le groupe de démonstration existe déjà",
+            )
         group = seed_demo(
             session,
             clock.today(),
@@ -105,12 +114,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "seed-demo-mco":
-        from services.admissions_smr.seed_mco import EMAIL_DOMAIN, GROUP_NAME, seed_demo_mco
+        from services.admissions_smr.seed_mco import (
+            EMAIL_DOMAIN,
+            GROUP_NAME,
+            add_demo_bedsoft_connection,
+            seed_demo_mco,
+        )
 
         try:
-            if session.scalar(select(Group.id).where(Group.name == GROUP_NAME)):
-                print("Le groupe de démonstration MCO existe déjà", file=sys.stderr)
-                return 1
+            existing = session.scalar(select(Group).where(Group.name == GROUP_NAME))
+            if existing is not None:
+                return _repair_demo_connections(
+                    session,
+                    existing,
+                    lambda g: add_demo_bedsoft_connection(
+                        session, g, settings.connector_key, args.bedsoft_url
+                    ),
+                    "Le groupe de démonstration MCO existe déjà",
+                )
             group = seed_demo_mco(
                 session,
                 clock.now(),
@@ -127,6 +148,21 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Comptes : bedmanager@, cadre@, direction@, admin@, agent@{EMAIL_DOMAIN}")
         return 0
     return 2
+
+
+def _repair_demo_connections(
+    session: Session, group: Group, add: Callable[[Group], object], exists_message: str
+) -> int:
+    """A demo database seeded before connections existed gets its demo connection, so that
+    `docker compose up` after an update works without wiping the data. Never touches a
+    group that already has a connection (one created or archived by an administrator)."""
+    if session.scalar(select(AgentConnection.id).where(AgentConnection.group_id == group.id)):
+        print(exists_message, file=sys.stderr)
+        return 1
+    add(group)
+    session.commit()
+    print(f"{exists_message} : connexion de démonstration ajoutée.")
+    return 0
 
 
 if __name__ == "__main__":

@@ -23,6 +23,10 @@ mouvements HL7 en continu (4 par minute).
 | | `admin@ch-demo.hospitalos.fr` (administration : envoi simulé, réglages ROR) | idem |
 | | `direction@ch-demo.hospitalos.fr` (lecture seule) | idem |
 
+Mise à jour d'une démo déjà installée : `git pull` puis la même commande `up -d --build`.
+Les données sont gardées ; s'il manque une connexion de démonstration (base créée avant le
+pilotage du computer use), elle est ajoutée au démarrage.
+
 Réglages : `DEMO_HIS_RATE` (messages par minute, `0` pour couper le flux),
 `FORECAST_EVERY_HOURS`, `DEMO_WEB_PORT`. Repartir de zéro :
 `docker compose -f docker-compose.demo.yml down -v`.
