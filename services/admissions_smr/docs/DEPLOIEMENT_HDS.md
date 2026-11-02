@@ -57,9 +57,22 @@ de HospitalOS pour l'activité 5 est probablement nécessaire.
 | `ADM_DATABASE_URL` | `postgresql+psycopg://…@<hôte privé>/admissions?sslmode=require` |
 | `ADM_SECRET_KEY` | 32 caractères aléatoires au moins, dans le coffre de secrets de l'hébergeur |
 | `ADM_PSEUDONYM_SECRET` | Clé HMAC des IPP / NDA reçus en HL7 : 32 caractères aléatoires au moins, distincte de `ADM_SECRET_KEY`, jamais changée (sinon les références ne correspondent plus) |
+| `ADM_CONNECTOR_KEY` | Clé maître des mots de passe des connexions de l'agent (portails, gestion des lits) : 32 caractères aléatoires au moins, distincte des deux précédentes, dans le coffre de secrets (voir ci-dessous) |
 | `ADM_CORS_ORIGINS` | vide (même origine derrière nginx) |
 | `ADM_OIDC_*`, `ADM_FRONTEND_URL` | voir le README du module |
 | `ADM_PASSWORD_LOGIN` | `0` une fois l'OIDC en place (les comptes de service gardent le mot de passe) |
+
+**Clé des connexions (`ADM_CONNECTOR_KEY`).** Les mots de passe saisis dans l'écran
+Computer use sont chiffrés en AES-256-GCM avec une clé par groupe dérivée de cette clé
+maître (HKDF-SHA256) ; la base seule ne permet pas de les lire. Générer la clé avec
+`openssl rand -hex 32`, la garder dans le coffre de l'hébergeur (jamais dans le dépôt, une
+image ou un journal), la sauvegarder séparément de la base, en restreindre la lecture au
+service API. Perte de la clé : les mots de passe sont irrécupérables, les ressaisir dans
+chaque connexion (les réservations échouent avec « mot de passe illisible » d'ici là).
+Fuite de la clé : générer une nouvelle clé, la déployer, puis ressaisir chaque mot de
+passe (et changer ces mots de passe chez les éditeurs si la base a pu fuiter aussi). Le
+préfixe de version des valeurs chiffrées (`v1:`) permettra une rotation outillée
+(re-chiffrement) sans changer le format.
 
 Le schéma est migré par Alembic au démarrage de l'API. Pour un déploiement contrôlé,
 lancer `python -m services.admissions_smr.cli migrate` comme étape distincte avant de

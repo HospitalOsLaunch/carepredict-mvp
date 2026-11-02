@@ -51,13 +51,16 @@ Le schéma est créé et mis à jour par **Alembic** au démarrage de l'API
 (`python -m services.admissions_smr.cli migrate` pour le faire à part). PostgreSQL
 en production, SQLite accepté en développement uniquement.
 
-Pour voir l'agent travailler sur la démo, avec le portail fictif fourni :
+Pour voir l'agent travailler sur la démo, avec le portail fictif fourni : le jeu
+`seed-demo` crée la connexion du portail, démarrée (adresse `http://portal:8020` du compose,
+`--portal-url` ou `ADM_DEMO_PORTAL_URL` pour une autre), et le poste n'a besoin que de
+l'API, de son compte et de son nom :
 
 ```bash
+ADM_DEMO_PORTAL_URL=http://127.0.0.1:8020 python -m services.admissions_smr.cli seed-demo
 uvicorn services.admissions_agent.demo_portal.app:app --port 8020
 AGENT_API_EMAIL=agent@demo.hospitalos.fr AGENT_API_PASSWORD=demo-hospitalos-2026 \
-AGENT_PORTAL_USERNAME=demo AGENT_PORTAL_PASSWORD=demo-portail \
-  python -m services.admissions_agent once
+AGENT_ID=poste-demo python -m services.admissions_agent once
 ```
 
 Comptes de démonstration (mot de passe `demo-hospitalos-2026`, ou `ADM_DEMO_PASSWORD`) :
@@ -133,7 +136,41 @@ n'est jamais dupliquée ni modifiée. Contrat : schéma `RequestCreate` dans `/a
 
 L'agent tire ses tâches de `/api/agent/tasks/claim` (bail de 10 minutes, nombre
 de tentatives borné, puis reprise humaine). Un accord ou un refus sur une demande
-venue d'un portail crée une tâche de report si l'agent est déclaré pour le groupe.
+venue d'un portail crée une tâche de report si l'agent est déclaré pour le groupe ;
+elle va à la connexion portail (avec `reply_portal`) du site de la demande, sinon à la
+connexion « tout le groupe », sinon à une autre ; une connexion en pause la garde en
+attente jusqu'à la reprise.
+
+### Connexions et postes (computer use piloté depuis l'interface)
+
+Spécification : [`docs/agent/CONNEXIONS_SPEC.md`](../../docs/agent/CONNEXIONS_SPEC.md).
+
+| Endpoint (`/api/agent`) | Rôles |
+| --- | --- |
+| `GET /workers`, `GET /connections`, `GET /connections/{id}/runs?limit=20` | `admin_groupe`, `coordination` (son site et les connexions « tout le groupe » si limitée à un site), `direction` |
+| `POST /connections`, `PATCH /connections/{id}`, `DELETE /connections/{id}` (archive, 204) | `admin_groupe` |
+| `POST /connections/{id}/start`, `/pause`, `/resume`, `/sync` | `admin_groupe` ; `coordination` sur les connexions de son site (toutes si non limitée ; « tout le groupe » : non limitée seulement) |
+| `POST /pause`, `POST /resume` (pause générale), `PUT /policy` | `admin_groupe` |
+
+Une connexion d'un autre groupe (ou d'un autre site pour un cadre limité) répond 404 ;
+une connexion visible mais non pilotable, 403. Le mot de passe est en écriture seule
+(`secret` à la création ou dans un `PATCH`, `clear_secret: true` pour l'effacer) : les
+réponses ne portent que `secret_set` et `secret_updated_at`, l'audit seulement « secret
+défini / modifié / effacé ». Il est chiffré en AES-256-GCM avec une clé par groupe dérivée
+de **`ADM_CONNECTOR_KEY`** (HKDF-SHA256) et lié à sa connexion (données associées
+`group_id|connection_id`) ; il n'est déchiffré que dans la réservation d'une tâche de la
+connexion, pour un compte `ingestion` du groupe. `ADM_CONNECTOR_KEY` est obligatoire hors
+`ADM_ENV` ∈ {development, test} (32 caractères au moins, distincte des autres clés).
+
+Planification côté API : prochain passage = premier instant dans la plage horaire
+(heure locale, `active_from`–`active_to` en « HH:MM », même jour) d'un jour autorisé
+(`days`, ISO 1 = lundi … 7 = dimanche), puis tous les `interval_minutes`. La relève due est
+créée au signal d'un poste qui peut exécuter la connexion, jamais en double. Pause d'une
+connexion : plus rien n'est créé ni réservé pour elle, la tâche en cours s'arrête à son
+prochain point de contrôle, les tâches en attente restent visibles ; reprise : elles
+redeviennent réservables et un passage est dû tout de suite (ou au début de la prochaine
+plage). La pause générale prime. Le `source_system` d'une connexion de gestion des lits
+est ajouté aux comptes `ingestion` du groupe limités à une liste de sources.
 
 ## Données
 
