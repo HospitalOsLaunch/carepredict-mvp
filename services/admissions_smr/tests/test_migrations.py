@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
 from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.runtime.migration import MigrationContext
 from sqlalchemy import MetaData, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from services.admissions_smr.db import Base, make_engine
 from services.admissions_smr.migrate import alembic_config, is_current, upgrade
+from services.admissions_smr.models import Bed, BedPool, Group, Site, Stay
 from services.admissions_smr.tests.conftest import test_database_url as database_url
 
 
@@ -238,4 +243,82 @@ def test_liscop_downgrade_then_upgrade_on_empty_database(tmp_path: Path) -> None
         assert "bed_id" not in tables.tables["stays"].c
     upgrade(engine)
     assert is_current(engine)
+    engine.dispose()
+
+
+# Reproduced: on SQLite the batch copy of `stays` drops the old table while beds.stay_id
+# still points at it (FOREIGN KEY constraint failed). The fix belongs to migration 0003
+# (owner: fix-ingest), e.g. clear beds.stay_id or drop `beds` before the batch. Strict:
+# the test fails as soon as the migration is fixed, so this marker is then removed.
+@pytest.mark.xfail(
+    not os.getenv("ADM_TEST_DATABASE_URL"),
+    reason="0003 downgrade fails on SQLite with a stay linked to a bed",
+    raises=IntegrityError,
+    strict=True,
+)
+def test_liscop_downgrade_keeps_a_stay_linked_to_a_bed(tmp_path: Path) -> None:
+    """T-19: stays.bed_id ↔ beds.stay_id reference each other; the downgrade still runs."""
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    now = datetime.now(UTC)
+    with Session(engine) as session:
+        group = Group(name="G", created_at=now)
+        session.add(group)
+        session.flush()
+        site = Site(group_id=group.id, name="S", capabilities="", created_at=now)
+        session.add(site)
+        session.flush()
+        pool = BedPool(
+            site_id=site.id,
+            mention="medecine_polyvalente",
+            beds_installed=1,
+            beds_open=1,
+            unit_type="medecine",
+            discipline="medecine",
+            updated_at=now,
+        )
+        session.add(pool)
+        session.flush()
+        stay = Stay(
+            group_id=group.id,
+            site_id=site.id,
+            mention="medecine_polyvalente",
+            patient_ref="P-1",
+            admission_date=now.date(),
+            source="hl7",
+            created_at=now,
+            updated_at=now,
+        )
+        session.add(stay)
+        session.flush()
+        bed = Bed(
+            group_id=group.id,
+            site_id=site.id,
+            pool_id=pool.id,
+            room="101",
+            label="101",
+            status="occupe",
+            stay_id=stay.id,
+            updated_at=now,
+        )
+        session.add(bed)
+        session.flush()
+        stay.bed_id = bed.id
+        session.commit()
+        stay_id = stay.id
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0002")
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        assert "beds" not in tables.tables and "bed_id" not in tables.tables["stays"].c
+        stays = tables.tables["stays"]
+        assert connection.execute(select(stays.c.id, stays.c.patient_ref)).all() == [
+            (stay_id, "P-1")
+        ]
+    upgrade(engine)
+    assert is_current(engine)
+    with Session(engine) as session:
+        assert session.get(Stay, stay_id).bed_id is None  # type: ignore[union-attr]
     engine.dispose()
