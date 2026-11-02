@@ -193,16 +193,16 @@ describe("AgentPlayer", () => {
   it("draws the masks with their reason, the pointer and the box, scaled to the viewport", async () => {
     withFrames();
     renderPlayer();
-    const label = await screen.findByText("Masqué : mot de passe");
-    expect(label.parentElement).toHaveStyle({ left: "25%", top: "20%", width: "20%", height: "10%" });
+    const mask = await screen.findByTitle("Masqué : mot de passe");
+    expect(mask).toHaveStyle({ left: "25%", top: "20%", width: "20%", height: "10%" });
+    expect(mask).toHaveTextContent("Masqué : mot de passe");
 
     fireEvent.click(screen.getByRole("button", { name: "Étape suivante" }));
     await waitFor(() => expect(screen.getByTestId("pointer")).toHaveStyle({ left: "50%", top: "50%" }));
     expect(screen.getByTestId("box")).toHaveStyle({ left: "10%", top: "10%", width: "10%", height: "5%" });
 
     fireEvent.change(screen.getByRole("slider"), { target: { value: "3" } });
-    const identity = await screen.findByText("Masqué : identité patient");
-    expect(identity.parentElement).toHaveStyle({ left: "0%", top: "80%", width: "50%" });
+    expect(await screen.findByTitle("Masqué : identité patient")).toHaveStyle({ left: "0%", top: "80%", width: "50%" });
   });
 
   it("prefetches the next frames, caches them by step and revokes them on unmount", async () => {

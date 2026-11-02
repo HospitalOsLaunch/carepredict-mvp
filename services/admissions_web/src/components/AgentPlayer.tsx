@@ -26,9 +26,9 @@ import {
   TriangleAlert,
   type LucideIcon
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 
-import type { MaskReason, ReplayOut, ReplayStep, StepKind, StepOutcome, StepRect } from "../api/types_agent";
+import type { MaskReason, ReplayOut, ReplayStep, StepKind, StepMask, StepOutcome, StepRect } from "../api/types_agent";
 import { engineLabel, useFrames, type FrameState } from "../lib/agent";
 import { fmtNum } from "../lib/format";
 
@@ -318,6 +318,8 @@ function Screen({
 }) {
   // While the next image loads, keep the previous one rather than flashing a placeholder.
   const lastUrl = useRef<string>();
+  const screenRef = useRef<HTMLDivElement>(null);
+  const width = useWidth(screenRef);
   if (frame.url) lastUrl.current = frame.url;
   const vw = step?.viewport?.w ?? 1280;
   const vh = step?.viewport?.h ?? 800;
@@ -349,7 +351,7 @@ function Screen({
         </span>
         <span className="num shrink-0 text-[12px] text-white/60">{count ? `${index + 1} / ${count}` : "—"}</span>
       </div>
-      <div className="relative overflow-hidden rounded-[14px] bg-sky-deep" style={{ aspectRatio: `${vw} / ${vh}` }}>
+      <div ref={screenRef} className="relative overflow-hidden rounded-[14px] bg-sky-deep" style={{ aspectRatio: `${vw} / ${vh}` }}>
         {shown && step && (
           <>
             <img
@@ -360,11 +362,16 @@ function Screen({
             />
             {fresh && (
               <div className="absolute inset-0" aria-hidden data-testid="overlays">
-                {step.masks.map((m, k) => (
-                  <div key={k} className="mask-hatch absolute grid place-items-center overflow-hidden rounded-[3px]" style={rectStyle(m, vw, vh)} title={MASK_LABEL[m.reason]}>
-                    <span className="max-w-full truncate rounded bg-ink/85 px-1.5 text-[11px] font-bold leading-4 text-sun-glow">{MASK_LABEL[m.reason] ?? "Masqué"}</span>
-                  </div>
-                ))}
+                {step.masks.map((m, k) => {
+                  // A label inside the zone only when it is readable there; the legend covers the others.
+                  const fits = !width || (m.h * width) / vw >= 15 && (m.w * width) / vw >= 120;
+                  return (
+                    <div key={k} className="mask-hatch absolute grid place-items-center overflow-hidden rounded-[3px]" style={rectStyle(m, vw, vh)} title={MASK_LABEL[m.reason]}>
+                      {fits && <span className="max-w-full truncate rounded bg-ink/85 px-1.5 text-[11px] font-bold leading-4 text-sun-glow">{MASK_LABEL[m.reason] ?? "Masqué"}</span>}
+                    </div>
+                  );
+                })}
+                <MaskLegend masks={step.masks} />
                 {step.box && <div className="absolute rounded-md border-2 border-sun shadow-[0_0_0_4px_rgba(255,178,30,0.25)]" style={rectStyle(step.box, vw, vh)} data-testid="box" />}
                 {step.pointer && (
                   <div className="absolute" style={{ left: pct(step.pointer.x, vw), top: pct(step.pointer.y, vh) }} data-testid="pointer">
@@ -393,6 +400,36 @@ function Screen({
       )}
     </figure>
   );
+}
+
+/** One chip per reason, with the number of zones: the masks of a table are too small to carry a label. */
+function MaskLegend({ masks }: { masks: StepMask[] }) {
+  if (!masks.length) return null;
+  const counts = new Map<MaskReason, number>();
+  for (const m of masks) counts.set(m.reason, (counts.get(m.reason) ?? 0) + 1);
+  return (
+    <div className="absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] flex-wrap gap-1">
+      {[...counts].map(([reason, n]) => (
+        <span key={reason} className="inline-flex items-center gap-1.5 rounded-chip bg-ink/85 py-0.5 pl-1 pr-2 text-[11px] font-bold text-white sm:text-[12px]">
+          <span className="mask-hatch h-3.5 w-3.5 rounded-full" />
+          {MASK_LABEL[reason] ?? "Masqué"}
+          {n > 1 && <span className="num text-sun-glow">× {n}</span>}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function useWidth(ref: RefObject<HTMLElement>): number {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref]);
+  return width;
 }
 
 function Placeholder({ text, icon }: { text: string; icon?: ReactNode }) {
