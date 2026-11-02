@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, Lock, Plus, Unlock } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { api } from "../api/client";
 import type { AuditEntry, GroupSettings, Site, User } from "../api/types";
@@ -23,7 +24,8 @@ const TABS: Array<{ value: Tab; label: string }> = [
 ];
 
 export function SettingsPage() {
-  const [tab, setTab] = useState<Tab>("sites");
+  const [params] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => TABS.find((t) => t.value === params.get("rubrique"))?.value ?? "sites");
   return (
     <>
       <PageHeader title="Paramètres du groupe" />
