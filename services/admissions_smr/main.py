@@ -5,8 +5,11 @@ uvicorn services.admissions_smr.main:app --port 8010
 
 from __future__ import annotations
 
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from services.admissions_smr import __version__
 from services.admissions_smr.api import (
@@ -49,6 +52,16 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
     app.state.clock = clock or Clock(settings.timezone)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(_request: Request, exc: RequestValidationError) -> JSONResponse:
+        """422 without ``input`` / ``ctx``: a rejected value (a name typed in the wrong
+        field, a value read on a screen) is never echoed back or logged (REVIEW S-M2)."""
+        detail = [
+            {key: error[key] for key in ("loc", "msg", "type") if key in error}
+            for error in exc.errors()
+        ]
+        return JSONResponse(status_code=422, content={"detail": jsonable_encoder(detail)})
 
     app.add_middleware(
         CORSMiddleware,

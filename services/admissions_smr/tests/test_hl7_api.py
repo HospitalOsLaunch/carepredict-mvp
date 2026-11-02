@@ -171,14 +171,17 @@ def test_structured_movements_from_the_agent(
 
 
 def test_structured_movements_refuse_extra_fields(
-    app_client: TestClient, headers: Callable[[str], dict[str, str]]
+    app_client: TestClient, headers: Callable[[str], dict[str, str]], db: Session
 ) -> None:
     r = app_client.post(
         "/api/ingest/movements",
         json=[agent_item(patient_name="Mme Exemple")],
         headers=headers("agent"),
     )
-    assert r.status_code == 422
+    assert r.status_code == 200  # REVIEW C-7: refused item by item
+    (result,) = r.json()
+    assert result["status"] == "rejected" and "patient_name" in result["message"]
+    assert "Exemple" not in r.text and db.query(Movement).count() == 0
 
 
 def test_journal_is_paginated_pseudonymous_and_reports_rejections(

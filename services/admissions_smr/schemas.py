@@ -185,9 +185,8 @@ class RequestCreate(Strict):
     @field_validator("special_needs")
     @classmethod
     def _needs(cls, value: list[str]) -> list[str]:
-        unknown = [v for v in value if v not in SPECIAL_NEEDS]
-        if unknown:
-            raise ValueError(f"besoins inconnus : {unknown}")
+        if any(v not in SPECIAL_NEEDS for v in value):  # never echo the value (REVIEW S-M2)
+            raise ValueError("besoins inconnus : codes du vocabulaire special_needs attendus")
         return sorted(set(value))
 
     @field_validator("patient_ref")

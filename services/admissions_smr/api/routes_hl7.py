@@ -16,13 +16,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import secrets
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import timedelta
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Request, status
 from fastapi.responses import Response
+from pydantic import ValidationError
 from sqlalchemy import func, select
 
 from services.admissions_smr.api.deps import Ctx, ReadCtx, require
@@ -63,8 +65,18 @@ HTTP_STATUS = {"AA": 200, "AE": 422, "AR": 400}
 IngestOnly = Annotated[Ctx, Depends(require(frozenset({"ingestion"})))]
 
 
-async def hl7_body(request: Request) -> tuple[str, bytes]:
-    """Read at most MAX_BYTES + 1 bytes, before any database lock is taken."""
+@dataclass(frozen=True)
+class Received:
+    """An HL7 message read and parsed before the tenant write lock is taken (REVIEW S-L5)."""
+
+    media: str
+    raw: bytes
+    parsed: ParsedMovement | None
+    error: Hl7Error | None
+
+
+async def hl7_body(request: Request) -> Received:
+    """Read at most MAX_BYTES + 1 bytes and parse them, before any database lock."""
     media = request.headers.get("content-type", "").split(";")[0].strip().lower()
     if media not in ACCEPTED_TYPES:
         raise HTTPException(
@@ -76,7 +88,11 @@ async def hl7_body(request: Request) -> tuple[str, bytes]:
         body += chunk
         if len(body) > MAX_BYTES:
             break
-    return media, bytes(body[: MAX_BYTES + 1])
+    raw = bytes(body[: MAX_BYTES + 1])
+    try:
+        return Received(media, raw, parse(raw, request.app.state.clock.zone, MAX_BYTES), None)
+    except Hl7Error as exc:
+        return Received(media, raw, None, exc)
 
 
 def _ack_response(
@@ -100,16 +116,14 @@ def _ack_response(
     )
 
 
-# The body dependency comes first: the message is read before the tenant lock is taken.
+# The body dependency comes first: the message is read and parsed before the tenant lock.
 @router.post("/ingest/hl7", response_class=Response)
-def ingest_hl7(
-    message: Annotated[tuple[str, bytes], Depends(hl7_body)], ctx: IngestOnly
-) -> Response:
-    media, raw = message
+def ingest_hl7(message: Annotated[Received, Depends(hl7_body)], ctx: IngestOnly) -> Response:
+    media, raw = message.media, message.raw
     digest = _hl7_digest(ctx, raw)
-    try:
-        parsed = replace(parse(raw, ctx.clock.zone, MAX_BYTES), digest=digest)
-    except Hl7Error as exc:
+    if message.parsed is None:
+        assert message.error is not None
+        exc = message.error
         header = exc.header
         movement_id = None
         if header is not None and not source_allowed(ctx, header.source_system):
@@ -139,6 +153,7 @@ def ingest_hl7(
             exc.location,
             413 if too_large else None,
         )
+    parsed = replace(message.parsed, digest=digest)
     if not source_allowed(ctx, parsed.source_system):
         return _source_refused(media, parsed.header, ctx)
     result = apply_movement(
@@ -235,13 +250,48 @@ def _structured(item: MovementIn, ctx: Ctx) -> ParsedMovement:
     return replace(parsed, digest=keyed_digest(secret, ctx.group.id, payload))
 
 
+_REF = re.compile(r"^[A-Za-z0-9_.:-]{1,50}$")
+
+
+def validate_items(
+    items: Annotated[list[Any], Body(max_length=MOVEMENT_BATCH_MAX)],
+) -> list[MovementIn | MovementResultOut]:
+    """Each item validated on its own (REVIEW C-7): one bad line no longer blocks the batch.
+    Before the tenant lock, like the HL7 parsing. Reasons name the field and the expected
+    format, never the value received (REVIEW S-M2)."""
+    out: list[MovementIn | MovementResultOut] = []
+    for raw in items:
+        try:
+            out.append(MovementIn.model_validate(raw))
+        except ValidationError as exc:
+            ref = raw.get("movement_ref") if isinstance(raw, dict) else None
+            reasons = "; ".join(
+                f"{'.'.join(str(p) for p in e['loc']) or 'élément'} : {e['msg']}"
+                for e in exc.errors(include_url=False, include_input=False, include_context=False)
+            )
+            out.append(
+                MovementResultOut(
+                    movement_ref=ref if isinstance(ref, str) and _REF.match(ref) else "",
+                    status="rejected",
+                    message=f"Mouvement invalide ({reasons})"[:500],
+                    movement_id=None,
+                )
+            )
+    return out
+
+
 @router.post("/ingest/movements", response_model=list[MovementResultOut])
 def ingest_movements(
-    items: Annotated[list[MovementIn], Body(max_length=MOVEMENT_BATCH_MAX)], ctx: IngestOnly
+    items: Annotated[list[MovementIn | MovementResultOut], Depends(validate_items)],
+    ctx: IngestOnly,
 ) -> list[MovementResultOut]:
-    """Idempotent: a movement already received (same system, reference, action) is skipped."""
+    """Idempotent: a movement already received (same system, reference, action) is skipped.
+    One result per item, in order: applied, duplicate, ignored or rejected (with a reason)."""
     out = []
     for item in items:
+        if isinstance(item, MovementResultOut):
+            out.append(item)
+            continue
         if not source_allowed(ctx, item.source_system):
             out.append(MovementResultOut(
                 movement_ref=item.movement_ref, status="rejected", message=SOURCE_REFUSED,

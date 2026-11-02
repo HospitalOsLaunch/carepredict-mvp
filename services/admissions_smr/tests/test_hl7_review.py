@@ -9,6 +9,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -16,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from services.admissions_smr import movement_service
+from services.admissions_smr.api import deps, routes_hl7
 from services.admissions_smr.domain.hl7_pam import Hl7Error, parse, parse_ts
 from services.admissions_smr.domain.pseudonym import keyed_digest, pseudonym
 from services.admissions_smr.models import EdVisit, Group, Movement, Stay, User
@@ -344,3 +346,70 @@ def test_s_l1_ack_and_journal_never_echo_raw_values(
     journal = " ".join(str(m.error) for m in db.scalars(select(Movement)))
     assert leak not in ack and leak not in journal
     assert leak.upper().replace(" ", "") not in ack.replace("\\S\\", "")
+
+
+# --- C-7: item-by-item validation of the agent's batch ---------------------------------------
+
+
+def test_c7_one_invalid_line_does_not_block_the_batch(
+    app_client: TestClient, db: Session, hospital: Group
+) -> None:
+    batch = [
+        agent_item(),
+        agent_item(movement_ref="BS-2", event="A99", occurred_at="le 25/10 Mme Durand"),
+        "pas un objet",
+        agent_item(movement_ref="BS-3", encounter_id="NDA-3", patient_id="IPP-3", bed="2102A"),
+    ]
+
+    r = app_client.post("/api/ingest/movements", json=batch, headers=auth(app_client))
+
+    assert r.status_code == 200
+    results = r.json()
+    assert [x["status"] for x in results] == ["applied", "rejected", "rejected", "applied"]
+    assert results[1]["movement_ref"] == "BS-2"
+    assert "event" in results[1]["message"] and "occurred_at" in results[1]["message"]
+    assert "Durand" not in r.text and "A99" not in r.text  # S-M2: never the value
+    assert db.query(Stay).count() == 2
+
+
+# --- S-L5: HL7 parsed before the tenant write lock ------------------------------------------
+
+
+def test_s_l5_message_is_parsed_before_the_write_lock(
+    app_client: TestClient, hospital: Group, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    order: list[str] = []
+    real_parse, real_auth = parse, deps._authenticate
+
+    def parse_spy(*args: Any, **kwargs: Any) -> Any:
+        order.append("parse")
+        return real_parse(*args, **kwargs)
+
+    def auth_spy(*args: Any, **kwargs: Any) -> Any:
+        order.append("lock+auth")  # the write lock is taken right before authentication
+        return real_auth(*args, **kwargs)
+
+    headers = {**HL7, **auth(app_client)}
+    monkeypatch.setattr(routes_hl7, "parse", parse_spy)
+    monkeypatch.setattr(deps, "_authenticate", auth_spy)
+
+    app_client.post("/api/ingest/hl7", content=a01(), headers=headers)
+
+    assert order == ["parse", "lock+auth"]
+
+
+# --- S-M2: validation errors never echo the input -------------------------------------------
+
+
+def test_s_m2_validation_errors_carry_no_input_on_any_route(
+    app_client: TestClient, make_group: MakeGroup, login: Login
+) -> None:
+    make_group("g1")
+    body = new_request(patient_ref="Mme Jeanne Durand", special_needs=["Mme Durand"])
+
+    r = app_client.post("/api/requests", json=body, headers=login("coord@g1.fr"))
+
+    assert r.status_code == 422
+    assert "Durand" not in r.text
+    for error in r.json()["detail"]:
+        assert set(error) <= {"loc", "msg", "type"} and error["loc"]
