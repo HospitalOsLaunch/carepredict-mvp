@@ -592,3 +592,137 @@ def test_simpl_shared_room_conflict_uses_the_domain_rule(
     result = apply(man)
 
     assert "Chambre 2102 partagée avec un patient de l'autre sexe" in result.message
+
+
+# --- T-6: chained cancellations -------------------------------------------------------------
+
+
+def state_dump(db: Session) -> list[tuple[object, ...]]:
+    db.expire_all()
+    stays = [(s.id, s.mention, s.bed_id, s.admission_date, s.discharged_at) for s in db.query(Stay)]
+    beds = [(b.id, b.status, b.stay_id) for b in db.query(Bed).order_by(Bed.id)]
+    visits = [(v.id, v.left_at, v.outcome, v.target_pool_id) for v in db.query(EdVisit)]
+    return [*stays, *beds, *visits]
+
+
+def test_t6_cancellations_unwind_the_encounter_one_movement_at_a_time(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    apply("a01_admission")
+    after_admission = state_dump(db)
+    apply("a02_transfer")  # MVT-2: to cardiology 2302A
+    after_first_transfer = state_dump(db)
+    second = replace(
+        fixture("a02_transfer"), control_id="MSG-A02-2", movement_ref="MVT-2b",
+        uf_code="2101", room="2102", bed="2102B",
+        occurred_at=datetime(2026, 10, 27, 9, tzinfo=PARIS),
+    )  # fmt: skip
+    apply(second)
+
+    first_cancel = apply(replace(fixture("a12_cancel_transfer"), movement_ref="MVT-2b"))
+    assert first_cancel.status == "applied" and state_dump(db) == after_first_transfer
+    second_cancel = apply(replace(fixture("a12_cancel_transfer"), control_id="MSG-A12-2"))
+    assert second_cancel.status == "applied" and state_dump(db) == after_admission
+    assert apply("a11_cancel_admission").status == "applied"
+    assert db.query(Stay).count() == 0
+    assert {b.status for b in db.query(Bed)} == {"libre"}
+
+
+# --- T-7: Z99 error branches ----------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("change", "reason"),
+    [
+        ({"movement_ref": "MVT-INCONNU"}, "introuvable"),
+        ({"original_event": "A02"}, "ZBE-6"),
+        ({"source_system": "AUTRE/SI"}, "introuvable"),  # another system's movement
+        ({"uf_code": "9999", "facility": None}, "UF 9999 inconnue"),
+    ],
+)
+def test_t7_z99_errors_are_ae_and_change_nothing(
+    db: Session, apply: Apply, change: dict[str, object], reason: str
+) -> None:
+    apply("a01_admission")
+    before = state_dump(db)
+
+    result = apply(replace(fixture("z99_update"), **change))  # type: ignore[arg-type]
+
+    assert (result.status, result.ack_code) == ("rejected", "AE") and reason in result.message
+    assert state_dump(db) == before
+
+
+# --- T-8: nothing partial after a rejection -------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "name_and_change",
+    [
+        ("a02_transfer", {"uf_code": "9999", "facility": None}),  # unknown destination
+        ("a01_admission", {"control_id": "X", "movement_ref": "X"}),  # second admission
+        ("a22_return", {}),  # return without leave
+        ("a13_cancel_discharge", {}),  # nothing to cancel
+    ],
+)
+def test_t8_a_rejected_movement_leaves_no_partial_change(
+    db: Session, apply: Apply, name_and_change: tuple[str, dict[str, object]]
+) -> None:
+    apply("a01_admission")
+    before = state_dump(db)
+    name, change = name_and_change
+
+    result = apply(replace(fixture(name), **change))  # type: ignore[arg-type]
+
+    assert result.status == "rejected"
+    assert state_dump(db) == before
+    journal = db.scalars(select(Movement).where(Movement.id == result.movement_id)).one()
+    assert journal.status == "rejected" and journal.bed_id is None and journal.pool_id is None
+
+
+# --- T-13: tenant isolation on the journal and on cancellations -----------------------------
+
+
+def test_t13_journal_and_cancellations_stay_within_their_group(
+    app_client: TestClient, db: Session, hospital: Group
+) -> None:
+    def rename(group_id: int, old: str, new: str, same: bool = True) -> None:
+        for user in db.scalars(select(User)):
+            if (user.group_id == group_id) == same:
+                user.email = user.email.replace(old, new)
+        db.commit()
+
+    rename(hospital.id, "@hl7.test", "@a.test")
+    build_hospital(db, "CH Autre")
+    rename(hospital.id, "@hl7.test", "@autre.test", same=False)
+    rename(hospital.id, "@a.test", "@hl7.test")
+
+    def login_other(who: str) -> dict[str, str]:
+        r = app_client.post(
+            "/api/auth/login", json={"email": f"{who}@autre.test", "password": PASSWORD}
+        )
+        return {"Authorization": f"Bearer {r.json()['token']}"}
+
+    send_raw(app_client, a01())  # group A
+    cancel = (FIXTURES / "a11_cancel_admission.hl7").read_bytes().replace(b"\n", b"\r")
+    r = app_client.post("/api/ingest/hl7", content=cancel, headers={**HL7, **login_other("agent")})
+
+    assert r.status_code == 422 and "introuvable" in r.text  # group B cannot cancel it
+    assert db.query(Stay).filter(Stay.group_id == hospital.id).count() == 1
+    other = app_client.get("/api/movements", headers=login_other("dir")).json()
+    assert [m["event"] for m in other["items"]] == ["A11"]
+    mine = app_client.get("/api/movements", headers=auth(app_client, "dir")).json()
+    assert [m["event"] for m in mine["items"]] == ["A01"]
+
+
+def test_t13_site_scoped_user_sees_only_its_site_movements(
+    app_client: TestClient, db: Session, hospital: Group
+) -> None:
+    smr = db.scalars(select(Site).where(Site.name == "SMR Test")).one()
+    coord = db.scalars(select(User).where(User.email == "coord@hl7.test")).one()
+    coord.site_id = smr.id
+    db.commit()
+    send_raw(app_client, a01())  # MCO site
+
+    page = app_client.get("/api/movements", headers=auth(app_client, "coord")).json()
+
+    assert page["items"] == [] and page["total"] == 0
