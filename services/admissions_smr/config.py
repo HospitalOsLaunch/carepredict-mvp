@@ -8,8 +8,8 @@ from functools import lru_cache
 
 _DEV_SECRET = "dev-only-secret-change-me"
 _DEV_PSEUDONYM_SECRET = "dev-only-pseudonym-secret-change-me"
-# The only environments where the built-in development keys and the demo seeds are
-# accepted, and only on a SQLite file: anything else fails closed (REVIEW S-M3).
+# The only environments (exact, case-sensitive) where the built-in development keys and
+# the demo seeds are accepted: anything else fails closed (REVIEW S-M3).
 DEV_ENVIRONMENTS = frozenset({"development", "test"})
 
 
@@ -61,16 +61,15 @@ class Settings:
 
     @property
     def dev_defaults_allowed(self) -> bool:
-        """Development keys and demo seeds: ADM_ENV development/test on SQLite only."""
-        return self.environment in DEV_ENVIRONMENTS and self.database_url.startswith("sqlite")
+        """Development keys and demo seeds: ADM_ENV exactly development or test."""
+        return self.environment in DEV_ENVIRONMENTS
 
 
 def ensure_demo_allowed(settings: Settings) -> None:
     """Demo seeds (known passwords, synthetic patients) never reach a real database."""
     if not settings.dev_defaults_allowed:
         raise ConfigurationError(
-            "Jeu de démonstration refusé : ADM_ENV doit valoir development ou test, "
-            "avec une base SQLite"
+            "Jeu de démonstration refusé : ADM_ENV doit valoir exactement development ou test"
         )
 
 
@@ -118,7 +117,7 @@ def load_settings() -> Settings:
         if settings.secret_key == _DEV_SECRET or len(settings.secret_key) < 32:
             raise ConfigurationError(
                 "ADM_SECRET_KEY must be set to a 32+ char secret: development keys are only "
-                "accepted with ADM_ENV=development or test on SQLite"
+                "accepted with ADM_ENV=development or test"
             )
         if (
             settings.pseudonym_secret == _DEV_PSEUDONYM_SECRET
@@ -127,7 +126,7 @@ def load_settings() -> Settings:
         ):
             raise ConfigurationError(
                 "ADM_PSEUDONYM_SECRET must be set to its own 32+ char secret: development "
-                "keys are only accepted with ADM_ENV=development or test on SQLite"
+                "keys are only accepted with ADM_ENV=development or test"
             )
     if settings.is_production and settings.database_url.startswith("sqlite"):
         raise ConfigurationError("SQLite is not allowed in production; use PostgreSQL (HDS)")

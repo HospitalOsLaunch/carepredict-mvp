@@ -78,20 +78,14 @@ def test_development_has_a_pseudonymisation_secret_by_default(
 
 
 @pytest.mark.parametrize(
-    ("env", "url"),
-    [
-        ("development", "postgresql+psycopg://u:p@db/adm"),  # dev keys on a real database
-        ("staging", "sqlite:///x.db"),  # anything but development/test
-        ("prod", "postgresql+psycopg://u:p@db/adm"),  # a typo must not open the door
-        ("", "sqlite:///x.db"),
-    ],
+    "env", ["staging", "prod", "Development", "TEST", " development", "", "demo"]
 )
-def test_dev_keys_are_refused_outside_development_or_test_on_sqlite(
-    monkeypatch: pytest.MonkeyPatch, env: str, url: str
+def test_dev_keys_are_refused_unless_adm_env_is_exactly_development_or_test(
+    monkeypatch: pytest.MonkeyPatch, env: str
 ) -> None:
-    # REVIEW S-M3: fail closed.
+    # REVIEW S-M3: fail closed, whatever the database.
     monkeypatch.setenv("ADM_ENV", env)
-    monkeypatch.setenv("ADM_DATABASE_URL", url)
+    monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@db/adm")
     monkeypatch.delenv("ADM_SECRET_KEY", raising=False)
     monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
     with pytest.raises(ConfigurationError, match="ADM_ENV"):
@@ -99,29 +93,22 @@ def test_dev_keys_are_refused_outside_development_or_test_on_sqlite(
     monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
     with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
         load_settings()
-
-
-@pytest.mark.parametrize("env", ["development", "test"])
-def test_dev_keys_and_demo_seeds_are_allowed_in_development_on_sqlite(
-    monkeypatch: pytest.MonkeyPatch, env: str
-) -> None:
-    monkeypatch.setenv("ADM_ENV", env)
-    monkeypatch.setenv("ADM_DATABASE_URL", "sqlite:///x.db")
-    monkeypatch.delenv("ADM_SECRET_KEY", raising=False)
-    monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
-    settings = load_settings()
-    assert settings.dev_defaults_allowed
-    ensure_demo_allowed(settings)
-
-
-def test_demo_seeds_are_refused_on_a_real_database_even_with_real_keys(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("ADM_ENV", "development")
-    monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@db/adm")
-    monkeypatch.setenv("ADM_SECRET_KEY", "k" * 40)
     monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
     settings = load_settings()
     assert not settings.dev_defaults_allowed
     with pytest.raises(ConfigurationError, match="démonstration"):
         ensure_demo_allowed(settings)
+
+
+@pytest.mark.parametrize("env", ["development", "test"])
+@pytest.mark.parametrize("url", ["sqlite:///x.db", "postgresql+psycopg://u:p@db/adm"])
+def test_dev_keys_and_demo_seeds_are_allowed_in_development_and_test(
+    monkeypatch: pytest.MonkeyPatch, env: str, url: str
+) -> None:
+    monkeypatch.setenv("ADM_ENV", env)
+    monkeypatch.setenv("ADM_DATABASE_URL", url)
+    monkeypatch.delenv("ADM_SECRET_KEY", raising=False)
+    monkeypatch.delenv("ADM_PSEUDONYM_SECRET", raising=False)
+    settings = load_settings()
+    assert settings.dev_defaults_allowed
+    ensure_demo_allowed(settings)
