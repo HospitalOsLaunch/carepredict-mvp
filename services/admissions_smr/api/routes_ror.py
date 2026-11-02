@@ -29,7 +29,6 @@ from services.admissions_smr.api.routes_ed import (
     load_admitted,
     load_visits,
 )
-from services.admissions_smr.api.routes_forecast_store import STALE_AFTER_HOURS, SYNTHETIC_GROUPS
 from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain import oru
 from services.admissions_smr.domain.ed import (
@@ -96,6 +95,7 @@ from services.admissions_smr.schemas_liscop import (
     RorUnitSettingsOut,
 )
 from services.admissions_smr.service import build_forecast, group_sites, reservations, stay_records
+from services.admissions_smr.vocab import FORECAST_STALE_AFTER_HOURS, SYNTHETIC_GROUPS
 
 router = APIRouter()
 
@@ -459,7 +459,7 @@ def export_out(ctx: Ctx, sites: Sequence[Site]) -> RorExportOut:
             calcule_le=run.created_at,
             modele=run.model_version,
             perimee=run.as_of != today
-            or (now - run.created_at).total_seconds() > STALE_AFTER_HOURS * 3600,
+            or (now - run.created_at).total_seconds() > FORECAST_STALE_AFTER_HOURS * 3600,
         ),
         referentiels=REFERENCES,
         hypotheses=ASSUMPTIONS,

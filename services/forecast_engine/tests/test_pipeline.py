@@ -25,10 +25,12 @@ from services.admissions_smr.models import (
     Stay,
 )
 from services.admissions_smr.seed_mco import GROUP_NAME
+from services.admissions_smr.service import build_forecast, plan_history
 from services.admissions_smr.tests.conftest import test_database_url as database_url
+from services.admissions_smr.vocab import FORECAST_SCOPES, FORECAST_TARGETS
 from services.forecast_engine.__main__ import SCHEMA_BEHIND, main
 from services.forecast_engine.data import load_history
-from services.forecast_engine.pipeline import compute
+from services.forecast_engine.pipeline import compute, discharge_model
 from services.forecast_engine.store import save_run
 
 PARIS = ZoneInfo("Europe/Paris")
@@ -109,7 +111,7 @@ def test_a_run_has_every_scope_and_consistent_bounds(tiny: tuple[str, int]) -> N
         result = compute(session, history, AS_OF, use_current_plans=True, draws=300)
     engine.dispose()
 
-    assert {v.scope for v in result.values} == {"unit", "site", "group", "ght", "departement"}
+    assert {v.scope for v in result.values} == set(FORECAST_SCOPES)
     beds = [v for v in result.values if v.target == "available_beds"]
     assert {v.day for v in beds} == {AS_OF + timedelta(days=k) for k in range(8)}
     for v in beds:
@@ -122,6 +124,22 @@ def test_a_run_has_every_scope_and_consistent_bounds(tiny: tuple[str, int]) -> N
     assert result.metrics["fallback_series"]  # 30 days: too short for cross-validation
     targets = {v.target for v in result.values}
     assert {"arrivals", "discharges", "tension_prob", "boarding_10h", "ed_arrivals"} <= targets
+    assert targets == set(FORECAST_TARGETS)  # what the API accepts, from the shared vocabulary
+
+
+def test_discharge_model_is_the_one_of_build_forecast(demo_engine: Engine) -> None:
+    """The engine skips build_forecast's per-pool work but keeps its hazards and slip."""
+    as_of = date(2026, 10, 25)
+    with make_session_factory(demo_engine)() as session:
+        group_id = session.scalars(select(Group.id).where(Group.name == GROUP_NAME)).one()
+        sites = list(session.scalars(select(Site).where(Site.group_id == group_id)))
+        fitted = build_forecast(session, group_id, sites, as_of, 8)
+
+        plans = plan_history(session, group_id)
+        model, slip = discharge_model(session, group_id, as_of, plans)
+
+    assert model == fitted.model
+    assert slip == fitted.slip.weights
 
 
 def test_saved_run_reads_back(tiny: tuple[str, int]) -> None:
