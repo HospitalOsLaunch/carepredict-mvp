@@ -17,7 +17,7 @@ plus vite à l'adresseur.
 | Charge en soins | Minutes de soins attendues sur 14 jours par unité, face aux heures soignantes prévues : grille des journées en tension, détail jour par jour avec fourchette, saisie de la semaine type et des jours particuliers, rejeu de fiabilité. |
 | Vue groupe | Occupation, demandes en attente, sorties à 7 jours et lits fermés, site par site. |
 | Indicateurs pilote | North Star (journées-lits récupérées) avec intervalle, délai de réponse, parcours des demandes, motifs de refus et de perte, lits fermés par motif, fiabilité de la prévision. |
-| Remontée ROR (maquette) | Ce que le pilote pourrait remonter au ROR national, unité par unité : lits par statut ROR (installés, disponibles, occupés, réservés, fermés avec leur type), niveau de tension, lits libres attendus à J+1, J+2, J+7 et ancienneté du dernier mouvement saisi. Lecture seule, rien n'est envoyé ; JSON téléchargeable. Voir plus bas. |
+| Remontée ROR (maquette) | Ce que HospitalOS pourrait remonter au ROR national, unité par unité, au format LISCOP : disponibles par genre, prévisionnel J+1, J+2, J+7, opérationnel, crise-SSE, tension, fraîcheur ; indicateurs quotidiens pour l'ORU (CSV, JSON) ; envoi en simulation seulement. Voir plus bas. |
 | Imports | CSV des lits, des séjours (avec niveau de soins) et des demandes ; vérification complète avant import. |
 | Paramètres | Sites et lits, utilisateurs et identité fédérée, période de référence et termes du contrat (gel), priorisation, minutes de soins par niveau, agent et routage des moteurs, journal d'audit. |
 
@@ -260,23 +260,31 @@ Conséquences pour le contrat :
 - Ces taux ont été mesurés sur des données synthétiques : ils doivent être
   re-mesurés sur l'historique réel du groupe avant signature.
 
-## Remontée vers le ROR (maquette)
+## Remontée vers le ROR et indicateurs ORU (maquette)
 
-`GET /api/ror/export` (et l'écran « Remontée ROR ») traduit ce que le pilote sait déjà dans
-le vocabulaire de capacité du ROR, pour montrer aux équipes régionales qui lisent le ROR
-(LISCOP en Hauts-de-France) ce qu'une alimentation automatique, sans double saisie,
-pourrait leur apporter. **Aucun envoi** : pas de connexion au ROR, rien n'est écrit.
+L'écran « Remontée ROR » et les routes ci-dessous traduisent ce que HospitalOS sait (plan
+des lits, fermetures, prévisions stockées, recensement des urgences) dans le vocabulaire
+de capacité du ROR, pour les équipes régionales qui le lisent (LISCOP en Hauts-de-France,
+via Inéa). **Aucun envoi** : le module n'importe aucun client HTTP et n'ouvre aucune
+connexion ; un test le vérifie. Correspondance champ par champ, sources et questions à
+Inéa : [`docs/liscop/ROR_ORU.md`](../../docs/liscop/ROR_ORU.md).
 
-- Statuts : jeu de valeurs ANS `JDV_J188_TypeStatutCapacite_ROR`. Disponible = ouverts −
-  présents − admissions accordées pour aujourd'hui ou demain.
-- Fermetures : `JDV_J191_TypeFermetureCapacite_ROR`, déduit du motif saisi (personnel et
-  saisonnier → réactivable, travaux → non réactivable, autre → indéterminé) : à valider.
-- Prévisionnel J+1, J+2, J+7 avec fourchette à 80 % : pas un statut ROR, il reprend les
-  colonnes affichées par LISCOP.
-- Tension : seuils de la légende LISCOP (normal ≥ 20 % de lits installés disponibles,
-  critique à 0), à confirmer.
-- Non suivi : disponibilité par genre, capacité supplémentaire, identifiant ROR des unités.
-  Un envoi réel demande aussi l'habilitation au flux d'alimentation du ROR (ANS, ARS).
+| Route | Rôles | Contenu |
+|---|---|---|
+| `GET /api/ror/export[?site_id=]` | lecture, périmètre du site | par unité : statuts J188 (dont supplémentaires), disponibles par genre J190 (01 femme, 02 homme, 04 indéterminé) et isolement, fermetures typées J191, opérationnel (en service, réactivables, supplémentaires), réservés crise-SSE, tension, fraîcheur, prévisionnel J+1/J+2/J+7 (J189 03/04/05), enregistrements au format de l'extension FHIR `supported-capacity` |
+| `GET /api/oru/indicators?start=&end=&format=json\|csv[&site_id=]` | lecture, périmètre du site | par site et par jour (366 jours au plus, fin ≤ J+7) : passages, présents / en attente de lit / lits brancards / hébergés à 10 h (déclaré ou calculé, les deux visibles), unités en tension et critiques, HET et Plan blanc actifs, prévision des lits brancards ; CSV UTF-8 avec BOM, `;`, virgule décimale |
+| `POST /api/ror/outbox` | `admin_groupe` | fige l'export courant dans `ror_outbox` (statut `simulated`, SHA-256 du JSON canonique), journalisé ; ne transmet rien |
+| `GET /api/ror/outbox` | `admin_groupe` | 50 derniers envois simulés (sans le contenu), avec leur auteur |
+| `PUT /api/ror/units/{pool_id}` | `admin_groupe` | `ror_unit_id` (lettres, chiffres, `. _ : -`, 64 caractères ; format à confirmer), `extra_beds`, `crisis_reserved_beds` ; journalisé |
+
+- Prévisionnel : « disponibles attendus » de la dernière prévision stockée (moteur
+  `services/forecast_engine`, moyenne, fourchette à 80 %, probabilités de tension et de
+  critique). Sans prévision pour l'unité, la prévision des sorties est affichée sous le
+  libellé « libérés non promis » et n'est jamais transmise comme disponibilité ROR.
+- Unités sans plan des lits : calcul à l'unité (ouverts − présents − promis 24 h), genre
+  inconnu (`null`).
+- Fraîcheur : le plus récent de dernier mouvement reçu, changement de statut de lit,
+  changement de capacité et séjour saisi ; la source est indiquée.
 
 ## Mouvements patients (HL7 IHE PAM France)
 
