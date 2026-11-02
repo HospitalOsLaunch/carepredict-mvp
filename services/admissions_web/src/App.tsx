@@ -19,6 +19,7 @@ import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import { useAuth } from "./auth";
 import { Mark } from "./components/Mark";
 import { Spinner } from "./components/ui";
+import { AgentReplayPage } from "./pages/AgentReplayPage";
 import { BedBoardPage } from "./pages/BedBoardPage";
 import { BedsPage } from "./pages/BedsPage";
 import { ComputerUsePage } from "./pages/ComputerUsePage";
@@ -153,6 +154,7 @@ export function App() {
           />
           <Route path="/ror" element={<RorPage />} />
           <Route path="/computer-use" element={<ComputerUsePage />} />
+          <Route path="/computer-use/passages/:taskId" element={<AgentReplayPage />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
           <Route path="*" element={<Navigate to="/demandes" replace />} />
