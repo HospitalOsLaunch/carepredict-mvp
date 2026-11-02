@@ -290,6 +290,9 @@ def _movement(message: Any, header: Header, zone: ZoneInfo) -> ParsedMovement:
     action = action or expected
     if action != expected:
         raise Hl7Error("AE", f"ZBE-4 incohérent avec l'événement {event}", 103, "ZBE^1^4")
+    historic = (_get(zbe, 5).upper() == "Y") if zbe is not None else False
+    if historic and event != "Z99":  # REVIEW T-4: only a correction may touch the past
+        raise Hl7Error("AE", "Mouvement historique (ZBE-5 = Y) non pris en charge", 103, "ZBE^1^5")
 
     patient_id = patient_domain = ""
     for rep in range(1, _repetitions(pid, 3) + 1):
@@ -328,7 +331,7 @@ def _movement(message: Any, header: Header, zone: ZoneInfo) -> ParsedMovement:
         age=_age(_get(pid, 7), occurred, zone),
         outcome=ED_OUTCOME_BY_DISCHARGE_MODE.get(_get(pv1, 36)),
         original_event=original or None,
-        historic=(_get(zbe, 5).upper() == "Y") if zbe is not None else False,
+        historic=historic,
         encounter_domain=_authority(pv1, 19),
         patient_domain=patient_domain,
         encounter_id=encounter_id[:64],
@@ -447,7 +450,9 @@ def project(facts: Sequence[Fact], ed_pools: frozenset[int]) -> EncounterState:
                 raise MovementConflict("Unité d'hospitalisation introuvable")
             if ed is not None and open_ed:
                 ed.left_at, ed.left_by = f.occurred_at, f.event
-                ed.target_pool_id = f.pool_id
+                # REVIEW C-1: admitted elsewhere than decided = hosted; keep the decision's
+                # target unit (the admission unit only when there was no decision).
+                ed.target_pool_id = ed.target_pool_id or f.pool_id
                 ed.admit_decision_at = ed.admit_decision_at or f.occurred_at
             from_ed = f.event == "A06" or ed is not None
             state.stay = StayState(

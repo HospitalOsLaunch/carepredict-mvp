@@ -21,7 +21,16 @@ from services.admissions_smr import movement_service
 from services.admissions_smr.api import deps, routes_hl7
 from services.admissions_smr.domain.hl7_pam import Hl7Error, parse, parse_ts
 from services.admissions_smr.domain.pseudonym import keyed_digest, pseudonym
-from services.admissions_smr.models import EdVisit, Group, Movement, Site, Stay, User
+from services.admissions_smr.models import (
+    Bed,
+    BedPool,
+    EdVisit,
+    Group,
+    Movement,
+    Site,
+    Stay,
+    User,
+)
 from services.admissions_smr.movement_service import apply_movement
 from services.admissions_smr.schemas_liscop import MovementIn
 from services.admissions_smr.tests.test_api import new_request
@@ -31,6 +40,7 @@ from services.admissions_smr.tests.test_hl7_apply import (
     NOW,
     PARIS,
     PASSWORD,
+    RECEIVED,
     SECRET,
     Apply,
     build_hospital,
@@ -462,3 +472,123 @@ def test_c2_manual_stays_still_unique_per_patient_site_and_day(
     with pytest.raises(IntegrityError):
         db.commit()
     db.rollback()
+
+
+# --- C-1: "hébergés", the decision's target unit is kept ------------------------------------
+
+
+def test_c1_admission_elsewhere_keeps_the_decision_target_unit(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    cardio = db.scalars(select(BedPool).where(BedPool.uf_code == "2301")).one()
+    apply("a04_ed_arrival")
+    apply("a02_ed_decision")  # decision: cardiology
+
+    apply(replace(fixture("a06_ed_to_ward"), uf_code="2101", room="2102", bed="2102B"))
+
+    visit = db.scalars(select(EdVisit)).one()
+    stay = db.scalars(select(Stay)).one()
+    assert stay.mention == "medecine_polyvalente"  # hosted in medicine
+    assert visit.target_pool_id == cardio.id  # still waiting for a cardiology bed
+
+
+def test_c1_without_decision_the_admission_unit_is_the_target(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    apply("a04_ed_arrival")
+    apply("a06_ed_to_ward")
+    cardio = db.scalars(select(BedPool).where(BedPool.uf_code == "2301")).one()
+    assert db.scalars(select(EdVisit)).one().target_pool_id == cardio.id
+
+
+# --- T-4: historic movements ----------------------------------------------------------------
+
+
+def test_t4_historic_movement_is_refused_except_a_z99_correction(db: Session, apply: Apply) -> None:
+    with pytest.raises(Hl7Error) as caught:
+        parse(a01_with(b"||INSERT|N|", b"||INSERT|Y|"), PARIS)
+    assert (caught.value.ack_code, caught.value.location) == ("AE", "ZBE^1^5")
+
+    z99 = (FIXTURES / "z99_update.hl7").read_bytes().replace(b"\n", b"\r")
+    assert parse(z99.replace(b"|UPDATE|N|", b"|UPDATE|Y|"), PARIS).historic
+
+
+def test_t4_historic_movement_is_journaled_rejected_over_http(
+    app_client: TestClient, db: Session, hospital: Group
+) -> None:
+    code, ack = send_raw(app_client, a01_with(b"||INSERT|N|", b"||INSERT|Y|"))
+
+    assert code == 422 and "MSA|AE|MSG-A01" in ack
+    assert db.scalars(select(Movement)).one().status == "rejected"
+    assert db.query(Stay).count() == 0
+
+
+# --- T-5: a cancellation resent under a new control id --------------------------------------
+
+
+def test_t5_cancellation_resent_under_a_new_control_id_is_a_duplicate(
+    db: Session, apply: Apply
+) -> None:
+    apply("a01_admission")
+    apply("a11_cancel_admission")
+
+    again = apply(replace(fixture("a11_cancel_admission"), control_id="MSG-A11-BIS"))
+
+    assert (again.status, again.ack_code) == ("duplicate", "AA")
+    assert db.query(Stay).count() == 0
+
+
+# --- C-5: admission to a blocked bed --------------------------------------------------------
+
+
+def test_c5_admission_to_a_blocked_bed_keeps_the_block(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    blocked = db.scalars(select(Bed).where(Bed.label == "2102A")).one()
+    blocked.status, blocked.status_reason = "bloque", "Travaux"
+    db.commit()
+
+    result = apply("a01_admission")
+
+    db.refresh(blocked)
+    stay = db.scalars(select(Stay)).one()
+    assert result.status == "applied" and "bloqué" in result.message
+    assert stay.bed_id is None and blocked.stay_id is None
+    assert (blocked.status, blocked.status_reason) == ("bloque", "Travaux")
+    journal = db.scalars(select(Movement)).one()
+    assert journal.error is not None and "bloqué" in journal.error
+    apply("a03_discharge")
+    db.refresh(blocked)
+    assert blocked.status == "bloque"  # never "libre" after the discharge
+
+
+# --- C-9: releasing a bed stamps it ---------------------------------------------------------
+
+
+def test_c9_released_bed_is_stamped(db: Session, hospital: Group, apply: Apply) -> None:
+    apply("a01_admission")
+    later = RECEIVED + timedelta(hours=1)
+
+    apply_movement(db, hospital, fixture("a03_discharge"), later, secret=SECRET, zone=PARIS)
+    db.commit()
+
+    released = db.scalars(select(Bed).where(Bed.label == "2102A")).one()
+    assert released.status == "a_nettoyer" and released.updated_at == later
+
+
+# --- Simplification: sex conflicts come from domain.beds ------------------------------------
+
+
+def test_simpl_shared_room_conflict_uses_the_domain_rule(
+    db: Session, hospital: Group, apply: Apply
+) -> None:
+    apply(replace(fixture("a01_admission"), sex="F"))  # 2102A
+    man = replace(
+        fixture("a01_admission"),
+        control_id="X2", movement_ref="X2", encounter_id="900004", patient_id="IPP8",
+        bed="2102B", sex="M",
+    )  # fmt: skip
+
+    result = apply(man)
+
+    assert "Chambre 2102 partagée avec un patient de l'autre sexe" in result.message

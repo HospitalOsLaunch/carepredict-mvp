@@ -18,6 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.domain.beds import BedState, accepted_sexes
 from services.admissions_smr.domain.hl7_pam import (
     CANCELS,
     ED_CLASS,
@@ -130,7 +131,7 @@ def apply_movement(
     if _other_patient(session, row):
         record("rejected", PATIENT_MISMATCH)
         return ApplyResult("rejected", "AE", PATIENT_MISMATCH, row.id, 207, "PID^1^3")
-    if parsed.action == "INSERT" and parsed.movement_ref and _already_applied(session, row):
+    if parsed.action != "UPDATE" and parsed.movement_ref and _already_applied(session, row):
         record("duplicate", "Mouvement déjà reçu sous un autre identifiant de message")
         return ApplyResult("duplicate", "AA", "Mouvement déjà reçu, sans effet", row.id)
 
@@ -216,6 +217,8 @@ def _other_patient(session: Session, row: Movement) -> bool:
 
 
 def _already_applied(session: Session, row: Movement) -> bool:
+    """Same movement (ZBE-1), same event and action, already handled under another control
+    id: an entry, or a cancellation (REVIEW T-5)."""
     return (
         session.scalar(
             select(Movement.id).where(
@@ -223,7 +226,7 @@ def _already_applied(session: Session, row: Movement) -> bool:
                 Movement.source_system == row.source_system,
                 Movement.movement_ref == row.movement_ref,
                 Movement.event == row.event,
-                Movement.action == "INSERT",
+                Movement.action == row.action,
                 Movement.status.in_(("applied", "cancelled", "ignored")),
             )
         )
@@ -452,7 +455,7 @@ def _reconcile(
     target = state.stay
     if target is None:
         if stay is not None:
-            _release(session, stay, cancel=True)
+            _release(session, stay, now, cancel=True)
             session.flush()
             session.delete(stay)
         session.flush()
@@ -483,16 +486,17 @@ def _reconcile(
 
     wanted = None if target.discharged_at else target.bed_id
     if stay.bed_id != wanted:
-        _release(session, stay, cancel=cancel)
+        _release(session, stay, now, cancel=cancel)
     if wanted is not None:
         bed = session.get(Bed, wanted)
         assert bed is not None
         if bed.stay_id not in (None, stay.id):
             warnings.append(f"Lit {bed.label} déjà occupé : séjour enregistré sans lit")
             wanted = None
+        elif bed.status == "bloque":  # REVIEW C-5: the block stays, the stay has no bed
+            warnings.append(f"Lit {bed.label} bloqué : séjour enregistré sans lit")
+            wanted = None
         else:
-            if bed.stay_id is None and bed.status == "bloque":
-                warnings.append(f"Lit {bed.label} signalé bloqué")
             warnings += _sex_warnings(session, bed, stay)
             bed.stay_id, bed.status = stay.id, "occupe"
             bed.status_reason = LEAVE_REASON if target.on_leave else None
@@ -502,7 +506,7 @@ def _reconcile(
     return warnings
 
 
-def _release(session: Session, stay: Stay, *, cancel: bool) -> None:
+def _release(session: Session, stay: Stay, now: datetime, *, cancel: bool) -> None:
     """The stay leaves its bed: to clean after a real move, free again after a cancellation."""
     if stay.bed_id is None:
         return
@@ -511,26 +515,35 @@ def _release(session: Session, stay: Stay, *, cancel: bool) -> None:
         bed.stay_id = None
         bed.status = "libre" if cancel else "a_nettoyer"
         bed.status_reason = None
+        bed.updated_at = now
     stay.bed_id = None
 
 
 def _sex_warnings(session: Session, bed: Bed, stay: Stay) -> list[str]:
-    """The movement is applied anyway (the patient is there); the conflict is flagged."""
+    """The movement is applied anyway (the patient is there); the conflict is flagged.
+    Same rule as the bed board (``domain.beds.accepted_sexes``)."""
     sex = stay.patient_sex
     if sex not in ("F", "M"):
         return []
-    out = []
-    if bed.sex_constraint in ("F", "M") and bed.sex_constraint != sex:
+    roommates = [
+        BedState(b.id, b.site_id, b.pool_id, b.room, b.label, b.sex_constraint, b.isolation,
+                 b.status, b.active, occupant)
+        for b, occupant in session.execute(
+            select(Bed, Stay.patient_sex)
+            .join(Stay, Stay.id == Bed.stay_id)
+            .where(Bed.site_id == bed.site_id, Bed.room == bed.room, Bed.id != bed.id)
+        )
+    ]  # fmt: skip
+    state = BedState(
+        bed.id, bed.site_id, bed.pool_id, bed.room, bed.label, bed.sex_constraint, bed.isolation,
+        "libre",
+    )  # fmt: skip
+    if sex not in accepted_sexes(state, []):
         who = "femmes" if bed.sex_constraint == "F" else "hommes"
-        out.append(f"Lit {bed.label} réservé aux {who}")
-    roommates = session.scalars(
-        select(Stay.patient_sex)
-        .join(Bed, Bed.stay_id == Stay.id)
-        .where(Bed.site_id == bed.site_id, Bed.room == bed.room, Bed.id != bed.id)
-    )
-    if any(s in ("F", "M") and s != sex for s in roommates):
-        out.append(f"Chambre {bed.room} partagée avec un patient de l'autre sexe")
-    return out
+        return [f"Lit {bed.label} réservé aux {who}"]
+    if sex not in accepted_sexes(state, roommates):
+        return [f"Chambre {bed.room} partagée avec un patient de l'autre sexe"]
+    return []
 
 
 def record_rejection(
