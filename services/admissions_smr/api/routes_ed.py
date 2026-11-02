@@ -19,6 +19,7 @@ from sqlalchemy import or_, select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, Ctx, ReadCtx, WriteCtx
 from services.admissions_smr.api.routes_beds import availability_out, unit_label, unit_views
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.ed import (
     BOARDING_ARRIVED_BEFORE,
     BOARDING_HOUR,
@@ -30,7 +31,6 @@ from services.admissions_smr.domain.ed import (
     census,
     daily_series,
     hosted_elsewhere,
-    local_time,
 )
 from services.admissions_smr.domain.tension import (
     AID_LEVELS,

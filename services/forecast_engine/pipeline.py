@@ -19,6 +19,7 @@ import numpy as np
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.domain.ed import BOARDING_ARRIVED_BEFORE, BOARDING_HOUR
 from services.admissions_smr.domain.forecast import StayRecord, discharge_cdf, plan_known_at
 from services.admissions_smr.models import Site
 from services.admissions_smr.service import build_forecast, plan_history, reservations
@@ -39,12 +40,7 @@ from services.forecast_engine.capacity import (
     weekday_retention,
 )
 from services.forecast_engine.conformal import ALPHA, GAMMA, WINDOW
-from services.forecast_engine.data import (
-    BOARDING_ARRIVED_BEFORE,
-    BOARDING_AT,
-    History,
-    Series,
-)
+from services.forecast_engine.data import History, Series
 from services.forecast_engine.models import (
     CV_REFIT,
     CV_WINDOWS,
@@ -296,8 +292,8 @@ def compute(
         "draws": draws,
         "seed": seed,
         "boarding_definition": (
-            f"présents aux urgences à {BOARDING_AT:%H:%M}, décision d'hospitalisation à "
-            f"{BOARDING_AT:%H:%M} au plus tard, arrivés avant {BOARDING_ARRIVED_BEFORE:%H:%M}"
+            f"présents aux urgences à {BOARDING_HOUR:%H:%M}, décision d'hospitalisation à "
+            f"{BOARDING_HOUR:%H:%M} au plus tard, arrivés avant {BOARDING_ARRIVED_BEFORE:%H:%M}"
         ),
         "plans": "actuels" if use_current_plans else "connus à la date",
     }

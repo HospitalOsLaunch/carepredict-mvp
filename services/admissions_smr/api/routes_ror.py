@@ -30,13 +30,13 @@ from services.admissions_smr.api.routes_ed import (
     load_visits,
 )
 from services.admissions_smr.api.routes_forecast_store import STALE_AFTER_HOURS, SYNTHETIC_GROUPS
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain import oru
 from services.admissions_smr.domain.ed import (
     BOARDING_HOUR,
     STALE_AFTER,
     DayPoint,
     daily_series,
-    local_time,
 )
 from services.admissions_smr.domain.forecast import StayRecord
 from services.admissions_smr.domain.metrics import (
