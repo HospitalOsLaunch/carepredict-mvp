@@ -8,6 +8,7 @@ from functools import lru_cache
 
 _DEV_SECRET = "dev-only-secret-change-me"
 _DEV_PSEUDONYM_SECRET = "dev-only-pseudonym-secret-change-me"
+DEV_CONNECTOR_KEY = "dev-only-connector-key-change-me"
 # The only environments (exact, case-sensitive) where the built-in development keys and
 # the demo seeds are accepted: anything else fails closed (REVIEW S-M3).
 DEV_ENVIRONMENTS = frozenset({"development", "test"})
@@ -54,6 +55,9 @@ class Settings:
     # Accepted movement dates, relative to reception: older or later movements get an AE.
     movement_max_age_days: int = 400
     movement_max_future_hours: int = 24
+    # Master key of the agent connections' secrets (AES-256-GCM, one key per group derived
+    # with HKDF). Separate from the other keys; losing it means re-entering every password.
+    connector_key: str = DEV_CONNECTOR_KEY
 
     @property
     def is_production(self) -> bool:
@@ -112,6 +116,7 @@ def load_settings() -> Settings:
         pseudonym_secret=os.getenv("ADM_PSEUDONYM_SECRET", _DEV_PSEUDONYM_SECRET),
         movement_max_age_days=int(os.getenv("ADM_MOVEMENT_MAX_AGE_DAYS", "400")),
         movement_max_future_hours=int(os.getenv("ADM_MOVEMENT_MAX_FUTURE_HOURS", "24")),
+        connector_key=os.getenv("ADM_CONNECTOR_KEY", DEV_CONNECTOR_KEY),
     )
     if not settings.dev_defaults_allowed:
         if settings.secret_key == _DEV_SECRET or len(settings.secret_key) < 32:
@@ -126,6 +131,15 @@ def load_settings() -> Settings:
         ):
             raise ConfigurationError(
                 "ADM_PSEUDONYM_SECRET must be set to its own 32+ char secret: development "
+                "keys are only accepted with ADM_ENV=development or test"
+            )
+        if (
+            settings.connector_key == DEV_CONNECTOR_KEY
+            or len(settings.connector_key) < 32
+            or settings.connector_key in (settings.secret_key, settings.pseudonym_secret)
+        ):
+            raise ConfigurationError(
+                "ADM_CONNECTOR_KEY must be set to its own 32+ char secret: development "
                 "keys are only accepted with ADM_ENV=development or test"
             )
     if settings.is_production and settings.database_url.startswith("sqlite"):

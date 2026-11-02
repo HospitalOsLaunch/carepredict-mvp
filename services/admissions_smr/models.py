@@ -7,7 +7,7 @@ NIR or contact details.
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 
 from sqlalchemy import (
     Boolean,
@@ -18,6 +18,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    Time,
     UniqueConstraint,
     text,
 )
@@ -311,6 +312,63 @@ class AgentState(Base):
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
 
 
+class AgentWorker(Base):
+    """A machine of the hospital's network that runs the agent ("poste agent").
+
+    Registered on its first heartbeat; reports its version, engines and the catalogue of
+    playbooks bundled with it (name, label, kind, tasks). Several per group."""
+
+    __tablename__ = "agent_workers"
+    __table_args__ = (UniqueConstraint("group_id", "agent_id"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    agent_id: Mapped[str] = mapped_column(String(120))
+    site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
+    version: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    engines_json: Mapped[str] = mapped_column(Text, default="[]")
+    playbooks_json: Mapped[str] = mapped_column(Text, default="[]")
+    last_heartbeat_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+
+
+class AgentConnection(Base):
+    """One software the agent reads for a site (or the whole group): orientation portal or
+    bed management. The password is stored encrypted (``domain/secrets.py``) and only
+    decrypted in the claim response of one of its tasks."""
+
+    __tablename__ = "agent_connections"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    name: Mapped[str] = mapped_column(String(120))
+    kind: Mapped[str] = mapped_column(String(30))  # portail_orientation | gestion_lits
+    site_id: Mapped[int | None] = mapped_column(ForeignKey("sites.id"), nullable=True)
+    url: Mapped[str] = mapped_column(String(500))
+    allowed_hosts_json: Mapped[str] = mapped_column(Text, default="[]")
+    username: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    secret_ciphertext: Mapped[str | None] = mapped_column(Text, nullable=True)
+    secret_updated_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    playbook: Mapped[str] = mapped_column(String(80))
+    tasks_json: Mapped[str] = mapped_column(Text, default="[]")
+    source_system: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    interval_minutes: Mapped[int] = mapped_column(Integer, default=10)
+    active_from: Mapped[time | None] = mapped_column(Time, nullable=True)  # local time
+    active_to: Mapped[time | None] = mapped_column(Time, nullable=True)
+    days_json: Mapped[str] = mapped_column(Text, default="[1, 2, 3, 4, 5, 6, 7]")  # ISO days
+    agent_id: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="arretee")  # active | en_pause
+    next_run_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    last_run_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    last_outcome: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    archived_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
+    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    updated_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+
+
 class AgentTask(Base):
     """Work for the agent: read the portal inbox, or write a reply back to the portal."""
 
@@ -341,6 +399,12 @@ class AgentTask(Base):
     created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)
     finished_at: Mapped[datetime | None] = mapped_column(UTCDateTime, nullable=True)
+    # NULL: legacy task, run by an agent configured with environment variables.
+    connection_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_connections.id", name="fk_agent_tasks_connection_id"),
+        nullable=True,
+        index=True,
+    )
 
 
 class AgentAttempt(Base):
