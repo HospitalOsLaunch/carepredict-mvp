@@ -9,5 +9,10 @@ select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "--strict-markers --strict-config"
-testpaths = ["services/admissions_smr/tests", "services/admissions_agent/tests", "tools/tests"]
+testpaths = [
+    "services/admissions_smr/tests",
+    "services/forecast_engine/tests",
+    "services/admissions_agent/tests",
+    "tools/tests",
+]
 pythonpath = ["."]
