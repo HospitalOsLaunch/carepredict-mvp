@@ -1,5 +1,6 @@
 # HospitalOS Admissions SMR: API + web + PostgreSQL (+ the computer-use agent, optional).
 #   ADM_SECRET_KEY=$(openssl rand -hex 32) ADM_PSEUDONYM_SECRET=$(openssl rand -hex 32) \
+#     ADM_CONNECTOR_KEY=$(openssl rand -hex 32) \
 #     ADM_DB_PASSWORD=... \
 #     docker compose -f docker-compose.admissions.yml up -d --build
 # Production must run on HDS-certified hosting with TLS terminated in front of "web".
@@ -29,6 +30,7 @@ services:
       ADM_DATABASE_URL: postgresql+psycopg://admissions:${ADM_DB_PASSWORD}@db:5432/admissions
       ADM_SECRET_KEY: ${ADM_SECRET_KEY:?ADM_SECRET_KEY is required}
       ADM_PSEUDONYM_SECRET: ${ADM_PSEUDONYM_SECRET:?ADM_PSEUDONYM_SECRET is required}
+      ADM_CONNECTOR_KEY: ${ADM_CONNECTOR_KEY:?ADM_CONNECTOR_KEY is required}
       ADM_TIMEZONE: Europe/Paris
       ADM_CORS_ORIGINS: ""
       # Sign-in through Pro Santé Connect or the establishment's identity provider (optional).
@@ -69,6 +71,8 @@ services:
       AGENT_API_URL: http://api:8010
       AGENT_API_EMAIL: ${AGENT_API_EMAIL:-}
       AGENT_API_PASSWORD: ${AGENT_API_PASSWORD:-}
+      AGENT_ID: ${AGENT_ID:-agent-1}
+      # Legacy mode only (no connection set up in HospitalOS for this worker):
       AGENT_PORTAL_URL: ${AGENT_PORTAL_URL:-}
       AGENT_PORTAL_USERNAME: ${AGENT_PORTAL_USERNAME:-}
       AGENT_PORTAL_PASSWORD: ${AGENT_PORTAL_PASSWORD:-}

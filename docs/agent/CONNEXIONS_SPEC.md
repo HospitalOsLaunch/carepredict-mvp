@@ -138,3 +138,67 @@ Nouvel écran « Computer use » dans le menu (admin, coordination, direction) :
    autre connexion.
 5. Mode historique (variables d'environnement) toujours fonctionnel.
 6. Tous les contrôles verts (pytest, ruff, mypy, vitest, build) ; démo vérifiée.
+
+## Implémentation (côté API et poste agent)
+
+Décisions prises en construisant le contrat (branche `feat/agent-connections-backend`) :
+
+- **Schéma** : migration `0004` (`agent_workers`, `agent_connections`,
+  `agent_tasks.connection_id`). `agent_states` garde la pause générale et la politique.
+- **Chiffrement** : `services/admissions_smr/domain/connector_secrets.py` ; clé de groupe =
+  HKDF-SHA256(`ADM_CONNECTOR_KEY`, sel `hospitalos-connector`, info
+  `connector/group/<group_id>`), nonce aléatoire de 96 bits, stockage
+  `v1:` + base64url(nonce ‖ chiffré ‖ tag), AAD `group_id|connection_id`.
+- **Formats** : `active_from` / `active_to` en « HH:MM » (heure locale du groupe), en
+  entrée comme en sortie ; la plage doit finir après son début le même jour (pas de plage
+  de nuit) ; une borne absente = minuit. `days` : jours ISO (1 = lundi) ; `null` = tous.
+  `allowed_hosts` : on écrit les hôtes **en plus**, l'API ajoute toujours l'hôte de l'URL
+  (en tête de la liste renvoyée).
+- **Validation** : URL en https sauf machine locale ou nom de service sans point (même
+  règle qu'`AGENT_API_URL`) ; tâches cohérentes avec le type ; `kind` non modifiable par
+  `PATCH` (422) ; `secret` et `clear_secret` ensemble refusés ; `agent_id` doit être un
+  poste déjà connu du groupe. **Script** : il doit figurer au catalogue du poste assigné,
+  sinon dans l'union des catalogues des postes du groupe (dernier signal) ; tant
+  qu'aucun poste n'a déclaré de catalogue, les scripts embarqués connus (`demo_portal`,
+  `demo_bedsoft`) sont acceptés ; le type et les tâches doivent correspondre au script.
+- **`source_system`** : facultatif, réservé à la gestion des lits. S'il est renseigné, il
+  remplace celui du script dans les mouvements envoyés, et il est **ajouté
+  automatiquement** aux `allowed_sources` des comptes `ingestion` du groupe limités à une
+  liste (une liste vide ou absente accepte déjà toute source et reste ainsi). Sans lui, le
+  poste envoie le `source_system` du script.
+- **Droits et visibilité** : un cadre limité à un site voit les connexions de son site et
+  celles « tout le groupe » (lecture seule pour ces dernières) ; une connexion d'un autre
+  site ou groupe répond 404, une connexion visible non pilotable 403. Les passages d'une
+  connexion « tout le groupe » ne montrent à ce cadre que les reports des demandes de son
+  site. `site_id` d'un poste = celui de son compte `ingestion` (null en général).
+- **Endpoints** : `DELETE` répond 204 (archive : plus listée, tâches en attente annulées,
+  secret effacé, état `arretee`). `start` est idempotent ; `pause` / `resume` sur une
+  connexion arrêtée répondent 409. `sync` (201, la tâche en attente existante si elle
+  existe) est refusé (409) en pause générale **et** si la connexion n'est pas active
+  (arrêtée ou en pause). `runs` renvoie des `TaskOut` (avec `connection_id`), `limit`
+  de 1 à 100. `last_outcome` vaut `done`, `failed` ou `needs_human`.
+- **Planification** : `next_run_at` recalculé au démarrage, à la reprise et à chaque
+  modification du planning ; au signal d'un poste qui peut exécuter la connexion, la
+  relève due est créée si l'instant est dans la plage (sinon le prochain passage est
+  reporté au début de la plage suivante), jamais en double (une tâche en attente ou en
+  cours suffit), jamais en pause générale. `POST /agent/sync` (historique) va aux
+  connexions actives de ce type quand le groupe en a (409 si aucune n'est active).
+- **Réponses au portail** : la connexion portail (avec `reply_portal`) du site de la
+  demande, sinon celle « tout le groupe », sinon une autre ; une active d'abord, sinon une
+  en pause ou arrêtée qui garde la tâche jusqu'au démarrage ; sans connexion, tâche
+  historique (sans `connection_id`) comme avant.
+- **Réservation** : `ClaimIn.legacy` (vrai par défaut, pour les anciens postes) autorise
+  les tâches sans connexion. Les tâches d'une connexion ne sont servies qu'à un compte
+  `ingestion` (pas à un admin), sur une connexion active, assignée à ce poste ou à tout
+  poste, dont le script est au catalogue déclaré par ce poste. Un secret illisible
+  (mauvaise clé) laisse la tâche en attente et l'écrit dans `last_error`.
+- **Pause d'une connexion** : renouvellement du bail, début d'écriture et budget refusés
+  (409) : une tâche en cours s'arrête à son prochain point de contrôle (un report
+  commencé passe à « à reprendre », comme pour la pause générale). Les tâches en attente
+  restent visibles et redeviennent réservables à la reprise, qui rend un passage dû.
+- **Poste** : signal avec `playbooks` (en-tête `id` / `kind` des YAML embarqués, tâches
+  déduites des sections) ; la réponse liste les connexions assignables à ce poste (tous
+  états). Mode historique si cette liste est vide et `AGENT_PORTAL_URL` défini.
+- **Démo** : `seed-demo` et `seed-demo-mco` créent leurs connexions actives
+  (`http://portal:8020`, `http://bedsoft:8120` ; `--portal-url` / `--bedsoft-url` ou
+  `ADM_DEMO_PORTAL_URL` / `ADM_DEMO_BEDSOFT_URL` pour lancer hors compose).

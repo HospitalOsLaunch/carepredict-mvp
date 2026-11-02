@@ -366,3 +366,53 @@ def test_liscop_downgrade_keeps_a_stay_linked_to_a_bed(tmp_path: Path) -> None:
     assert is_current(engine)
     with Session(engine) as session:
         assert session.get(Stay, stay_id).bed_id is None  # type: ignore[union-attr]
+
+
+def test_connections_downgrade_keeps_tasks_and_their_attempts(tmp_path: Path) -> None:
+    """0004 down: agent_tasks loses connection_id (SQLite copies the table that
+    agent_attempts references), the rows survive, and the upgrade runs again."""
+    engine = make_engine(database_url(tmp_path))
+    upgrade(engine)
+    now = datetime.now(UTC)
+    with engine.begin() as connection:
+        tables = MetaData()
+        tables.reflect(bind=connection)
+        connection.execute(
+            tables.tables["groups"].insert().values(
+                id=1, name="G", created_at=now, value_per_bed_day=0, success_fee_rate=0,
+                scoring_weights_json="{}", care_minutes_json="{}",
+            )
+        )  # fmt: skip
+        connection.execute(
+            tables.tables["agent_connections"].insert().values(
+                id=1, group_id=1, name="Portail", kind="portail_orientation",
+                url="https://portail.example.fr", allowed_hosts_json="[]", playbook="demo_portal",
+                tasks_json='["sync_inbox"]', interval_minutes=10, days_json="[1]",
+                status="active", created_at=now, updated_at=now,
+            )
+        )  # fmt: skip
+        connection.execute(
+            tables.tables["agent_tasks"].insert().values(
+                id=1, group_id=1, kind="sync_inbox", payload_json="{}", status="done",
+                attempts=1, cost_usd=0, created_at=now, updated_at=now, connection_id=1,
+            )
+        )  # fmt: skip
+        connection.execute(
+            tables.tables["agent_attempts"].insert().values(
+                id=1, group_id=1, task_id=1, engine="playbook", outcome="success",
+                cost_usd=0, steps=1, duration_s=1, at=now,
+            )
+        )  # fmt: skip
+    config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.downgrade(config, "0003")
+        old = MetaData()
+        old.reflect(bind=connection)
+        assert not {"agent_connections", "agent_workers"} & set(old.tables)
+        assert "connection_id" not in old.tables["agent_tasks"].c
+        assert connection.execute(select(old.tables["agent_attempts"].c.task_id)).scalar() == 1
+        assert connection.execute(select(old.tables["agent_tasks"].c.id)).scalar() == 1
+    upgrade(engine)
+    assert is_current(engine)
+    engine.dispose()

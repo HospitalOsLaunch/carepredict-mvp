@@ -48,9 +48,10 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "agent_id": settings.agent_id,
-                    "portal": settings.portal_url,
-                    "allowed_hosts": settings.allowed_hosts,
-                    "playbook": agent.playbook.name,
+                    "api": settings.api_url,
+                    "catalogue": agent.playbooks_report(),
+                    "legacy_portal": settings.portal_url or None,
+                    "legacy_playbook": agent.playbook.name if agent.playbook else None,
                     "engines": agent.engine_reports(),
                 },
                 ensure_ascii=False,

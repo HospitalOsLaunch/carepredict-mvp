@@ -47,6 +47,7 @@ def test_production_refuses_default_secret_and_sqlite(monkeypatch: pytest.Monkey
         load_settings()
     monkeypatch.setenv("ADM_DATABASE_URL", "postgresql+psycopg://u:p@db/adm")
     monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    monkeypatch.setenv("ADM_CONNECTOR_KEY", "c" * 40)
     assert load_settings().is_production
 
 
@@ -66,6 +67,7 @@ def test_production_requires_its_own_pseudonymisation_secret(
     with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
         load_settings()
     monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    monkeypatch.setenv("ADM_CONNECTOR_KEY", "c" * 40)
     assert load_settings().pseudonym_secret == "p" * 40
 
 
@@ -94,6 +96,10 @@ def test_dev_keys_are_refused_unless_adm_env_is_exactly_development_or_test(
     with pytest.raises(ConfigurationError, match="ADM_PSEUDONYM_SECRET"):
         load_settings()
     monkeypatch.setenv("ADM_PSEUDONYM_SECRET", "p" * 40)
+    monkeypatch.delenv("ADM_CONNECTOR_KEY", raising=False)
+    with pytest.raises(ConfigurationError, match="ADM_CONNECTOR_KEY"):
+        load_settings()
+    monkeypatch.setenv("ADM_CONNECTOR_KEY", "c" * 40)
     settings = load_settings()
     assert not settings.dev_defaults_allowed
     with pytest.raises(ConfigurationError, match="démonstration"):
