@@ -224,3 +224,31 @@ intervalle inclusif ; dans 23,0 % des cas, q10 = 0 et 0 lit disponible réalisé
   bout de la semaine la référence saisonnière fait aussi bien.
 - Informatif : la MAE des lits disponibles est inférieure à la persistance à chaque
   horizon (2,68 contre 3,01 poolé), sauf en réanimation et en SMR où rien ne bouge beaucoup.
+
+## Erratum du 2 novembre 2026 (après publication des résultats)
+
+Deux corrections du code, constatées en revue (`docs/liscop/REVIEW.md`, T-1 et T-2/C-10),
+**sans relancer le backtest** :
+
+- **Définitions des urgences unifiées.** Le moteur avait sa propre copie des règles
+  « en attente de lit » et « lits brancards à 10 h ». Il utilise désormais la définition
+  unique de `services/admissions_smr/domain/ed.py`, celle de la page Urgences. Écarts de
+  l'ancienne copie : un patient décidé exactement à l'instant de lecture (0 h pour les
+  admissions promises du Monte Carlo) n'était pas compté en attente, un patient sorti
+  exactement à cet instant l'était encore, et la règle des 72 h n'était pas appliquée
+  aux lits brancards quand une sortie tardive (plus de 72 h après l'arrivée) était
+  enregistrée. Les séries et les prévisions calculées depuis ce changement peuvent donc
+  différer légèrement de celles du backtest publié.
+- **Borne du critère (c).** La tolérance « ACI à ±5 points » était comparée en flottants :
+  |0,75 − 0,8| vaut 0,05000000000000004, si bien qu'une couverture ACI de 75,0 % (ou
+  85,0 %) aurait été jugée « échoué ». La comparaison est maintenant inclusive, avec une
+  marge de 10⁻⁹ documentée dans `backtest.py` (les parts sont arrondies à 4 décimales) ;
+  idem pour les bornes de (b) et pour « statique < 75 % ». Le verdict publié de (c)
+  (ACI 75,8 %) **reste « réussi » : il était juste**, l'erreur ne pouvait jouer qu'à la
+  borne exacte.
+
+Les chiffres publiés ci-dessus ont été obtenus avec l'ancienne définition du moteur ; ils
+sont conservés tels quels et **ne sont pas recalculés sur la même fenêtre d'évaluation**
+(la recalculer après avoir vu les résultats reviendrait à la réutiliser). Toute
+réévaluation se fera sur une **nouvelle fenêtre, postérieure** à celle-ci (origines
+après le 2026-10-24, sur un historique prolongé), avec le protocole ci-dessus inchangé.

@@ -24,8 +24,11 @@ export function useBedBoard() {
 export function useBedAction() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, action, reason }: { id: number; action: BedAction; reason?: string }) =>
-      api(`/beds/${id}`, { method: "PATCH", json: reason ? { action, reason } : { action } }),
+    mutationFn: ({ id, action, reason, note }: { id: number; action: BedAction; reason?: string; note?: string }) =>
+      api(`/beds/${id}`, {
+        method: "PATCH",
+        json: { action, ...(reason ? { reason } : {}), ...(note ? { note } : {}) }
+      }),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: ["beds"] });
       void client.invalidateQueries({ queryKey: ["tension-status"] });

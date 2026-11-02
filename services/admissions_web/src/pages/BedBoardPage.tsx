@@ -1,7 +1,16 @@
 import { Ban, CalendarClock, Check, ShieldPlus, Sparkles, User, type LucideIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import type { Availability, Bed, BedAction, BedStatus, BoardUnit } from "../api/types_liscop";
+import {
+  BED_BLOCK_REASONS,
+  BED_NOTE_MAX,
+  type Availability,
+  type Bed,
+  type BedAction,
+  type BedBlockReason,
+  type BedStatus,
+  type BoardUnit
+} from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
 import { fmtDateTime, fmtNum } from "../lib/format";
@@ -315,11 +324,12 @@ const ACTIONS: Record<BedStatus, { action: BedAction; label: string; danger?: bo
 
 function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
   const mutation = useBedAction();
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState<BedBlockReason | "">("");
+  const [note, setNote] = useState("");
   const [blocking, setBlocking] = useState(false);
   const run = (action: BedAction) =>
     mutation.mutate(
-      { id: bed.id, action, reason: action === "bloquer" || action === "reserver" ? reason.trim() || undefined : undefined },
+      action === "bloquer" ? { id: bed.id, action, reason, note: note.trim() || undefined } : { id: bed.id, action },
       { onSuccess: onClose }
     );
   const actions = ACTIONS[bed.status];
@@ -346,18 +356,37 @@ function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
           <label className="field" htmlFor="block-reason">
             Motif du blocage
           </label>
-          <input
+          <select
             id="block-reason"
             className="input"
             required
-            minLength={3}
-            maxLength={200}
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Ex. : fuite d'eau, matériel en panne"
+            onChange={(e) => setReason(e.target.value as BedBlockReason | "")}
+          >
+            <option value="">Choisir un motif</option>
+            {Object.entries(BED_BLOCK_REASONS).map(([code, text]) => (
+              <option key={code} value={code}>
+                {text}
+              </option>
+            ))}
+          </select>
+          <label className="field mt-3" htmlFor="block-note">
+            Précision (facultatif)
+          </label>
+          <input
+            id="block-note"
+            className="input"
+            maxLength={BED_NOTE_MAX}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            aria-describedby="block-note-help"
+            placeholder="Ex. : fuite d'eau"
           />
+          <p id="block-note-help" className="mt-1 text-[14px] text-ink-soft">
+            {BED_NOTE_MAX} caractères au plus, sans nom de patient. Affiché sur le plan des lits, pas dans le journal.
+          </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button type="submit" className="btn-danger" disabled={mutation.isPending || reason.trim().length < 3}>
+            <button type="submit" className="btn-danger" disabled={mutation.isPending || !reason}>
               Confirmer le blocage
             </button>
             <button type="button" className="btn-quiet" onClick={() => setBlocking(false)}>

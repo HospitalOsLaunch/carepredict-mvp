@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from services.admissions_smr.domain import ror
 from services.admissions_smr.domain.tension import (
     HetInputs,
     HetThresholds,
@@ -28,10 +27,6 @@ def test_liscop_legend_boundaries() -> None:
     assert tension_of(1, 10).level == "tension"
     assert tension_of(0, 10).level == "critique"
     assert tension_of(0, 0).level == "normal"
-
-
-def test_ror_module_uses_the_same_legend() -> None:
-    assert ror.tension_of is tension_of
 
 
 def test_no_criterion_met_means_no_signal() -> None:

@@ -122,7 +122,7 @@ def test_cleaned_bed_becomes_free_and_is_audited(
     assert (audit.entity_id, audit.detail) == (str(ids["A3"]), "a_nettoyer → libre")
 
 
-def test_block_needs_a_reason_then_unblock(
+def test_block_needs_a_coded_reason_then_unblock(
     app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
 ) -> None:
     ids = add_beds(db, make_group("g1"))
@@ -130,14 +130,40 @@ def test_block_needs_a_reason_then_unblock(
     url = f"/api/beds/{ids['A1']}"
 
     no_reason = app_client.patch(url, json={"action": "bloquer"}, headers=coord)
+    free_text = app_client.patch(
+        url, json={"action": "bloquer", "reason": "M. Dupont agité"}, headers=coord
+    )
+    too_long = app_client.patch(
+        url, json={"action": "bloquer", "reason": "autre", "note": "x" * 81}, headers=coord
+    )
     blocked = app_client.patch(
-        url, json={"action": "bloquer", "reason": "Fuite d'eau"}, headers=coord
+        url,
+        json={"action": "bloquer", "reason": "equipement", "note": " Fuite d'eau "},
+        headers=coord,
     )
     unblocked = app_client.patch(url, json={"action": "debloquer"}, headers=coord)
 
-    assert no_reason.status_code == 422
-    assert (blocked.json()["status"], blocked.json()["status_reason"]) == ("bloque", "Fuite d'eau")
+    assert (no_reason.status_code, free_text.status_code, too_long.status_code) == (422, 422, 422)
+    assert blocked.status_code == 200, blocked.text
+    assert blocked.json()["status"] == "bloque"
+    assert blocked.json()["status_reason"] == "Équipement en panne : Fuite d'eau"
     assert (unblocked.json()["status"], unblocked.json()["status_reason"]) == ("libre", None)
+    # The audit keeps the code, never the free note.
+    audit = db.scalars(select(AuditEntry).where(AuditEntry.action == "lit.bloquer")).one()
+    assert audit.detail == "libre → bloque (equipement)"
+    assert "Fuite" not in " ".join(a.detail or "" for a in db.scalars(select(AuditEntry)))
+
+
+def test_block_reasons_are_in_the_vocabulary(app_client: TestClient) -> None:
+    vocabulary = app_client.get("/api/vocabulary").json()
+
+    assert set(vocabulary["bed_block_reasons"]) == {
+        "travaux",
+        "equipement",
+        "hygiene_isolement",
+        "personnel",
+        "autre",
+    }
 
 
 def test_reserve_and_cancel_a_reservation(
@@ -147,11 +173,16 @@ def test_reserve_and_cancel_a_reservation(
     admin = login("admin@g1.fr")
     url = f"/api/beds/{ids['B1']}"
 
-    reserved = app_client.patch(url, json={"action": "reserver"}, headers=admin)
+    reserved = app_client.patch(
+        url, json={"action": "reserver", "note": "Entrée programmée"}, headers=admin
+    )
     again = app_client.patch(url, json={"action": "reserver"}, headers=admin)
     cancelled = app_client.patch(url, json={"action": "annuler_reservation"}, headers=admin)
 
     assert reserved.json()["status"] == "reserve"
+    assert reserved.json()["status_reason"] == "Entrée programmée"
+    audit = db.scalars(select(AuditEntry).where(AuditEntry.action == "lit.reserver")).one()
+    assert audit.detail == "libre → reserve"
     assert again.status_code == 409
     assert cancelled.json()["status"] == "libre"
 
@@ -200,3 +231,25 @@ def test_another_tenant_cannot_see_or_touch_the_beds(
     assert board["sites"] == []
     assert by_site.status_code == 404
     assert patch.status_code == 404
+
+
+def test_availability_stays_within_the_tenant_and_site_scope(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """T-13: /beds/availability."""
+    add_beds(db, make_group("g1"))
+    make_group("g2")
+    site_a = db.scalars(select(Site).where(Site.name == "g1 A")).one()
+    other, scoped = login("admin@g2.fr"), login("siteb@g1.fr")
+
+    mine = app_client.get("/api/beds/availability", headers=login("dir@g1.fr")).json()
+    theirs = app_client.get("/api/beds/availability", headers=other).json()
+    by_site = app_client.get(f"/api/beds/availability?site_id={site_a.id}", headers=other)
+    scoped_all = app_client.get("/api/beds/availability", headers=scoped).json()
+    scoped_a = app_client.get(f"/api/beds/availability?site_id={site_a.id}", headers=scoped)
+
+    assert {u["site_name"] for u in mine["units"]} == {"g1 A", "g1 B"}
+    assert theirs["units"] == [] and theirs["sites"] == []
+    assert by_site.status_code == 404
+    assert {u["site_name"] for u in scoped_all["units"]} <= {"g1 B"}
+    assert scoped_a.status_code == 403

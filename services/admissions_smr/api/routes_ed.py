@@ -18,19 +18,16 @@ from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import or_, select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, Ctx, ReadCtx, WriteCtx
-from services.admissions_smr.api.routes_beds import availability_out, unit_label, unit_views
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.ed import (
     BOARDING_ARRIVED_BEFORE,
     BOARDING_HOUR,
     STALE_AFTER,
-    AdmittedStay,
-    Declared,
     Visit,
     boarding_10h,
     census,
     daily_series,
     hosted_elsewhere,
-    local_time,
 )
 from services.admissions_smr.domain.tension import (
     AID_LEVELS,
@@ -38,12 +35,18 @@ from services.admissions_smr.domain.tension import (
     HetInputs,
     het_aid,
 )
+from services.admissions_smr.liscop_service import (
+    as_declared,
+    availability_out,
+    declarations_since,
+    load_admitted,
+    load_visits,
+    unit_label,
+    unit_views,
+)
 from services.admissions_smr.models import (
-    BedPool,
     EdSnapshot,
-    EdVisit,
     Site,
-    Stay,
     TensionDeclaration,
     User,
 )
@@ -109,73 +112,6 @@ def ed_site(ctx: Ctx, site_id: int | None) -> Site:
     if not ctx.can_see_site(site.id):
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Site hors de votre périmètre")
     return site
-
-
-def load_visits(ctx: Ctx, site_id: int, since: datetime) -> list[Visit]:
-    rows = ctx.session.execute(
-        select(EdVisit.arrived_at, EdVisit.admit_decision_at, EdVisit.left_at).where(
-            EdVisit.group_id == ctx.group.id,
-            EdVisit.site_id == site_id,
-            EdVisit.arrived_at >= since,
-            EdVisit.arrived_at <= ctx.clock.now(),
-        )
-    )
-    return [Visit(a, d, left) for a, d, left in rows]
-
-
-def load_admitted(ctx: Ctx, site_id: int, since: datetime) -> list[AdmittedStay]:
-    pools = ctx.session.execute(
-        select(BedPool.id, BedPool.site_id, BedPool.mention, BedPool.discipline)
-        .join(Site, Site.id == BedPool.site_id)
-        .where(Site.group_id == ctx.group.id)
-    ).all()
-    by_id = {p.id: p.discipline for p in pools}
-    by_code = {(p.site_id, p.mention): p.discipline for p in pools}
-    rows = ctx.session.execute(
-        select(
-            Stay.admitted_at, Stay.discharged_at, Stay.site_id, Stay.mention, EdVisit.target_pool_id
-        )
-        .join(
-            EdVisit,
-            (EdVisit.group_id == Stay.group_id) & (EdVisit.encounter_ref == Stay.encounter_ref),
-        )
-        .where(
-            Stay.group_id == ctx.group.id,
-            EdVisit.site_id == site_id,
-            Stay.admitted_at.is_not(None),
-            Stay.admitted_at <= ctx.clock.now(),
-            or_(Stay.discharged_at.is_(None), Stay.discharged_at >= since),
-        )
-    )
-    return [
-        AdmittedStay(
-            admitted_at=admitted,
-            discharged_at=discharged,
-            discipline=by_code.get((stay_site, mention), "inconnue"),
-            target_discipline=by_id.get(target) if target is not None else None,
-        )
-        for admitted, discharged, stay_site, mention, target in rows
-        if admitted is not None
-    ]
-
-
-def declarations_since(ctx: Ctx, site_id: int, since: datetime) -> list[EdSnapshot]:
-    return list(
-        ctx.session.scalars(
-            select(EdSnapshot)
-            .where(
-                EdSnapshot.group_id == ctx.group.id,
-                EdSnapshot.site_id == site_id,
-                EdSnapshot.source == "declaration",
-                EdSnapshot.at >= since,
-            )
-            .order_by(EdSnapshot.at.desc(), EdSnapshot.id.desc())
-        )
-    )
-
-
-def as_declared(rows: Sequence[EdSnapshot]) -> list[Declared]:
-    return [Declared(r.at, r.present, r.waiting_bed, r.boarding, r.hosted_elsewhere) for r in rows]
 
 
 def snapshot_out(s: EdSnapshot) -> EdSnapshotOut:

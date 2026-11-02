@@ -34,6 +34,10 @@ SHIFT_DAYS = 21
 SHIFT_START_BEFORE_END = 48  # S = T - 48
 ACI_TOLERANCE = 0.05
 PIT_SEED = 80
+# Gate bounds are inclusive. Shares are rounded to 4 decimals, so a margin far below that
+# rounding only absorbs float error: |0.75 − 0.8| is 0.05000000000000004, and 75 % must
+# pass the ±5 points of gate (c) (erratum of 2 November 2026 in docs/liscop/BACKTEST.md).
+EPSILON = 1e-9
 
 
 def protocol_origins(last_day: date, n: int = ORIGINS) -> list[date]:
@@ -238,19 +242,25 @@ def regime_shift(history: History, start: date, gamma: float = GAMMA) -> dict[st
     }
 
 
-def _gates(report: dict[str, Any]) -> dict[str, Any]:
+def _in_gate(x: float | None) -> bool:
     low, high = COVERAGE_GATE
+    return x is not None and low - EPSILON <= x <= high + EPSILON
+
+
+def _gates(report: dict[str, Any]) -> dict[str, Any]:
+    low, _ = COVERAGE_GATE
     ratios = [report["arrivals"]["by_horizon"][str(k)]["mae_ratio"] for k in HORIZONS]
     a = all(r is not None and r < 1 for r in ratios)
     cov_arr = report["arrivals"]["pooled"]["coverage_80"]
     cov_beds = report["available_beds"]["pooled"]["coverage_80"]
-    b = low <= cov_arr <= high and low <= cov_beds <= high
+    b = _in_gate(cov_arr) and _in_gate(cov_beds)
     shift = report["regime_shift"]
     static, aci = shift["static"]["pooled"], shift["aci"]["pooled"]
-    if static is None or aci is None or static >= low:
+    # The test is conclusive only when the frozen interval breaks (static strictly < 75 %).
+    if static is None or aci is None or static > low - EPSILON:
         c = "non concluant"
     else:
-        c = "réussi" if abs(aci - (1 - ALPHA)) <= ACI_TOLERANCE else "échoué"
+        c = "réussi" if abs(aci - (1 - ALPHA)) <= ACI_TOLERANCE + EPSILON else "échoué"
     board = report["boarding_10h"]["pooled"]["mae_ratio"] if report["boarding_10h"] else None
     d = "non évaluable" if board is None else ("réussi" if board < 1 else "échoué")
     return {

@@ -26,6 +26,7 @@ from dataclasses import dataclass, fields
 from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.ed import DayPoint
 from services.admissions_smr.domain.tension import tension_of
 
@@ -131,8 +132,8 @@ def active_declarations(
     declarations: Sequence[Declaration], day: date, zone: ZoneInfo
 ) -> dict[str, str]:
     """Level of each kind active at some point of the local day; the latest start wins."""
-    start = datetime.combine(day, time(0), tzinfo=zone)
-    end = start + timedelta(days=1)
+    start = local_time(day, time(0), zone)
+    end = local_time(day + timedelta(days=1), time(0), zone)
     out: dict[str, str] = {}
     for d in sorted(declarations, key=lambda d: d.started_at):
         if d.started_at < end and (d.ended_at is None or d.ended_at >= start):
@@ -175,6 +176,9 @@ def oru_day(
     )
 
 
+FORMULA_STARTS = frozenset({"=", "+", "-", "@", "\t", "\r"})
+
+
 def _cell(value: object) -> str:
     if value is None:
         return ""
@@ -185,8 +189,9 @@ def _cell(value: object) -> str:
     if isinstance(value, date):
         return value.isoformat()
     text = str(value)
-    # A cell starting with = + - @ would run as a formula in a spreadsheet (CSV injection).
-    return f"'{text}" if text[:1] in ("=", "+", "-", "@") else text
+    # A cell starting with = + - @, or with a tab or carriage return (which spreadsheets
+    # skip before reading a formula), would run as a formula (CSV injection, OWASP).
+    return f"'{text}" if text[:1] in FORMULA_STARTS else text
 
 
 def to_csv(rows: Sequence[OruDay], labels: Mapping[str, str] | None = None) -> str:

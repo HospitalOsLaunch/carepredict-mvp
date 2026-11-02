@@ -33,12 +33,9 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
+from services.admissions_smr.clock import horizon_label
 from services.admissions_smr.domain.beds import Availability
-
-# The LISCOP tension legend lives in domain.tension; re-exported for existing callers.
-from services.admissions_smr.domain.tension import TENSION_NORMAL_MIN as TENSION_NORMAL_MIN
-from services.admissions_smr.domain.tension import Tension as Tension
-from services.admissions_smr.domain.tension import tension_of as tension_of
+from services.admissions_smr.domain.tension import Tension, tension_of
 
 Code = tuple[str, str]
 
@@ -282,7 +279,7 @@ def forecast_block(source: ForecastSource, today: date) -> ForecastBlock:
     by_offset = {(p.day - today).days: p for p in source.points}
     lines = [
         ForecastLine(
-            horizon=f"J+{k}",
+            horizon=horizon_label(p.day, today),
             day=p.day,
             temporality=TEMPORALITY_BY_OFFSET[k],
             mean=round(max(0.0, p.mean), 1),

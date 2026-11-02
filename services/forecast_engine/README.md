@@ -25,8 +25,9 @@ Pour J+0 à J+7 (J+0 = jour du calcul, état pris à 0 h) :
 1. **Séries** (`data.py`) : par unité, arrivées (et par `admission_mode`), sorties,
    occupation en fin de journée ; par site, passages, admissions et **lits brancards à
    10 h** : patients présents aux urgences à 10 h (Europe/Paris), décision
-   d'hospitalisation à 10 h au plus tard, arrivés avant 8 h. Définition et seuils dans
-   `data.py` (`BOARDING_*`), à unifier avec `services/admissions_smr/domain/ed.py`.
+   d'hospitalisation à 10 h au plus tard, arrivés avant 8 h, au plus 72 h après
+   l'arrivée. Définition unique, celle de la page Urgences :
+   `services/admissions_smr/domain/ed.py` (`is_waiting_bed`, `boarding_days`).
 2. **Modèles** (`models.py`, Nixtla statsforecast) : `SeasonalNaive(7)` (référence),
    `AutoETS`, `AutoTheta`, `MSTL` (hebdomadaire ; + annuel au-delà de deux ans
    d'historique), choisis par série par validation croisée à origine glissante (56
@@ -42,7 +43,7 @@ Pour J+0 à J+7 (J+0 = jour du calcul, état pris à 0 h) :
    négative calée sur la prévision et l'intervalle conformal ; les arrivants peuvent
    sortir dans l'horizon ; admissions promises (demandes accordées, patients des urgences
    en attente de l'unité) en plancher des arrivées. Disponibles bornés à [0, lits
-   ouverts]. Tension : seuil `TENSION_NORMAL_MIN` de `domain/ror.py` (20 % des lits
+   ouverts]. Tension : seuil `TENSION_NORMAL_MIN` de `domain/tension.py` (20 % des lits
    installés), critique à 0. `p_tension` = P(tension ou critique).
 5. **Agrégats** : somme des tirages des unités, tirage par tirage, avec un facteur
    commun journalier sur les arrivées (variance estimée sur la covariance des erreurs
@@ -62,7 +63,11 @@ python -m services.forecast_engine run --all                # tous les groupes
 python -m services.forecast_engine backtest --group 1 --out backtest.json
 ```
 
-Même configuration que l'API (`ADM_DATABASE_URL`, `ADM_TIMEZONE`). Un run en échec est
+Réglages : `ADM_DATABASE_URL` et `ADM_TIMEZONE` seulement ; le moteur ne lit ni
+`ADM_SECRET_KEY` ni `ADM_PSEUDONYM_SECRET`. Il **ne migre jamais la base** : l'API le
+fait à son démarrage (ou `python -m services.admissions_smr.cli migrate`) ; si le schéma
+n'est pas à la révision attendue, le moteur s'arrête avec le code 2 et un message clair,
+sans rien écrire. Un run en échec est
 enregistré (`status = failed`) et l'API continue de servir le dernier run réussi en le
 signalant. Le backtest enregistre son en-tête (`status = backtest`, sans valeurs).
 Durée sur la démo MCO (8 unités avec lits, un an) : environ 20 s par run, 5 min pour le backtest.
@@ -70,6 +75,29 @@ Durée sur la démo MCO (8 unités avec lits, un an) : environ 20 s par run, 5 m
 Docker : `services/forecast_engine/Dockerfile` (une exécution `run --all` puis sortie,
 à planifier) ; service `forecast` de `docker-compose.demo.yml` (démo : toutes les
 `FORECAST_EVERY_HOURS` heures, 6 par défaut).
+
+## Rôle base de données dédié (production)
+
+Le moteur se connecte avec son propre rôle PostgreSQL, jamais celui de l'API : lecture
+des seules tables dont il a besoin, écriture dans `forecast_runs` / `forecast_values`
+seulement, aucun droit de modifier le schéma (DDL) ni les autres tables. À créer par
+l'administrateur de la base, après la première migration (noms de séquences par défaut
+de PostgreSQL ; liste des tables à tenir à jour avec `data.py` et `service.py`) :
+
+```sql
+CREATE ROLE forecast_engine LOGIN PASSWORD '<secret du coffre>';
+GRANT CONNECT ON DATABASE admissions TO forecast_engine;
+GRANT USAGE ON SCHEMA public TO forecast_engine;
+GRANT SELECT ON alembic_version, groups, sites, bed_pools, capacity_changes, stays,
+    stay_plan_changes, admission_requests, ed_visits TO forecast_engine;
+-- INSERT … RETURNING id demande aussi SELECT sur forecast_runs.
+GRANT SELECT, INSERT ON forecast_runs, forecast_values TO forecast_engine;
+GRANT USAGE ON SEQUENCE forecast_runs_id_seq, forecast_values_id_seq TO forecast_engine;
+```
+
+`ADM_DATABASE_URL` du moteur : `postgresql+psycopg://forecast_engine:…@<hôte>/admissions?sslmode=require`.
+Une migration qui ajoute une table lue par le moteur doit compléter ces droits. En
+démonstration (`docker-compose.demo.yml`), le moteur partage le compte de l'API.
 
 ## Tests
 

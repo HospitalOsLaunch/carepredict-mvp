@@ -6,7 +6,7 @@ Days are local calendar days (Europe/Paris by default). A series covers
 Per unit: arrivals (all modes, and split by ``stays.admission_mode``), discharges,
 occupancy at the end of the day. Per site: emergency arrivals, emergency admissions
 (visits that ended in a ward, counted on the day they left the emergency department)
-and boarding at 10:00 ("lits brancards à 10 h", definition below).
+and boarding at 10:00 ("lits brancards à 10 h", definition in domain/ed.py).
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -22,17 +22,12 @@ import numpy.typing as npt
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from services.admissions_smr.clock import local_day, local_time
+from services.admissions_smr.domain.ed import Visit, boarding_days, is_waiting_bed
 from services.admissions_smr.models import BedPool, CapacityChange, EdVisit, Site, Stay
 
-# --- Boarding at 10:00 ("lits brancards à 10 h") -------------------------------------------
-# Patients present in the emergency department at 10:00 local time who have an admission
-# decision taken at or before 10:00 and arrived before 08:00 that same day.
-# Shared definition with the live census of the beds-ed module
-# (services/admissions_smr/domain/ed.py): to unify there in one place when both merge.
-BOARDING_AT = time(10, 0)
-BOARDING_ARRIVED_BEFORE = time(8, 0)
-# History only: a visit never closed is a data gap, not a patient boarding for months.
-BOARDING_STALE_AFTER = timedelta(hours=72)
+# Presence, waiting for a bed and boarding at 10:00 ("lits brancards à 10 h") follow the
+# single definition of services/admissions_smr/domain/ed.py (72 h stale rule included).
 
 ADMISSION_MODES = ("urgences", "programme", "mutation", "transfert")
 Series = npt.NDArray[np.float64]
@@ -77,6 +72,10 @@ class EdRow:
     outcome: str | None
     target_pool_id: int | None
 
+    @property
+    def visit(self) -> Visit:
+        return Visit(self.arrived_at, self.admit_decision_at, self.left_at)
+
 
 @dataclass
 class History:
@@ -100,7 +99,7 @@ class History:
         return (day - self.first_day).days
 
     def midnight(self, day: date) -> datetime:
-        return datetime.combine(day, time(0), tzinfo=self.zone).astimezone(UTC)
+        return local_time(day, time(0), self.zone)
 
     def capacity_on(self, pool_id: int, day: date) -> tuple[int, int]:
         """(installed, open) beds on ``day``: the latest capacity change, else today's."""
@@ -124,39 +123,9 @@ class History:
         """Emergency patients with a decision and a target unit, still waiting at ``at``."""
         out: Counter[int] = Counter()
         for v in self.ed:
-            if (
-                v.target_pool_id is not None
-                and v.admit_decision_at is not None
-                and v.admit_decision_at < at
-                and (v.left_at is None or v.left_at >= at)
-                and at - v.arrived_at < BOARDING_STALE_AFTER
-            ):
+            if v.target_pool_id is not None and is_waiting_bed(v.visit, at):
                 out[v.target_pool_id] += 1
         return out
-
-
-def boarding_window(v: EdRow, zone: ZoneInfo) -> tuple[date, date] | None:
-    """First and last local days on which ``v`` counts in boarding at 10:00, if any."""
-    if v.admit_decision_at is None:
-        return None
-
-    def at(day: date, moment: time) -> datetime:
-        return datetime.combine(day, moment, tzinfo=zone).astimezone(UTC)
-
-    # First day d with arrival < d 08:00 and decision <= d 10:00.
-    first = v.arrived_at.astimezone(zone).date()
-    if v.arrived_at >= at(first, BOARDING_ARRIVED_BEFORE):
-        first += timedelta(days=1)
-    decided = v.admit_decision_at.astimezone(zone).date()
-    if v.admit_decision_at > at(decided, BOARDING_AT):
-        decided += timedelta(days=1)
-    first = max(first, decided)
-    # Last day d with d 10:00 < left (or before the visit goes stale).
-    end = v.left_at if v.left_at is not None else v.arrived_at + BOARDING_STALE_AFTER
-    last = end.astimezone(zone).date()
-    if end <= at(last, BOARDING_AT):
-        last -= timedelta(days=1)
-    return (first, last) if first <= last else None
 
 
 def load_history(session: Session, group_id: int, last_day: date, timezone: str) -> History:
@@ -164,7 +133,7 @@ def load_history(session: Session, group_id: int, last_day: date, timezone: str)
     zone = ZoneInfo(timezone)
 
     def local(at: datetime) -> date:
-        return at.astimezone(zone).date()
+        return local_day(at, zone)
 
     sites = {
         s.id: SiteRef(s.id, s.name, s.ght, s.departement)
@@ -267,14 +236,14 @@ def _fill_series(h: History, modes: list[str]) -> None:
     with_ed = {v.site_id for v in h.ed}
     site = {m: zeros(with_ed) for m in ("ed_arrivals", "ed_admissions", "boarding_10h")}
     for v in h.ed:
-        i = h.index(v.arrived_at.astimezone(h.zone).date())
+        i = h.index(local_day(v.arrived_at, h.zone))
         if 0 <= i < n:
             site["ed_arrivals"][v.site_id][i] += 1
         if v.outcome == "hospitalise" and v.left_at is not None:
-            j = h.index(v.left_at.astimezone(h.zone).date())
+            j = h.index(local_day(v.left_at, h.zone))
             if 0 <= j < n:
                 site["ed_admissions"][v.site_id][j] += 1
-        window = boarding_window(v, h.zone)
+        window = boarding_days(v.visit, h.zone)
         if window is not None:
             lo, hi = max(h.index(window[0]), 0), min(h.index(window[1]), n - 1)
             if lo <= hi:

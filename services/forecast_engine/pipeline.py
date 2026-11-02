@@ -10,18 +10,26 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Any
 
 import numpy as np
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from services.admissions_smr.domain.forecast import StayRecord, discharge_cdf, plan_known_at
-from services.admissions_smr.models import Site
-from services.admissions_smr.service import build_forecast, plan_history, reservations
+from services.admissions_smr.domain.ed import BOARDING_ARRIVED_BEFORE, BOARDING_HOUR
+from services.admissions_smr.domain.forecast import (
+    HazardModel,
+    PlanHistory,
+    StayRecord,
+    discharge_cdf,
+    estimate_plan_slip,
+    fit_hazard,
+    plan_known_at,
+)
+from services.admissions_smr.service import plan_history, reservations, stay_records
+from services.admissions_smr.vocab import FORECAST_SCOPES
 from services.forecast_engine import MODEL_VERSION
 from services.forecast_engine.calendar import day_kinds
 from services.forecast_engine.capacity import (
@@ -39,12 +47,7 @@ from services.forecast_engine.capacity import (
     weekday_retention,
 )
 from services.forecast_engine.conformal import ALPHA, GAMMA, WINDOW
-from services.forecast_engine.data import (
-    BOARDING_ARRIVED_BEFORE,
-    BOARDING_AT,
-    History,
-    Series,
-)
+from services.forecast_engine.data import History, Series
 from services.forecast_engine.models import (
     CV_REFIT,
     CV_WINDOWS,
@@ -55,8 +58,6 @@ from services.forecast_engine.models import (
 
 log = logging.getLogger("forecast_engine")
 
-SCOPES = ("unit", "site", "group", "ght", "departement")
-TARGETS = ("arrivals", "discharges", "available_beds", "tension_prob", "boarding_10h")
 ED_ARRIVALS = "ed_arrivals"  # extra target: emergency department arrivals per site
 
 
@@ -130,11 +131,9 @@ def compute(
     forecasts = forecast_series(series, last_day, alpha, gamma, window)
 
     # 2. Discharge model of the admissions service (Kaplan-Meier, plans with slip).
-    progress("Modèle de sorties (build_forecast)")
-    sites = list(session.scalars(select(Site).where(Site.id.in_(history.sites)).order_by(Site.id)))
-    fitted = build_forecast(session, history.group_id, sites, as_of, HORIZON)
-    slip = fitted.slip.weights
+    progress("Modèle de sorties (durées de séjour, glissement des dates prévues)")
     plans = plan_history(session, history.group_id)
+    model, slip = discharge_model(session, history.group_id, as_of, plans)
     promised_requests = reservations(session, history.group_id) if use_current_plans else {}
     present = history.present_at_start(as_of)
     waiting = history.ed_waiting(history.midnight(as_of))
@@ -168,9 +167,9 @@ def compute(
             )
             for s in present.get(pool_id, [])
         ]
-        cdfs = np.array([discharge_cdf(r, as_of, HORIZON, fitted.model, slip) for r in records])
+        cdfs = np.array([discharge_cdf(r, as_of, HORIZON, model, slip) for r in records])
         newcomer = StayRecord(0, unit.site_id, unit.code, as_of)
-        new_cdf = np.array(discharge_cdf(newcomer, as_of, HORIZON, fitted.model))
+        new_cdf = np.array(discharge_cdf(newcomer, as_of, HORIZON, model))
         due = promised_requests.get((unit.site_id, unit.code), {})
         promised = [waiting[pool_id] + sum(n for d, n in due.items() if d <= day) for day in days]
         capacity = [history.capacity_on(pool_id, day) for day in days]
@@ -245,7 +244,7 @@ def compute(
             add(scope, key, "tension_prob", p, p, p, p, probs, site_id, pool_id)
 
     installed_by: dict[str, list[int]] = defaultdict(lambda: [0] * HORIZON)
-    scope_of: dict[str, dict[int, str]] = {s: {} for s in SCOPES[1:]}
+    scope_of: dict[str, dict[int, str]] = {s: {} for s in FORECAST_SCOPES[1:]}
     for pool_id, unit in beds.items():
         sim = sims[pool_id]
         installed = [history.capacity_on(pool_id, day)[0] for day in days]
@@ -261,7 +260,7 @@ def compute(
             ]
 
     site_of_key = {f"site:{s}": s for s in history.sites}
-    for scope in SCOPES[1:]:
+    for scope in FORECAST_SCOPES[1:]:
         for target, field_name in (
             ("arrivals", "arrivals"),
             ("discharges", "discharges"),
@@ -296,13 +295,22 @@ def compute(
         "draws": draws,
         "seed": seed,
         "boarding_definition": (
-            f"présents aux urgences à {BOARDING_AT:%H:%M}, décision d'hospitalisation à "
-            f"{BOARDING_AT:%H:%M} au plus tard, arrivés avant {BOARDING_ARRIVED_BEFORE:%H:%M}"
+            f"présents aux urgences à {BOARDING_HOUR:%H:%M}, décision d'hospitalisation à "
+            f"{BOARDING_HOUR:%H:%M} au plus tard, arrivés avant {BOARDING_ARRIVED_BEFORE:%H:%M}"
         ),
         "plans": "actuels" if use_current_plans else "connus à la date",
     }
     unit_draws = {p: s.available for p, s in sims.items()}
     return RunResult(as_of, MODEL_VERSION, params, metrics, values, forecasts, unit_draws)
+
+
+def discharge_model(
+    session: Session, group_id: int, as_of: date, plans: PlanHistory
+) -> tuple[HazardModel, Mapping[int, float]]:
+    """The hazards and plan slip of ``service.build_forecast``, without its per-pool work."""
+    records = stay_records(session, group_id)
+    model = fit_hazard(records, as_of, plans=plans or None)
+    return model, estimate_plan_slip(records, plans, as_of).weights
 
 
 PROFILE_WEEKS = 12

@@ -42,7 +42,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from services.admissions_smr.domain.ror import TENSION_NORMAL_MIN
+from services.admissions_smr.domain.tension import TENSION_NORMAL_MIN
 
 DRAWS = 2_000
 SEED = 2026

@@ -30,8 +30,10 @@ from __future__ import annotations
 from bisect import bisect_left, bisect_right
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
+
+from services.admissions_smr.clock import local_day, local_time
 
 BOARDING_HOUR = time(10, 0)
 BOARDING_ARRIVED_BEFORE = time(8, 0)
@@ -83,12 +85,8 @@ class DayPoint:
     computed_boarding: int
 
 
-def local_time(day: date, at: time, zone: ZoneInfo) -> datetime:
-    return datetime.combine(day, at, tzinfo=zone).astimezone(UTC)
-
-
 def is_present(v: Visit, t: datetime) -> bool:
-    return v.arrived_at <= t < v.arrived_at + STALE_AFTER and (v.left_at is None or v.left_at > t)
+    return v.arrived_at <= t < present_until(v)
 
 
 def is_waiting_bed(v: Visit, t: datetime) -> bool:
@@ -120,6 +118,36 @@ def boarding_10h(
     return sum(is_waiting_bed(v, t) and v.arrived_at < cutoff for v in visits)
 
 
+def present_until(v: Visit) -> datetime:
+    """End (excluded) of the presence of ``v``: departure, or arrival + 72 h if earlier."""
+    stale = v.arrived_at + STALE_AFTER
+    return stale if v.left_at is None else min(v.left_at, stale)
+
+
+def boarding_days(v: Visit, zone: ZoneInfo) -> tuple[date, date] | None:
+    """First and last local days ``d`` with ``v`` counted by ``boarding_10h(…, d, …)``.
+
+    The same rule as ``boarding_10h`` solved per visit, so that a year of daily series is
+    built in one pass (forecast engine); ``None`` when the visit never boards at 10:00.
+    """
+    if v.admit_decision_at is None:
+        return None
+    # First day: arrived before 08:00 that day and decided by 10:00 that day.
+    first = local_day(v.arrived_at, zone)
+    if v.arrived_at >= local_time(first, BOARDING_ARRIVED_BEFORE, zone):
+        first += timedelta(days=1)
+    decided = local_day(v.admit_decision_at, zone)
+    if v.admit_decision_at > local_time(decided, BOARDING_HOUR, zone):
+        decided += timedelta(days=1)
+    first = max(first, decided)
+    # Last day: still present at 10:00.
+    end = present_until(v)
+    last = local_day(end, zone)
+    if end <= local_time(last, BOARDING_HOUR, zone):
+        last -= timedelta(days=1)
+    return (first, last) if first <= last else None
+
+
 def hosted_elsewhere(stays: Sequence[AdmittedStay], t: datetime) -> int:
     return sum(
         s.admitted_at <= t
@@ -142,7 +170,7 @@ def daily_series(
     arrivals = [v.arrived_at for v in ordered]
     latest: dict[date, Declared] = {}
     for d in sorted(declarations, key=lambda d: d.at):
-        latest[d.at.astimezone(zone).date()] = d
+        latest[local_day(d.at, zone)] = d
     out: list[DayPoint] = []
     for day in days:
         t = local_time(day, BOARDING_HOUR, zone)

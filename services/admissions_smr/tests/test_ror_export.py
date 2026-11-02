@@ -15,7 +15,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from services.admissions_smr.api import routes_ror
+from services.admissions_smr.api import deps, routes_ror
 from services.admissions_smr.domain.beds import Availability
 from services.admissions_smr.domain.ror import (
     MODE_EXPECTED,
@@ -29,13 +29,14 @@ from services.admissions_smr.domain.ror import (
     closures,
     forecast_block,
     freshness,
-    tension_of,
     unit_export,
 )
+from services.admissions_smr.domain.tension import tension_of
 from services.admissions_smr.models import (
     AuditEntry,
     BedPool,
     CapacityChange,
+    ForecastValue,
     Group,
     RorOutbox,
     Site,
@@ -300,6 +301,52 @@ def test_without_a_run_the_discharge_forecast_is_labelled_as_such(
     assert {r["temporalityCapacity"]["code"] for r in unit["ror_capacites"]} == {"01"}
 
 
+def test_page_and_export_label_a_stale_run_from_today_alike(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """C-6 / T-11: J+n counts from today on the forecast page and in the ROR export."""
+    group = make_group("g1")
+    add_run(db, group, as_of=TODAY - timedelta(days=1), created=NOW - timedelta(days=1))
+    headers = login("dir@g1.fr")
+
+    page = app_client.get(
+        "/api/forecast/liscop", params={"target": "available_beds"}, headers=headers
+    ).json()
+    export = app_client.get("/api/ror/export", headers=headers).json()
+
+    assert page["run"]["stale"] is True and export["prevision"]["perimee"] is True
+    values = page["series"][0]["values"]
+    assert [v["horizon"] for v in values] == [f"J{k:+d}" for k in range(-1, 7)]
+    page_days = {v["horizon"]: v["day"] for v in values}
+    unit = unit_of(export, "g1 A", "geriatrie")
+    export_days = {p["echeance"]: p["date"] for p in unit["previsionnel"]}
+    assert list(export_days) == ["J+1", "J+2"]  # J+7 lies beyond the run of yesterday
+    assert export_days == {k: page_days[k] for k in export_days}
+    assert export_days["J+1"] == (TODAY + timedelta(days=1)).isoformat()
+
+
+def test_units_missing_from_the_run_fall_back_to_the_discharge_forecast(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    group = make_group("g1")
+    run = add_run(db, group)
+    site_a = db.scalars(select(Site).where(Site.name == "g1 A")).one()
+    missing = next(p for p in site_a.pools if p.mention == "polyvalent")
+    for row in db.scalars(select(ForecastValue).where(ForecastValue.pool_id == missing.id)):
+        db.delete(row)
+    db.commit()
+
+    body = app_client.get("/api/ror/export", headers=login("dir@g1.fr")).json()
+
+    assert body["prevision"]["id"] == run.id
+    covered = unit_of(body, "g1 A", "geriatrie")
+    absent = unit_of(body, "g1 A", "polyvalent")
+    assert covered["previsionnel_nature"]["nature"] == "disponibles_attendus"
+    assert absent["previsionnel_nature"]["nature"] == "liberes_non_promis"
+    assert absent["previsionnel_nature"]["modele"] != run.model_version
+    assert {r["temporalityCapacity"]["code"] for r in absent["ror_capacites"]} == {"01"}
+
+
 def test_export_respects_site_scope_roles_and_tenants(
     app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
 ) -> None:
@@ -353,6 +400,31 @@ def test_simulated_send_stores_a_digest_audits_and_never_opens_a_socket(
     history = app_client.get("/api/ror/outbox", headers=admin).json()
     assert [h["id"] for h in history] == [second.json()["id"], out["id"]]
     assert history[0]["prepare_par"] == "admin@g1.fr" and history[0]["contenu"] is None
+
+
+def test_simulated_send_builds_the_export_before_taking_the_write_lock(
+    app_client: TestClient, make_group: MakeGroup, login: Login, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    make_group("g1")
+    calls: list[str] = []
+    build = routes_ror.export_out
+
+    def export_out(ctx: Any, sites: Any) -> Any:
+        calls.append("export")
+        return build(ctx, sites)
+
+    def lock_tenant(session: Session, group_id: int) -> Group:
+        calls.append("lock")
+        return deps.lock_tenant(session, group_id)
+
+    monkeypatch.setattr(routes_ror, "export_out", export_out)
+    monkeypatch.setattr(routes_ror, "lock_tenant", lock_tenant)
+
+    response = app_client.post("/api/ror/outbox", headers=login("admin@g1.fr"))
+
+    assert response.status_code == 201, response.text
+    assert calls == ["export", "lock"]
+    assert response.json()["prepare_par"] == "admin@g1.fr"
 
 
 def test_the_export_module_has_no_way_to_reach_the_network() -> None:

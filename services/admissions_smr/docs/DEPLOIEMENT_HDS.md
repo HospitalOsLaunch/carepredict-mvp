@@ -65,6 +65,13 @@ Le schéma est migré par Alembic au démarrage de l'API. Pour un déploiement c
 lancer `python -m services.admissions_smr.cli migrate` comme étape distincte avant de
 démarrer la nouvelle version.
 
+**Moteur de prévision LISCOP** (`services/forecast_engine`, tâche planifiée, image à
+part) : il ne lit que `ADM_DATABASE_URL` et `ADM_TIMEZONE` (aucun secret de l'API) et ne
+migre jamais la base ; il s'arrête (code 2) si le schéma n'est pas à jour, donc le
+lancer après l'API ou l'étape `migrate`. Il se connecte avec un **rôle PostgreSQL
+dédié** : `SELECT` sur les tables qu'il lit, `SELECT` + `INSERT` sur `forecast_runs` et
+`forecast_values`, rien d'autre (script SQL dans `services/forecast_engine/README.md`).
+
 ## 4. Liste de contrôle
 
 **Hébergeur**
@@ -85,6 +92,7 @@ démarrer la nouvelle version.
 **Application**
 - [ ] `ADM_ENV=production`, secret fort, OIDC configuré, mot de passe désactivé pour les personnes.
 - [ ] Compte `ingestion` dédié à chaque agent, mot de passe long, rotation planifiée.
+- [ ] Moteur de prévision sur son rôle base dédié (lecture + `INSERT` dans `forecast_*`), jamais celui de l'API.
 - [ ] Journaux applicatifs sans données patient, conservés selon la politique du client.
 - [ ] Supervision de `/api/health` et alerte quand l'agent est signalé hors ligne (aucun signal depuis 5 minutes).
 

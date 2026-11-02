@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import secrets
-from datetime import UTC, datetime, time, timedelta
+from datetime import datetime, time, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
@@ -31,6 +31,7 @@ from services.admissions_smr.api.deps import (
     SyncCtx,
     WriteCtx,
 )
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.messages import accord_message, refusal_message
 from services.admissions_smr.models import (
     AdmissionRequest,
@@ -209,7 +210,7 @@ def spent_since(ctx: Ctx, since: datetime) -> float:
 
 
 def local_midnight(ctx: Ctx) -> datetime:
-    return datetime.combine(ctx.clock.today(), time.min, tzinfo=ctx.clock.zone).astimezone(UTC)
+    return local_time(ctx.clock.today(), time.min, ctx.clock.zone)
 
 
 def latest_calibrations(ctx: Ctx) -> dict[str, AgentCalibration]:

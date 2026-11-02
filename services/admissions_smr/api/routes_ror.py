@@ -21,22 +21,21 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Response, status
 from sqlalchemy import func, select
 
-from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadCtx
-from services.admissions_smr.api.routes_beds import unit_label, unit_views, visible_sites
-from services.admissions_smr.api.routes_ed import (
-    as_declared,
-    declarations_since,
-    load_admitted,
-    load_visits,
+from services.admissions_smr.api.deps import (
+    UNPROCESSABLE,
+    AdminCtx,
+    AdminLateLockCtx,
+    Ctx,
+    ReadCtx,
+    lock_tenant,
 )
-from services.admissions_smr.api.routes_forecast_store import STALE_AFTER_HOURS, SYNTHETIC_GROUPS
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain import oru
 from services.admissions_smr.domain.ed import (
     BOARDING_HOUR,
     STALE_AFTER,
     DayPoint,
     daily_series,
-    local_time,
 )
 from services.admissions_smr.domain.forecast import StayRecord
 from services.admissions_smr.domain.metrics import (
@@ -51,7 +50,6 @@ from services.admissions_smr.domain.ror import (
     MODE_EXPECTED,
     MODE_RELEASED,
     NO_FORECAST,
-    TENSION_NORMAL_MIN,
     Code,
     ForecastPoint,
     ForecastSource,
@@ -59,7 +57,16 @@ from services.admissions_smr.domain.ror import (
     UnitSnapshot,
     unit_export,
 )
-from services.admissions_smr.domain.tension import DECLARATION_LEVELS
+from services.admissions_smr.domain.tension import DECLARATION_LEVELS, TENSION_NORMAL_MIN
+from services.admissions_smr.liscop_service import (
+    as_declared,
+    declarations_since,
+    load_admitted,
+    load_visits,
+    unit_label,
+    unit_views,
+    visible_sites,
+)
 from services.admissions_smr.models import (
     AuditEntry,
     Bed,
@@ -96,6 +103,7 @@ from services.admissions_smr.schemas_liscop import (
     RorUnitSettingsOut,
 )
 from services.admissions_smr.service import build_forecast, group_sites, reservations, stay_records
+from services.admissions_smr.vocab import FORECAST_STALE_AFTER_HOURS, SYNTHETIC_GROUPS
 
 router = APIRouter()
 
@@ -459,7 +467,7 @@ def export_out(ctx: Ctx, sites: Sequence[Site]) -> RorExportOut:
             calcule_le=run.created_at,
             modele=run.model_version,
             perimee=run.as_of != today
-            or (now - run.created_at).total_seconds() > STALE_AFTER_HOURS * 3600,
+            or (now - run.created_at).total_seconds() > FORECAST_STALE_AFTER_HOURS * 3600,
         ),
         referentiels=REFERENCES,
         hypotheses=ASSUMPTIONS,
@@ -491,12 +499,18 @@ def outbox_out(row: RorOutbox, by: str | None, content: RorExportOut | None) -> 
 
 
 @router.post("/ror/outbox", response_model=RorOutboxOut, status_code=201, tags=["ror"])
-def prepare_send(ctx: AdminCtx) -> RorOutboxOut:
-    """Stores the current export as a simulated send. Never sends anything."""
+def prepare_send(ctx: AdminLateLockCtx) -> RorOutboxOut:
+    """Stores the current export as a simulated send. Never sends anything.
+
+    The export (the discharge model may be fitted) is built in a read transaction; the
+    tenant write lock is taken only for the insert and its audit entry (C-8).
+    """
     content = export_out(ctx, group_sites(ctx))
     payload = json.dumps(
         content.model_dump(mode="json"), ensure_ascii=False, sort_keys=True, separators=(",", ":")
     )
+    ctx.session.rollback()  # end the read transaction; nothing was written
+    ctx.group = lock_tenant(ctx.session, ctx.group.id)
     row = RorOutbox(
         group_id=ctx.group.id,
         created_at=ctx.clock.now(),

@@ -8,6 +8,7 @@ from collections.abc import Callable
 from datetime import UTC, date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -86,6 +87,14 @@ def test_a_declared_day_keeps_the_computed_boarding_next_to_it() -> None:
     empty = oru.oru_day(1, "S", TODAY, TODAY, None, None, None, {}, None)
     assert empty.present_10h is None and empty.boarding_source is None and not empty.complete
     assert empty.units is None
+
+
+@pytest.mark.parametrize("start", ["=", "+", "-", "@", "\t", "\r"])
+def test_csv_neutralises_every_formula_start(start: str) -> None:
+    text = oru.to_csv([row(site_name=f"{start}cmd|' /C calc'!A0")])
+
+    _, line = list(csv.reader(io.StringIO(text[1:]), delimiter=";"))
+    assert line[2] == f"'{start}cmd|' /C calc'!A0"
 
 
 def test_csv_is_utf8_with_bom_semicolons_french_headers_and_no_formula() -> None:
