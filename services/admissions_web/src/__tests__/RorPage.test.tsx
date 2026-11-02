@@ -137,6 +137,25 @@ describe("RorPage", () => {
     expect(within(table).getByRole("columnheader", { name: "J+7" })).toBeInTheDocument();
   });
 
+  it("says when the stored forecast is stale", async () => {
+    vi.mocked(api).mockImplementation(async (path: string) => {
+      if (path === "/ror/export") return { ...sample, prevision: { ...sample.prevision!, perimee: true } } as never;
+      if (path === "/ror/outbox") return [] as never;
+      throw new Error(`unexpected ${path}`);
+    });
+    renderPage();
+
+    expect(await screen.findByText(/prévision du .*\(engine-1\), à recalculer/)).toBeInTheDocument();
+  });
+
+  it("shows the API error instead of the export", async () => {
+    vi.mocked(api).mockRejectedValue(new Error("Export indisponible"));
+    renderPage();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Export indisponible");
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  });
+
   it("labels the discharge fallback and units without a bed plan", async () => {
     mockApi();
     renderPage();

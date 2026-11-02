@@ -148,6 +148,32 @@ describe("PrevisionPage", () => {
     expect(vi.mocked(api)).toHaveBeenCalledWith("/forecast/liscop?scope=ght");
   });
 
+  it("flags a stale run, counts its days from today and reports the failed computation", async () => {
+    // Run of yesterday: its days read J-1..J+6 from today, so J+7 is missing.
+    const shifted = (k: number) => ({ ...day(k, 6, 0.2, 0), horizon: `J${k - 1 >= 0 ? "+" : ""}${k - 1}` });
+    vi.mocked(api).mockResolvedValue({
+      ...sample,
+      run: { ...sample.run!, stale: true, age_hours: 27 },
+      last_failure_at: "2026-11-02T05:00:00Z",
+      series: [series("available_beds", "Médecine polyvalente", week(shifted))]
+    } as never);
+    renderPage();
+
+    expect(await screen.findByText(/À rafraîchir/)).toBeInTheDocument();
+    expect(screen.getByText(/Dernier calcul en échec le/)).toHaveTextContent(/chiffres du calcul précédent/);
+    expect(screen.getByText(/comptés depuis aujourd'hui/)).toBeInTheDocument();
+    const row = screen.getByRole("row", { name: /Médecine polyvalente/ });
+    expect(within(row).getAllByRole("cell")[4]).toHaveTextContent("—"); // J+7 not in the run
+  });
+
+  it("shows the API error instead of the forecast", async () => {
+    vi.mocked(api).mockRejectedValue(new Error("Prévision indisponible"));
+    renderPage();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Prévision indisponible");
+    expect(screen.queryByRole("row", { name: /Médecine polyvalente/ })).not.toBeInTheDocument();
+  });
+
   it("has a clear empty state before the first run", async () => {
     vi.mocked(api).mockResolvedValue({ ...sample, run: null, series: [] } as never);
     renderPage();

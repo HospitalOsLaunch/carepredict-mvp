@@ -153,6 +153,14 @@ describe("UrgencesPage", () => {
     expect(api).toHaveBeenCalledWith("/tension/declarations/7", expect.objectContaining({ method: "PATCH" }));
   });
 
+  it("shows the API error instead of the census", async () => {
+    vi.mocked(api).mockRejectedValue(new Error("Recensement indisponible"));
+    renderPage();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Recensement indisponible");
+    expect(screen.queryByRole("region", { name: /Recensement/ })).not.toBeInTheDocument();
+  });
+
   it("hides write actions for read-only roles", async () => {
     auth.canWrite = false;
     renderPage();
