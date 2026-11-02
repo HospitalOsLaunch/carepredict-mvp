@@ -11,6 +11,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -20,6 +21,8 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeout
 from services.admissions_agent.browser import BrowserSession
 
 PARIS = ZoneInfo("Europe/Paris")
+BUNDLED = Path(__file__).parent / "playbooks"
+TASK_ORDER = ("sync_inbox", "reply_portal", "sync_movements")
 _TEMPLATE = re.compile(r"\{\{\s*([a-zA-Z_][\w.]*)\s*\}\}")
 
 
@@ -101,9 +104,12 @@ class Transforms:
 
 
 class Playbook:
-    def __init__(self, spec: dict[str, Any]) -> None:
+    def __init__(self, spec: dict[str, Any], default_id: str = "playbook") -> None:
         self.spec = spec
-        self.name = str(spec.get("name", "playbook"))
+        self.name = str(spec.get("name", "playbook"))  # label shown to people
+        # Header read by the catalogue: ``id`` (what a connection names) and ``kind``.
+        self.id = str(spec.get("id", default_id))
+        self.kind = str(spec.get("kind", ""))
         self.timeout = int(spec.get("timeout_ms", 8000))
 
     @classmethod
@@ -112,7 +118,16 @@ class Playbook:
             spec = yaml.safe_load(handle)
         if not isinstance(spec, dict):
             raise PlaybookError("playbook invalide")
-        return cls(spec)
+        return cls(spec, Path(path).stem)
+
+    def info(self) -> dict[str, Any]:
+        """Catalogue entry reported to HospitalOS: no selector, no secret."""
+        return {
+            "name": self.id,
+            "label": self.name,
+            "kind": self.kind,
+            "tasks": [k for k in TASK_ORDER if self.supports(k)],
+        }
 
     def supports(self, task_kind: str) -> bool:
         return task_kind in self.spec
@@ -243,3 +258,14 @@ class Playbook:
         }
         ok = bool(expected) and all(same_text(observed.get(k, ""), v) for k, v in expected.items())
         return ok, {"observed": observed, "expected": expected}
+
+
+def load_catalogue(directory: str | Path = BUNDLED) -> dict[str, Playbook]:
+    """Playbooks bundled with this agent (``*.yaml`` with an ``id`` and a ``kind``): the
+    only scripts a connection can name. No script is ever received from the API."""
+    catalogue: dict[str, Playbook] = {}
+    for path in sorted(Path(directory).glob("*.yaml")):
+        playbook = Playbook.load(str(path))
+        if playbook.kind in ("portail_orientation", "gestion_lits"):
+            catalogue[playbook.id] = playbook
+    return catalogue

@@ -101,6 +101,8 @@ class Router:
         transforms: Transforms,
         engine_factory: EngineFactory,
         session_factory: SessionFactory,
+        credentials: dict[str, str] | None = None,
+        source_system: str | None = None,
     ) -> None:
         self.settings = settings
         self.api = api
@@ -108,6 +110,9 @@ class Router:
         self.transforms = transforms
         self.engine_factory = engine_factory
         self.session_factory = session_factory
+        # A connection's credentials (in memory, for one task), else the legacy settings.
+        self.credentials = credentials
+        self.source_system = source_system
 
     # --- eligibility ---------------------------------------------------------------
 
@@ -176,14 +181,15 @@ class Router:
             try:
                 self.playbook.login(
                     session,
-                    {
+                    self.credentials
+                    or {
                         "username": self.settings.portal_username,
                         "password": self.settings.portal_password,
                     },
                 )
             except Exception as exc:  # noqa: BLE001 - portal down or login changed
                 return TaskOutcome(
-                    "failed", None, {"route": route}, f"connexion au portail : {exc}"
+                    "failed", None, {"route": route}, f"connexion au portail : {self._hide(exc)}"
                 )
 
             session.checkpoint = lambda: self.api.checkpoint(task["id"])
@@ -301,6 +307,15 @@ class Router:
             )
         finally:
             session.close()
+
+    def _hide(self, exc: Exception) -> str:
+        """An error message never carries a password, whatever the library put in it."""
+        text = str(exc)
+        secrets = [self.settings.portal_password, *(self.credentials or {}).values()]
+        for value in secrets:
+            if value:
+                text = text.replace(value, "•••")
+        return text
 
     def _run(
         self,
@@ -477,6 +492,8 @@ class Router:
         clean = {k: v for k, v in item.items() if k in MOVEMENT_FIELDS and v not in (None, "")}
         if clean.get("sex") not in ("F", "M", None):
             clean["sex"] = "U"
+        if self.source_system:  # the connection's sending system, declared in HospitalOS
+            clean["source_system"] = self.source_system
         if clean.get("action") == "CANCEL":
             return [{**clean, "action": "INSERT"}, clean]
         return [clean]

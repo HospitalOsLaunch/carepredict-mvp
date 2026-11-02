@@ -12,6 +12,42 @@ Il tourne **dans le réseau de l'établissement**, à côté des portails, avec 
 service `ingestion`. Il ne reçoit aucune connexion entrante : il appelle l'API HospitalOS,
 les portails autorisés et les moteurs que la politique autorise.
 
+## Installation minimale et connexions
+
+Un poste agent n'a besoin que de quatre variables :
+
+```bash
+AGENT_API_URL=https://hospitalos.exemple.fr \
+AGENT_API_EMAIL=agent@groupe.fr AGENT_API_PASSWORD=… \
+AGENT_ID=poste-smr-1 \
+  python -m services.admissions_agent run
+```
+
+Tout le reste se paramètre dans HospitalOS (écran **Computer use**), établissement par
+établissement, sous forme de **connexions** : logiciel à lire (portail d'orientation ou
+gestion des lits), adresse, hôtes autorisés, identifiant, mot de passe (chiffré côté
+HospitalOS, en écriture seule), script choisi dans le catalogue du poste, tâches,
+planning (intervalle, plage horaire, jours), poste assigné. L'administrateur du groupe
+les crée ; la coordination les démarre, les met en pause, les reprend ou demande une
+relève immédiate (sur son site).
+
+À chaque signal, le poste déclare sa version, ses moteurs et son **catalogue** : les
+scripts `playbooks/*.yaml` embarqués dans son image, avec leur en-tête (`id` : nom choisi
+dans l'interface, `kind` : `portail_orientation` ou `gestion_lits`, tâches déduites des
+sections présentes). Aucun script n'est reçu de l'API. HospitalOS crée les relèves dues
+(planification côté API) ; chaque tâche réservée porte sa connexion (adresse, hôtes
+autorisés, identifiant, mot de passe déchiffré, nom du script, système source). Le poste
+garde le mot de passe en mémoire le temps de la tâche, ne l'écrit ni ne le journalise ;
+le script se connecte, aucun modèle ne voit les identifiants. Un poste ne réserve que les
+tâches des connexions actives dont il a le script (et qui lui sont assignées, ou à tout
+poste). Plusieurs postes par groupe, plusieurs connexions par poste.
+
+**Mode historique** : si HospitalOS ne renvoie aucune connexion pour ce poste et que
+`AGENT_PORTAL_URL` est défini, le poste fonctionne comme avant (une connexion implicite
+décrite par `AGENT_PORTAL_*`, `AGENT_PLAYBOOK`, `AGENT_ALLOWED_HOSTS`, et il demande
+lui-même ses relèves selon `sync_interval_minutes` de la politique). Dès qu'une connexion
+existe pour lui, HospitalOS décide.
+
 ## Les moteurs et le routage
 
 | Nom | Moteur | Licence | Coût | Rôle |
@@ -73,9 +109,10 @@ réel de l'heure GPU.
 | --- | --- |
 | `AGENT_API_URL`, `AGENT_API_EMAIL`, `AGENT_API_PASSWORD` | API HospitalOS et compte `ingestion` ; l'URL doit être en `https`, sauf vers la machine locale ou un nom de service interne sans point (`http://api:8010` en compose) |
 | `AGENT_ID` | nom du poste, affiché dans l'interface |
-| `AGENT_PORTAL_URL`, `AGENT_PORTAL_USERNAME`, `AGENT_PORTAL_PASSWORD` | portail d'orientation |
-| `AGENT_PLAYBOOK` | script YAML du portail (défaut : portail de démonstration) |
-| `AGENT_ALLOWED_HOSTS` | hôtes autorisés, séparés par des virgules |
+| `AGENT_PLAYBOOKS_DIR` | dossier du catalogue de scripts (défaut : `playbooks/` embarqué) |
+| `AGENT_PORTAL_URL`, `AGENT_PORTAL_USERNAME`, `AGENT_PORTAL_PASSWORD` | mode historique seulement : portail d'orientation |
+| `AGENT_PLAYBOOK` | mode historique : script YAML du portail (défaut : portail de démonstration) |
+| `AGENT_ALLOWED_HOSTS` | mode historique : hôtes autorisés, séparés par des virgules |
 | `OPEN_LIGHT_URL`, `OPEN_LIGHT_MODEL`, `OPEN_LIGHT_API_KEY`, `OPEN_LIGHT_COORDINATES` | moteur ouvert léger (point d'accès compatible OpenAI) |
 | `OPEN_HEAVY_URL`, `OPEN_HEAVY_MODEL`, `OPEN_HEAVY_API_KEY`, `OPEN_HEAVY_COORDINATES` | moteur ouvert puissant |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL` | moteurs propriétaires |
@@ -115,7 +152,9 @@ autre modèle, l'analyseur d'appels d'outils dépend de sa fiche.
 
 ## Écrire le script d'un portail
 
-`playbooks/demo_portal.yaml` est le modèle : sections `login`, `sync_inbox` (liste,
+`playbooks/demo_portal.yaml` est le modèle : en-tête `id` (nom proposé dans l'interface)
+et `kind` (`portail_orientation` ou `gestion_lits`), puis sections `login` (avec
+`{{ secrets.username }}` et `{{ secrets.password }}`), `sync_inbox` (liste,
 champs à lire, transformations vers le vocabulaire HospitalOS), `reply_portal` et
 `verify_reply`. Étapes disponibles : `goto`, `fill`, `click`, `check`, `select`,
 `wait_for`, `when`. Le script de ViaTrajectoire n'est pas fourni : il ne peut être
