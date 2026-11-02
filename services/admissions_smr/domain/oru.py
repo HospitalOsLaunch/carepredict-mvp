@@ -26,6 +26,7 @@ from dataclasses import dataclass, fields
 from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.ed import DayPoint
 from services.admissions_smr.domain.tension import tension_of
 
@@ -131,8 +132,8 @@ def active_declarations(
     declarations: Sequence[Declaration], day: date, zone: ZoneInfo
 ) -> dict[str, str]:
     """Level of each kind active at some point of the local day; the latest start wins."""
-    start = datetime.combine(day, time(0), tzinfo=zone)
-    end = start + timedelta(days=1)
+    start = local_time(day, time(0), zone)
+    end = local_time(day + timedelta(days=1), time(0), zone)
     out: dict[str, str] = {}
     for d in sorted(declarations, key=lambda d: d.started_at):
         if d.started_at < end and (d.ended_at is None or d.ended_at >= start):

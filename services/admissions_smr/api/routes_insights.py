@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -13,6 +13,7 @@ from sqlalchemy import select
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadCtx
 from services.admissions_smr.api.routes_predictions import care_minutes_dict, care_minutes_of
+from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain.forecast import StayRecord, backtest
 from services.admissions_smr.domain.metrics import (
     CapacityPoint,
@@ -204,10 +205,7 @@ def dashboard(ctx: ReadCtx) -> GroupDashboardOut:
 
 def _local_bounds(ctx: Ctx, start: date, end: date) -> tuple[datetime, datetime]:
     zone = ctx.clock.zone
-    return (
-        datetime.combine(start, time.min, tzinfo=zone).astimezone(UTC),
-        datetime.combine(end + timedelta(days=1), time.min, tzinfo=zone).astimezone(UTC),
-    )
+    return local_time(start, time.min, zone), local_time(end + timedelta(days=1), time.min, zone)
 
 
 def _capacity_inputs(

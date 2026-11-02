@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from services.admissions_smr.domain.ror import TENSION_NORMAL_MIN
+from services.admissions_smr.domain.tension import TENSION_NORMAL_MIN
 from services.forecast_engine.capacity import (
     UnitInputs,
     aggregate,

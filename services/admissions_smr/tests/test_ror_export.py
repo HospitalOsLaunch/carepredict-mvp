@@ -29,9 +29,9 @@ from services.admissions_smr.domain.ror import (
     closures,
     forecast_block,
     freshness,
-    tension_of,
     unit_export,
 )
+from services.admissions_smr.domain.tension import tension_of
 from services.admissions_smr.models import (
     AuditEntry,
     BedPool,

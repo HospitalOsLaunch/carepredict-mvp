@@ -29,13 +29,6 @@ from services.admissions_smr.api.deps import (
     ReadCtx,
     lock_tenant,
 )
-from services.admissions_smr.api.routes_beds import unit_label, unit_views, visible_sites
-from services.admissions_smr.api.routes_ed import (
-    as_declared,
-    declarations_since,
-    load_admitted,
-    load_visits,
-)
 from services.admissions_smr.clock import local_time
 from services.admissions_smr.domain import oru
 from services.admissions_smr.domain.ed import (
@@ -57,7 +50,6 @@ from services.admissions_smr.domain.ror import (
     MODE_EXPECTED,
     MODE_RELEASED,
     NO_FORECAST,
-    TENSION_NORMAL_MIN,
     Code,
     ForecastPoint,
     ForecastSource,
@@ -65,7 +57,16 @@ from services.admissions_smr.domain.ror import (
     UnitSnapshot,
     unit_export,
 )
-from services.admissions_smr.domain.tension import DECLARATION_LEVELS
+from services.admissions_smr.domain.tension import DECLARATION_LEVELS, TENSION_NORMAL_MIN
+from services.admissions_smr.liscop_service import (
+    as_declared,
+    declarations_since,
+    load_admitted,
+    load_visits,
+    unit_label,
+    unit_views,
+    visible_sites,
+)
 from services.admissions_smr.models import (
     AuditEntry,
     Bed,
