@@ -125,5 +125,29 @@ services:
       api:
         condition: service_healthy
 
+  # Live IHE PAM feed for the MCO demo (LISCOP): emergency arrivals, admissions, transfers
+  # and discharges posted to /api/ingest/hl7, so the bed board and ED census move on their
+  # own. Invented identifiers only. DEMO_HIS_RATE = messages per minute (0 to stop).
+  his:
+    build:
+      context: .
+      dockerfile: services/admissions_smr/Dockerfile
+    volumes:
+      - ./tools:/app/tools:ro
+    entrypoint: ["sh", "-c"]
+    command:
+      - >
+        [ "$${DEMO_HIS_RATE:-4}" = "0" ] && exec sleep infinity;
+        exec python -m tools.his_simulator --count 0 --rate $${DEMO_HIS_RATE:-4}
+        --url http://api:8010 --email agent@ch-demo.hospitalos.fr
+        --password demo-hospitalos-2026
+        --database-url postgresql+psycopg://admissions:demo-only@db:5432/admissions
+    environment:
+      DEMO_HIS_RATE: ${DEMO_HIS_RATE:-4}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   cu-demo-db:

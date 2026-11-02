@@ -28,8 +28,10 @@ Parcours à essayer :
 2. Donner un accord à une date : le bloc « Report sur le portail » passe à « fait et relu ».
 3. Ouvrir le dossier sur le portail : l'accord et la date y sont saisis.
 4. **Paramètres → Agent et routage** : état de l'agent, moteurs, routes, budgets, dernières tâches.
-5. **Remontée ROR** : maquette de ce que les mêmes données pourraient alimenter dans le ROR
-   national (et donc dans LISCOP), unité par unité. Rien n'est envoyé.
+5. **Démo LISCOP / ARS** (hôpital MCO fictif, flux HL7 en direct) : se connecter avec
+   `bedmanager@ch-demo.hospitalos.fr` (même mot de passe) et suivre le scénario de
+   [`docs/liscop/DEMO.md`](docs/liscop/DEMO.md) : plan des lits, urgences et tension,
+   prévision, remontée ROR.
 
 Vérification automatique du parcours complet (c'est aussi ce que fait la CI) :
 

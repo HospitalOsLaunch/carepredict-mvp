@@ -227,14 +227,25 @@ class Simulator:
 
 def post(args: argparse.Namespace, sim: Simulator) -> int:
     client = httpx.Client(base_url=args.url.rstrip("/"), timeout=30)
-    r = client.post("/api/auth/login", json={"email": args.email, "password": args.password})
-    if r.status_code != 200:
-        print(f"connexion refusée ({r.status_code})", file=sys.stderr)
+
+    def login() -> dict[str, str] | None:
+        r = client.post("/api/auth/login", json={"email": args.email, "password": args.password})
+        if r.status_code != 200:
+            print(f"connexion refusée ({r.status_code})", file=sys.stderr)
+            return None
+        return {"Authorization": f"Bearer {r.json()['token']}", "Content-Type": HL7_TYPE}
+
+    auth = login()
+    if auth is None:
         return 1
-    auth = {"Authorization": f"Bearer {r.json()['token']}", "Content-Type": HL7_TYPE}
     counts: dict[str, int] = {}
     for n, message in enumerate(sim.messages(), start=1):
         answer = client.post("/api/ingest/hl7", content=message.encode(), headers=auth)
+        if answer.status_code == 401:  # token expired during a long-running demo
+            auth = login()
+            if auth is None:
+                return 1
+            answer = client.post("/api/ingest/hl7", content=message.encode(), headers=auth)
         msa = next((s for s in answer.text.split("\r") if s.startswith("MSA")), "MSA|??")
         code = msa.split("|")[1]
         counts[code] = counts.get(code, 0) + 1

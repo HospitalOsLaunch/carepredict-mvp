@@ -42,7 +42,7 @@ SCHOOL_TABLE_RANGE = (date(2025, 7, 5), date(2027, 8, 31))
 
 def public_holidays(years: Iterable[int]) -> dict[date, str]:
     """French public holidays (metropolitan France) for the given years."""
-    return dict(holidays.country_holidays("FR", years=sorted(set(years))).items())
+    return dict(holidays.country_holidays("FR", years=sorted(set(years)), language="fr").items())
 
 
 def is_school_holiday(day: date) -> bool | None:
