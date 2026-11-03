@@ -13,8 +13,8 @@ const KEPT = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" })
 
 function Back() {
   return (
-    <Link to="/computer-use" className="btn-ghost -ml-3 mb-3 px-3 py-1.5 text-[14px]">
-      <ArrowLeft className="h-4 w-4" aria-hidden /> Computer use
+    <Link to="/agents" className="btn-ghost -ml-3 mb-3 px-3 py-1.5 text-[14px]">
+      <ArrowLeft className="h-4 w-4" aria-hidden /> Agents
     </Link>
   );
 }
@@ -39,7 +39,7 @@ function Restricted() {
           <h1 className="text-[24px]">Player réservé</h1>
           <p className="mt-2 text-ink-soft">
             Regarder les passages de l'agent est réservé à l'administrateur du groupe et à la coordination de l'établissement. Les résultats
-            de chaque passage restent visibles dans la page Computer use.
+            de chaque passage restent visibles dans la page Agents.
           </p>
         </div>
       </div>

@@ -20,7 +20,7 @@ export interface NavItem {
 const PRIMARY: Record<string, string[]> = {
   coordination: ["/plan-des-lits", "/urgences", "/demandes", "/lits"],
   direction: ["/urgences", "/groupe", "/prevision", "/indicateurs"],
-  admin_groupe: ["/plan-des-lits", "/urgences", "/demandes", "/computer-use"]
+  admin_groupe: ["/plan-des-lits", "/urgences", "/demandes", "/agents"]
 };
 
 export function primaryFor(role: string | undefined): string[] {

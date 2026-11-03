@@ -1,4 +1,4 @@
-// Computer use: agent workers and connections (docs/agent/CONNEXIONS_SPEC.md, « Contrat d'API »).
+// Agents (computer use): agent workers and connections (docs/agent/CONNEXIONS_SPEC.md, « Contrat d'API »).
 // Field names mirror the API exactly.
 
 export type ConnectionKind = "portail_orientation" | "gestion_lits";

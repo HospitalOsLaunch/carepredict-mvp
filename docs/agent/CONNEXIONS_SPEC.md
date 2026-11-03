@@ -103,7 +103,7 @@ Poste agent :
 
 ## Interface
 
-Nouvel écran « Computer use » dans le menu (admin, coordination, direction) :
+Nouvel écran « Computer use » (renommé « Agents » en novembre 2026, adresse `/agents`) dans le menu (admin, coordination, direction) :
 
 - en tête : pause générale (admin), postes (en ligne / hors ligne, version, moteurs,
   dernier signal) ;

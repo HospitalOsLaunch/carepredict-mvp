@@ -1,13 +1,13 @@
 import {
   Activity,
   BedDouble,
+  Bot,
   BedSingle,
   Building2,
   FileUp,
   Gauge,
   Inbox,
   LogOut,
-  MousePointerClick,
   RadioTower,
   Settings,
   Siren,
@@ -17,13 +17,14 @@ import { lazy, Suspense } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 
 import { useAuth } from "./auth";
+import { LegacyAgentsRedirect } from "./components/LegacyAgentsRedirect";
 import { Mark } from "./components/Mark";
 import { MobileNav, primaryFor, type NavItem } from "./components/MobileNav";
 import { Spinner } from "./components/ui";
 import { AgentReplayPage } from "./pages/AgentReplayPage";
 import { BedBoardPage } from "./pages/BedBoardPage";
 import { BedsPage } from "./pages/BedsPage";
-import { ComputerUsePage } from "./pages/ComputerUsePage";
+import { AgentsPage } from "./pages/AgentsPage";
 import { GroupPage } from "./pages/GroupPage";
 import { ImportsPage } from "./pages/ImportsPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -46,7 +47,7 @@ const NAV: NavItem[] = [
   { to: "/groupe", label: "Vue groupe", short: "Groupe", icon: Building2 },
   { to: "/indicateurs", label: "Indicateurs pilote", short: "Indicateurs", icon: Gauge },
   { to: "/ror", label: "Remontée ROR", icon: RadioTower },
-  { to: "/computer-use", label: "Computer use", short: "Agent", icon: MousePointerClick },
+  { to: "/agents", label: "Agents", icon: Bot },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
   { to: "/parametres", label: "Paramètres", icon: Settings, admin: true }
 ];
@@ -148,8 +149,9 @@ export function App() {
             }
           />
           <Route path="/ror" element={<RorPage />} />
-          <Route path="/computer-use" element={<ComputerUsePage />} />
-          <Route path="/computer-use/passages/:taskId" element={<AgentReplayPage />} />
+          <Route path="/agents" element={<AgentsPage />} />
+          <Route path="/agents/passages/:taskId" element={<AgentReplayPage />} />
+          <Route path="/computer-use/*" element={<LegacyAgentsRedirect />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
           <Route path="*" element={<Navigate to="/demandes" replace />} />

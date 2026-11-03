@@ -53,7 +53,7 @@ const OUTCOME: Record<string, string> = {
   refused: "refusé"
 };
 
-export function ComputerUsePage() {
+export function AgentsPage() {
   const { isAdmin, canWrite } = useAuth();
   const status = useAgentStatus();
   const workers = useWorkers();
@@ -81,7 +81,7 @@ export function ComputerUsePage() {
   return (
     <>
       <PageHeader
-        title="Computer use"
+        title="Agents"
         lead="L'agent lit vos logiciels comme le ferait une personne, établissement par établissement. Démarrez, mettez en pause ou relevez à la demande."
         actions={
           isAdmin && (
@@ -404,7 +404,7 @@ function ConnectionCard({
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {canWatch && c.running_task_id != null && (
-            <Link to={`/computer-use/passages/${c.running_task_id}`} className="btn bg-ink text-white hover:bg-ink-soft">
+            <Link to={`/agents/passages/${c.running_task_id}`} className="btn bg-ink text-white hover:bg-ink-soft">
               <Eye className="h-4 w-4" aria-hidden /> Regarder en direct
               <span className="chip bg-coral px-2 py-0 text-[12px] text-white">
                 <LiveDot light /> En direct
@@ -501,7 +501,7 @@ function Runs({ id, canAct, canWatch }: { id: number; canAct: boolean; canWatch:
               <span className={`chip ${st.tone}`}>{st.text}</span>
               {canWatch && r.has_replay && (
                 <Link
-                  to={`/computer-use/passages/${r.id}`}
+                  to={`/agents/passages/${r.id}`}
                   className="btn-quiet px-3 py-1.5 text-[13px]"
                   aria-label={`Revoir ce passage (${r.steps_count} étape${r.steps_count > 1 ? "s" : ""})`}
                 >
