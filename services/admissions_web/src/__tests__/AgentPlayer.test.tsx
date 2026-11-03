@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 
 import type { ConnectionOut, ReplayOut, ReplayStep } from "../api/types_agent";
-import { AgentPlayer, transmittedText } from "../components/AgentPlayer";
-import { AgentReplayPage } from "../pages/AgentReplayPage";
+import { AgentPlayer, phases, readableTarget, transmittedText } from "../components/AgentPlayer";
+import { AgentReplayPage, passageTitle } from "../pages/AgentReplayPage";
 import { AgentsPage } from "../pages/AgentsPage";
 
 vi.mock("../api/client", () => ({ api: vi.fn(), apiBlob: vi.fn() }));
@@ -111,13 +111,11 @@ describe("AgentPlayer", () => {
     withFrames();
     vi.mocked(api).mockResolvedValue(replay() as never);
     renderPage();
-    expect(await screen.findByRole("heading", { level: 1, name: "Lits CH Sud" })).toBeInTheDocument();
+    // The title says what the agent did, in the words of the button that opened it; no details row.
+    expect(await screen.findByRole("heading", { level: 2, name: /^Revoir la relève des mouvements (de|du) / })).toBeInTheDocument();
     expect(api).toHaveBeenCalledWith("/agent/tasks/7/replay");
-    expect(screen.getByText("CH Sud")).toBeInTheDocument();
-    expect(screen.getByText("Relever les mouvements")).toBeInTheDocument();
-    expect(screen.getByText("Faite")).toBeInTheDocument();
-    expect(screen.getByText("9 novembre")).toBeInTheDocument();
-    expect(screen.getByText(/Conservé jusqu'au/)).toBeInTheDocument();
+    for (const detail of [/Conservé jusqu'au/, /^CH Sud$/, /^Établissement/, /^Commencé/]) expect(screen.queryByText(detail)).not.toBeInTheDocument();
+    expect(screen.queryByText("Faite")).not.toBeInTheDocument(); // a passage that went well needs no badge
 
     const items = within(transcript()).getAllByRole("listitem");
     expect(items).toHaveLength(5);
@@ -267,17 +265,21 @@ describe("AgentPlayer", () => {
     expect(apiBlob).not.toHaveBeenCalled();
   });
 
-  it("names the engines of a live task from its steps, before the task records its engine", async () => {
-    // engine_used is only set when the task ends: during the live, the header said « Moteur — ».
+  it("shows each step's engine during a live, before the task records its engine (no « Moteur — »)", async () => {
+    // engine_used is only set when the task ends; the header has no details row any more, and
+    // each step of the transcript names its engine as it arrives.
     const running = { ...replay().task, status: "running", finished_at: null, engine_used: null };
-    vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 2), task: running }) as never);
-    renderPage();
-    const meta = await screen.findByText("Moteur");
-    expect(meta.parentElement).toHaveTextContent("Moteur script");
-    cleanup();
     vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 4), task: running }) as never);
     renderPage();
-    expect((await screen.findByText("Moteur")).parentElement).toHaveTextContent("script · modèle ouvert · Claude");
+    await screen.findByRole("dialog", { name: "L'agent relève les mouvements" });
+    expect(screen.queryByText("Moteur")).not.toBeInTheDocument();
+    const items = within(transcript()).getAllByRole("listitem");
+    expect(items.map((li) => within(li).getAllByText(/^(script|modèle ouvert|Claude)$/)[0].textContent)).toEqual([
+      "script",
+      "script",
+      "modèle ouvert",
+      "Claude"
+    ]);
   });
 
   it("follows a live task: polls with after_seq every second and appends the new steps", async () => {
@@ -421,5 +423,114 @@ describe("entry points on the computer use page", () => {
     await userEvent.click(within(card).getByRole("button", { name: /Passages/ }));
     await within(card).findByRole("list", { name: "Derniers passages" });
     expect(within(card).queryByRole("link", { name: /Revoir/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("player window: views driven by the same controls", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("switches between Vidéo, Transcription and Les deux, and remembers the choice", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    renderPage();
+    const win = await screen.findByRole("dialog", { name: /Revoir la relève des mouvements/ });
+    const views = within(win).getByRole("group", { name: "Vue du player" });
+    expect(within(views).getByRole("button", { name: "Les deux" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("figure")).toBeInTheDocument();
+    expect(transcript()).toBeInTheDocument();
+
+    await userEvent.click(within(views).getByRole("button", { name: "Vidéo" }));
+    expect(screen.getByRole("figure")).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Transcription" })).not.toBeInTheDocument();
+
+    await userEvent.click(within(views).getByRole("button", { name: "Transcription" }));
+    expect(screen.queryByRole("figure")).not.toBeInTheDocument();
+    expect(transcript()).toBeInTheDocument();
+    expect(localStorage.getItem("hospitalos.player.view")).toBe("flow");
+  });
+
+  it("titles the window with the agent's action: live, then « Revoir … » with the time", () => {
+    const at = "2026-11-02T08:00:00Z";
+    const hhmm = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" }).format(new Date(at));
+    const base = replay({ task: { ...replay().task, created_at: at } });
+    expect(passageTitle({ ...base, live: true }, new Date(at))).toBe("L'agent relève les mouvements");
+    expect(passageTitle(base, new Date(at))).toBe(`Revoir la relève des mouvements de ${hhmm}`);
+    expect(passageTitle(base, new Date("2026-11-05T10:00:00Z"))).toMatch(/^Revoir la relève des mouvements du 2 nov\. à /);
+    const inbox = { ...base, task: { ...base.task, kind: "sync_inbox" } };
+    expect(passageTitle({ ...inbox, live: true }, new Date(at))).toBe("L'agent relève les demandes du portail");
+    const unknown = { ...base, task: { ...base.task, kind: "autre_tache" } };
+    expect(passageTitle(unknown, new Date(at))).toBe(`Revoir le passage de ${hhmm}`);
+  });
+
+  it("cycles the speed with one button in a small window (1× → 2× → 4× → 1×)", () => {
+    renderPlayer();
+    const cycle = screen.getByRole("button", { name: "Vitesse 1× : changer" });
+    fireEvent.click(cycle);
+    expect(screen.getByRole("button", { name: "Vitesse 2× : changer" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "2×", pressed: true })).toBeInTheDocument(); // same speed as the group
+    fireEvent.click(screen.getByRole("button", { name: "Vitesse 2× : changer" }));
+    fireEvent.click(screen.getByRole("button", { name: "Vitesse 4× : changer" }));
+    expect(screen.getByRole("button", { name: "Vitesse 1× : changer" })).toBeInTheDocument();
+  });
+
+  it("shows a script's target without its template placeholders", () => {
+    expect(readableTarget("/mouvements/{{ ref }}")).toBe("/mouvements/…");
+    expect(readableTarget("#mdp")).toBe("#mdp");
+  });
+
+  it("opens a replay on its first image, not on the opening line without one", () => {
+    const opening = step(0, { kind: "info", label: "Début du passage : relève des mouvements", has_frame: false, outcome: "info" });
+    renderPlayer(replay({ steps: [opening, ...STEPS] }));
+    expect(current()).toHaveTextContent("Saisit l'identifiant");
+    expect(within(transcript()).getAllByRole("listitem")[0]).toHaveTextContent("Début du passage");
+  });
+
+  it("drives the transcription alone with the same controls, grouped by phase", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    localStorage.setItem("hospitalos.player.view", "flow");
+    renderPage();
+    await screen.findByRole("dialog", { name: /Revoir la relève des mouvements/ });
+    expect(current()).toHaveTextContent("Saisit l'identifiant");
+    await userEvent.click(screen.getByRole("button", { name: "Étape suivante" }));
+    expect(current()).toHaveTextContent("Ouvre la liste");
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "3" } });
+    expect(current()).toHaveTextContent("Lit 12 mouvements");
+    // Phase headings are part of the text, not extra list items.
+    expect(within(transcript()).getAllByRole("listitem")).toHaveLength(5);
+    expect(within(transcript()).getByText("Connexion")).toBeInTheDocument();
+    expect(within(transcript()).getByText("Transmission à HospitalOS")).toBeInTheDocument();
+    expect(phases(STEPS).map((g) => g.name)).toEqual(["Connexion", "Navigation", "Transmission à HospitalOS", "Vérification"]);
+  });
+
+  it("closes back to the Agents screen, and leaves the page's keys to the page", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    wrap(
+      <Routes>
+        <Route
+          path="/agents"
+          element={
+            <>
+              <p>Écran Agents</p>
+              <input aria-label="Recherche" />
+              <Outlet />
+            </>
+          }
+        >
+          <Route path="passages/:taskId" element={<AgentReplayPage />} />
+        </Route>
+      </Routes>,
+      "/agents/passages/7"
+    );
+    const win = await screen.findByRole("dialog", { name: /Revoir la relève des mouvements/ });
+    expect(screen.getByText("Écran Agents")).toBeInTheDocument(); // the screen stays behind
+    const play = within(win).getByRole("button", { name: "Lecture" });
+
+    document.body.focus();
+    await userEvent.click(screen.getByText("Écran Agents"));
+    await userEvent.keyboard(" ");
+    expect(play).toHaveAccessibleName("Lecture"); // space outside the window does not play
+
+    await userEvent.click(within(win).getByRole("button", { name: "Fermer le player" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("Écran Agents")).toBeInTheDocument();
   });
 });

@@ -149,8 +149,10 @@ export function App() {
             }
           />
           <Route path="/ror" element={<RorPage />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/agents/passages/:taskId" element={<AgentReplayPage />} />
+          {/* The player opens in a window over the Agents screen; its address can be shared. */}
+          <Route path="/agents" element={<AgentsPage />}>
+            <Route path="passages/:taskId" element={<AgentReplayPage />} />
+          </Route>
           <Route path="/computer-use/*" element={<LegacyAgentsRedirect />} />
           {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
           {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
