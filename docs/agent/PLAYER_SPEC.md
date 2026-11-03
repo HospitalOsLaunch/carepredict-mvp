@@ -178,3 +178,23 @@ Décisions prises en construisant le contrat (branche `feat/agent-player-backend
   décodées avec Pillow, outil de test seulement ; aucune valeur à l'écran ni mot de passe
   dans les étapes stockées ; sans `privacy`, pas d'image ; zone introuvable, image retenue ;
   gestes d'un moteur Claude simulé ; file d'envoi non bloquante).
+
+## Vérification de la démo (3 novembre 2026)
+
+Démo réelle sans Docker (API, `demo_bedsoft` sur 8120, agent `agent-mco` avec ses quatre
+variables, Vite), compte `bedmanager@ch-demo.hospitalos.fr`, connexion « Gestion des lits
+(démonstration) » :
+
+- « Relever maintenant » puis « Regarder en direct » : images au fil de l'eau ; retard
+  mesuré dans le navigateur entre le début d'une étape et son arrivée : 1,3 s au plus
+  (0,9 s au plus après la fin de l'étape, médiane 0,5 s).
+- « Revoir » après la tâche : 24 étapes, contrôles du player, clavier.
+- 104 images de 8 passages relues au pixel : 0 zone déclarée non couverte ; chaque image
+  de la liste a ses 7 cellules Patient masquées ; aucun nom, date de naissance, IPP, n° de
+  venue ni mot de passe dans les étapes stockées ni dans les journaux de l'API, de l'agent
+  et du logiciel fictif.
+- Droits sur `GET /replay` : bedmanager, cadre et admin du CH 200 ; direction 403 (et le
+  web affiche « Player réservé » sans appeler l'API) ; comptes de l'autre groupe 404.
+- 390 px : pas de défilement horizontal (player et écran Computer use).
+
+Captures (données fictives) : `docs/agent/captures/`.
