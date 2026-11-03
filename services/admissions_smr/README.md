@@ -172,6 +172,37 @@ redeviennent réservables et un passage est dû tout de suite (ou au début de l
 plage). La pause générale prime. Le `source_system` d'une connexion de gestion des lits
 est ajouté aux comptes `ingestion` du groupe limités à une liste de sources.
 
+### Player : regarder l'agent (direct et replay)
+
+Spécification : [`docs/agent/PLAYER_SPEC.md`](../../docs/agent/PLAYER_SPEC.md).
+
+| Endpoint (`/api/agent`) | Rôles |
+| --- | --- |
+| `POST /tasks/{id}/steps` (multipart : `meta` JSON + `frame` image/jpeg facultative) | `ingestion` (ou `admin_groupe`) qui tient le bail de la tâche |
+| `GET /tasks/{id}/replay?after_seq=N` | `admin_groupe` ; `coordination` du site de la connexion de la tâche (connexion « tout le groupe » ou tâche sans connexion : non limitée à un site) |
+| `GET /steps/{id}/frame` | idem ; `image/jpeg` |
+
+`direction` reçoit 403, un autre groupe (ou un autre site pour un cadre limité) 404.
+Réponses `Cache-Control: no-store` et `X-Content-Type-Options: nosniff`. Chaque
+visionnage est audité (`agent.replay.view`, au plus une entrée par utilisateur, tâche et
+heure). `GET /connections` gagne `running_task_id`, `GET /connections/{id}/runs` gagne
+`has_replay` (des étapes existent et ce lecteur peut les voir) et `steps_count`.
+
+Envoi d'une étape : mêmes `agent_id` et `lease_token` que les autres appels de tâche,
+dans `meta` ; refus 409 si le bail n'est pas tenu ou si la tâche est finie ; `meta`
+strict (champs inconnus refusés, longueurs, énumérations `kind` / `outcome` / motif de
+masque, coordonnées bornées, date avec fuseau) ; un `label` ou une `target` qui ressemble
+à un NIR ou à une date complète est refusé (422, défense en profondeur ; la valeur n'est
+jamais renvoyée) ; image : `image/jpeg`, octets magiques JPEG (415), 512 Ko au plus
+(413 ; corps de plus de ~530 Ko refusé avant lecture, `Content-Length` exigé) ; au plus
+2 000 étapes par tâche ; un même `seq` renvoyé est idempotent (200). `replay` renvoie au
+plus 500 étapes après `after_seq` (le direct interroge avec le dernier `seq` reçu).
+
+**Conservation** : `ADM_AGENT_REPLAY_DAYS` (défaut 7, de 1 à 90). Les étapes et leurs
+images plus anciennes sont supprimées au démarrage de l'API et au signal des postes (au
+plus une fois par heure et par groupe). `retention_until` = première étape de la tâche
++ la conservation.
+
 ## Données
 
 - Seules des **références patient pseudonymisées** sont acceptées. Une valeur
