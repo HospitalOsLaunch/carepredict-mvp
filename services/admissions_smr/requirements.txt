@@ -9,3 +9,4 @@ pyjwt[crypto]>=2.8,<3
 cryptography>=42  # AES-256-GCM of the agent connections' secrets (also pulled by pyjwt)
 httpx>=0.27,<1
 hl7>=0.4.5,<0.5  # HL7 v2 ER7 parser (BSD), IHE PAM movements
+python-multipart>=0.0.9  # agent player: step uploads (meta + JPEG frame)

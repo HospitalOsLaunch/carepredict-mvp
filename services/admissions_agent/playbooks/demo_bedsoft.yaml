@@ -11,15 +11,31 @@ id: demo_bedsoft
 kind: gestion_lits
 name: Gestion des lits (démonstration)
 
+# Player (docs/agent/PLAYER_SPEC.md): zones masked on this machine BEFORE any capture. The
+# list shows each patient's name, the detail its name, birth date, IPP and venue number
+# (clear identifiers: HospitalOS only ever stores them pseudonymised): masked, and the
+# frame is withheld if a zone cannot be found on its screen. Password inputs and fields
+# filled with credentials are always masked. Without this section, no frame at all.
+privacy:
+  mask:
+    - {selector: "td.patient", reason: identite, screen: /mouvements}
+    - {selector: "#patient", reason: identite, screen: "/mouvements/*"}
+    - {selector: "#naissance", reason: identite, screen: "/mouvements/*"}
+    - {selector: "#ipp", reason: identite, screen: "/mouvements/*"}
+    - {selector: "#venue", reason: identite, screen: "/mouvements/*"}
+
+# ``label``: what the player's transcript says of a step (static text, never a value).
 login:
-  - goto: /connexion
+  - {goto: /connexion, label: "Ouvre la page de connexion du logiciel"}
   - fill: {selector: "#utilisateur", value: "{{ secrets.username }}"}
   - fill: {selector: "#mdp", value: "{{ secrets.password }}"}
-  - click: "button[type=submit]"
-  - wait_for: "[data-testid=mouvements]"
+  - {click: "button[type=submit]", label: "Valide la connexion"}
+  - {wait_for: "[data-testid=mouvements]", label: "Attend la liste des mouvements"}
 
 sync_movements:
   list:
+    label: Ouvre la liste des mouvements du jour
+    items: mouvements
     goto: /mouvements
     rows: "tr[data-id]"
     ref_attribute: data-id

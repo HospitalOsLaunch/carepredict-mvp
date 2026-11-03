@@ -21,7 +21,7 @@ from typing import Any
 import httpx
 
 from services.admissions_agent.api_client import TaskInterrupted
-from services.admissions_agent.browser import BrowserSession
+from services.admissions_agent.browser import ALLOWED_KEYS, BrowserSession
 from services.admissions_agent.engines.base import (
     SYSTEM_PROMPT,
     BudgetExceeded,
@@ -30,6 +30,7 @@ from services.admissions_agent.engines.base import (
     cost_from_tokens,
     parse_final,
 )
+from services.admissions_agent.replay import CLICKS, model_label
 
 TOOLSET = {"type": "computer_toolset_20260801", "configs": {"zoom": {"enabled": False}}}
 API_VERSION = "2023-06-01"
@@ -112,6 +113,26 @@ class AnthropicComputerUse:
             time.sleep(min(float(args.get("duration", 1)), 10.0))
             return "OK"
         raise ValueError(f"action inconnue : {member}")
+
+    def _recorded(self, session: BrowserSession, member: str, args: dict[str, Any]) -> Any:
+        """The player's step for one model action, with its gesture. Coordinates are in
+        the screenshot's pixels, which are the viewport's (1280x800, no rescaling)."""
+        text = str(args.get("text") or "")
+        pointer = None
+        if member in CLICKS or member in ("mouse_move", "scroll"):
+            pointer = args.get("coordinate") or self.cursor
+        return session.recorder.step(
+            "model_action",
+            model_label(
+                member,
+                chars=len(text),
+                key=text if member == "key" and text in ALLOWED_KEYS else None,
+                direction=args.get("scroll_direction"),
+            ),
+            engine=self.name,
+            pointer=pointer,
+            capture="before" if member in CLICKS else "after",
+        )
 
     def _trim(self, messages: list[dict[str, Any]]) -> None:
         """Keep only the last screenshots in the history to bound cost."""
@@ -236,9 +257,9 @@ class AnthropicComputerUse:
                     result["is_error"] = True
                 else:
                     try:
-                        result["content"] = self._act(
-                            session, call["name"], call.get("input") or {}
-                        )
+                        member, args = str(call["name"]), call.get("input") or {}
+                        with self._recorded(session, member, args):
+                            result["content"] = self._act(session, member, args)
                         trace.append(f"{call['name']} {call.get('input') or ''}")
                     except TaskInterrupted:
                         raise

@@ -27,7 +27,7 @@ from typing import Any
 import httpx
 
 from services.admissions_agent.api_client import TaskInterrupted
-from services.admissions_agent.browser import BrowserSession
+from services.admissions_agent.browser import ALLOWED_KEYS, BrowserSession
 from services.admissions_agent.engines.base import (
     SYSTEM_PROMPT,
     BudgetExceeded,
@@ -36,6 +36,7 @@ from services.admissions_agent.engines.base import (
     cost_from_tokens,
     parse_final,
 )
+from services.admissions_agent.replay import model_label
 
 KEEP_SCREENSHOTS = 2
 
@@ -166,6 +167,33 @@ class OpenWeightsVision:
             raise ValueError(f"action inconnue : {name}")
         return "OK"
 
+    def _recorded(self, session: BrowserSession, name: str, args: dict[str, Any]) -> Any:
+        """The player's step for one model action; the pointer in viewport pixels."""
+        pointer = None
+        if name in ("click", "scroll"):
+            try:
+                pointer = self.to_pixels(session, float(args["x"]), float(args["y"]))
+            except (KeyError, TypeError, ValueError):
+                pointer = None
+        action = {
+            "click": "double_click" if args.get("double") else "left_click",
+            "type_text": "type",
+            "press_key": "key",
+        }.get(name, name)
+        key = str(args.get("key") or "")
+        return session.recorder.step(
+            "model_action",
+            model_label(
+                action,
+                chars=len(str(args.get("text") or "")),
+                key=key if key in ALLOWED_KEYS else None,
+                direction=args.get("direction"),
+            ),
+            engine=self.name,
+            pointer=pointer,
+            capture="before" if name == "click" else "after",
+        )
+
     def close(self) -> None:
         self.http.close()
 
@@ -284,7 +312,8 @@ class OpenWeightsVision:
                         trace,
                     )
                 try:
-                    outcome = self._act(session, str(fn.get("name")), args)
+                    with self._recorded(session, str(fn.get("name")), args):
+                        outcome = self._act(session, str(fn.get("name")), args)
                     trace.append(f"{fn.get('name')} {args}")
                 except TaskInterrupted:
                     raise

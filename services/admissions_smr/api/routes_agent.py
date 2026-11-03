@@ -12,7 +12,7 @@ import secrets
 from datetime import datetime, time, timedelta
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy import Select, case, func, or_, select
 
@@ -23,6 +23,7 @@ from services.admissions_smr.agent_policy import (
     AgentPolicy,
     parse_policy,
 )
+from services.admissions_smr.agent_replay import purge_due, purge_steps
 from services.admissions_smr.api.deps import (
     UNPROCESSABLE,
     AdminCtx,
@@ -400,8 +401,10 @@ def enqueue_portal_reply(ctx: Ctx, req: AdmissionRequest) -> AgentTask | None:
 
 
 @router.post("/heartbeat", response_model=HeartbeatOut)
-def heartbeat(body: HeartbeatIn, ctx: IngestCtx) -> HeartbeatOut:
+def heartbeat(body: HeartbeatIn, ctx: IngestCtx, request: Request) -> HeartbeatOut:
     now = ctx.clock.now()
+    if purge_due(request.app.state.replay_purged_at, ctx.group.id, now):
+        purge_steps(ctx.session, now, ctx.settings.agent_replay_days, ctx.group.id)
     state = get_state(ctx)
     assert state is not None
     state.last_heartbeat_at = now

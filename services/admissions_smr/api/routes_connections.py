@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 
 from services.admissions_smr import agent_connections as connections
 from services.admissions_smr.api.deps import UNPROCESSABLE, AdminCtx, Ctx, ReadCtx, WriteCtx
@@ -36,11 +36,13 @@ from services.admissions_smr.api.routes_agent import (
     get_state,
     task_out,
 )
+from services.admissions_smr.api.routes_replay import can_watch
 from services.admissions_smr.domain.connector_secrets import encrypt
 from services.admissions_smr.models import (
     AdmissionRequest,
     AgentConnection,
     AgentTask,
+    AgentTaskStep,
     AgentWorker,
     Site,
     User,
@@ -92,8 +94,16 @@ class ConnectionOut(BaseModel):
     last_error: str | None
     pending_tasks: int
     needs_human: int
+    running_task_id: int | None  # the task in progress (player: "Regarder en direct")
     can_control: bool
     can_edit: bool
+
+
+class RunOut(TaskOut):
+    """A run of a connection, with what the player can show of it to this viewer."""
+
+    has_replay: bool
+    steps_count: int
 
 
 Day = Literal[1, 2, 3, 4, 5, 6, 7]
@@ -224,6 +234,7 @@ def connection_out(
         last_error=conn.last_error,
         pending_tasks=tally.get("pending", 0),
         needs_human=tally.get("needs_human", 0),
+        running_task_id=tally.get("running_task_id"),
         can_control=can_control(ctx, conn),
         can_edit=ctx.user.role == "admin_groupe",
     )
@@ -403,10 +414,10 @@ def list_connections(ctx: ReadCtx) -> list[ConnectionOut]:
     return [connection_out(ctx, c, counts) for c in rows if visible(ctx, c)]
 
 
-@router.get("/connections/{connection_id}/runs", response_model=list[TaskOut])
+@router.get("/connections/{connection_id}/runs", response_model=list[RunOut])
 def connection_runs(
     connection_id: int, ctx: ReadCtx, limit: int = Query(20, ge=1, le=100)
-) -> list[TaskOut]:
+) -> list[RunOut]:
     conn = get_connection(ctx, connection_id)
     query = select(AgentTask).where(
         AgentTask.group_id == ctx.group.id, AgentTask.connection_id == conn.id
@@ -426,10 +437,28 @@ def connection_runs(
                 ),
             )
         )
-    rows = ctx.session.scalars(
-        query.order_by(AgentTask.created_at.desc(), AgentTask.id.desc()).limit(limit)
+    rows = list(
+        ctx.session.scalars(
+            query.order_by(AgentTask.created_at.desc(), AgentTask.id.desc()).limit(limit)
+        )
     )
-    return [task_out(t) for t in rows]
+    steps: dict[int, int] = {
+        task_id: int(n)
+        for task_id, n in ctx.session.execute(
+            select(AgentTaskStep.task_id, func.count())
+            .where(AgentTaskStep.task_id.in_([t.id for t in rows]))
+            .group_by(AgentTaskStep.task_id)
+        )
+    }
+    watch = can_watch(ctx, conn)
+    return [
+        RunOut(
+            **task_out(t).model_dump(),
+            steps_count=int(steps.get(t.id, 0)),
+            has_replay=watch and bool(steps.get(t.id)),
+        )
+        for t in rows
+    ]
 
 
 # --- administration ---------------------------------------------------------------------

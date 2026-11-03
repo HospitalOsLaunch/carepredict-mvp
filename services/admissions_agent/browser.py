@@ -15,6 +15,8 @@ from urllib.parse import urljoin, urlparse
 
 from playwright.sync_api import Browser, BrowserContext, Page, Playwright, Route, sync_playwright
 
+from services.admissions_agent.replay import Recorder
+
 
 class BlockedNavigation(RuntimeError):
     pass
@@ -79,6 +81,7 @@ class BrowserSession:
         headless: bool = True,
     ) -> None:
         self.checkpoint: Callable[[], None] = lambda: None
+        self.recorder = Recorder()  # disabled until a task attaches one (player)
         self.base_url = base_url.rstrip("/")
         self.allowed_hosts = set(allowed_hosts)
         self.viewport = viewport

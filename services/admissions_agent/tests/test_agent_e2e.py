@@ -61,7 +61,7 @@ def broken_playbook(tmp_path: Path, original: str) -> str:
     spec = yaml.safe_load(Path(original).read_text())
     spec["timeout_ms"] = 1500
     spec["reply_portal"] = [
-        s if s != {"click": "#envoyer"} else {"click": "#bouton-renomme"}
+        s if s.get("click") != "#envoyer" else {"click": "#bouton-renomme"}
         for s in spec["reply_portal"]
     ]
     path = tmp_path / "broken.yaml"

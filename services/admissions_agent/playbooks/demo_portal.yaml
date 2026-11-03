@@ -11,15 +11,26 @@ id: demo_portal
 kind: portail_orientation
 name: Portail d'orientation (démonstration)
 
+# Player (docs/agent/PLAYER_SPEC.md): zones masked on this machine BEFORE any capture. The
+# patient's name is shown on each dossier: masked, and the frame is withheld if it cannot
+# be found there. Password inputs and fields filled with credentials are always masked.
+# Without this section, no frame is ever captured (the transcript stays).
+privacy:
+  mask:
+    - {selector: "#patient", reason: identite, screen: "/dossiers/*"}
+
+# ``label``: what the player's transcript says of a step (static text, never a value).
 login:
-  - goto: /login
+  - {goto: /login, label: "Ouvre la page de connexion du portail"}
   - fill: {selector: "#identifiant", value: "{{ secrets.username }}"}
   - fill: {selector: "#mot-de-passe", value: "{{ secrets.password }}"}
-  - click: "button[type=submit]"
-  - wait_for: "[data-testid=liste-dossiers]"
+  - {click: "button[type=submit]", label: "Valide la connexion"}
+  - {wait_for: "[data-testid=liste-dossiers]", label: "Attend la liste des demandes"}
 
 sync_inbox:
   list:
+    label: Ouvre la liste des demandes en attente
+    items: demandes
     goto: /dossiers?statut=en_attente
     rows: "tr[data-ref]"
     ref_attribute: data-ref
@@ -42,18 +53,21 @@ sync_inbox:
   patient_ref_from: external_ref
 
 reply_portal:
-  - goto: "/dossiers/{{ payload.external_ref }}"
+  - {goto: "/dossiers/{{ payload.external_ref }}", label: "Ouvre le dossier à traiter"}
   - when: {decision: accord}
     steps:
-      - check: "#decision-accord"
+      - {check: "#decision-accord", label: "Choisit « Accord »"}
       - fill: {selector: "#date-entree", value: "{{ payload.proposed_date_fr }}"}
+        label: Saisit la date d'entrée proposée
   - when: {decision: refus}
     steps:
-      - check: "#decision-refus"
+      - {check: "#decision-refus", label: "Choisit « Refus »"}
       - select: {selector: "#motif-refus", label: "{{ payload.reason_label }}"}
+        label: Choisit le motif de refus
   - fill: {selector: "#message", value: "{{ payload.message }}"}
-  - click: "#envoyer"
-  - wait_for: "#confirmation"
+    label: Colle le message au demandeur
+  - {click: "#envoyer", label: "Envoie la réponse"}
+  - {wait_for: "#confirmation", label: "Attend la confirmation du portail"}
 
 verify_reply:
   goto: "/dossiers/{{ payload.external_ref }}"

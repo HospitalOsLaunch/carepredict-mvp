@@ -259,6 +259,18 @@ def task_counts(ctx: Ctx) -> dict[int, dict[str, int]]:
         bucket = out.setdefault(int(connection_id or 0), {"pending": 0, "needs_human": 0})
         key = "needs_human" if task_status == "needs_human" else "pending"
         bucket[key] += int(count)
+    running = (
+        select(AgentTask.connection_id, func.max(AgentTask.id))
+        .where(
+            AgentTask.group_id == ctx.group.id,
+            AgentTask.connection_id.is_not(None),
+            AgentTask.status == "running",
+        )
+        .group_by(AgentTask.connection_id)
+    )
+    for connection_id, task_id in ctx.session.execute(running):
+        bucket = out.setdefault(int(connection_id or 0), {"pending": 0, "needs_human": 0})
+        bucket["running_task_id"] = int(task_id)
     return out
 
 

@@ -41,6 +41,7 @@ from services.admissions_agent.playbook import (
     render,
     same_text,
 )
+from services.admissions_agent.replay import Recorder, StepUploader
 
 EngineFactory = Callable[[str, dict[str, Any]], VisionEngine | None]
 SessionFactory = Callable[[], BrowserSession]
@@ -84,6 +85,21 @@ MOVEMENT_FIELDS = {
 }
 
 
+TASK_LABELS = {
+    "sync_inbox": "relève des demandes",
+    "reply_portal": "réponse au portail",
+    "sync_movements": "relève des mouvements",
+}
+END_LABELS = {
+    "done": ("Passage terminé : réussi", "info", "ok"),
+    "needs_human": ("Passage terminé : à reprendre par une personne", "error", "fail"),
+    "failed": ("Passage terminé : échec, nouvelle tentative prévue", "error", "fail"),
+}
+# Seq of a task's steps: each claim (attempt) starts its own range, so a retried task keeps
+# one ordered transcript and (task_id, seq) stays unique.
+SEQ_PER_ATTEMPT = 100_000
+
+
 @dataclass
 class TaskOutcome:
     status: str  # done | failed | needs_human
@@ -113,6 +129,7 @@ class Router:
         # A connection's credentials (in memory, for one task), else the legacy settings.
         self.credentials = credentials
         self.source_system = source_system
+        self.recorder = Recorder()  # the player's recorder of the task being handled
 
     # --- eligibility ---------------------------------------------------------------
 
@@ -155,6 +172,32 @@ class Router:
     # --- task handling -------------------------------------------------------------
 
     def handle(self, task: dict[str, Any], heartbeat: dict[str, Any]) -> TaskOutcome:
+        """Run the task, recording each step for the player (best effort, never blocking:
+        the final step is sent before the task is reported complete)."""
+        attempt = max(1, int(task.get("attempts") or 1))
+        self.recorder = Recorder(
+            StepUploader(lambda meta, frame, timeout: self.api.post_step(
+                task["id"], meta, frame, timeout
+            )),
+            self.playbook.privacy,
+            seq_base=(attempt - 1) * SEQ_PER_ATTEMPT,
+        )  # fmt: skip
+        what = TASK_LABELS.get(task["kind"], "tâche")
+        self.recorder.info(
+            f"Début du passage : {what}" + (f" (tentative {attempt})" if attempt > 1 else "")
+        )
+        try:
+            outcome = self._handle(task, heartbeat)
+            label, kind, verdict = END_LABELS.get(outcome.status, END_LABELS["failed"])
+            self.recorder.info(label, kind=kind, outcome=verdict)
+            return outcome
+        except BaseException:
+            self.recorder.info("Passage interrompu", kind="error", outcome="fail")
+            raise
+        finally:
+            self.recorder.close()
+
+    def _handle(self, task: dict[str, Any], heartbeat: dict[str, Any]) -> TaskOutcome:
         policy = heartbeat["policy"]
         kind = task["kind"]
         chain: list[str] = policy["routes"].get(kind, [])
@@ -176,6 +219,8 @@ class Router:
                 ),
             )
         session = self.session_factory()
+        session.recorder = self.recorder
+        self.recorder.attach(session)
         writing = False
         try:
             try:
@@ -434,6 +479,11 @@ class Router:
 
     # --- inbox ----------------------------------------------------------------------------
 
+    @staticmethod
+    def normalise_keys(item: Any) -> list[str]:
+        """Field names that may leave the screen (the player lists names, never values)."""
+        return [k for k in item if k in REQUEST_FIELDS] if isinstance(item, dict) else []
+
     def normalise(self, item: dict[str, Any]) -> dict[str, Any]:
         """Keep allowed fields only; model labels become codes; the patient is the dossier."""
         clean = {k: v for k, v in item.items() if k in REQUEST_FIELDS and v not in (None, "")}
@@ -478,6 +528,19 @@ class Router:
             "already_known": existing,
             "rejected": rejected,
         }
+        sent = len(items or [])
+        self.recorder.info(
+            f"Transmet {sent} demande(s) à HospitalOS : {created} nouvelle(s), "
+            f"{existing} déjà connue(s), {len(rejected)} refusée(s)",
+            outcome="fail" if rejected else "ok",
+            transmitted={
+                "count": sent,
+                "fields": sorted({k for i in items or [] for k in self.normalise_keys(i)}),
+                "applied": created,
+                "duplicates": existing,
+                "rejected": len(rejected),
+            },
+        )
         if rejected:
             return TaskOutcome(
                 "needs_human", engine, result, f"{len(rejected)} demande(s) rejetée(s)"
@@ -516,6 +579,19 @@ class Router:
             if a.get("status") == "rejected"
         ]
         result = {"route": route, "movements": counts, "rejected": rejected}
+        self.recorder.info(
+            f"Transmet {len(batch)} mouvement(s) à HospitalOS : "
+            f"{counts.get('applied', 0)} appliqué(s), {counts.get('duplicate', 0)} doublon(s), "
+            f"{len(rejected)} refusé(s)",
+            outcome="fail" if rejected else "ok",
+            transmitted={
+                "count": len(batch),
+                "fields": sorted({k for m in batch for k in m}),
+                "applied": counts.get("applied", 0),
+                "duplicates": counts.get("duplicate", 0),
+                "rejected": len(rejected),
+            },
+        )
         if rejected:
             return TaskOutcome(
                 "needs_human", engine, result, f"{len(rejected)} mouvement(s) rejeté(s)"

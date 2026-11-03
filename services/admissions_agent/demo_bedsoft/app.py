@@ -164,7 +164,8 @@ def movements(request: Request) -> HTMLResponse | RedirectResponse:
     today = store.clock().date()
     body = "".join(
         f"<tr data-id='{esc(r.id)}' class='{'annule' if r.cancelled else ''}'>"
-        f"<td>{r.at(today):%H:%M}</td><td>{esc(TYPES[r.type])}</td><td>{esc(r.name)}</td>"
+        f"<td>{r.at(today):%H:%M}</td><td>{esc(TYPES[r.type])}</td>"
+        f"<td class='patient'>{esc(r.name)}</td>"
         f"<td>{esc(UNITS[r.uf])}</td><td>{esc(r.room)}</td><td>{esc(r.bed)}</td>"
         f"<td>{'Annulé' if r.cancelled else 'Validé'}</td>"
         f"<td><a href='/mouvements/{esc(r.id)}'>Détail</a></td></tr>"

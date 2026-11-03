@@ -58,6 +58,8 @@ class Settings:
     # Master key of the agent connections' secrets (AES-256-GCM, one key per group derived
     # with HKDF). Separate from the other keys; losing it means re-entering every password.
     connector_key: str = DEV_CONNECTOR_KEY
+    # Days the agent player keeps each step (label, gesture, masked frame) before purge.
+    agent_replay_days: int = 7
 
     @property
     def is_production(self) -> bool:
@@ -117,7 +119,10 @@ def load_settings() -> Settings:
         movement_max_age_days=int(os.getenv("ADM_MOVEMENT_MAX_AGE_DAYS", "400")),
         movement_max_future_hours=int(os.getenv("ADM_MOVEMENT_MAX_FUTURE_HOURS", "24")),
         connector_key=os.getenv("ADM_CONNECTOR_KEY", DEV_CONNECTOR_KEY),
+        agent_replay_days=int(os.getenv("ADM_AGENT_REPLAY_DAYS", "7")),
     )
+    if not 1 <= settings.agent_replay_days <= 90:
+        raise ConfigurationError("ADM_AGENT_REPLAY_DAYS doit être compris entre 1 et 90")
     if not settings.dev_defaults_allowed:
         if settings.secret_key == _DEV_SECRET or len(settings.secret_key) < 32:
             raise ConfigurationError(

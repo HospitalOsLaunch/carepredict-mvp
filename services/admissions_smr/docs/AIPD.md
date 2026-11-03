@@ -57,6 +57,7 @@ requise. **[À DÉCIDER]** confirmation par le DPO.
 | Utilisateurs | Nom, e-mail, rôle, site, identifiant fédéré (ex. identifiant national Pro Santé Connect), empreinte du mot de passe (PBKDF2) | Administrateur, fournisseur d'identité | |
 | Traces | Journal d'audit : qui, quoi, quand, sur quel objet | Application | |
 | Agent | Tâches, parcours des moteurs, coûts, erreurs | Agent | Les erreurs ne doivent pas recopier de donnée patient (consigne donnée aux modèles) |
+| **Player de l'agent** | Par étape d'une tâche : phrase fixe décrivant le geste (sans valeur lue), moteur, durée, résultat, position du clic, noms et nombre des champs transmis, **capture d'écran JPEG masquée sur le poste** | Agent | Zones identifiantes (nom, date de naissance, IPP, n° de venue…) et mots de passe recouverts **avant** la capture ; sans masques déclarés, aucune image ; conservation **7 jours** ; visionnage réservé à l'administrateur et à la coordination du site, journalisé |
 | **Pseudonymes (LISCOP)** | `patient_ref` et `encounter_ref` : HMAC-SHA256 de l'IPP et du NDA reçus, avec une clé propre (`ADM_PSEUDONYM_SECRET`, distincte de la clé des jetons) | Mouvements HL7, agent | IPP et NDA en clair jamais stockés ; la clé permet de recalculer un pseudonyme à partir d'un IPP connu : elle est un secret de production (coffre de l'hébergeur) |
 | **Journal des mouvements** | Par message : système émetteur, identifiant du message (MSH-10) et du mouvement (ZBE-1), événement (A01, A02…), horodatage du mouvement et de réception, pseudonymes, site, unité, lit, statut, motif de rejet, empreinte du message | Dossier patient (HL7), agent | Pas de nom, d'adresse, de date de naissance ni de téléphone : le message reçu n'est pas conservé, seule son empreinte |
 | **Passages aux urgences** | Pseudonymes, site, heure d'arrivée, de décision d'hospitalisation et de départ, issue (hospitalisé, retour à domicile…), unité visée | Mouvements | Horodatages à la minute : quasi-identifiants, voir section 6 |
@@ -74,6 +75,18 @@ sexe, dates, unité). Elles sont traitées comme des données de santé.
 l'identité du patient. Le script extrait uniquement les champs ci-dessus ; les
 captures d'écran ne sont envoyées à un modèle que si l'administrateur a autorisé ce
 moteur à voir des écrans identifiants (désactivé par défaut pour tous les modèles).
+
+**Captures du player (finalité : contrôle humain de l'agent).** Pour qu'une personne
+habilitée vérifie ce que l'agent a fait sur le logiciel (et en direct pendant la tâche),
+le poste enregistre une image par étape. Les zones identifiantes déclarées par le script
+et les champs de mot de passe sont recouverts **sur le poste, avant la capture** : aucune
+image non masquée ne quitte le réseau de l'établissement ni n'est stockée. Le dispositif
+est fermé par défaut (script sans masques : aucune image ; zone attendue introuvable :
+image retenue). L'API refuse en plus un libellé qui ressemble à un NIR ou à une date.
+Résidu : une donnée identifiante affichée hors des zones déclarées (texte libre d'un
+dossier, par exemple) peut apparaître sur une image ; d'où une conservation courte
+(7 jours), l'accès restreint et journalisé, et la revue des masques de chaque script
+avant sa mise en service.
 
 ## 3. Principes fondamentaux
 
@@ -114,6 +127,7 @@ l'exploitant ; les autres durées restent à définir puis implémenter :
 | Journal d'audit | **[À DÉCIDER]** par ex. 1 an glissant, ou selon la politique de traçabilité de l'établissement |
 | Comptes utilisateurs | Désactivation au départ ; suppression après **[À DÉCIDER]** |
 | Tâches de l'agent | **[À DÉCIDER]** par ex. 90 jours |
+| Étapes et captures du player | **7 jours** (`ADM_AGENT_REPLAY_DAYS`), **purge codée** : au démarrage de l'API et au signal des postes, au plus une fois par heure |
 
 **Purge LISCOP (tâche d'exploitation, PostgreSQL, mensuelle)**, durées ci-dessus, dans
 une transaction, avec un rôle qui a le droit de supprimer (pas celui du moteur de

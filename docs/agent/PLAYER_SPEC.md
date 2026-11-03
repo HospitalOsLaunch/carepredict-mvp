@@ -115,3 +115,66 @@ ci-dessus, `frame` binaire nullable, `created_at`), index (`task_id`, `seq`) ; p
 5. Droits : admin et coordination de son site ; direction 403 ; autre groupe 404 ;
    visionnage journalisé. Purge après 7 jours.
 6. Tous les contrôles verts ; démo vérifiée.
+
+## Implémentation (côté API et poste agent)
+
+Décisions prises en construisant le contrat (branche `feat/agent-player-backend`) :
+
+- **Schéma** : migration `0005`, table `agent_task_steps` (`pointer`, `box`, `viewport`,
+  `masks`, `transmitted` en JSON texte ; `frame` binaire nullable), index unique
+  (`task_id`, `seq`), index sur `created_at` pour la purge.
+- **Envoi d'une étape** : `meta` porte aussi `agent_id` et `lease_token` (mêmes jetons que
+  `renew` / `attempts`) ; le bail est vérifié sans les contrôles de travail (pause, décision
+  à jour) pour que les dernières étapes d'une tâche qu'on arrête arrivent encore ; tâche
+  finie ou bail perdu : 409. `engine` doit être un moteur connu. Réponses : 201 (créée),
+  200 (même `seq` renvoyé : idempotent), 411 (sans `Content-Length`), 413 (image > 512 Ko,
+  ou corps > ~530 Ko refusé avant lecture), 415 (type ou octets magiques non JPEG), 422
+  (`meta` stricte : champ inconnu, énumérations, longueurs, coordonnées bornées à ±20 000,
+  date avec fuseau ; libellé ou cible ressemblant à un NIR, à 13 chiffres ou plus, ou à
+  une **date complète** quelle qu'elle soit — une date de naissance ne se distingue pas
+  d'une autre ; la valeur refusée n'est jamais renvoyée). Au plus 2 000 étapes par tâche.
+- **`seq`** : croissant dans une tâche ; chaque tentative (réservation) commence à
+  `(tentative − 1) × 100 000 + 1`, pour qu'une tâche reprise garde une transcription
+  ordonnée sans collision. Les `seq` ne sont donc pas contigus d'une tentative à l'autre.
+- **Replay** : 500 étapes au plus après `after_seq` (défaut 0) ; `live` = tâche en cours ;
+  `retention_until` = création de la première étape + `ADM_AGENT_REPLAY_DAYS` (création de
+  la tâche s'il n'y a pas d'étape). Coordonnées (`pointer`, `box`, `masks`) en pixels CSS du
+  `viewport` de l'étape ; l'image est capturée à l'échelle CSS, donc ses pixels sont ceux du
+  `viewport` (1280 × 800 sur les postes actuels).
+- **Droits** : site d'une tâche = site de sa connexion. Autre groupe ou autre site
+  (cadre limité) : 404 ; connexion « tout le groupe » ou tâche historique sans connexion
+  vue par un cadre limité : 403 (même règle que les connexions visibles non pilotables) ;
+  `direction` et `ingestion` : 403. L'image est soumise aux mêmes droits et au même audit
+  `agent.replay.view` (une entrée par utilisateur, tâche et heure, vérifiée sous le verrou du
+  groupe). `has_replay` vaut faux si ce lecteur ne peut pas regarder la tâche ; `steps_count`
+  est donné à tous les lecteurs des passages. `running_task_id` : la tâche en cours la plus
+  récente de la connexion.
+- **Conservation** : `ADM_AGENT_REPLAY_DAYS` de 1 à 90 (configuration refusée sinon) ;
+  purge au démarrage de l'API (tous groupes) et au signal d'un poste (son groupe, au plus une
+  fois par heure et par processus d'API).
+- **Poste** : `replay.py` (enregistreur et envoi). Masquage natif de Playwright, aplat
+  `#4B5563` (le player dessine les hachures et l'étiquette par-dessus avec les rectangles
+  reçus). **Écart** : un écran plus large que 1280 px n'est pas réduit, l'image est retenue
+  (« capture retenue : écran plus large que 1280 px ») ; les postes capturent en 1280 × 800,
+  sans Pillow ni redimensionnement. Image retenue aussi si la page change pendant la capture
+  ou si le JPEG dépasse 512 Ko. Zone déclarée avec `screen` et introuvable : image retenue
+  (`optional: true` pour l'éviter) ; zone sans `screen` : masquée là où elle paraît, sans
+  exigence.
+- **Libellés** : texte fixe, jamais interpolé (`label:` facultatif par étape de script,
+  sinon un libellé par type d'étape ; `list.label` / `list.items`). Une saisie de modèle est
+  décrite par sa longueur, une touche par son nom seulement si elle est dans la liste
+  autorisée. Étapes de connexion : `kind = login`. Début et fin de passage : `info` /
+  `error`. Chaque fiche lue : `read` avec `transmitted = {count: 1, fields}` ; la liste :
+  `read` avec le total ; après l'envoi à l'API : `info` (ou `ok` / `fail`) avec
+  `applied` / `duplicates` / `rejected` (demandes : nouvelles / déjà connues / refusées).
+- **Démo** : `demo_portal` masque `#patient` sur `/dossiers/*` ; `demo_bedsoft` masque la
+  colonne `td.patient` (classe ajoutée au logiciel fictif) sur `/mouvements`, et `#patient`,
+  `#naissance`, `#ipp`, `#venue` sur `/mouvements/*` (IPP et venue en clair : HospitalOS ne
+  les garde que pseudonymisés, ils ne doivent pas l'être en image).
+- **Tests** : `services/admissions_smr/tests/test_agent_replay.py` (droits, bail, tailles et
+  types, libellés refusés, purge, pagination, audit, en-têtes) ;
+  `services/admissions_agent/tests/test_player.py` (Chromium réel : chaque zone de nom, date
+  de naissance, identifiant et mot de passe est l'aplat de masquage dans toutes les images,
+  décodées avec Pillow, outil de test seulement ; aucune valeur à l'écran ni mot de passe
+  dans les étapes stockées ; sans `privacy`, pas d'image ; zone introuvable, image retenue ;
+  gestes d'un moteur Claude simulé ; file d'envoi non bloquante).

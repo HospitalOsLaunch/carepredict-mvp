@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from services.admissions_smr import __version__
+from services.admissions_smr.agent_replay import purge_steps
 from services.admissions_smr.api import (
     routes_agent,
     routes_auth,
@@ -23,6 +24,7 @@ from services.admissions_smr.api import (
     routes_imports,
     routes_insights,
     routes_predictions,
+    routes_replay,
     routes_requests,
     routes_ror,
     routes_sites,
@@ -53,6 +55,10 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
     app.state.engine = engine
     app.state.session_factory = make_session_factory(engine)
     app.state.clock = clock or Clock(settings.timezone)
+    app.state.replay_purged_at = {}  # group id -> last heartbeat purge of the agent player
+    with app.state.session_factory() as session:
+        purge_steps(session, app.state.clock.now(), settings.agent_replay_days)
+        session.commit()
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_request: Request, exc: RequestValidationError) -> JSONResponse:
@@ -64,6 +70,7 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
         ]
         return JSONResponse(status_code=422, content={"detail": jsonable_encoder(detail)})
 
+    app.add_middleware(routes_replay.StepUploadLimit)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
@@ -80,6 +87,7 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
     for module in (
         routes_agent,
         routes_connections,
+        routes_replay,
         routes_auth,
         routes_sites,
         routes_requests,
