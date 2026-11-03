@@ -1,6 +1,8 @@
 import {
   BedDouble,
   ChevronDown,
+  Clapperboard,
+  Eye,
   Globe,
   Monitor,
   Pause,
@@ -17,6 +19,7 @@ import { Link } from "react-router-dom";
 
 import type { ConnectionAction, ConnectionOut, WorkerOut } from "../api/types_agent";
 import { useAuth } from "../auth";
+import { LiveDot } from "../components/AgentPlayer";
 import { ConnectionForm, WEEKDAYS } from "../components/ConnectionForm";
 import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
 import {
@@ -176,6 +179,7 @@ export function ComputerUsePage() {
                 c={c}
                 groupPaused={paused}
                 canAct={canWrite && c.can_control}
+                canWatch={canWrite}
                 busy={action.isPending && action.variables?.id === c.id}
                 onAction={(act) => (act === "pause" ? setConfirm(c) : run(c, act))}
                 onEdit={isAdmin && c.can_edit ? () => setEditing(c) : undefined}
@@ -321,6 +325,7 @@ function ConnectionCard({
   c,
   groupPaused,
   canAct,
+  canWatch,
   busy,
   onAction,
   onEdit
@@ -328,6 +333,8 @@ function ConnectionCard({
   c: ConnectionOut;
   groupPaused: boolean;
   canAct: boolean;
+  /** Administrator and coordination watch the agent; the direction does not (PLAYER_SPEC). */
+  canWatch: boolean;
   busy: boolean;
   onAction: (action: ConnectionAction) => void;
   onEdit?: () => void;
@@ -396,6 +403,14 @@ function ConnectionCard({
         )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
+          {canWatch && c.running_task_id != null && (
+            <Link to={`/computer-use/passages/${c.running_task_id}`} className="btn bg-ink text-white hover:bg-ink-soft">
+              <Eye className="h-4 w-4" aria-hidden /> Regarder en direct
+              <span className="chip bg-coral px-2 py-0 text-[12px] text-white">
+                <LiveDot light /> En direct
+              </span>
+            </Link>
+          )}
           {canAct && c.status === "arretee" && (
             <button className="btn-primary" disabled={blocked} onClick={() => onAction("start")}>
               <Play className="h-4 w-4" aria-hidden /> Démarrer
@@ -436,7 +451,7 @@ function ConnectionCard({
       </div>
       {open && (
         <div id={`${titleId}-runs`} className="border-t border-line bg-sky/50 px-5 py-4 sm:px-6">
-          <Runs id={c.id} canAct={canAct} />
+          <Runs id={c.id} canAct={canAct} canWatch={canWatch} />
         </div>
       )}
     </article>
@@ -452,7 +467,7 @@ function Fact({ label, title, alert = false, children }: { label: string; title?
   );
 }
 
-function Runs({ id, canAct }: { id: number; canAct: boolean }) {
+function Runs({ id, canAct, canWatch }: { id: number; canAct: boolean; canWatch: boolean }) {
   const runs = useConnectionRuns(id, true);
   const act = useTaskAction();
   if (runs.isLoading) return <Spinner />;
@@ -484,6 +499,16 @@ function Runs({ id, canAct }: { id: number; canAct: boolean }) {
                 {r.error && stuck && <p className="mt-1 text-[13px] text-ink-soft">{r.error}</p>}
               </div>
               <span className={`chip ${st.tone}`}>{st.text}</span>
+              {canWatch && r.has_replay && (
+                <Link
+                  to={`/computer-use/passages/${r.id}`}
+                  className="btn-quiet px-3 py-1.5 text-[13px]"
+                  aria-label={`Revoir ce passage (${r.steps_count} étape${r.steps_count > 1 ? "s" : ""})`}
+                >
+                  <Clapperboard className="h-3.5 w-3.5" aria-hidden /> Revoir
+                  <span className="num font-normal text-ink-soft">· {r.steps_count}</span>
+                </Link>
+              )}
               {canAct && stuck && (
                 <div className="flex w-full justify-end gap-2 sm:w-auto">
                   <button

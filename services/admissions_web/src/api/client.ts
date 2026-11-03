@@ -41,7 +41,7 @@ function describe(detail: unknown): string {
   return "La requête a échoué.";
 }
 
-export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
+async function request(path: string, init: RequestInit & { json?: unknown } = {}): Promise<Response> {
   const headers = new Headers(init.headers);
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -70,7 +70,17 @@ export async function api<T>(path: string, init: RequestInit & { json?: unknown 
     }
     throw new ApiError(response.status, message);
   }
+  return response;
+}
+
+export async function api<T>(path: string, init: RequestInit & { json?: unknown } = {}): Promise<T> {
+  const response = await request(path, init);
   const type = response.headers.get("Content-Type") ?? "";
   if (type.includes("application/json")) return (await response.json()) as T;
   return (await response.text()) as unknown as T;
+}
+
+/** Binary GET with the bearer token (an <img src> cannot carry it), e.g. an agent frame. */
+export async function apiBlob(path: string): Promise<Blob> {
+  return (await request(path)).blob();
 }
