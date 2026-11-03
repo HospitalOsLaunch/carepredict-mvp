@@ -97,6 +97,11 @@ export function withheldReason(label: string): string | null {
   return found ? found[1] : null;
 }
 
+/** A script's target as people read it: « /mouvements/{{ ref }} » shows as « /mouvements/… ». */
+export function readableTarget(target: string): string {
+  return target.replace(/\{\{[^}]*\}\}/g, "…");
+}
+
 const time = (s: ReplayStep) => new Date(s.at).getTime();
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
@@ -278,7 +283,7 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
       </p>
     </div>
   );
-  const transcript = <Transcript steps={steps} index={i} live={live} onSeek={seek} fullscreen={fullscreen} fill={view === "flow"} />;
+  const transcript = <Transcript steps={steps} index={i} live={live} onSeek={seek} fullscreen={fullscreen} fill />;
 
   return (
     <section
@@ -288,9 +293,12 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
       className={`flex min-h-full flex-col gap-3 ${fullscreen ? "h-full overflow-auto bg-sky p-4 sm:p-6" : ""}`}
     >
       {view === "both" ? (
-        <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)]">
+        // The transcript takes the height of the screen beside it and scrolls inside it.
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)]">
           <div className="min-w-0">{screen}</div>
-          {transcript}
+          <div className="relative min-h-[18rem] min-w-0 lg:min-h-0">
+            <Transcript steps={steps} index={i} live={live} onSeek={seek} fullscreen={fullscreen} contained />
+          </div>
         </div>
       ) : view === "video" ? (
         <div className="min-w-0 flex-1">{screen}</div>
@@ -409,7 +417,7 @@ function Screen({
           <span className="h-2.5 w-2.5 rounded-full bg-lagoon" />
         </span>
         <span className="min-w-0 flex-1 truncate rounded-chip bg-white/10 px-3 py-0.5 text-center text-[12px] text-white/75">
-          {step?.target ?? "Écran du logiciel"}
+          {step?.target ? readableTarget(step.target) : "Écran du logiciel"}
         </span>
         <span className="num shrink-0 text-[12px] text-white/60">{count ? `${index + 1} / ${count}` : "—"}</span>
       </div>
@@ -599,13 +607,16 @@ function Transcript({
   live,
   onSeek,
   fullscreen,
-  fill = false
+  fill = false,
+  contained = false
 }: {
   steps: ReplayStep[];
   index: number;
   live: boolean;
   onSeek: (i: number) => void;
   fullscreen: boolean;
+  /** Beside the screen: exactly its height (absolutely placed in a sized box), scrolled inside. */
+  contained?: boolean;
   /** Alone in the window (Transcription view): taller, with every detail of each step. */
   fill?: boolean;
 }) {
@@ -624,7 +635,7 @@ function Transcript({
   const doneCount = steps.length ? index + 1 : 0;
 
   return (
-    <div className={`panel flex min-w-0 flex-col overflow-hidden ${fill ? "min-h-0 flex-1" : "lg:self-stretch"}`}>
+    <div className={`panel flex min-w-0 flex-col overflow-hidden ${fill ? "min-h-0 flex-1" : contained ? "h-full lg:absolute lg:inset-0" : "lg:self-stretch"}`}>
       <div className="flex items-center justify-between gap-2 border-b border-line px-4 py-3">
         <h2 id="transcription" className="text-[17px]">
           Transcription
@@ -639,7 +650,7 @@ function Transcript({
         aria-live={live ? "polite" : "off"}
         aria-relevant="additions"
         className={`relative overflow-y-auto py-1 ${
-          fill ? "min-h-0 flex-1" : fullscreen ? "max-h-[calc(100vh-8rem)]" : "max-h-[26rem] lg:max-h-[min(34rem,calc(100vh-18rem))]"
+          fill || contained ? "min-h-0 flex-1" : fullscreen ? "max-h-[calc(100vh-8rem)]" : "max-h-[26rem] lg:max-h-[min(34rem,calc(100vh-18rem))]"
         }`}
       >
         {groups.map((g) => {
@@ -691,7 +702,7 @@ function Transcript({
                         <span className={`chip px-2 py-0 text-[12px] ${ENGINE_CHIP[engine] ?? "bg-sky-deep text-ink-soft"}`}>{engine}</span>
                         {s.duration_ms !== null && <span className="num text-ink-faint">{fmtDuration(s.duration_ms)}</span>}
                         <span className={`chip px-2 py-0 text-[12px] ${out.chip}`}>{out.text}</span>
-                        {fill && s.target && <span className="max-w-full truncate font-mono text-[12px] text-ink-faint">{s.target}</span>}
+                        {fill && s.target && <span className="max-w-full truncate font-mono text-[12px] text-ink-faint">{readableTarget(s.target)}</span>}
                         {fill && s.has_frame && <span className="text-ink-faint">· image</span>}
                       </span>
                       {s.transmitted && (

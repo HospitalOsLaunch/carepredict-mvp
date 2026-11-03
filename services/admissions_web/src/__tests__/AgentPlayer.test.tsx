@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 
 import type { ConnectionOut, ReplayOut, ReplayStep } from "../api/types_agent";
-import { AgentPlayer, phases, transmittedText } from "../components/AgentPlayer";
+import { AgentPlayer, phases, readableTarget, transmittedText } from "../components/AgentPlayer";
 import { AgentReplayPage } from "../pages/AgentReplayPage";
 import { AgentsPage } from "../pages/AgentsPage";
 
@@ -444,6 +444,11 @@ describe("player window: views driven by the same controls", () => {
     expect(screen.queryByRole("figure")).not.toBeInTheDocument();
     expect(transcript()).toBeInTheDocument();
     expect(localStorage.getItem("hospitalos.player.view")).toBe("flow");
+  });
+
+  it("shows a script's target without its template placeholders", () => {
+    expect(readableTarget("/mouvements/{{ ref }}")).toBe("/mouvements/…");
+    expect(readableTarget("#mdp")).toBe("#mdp");
   });
 
   it("opens a replay on its first image, not on the opening line without one", () => {
