@@ -74,6 +74,13 @@ function Replay({ taskId }: { taskId: number }) {
   );
 }
 
+/** The task's engine once recorded (at the end); while it runs, the engines its steps used. */
+export function enginesOf({ task, steps }: ReplayOut): string {
+  if (task.engine_used) return engineLabel(task.engine_used);
+  const seen = [...new Set(steps.map((s) => engineLabel(s.engine)))].filter((e) => e !== "—");
+  return seen.length ? seen.join(" · ") : "—";
+}
+
 function ReplayHeader({ replay }: { replay: ReplayOut }) {
   const { task, live, retention_until } = replay;
   const st = TASK_STATUS[task.status] ?? { text: task.status, tone: "bg-sky-deep text-ink-soft" };
@@ -92,7 +99,7 @@ function ReplayHeader({ replay }: { replay: ReplayOut }) {
       <dl className="mt-3 flex flex-wrap gap-2 text-[14px]">
         <Meta label="Établissement">{task.site_name ?? "Tout le groupe"}</Meta>
         <Meta label="Tâche">{TASK_LABEL[task.kind] ?? task.kind}</Meta>
-        <Meta label="Moteur">{engineLabel(task.engine_used)}</Meta>
+        <Meta label="Moteur">{enginesOf(replay)}</Meta>
         <Meta label="Commencé">{fmtDateTime(task.created_at)}</Meta>
         {task.finished_at && <Meta label="Terminé">{fmtDateTime(task.finished_at)}</Meta>}
         {retention_until && <Meta label="Conservé jusqu'au">{KEPT.format(new Date(retention_until))}</Meta>}

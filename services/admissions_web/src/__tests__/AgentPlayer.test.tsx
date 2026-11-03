@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -193,9 +193,9 @@ describe("AgentPlayer", () => {
   it("draws the masks with their reason, the pointer and the box, scaled to the viewport", async () => {
     withFrames();
     renderPlayer();
-    const mask = await screen.findByTitle("Masqué : mot de passe");
+    const mask = await screen.findByTitle("Masqué : identifiants de connexion");
     expect(mask).toHaveStyle({ left: "25%", top: "20%", width: "20%", height: "10%" });
-    expect(mask).toHaveTextContent("Masqué : mot de passe");
+    expect(mask).toHaveTextContent("Masqué : identifiants de connexion");
 
     fireEvent.click(screen.getByRole("button", { name: "Étape suivante" }));
     await waitFor(() => expect(screen.getByTestId("pointer")).toHaveStyle({ left: "50%", top: "50%" }));
@@ -265,6 +265,19 @@ describe("AgentPlayer", () => {
     renderPlayer(replay({ steps: STEPS.map((s) => ({ ...s, has_frame: false })) }));
     expect(screen.getByText("Ce script ne capture pas d'écran")).toBeInTheDocument();
     expect(apiBlob).not.toHaveBeenCalled();
+  });
+
+  it("names the engines of a live task from its steps, before the task records its engine", async () => {
+    // engine_used is only set when the task ends: during the live, the header said « Moteur — ».
+    const running = { ...replay().task, status: "running", finished_at: null, engine_used: null };
+    vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 2), task: running }) as never);
+    renderPage();
+    const meta = await screen.findByText("Moteur");
+    expect(meta.parentElement).toHaveTextContent("Moteur script");
+    cleanup();
+    vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 4), task: running }) as never);
+    renderPage();
+    expect((await screen.findByText("Moteur")).parentElement).toHaveTextContent("script · modèle ouvert · Claude");
   });
 
   it("follows a live task: polls with after_seq every second and appends the new steps", async () => {
