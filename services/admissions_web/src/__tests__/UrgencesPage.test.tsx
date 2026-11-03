@@ -117,6 +117,16 @@ describe("UrgencesPage", () => {
     expect(within(aid).getByRole("note")).toHaveTextContent("la déclaration reste une décision de la direction");
   });
 
+  it("says the HET boarding criterion is yesterday's while 10:00 has not passed", async () => {
+    // The card shows today's provisional count and the aid yesterday's value: without saying
+    // so, the direction sees two different numbers for « lits brancards à 10 h ».
+    renderPage();
+
+    const aid = await screen.findByRole("region", { name: "Aide à la décision HET" });
+    expect(within(aid).getByText("Lits brancards à 10 h")).toBeInTheDocument();
+    expect(within(aid).getByText("relevé d'hier : 10 h n'est pas encore passé")).toBeInTheDocument();
+  });
+
   it("lists units from the most critical with the LISCOP legend", async () => {
     renderPage();
 

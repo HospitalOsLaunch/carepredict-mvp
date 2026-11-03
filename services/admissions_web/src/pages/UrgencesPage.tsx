@@ -58,7 +58,7 @@ export function UrgencesPage() {
         <Suspense fallback={<Spinner />}>
           <BoardingChart siteId={c.site_id} />
         </Suspense>
-        {status.data ? <AidCard status={status.data} /> : status.error ? <ErrorNote error={status.error} /> : <Spinner />}
+        {status.data ? <AidCard status={status.data} boardingIsYesterday={!c.today_10h.reached} /> : status.error ? <ErrorNote error={status.error} /> : <Spinner />}
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Declarations status={status.data} siteId={c.site_id} siteName={c.site_name} />
@@ -125,7 +125,7 @@ function criterionValue(c: HetCriterion): string {
   return `${fmtNum(c.value)} (seuil ${fmtNum(c.threshold)})`;
 }
 
-function AidCard({ status }: { status: TensionStatus }) {
+function AidCard({ status, boardingIsYesterday }: { status: TensionStatus; boardingIsYesterday: boolean }) {
   const aid = status.aid;
   if (!aid) return null;
   const style = AID_STYLE[aid.level];
@@ -152,6 +152,9 @@ function AidCard({ status }: { status: TensionStatus }) {
             <div>
               <p className={c.triggered ? "font-bold" : ""}>{c.label}</p>
               <p className="text-[14px] text-ink-soft">{criterionValue(c)}</p>
+              {c.code === "boarding_10h" && boardingIsYesterday && (
+                <p className="text-[13px] text-ink-faint">relevé d'hier : 10 h n'est pas encore passé</p>
+              )}
             </div>
           </li>
         ))}
