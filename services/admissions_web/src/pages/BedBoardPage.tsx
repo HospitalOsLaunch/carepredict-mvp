@@ -34,6 +34,17 @@ function accepts(bed: Bed): string {
   return `${SEX_LABEL[bed.accepts[0]]} seulement`;
 }
 
+/**
+ * What a tile shows: in a room of several beds, the bed's own letter (« A », « B ») when its
+ * label starts with the room number, written above the tiles; otherwise the whole label. Two
+ * beds of a double room no longer both read « 231… » on a narrow screen.
+ */
+export function shortBedLabel(label: string, room: string, shared: boolean): string {
+  if (!shared || !label.startsWith(room)) return label;
+  const own = label.slice(room.length).replace(/^[\s._/-]+/, "");
+  return own || label;
+}
+
 function bedTitle(bed: Bed): string {
   const parts = [`Lit ${bed.label}`, STATUS[bed.status].label];
   if (bed.status_reason) parts.push(bed.status_reason);
@@ -278,7 +289,7 @@ function UnitPanel({
               <p className="px-1 pb-1 text-[12px] font-bold text-ink-faint">Ch. {r.room}</p>
               <div className="flex gap-1 sm:gap-1.5">
                 {r.beds.map((b) => (
-                  <BedTile key={b.id} bed={b} onSelect={onSelect} />
+                  <BedTile key={b.id} bed={b} shown={shortBedLabel(b.label, r.room, r.beds.length > 1)} onSelect={onSelect} />
                 ))}
               </div>
             </li>
@@ -289,7 +300,7 @@ function UnitPanel({
   );
 }
 
-function BedTile({ bed, onSelect }: { bed: Bed; onSelect?: (bed: Bed) => void }) {
+function BedTile({ bed, shown, onSelect }: { bed: Bed; shown: string; onSelect?: (bed: Bed) => void }) {
   const s = STATUS[bed.status];
   const Icon = s.icon;
   const changed = useChanged(bed.status);
@@ -303,7 +314,9 @@ function BedTile({ bed, onSelect }: { bed: Bed; onSelect?: (bed: Bed) => void })
           {bed.isolation && <ShieldPlus className="h-3.5 w-3.5" aria-hidden />}
         </span>
       </span>
-      <span className="num mt-1 block truncate text-[13px] font-bold">{bed.label}</span>
+      <span className="num mt-1 block truncate text-[13px] font-bold" aria-hidden>
+        {shown}
+      </span>
       <span className="sr-only">{bedTitle(bed)}</span>
     </>
   );
