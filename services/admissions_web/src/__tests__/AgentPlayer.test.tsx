@@ -224,12 +224,25 @@ describe("AgentPlayer", () => {
   });
 
   it("explains a step without image", () => {
+    // Nothing loaded yet (frames never arrive here): no image to hold, the step says it has none.
     renderPlayer();
     fireEvent.change(screen.getByRole("slider"), { target: { value: "2" } });
     // No capture was attempted for this step: nothing was withheld.
     expect(screen.getByText("Pas d'image pour cette étape")).toBeInTheDocument();
     expect(screen.queryByText(/capture retenue/)).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
+  it("keeps the last image, dimmed, on a step without image, like a video", async () => {
+    withFrames();
+    renderPlayer();
+    await waitFor(() => expect(apiBlob).toHaveBeenCalledWith("/agent/steps/102/frame"));
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "1" } });
+    await screen.findByRole("img", { name: /Écran à l'étape 2/ });
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "2" } });
+    expect(screen.getByRole("img", { name: /Écran de l'étape 2, toujours affiché/ })).toBeInTheDocument();
+    expect(screen.getByText("Pas de nouvelle image à cette étape")).toBeInTheDocument();
+    expect(screen.queryByTestId("overlays")).not.toBeInTheDocument(); // no gesture drawn on an old image
   });
 
   it("says why the worker withheld a frame", () => {
