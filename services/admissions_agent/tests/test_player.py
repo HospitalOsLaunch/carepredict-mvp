@@ -250,6 +250,15 @@ def test_model_actions_become_steps_with_their_gesture(
     assert {s["engine"] for s in model} == {"closed_best"}
     clicks = [s for s in model if s["label"] == "Clique à l'endroit choisi par le modèle"]
     assert len(clicks) == 4 and all(s["pointer"] and s["has_frame"] for s in clicks)
+    # The frames recorded while the model works are masked like the script's: the name on
+    # the dossier is under the mask colour in each of them.
+    on_dossier = [
+        s for s in model if s["has_frame"] and any(m["reason"] == "identite" for m in s["masks"])
+    ]
+    assert on_dossier
+    for step in on_dossier:
+        image = frame(api, step)
+        assert all(covered(image, mask) for mask in step["masks"]), step["label"]
     assert "Saisit un texte (10 caractères)" in [s["label"] for s in model]
     assert any(s["label"] == "Fait défiler vers le bas" for s in model)
     failed = [s for s in steps if s["outcome"] == "fail" and s["engine"] == "playbook"]
