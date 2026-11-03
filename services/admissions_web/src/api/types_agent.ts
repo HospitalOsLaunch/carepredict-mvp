@@ -134,9 +134,10 @@ export interface StepMask extends StepRect {
 export interface StepTransmitted {
   count: number;
   fields: string[];
-  applied: number;
-  duplicates: number;
-  rejected: number;
+  /** HospitalOS's answer, on the step that sends; null on a reading step (sent later). */
+  applied: number | null;
+  duplicates: number | null;
+  rejected: number | null;
 }
 
 export interface ReplayStep {

@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import type { ConnectionOut, ReplayOut, ReplayStep } from "../api/types_agent";
-import { AgentPlayer } from "../components/AgentPlayer";
+import { AgentPlayer, transmittedText } from "../components/AgentPlayer";
 import { AgentReplayPage } from "../pages/AgentReplayPage";
 import { ComputerUsePage } from "../pages/ComputerUsePage";
 
@@ -226,8 +226,26 @@ describe("AgentPlayer", () => {
   it("explains a step without image", () => {
     renderPlayer();
     fireEvent.change(screen.getByRole("slider"), { target: { value: "2" } });
-    expect(screen.getByText("Pas d'image pour cette étape : capture retenue pour protéger une zone")).toBeInTheDocument();
+    // No capture was attempted for this step: nothing was withheld.
+    expect(screen.getByText("Pas d'image pour cette étape")).toBeInTheDocument();
+    expect(screen.queryByText(/capture retenue/)).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
+  it("says why the worker withheld a frame", () => {
+    const withheld = step(3, { has_frame: false, label: "Lit la fiche 1 sur 7 (capture retenue : zone à protéger introuvable)" });
+    renderPlayer(replay({ steps: [STEPS[0], STEPS[1], withheld] }));
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "2" } });
+    expect(screen.getByText("Image retenue sur le poste : zone à protéger introuvable")).toBeInTheDocument();
+  });
+
+  it("describes a reading step before HospitalOS answered (no API result yet)", () => {
+    const read = { count: 1, fields: ["uf_code"], applied: null, duplicates: null, rejected: null };
+    expect(transmittedText(read)).toBe("1 élément relevé");
+    expect(transmittedText({ ...read, count: 7 })).toBe("7 éléments relevés");
+    expect(transmittedText({ ...read, count: 8, applied: 0, duplicates: 8, rejected: 0 })).toBe(
+      "transmis : 8 éléments (appliqués 0, doublons 8)"
+    );
   });
 
   it("says when the script captures no screen at all", () => {

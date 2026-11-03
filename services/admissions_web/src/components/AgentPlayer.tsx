@@ -82,9 +82,18 @@ function fmtClock(ms: number): string {
 }
 
 export function transmittedText(t: NonNullable<ReplayStep["transmitted"]>): string {
-  const parts = [`appliqués ${t.applied}`, `doublons ${t.duplicates}`];
+  const s = t.count > 1 ? "s" : "";
+  // A reading step carries no API result yet (null): what was read, sent at the end.
+  if (t.applied == null && t.duplicates == null && t.rejected == null) return `${t.count} élément${s} relevé${s}`;
+  const parts = [`appliqués ${t.applied ?? 0}`, `doublons ${t.duplicates ?? 0}`];
   if (t.rejected) parts.push(`refusés ${t.rejected}`);
-  return `transmis : ${t.count} élément${t.count > 1 ? "s" : ""} (${parts.join(", ")})`;
+  return `transmis : ${t.count} élément${s} (${parts.join(", ")})`;
+}
+
+/** Why the worker kept the image (the label ends with « (capture retenue : …) »), or null. */
+export function withheldReason(label: string): string | null {
+  const found = /\(capture retenue : ([^)]+)\)\s*$/.exec(label);
+  return found ? found[1] : null;
 }
 
 const time = (s: ReplayStep) => new Date(s.at).getTime();
@@ -332,7 +341,13 @@ function Screen({
     empty = (
       <Placeholder
         icon={<ImageOff className="h-6 w-6" aria-hidden />}
-        text={anyFrame ? "Pas d'image pour cette étape : capture retenue pour protéger une zone" : "Ce script ne capture pas d'écran"}
+        text={
+          withheldReason(step.label)
+            ? `Image retenue sur le poste : ${withheldReason(step.label)}`
+            : anyFrame
+              ? "Pas d'image pour cette étape"
+              : "Ce script ne capture pas d'écran"
+        }
       />
     );
   else if (frame.failed && !frame.url) empty = <Placeholder icon={<ImageOff className="h-6 w-6" aria-hidden />} text="Image indisponible : elle a peut-être été purgée." />;
