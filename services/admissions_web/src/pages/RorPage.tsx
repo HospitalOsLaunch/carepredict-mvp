@@ -5,7 +5,7 @@ import { useState } from "react";
 import { api } from "../api/client";
 import type { RorExport, RorOutboxEntry, RorPrevision, RorUnite, TensionLevel } from "../api/types_liscop";
 import { useAuth } from "../auth";
-import { ErrorNote, PageHeader, Spinner } from "../components/ui";
+import { ErrorNote, PageHeader, Spinner } from "../components/common";
 import { fmtDateTime, fmtHours, fmtNum, fmtPct, fmtShort, isoDay, plural } from "../lib/format";
 
 const TENSION: Record<TensionLevel, { label: string; chip: string; icon: typeof CheckCircle2 }> = {

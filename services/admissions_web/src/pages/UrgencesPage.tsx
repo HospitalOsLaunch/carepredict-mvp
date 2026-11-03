@@ -4,7 +4,7 @@ import { lazy, Suspense, useState, type FormEvent } from "react";
 import type { EdCensus, HetCriterion, HetLevel, TensionDeclaration, TensionStatus } from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { LiveNumber } from "../components/live";
-import { ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
+import { ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import { fmtDateTime, fmtHours, fmtNum, fmtPct } from "../lib/format";
 import { useDeclarations, useEdCensus, useEdWrite, useSnapshots, useTensionStatus } from "../lib/liscop";
 import { TensionChip } from "./RorPage";

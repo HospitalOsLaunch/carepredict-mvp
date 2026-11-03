@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
 import type { AgentPolicy, AgentStatus, AgentTask, EnginePolicy } from "../api/types";
 import { useAuth } from "../auth";
-import { ErrorNote, Meter, Spinner } from "../components/ui";
+import { ErrorNote, Meter, Spinner } from "../components/common";
 import { TASK_STATUS } from "../lib/agent";
 import { fmtDateTime, fmtNum, fmtPct, plural } from "../lib/format";
 

@@ -6,7 +6,7 @@ import { api } from "../api/client";
 import type { Pool, Site, Stay } from "../api/types";
 import { useAuth } from "../auth";
 import { LampLegend, LampStrip } from "../components/LampStrip";
-import { Empty, ErrorNote, Meter, Modal, PageHeader, Spinner } from "../components/ui";
+import { Empty, ErrorNote, Meter, Modal, PageHeader, Spinner } from "../components/common";
 import { fmtDate, fmtDay, fmtNum, fmtPct, isoDay, plural } from "../lib/format";
 import { unitLabel, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";

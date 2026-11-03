@@ -13,7 +13,7 @@ import {
 
 import { api } from "../api/client";
 import type { Backtest, NorthStar, PilotMetrics } from "../api/types";
-import { ErrorNote, Meter, PageHeader, Spinner } from "../components/ui";
+import { ErrorNote, Meter, PageHeader, Spinner } from "../components/common";
 import { fmtDate, fmtEur, fmtHours, fmtNum, fmtPct, fmtShort, isoDay } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 

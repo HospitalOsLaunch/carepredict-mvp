@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { AuditEntry, GroupSettings, Site, User } from "../api/types";
 import { useAuth } from "../auth";
-import { ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
+import { ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import { fmtDate, fmtDateTime, fmtPct } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { AgentTab } from "./AgentSettings";

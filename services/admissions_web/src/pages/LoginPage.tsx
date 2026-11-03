@@ -6,7 +6,7 @@ import { api } from "../api/client";
 
 import { useAuth } from "../auth";
 import { Mark } from "../components/Mark";
-import { ErrorNote } from "../components/ui";
+import { ErrorNote } from "../components/common";
 
 export function LoginPage() {
   const { login, oidcError } = useAuth();

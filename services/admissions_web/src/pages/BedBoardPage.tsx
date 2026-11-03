@@ -13,7 +13,7 @@ import {
 } from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { Freshness, LiveNumber, useChanged } from "../components/live";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
+import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import { useBedAction, useBedBoard } from "../lib/liscop";
 import { TensionChip } from "./RorPage";
 

@@ -5,7 +5,7 @@ import type { ConnectionKind, ConnectionOut, ConnectionTask, WorkerOut, WorkerPl
 import { KIND_LABEL, TASK_LABEL, TASKS_BY_KIND, useArchiveConnection, useSaveConnection } from "../lib/agent";
 import { fmtDateTime } from "../lib/format";
 import { useSites } from "../lib/queries";
-import { ErrorNote, Modal } from "./ui";
+import { ErrorNote, Modal } from "./common";
 
 export const WEEKDAYS: Array<[number, string, string]> = [
   [1, "lun.", "lundi"],

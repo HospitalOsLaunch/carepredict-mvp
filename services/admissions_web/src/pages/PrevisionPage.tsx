@@ -4,7 +4,7 @@ import { lazy, Suspense, useState } from "react";
 
 import { api } from "../api/client";
 import type { ForecastDay, ForecastScope, ForecastSeries, LiscopForecast } from "../api/types_liscop";
-import { Empty, ErrorNote, PageHeader, Spinner } from "../components/ui";
+import { Empty, ErrorNote, PageHeader, Spinner } from "../components/common";
 import { fmtDateTime, fmtDay, fmtHours, fmtNum, fmtPct, fmtShort } from "../lib/format";
 
 // recharts stays out of the main bundle (as for the other chart pages).

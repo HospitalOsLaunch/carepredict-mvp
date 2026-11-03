@@ -20,7 +20,7 @@ import { useAuth } from "./auth";
 import { LegacyAgentsRedirect } from "./components/LegacyAgentsRedirect";
 import { Mark } from "./components/Mark";
 import { MobileNav, primaryFor, type NavItem } from "./components/MobileNav";
-import { Spinner } from "./components/ui";
+import { Spinner } from "./components/common";
 import { AgentReplayPage } from "./pages/AgentReplayPage";
 import { BedBoardPage } from "./pages/BedBoardPage";
 import { BedsPage } from "./pages/BedsPage";

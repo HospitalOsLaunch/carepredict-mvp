@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { api } from "../api/client";
 import type { ImportResult } from "../api/types";
-import { ErrorNote, PageHeader } from "../components/ui";
+import { ErrorNote, PageHeader } from "../components/common";
 
 type Kind = "lits" | "sejours" | "demandes";
 

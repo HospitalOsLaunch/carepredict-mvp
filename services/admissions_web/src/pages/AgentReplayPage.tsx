@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import type { ReplayOut } from "../api/types_agent";
 import { useAuth } from "../auth";
 import { AgentPlayer, LiveDot } from "../components/AgentPlayer";
-import { ErrorNote, Spinner } from "../components/ui";
+import { ErrorNote, Spinner } from "../components/common";
 import { TASK_LABEL, TASK_STATUS, engineLabel, useReplay } from "../lib/agent";
 import { fmtDateTime } from "../lib/format";
 
