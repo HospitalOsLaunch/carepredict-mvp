@@ -15,7 +15,7 @@ import {
   TriangleAlert
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 import type { ConnectionAction, ConnectionOut, WorkerOut } from "../api/types_agent";
 import { useAuth } from "../auth";
@@ -222,6 +222,8 @@ export function AgentsPage() {
           </div>
         </Modal>
       )}
+      {/* The player of a passage (/agents/passages/:taskId), in a window over this screen. */}
+      <Outlet />
     </>
   );
 }

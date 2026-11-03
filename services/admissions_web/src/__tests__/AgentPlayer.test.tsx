@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 
 import type { ConnectionOut, ReplayOut, ReplayStep } from "../api/types_agent";
-import { AgentPlayer, transmittedText } from "../components/AgentPlayer";
+import { AgentPlayer, phases, transmittedText } from "../components/AgentPlayer";
 import { AgentReplayPage } from "../pages/AgentReplayPage";
 import { AgentsPage } from "../pages/AgentsPage";
 
@@ -111,7 +111,7 @@ describe("AgentPlayer", () => {
     withFrames();
     vi.mocked(api).mockResolvedValue(replay() as never);
     renderPage();
-    expect(await screen.findByRole("heading", { level: 1, name: "Lits CH Sud" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 2, name: "Lits CH Sud" })).toBeInTheDocument();
     expect(api).toHaveBeenCalledWith("/agent/tasks/7/replay");
     expect(screen.getByText("CH Sud")).toBeInTheDocument();
     expect(screen.getByText("Relever les mouvements")).toBeInTheDocument();
@@ -421,5 +421,85 @@ describe("entry points on the computer use page", () => {
     await userEvent.click(within(card).getByRole("button", { name: /Passages/ }));
     await within(card).findByRole("list", { name: "Derniers passages" });
     expect(within(card).queryByRole("link", { name: /Revoir/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("player window: views driven by the same controls", () => {
+  beforeEach(() => localStorage.clear());
+
+  it("switches between Vidéo, Transcription and Les deux, and remembers the choice", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    renderPage();
+    const win = await screen.findByRole("dialog", { name: "Lits CH Sud" });
+    const views = within(win).getByRole("group", { name: "Vue du player" });
+    expect(within(views).getByRole("button", { name: "Les deux" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("figure")).toBeInTheDocument();
+    expect(transcript()).toBeInTheDocument();
+
+    await userEvent.click(within(views).getByRole("button", { name: "Vidéo" }));
+    expect(screen.getByRole("figure")).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Transcription" })).not.toBeInTheDocument();
+
+    await userEvent.click(within(views).getByRole("button", { name: "Transcription" }));
+    expect(screen.queryByRole("figure")).not.toBeInTheDocument();
+    expect(transcript()).toBeInTheDocument();
+    expect(localStorage.getItem("hospitalos.player.view")).toBe("flow");
+  });
+
+  it("opens a replay on its first image, not on the opening line without one", () => {
+    const opening = step(0, { kind: "info", label: "Début du passage : relève des mouvements", has_frame: false, outcome: "info" });
+    renderPlayer(replay({ steps: [opening, ...STEPS] }));
+    expect(current()).toHaveTextContent("Saisit l'identifiant");
+    expect(within(transcript()).getAllByRole("listitem")[0]).toHaveTextContent("Début du passage");
+  });
+
+  it("drives the transcription alone with the same controls, grouped by phase", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    localStorage.setItem("hospitalos.player.view", "flow");
+    renderPage();
+    await screen.findByRole("dialog", { name: "Lits CH Sud" });
+    expect(current()).toHaveTextContent("Saisit l'identifiant");
+    await userEvent.click(screen.getByRole("button", { name: "Étape suivante" }));
+    expect(current()).toHaveTextContent("Ouvre la liste");
+    fireEvent.change(screen.getByRole("slider"), { target: { value: "3" } });
+    expect(current()).toHaveTextContent("Lit 12 mouvements");
+    // Phase headings are part of the text, not extra list items.
+    expect(within(transcript()).getAllByRole("listitem")).toHaveLength(5);
+    expect(within(transcript()).getByText("Connexion")).toBeInTheDocument();
+    expect(within(transcript()).getByText("Transmission à HospitalOS")).toBeInTheDocument();
+    expect(phases(STEPS).map((g) => g.name)).toEqual(["Connexion", "Navigation", "Transmission à HospitalOS", "Vérification"]);
+  });
+
+  it("closes back to the Agents screen, and leaves the page's keys to the page", async () => {
+    vi.mocked(api).mockResolvedValue(replay() as never);
+    wrap(
+      <Routes>
+        <Route
+          path="/agents"
+          element={
+            <>
+              <p>Écran Agents</p>
+              <input aria-label="Recherche" />
+              <Outlet />
+            </>
+          }
+        >
+          <Route path="passages/:taskId" element={<AgentReplayPage />} />
+        </Route>
+      </Routes>,
+      "/agents/passages/7"
+    );
+    const win = await screen.findByRole("dialog", { name: "Lits CH Sud" });
+    expect(screen.getByText("Écran Agents")).toBeInTheDocument(); // the screen stays behind
+    const play = within(win).getByRole("button", { name: "Lecture" });
+
+    document.body.focus();
+    await userEvent.click(screen.getByText("Écran Agents"));
+    await userEvent.keyboard(" ");
+    expect(play).toHaveAccessibleName("Lecture"); // space outside the window does not play
+
+    await userEvent.click(within(win).getByRole("button", { name: "Fermer le player" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("Écran Agents")).toBeInTheDocument();
   });
 });
