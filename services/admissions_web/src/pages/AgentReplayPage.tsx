@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import type { ReplayOut } from "../api/types_agent";
 import { useAuth } from "../auth";
 import { AgentPlayer, LiveDot } from "../components/AgentPlayer";
-import { ErrorNote, Spinner } from "../components/ui";
+import { ErrorNote, Spinner } from "../components/common";
 import { TASK_LABEL, TASK_STATUS, engineLabel, useReplay } from "../lib/agent";
 import { fmtDateTime } from "../lib/format";
 
@@ -13,8 +13,8 @@ const KEPT = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" })
 
 function Back() {
   return (
-    <Link to="/computer-use" className="btn-ghost -ml-3 mb-3 px-3 py-1.5 text-[14px]">
-      <ArrowLeft className="h-4 w-4" aria-hidden /> Computer use
+    <Link to="/agents" className="btn-ghost -ml-3 mb-3 px-3 py-1.5 text-[14px]">
+      <ArrowLeft className="h-4 w-4" aria-hidden /> Agents
     </Link>
   );
 }
@@ -39,7 +39,7 @@ function Restricted() {
           <h1 className="text-[24px]">Player réservé</h1>
           <p className="mt-2 text-ink-soft">
             Regarder les passages de l'agent est réservé à l'administrateur du groupe et à la coordination de l'établissement. Les résultats
-            de chaque passage restent visibles dans la page Computer use.
+            de chaque passage restent visibles dans la page Agents.
           </p>
         </div>
       </div>
@@ -74,6 +74,13 @@ function Replay({ taskId }: { taskId: number }) {
   );
 }
 
+/** The task's engine once recorded (at the end); while it runs, the engines its steps used. */
+export function enginesOf({ task, steps }: ReplayOut): string {
+  if (task.engine_used) return engineLabel(task.engine_used);
+  const seen = [...new Set(steps.map((s) => engineLabel(s.engine)))].filter((e) => e !== "—");
+  return seen.length ? seen.join(" · ") : "—";
+}
+
 function ReplayHeader({ replay }: { replay: ReplayOut }) {
   const { task, live, retention_until } = replay;
   const st = TASK_STATUS[task.status] ?? { text: task.status, tone: "bg-sky-deep text-ink-soft" };
@@ -92,7 +99,7 @@ function ReplayHeader({ replay }: { replay: ReplayOut }) {
       <dl className="mt-3 flex flex-wrap gap-2 text-[14px]">
         <Meta label="Établissement">{task.site_name ?? "Tout le groupe"}</Meta>
         <Meta label="Tâche">{TASK_LABEL[task.kind] ?? task.kind}</Meta>
-        <Meta label="Moteur">{engineLabel(task.engine_used)}</Meta>
+        <Meta label="Moteur">{enginesOf(replay)}</Meta>
         <Meta label="Commencé">{fmtDateTime(task.created_at)}</Meta>
         {task.finished_at && <Meta label="Terminé">{fmtDateTime(task.finished_at)}</Meta>}
         {retention_until && <Meta label="Conservé jusqu'au">{KEPT.format(new Date(retention_until))}</Meta>}

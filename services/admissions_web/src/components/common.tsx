@@ -1,7 +1,10 @@
-import { AlertTriangle, Loader2, X } from "lucide-react";
-import { useEffect, useRef, type ReactNode } from "react";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import type { RequestStatus } from "../api/types";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 export function Spinner({ label = "Chargement" }: { label?: string }) {
   return (
@@ -20,18 +23,18 @@ export function ErrorNote({ error }: { error: unknown }) {
   );
 }
 
-const STATUS_STYLE: Record<RequestStatus, string> = {
-  nouvelle: "bg-coral-soft text-coral-dark",
-  en_etude: "bg-violet-soft text-violet-dark",
-  accord: "bg-lagoon-soft text-lagoon-dark",
-  confirmee: "bg-lagoon-dark text-white",
-  admise: "bg-ink text-white",
-  refusee: "bg-sky-deep text-ink-soft",
-  perdue: "bg-sky-deep text-ink-soft"
+const STATUS_TONE: Record<RequestStatus, BadgeProps["tone"]> = {
+  nouvelle: "coral",
+  en_etude: "violet",
+  accord: "lagoon",
+  confirmee: "lagoon-solid",
+  admise: "ink",
+  refusee: "neutral",
+  perdue: "neutral"
 };
 
 export function StatusChip({ status, label }: { status: RequestStatus; label: string }) {
-  return <span className={`chip ${STATUS_STYLE[status]}`}>{label}</span>;
+  return <Badge tone={STATUS_TONE[status]}>{label}</Badge>;
 }
 
 export function PageHeader({ title, lead, actions }: { title: ReactNode; lead?: ReactNode; actions?: ReactNode }) {
@@ -46,6 +49,11 @@ export function PageHeader({ title, lead, actions }: { title: ReactNode; lead?: 
   );
 }
 
+/**
+ * The app's dialog, on the shadcn/ui Dialog (Radix): focus trapped then restored to the
+ * button that opened it, Escape and the backdrop close it, the page behind is hidden from
+ * screen readers. Same props as before: every screen keeps its call.
+ */
 export function Modal({
   title,
   onClose,
@@ -57,32 +65,15 @@ export function Modal({
   children: ReactNode;
   wide?: boolean;
 }) {
-  const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const dialog = ref.current;
-    if (dialog && !dialog.open) {
-      if (typeof dialog.showModal === "function") dialog.showModal();
-      else dialog.setAttribute("open", "");
-    }
-  }, []);
   return (
-    <dialog
-      ref={ref}
-      onCancel={(e) => {
-        e.preventDefault();
-        onClose();
-      }}
-      className={`w-[calc(100%-2rem)] ${wide ? "max-w-3xl" : "max-w-lg"} rounded-panel bg-paper p-0 text-ink shadow-2xl backdrop:bg-ink/40`}
-      aria-labelledby="modal-title"
-    >
-      <div className="flex items-center justify-between border-b border-line px-6 py-4">
-        <h2 id="modal-title">{title}</h2>
-        <button type="button" className="btn-ghost h-9 w-9 p-0" onClick={onClose} aria-label="Fermer">
-          <X className="h-5 w-5" aria-hidden />
-        </button>
-      </div>
-      <div className="max-h-[75vh] overflow-y-auto px-6 py-5">{children}</div>
-    </dialog>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className={cn("p-0", wide ? "max-w-3xl" : "max-w-lg")} aria-describedby={undefined}>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="max-h-[75vh] overflow-y-auto px-6 py-5">{children}</div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

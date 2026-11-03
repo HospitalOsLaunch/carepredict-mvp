@@ -6,7 +6,7 @@ import { Area, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip,
 import { api } from "../api/client";
 import type { PoolWorkload, StaffPool, Workload, WorkloadBacktest, WorkloadDay } from "../api/types";
 import { useAuth } from "../auth";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
+import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import { fmtDay, fmtNum, fmtPct, fmtShort, parseDay } from "../lib/format";
 import { label, unitLabel, useVocabulary } from "../lib/queries";
 

@@ -46,7 +46,7 @@
   /* Touch screens (tablet on the ward cart, phone on rounds, often with gloves): every control
      is at least 44 px high (WCAG 2.5.5); the mouse keeps the denser layout. */
   @media (pointer: coarse) {
-    .btn, .input, button.chip, select.input { min-height: 44px; }
+    .btn, .input, button.chip, select.input, .touch-target { min-height: 44px; min-width: 44px; }
   }
 }
 
@@ -84,14 +84,8 @@
 .player-range:focus-visible::-moz-range-thumb { outline: 3px solid theme("colors.violet.DEFAULT"); outline-offset: 2px; }
 
 /* Motion vocabulary (docs/ux/UX_REVIEW.md). Short, functional, never looping on its own:
-   things enter from where they come from, and live data says when it changed. */
-@keyframes sheet-up {
-  from { transform: translateY(24px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-.sheet-up[open] { animation: sheet-up 220ms cubic-bezier(.2,.8,.2,1) both; }
-.sheet-up::backdrop { animation: fade-in 220ms ease-out both; }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+   things enter from where they come from (dialogs and sheets: tailwindcss-animate in the
+   shadcn/ui primitives), and live data says when it changed. */
 /* A live figure that just changed glows once (the signed delta beside it stays 2 minutes). */
 @keyframes live-changed {
   0% { background-color: rgba(255, 178, 30, 0.55); box-shadow: 0 0 0 6px rgba(255, 178, 30, 0.25); }

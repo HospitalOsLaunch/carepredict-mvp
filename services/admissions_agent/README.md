@@ -23,7 +23,7 @@ AGENT_ID=poste-smr-1 \
   python -m services.admissions_agent run
 ```
 
-Tout le reste se paramètre dans HospitalOS (écran **Computer use**), établissement par
+Tout le reste se paramètre dans HospitalOS (écran **Agents**), établissement par
 établissement, sous forme de **connexions** : logiciel à lire (portail d'orientation ou
 gestion des lits), adresse, hôtes autorisés, identifiant, mot de passe (chiffré côté
 HospitalOS, en écriture seule), script choisi dans le catalogue du poste, tâches,

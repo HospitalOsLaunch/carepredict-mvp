@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import type { ConnectionOut, ReplayOut, ReplayStep } from "../api/types_agent";
 import { AgentPlayer, transmittedText } from "../components/AgentPlayer";
 import { AgentReplayPage } from "../pages/AgentReplayPage";
-import { ComputerUsePage } from "../pages/ComputerUsePage";
+import { AgentsPage } from "../pages/AgentsPage";
 
 vi.mock("../api/client", () => ({ api: vi.fn(), apiBlob: vi.fn() }));
 const auth = { isAdmin: true, canWrite: true };
@@ -98,9 +98,9 @@ const renderPlayer = (r: ReplayOut = replay()) => wrap(<AgentPlayer replay={r} /
 const renderPage = () =>
   wrap(
     <Routes>
-      <Route path="/computer-use/passages/:taskId" element={<AgentReplayPage />} />
+      <Route path="/agents/passages/:taskId" element={<AgentReplayPage />} />
     </Routes>,
-    "/computer-use/passages/7"
+    "/agents/passages/7"
   );
 
 const transcript = () => screen.getByRole("list", { name: "Transcription" });
@@ -193,9 +193,9 @@ describe("AgentPlayer", () => {
   it("draws the masks with their reason, the pointer and the box, scaled to the viewport", async () => {
     withFrames();
     renderPlayer();
-    const mask = await screen.findByTitle("Masqué : mot de passe");
+    const mask = await screen.findByTitle("Masqué : identifiants de connexion");
     expect(mask).toHaveStyle({ left: "25%", top: "20%", width: "20%", height: "10%" });
-    expect(mask).toHaveTextContent("Masqué : mot de passe");
+    expect(mask).toHaveTextContent("Masqué : identifiants de connexion");
 
     fireEvent.click(screen.getByRole("button", { name: "Étape suivante" }));
     await waitFor(() => expect(screen.getByTestId("pointer")).toHaveStyle({ left: "50%", top: "50%" }));
@@ -265,6 +265,19 @@ describe("AgentPlayer", () => {
     renderPlayer(replay({ steps: STEPS.map((s) => ({ ...s, has_frame: false })) }));
     expect(screen.getByText("Ce script ne capture pas d'écran")).toBeInTheDocument();
     expect(apiBlob).not.toHaveBeenCalled();
+  });
+
+  it("names the engines of a live task from its steps, before the task records its engine", async () => {
+    // engine_used is only set when the task ends: during the live, the header said « Moteur — ».
+    const running = { ...replay().task, status: "running", finished_at: null, engine_used: null };
+    vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 2), task: running }) as never);
+    renderPage();
+    const meta = await screen.findByText("Moteur");
+    expect(meta.parentElement).toHaveTextContent("Moteur script");
+    cleanup();
+    vi.mocked(api).mockResolvedValue(replay({ live: true, steps: STEPS.slice(0, 4), task: running }) as never);
+    renderPage();
+    expect((await screen.findByText("Moteur")).parentElement).toHaveTextContent("script · modèle ouvert · Claude");
   });
 
   it("follows a live task: polls with after_seq every second and appends the new steps", async () => {
@@ -379,30 +392,30 @@ describe("entry points on the computer use page", () => {
 
   it("offers « Regarder en direct » only while a task runs", async () => {
     mock([connection({ running_task_id: 55 }), connection({ id: 3, name: "Lits CH Nord" })]);
-    wrap(<ComputerUsePage />);
+    wrap(<AgentsPage />);
     const running = await screen.findByRole("article", { name: "Lits CH Sud" });
     const link = within(running).getByRole("link", { name: /Regarder en direct/ });
-    expect(link).toHaveAttribute("href", "/computer-use/passages/55");
+    expect(link).toHaveAttribute("href", "/agents/passages/55");
     expect(link).toHaveTextContent("En direct");
     expect(within(screen.getByRole("article", { name: "Lits CH Nord" })).queryByRole("link", { name: /Regarder/ })).not.toBeInTheDocument();
   });
 
   it("offers « Revoir » only for runs with a replay", async () => {
     mock([connection({})]);
-    wrap(<ComputerUsePage />);
+    wrap(<AgentsPage />);
     const card = await screen.findByRole("article", { name: "Lits CH Sud" });
     await userEvent.click(within(card).getByRole("button", { name: /Passages/ }));
     const runs = await within(card).findByRole("list", { name: "Derniers passages" });
     const links = within(runs).getAllByRole("link", { name: /Revoir/ });
     expect(links).toHaveLength(1);
-    expect(links[0]).toHaveAttribute("href", "/computer-use/passages/40");
+    expect(links[0]).toHaveAttribute("href", "/agents/passages/40");
     expect(links[0]).toHaveAccessibleName("Revoir ce passage (12 étapes)");
   });
 
   it("hides the player entries from the direction", async () => {
     Object.assign(auth, { isAdmin: false, canWrite: false });
     mock([connection({ running_task_id: 55, can_control: false, can_edit: false })]);
-    wrap(<ComputerUsePage />);
+    wrap(<AgentsPage />);
     const card = await screen.findByRole("article", { name: "Lits CH Sud" });
     expect(within(card).queryByRole("link", { name: /Regarder/ })).not.toBeInTheDocument();
     await userEvent.click(within(card).getByRole("button", { name: /Passages/ }));

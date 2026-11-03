@@ -13,7 +13,7 @@ const ITEMS: NavItem[] = [
   { to: "/prevision", label: "Prévision", icon: Icon },
   { to: "/groupe", label: "Vue groupe", icon: Icon },
   { to: "/indicateurs", label: "Indicateurs pilote", icon: Icon },
-  { to: "/computer-use", label: "Computer use", icon: Icon }
+  { to: "/agents", label: "Agents", icon: Icon }
 ];
 
 function renderAt(path: string, role = "coordination") {
@@ -37,14 +37,14 @@ describe("MobileNav", () => {
   });
 
   it("opens the other screens in a sheet, marks « Plus » when one of them is open, and closes on choice", async () => {
-    renderAt("/computer-use");
+    renderAt("/agents");
     const more = screen.getByRole("button", { name: "Plus" });
     expect(more).toHaveAttribute("data-active", "true");
     await userEvent.click(more);
     const sheet = screen.getByRole("dialog", { name: "Tous les écrans" });
     const names = within(sheet).getAllByRole("link").map((l) => l.textContent);
-    expect(names).toEqual(["Prévision", "Vue groupe", "Indicateurs pilote", "Computer use"]);
-    expect(within(sheet).getByRole("link", { name: "Computer use" })).toHaveAttribute("aria-current", "page");
+    expect(names).toEqual(["Prévision", "Vue groupe", "Indicateurs pilote", "Agents"]);
+    expect(within(sheet).getByRole("link", { name: "Agents" })).toHaveAttribute("aria-current", "page");
     await userEvent.click(within(sheet).getByRole("link", { name: "Prévision" }));
     expect(screen.queryByRole("dialog", { name: "Tous les écrans" })).not.toBeInTheDocument();
   });

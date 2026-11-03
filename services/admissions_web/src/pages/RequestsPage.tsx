@@ -6,7 +6,7 @@ import type { AdmissionRequest } from "../api/types";
 import { useAuth } from "../auth";
 import { RequestDetailPanel } from "../components/RequestDetail";
 import { NewRequestModal } from "../components/RequestForms";
-import { Empty, ErrorNote, Meter, PageHeader, Spinner, StatusChip } from "../components/ui";
+import { Empty, ErrorNote, Meter, PageHeader, Spinner, StatusChip } from "../components/common";
 import { fmtHours, fmtShort, plural } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { useRequests, type Scope } from "../lib/requests";

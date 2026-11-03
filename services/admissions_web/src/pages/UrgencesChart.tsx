@@ -1,6 +1,6 @@
 import { Area, Bar, CartesianGrid, Cell, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { ErrorNote, Spinner } from "../components/ui";
+import { ErrorNote, Spinner } from "../components/common";
 import { fmtNum, fmtShort } from "../lib/format";
 import { useBoarding } from "../lib/liscop";
 

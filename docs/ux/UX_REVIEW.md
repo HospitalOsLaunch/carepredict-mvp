@@ -40,7 +40,7 @@ téléphone** (navigation et longueur des pages).
 | Lits et sorties : unités affichées en code brut (`chirurgie_orthopedique`) | 🟡 | **Fait** : libellé du vocabulaire, code inconnu rendu lisible |
 | Plan des lits sur téléphone : 11 865 px de haut, 2 chambres par ligne ; le cadre refait le filtre d'unité à chaque visite | 🟡 | **Fait** : 3 chambres par ligne (8 545 px), introduction raccourcie, site et unité mémorisés sur le poste |
 | Player : clignotement image / vide à chaque étape sans capture | 🟢 | **Fait** : la dernière image reste affichée, atténuée, avec une mention |
-| « Computer use » ne parle pas aux cadres ni à la direction | 🟢 | Abrégé « Agent » dans la barre mobile ; **à décider** : un nom métier (« Agent de relève » ?) |
+| « Computer use » ne parle pas aux cadres ni à la direction | 🟢 | **Fait** (décision produit) : l'écran s'appelle « Agents », adresse `/agents` (les anciennes adresses redirigent) — ancien texte : abrégé « Agent » dans la barre mobile ; à décider : un nom métier (« Agent de relève » ?) |
 
 ### Hiérarchie visuelle
 
@@ -126,5 +126,5 @@ nettoyé : +1 utilisable, +1 indifférencié, +1 isolement, −1 à nettoyer),
 3. **Un mode « mur »** pour la cellule de gestion des lits (grand écran, lecture à 3 m,
    défilement automatique des unités en tension).
 4. **Annonce récapitulative** pour les lecteurs d'écran (« 3 changements depuis 08:05 »).
-5. **Nommer l'agent** dans le langage des équipes (et non « Computer use »).
+5. ~~**Nommer l'agent** dans le langage des équipes~~ : fait, l'écran s'appelle « Agents ».
 6. **Prettier en CI** et lecture des couleurs des graphiques depuis les jetons.

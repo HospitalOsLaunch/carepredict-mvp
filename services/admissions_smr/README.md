@@ -25,7 +25,7 @@ Les deux propositions de valeur fortes :
 
 1. **Prédictions** : sorties (par patient, par unité, par jour) et charge en soins
    qui en découle, comparée aux effectifs. Méthodes et fiabilité mesurée plus bas.
-2. **Computer use** : un agent qui relève les demandes sur les portails
+2. **Agents** (computer use) : un agent qui relève les demandes sur les portails
    d'orientation et y reporte les réponses, en routant chaque tâche entre un
    script, des modèles open source auto-hébergés et des modèles propriétaires
    selon la tâche, le coût et ce que chaque moteur a le droit de voir. Voir

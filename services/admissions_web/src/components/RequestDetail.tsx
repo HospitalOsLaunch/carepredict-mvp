@@ -10,7 +10,7 @@ import { label, useVocabulary } from "../lib/queries";
 import { useForecast, useRequest, useRequestAction } from "../lib/requests";
 import { LampLegend, LampStrip } from "./LampStrip";
 import { AdmitModal, ReasonModal } from "./RequestForms";
-import { ErrorNote, Spinner, StatusChip } from "./ui";
+import { ErrorNote, Spinner, StatusChip } from "./common";
 
 interface Pick {
   siteId: number;

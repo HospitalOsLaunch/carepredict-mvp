@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { Availability, Bed, BedBoard } from "../api/types_liscop";
-import { BedBoardPage } from "../pages/BedBoardPage";
+import { BedBoardPage, shortBedLabel } from "../pages/BedBoardPage";
 
 vi.mock("../api/client", () => ({ api: vi.fn() }));
 const auth = { canWrite: true, user: { site_id: null } };
@@ -124,6 +124,21 @@ describe("BedBoardPage", () => {
     await screen.findByRole("region", { name: "Cardiologie" });
     expect(screen.getByLabelText("Unité")).toHaveValue("all");
     localStorage.clear();
+  });
+
+  it("shows the bed letter in a shared room, the room number being above: never a cut « 230… »", async () => {
+    renderPage();
+    const unit = await screen.findByRole("region", { name: "Cardiologie" });
+    const a = within(unit).getByRole("button", { name: /Lit 2302A/ });
+    const b = within(unit).getByRole("button", { name: /Lit 2302B/ });
+    expect(within(a).getByText("A")).toBeInTheDocument();
+    expect(within(b).getByText("B")).toBeInTheDocument();
+    expect(within(b).queryByText("2302B")).not.toBeInTheDocument();
+    // A single room keeps its full label, and the spoken name always says the whole bed.
+    expect(within(within(unit).getByRole("button", { name: /Lit 2301 · Libre/ })).getByText("2301")).toBeInTheDocument();
+    expect(shortBedLabel("2316 B", "2316", true)).toBe("B");
+    expect(shortBedLabel("Fenêtre", "2316", true)).toBe("Fenêtre"); // not prefixed by the room
+    expect(shortBedLabel("2316", "2316", true)).toBe("2316");
   });
 
   it("filters beds by status", async () => {

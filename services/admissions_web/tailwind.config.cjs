@@ -21,5 +21,6 @@ module.exports = {
       boxShadow: { lift: "0 1px 0 rgba(28,25,70,0.04), 0 8px 24px -12px rgba(28,25,70,0.18)" }
     }
   },
-  plugins: []
+  // Enter / exit animations of the shadcn/ui primitives (data-[state=open]:animate-in …).
+  plugins: [require("tailwindcss-animate")]
 };

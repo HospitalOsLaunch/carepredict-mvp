@@ -55,7 +55,8 @@ const KIND_ICON: Record<StepKind, LucideIcon> = {
 
 export const MASK_LABEL: Record<MaskReason, string> = {
   identite: "Masqué : identité patient",
-  secret: "Masqué : mot de passe",
+  // Both the login and the password are masked as credentials: one label for the two fields.
+  secret: "Masqué : identifiants de connexion",
   autre: "Masqué"
 };
 

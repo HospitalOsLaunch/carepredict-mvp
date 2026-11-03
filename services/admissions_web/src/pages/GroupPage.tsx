@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import type { PoolForecast, Site } from "../api/types";
 import { LampLegend, LampStrip, type LampDay } from "../components/LampStrip";
-import { ErrorNote, Meter, PageHeader, Spinner } from "../components/ui";
+import { ErrorNote, Meter, PageHeader, Spinner } from "../components/common";
 import { fmtHours, fmtNum, fmtPct, plural } from "../lib/format";
 import { unitLabel, useDashboard, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";

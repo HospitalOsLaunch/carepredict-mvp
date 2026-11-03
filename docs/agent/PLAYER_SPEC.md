@@ -96,7 +96,7 @@ ci-dessus, `frame` binaire nullable, `created_at`), index (`task_id`, `seq`) ; p
 - Carte de connexion : bouton **Regarder en direct** quand `running_task_id` existe
   (pastille rouge « En direct ») ; dans « Passages », bouton **Revoir** quand
   `has_replay`.
-- Player : page `/computer-use/passages/:taskId` (plein écran possible), écran à gauche,
+- Player : page `/agents/passages/:taskId` (anciennement `/computer-use/…`, redirigée) (plein écran possible), écran à gauche,
   transcription à droite (dessous en mobile), barre de contrôle sous l'écran, en-tête
   avec connexion, site, tâche, moteur, résultat, date et « conservé jusqu'au … ».
 - Microcopies françaises, claires ; jetons de design existants ; accessible ; pas de
@@ -195,6 +195,6 @@ variables, Vite), compte `bedmanager@ch-demo.hospitalos.fr`, connexion « Gestio
   et du logiciel fictif.
 - Droits sur `GET /replay` : bedmanager, cadre et admin du CH 200 ; direction 403 (et le
   web affiche « Player réservé » sans appeler l'API) ; comptes de l'autre groupe 404.
-- 390 px : pas de défilement horizontal (player et écran Computer use).
+- 390 px : pas de défilement horizontal (player et écran Agents, alors « Computer use »).
 
 Captures (données fictives) : `docs/agent/captures/`.

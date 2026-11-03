@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { api } from "../api/client";
 import type { RequestDetail } from "../api/types";
 import { useSites, useVocabulary } from "../lib/queries";
-import { ErrorNote, Modal } from "./ui";
+import { ErrorNote, Modal } from "./common";
 
 export function ReasonModal({
   title,

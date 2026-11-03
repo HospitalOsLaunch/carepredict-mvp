@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
 import type { ConnectionOut, WorkerOut } from "../api/types_agent";
-import { ComputerUsePage } from "../pages/ComputerUsePage";
+import { AgentsPage } from "../pages/AgentsPage";
 
 vi.mock("../api/client", () => ({ api: vi.fn() }));
 const auth = { isAdmin: true, canWrite: true };
@@ -115,7 +115,7 @@ function renderPage() {
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter>
-        <ComputerUsePage />
+        <AgentsPage />
       </MemoryRouter>
     </QueryClientProvider>
   );
@@ -135,7 +135,7 @@ beforeEach(() => {
   mockApi();
 });
 
-describe("ComputerUsePage", () => {
+describe("AgentsPage", () => {
   it("shows the workers and one card per connection", async () => {
     renderPage();
     expect(await screen.findByRole("heading", { name: "poste-accueil" })).toBeInTheDocument();

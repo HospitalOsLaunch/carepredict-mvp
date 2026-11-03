@@ -19,9 +19,10 @@ import { Link } from "react-router-dom";
 
 import type { ConnectionAction, ConnectionOut, WorkerOut } from "../api/types_agent";
 import { useAuth } from "../auth";
+import { Button } from "@/components/ui/button";
 import { LiveDot } from "../components/AgentPlayer";
 import { ConnectionForm, WEEKDAYS } from "../components/ConnectionForm";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
+import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import {
   KIND_LABEL,
   TASK_LABEL,
@@ -53,7 +54,7 @@ const OUTCOME: Record<string, string> = {
   refused: "refusé"
 };
 
-export function ComputerUsePage() {
+export function AgentsPage() {
   const { isAdmin, canWrite } = useAuth();
   const status = useAgentStatus();
   const workers = useWorkers();
@@ -81,7 +82,7 @@ export function ComputerUsePage() {
   return (
     <>
       <PageHeader
-        title="Computer use"
+        title="Agents"
         lead="L'agent lit vos logiciels comme le ferait une personne, établissement par établissement. Démarrez, mettez en pause ou relevez à la demande."
         actions={
           isAdmin && (
@@ -90,9 +91,9 @@ export function ComputerUsePage() {
                 <SlidersHorizontal className="h-4 w-4" aria-hidden /> Routage, moteurs et budgets
               </Link>
               {paused ? (
-                <button className="btn-primary" disabled={groupPause.isPending} onClick={() => toggleGroup(false)}>
+                <Button variant="primary" disabled={groupPause.isPending} onClick={() => toggleGroup(false)}>
                   <Play className="h-4 w-4" aria-hidden /> Lever la pause générale
-                </button>
+                </Button>
               ) : (
                 <button className="btn bg-paper text-ink shadow-lift hover:bg-sun-soft" disabled={groupPause.isPending || !status.data} onClick={() => setConfirm("group")}>
                   <Pause className="h-4 w-4" aria-hidden /> Pause générale
@@ -156,9 +157,9 @@ export function ComputerUsePage() {
             <p className="mt-1 text-[15px] text-ink-soft">Un logiciel à lire pour un établissement, avec son script et son planning.</p>
           </div>
           {isAdmin && (
-            <button className="btn-primary" onClick={() => setEditing("new")}>
+            <Button variant="primary" onClick={() => setEditing("new")}>
               <Plus className="h-4 w-4" aria-hidden /> Nouvelle connexion
-            </button>
+            </Button>
           )}
         </div>
         <div className="mt-4 space-y-4">
@@ -205,11 +206,11 @@ export function ComputerUsePage() {
               : "L'agent ne relève plus ce logiciel et ne reporte plus de réponse jusqu'à la reprise. Les tâches en file attendent."}
           </p>
           <div className="mt-6 flex flex-wrap justify-end gap-2">
-            <button className="btn-ghost" onClick={() => setConfirm(null)}>
+            <Button variant="ghost" onClick={() => setConfirm(null)}>
               Annuler
-            </button>
-            <button
-              className="btn-sun"
+            </Button>
+            <Button
+              variant="sun"
               onClick={() => {
                 if (confirm === "group") toggleGroup(true);
                 else run(confirm, "pause");
@@ -217,7 +218,7 @@ export function ComputerUsePage() {
               }}
             >
               <Pause className="h-4 w-4" aria-hidden /> Mettre en pause
-            </button>
+            </Button>
           </div>
         </Modal>
       )}
@@ -404,40 +405,42 @@ function ConnectionCard({
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {canWatch && c.running_task_id != null && (
-            <Link to={`/computer-use/passages/${c.running_task_id}`} className="btn bg-ink text-white hover:bg-ink-soft">
+            <Button asChild variant="dark">
+              <Link to={`/agents/passages/${c.running_task_id}`}>
               <Eye className="h-4 w-4" aria-hidden /> Regarder en direct
               <span className="chip bg-coral px-2 py-0 text-[12px] text-white">
                 <LiveDot light /> En direct
               </span>
             </Link>
+            </Button>
           )}
           {canAct && c.status === "arretee" && (
-            <button className="btn-primary" disabled={blocked} onClick={() => onAction("start")}>
+            <Button variant="primary" disabled={blocked} onClick={() => onAction("start")}>
               <Play className="h-4 w-4" aria-hidden /> Démarrer
-            </button>
+            </Button>
           )}
           {canAct && c.status === "active" && (
             <>
-              <button className="btn-primary" disabled={blocked} onClick={() => onAction("sync")}>
+              <Button variant="primary" disabled={blocked} onClick={() => onAction("sync")}>
                 <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} aria-hidden /> Relever maintenant
-              </button>
-              <button className="btn-quiet" disabled={blocked} onClick={() => onAction("pause")}>
+              </Button>
+              <Button variant="quiet" disabled={blocked} onClick={() => onAction("pause")}>
                 <Pause className="h-4 w-4" aria-hidden /> Mettre en pause
-              </button>
+              </Button>
             </>
           )}
           {canAct && c.status === "en_pause" && (
-            <button className="btn-primary" disabled={blocked} onClick={() => onAction("resume")}>
+            <Button variant="primary" disabled={blocked} onClick={() => onAction("resume")}>
               <Play className="h-4 w-4" aria-hidden /> Reprendre
-            </button>
+            </Button>
           )}
           {onEdit && (
-            <button className="btn-ghost" onClick={onEdit}>
+            <Button variant="ghost" onClick={onEdit}>
               <Pencil className="h-4 w-4" aria-hidden /> Modifier
-            </button>
+            </Button>
           )}
-          <button
-            className="btn-ghost ml-auto"
+          <Button
+            variant="ghost" className="ml-auto"
             aria-expanded={open}
             aria-controls={`${titleId}-runs`}
             onClick={() => setOpen(!open)}
@@ -445,7 +448,7 @@ function ConnectionCard({
             Passages
             {c.needs_human > 0 && <span className="chip bg-coral-dark text-white">{c.needs_human} à reprendre</span>}
             <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
-          </button>
+          </Button>
         </div>
         {canAct && groupPaused && <p className="mt-2 text-[13px] text-ink-faint">Commandes suspendues pendant la pause générale.</p>}
       </div>
@@ -501,7 +504,7 @@ function Runs({ id, canAct, canWatch }: { id: number; canAct: boolean; canWatch:
               <span className={`chip ${st.tone}`}>{st.text}</span>
               {canWatch && r.has_replay && (
                 <Link
-                  to={`/computer-use/passages/${r.id}`}
+                  to={`/agents/passages/${r.id}`}
                   className="btn-quiet px-3 py-1.5 text-[13px]"
                   aria-label={`Revoir ce passage (${r.steps_count} étape${r.steps_count > 1 ? "s" : ""})`}
                 >
@@ -511,20 +514,20 @@ function Runs({ id, canAct, canWatch }: { id: number; canAct: boolean; canWatch:
               )}
               {canAct && stuck && (
                 <div className="flex w-full justify-end gap-2 sm:w-auto">
-                  <button
-                    className="btn-quiet px-3 py-1.5 text-[13px]"
+                  <Button
+                    variant="quiet" size="sm" className="text-[13px]"
                     disabled={act.isPending}
                     onClick={() => act.mutate({ id: r.id, what: "retry" })}
                   >
                     <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Relancer
-                  </button>
-                  <button
-                    className="btn-quiet px-3 py-1.5 text-[13px]"
+                  </Button>
+                  <Button
+                    variant="quiet" size="sm" className="text-[13px]"
                     disabled={act.isPending}
                     onClick={() => act.mutate({ id: r.id, what: "manual" })}
                   >
                     Fait à la main
-                  </button>
+                  </Button>
                 </div>
               )}
             </li>
