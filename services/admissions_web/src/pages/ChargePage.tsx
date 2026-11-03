@@ -16,7 +16,7 @@ const DOW = new Intl.DateTimeFormat("fr-FR", { weekday: "narrow" });
 const TENSION: Record<WorkloadDay["tension"], { cell: string; text: string }> = {
   normale: { cell: "bg-lagoon-soft text-lagoon-dark", text: "normale" },
   vigilance: { cell: "bg-sun text-ink", text: "vigilance" },
-  tension: { cell: "bg-coral text-white", text: "tension" },
+  tension: { cell: "bg-coral-dark text-white", text: "tension" },
   inconnue: { cell: "bg-sky text-ink-faint", text: "effectif non renseigné" }
 };
 
@@ -253,8 +253,8 @@ function PoolDetail({ pool, mention }: { pool: PoolWorkload; mention: string }) 
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
             <CartesianGrid stroke="#D9E0F5" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} interval="preserveStartEnd" />
-            <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} unit=" h" width={52} />
+            <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} interval="preserveStartEnd" />
+            <YAxis tick={{ fontSize: 12, fill: "#666490" }} unit=" h" width={52} />
             <Tooltip
               formatter={(value, name) => {
                 const v = Array.isArray(value) ? `${value[0]} à ${value[1]} h` : `${value} h`;
@@ -619,8 +619,8 @@ function BacktestPanel() {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={byHorizon(3)}>
                 <CartesianGrid stroke="#D9E0F5" vertical={false} />
-                <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} />
-                <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} unit=" h" width={60} domain={["auto", "auto"]} />
+                <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} />
+                <YAxis tick={{ fontSize: 12, fill: "#666490" }} unit=" h" width={60} domain={["auto", "auto"]} />
                 <Tooltip formatter={(v, n) => [`${v} h`, n]} />
                 <Line
                   dataKey="predicted_hours"

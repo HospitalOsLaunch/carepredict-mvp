@@ -24,7 +24,7 @@ const STATUS_STYLE: Record<RequestStatus, string> = {
   nouvelle: "bg-coral-soft text-coral-dark",
   en_etude: "bg-violet-soft text-violet-dark",
   accord: "bg-lagoon-soft text-lagoon-dark",
-  confirmee: "bg-lagoon text-white",
+  confirmee: "bg-lagoon-dark text-white",
   admise: "bg-ink text-white",
   refusee: "bg-sky-deep text-ink-soft",
   perdue: "bg-sky-deep text-ink-soft"

@@ -159,7 +159,7 @@ export const TASK_STATUS: Record<string, { text: string; tone: string }> = {
   running: { text: "En cours", tone: "bg-violet text-white" },
   done: { text: "Faite", tone: "bg-lagoon-soft text-lagoon-dark" },
   manual: { text: "Faite à la main", tone: "bg-sky-deep text-ink-soft" },
-  needs_human: { text: "À reprendre", tone: "bg-coral text-white" },
+  needs_human: { text: "À reprendre", tone: "bg-coral-dark text-white" },
   failed: { text: "Échec", tone: "bg-coral-soft text-coral-dark" },
   cancelled: { text: "Annulée", tone: "bg-sky-deep text-ink-soft" }
 };

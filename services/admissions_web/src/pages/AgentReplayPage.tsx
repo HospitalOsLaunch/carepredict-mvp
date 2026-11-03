@@ -82,7 +82,7 @@ function ReplayHeader({ replay }: { replay: ReplayOut }) {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="break-words">{task.connection_name ?? `Passage n° ${task.id}`}</h1>
         {live ? (
-          <span className="chip bg-coral text-white">
+          <span className="chip bg-coral-dark text-white">
             <LiveDot light /> En direct
           </span>
         ) : (

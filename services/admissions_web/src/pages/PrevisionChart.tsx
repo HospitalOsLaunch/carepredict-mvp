@@ -27,8 +27,8 @@ export function BoardingChart({ series }: { series: ForecastSeries }) {
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={points} margin={{ left: 0, right: 8, top: 8 }}>
             <CartesianGrid stroke="#D9E0F5" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} interval="preserveStartEnd" />
-            <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} width={36} allowDecimals={false} />
+            <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} interval="preserveStartEnd" />
+            <YAxis tick={{ fontSize: 12, fill: "#666490" }} width={36} allowDecimals={false} />
             <Tooltip />
             <Area dataKey="band" name="Fourchette à 80 %" fill="#ECE8FF" stroke="none" isAnimationActive={false} />
             <Line

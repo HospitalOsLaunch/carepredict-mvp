@@ -117,8 +117,8 @@ export function MetricsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={m.weekly.map((w) => ({ ...w, label: fmtShort(w.week_start) }))}>
                   <CartesianGrid stroke="#D9E0F5" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} />
-                  <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} unit=" h" width={48} />
+                  <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} />
+                  <YAxis tick={{ fontSize: 12, fill: "#666490" }} unit=" h" width={48} />
                   <Tooltip formatter={(v) => [`${v} h`, "Délai médian"]} />
                   <Line type="monotone" dataKey="response_hours_median" stroke="#5B3DF5" strokeWidth={3} dot={{ r: 3 }} connectNulls />
                 </ComposedChart>
@@ -369,8 +369,8 @@ function BacktestSection({ backtest: b, loading, error }: { backtest?: Backtest;
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={b.points.map((p) => ({ ...p, band: [p.p10, p.p90], label: fmtShort(p.as_of) }))}>
                 <CartesianGrid stroke="#D9E0F5" vertical={false} />
-                <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} />
-                <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} width={40} />
+                <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} />
+                <YAxis tick={{ fontSize: 12, fill: "#666490" }} width={40} />
                 <Tooltip />
                 <Area dataKey="band" name="Fourchette à 80 %" fill="#FFF1CC" stroke="#FFB21E" />
                 <Line dataKey="predicted" name="Prévu" stroke="#5B3DF5" strokeWidth={2} dot={false} />

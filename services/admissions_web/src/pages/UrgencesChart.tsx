@@ -27,8 +27,8 @@ export function BoardingChart({ siteId }: { siteId: number }) {
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ left: 0, right: 8, top: 8 }}>
               <CartesianGrid stroke="#D9E0F5" vertical={false} />
-              <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#7D7BA3" }} interval="preserveStartEnd" minTickGap={24} />
-              <YAxis tick={{ fontSize: 12, fill: "#7D7BA3" }} allowDecimals={false} width={36} />
+              <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#666490" }} interval="preserveStartEnd" minTickGap={24} />
+              <YAxis tick={{ fontSize: 12, fill: "#666490" }} allowDecimals={false} width={36} />
               <Tooltip
                 formatter={(value, name) => [value, name]}
                 labelFormatter={(label, payload) => {

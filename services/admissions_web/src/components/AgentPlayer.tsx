@@ -254,7 +254,7 @@ export function AgentPlayer({ replay }: { replay: ReplayOut }) {
                   type="button"
                   onClick={goLive}
                   aria-pressed={follow}
-                  className={`btn px-3 py-1.5 text-[14px] ${follow ? "bg-coral text-white" : "bg-coral-soft text-coral-dark hover:bg-coral hover:text-white"}`}
+                  className={`btn px-3 py-1.5 text-[14px] ${follow ? "bg-coral-dark text-white" : "bg-coral-soft text-coral-dark hover:bg-coral-dark hover:text-white"}`}
                 >
                   <LiveDot pulse={follow} light={follow} /> En direct
                 </button>

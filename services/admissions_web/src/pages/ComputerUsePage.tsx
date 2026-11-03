@@ -443,7 +443,7 @@ function ConnectionCard({
             onClick={() => setOpen(!open)}
           >
             Passages
-            {c.needs_human > 0 && <span className="chip bg-coral text-white">{c.needs_human} à reprendre</span>}
+            {c.needs_human > 0 && <span className="chip bg-coral-dark text-white">{c.needs_human} à reprendre</span>}
             <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
           </button>
         </div>
