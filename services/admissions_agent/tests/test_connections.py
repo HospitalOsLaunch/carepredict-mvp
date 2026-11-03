@@ -15,7 +15,7 @@ from sqlalchemy import select
 from services.admissions_agent.api_client import HospitalOSClient
 from services.admissions_agent.config import AgentSettings
 from services.admissions_agent.runner import Agent
-from services.admissions_agent.tests.conftest import PASSWORD, db, login
+from services.admissions_agent.tests.conftest import PASSWORD, as_httpx, db, login
 from services.admissions_smr.models import AgentTask, Movement, Site, User
 from services.admissions_smr.security import hash_password
 
@@ -30,7 +30,7 @@ def bare_agent(api: TestClient, agent_id: str = "poste-1") -> Agent:
         api_password=PASSWORD,
         agent_id=agent_id,
     )
-    return Agent(settings, HospitalOSClient(api, "agent@test.fr", PASSWORD))
+    return Agent(settings, HospitalOSClient(as_httpx(api), "agent@test.fr", PASSWORD))
 
 
 def create(api: TestClient, **body: Any) -> dict[str, Any]:
