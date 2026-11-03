@@ -14,11 +14,16 @@ import os
 import sys
 from collections.abc import Callable
 
-from sqlalchemy import select
+from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
 from services.admissions_smr.clock import Clock
-from services.admissions_smr.config import ConfigurationError, ensure_demo_allowed, get_settings
+from services.admissions_smr.config import (
+    ConfigurationError,
+    Settings,
+    ensure_demo_allowed,
+    get_settings,
+)
 from services.admissions_smr.db import make_engine, make_session_factory
 from services.admissions_smr.migrate import upgrade
 from services.admissions_smr.models import AgentConnection, Group, User
@@ -57,11 +62,19 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Refusé : {exc}", file=sys.stderr)
             return 1
     engine = make_engine(settings.database_url)
+    session = make_session_factory(engine)()
+    try:
+        return _run(args, settings, engine, session)
+    finally:  # no transaction left open, success or refusal (it blocks schema changes on PG)
+        session.close()
+        engine.dispose()
+
+
+def _run(args: argparse.Namespace, settings: Settings, engine: Engine, session: Session) -> int:
     upgrade(engine)
     if args.command == "migrate":
         print("Schéma à jour.")
         return 0
-    session = make_session_factory(engine)()
     clock = Clock(settings.timezone)
 
     if args.command == "init-group":
@@ -121,29 +134,25 @@ def main(argv: list[str] | None = None) -> int:
             seed_demo_mco,
         )
 
-        try:
-            existing = session.scalar(select(Group).where(Group.name == GROUP_NAME))
-            if existing is not None:
-                return _repair_demo_connections(
-                    session,
-                    existing,
-                    lambda g: add_demo_bedsoft_connection(
-                        session, g, settings.connector_key, args.bedsoft_url
-                    ),
-                    "Le groupe de démonstration MCO existe déjà",
-                )
-            group = seed_demo_mco(
+        existing = session.scalar(select(Group).where(Group.name == GROUP_NAME))
+        if existing is not None:
+            return _repair_demo_connections(
                 session,
-                clock.now(),
-                args.password,
-                settings.password_iterations,
-                settings.timezone,
-                connector_key=settings.connector_key,
-                bedsoft_url=args.bedsoft_url,
+                existing,
+                lambda g: add_demo_bedsoft_connection(
+                    session, g, settings.connector_key, args.bedsoft_url
+                ),
+                "Le groupe de démonstration MCO existe déjà",
             )
-        finally:  # no transaction left open (it would block a schema change on PostgreSQL)
-            session.close()
-            engine.dispose()
+        group = seed_demo_mco(
+            session,
+            clock.now(),
+            args.password,
+            settings.password_iterations,
+            settings.timezone,
+            connector_key=settings.connector_key,
+            bedsoft_url=args.bedsoft_url,
+        )
         print(f"Hôpital MCO de démonstration créé (id {group.id}).")
         print(f"Comptes : bedmanager@, cadre@, direction@, admin@, agent@{EMAIL_DOMAIN}")
         return 0
