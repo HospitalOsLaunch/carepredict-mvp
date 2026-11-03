@@ -19,11 +19,13 @@ import yaml
 from playwright.sync_api import TimeoutError as PlaywrightTimeout
 
 from services.admissions_agent.browser import BrowserSession
+from services.admissions_agent.replay import Privacy, PrivacyError
 
 PARIS = ZoneInfo("Europe/Paris")
 BUNDLED = Path(__file__).parent / "playbooks"
 TASK_ORDER = ("sync_inbox", "reply_portal", "sync_movements")
 _TEMPLATE = re.compile(r"\{\{\s*([a-zA-Z_][\w.]*)\s*\}\}")
+SECRET_FILL = re.compile(r"\{\{\s*secrets\.(\w+)\s*\}\}")
 
 
 # What each transform expects, for error messages that never quote the screen.
@@ -111,6 +113,10 @@ class Playbook:
         self.id = str(spec.get("id", default_id))
         self.kind = str(spec.get("kind", ""))
         self.timeout = int(spec.get("timeout_ms", 8000))
+        try:  # player: zones masked before capture; no section = no frame (fail closed)
+            self.privacy = Privacy.from_spec(spec.get("privacy"))
+        except PrivacyError as exc:
+            raise PlaybookError(str(exc)) from exc
 
     @classmethod
     def load(cls, path: str) -> Playbook:
@@ -145,39 +151,86 @@ class Playbook:
 
     # --- steps --------------------------------------------------------------------
 
-    def run_steps(self, session: BrowserSession, steps: list[Any], context: dict[str, Any]) -> None:
+    def run_steps(
+        self,
+        session: BrowserSession,
+        steps: list[Any],
+        context: dict[str, Any],
+        phase: str | None = None,
+    ) -> None:
+        """Each step may carry a static ``label`` shown in the player (never templated, so
+        no screen or payload value can enter it). ``phase="login"``: login steps."""
         page = session.page
+        rec = session.recorder
         for step in steps:
             session.checkpoint()
-            if not isinstance(step, dict) or (len(step) != 1 and "when" not in step):
+            body = {k: v for k, v in step.items() if k != "label"} if isinstance(step, dict) else {}
+            if not body or (len(body) != 1 and "when" not in body):
                 raise PlaybookError(f"étape invalide : {step}")
+            label = step.get("label")
+            if label is not None and not isinstance(label, str):
+                raise PlaybookError(f"libellé invalide : {step}")
             try:
-                if "when" in step:
-                    condition = step["when"]
+                if "when" in body:
+                    condition = body["when"]
                     payload = context.get("payload", {})
                     if all(str(payload.get(k)) == str(v) for k, v in condition.items()):
-                        self.run_steps(session, step.get("steps", []), context)
+                        self.run_steps(session, body.get("steps", []), context, phase)
                     continue
-                ((action, arg),) = step.items()
+                ((action, arg),) = body.items()
                 if action == "goto":
-                    session.goto(render(arg, context))
+                    with rec.step(
+                        phase or "navigate", label or "Ouvre une page du logiciel", target=str(arg)
+                    ):
+                        session.goto(render(arg, context))
                 elif action == "fill":
-                    page.fill(arg["selector"], render(arg["value"], context), timeout=self.timeout)
-                elif action == "click":
-                    page.click(arg, timeout=self.timeout)
-                    session._settle()
-                elif action == "check":
-                    page.check(arg, timeout=self.timeout)
+                    selector, template = arg["selector"], str(arg["value"])
+                    secret = SECRET_FILL.search(template)
+                    if secret:  # always masked in every later frame
+                        rec.secret_selectors.add(selector)
+                    default = (
+                        ("Saisit l'identifiant" if secret.group(1) == "username" else
+                         "Saisit le mot de passe")
+                        if secret
+                        else "Remplit un champ"
+                    )  # fmt: skip
+                    with rec.step(
+                        phase or "fill", label or default, target=selector, selector=selector
+                    ):
+                        page.fill(selector, render(template, context), timeout=self.timeout)
+                elif action in ("click", "check"):
+                    default = "Clique sur un bouton" if action == "click" else "Coche une case"
+                    with rec.step(
+                        phase or "click",
+                        label or default,
+                        target=arg,
+                        selector=arg,
+                        capture="before",
+                    ):
+                        if action == "click":
+                            page.click(arg, timeout=self.timeout)
+                            session._settle()
+                        else:
+                            page.check(arg, timeout=self.timeout)
                 elif action == "select":
-                    label = render(arg["label"], context)
-                    options = page.locator(f"{arg['selector']} option").all_inner_texts()
-                    chosen = next((o for o in options if fold(o) == fold(label)), None)
-                    chosen = chosen or arg.get("fallback")
-                    if not chosen:
-                        raise PlaybookError(f"option introuvable : {label}")
-                    page.select_option(arg["selector"], label=chosen, timeout=self.timeout)
+                    with rec.step(
+                        phase or "select",
+                        label or "Choisit une option dans une liste",
+                        target=arg["selector"],
+                        selector=arg["selector"],
+                    ):
+                        wanted = render(arg["label"], context)
+                        options = page.locator(f"{arg['selector']} option").all_inner_texts()
+                        chosen = next((o for o in options if fold(o) == fold(wanted)), None)
+                        chosen = chosen or arg.get("fallback")
+                        if not chosen:
+                            raise PlaybookError(f"option introuvable : {wanted}")
+                        page.select_option(arg["selector"], label=chosen, timeout=self.timeout)
                 elif action == "wait_for":
-                    page.wait_for_selector(arg, timeout=self.timeout)
+                    with rec.step(
+                        phase or "wait", label or "Attend l'affichage de la page", target=arg
+                    ):
+                        page.wait_for_selector(arg, timeout=self.timeout)
                 else:
                     raise PlaybookError(f"action inconnue : {action}")
             except PlaywrightTimeout as exc:
@@ -213,25 +266,41 @@ class Playbook:
     # --- tasks ----------------------------------------------------------------------
 
     def login(self, session: BrowserSession, secrets: dict[str, str]) -> None:
-        self.run_steps(session, self.spec.get("login", []), {"secrets": secrets})
+        self.run_steps(session, self.spec.get("login", []), {"secrets": secrets}, "login")
 
     def read_listing(
         self, session: BrowserSession, task: str, transforms: Transforms
     ) -> list[dict[str, Any]]:
-        """Open each row of a list and read the playbook's fields (and only those)."""
+        """Open each row of a list and read the playbook's fields (and only those).
+        ``list.label`` and ``list.items`` (plural noun) word the player's transcript."""
         spec = self.spec[task]
         listing = spec["list"]
-        session.goto(listing["goto"])
+        rec = session.recorder
+        noun = str(listing.get("items", "fiches"))
+        with rec.step(
+            "navigate", str(listing.get("label", "Ouvre la liste")), target=listing["goto"]
+        ):
+            session.goto(listing["goto"])
         refs = [
             r.get_attribute(listing["ref_attribute"]) or ""
             for r in session.page.locator(listing["rows"]).all()
         ]
+        refs = [r for r in refs if r]
         items: list[dict[str, Any]] = []
-        for ref in [r for r in refs if r]:
-            session.goto(render(listing["detail_path"], {"ref": ref}))
-            fields = self.read_fields(session, spec["fields"], transforms)
+        for n, ref in enumerate(refs, start=1):
+            target = str(listing["detail_path"])
+            with rec.step(
+                "navigate", f"Ouvre la fiche {n} sur {len(refs)}", target=target, capture=None
+            ):
+                session.goto(render(listing["detail_path"], {"ref": ref}))
+            with rec.step("read", f"Lit la fiche {n} sur {len(refs)}") as step:
+                fields = self.read_fields(session, spec["fields"], transforms)
+                step.transmitted = {"count": 1, "fields": sorted(fields)}
             fields.update(spec.get("constants", {}))
             items.append(fields)
+        names = sorted({k for item in items for k in item})
+        rec.info(f"Lit {len(items)} {noun}", kind="read", outcome="ok",
+                 transmitted={"count": len(items), "fields": names})  # fmt: skip
         return items
 
     def sync_inbox(self, session: BrowserSession, transforms: Transforms) -> list[dict[str, Any]]:
@@ -250,13 +319,25 @@ class Playbook:
         """Read back the portal and compare with what should have been written."""
         spec = self.spec["verify_reply"]
         context = {"payload": payload}
-        session.goto(render(spec["goto"], context))
-        observed = self.read_fields(session, spec["fields"], transforms)
-        expected = {
-            k: render(str(v), context).strip()
-            for k, v in spec["expect"].get(str(payload.get("decision")), {}).items()
-        }
-        ok = bool(expected) and all(same_text(observed.get(k, ""), v) for k, v in expected.items())
+        rec = session.recorder
+        with rec.step(
+            "navigate", "Ouvre le dossier pour le relire", target=spec["goto"], capture=None
+        ):
+            session.goto(render(spec["goto"], context))
+        with rec.step("verify", "Relit le dossier") as step:
+            observed = self.read_fields(session, spec["fields"], transforms)
+            expected = {
+                k: render(str(v), context).strip()
+                for k, v in spec["expect"].get(str(payload.get("decision")), {}).items()
+            }
+            ok = bool(expected) and all(
+                same_text(observed.get(k, ""), v) for k, v in expected.items()
+            )
+            step.label = (
+                "Relit le dossier : la réponse attendue y figure"
+                if ok
+                else "Relit le dossier : la réponse attendue n'y figure pas"
+            )
         return ok, {"observed": observed, "expected": expected}
 
 

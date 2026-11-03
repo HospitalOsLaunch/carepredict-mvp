@@ -268,7 +268,7 @@ def task_counts(ctx: Ctx) -> dict[int, dict[str, int]]:
         )
         .group_by(AgentTask.connection_id)
     )
-    for connection_id, task_id in ctx.session.execute(running).tuples():
+    for connection_id, task_id in ctx.session.execute(running):
         bucket = out.setdefault(int(connection_id or 0), {"pending": 0, "needs_human": 0})
         bucket["running_task_id"] = int(task_id)
     return out

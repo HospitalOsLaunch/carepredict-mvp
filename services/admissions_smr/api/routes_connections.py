@@ -442,15 +442,14 @@ def connection_runs(
             query.order_by(AgentTask.created_at.desc(), AgentTask.id.desc()).limit(limit)
         )
     )
-    steps = dict(
-        ctx.session.execute(
+    steps: dict[int, int] = {
+        task_id: int(n)
+        for task_id, n in ctx.session.execute(
             select(AgentTaskStep.task_id, func.count())
             .where(AgentTaskStep.task_id.in_([t.id for t in rows]))
             .group_by(AgentTaskStep.task_id)
         )
-        .tuples()
-        .all()
-    )
+    }
     watch = can_watch(ctx, conn)
     return [
         RunOut(

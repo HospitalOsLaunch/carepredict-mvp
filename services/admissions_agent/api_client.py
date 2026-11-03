@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import time
 import uuid
 from typing import Any
 
 import httpx
+
+from services.admissions_agent.replay import StepRefused
 
 
 class ApiError(RuntimeError):
@@ -109,6 +112,31 @@ class HospitalOSClient:
             {**self._lease(task_id), "engine": engine},
         )
         return float(result["budget_usd"])
+
+    def post_step(
+        self, task_id: int, meta: dict[str, Any], frame: bytes | None, timeout: float
+    ) -> None:
+        """One player step (called from the upload thread). Never retried by the caller:
+        ``StepRefused`` when the task no longer accepts steps (lease lost, finished)."""
+        lease = self.leases.get(task_id)
+        if lease is None:
+            raise StepRefused("plus de réservation")
+        files = {"frame": ("frame.jpg", frame, "image/jpeg")} if frame is not None else None
+        for _ in range(2):
+            r = self.http.post(
+                f"/api/agent/tasks/{task_id}/steps",
+                data={"meta": json.dumps({**lease, **meta})},
+                files=files,
+                headers=self._headers(),
+                timeout=timeout,
+            )
+            if r.status_code != 401:
+                break
+            self.token = None
+        if r.status_code in (401, 403, 404, 409):
+            raise StepRefused(f"étape refusée ({r.status_code})")
+        if r.status_code >= 400:
+            raise ApiError(f"étape non enregistrée : {r.status_code}{_reason(r)}")
 
     def vocabulary(self) -> dict[str, dict[str, str]]:
         r = self.http.get("/api/vocabulary")

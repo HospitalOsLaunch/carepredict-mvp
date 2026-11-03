@@ -368,7 +368,7 @@ def replay(
         .where(AgentTaskStep.task_id == task.id, AgentTaskStep.seq > after_seq)
         .order_by(AgentTaskStep.seq)
         .limit(PAGE)
-    ).tuples()
+    )
     steps = [step_out(s, bool(has_frame)) for s, has_frame in rows]
     oldest = ctx.session.scalar(
         select(func.min(AgentTaskStep.created_at)).where(AgentTaskStep.task_id == task.id)
