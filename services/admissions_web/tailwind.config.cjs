@@ -6,11 +6,11 @@ module.exports = {
       colors: {
         sky: { DEFAULT: "#EEF3FF", deep: "#DDE6FF" },
         paper: "#FFFFFF",
-        ink: { DEFAULT: "#1C1946", soft: "#4A4874", faint: "#7D7BA3" },
+        ink: { DEFAULT: "#1C1946", soft: "#4A4874", faint: "#666490" },
         violet: { DEFAULT: "#5B3DF5", soft: "#ECE8FF", dark: "#4127D9" },
         sun: { DEFAULT: "#FFB21E", soft: "#FFF1CC", glow: "#FFD36B" },
-        coral: { DEFAULT: "#FF6B57", soft: "#FFE7E2", dark: "#D9442F" },
-        lagoon: { DEFAULT: "#0FA897", soft: "#D8F5F1", dark: "#0B7F72" },
+        coral: { DEFAULT: "#FF6B57", soft: "#FFE7E2", dark: "#B5371F" },
+        lagoon: { DEFAULT: "#0FA897", soft: "#D8F5F1", dark: "#0A6B61" },
         line: "#D9E0F5"
       },
       fontFamily: {

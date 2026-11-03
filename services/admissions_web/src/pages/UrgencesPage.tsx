@@ -3,6 +3,7 @@ import { lazy, Suspense, useState, type FormEvent } from "react";
 
 import type { EdCensus, HetCriterion, HetLevel, TensionDeclaration, TensionStatus } from "../api/types_liscop";
 import { useAuth } from "../auth";
+import { LiveNumber } from "../components/live";
 import { ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
 import { fmtDateTime, fmtHours, fmtNum, fmtPct } from "../lib/format";
 import { useDeclarations, useEdCensus, useEdWrite, useSnapshots, useTensionStatus } from "../lib/liscop";
@@ -57,7 +58,7 @@ export function UrgencesPage() {
         <Suspense fallback={<Spinner />}>
           <BoardingChart siteId={c.site_id} />
         </Suspense>
-        {status.data ? <AidCard status={status.data} /> : status.error ? <ErrorNote error={status.error} /> : <Spinner />}
+        {status.data ? <AidCard status={status.data} boardingIsYesterday={!c.today_10h.reached} /> : status.error ? <ErrorNote error={status.error} /> : <Spinner />}
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Declarations status={status.data} siteId={c.site_id} siteName={c.site_name} />
@@ -76,10 +77,12 @@ export function UrgencesPage() {
   );
 }
 
-function Card({ value, label, note, tone }: { value: string; label: string; note?: string; tone: string }) {
+function Card({ value, label, note, tone, scope }: { value: number; label: string; note?: string; tone: string; scope: number }) {
   return (
     <div className={`panel relative overflow-hidden px-5 py-4 before:absolute before:inset-x-0 before:top-0 before:h-1 ${tone}`}>
-      <p className="num font-display text-4xl font-bold">{value}</p>
+      <p className="num font-display text-4xl font-bold">
+        <LiveNumber value={value} scope={String(scope)} />
+      </p>
       <p className="mt-1 text-[15px] font-bold">{label}</p>
       {note && <p className="mt-1 text-[13px] text-ink-faint">{note}</p>}
     </div>
@@ -95,16 +98,18 @@ function CensusCards({ census }: { census: EdCensus }) {
       : "Provisoire : 10:00 n'est pas encore passé";
   return (
     <section aria-label={`Recensement, ${census.site_name}`} className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-      <Card value={fmtNum(now.present)} label="présents aux urgences" note={`Au ${fmtDateTime(now.at)}`} tone="before:bg-violet" />
+      <Card scope={census.site_id} value={now.present} label="présents aux urgences" note={`Au ${fmtDateTime(now.at)}`} tone="before:bg-violet" />
       <Card
-        value={fmtNum(now.waiting_bed)}
+        scope={census.site_id}
+        value={now.waiting_bed}
         label="en attente de lit"
         note={now.longest_wait_hours === null ? "Personne n'attend de lit" : `Attente la plus longue : ${fmtHours(now.longest_wait_hours)}`}
         tone="before:bg-sun"
       />
-      <Card value={fmtNum(t.boarding)} label="lits brancards à 10 h aujourd'hui" note={boardingNote} tone="before:bg-coral" />
+      <Card scope={census.site_id} value={t.boarding} label="lits brancards à 10 h aujourd'hui" note={boardingNote} tone="before:bg-coral" />
       <Card
-        value={fmtNum(now.hosted_elsewhere)}
+        scope={census.site_id}
+        value={now.hosted_elsewhere}
         label="hébergés hors de leur discipline"
         note="Hospitalisés depuis les urgences, encore présents"
         tone="before:bg-lagoon"
@@ -120,7 +125,7 @@ function criterionValue(c: HetCriterion): string {
   return `${fmtNum(c.value)} (seuil ${fmtNum(c.threshold)})`;
 }
 
-function AidCard({ status }: { status: TensionStatus }) {
+function AidCard({ status, boardingIsYesterday }: { status: TensionStatus; boardingIsYesterday: boolean }) {
   const aid = status.aid;
   if (!aid) return null;
   const style = AID_STYLE[aid.level];
@@ -147,6 +152,9 @@ function AidCard({ status }: { status: TensionStatus }) {
             <div>
               <p className={c.triggered ? "font-bold" : ""}>{c.label}</p>
               <p className="text-[14px] text-ink-soft">{criterionValue(c)}</p>
+              {c.code === "boarding_10h" && boardingIsYesterday && (
+                <p className="text-[13px] text-ink-faint">relevé d'hier : 10 h n'est pas encore passé</p>
+              )}
             </div>
           </li>
         ))}

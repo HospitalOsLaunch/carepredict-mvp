@@ -204,7 +204,7 @@ export function AgentPlayer({ replay }: { replay: ReplayOut }) {
       className={`grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)] ${fullscreen ? "h-full overflow-auto bg-sky p-4 sm:p-6" : ""}`}
     >
       <div className="min-w-0 space-y-3">
-        <Screen step={step} frame={step ? frameOf(step.id) : { failed: false }} anyFrame={anyFrame} live={live} index={i} count={steps.length} />
+        <Screen step={step} frame={step ? frameOf(step.id) : { failed: false }} held={heldFrame(steps, i, frameOf)} anyFrame={anyFrame} live={live} index={i} count={steps.length} />
 
         <div className="panel px-3 py-3 sm:px-4">
           <Scrubber steps={steps} index={i} onSeek={seek} elapsed={elapsed} total={total} />
@@ -254,7 +254,7 @@ export function AgentPlayer({ replay }: { replay: ReplayOut }) {
                   type="button"
                   onClick={goLive}
                   aria-pressed={follow}
-                  className={`btn px-3 py-1.5 text-[14px] ${follow ? "bg-coral text-white" : "bg-coral-soft text-coral-dark hover:bg-coral hover:text-white"}`}
+                  className={`btn px-3 py-1.5 text-[14px] ${follow ? "bg-coral-dark text-white" : "bg-coral-soft text-coral-dark hover:bg-coral-dark hover:text-white"}`}
                 >
                   <LiveDot pulse={follow} light={follow} /> En direct
                 </button>
@@ -310,9 +310,20 @@ const rectStyle = (r: StepRect, vw: number, vh: number) => ({
   height: pct(r.h, vh)
 });
 
+/** The last image already loaded before step `i`: a step without image keeps it on screen, dimmed. */
+function heldFrame(steps: ReplayStep[], i: number, frameOf: (id: number) => FrameState): { url: string; index: number } | undefined {
+  for (let k = i - 1; k >= 0; k--) {
+    if (!steps[k].has_frame) continue;
+    const url = frameOf(steps[k].id).url;
+    return url ? { url, index: k } : undefined;
+  }
+  return undefined;
+}
+
 function Screen({
   step,
   frame,
+  held,
   anyFrame,
   live,
   index,
@@ -320,6 +331,7 @@ function Screen({
 }: {
   step?: ReplayStep;
   frame: FrameState;
+  held?: { url: string; index: number };
   anyFrame: boolean;
   live: boolean;
   index: number;
@@ -337,6 +349,16 @@ function Screen({
 
   let empty: ReactNode = null;
   if (!step) empty = live ? <Placeholder icon={<Loader2 className="h-6 w-6 animate-spin" aria-hidden />} text="L'agent démarre : la première étape arrive…" /> : <Placeholder text="Aucune étape enregistrée pour ce passage." />;
+  else if (!step.has_frame && held && !withheldReason(step.label))
+    // Like a video: the screen stays on the last image while the agent navigates or waits.
+    empty = (
+      <>
+        <img src={held.url} alt={`Écran de l'étape ${held.index + 1}, toujours affiché : pas de nouvelle image à cette étape`} className="absolute inset-0 h-full w-full object-fill opacity-45 saturate-50" draggable={false} />
+        <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-chip bg-ink/85 px-2.5 py-1 text-[12px] font-bold text-white">
+          <ImageOff className="h-3.5 w-3.5" aria-hidden /> Pas de nouvelle image à cette étape
+        </span>
+      </>
+    );
   else if (!step.has_frame)
     empty = (
       <Placeholder

@@ -13,11 +13,12 @@ import {
   Siren,
   TrendingUp
 } from "lucide-react";
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 
 import { useAuth } from "./auth";
 import { Mark } from "./components/Mark";
+import { MobileNav, primaryFor, type NavItem } from "./components/MobileNav";
 import { Spinner } from "./components/ui";
 import { AgentReplayPage } from "./pages/AgentReplayPage";
 import { BedBoardPage } from "./pages/BedBoardPage";
@@ -35,24 +36,17 @@ import { UrgencesPage } from "./pages/UrgencesPage";
 const ChargePage = lazy(() => import("./pages/ChargePage").then((m) => ({ default: m.ChargePage })));
 const MetricsPage = lazy(() => import("./pages/MetricsPage").then((m) => ({ default: m.MetricsPage })));
 
-interface NavItem {
-  to: string;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-  admin?: boolean;
-}
-
 const NAV: NavItem[] = [
   { to: "/demandes", label: "Demandes", icon: Inbox },
-  { to: "/lits", label: "Lits et sorties", icon: BedDouble },
-  { to: "/plan-des-lits", label: "Plan des lits", icon: BedSingle },
-  { to: "/urgences", label: "Urgences et tension", icon: Siren },
+  { to: "/lits", label: "Lits et sorties", short: "Sorties", icon: BedDouble },
+  { to: "/plan-des-lits", label: "Plan des lits", short: "Lits", icon: BedSingle },
+  { to: "/urgences", label: "Urgences et tension", short: "Urgences", icon: Siren },
   { to: "/prevision", label: "Prévision", icon: TrendingUp },
   { to: "/charge", label: "Charge en soins", icon: Activity },
-  { to: "/groupe", label: "Vue groupe", icon: Building2 },
-  { to: "/indicateurs", label: "Indicateurs pilote", icon: Gauge },
+  { to: "/groupe", label: "Vue groupe", short: "Groupe", icon: Building2 },
+  { to: "/indicateurs", label: "Indicateurs pilote", short: "Indicateurs", icon: Gauge },
   { to: "/ror", label: "Remontée ROR", icon: RadioTower },
-  { to: "/computer-use", label: "Computer use", icon: MousePointerClick },
+  { to: "/computer-use", label: "Computer use", short: "Agent", icon: MousePointerClick },
   { to: "/imports", label: "Imports", icon: FileUp, admin: true },
   { to: "/parametres", label: "Paramètres", icon: Settings, admin: true }
 ];
@@ -89,7 +83,7 @@ export function App() {
         Aller au contenu
       </a>
       <aside className="sticky top-0 z-20 flex flex-col border-b border-line bg-paper/90 backdrop-blur lg:h-screen lg:border-b-0 lg:border-r">
-        <div className="flex items-center gap-3 px-5 py-4 lg:py-6">
+        <div className="flex items-center gap-3 px-4 py-3 lg:px-5 lg:py-6">
           <Mark />
           <div className="min-w-0">
             <p className="font-display text-[17px] font-bold leading-tight">HospitalOS</p>
@@ -99,7 +93,7 @@ export function App() {
             <LogOut className="h-4 w-4" aria-hidden />
           </button>
         </div>
-        <nav aria-label="Navigation principale" className="overflow-x-auto px-3 pb-3 lg:flex-1 lg:pb-0">
+        <nav aria-label="Navigation principale" className="hidden px-3 lg:block lg:flex-1">
           <ul className="flex gap-1 lg:flex-col">
             {items.map(({ to, label, icon: Icon }) => (
               <li key={to}>
@@ -126,7 +120,8 @@ export function App() {
           </button>
         </div>
       </aside>
-      <main id="contenu" className="min-w-0 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
+      <MobileNav items={items} primary={primaryFor(user.role)} />
+      <main id="contenu" className="min-w-0 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:py-9">
         <Routes>
           <Route path="/" element={<Navigate to="/demandes" replace />} />
           <Route path="/demandes" element={<RequestsPage />} />

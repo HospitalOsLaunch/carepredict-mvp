@@ -12,8 +12,8 @@ import {
   type BoardUnit
 } from "../api/types_liscop";
 import { useAuth } from "../auth";
+import { Freshness, LiveNumber, useChanged } from "../components/live";
 import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
-import { fmtDateTime, fmtNum } from "../lib/format";
 import { useBedAction, useBedBoard } from "../lib/liscop";
 import { TensionChip } from "./RorPage";
 
@@ -49,16 +49,46 @@ function sum(units: BoardUnit[], key: keyof Omit<Availability, "tension">): numb
   return units.reduce((acc, u) => acc + u.availability[key], 0);
 }
 
+type Place = { siteId: number | "all"; poolId: number | "all" };
+const PLACE_KEY = "hospitalos.plan-des-lits";
+
+/** The site and unit last chosen on this device: a cadre looks at their own unit. No patient data. */
+function useRememberedPlace(): [Place, (next: Place) => void] {
+  const [place, setPlace] = useState<Place>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(PLACE_KEY) ?? "null") as Place | null;
+      if (saved && (saved.siteId === "all" || typeof saved.siteId === "number") && (saved.poolId === "all" || typeof saved.poolId === "number"))
+        return saved;
+    } catch {
+      /* private mode or corrupted value: start from everything */
+    }
+    return { siteId: "all", poolId: "all" };
+  });
+  const remember = (next: Place) => {
+    setPlace(next);
+    try {
+      localStorage.setItem(PLACE_KEY, JSON.stringify(next));
+    } catch {
+      /* storage unavailable: the choice lasts for this visit */
+    }
+  };
+  return [place, remember];
+}
+
 export function BedBoardPage() {
   const board = useBedBoard();
   const { canWrite } = useAuth();
-  const [siteId, setSiteId] = useState<number | "all">("all");
-  const [poolId, setPoolId] = useState<number | "all">("all");
+  const [place, setPlace] = useRememberedPlace();
   const [statuses, setStatuses] = useState<Set<BedStatus>>(new Set());
   const [selected, setSelected] = useState<Bed | null>(null);
 
   const sites = board.data?.sites ?? [];
+  // A remembered site or unit that no longer exists falls back to everything.
+  const siteId = place.siteId !== "all" && sites.some((s) => s.site_id === place.siteId) ? place.siteId : "all";
   const visibleSites = sites.filter((s) => siteId === "all" || s.site_id === siteId);
+  const poolId =
+    place.poolId !== "all" && visibleSites.some((s) => s.units.some((u) => u.pool_id === place.poolId)) ? place.poolId : "all";
+  const scope = `${siteId}:${poolId}`;
   const units = useMemo(
     () => visibleSites.flatMap((s) => s.units).filter((u) => poolId === "all" || u.pool_id === poolId),
     [visibleSites, poolId]
@@ -81,8 +111,11 @@ export function BedBoardPage() {
         title="Plan des lits"
         lead={
           <>
-            Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé. Les
-            disponibilités par genre et en isolement suivent les définitions du ROR.
+            Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé.
+            <span className="hidden sm:inline">
+              {" "}
+              Les disponibilités par genre et en isolement suivent les définitions du ROR.
+            </span>
           </>
         }
       />
@@ -94,19 +127,19 @@ export function BedBoardPage() {
       ) : (
         <>
           <dl className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4" aria-label="Disponibilités">
-            <Kpi value={sum(units, "usable")} label="lits utilisables maintenant" tone="lagoon" />
+            <Kpi scope={scope} value={sum(units, "usable")} label="lits utilisables maintenant" tone="lagoon" />
             <div className="panel flex flex-col-reverse justify-end px-5 py-4">
               <dt className="mt-1 text-[14px] text-ink-soft">dont femme · homme · indifférencié</dt>
               <dd className="num flex items-baseline gap-3 font-display text-3xl font-bold">
-                <span aria-label={`${sum(units, "female")} pour une femme`}>{fmtNum(sum(units, "female"))}</span>
+                <span aria-label={`${sum(units, "female")} pour une femme`}><LiveNumber value={sum(units, "female")} scope={scope} /></span>
                 <span className="text-ink-faint" aria-hidden>·</span>
-                <span aria-label={`${sum(units, "male")} pour un homme`}>{fmtNum(sum(units, "male"))}</span>
+                <span aria-label={`${sum(units, "male")} pour un homme`}><LiveNumber value={sum(units, "male")} scope={scope} /></span>
                 <span className="text-ink-faint" aria-hidden>·</span>
-                <span aria-label={`${sum(units, "either")} indifférenciés`}>{fmtNum(sum(units, "either"))}</span>
+                <span aria-label={`${sum(units, "either")} indifférenciés`}><LiveNumber value={sum(units, "either")} scope={scope} /></span>
               </dd>
             </div>
-            <Kpi value={sum(units, "isolation")} label="utilisables en chambre d'isolement" tone="violet" />
-            <Kpi value={sum(units, "cleaning")} label="à nettoyer : bientôt disponibles" tone="sun" />
+            <Kpi scope={scope} value={sum(units, "isolation")} label="utilisables en chambre d'isolement" tone="violet" />
+            <Kpi scope={scope} value={sum(units, "cleaning")} label="à nettoyer : bientôt disponibles" tone="sun" />
           </dl>
 
           <section className="panel mb-6 flex flex-wrap items-end gap-4 px-5 py-4" aria-label="Filtres">
@@ -116,10 +149,7 @@ export function BedBoardPage() {
                 <select
                   className="input"
                   value={siteId}
-                  onChange={(e) => {
-                    setSiteId(e.target.value === "all" ? "all" : Number(e.target.value));
-                    setPoolId("all");
-                  }}
+                  onChange={(e) => setPlace({ siteId: e.target.value === "all" ? "all" : Number(e.target.value), poolId: "all" })}
                 >
                   <option value="all">Tous les sites</option>
                   {sites.map((s) => (
@@ -135,7 +165,7 @@ export function BedBoardPage() {
               <select
                 className="input"
                 value={poolId}
-                onChange={(e) => setPoolId(e.target.value === "all" ? "all" : Number(e.target.value))}
+                onChange={(e) => setPlace({ siteId, poolId: e.target.value === "all" ? "all" : Number(e.target.value) })}
               >
                 <option value="all">Toutes les unités</option>
                 {visibleSites.flatMap((s) =>
@@ -165,7 +195,9 @@ export function BedBoardPage() {
                 );
               })}
             </fieldset>
-            <p className="ml-auto text-[13px] text-ink-faint">Mis à jour le {fmtDateTime(board.data?.generated_at)}</p>
+            <div className="ml-auto">
+              <Freshness at={board.data?.generated_at} staleAfterMs={3 * 60_000} />
+            </div>
           </section>
 
           <div className="grid gap-6 2xl:grid-cols-2">
@@ -187,14 +219,16 @@ export function BedBoardPage() {
   );
 }
 
-function Kpi({ value, label, tone }: { value: number; label: string; tone: "lagoon" | "violet" | "sun" }) {
+function Kpi({ value, label, tone, scope }: { value: number; label: string; tone: "lagoon" | "violet" | "sun"; scope: string }) {
   const bar = { lagoon: "before:bg-lagoon", violet: "before:bg-violet", sun: "before:bg-sun" }[tone];
   return (
     <div
       className={`panel relative flex flex-col-reverse justify-end overflow-hidden px-5 py-4 before:absolute before:inset-x-0 before:top-0 before:h-1 ${bar}`}
     >
       <dt className="mt-1 text-[14px] text-ink-soft">{label}</dt>
-      <dd className="num font-display text-3xl font-bold">{fmtNum(value)}</dd>
+      <dd className="num font-display text-3xl font-bold">
+        <LiveNumber value={value} scope={scope} />
+      </dd>
     </div>
   );
 }
@@ -238,11 +272,11 @@ function UnitPanel({
       {rooms.length === 0 ? (
         <p className="mt-4 text-[14px] text-ink-faint">Aucun lit avec ce statut.</p>
       ) : (
-        <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2" aria-label={`Chambres, ${unit.label}`}>
+        <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-1.5 sm:grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] sm:gap-2" aria-label={`Chambres, ${unit.label}`}>
           {rooms.map((r) => (
-            <li key={r.room} className="rounded-xl border border-line bg-sky/60 p-1.5">
+            <li key={r.room} className="rounded-xl border border-line bg-sky/60 p-1 sm:p-1.5">
               <p className="px-1 pb-1 text-[12px] font-bold text-ink-faint">Ch. {r.room}</p>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1 sm:gap-1.5">
                 {r.beds.map((b) => (
                   <BedTile key={b.id} bed={b} onSelect={onSelect} />
                 ))}
@@ -258,6 +292,7 @@ function UnitPanel({
 function BedTile({ bed, onSelect }: { bed: Bed; onSelect?: (bed: Bed) => void }) {
   const s = STATUS[bed.status];
   const Icon = s.icon;
+  const changed = useChanged(bed.status);
   const sex = bed.status !== "occupe" && bed.accepts.length === 1 ? (bed.accepts[0] === "F" ? "F" : "H") : null;
   const content = (
     <>
@@ -272,7 +307,9 @@ function BedTile({ bed, onSelect }: { bed: Bed; onSelect?: (bed: Bed) => void })
       <span className="sr-only">{bedTitle(bed)}</span>
     </>
   );
-  const cls = `block min-h-[3.5rem] flex-1 rounded-lg border-2 px-1.5 py-1 text-left ${s.tile}`;
+  const cls = `block min-h-[3.5rem] min-w-0 flex-1 rounded-lg border-2 px-1 py-1 text-left sm:px-1.5 ${s.tile} ${
+    changed ? "live-changed" : ""
+  }`;
   if (!onSelect)
     return (
       <span className={cls} title={bedTitle(bed)}>

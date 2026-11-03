@@ -372,7 +372,7 @@ export function ConnectionForm({
             <div className="mt-3 flex flex-wrap gap-2">
               <button
                 type="button"
-                className="btn bg-coral text-white hover:bg-coral-dark"
+                className="btn bg-coral-dark text-white hover:bg-coral-dark/90"
                 disabled={archive.isPending}
                 onClick={() =>
                   archive.mutate(c.id, {

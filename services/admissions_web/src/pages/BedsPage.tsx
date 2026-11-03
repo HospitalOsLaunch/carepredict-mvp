@@ -8,7 +8,7 @@ import { useAuth } from "../auth";
 import { LampLegend, LampStrip } from "../components/LampStrip";
 import { Empty, ErrorNote, Meter, Modal, PageHeader, Spinner } from "../components/ui";
 import { fmtDate, fmtDay, fmtNum, fmtPct, isoDay, plural } from "../lib/format";
-import { label, useSites, useVocabulary } from "../lib/queries";
+import { unitLabel, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";
 
 export function BedsPage() {
@@ -82,7 +82,7 @@ function SiteBeds({ site }: { site: Site }) {
               <article key={pool.mention} className="panel min-w-0 px-5 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3>{label(vocab.data?.mentions, pool.mention)}</h3>
+                    <h3>{unitLabel(vocab.data, pool.mention)}</h3>
                     <p className="text-[14px] text-ink-soft">
                       {pool.occupied} patients pour {plural(pool.beds_open, "lit ouvert", "lits ouverts")}
                       {closed > 0 ? `, ${plural(closed, "lit fermé", "lits fermés")}` : ""}
@@ -115,7 +115,7 @@ function SiteBeds({ site }: { site: Site }) {
         {forecast.data && forecast.data.basis.low_data_mentions.length > 0 && (
           <p className="mt-3 text-[14px] text-ink-soft">
             Historique encore court pour :{" "}
-            {forecast.data.basis.low_data_mentions.map((m) => label(vocab.data?.mentions, m)).join(", ")}. La prévision
+            {forecast.data.basis.low_data_mentions.map((m) => unitLabel(vocab.data, m)).join(", ")}. La prévision
             s'appuie alors sur l'ensemble des mentions du groupe.
           </p>
         )}
@@ -172,7 +172,7 @@ function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
         </thead>
         <tbody>
           {rows.map((s) => (
-            <StayRow key={s.id} stay={s} mention={label(vocab.data?.mentions, s.mention)} canWrite={canWrite} />
+            <StayRow key={s.id} stay={s} mention={unitLabel(vocab.data, s.mention)} canWrite={canWrite} />
           ))}
         </tbody>
       </table>
@@ -326,7 +326,7 @@ function PoolModal({ site, pool, onClose }: { site: Site; pool: Pool; onClose: (
   });
   const closing = Number(opened) < Number(installed);
   return (
-    <Modal title={`Lits ouverts, ${label(vocab.data?.mentions, pool.mention)}`} onClose={onClose}>
+    <Modal title={`Lits ouverts, ${unitLabel(vocab.data, pool.mention)}`} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
