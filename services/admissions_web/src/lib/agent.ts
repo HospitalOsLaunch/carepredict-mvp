@@ -35,11 +35,20 @@ export function useWorkers() {
   });
 }
 
+/** While a task waits or runs, poll fast: a sync can last a few seconds, and the card must
+ * show « Regarder en direct » while it runs. */
+export const ACTIVE_POLL_MS = 2_000;
+
+export function connectionsPollMs(connections: ConnectionOut[] | undefined): number {
+  const busy = connections?.some((c) => c.pending_tasks > 0 || c.running_task_id != null);
+  return busy ? ACTIVE_POLL_MS : POLL_MS;
+}
+
 export function useConnections() {
   return useQuery({
     queryKey: CONNECTIONS,
     queryFn: () => api<ConnectionOut[]>("/agent/connections"),
-    refetchInterval: POLL_MS
+    refetchInterval: (query) => connectionsPollMs(query.state.data)
   });
 }
 
@@ -47,7 +56,9 @@ export function useConnectionRuns(id: number, enabled: boolean) {
   return useQuery({
     queryKey: ["agent", "connections", id, "runs"],
     queryFn: () => api<ConnectionRun[]>(`/agent/connections/${id}/runs?limit=20`),
-    enabled
+    enabled,
+    // An open list follows the passages as they end (« Revoir » appears).
+    refetchInterval: POLL_MS
   });
 }
 
