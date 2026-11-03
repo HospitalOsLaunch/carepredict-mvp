@@ -4,7 +4,7 @@ import type { PoolForecast, Site } from "../api/types";
 import { LampLegend, LampStrip, type LampDay } from "../components/LampStrip";
 import { ErrorNote, Meter, PageHeader, Spinner } from "../components/ui";
 import { fmtHours, fmtNum, fmtPct, plural } from "../lib/format";
-import { label, useDashboard, useSites, useVocabulary } from "../lib/queries";
+import { unitLabel, useDashboard, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";
 
 /** Site-level lamps: a bed is free somewhere on the site if any mention has one. */
@@ -106,7 +106,7 @@ export function GroupPage() {
         })}
       </ul>
 
-      <ClosedBeds sites={sites.data ?? []} mentionLabel={(m) => label(vocab.data?.mentions, m)} />
+      <ClosedBeds sites={sites.data ?? []} mentionLabel={(m) => unitLabel(vocab.data, m)} />
     </>
   );
 }

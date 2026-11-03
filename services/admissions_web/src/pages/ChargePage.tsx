@@ -8,7 +8,7 @@ import type { PoolWorkload, StaffPool, Workload, WorkloadBacktest, WorkloadDay }
 import { useAuth } from "../auth";
 import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/ui";
 import { fmtDay, fmtNum, fmtPct, fmtShort, parseDay } from "../lib/format";
-import { label, useVocabulary } from "../lib/queries";
+import { label, unitLabel, useVocabulary } from "../lib/queries";
 
 const WEEKDAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const DOW = new Intl.DateTimeFormat("fr-FR", { weekday: "narrow" });
@@ -86,7 +86,7 @@ export function ChargePage() {
 
           <TensionGrid workload={w} selected={selected} onSelect={setSelected} mentions={vocab.data?.mentions} />
 
-          {pool && <PoolDetail key={poolKey(pool)} pool={pool} mention={label(vocab.data?.mentions, pool.mention)} />}
+          {pool && <PoolDetail key={poolKey(pool)} pool={pool} mention={unitLabel(vocab.data, pool.mention)} />}
 
           <Basis workload={w} />
           <BacktestPanel />
