@@ -107,6 +107,7 @@ jobs:
         run: |
           docker compose -f docker-compose.admissions.yml up -d --build db api web
           curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health
+          WEB=http://127.0.0.1:8080 sh tools/check_web_headers.sh
           docker compose -f docker-compose.admissions.yml logs api | tail -20
           docker compose -f docker-compose.admissions.yml down -v
       - name: Demo end to end (computer use, then LISCOP HL7, forecast, ROR export, census)
