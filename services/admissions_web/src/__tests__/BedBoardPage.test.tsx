@@ -107,6 +107,25 @@ describe("BedBoardPage", () => {
     expect(screen.queryByText(/patient_ref|encounter/)).not.toBeInTheDocument();
   });
 
+  it("remembers the cadre's unit on this device, and forgets one that no longer exists", async () => {
+    localStorage.clear();
+    const first = renderPage();
+    await screen.findByRole("region", { name: "Cardiologie" });
+    await userEvent.selectOptions(screen.getByLabelText("Unité"), "10");
+    first.unmount();
+
+    const second = renderPage();
+    await screen.findByRole("region", { name: "Cardiologie" });
+    expect(screen.getByLabelText("Unité")).toHaveValue("10");
+    second.unmount();
+
+    localStorage.setItem("hospitalos.plan-des-lits", JSON.stringify({ siteId: "all", poolId: 999 }));
+    renderPage();
+    await screen.findByRole("region", { name: "Cardiologie" });
+    expect(screen.getByLabelText("Unité")).toHaveValue("all");
+    localStorage.clear();
+  });
+
   it("filters beds by status", async () => {
     renderPage();
     await screen.findByRole("region", { name: "Cardiologie" });
