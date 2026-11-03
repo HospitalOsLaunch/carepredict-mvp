@@ -218,14 +218,14 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
     <Screen step={step} frame={step ? frameOf(step.id) : { failed: false }} held={heldFrame(steps, i, frameOf)} anyFrame={anyFrame} live={live} index={i} count={steps.length} />
   );
   const controls = (
-    <div className="panel px-3 py-3 sm:px-4">
+    <div className="panel px-3 py-3 group-data-[tight]:px-2 group-data-[tight]:py-2 sm:px-4">
       <Scrubber steps={steps} index={i} onSeek={seek} elapsed={elapsed} total={total} />
       <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-2">
         <div className="flex items-center gap-0.5">
           <IconButton label="Étape précédente" onClick={() => seek(i - 1)} disabled={i <= 0}>
             <SkipBack className="h-4 w-4" aria-hidden />
           </IconButton>
-          <IconButton label="Image précédente" onClick={() => seekFrame(-1)} disabled={i <= 0}>
+          <IconButton label="Image précédente" onClick={() => seekFrame(-1)} disabled={i <= 0} className="group-data-[tight]:hidden">
             <ChevronLeft className="h-5 w-5" aria-hidden />
           </IconButton>
           <button
@@ -234,11 +234,11 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
             disabled={!steps.length}
             aria-label={playing || follow ? "Pause" : "Lecture"}
             title={`${playing || follow ? "Pause" : "Lecture"} (espace)`}
-            className="mx-1 grid h-12 w-12 place-items-center rounded-full bg-violet text-white shadow-lift transition-colors hover:bg-violet-dark disabled:opacity-50"
+            className="mx-1 grid h-12 w-12 place-items-center rounded-full bg-violet text-white shadow-lift transition-colors hover:bg-violet-dark disabled:opacity-50 group-data-[tight]:h-11 group-data-[tight]:w-11"
           >
             {playing || follow ? <Pause className="h-5 w-5" aria-hidden /> : <Play className="ml-0.5 h-5 w-5" aria-hidden />}
           </button>
-          <IconButton label="Image suivante" onClick={() => seekFrame(1)} disabled={i >= last}>
+          <IconButton label="Image suivante" onClick={() => seekFrame(1)} disabled={i >= last} className="group-data-[tight]:hidden">
             <ChevronRight className="h-5 w-5" aria-hidden />
           </IconButton>
           <IconButton label="Étape suivante" onClick={() => seek(i + 1)} disabled={i >= last}>
@@ -246,7 +246,17 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
           </IconButton>
         </div>
 
-        <div role="group" aria-label="Vitesse" className="flex rounded-chip bg-sky p-0.5">
+        {/* In a small window, one button cycles the speed (1× → 2× → 4×). */}
+        <button
+          type="button"
+          onClick={() => setSpeed(SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length])}
+          aria-label={`Vitesse ${speed}× : changer`}
+          title="Vitesse de lecture"
+          className="num hidden h-9 min-w-[2.75rem] place-items-center rounded-chip bg-sky px-2.5 text-[14px] font-bold text-ink group-data-[tight]:grid"
+        >
+          {speed}×
+        </button>
+        <div role="group" aria-label="Vitesse" className="flex rounded-chip bg-sky p-0.5 group-data-[tight]:hidden">
           {SPEEDS.map((s) => (
             <button
               key={s}
@@ -278,7 +288,7 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
           )}
         </div>
       </div>
-      <p className="mt-2 hidden text-[12px] text-ink-faint sm:block">
+      <p className="mt-2 hidden text-[12px] text-ink-faint group-data-[tight]:!hidden sm:block">
         Raccourcis : espace lecture / pause · ← → image par image · Maj + ← → étape par étape
       </p>
     </div>
@@ -290,7 +300,7 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
       ref={rootRef}
       aria-label="Player du passage"
       data-view={view}
-      className={`flex min-h-full flex-col gap-3 ${fullscreen ? "h-full overflow-auto bg-sky p-4 sm:p-6" : ""}`}
+      className={`flex min-h-full flex-col gap-3 group-data-[tight]:gap-2 ${fullscreen ? "h-full overflow-auto bg-sky p-4 sm:p-6" : ""}`}
     >
       {view === "both" ? (
         // The transcript takes the height of the screen beside it and scrolls inside it.
@@ -310,7 +320,19 @@ export function AgentPlayer({ replay, view = "both" }: { replay: ReplayOut; view
   );
 }
 
-function IconButton({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: ReactNode }) {
+function IconButton({
+  label,
+  onClick,
+  disabled,
+  children,
+  className = ""
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <button
       type="button"
@@ -318,7 +340,7 @@ function IconButton({ label, onClick, disabled, children }: { label: string; onC
       title={label}
       onClick={onClick}
       disabled={disabled}
-      className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-sky disabled:cursor-not-allowed disabled:opacity-35"
+      className={`grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-sky disabled:cursor-not-allowed disabled:opacity-35 ${className}`}
     >
       {children}
     </button>
@@ -409,8 +431,8 @@ function Screen({
   else if (!shown) empty = <Placeholder icon={<Loader2 className="h-6 w-6 animate-spin" aria-hidden />} text="Chargement de l'image…" />;
 
   return (
-    <figure className="m-0 rounded-[22px] bg-ink p-2 shadow-[0_24px_60px_-28px_rgba(91,61,245,0.55)] ring-1 ring-ink/10 sm:p-2.5">
-      <div className="flex items-center gap-2 px-2 pb-2 pt-0.5">
+    <figure className="relative m-0 rounded-[22px] bg-ink p-2 shadow-[0_24px_60px_-28px_rgba(91,61,245,0.55)] ring-1 ring-ink/10 group-data-[tight]:rounded-[14px] group-data-[tight]:p-1 group-data-[tight]:shadow-none sm:p-2.5">
+      <div className="flex items-center gap-2 px-2 pb-2 pt-0.5 group-data-[tight]:hidden">
         <span className="flex gap-1.5" aria-hidden>
           <span className="h-2.5 w-2.5 rounded-full bg-coral" />
           <span className="h-2.5 w-2.5 rounded-full bg-sun" />
@@ -463,7 +485,7 @@ function Screen({
         {empty}
       </div>
       {step && (
-        <figcaption className="flex items-start gap-2 px-2 pb-1 pt-2.5 text-[15px] font-bold text-white">
+        <figcaption className="flex items-start gap-2 px-2 pb-1 pt-2.5 text-[15px] font-bold text-white group-data-[tight]:pointer-events-none group-data-[tight]:absolute group-data-[tight]:inset-x-1 group-data-[tight]:top-1 group-data-[tight]:rounded-t-[11px] group-data-[tight]:bg-gradient-to-b group-data-[tight]:from-ink/85 group-data-[tight]:to-transparent group-data-[tight]:px-3 group-data-[tight]:pb-6 group-data-[tight]:pt-2 group-data-[tight]:text-[13px]">
           <StepIcon kind={step.kind} className="mt-0.5 text-sun-glow" />
           <span className="min-w-0">{step.label}</span>
         </figcaption>

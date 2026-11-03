@@ -84,6 +84,23 @@ describe("FloatingWindow", () => {
     expect(at(win)).toEqual({ x: 320, y: 150 });
   });
 
+  it("opens in the bottom-right corner at 420 × 420 like a picture-in-picture player, tight", async () => {
+    render(
+      <FloatingWindow title="L'agent relève les mouvements" titleId="pip" onClose={vi.fn()} placement="bottom-right" initialSize={{ w: 420, h: 420 }}>
+        <p>Écran</p>
+      </FloatingWindow>
+    );
+    const win = screen.getByRole("dialog", { name: "L'agent relève les mouvements" });
+    expect(at(win)).toEqual({ x: 1440 - 420 - 24, y: 900 - 420 - 24 });
+    expect(win.style.width).toBe("420px");
+    expect(win.style.height).toBe("420px");
+    expect(win).toHaveAttribute("data-tight", "true"); // header and player tighten in a small window
+    const handle = screen.getByRole("button", { name: /Début pour la replacer en bas à droite/ });
+    handle.focus();
+    await userEvent.keyboard("{ArrowLeft}{ArrowUp}{Home}");
+    expect(at(win)).toEqual({ x: 996, y: 456 });
+  });
+
   it("enlarges to the screen and back", async () => {
     const { win } = open();
     await userEvent.click(screen.getByRole("button", { name: "Agrandir la fenêtre" }));

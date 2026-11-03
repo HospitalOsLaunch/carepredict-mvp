@@ -1,5 +1,5 @@
 import { ListChecks, Lock, MonitorPlay, PanelsLeftRight } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import type { ReplayOut } from "../api/types_agent";
@@ -7,10 +7,7 @@ import { useAuth } from "../auth";
 import { AgentPlayer, LiveDot, type PlayerView } from "../components/AgentPlayer";
 import { ErrorNote, Spinner } from "../components/common";
 import { FloatingWindow } from "../components/FloatingWindow";
-import { TASK_LABEL, TASK_STATUS, engineLabel, useReplay } from "../lib/agent";
-import { fmtDateTime } from "../lib/format";
-
-const KEPT = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
+import { TASK_STATUS, useReplay } from "../lib/agent";
 const VIEW_KEY = "hospitalos.player.view";
 const VIEWS: Array<{ id: PlayerView; label: string; icon: typeof MonitorPlay }> = [
   { id: "video", label: "Vidéo", icon: MonitorPlay },
@@ -82,18 +79,20 @@ function Replay({ taskId, onClose }: { taskId: number; onClose: () => void }) {
 
   const data = replay.data;
   const status = (replay.error as { status?: number } | null)?.status;
-  const title = status === 403 ? "Player réservé" : (data?.task.connection_name ?? `Passage n° ${taskId}`);
+  const title = status === 403 ? "Player réservé" : data ? passageTitle(data) : "Chargement du passage";
 
   return (
     <FloatingWindow
       title={title}
       titleId="player-title"
-      subtitle={data ? <ReplayMeta replay={data} /> : undefined}
+      badge={data ? <StateBadge replay={data} /> : undefined}
       tools={data && <ViewSwitch view={shown} narrow={narrow} onChange={choose} />}
       onClose={onClose}
-      storageKey="hospitalos.player.window"
+      storageKey="hospitalos.player.window.v2"
+      placement="bottom-right"
+      initialSize={{ w: 420, h: 420 }}
     >
-      <div ref={bodyRef} className="h-full p-3 sm:p-4">
+      <div ref={bodyRef} className="h-full p-2 sm:p-3">
         {replay.isLoading ? (
           <Spinner label="Chargement du passage" />
         ) : status === 403 ? (
@@ -136,12 +135,13 @@ function ViewSwitch({ view, narrow, onChange }: { view: PlayerView; narrow: bool
           aria-label={label}
           title={label}
           onClick={() => onChange(id)}
-          className={`touch-target inline-flex items-center gap-1.5 rounded-chip px-3 py-1.5 text-[14px] font-bold transition-colors ${
+          className={`touch-target inline-flex items-center justify-center gap-1.5 rounded-chip px-3 py-1.5 text-[14px] font-bold transition-colors group-data-[tight]:px-2.5 ${
             view === id ? "bg-ink text-white shadow-lift" : "text-ink-soft hover:text-ink"
           }`}
         >
           <Icon className="h-4 w-4" aria-hidden />
-          <span aria-hidden className={id === "both" ? "hidden md:inline" : ""}>
+          {/* Icons only in a small window; the name stays the button's accessible name. */}
+          <span aria-hidden className={`group-data-[tight]:hidden ${id === "both" ? "hidden md:inline" : ""}`}>
             {label}
           </span>
         </button>
@@ -150,53 +150,39 @@ function ViewSwitch({ view, narrow, onChange }: { view: PlayerView; narrow: bool
   );
 }
 
-/** The task's engine once recorded (at the end); while it runs, the engines its steps used. */
-export function enginesOf({ task, steps }: ReplayOut): string {
-  if (task.engine_used) return engineLabel(task.engine_used);
-  const seen = [...new Set(steps.map((s) => engineLabel(s.engine)))].filter((e) => e !== "—");
-  return seen.length ? seen.join(" · ") : "—";
+/** What the agent does, for the window title: live (a verb) and afterwards (a noun). */
+const ACTION: Record<string, { live: string; noun: string }> = {
+  sync_movements: { live: "relève les mouvements", noun: "la relève des mouvements" },
+  sync_inbox: { live: "relève les demandes du portail", noun: "la relève des demandes" },
+  reply_portal: { live: "reporte une réponse sur le portail", noun: "le report de la réponse" }
+};
+const HOUR = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digit" });
+const DAY = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
+
+/**
+ * The window title says what the agent does, in the words of the button that opened it:
+ * « Regarder en direct » → « L'agent relève les mouvements » ; « Revoir » → « Revoir la relève
+ * des mouvements de 18:00 » (« du 3 nov. à 18:00 » another day).
+ */
+export function passageTitle({ task, live }: ReplayOut, now = new Date()): string {
+  const action = ACTION[task.kind];
+  if (live) return `L'agent ${action?.live ?? "travaille"}`;
+  const at = new Date(task.created_at);
+  const sameDay = at.toDateString() === now.toDateString();
+  const when = sameDay ? `de ${HOUR.format(at)}` : `du ${DAY.format(at)} à ${HOUR.format(at)}`;
+  return `Revoir ${action?.noun ?? "le passage"} ${when}`;
 }
 
-function ReplayMeta({ replay }: { replay: ReplayOut }) {
-  const { task, live, retention_until } = replay;
-  const st = TASK_STATUS[task.status] ?? { text: task.status, tone: "bg-sky-deep text-ink-soft" };
-  return (
-    <dl className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {live ? (
-        <span className="chip bg-coral-dark text-white">
-          <LiveDot light /> En direct
-        </span>
-      ) : (
-        <span className={`chip ${st.tone}`}>{st.text}</span>
-      )}
-      <Meta label="Établissement" wide>
-        {task.site_name ?? "Tout le groupe"}
-      </Meta>
-      <Meta label="Tâche">{TASK_LABEL[task.kind] ?? task.kind}</Meta>
-      <Meta label="Moteur" wide>
-        {enginesOf(replay)}
-      </Meta>
-      <Meta label="Commencé">{fmtDateTime(task.created_at)}</Meta>
-      {task.finished_at && (
-        <Meta label="Terminé" wide>
-          {fmtDateTime(task.finished_at)}
-        </Meta>
-      )}
-      {retention_until && (
-        <Meta label="Conservé jusqu'au" wide>
-          {KEPT.format(new Date(retention_until))}
-        </Meta>
-      )}
-    </dl>
-  );
-}
-
-/** `wide`: shown from tablet width up; on a phone the header keeps status, task and start. */
-function Meta({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) {
-  return (
-    <div className={`whitespace-nowrap ${wide ? "hidden md:block" : ""}`}>
-      <dt className="inline text-ink-faint">{label} </dt>
-      <dd className="inline font-bold text-ink">{children}</dd>
-    </div>
-  );
+/** Only what changes how to read the window: live, or a passage that did not go well. */
+function StateBadge({ replay }: { replay: ReplayOut }) {
+  if (replay.live)
+    return (
+      // In a small window, only the dot: the controls already say « En direct », and the title needs the room.
+      <span className="chip shrink-0 bg-coral-dark text-white group-data-[tight]:px-1.5 group-data-[tight]:py-1.5" title="En direct">
+        <LiveDot light /> <span className="group-data-[tight]:sr-only">En direct</span>
+      </span>
+    );
+  if (replay.task.status === "done") return null;
+  const st = TASK_STATUS[replay.task.status] ?? { text: replay.task.status, tone: "bg-sky-deep text-ink-soft" };
+  return <span className={`chip shrink-0 ${st.tone}`}>{st.text}</span>;
 }

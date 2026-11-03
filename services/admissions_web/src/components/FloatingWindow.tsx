@@ -21,6 +21,17 @@ function viewport() {
   return { vw: window.innerWidth || 1280, vh: window.innerHeight || 800 };
 }
 
+/** Where a window opens: centred, or in the bottom-right corner like a picture-in-picture player. */
+export type Placement = "center" | "bottom-right";
+
+export function placed(placement: Placement, w: number, h: number): Frame {
+  if (placement === "center") return centered(w, h);
+  const { vw, vh } = viewport();
+  const width = Math.min(w, vw - 2 * MARGIN);
+  const height = Math.min(h, vh - 2 * MARGIN);
+  return { x: vw - width - 2 * MARGIN, y: vh - height - 2 * MARGIN, w: width, h: height };
+}
+
 export function centered(w: number, h: number): Frame {
   const { vw, vh } = viewport();
   const width = Math.min(w, vw - 2 * MARGIN);
@@ -87,15 +98,19 @@ function useCompact(): boolean {
 export function FloatingWindow({
   title,
   titleId,
+  badge,
   subtitle,
   tools,
   onClose,
   children,
   storageKey,
-  initialSize = { w: 1120, h: 820 }
+  initialSize = { w: 1120, h: 820 },
+  placement = "center"
 }: {
   title: ReactNode;
   titleId: string;
+  /** A short state shown beside the title (« En direct »…). */
+  badge?: ReactNode;
   subtitle?: ReactNode;
   /** Controls placed in the header before the window buttons (a view switch…). */
   tools?: ReactNode;
@@ -103,9 +118,10 @@ export function FloatingWindow({
   children: ReactNode;
   storageKey?: string;
   initialSize?: { w: number; h: number };
+  placement?: Placement;
 }) {
   const compact = useCompact();
-  const [frame, setFrame] = useState<Frame>(() => clampFrame(load(storageKey) ?? centered(initialSize.w, initialSize.h)));
+  const [frame, setFrame] = useState<Frame>(() => clampFrame(load(storageKey) ?? placed(placement, initialSize.w, initialSize.h)));
   const [maximized, setMaximized] = useState(false);
   const [dragging, setDragging] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -145,8 +161,10 @@ export function FloatingWindow({
     if (!dragging) save(storageKey, frame);
   }, [frame, dragging, storageKey]);
 
-  const recenter = useCallback(() => setFrame((f) => clampFrame(centered(f.w, f.h))), []);
+  const recenter = useCallback(() => setFrame((f) => clampFrame(placed(placement, f.w, f.h))), [placement]);
   const movable = !compact && !maximized;
+  // A small window (the 420 px player) lays its header out tighter, whatever the screen.
+  const tight = !compact && !maximized && frame.w < 640;
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (!movable || e.button !== 0) return;
@@ -191,6 +209,7 @@ export function FloatingWindow({
       aria-labelledby={titleId}
       tabIndex={-1}
       data-player-host
+      data-tight={tight || undefined}
       data-testid="floating-window"
       onKeyDown={(e) => {
         if (e.key !== "Escape") return;
@@ -201,7 +220,7 @@ export function FloatingWindow({
       }}
       style={style}
       className={cn(
-        "window-in fixed z-40 flex flex-col overflow-hidden bg-sky text-ink outline-none",
+        "window-in group fixed z-40 flex flex-col overflow-hidden bg-sky text-ink outline-none",
         compact || maximized
           ? "inset-0 sm:inset-3 sm:rounded-[20px] sm:shadow-2xl sm:ring-1 sm:ring-ink/10"
           : "min-h-[22rem] min-w-[20rem] max-w-[calc(100vw-24px)] resize rounded-[20px] shadow-[0_30px_80px_-24px_rgba(28,25,70,0.55)] ring-1 ring-ink/10",
@@ -227,21 +246,24 @@ export function FloatingWindow({
             type="button"
             onKeyDown={onHandleKey}
             onClick={recenter}
-            aria-label="Déplacer la fenêtre : flèches pour la déplacer, Début pour la recentrer"
+            aria-label={`Déplacer la fenêtre : flèches pour la déplacer, Début pour la replacer ${placement === "center" ? "au centre" : "en bas à droite"}`}
             title="Glisser l'en-tête pour déplacer · flèches au clavier · double-clic pour agrandir"
             className="touch-target -ml-1 grid h-9 w-9 shrink-0 cursor-grab place-items-center rounded-xl text-ink-faint transition-colors hover:bg-sky hover:text-ink"
           >
             <GripHorizontal className="h-5 w-5" aria-hidden />
           </button>
         )}
-        <div className="min-w-0 flex-1 basis-[12rem]">
-          <h2 id={titleId} className="truncate text-[18px] leading-tight sm:text-[20px]">
-            {title}
-          </h2>
+        <div className={cn("min-w-0 flex-1", tight ? "basis-0" : "basis-[12rem]")}>
+          <div className={cn("flex min-w-0 items-center gap-x-2 gap-y-1", tight ? "flex-nowrap" : "flex-wrap")}>
+            <h2 id={titleId} className={cn("min-w-0 leading-tight", tight ? "line-clamp-2 text-[15px]" : "truncate text-[18px] sm:text-[20px]")}>
+              {title}
+            </h2>
+            {badge}
+          </div>
           {subtitle && <div className="mt-0.5 min-w-0 text-[13px] text-ink-soft">{subtitle}</div>}
         </div>
-        {/* On a narrow window the tools take their own row, under the title. */}
-        {tools && <div className="order-last flex w-full justify-start md:order-none md:w-auto">{tools}</div>}
+        {/* In a tight window the tools stay on the title row (icons only); on a phone, their own row. */}
+        {tools && <div className={cn("flex justify-start", tight ? "shrink-0" : "order-last w-full md:order-none md:w-auto")}>{tools}</div>}
         <div className="flex shrink-0 items-center gap-1 self-start md:self-center">
           {!compact && (
             <button
