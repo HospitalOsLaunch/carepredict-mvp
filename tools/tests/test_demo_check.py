@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 from fastapi.testclient import TestClient
 
 from services.admissions_agent.demo_portal import app as portal_module
+from services.admissions_agent.tests.conftest import as_httpx
 from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import Settings
 from services.admissions_smr.domain.hl7_pam import parse
@@ -49,10 +50,10 @@ def test_pause_then_resume_of_the_demo_portal_connection(tmp_path: Path) -> None
         TestClient(portal_module.app) as portal,
     ):
         portal.post("/_test/reset")
-        admin = login(api, "admin@demo.hospitalos.fr")
+        admin = login(as_httpx(api), "admin@demo.hospitalos.fr")
         assert admin is not None
 
-        new_ref = check_pause_resume(api, portal, 0)
+        new_ref = check_pause_resume(as_httpx(api), as_httpx(portal), 0)
 
         conn = api.get("/agent/connections", headers=admin).json()[0]
         assert conn["status"] == "active" and new_ref.startswith("DOS-")

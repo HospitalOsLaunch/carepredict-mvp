@@ -103,6 +103,57 @@ réel de l'heure GPU.
   synthétique (`calibrate`). Le score mesure aussi la convention de coordonnées
   (0-1000 normalisé ou pixels) que suit le modèle déployé.
 
+## Player : ce que fait l'agent, en direct et en replay
+
+Spécification : [`docs/agent/PLAYER_SPEC.md`](../../docs/agent/PLAYER_SPEC.md). Pour chaque
+tâche, le poste envoie à HospitalOS une **étape** par geste (`replay.py`) : une phrase en
+français (« Ouvre la liste des mouvements du jour », « Saisit le mot de passe », « Lit la
+fiche 2 sur 7 », « Transmet 8 mouvement(s) à HospitalOS : 8 appliqué(s)… »), le moteur,
+la durée, le résultat, le geste (point du clic au centre de l'élément, cadre du champ
+rempli ; pour un modèle, ses coordonnées ramenées aux pixels de l'écran) et, pour les
+lectures, ce qui a été transmis (nombre et **noms** de champs, appliqués / doublons /
+refusés). Les phrases sont du texte fixe (code ou `label:` du script, jamais interpolé) :
+aucune valeur lue à l'écran ni du message à saisir n'y entre ; une saisie de modèle est
+décrite par sa longueur seulement.
+
+**Image de l'étape, masquée sur le poste avant la capture** (masquage natif de
+Playwright, `page.screenshot(mask=…)`, aplat ardoise ; JPEG qualité 60, largeur ≤ 1280 px,
+≤ 512 Ko) ; les rectangles masqués et leur motif accompagnent l'étape pour que le player
+les étiquette. Toujours masqués : les champs `type=password` et tout champ que le script a
+rempli avec `{{ secrets.… }}`.
+
+Section `privacy` du script :
+
+```yaml
+privacy:
+  mask:
+    - {selector: "#patient", reason: identite, screen: "/dossiers/*"}
+    - {selector: ".bandeau-patient", reason: identite}          # partout où il paraît
+    - {selector: "#note", reason: autre, screen: [/a/*, /b], optional: true}
+```
+
+`reason` ∈ `identite` (défaut), `secret`, `autre` ; `screen` : motif(s) de chemin d'URL
+(`fnmatch`, sans la requête) ; sans `screen`, la zone est masquée là où elle paraît.
+
+**Fermé par défaut** :
+
+- script sans section `privacy` → **aucune image** (la transcription reste) ;
+- zone déclarée pour l'écran courant (`screen` correspond, `optional` absent) et
+  introuvable → image **retenue** et l'étape le dit (« capture retenue : zone à protéger
+  introuvable ») ; de même si la page change pendant la capture, si l'image dépasse
+  512 Ko ou si l'écran est plus large que 1280 px ;
+- une erreur de capture ne donne jamais une image non masquée : l'étape part sans image.
+
+Envoi **au mieux, jamais bloquant** : file bornée (300 étapes, 6 images en attente)
+vidée par un fil d'arrière-plan, délai de 3 s par envoi, aucune nouvelle tentative ;
+quand HospitalOS est lent, les images sont abandonnées avant les étapes ; un refus (bail
+perdu, tâche finie) ou trois échecs de suite arrêtent les envois de la tâche. La fin de
+tâche attend au plus 5 s que la file se vide, avant de déclarer la tâche terminée.
+
+Libellés des scripts : chaque étape accepte `label:` (« Valide la connexion ») ; sans
+lui, un libellé par type d'étape (« Clique sur un bouton ») ; `list.label` et
+`list.items` (nom au pluriel) formulent la lecture d'une liste.
+
 ## Configuration (variables d'environnement)
 
 | Variable | Rôle |
@@ -157,7 +208,8 @@ et `kind` (`portail_orientation` ou `gestion_lits`), puis sections `login` (avec
 `{{ secrets.username }}` et `{{ secrets.password }}`), `sync_inbox` (liste,
 champs à lire, transformations vers le vocabulaire HospitalOS), `reply_portal` et
 `verify_reply`. Étapes disponibles : `goto`, `fill`, `click`, `check`, `select`,
-`wait_for`, `when`. Le script de ViaTrajectoire n'est pas fourni : il ne peut être
+`wait_for`, `when` ; chacune peut porter un `label:` pour le player. Déclarez la
+section `privacy` (voir « Player ») : sans elle, le player n'a pas d'image. Le script de ViaTrajectoire n'est pas fourni : il ne peut être
 écrit qu'avec un accès au portail, après vérification de ses conditions
 d'utilisation et accord de son opérateur.
 

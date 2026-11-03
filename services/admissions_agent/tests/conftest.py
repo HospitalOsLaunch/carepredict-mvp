@@ -6,7 +6,7 @@ import time
 from collections.abc import Callable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 import pytest
@@ -28,6 +28,12 @@ from services.admissions_smr.models import Bed, BedPool, Group, Site, User
 from services.admissions_smr.security import hash_password
 
 PASSWORD = "mot-de-passe-solide"
+
+
+def as_httpx(client: object) -> httpx.Client:
+    """A TestClient where an httpx.Client is expected: since Starlette 1.7 it is built on
+    httpx2 (same interface, not a subclass), so the type checker needs telling."""
+    return cast(httpx.Client, client)
 
 
 def free_port() -> int:
@@ -138,7 +144,9 @@ def make_agent(api: TestClient, portal_url: str) -> Callable[..., Agent]:
             max_steps=12,
             engines=engines or {},
         )
-        agent = Agent(settings, HospitalOSClient(api, "agent@test.fr", PASSWORD), engine_factory)
+        agent = Agent(
+            settings, HospitalOSClient(as_httpx(api), "agent@test.fr", PASSWORD), engine_factory
+        )
         sessions: list[BrowserSession] = []
         original = agent.router.session_factory
 

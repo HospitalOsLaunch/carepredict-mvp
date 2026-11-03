@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useReducer, useRef } from "react";
 
-import { api } from "../api/client";
+import { api, apiBlob } from "../api/client";
 import type { AgentStatus, AgentTask } from "../api/types";
 import type {
   ConnectionAction,
@@ -9,6 +10,8 @@ import type {
   ConnectionPatch,
   ConnectionRun,
   ConnectionStatus,
+  ReplayOut,
+  ReplayStep,
   WorkerOut
 } from "../api/types_agent";
 
@@ -32,11 +35,20 @@ export function useWorkers() {
   });
 }
 
+/** While a task waits or runs, poll fast: a sync can last a few seconds, and the card must
+ * show « Regarder en direct » while it runs. */
+export const ACTIVE_POLL_MS = 2_000;
+
+export function connectionsPollMs(connections: ConnectionOut[] | undefined): number {
+  const busy = connections?.some((c) => c.pending_tasks > 0 || c.running_task_id != null);
+  return busy ? ACTIVE_POLL_MS : POLL_MS;
+}
+
 export function useConnections() {
   return useQuery({
     queryKey: CONNECTIONS,
     queryFn: () => api<ConnectionOut[]>("/agent/connections"),
-    refetchInterval: POLL_MS
+    refetchInterval: (query) => connectionsPollMs(query.state.data)
   });
 }
 
@@ -44,7 +56,9 @@ export function useConnectionRuns(id: number, enabled: boolean) {
   return useQuery({
     queryKey: ["agent", "connections", id, "runs"],
     queryFn: () => api<ConnectionRun[]>(`/agent/connections/${id}/runs?limit=20`),
-    enabled
+    enabled,
+    // An open list follows the passages as they end (« Revoir » appears).
+    refetchInterval: POLL_MS
   });
 }
 
@@ -149,3 +163,94 @@ export const TASK_STATUS: Record<string, { text: string; tone: string }> = {
   failed: { text: "Échec", tone: "bg-coral-soft text-coral-dark" },
   cancelled: { text: "Annulée", tone: "bg-sky-deep text-ink-soft" }
 };
+
+/** Engine family shown to people: the exact engine name stays in the settings. */
+export function engineLabel(engine: string | null | undefined): string {
+  if (!engine) return "—";
+  if (engine === "playbook") return "script";
+  if (engine.startsWith("open_")) return "modèle ouvert";
+  if (engine.startsWith("closed_")) return "Claude";
+  return engine;
+}
+
+export const LIVE_POLL_MS = 1_000;
+
+/** Appends the steps of a live poll to what is already known (by seq, without duplicates). */
+export function mergeReplay(previous: ReplayOut | undefined, next: ReplayOut): ReplayOut {
+  if (!previous) return next;
+  const known = new Set(previous.steps.map((s) => s.seq));
+  const steps = [...previous.steps, ...next.steps.filter((s) => !known.has(s.seq))].sort((a, b) => a.seq - b.seq);
+  return { ...next, steps };
+}
+
+/** The steps of a task; while it runs, asks every second for the steps after the last one. */
+export function useReplay(taskId: number) {
+  const client = useQueryClient();
+  const key = ["agent", "replay", taskId];
+  return useQuery({
+    queryKey: key,
+    queryFn: async () => {
+      const previous = client.getQueryData<ReplayOut>(key);
+      const last = previous?.steps.at(-1)?.seq;
+      const query = last === undefined ? "" : `?after_seq=${last}`;
+      return mergeReplay(previous, await api<ReplayOut>(`/agent/tasks/${taskId}/replay${query}`));
+    },
+    refetchInterval: (query) => (query.state.data?.live ? LIVE_POLL_MS : false),
+    // 403 (direction) and 404 (purged, other group) will not change on retry.
+    retry: (count, error) => ((error as { status?: number }).status ?? 500) >= 500 && count < 2
+  });
+}
+
+export interface FrameState {
+  url?: string;
+  failed: boolean;
+}
+
+/**
+ * Frames are fetched with the bearer token as blobs and shown through object URLs, cached by
+ * step id: the current one and the next `ahead` frames, so playback does not wait. Every URL is
+ * revoked on unmount.
+ */
+export function useFrames(steps: ReplayStep[], index: number, ahead = 3): (stepId: number) => FrameState {
+  // shortcut: the cache keeps every frame of the task (≤ 512 Ko each); evict if tasks grow to hundreds of steps.
+  const urls = useRef(new Map<number, string>());
+  const failed = useRef(new Set<number>());
+  const pending = useRef(new Set<number>());
+  const mounted = useRef(true);
+  const [, bump] = useReducer((n: number) => n + 1, 0);
+
+  useEffect(() => {
+    mounted.current = true;
+    const cache = urls.current;
+    return () => {
+      mounted.current = false;
+      for (const url of cache.values()) URL.revokeObjectURL(url);
+      cache.clear();
+    };
+  }, []);
+
+  const wanted = steps
+    .slice(Math.max(0, index))
+    .filter((s) => s.has_frame)
+    .slice(0, ahead + 1)
+    .map((s) => s.id);
+  const wantedKey = wanted.join(",");
+
+  useEffect(() => {
+    for (const id of wanted) {
+      if (urls.current.has(id) || failed.current.has(id) || pending.current.has(id)) continue;
+      pending.current.add(id);
+      apiBlob(`/agent/steps/${id}/frame`)
+        .then((blob) => {
+          if (mounted.current) urls.current.set(id, URL.createObjectURL(blob));
+        })
+        .catch(() => failed.current.add(id))
+        .finally(() => {
+          pending.current.delete(id);
+          if (mounted.current) bump();
+        });
+    }
+  }, [wantedKey]); // wantedKey stands for wanted (a new array every render)
+
+  return (stepId) => ({ url: urls.current.get(stepId), failed: failed.current.has(stepId) });
+}

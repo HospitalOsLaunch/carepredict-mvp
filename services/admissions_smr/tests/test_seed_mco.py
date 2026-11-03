@@ -303,3 +303,40 @@ def test_cli_repairs_a_demo_database_seeded_before_connections(
         engine.dispose()
     finally:
         get_settings.cache_clear()
+
+
+@pytest.mark.parametrize("command", ["seed-demo", "seed-demo-mco"])
+def test_cli_leaves_no_session_open_on_any_path(
+    command: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Each command closes its session and engine, success or refusal: a transaction left
+    open blocks the next schema change on PostgreSQL (the CI hung on DROP SCHEMA)."""
+    url = database_url(tmp_path)
+    monkeypatch.setenv("ADM_DATABASE_URL", url)
+    monkeypatch.setenv("ADM_ENV", "development")
+    monkeypatch.setenv("ADM_PASSWORD_ITERATIONS", "1000")
+    monkeypatch.setenv("ADM_ADMIN_PASSWORD", "mot-de-passe-solide")
+    engines: list[Engine] = []
+    disposed: list[Engine] = []
+
+    def tracked(database_url: str) -> Engine:
+        engine = make_engine(database_url)
+        engines.append(engine)
+        original = engine.dispose
+
+        def dispose(close: bool = True) -> None:
+            disposed.append(engine)
+            original(close)
+
+        monkeypatch.setattr(engine, "dispose", dispose)
+        return engine
+
+    monkeypatch.setattr(cli, "make_engine", tracked)
+    get_settings.cache_clear()
+    try:
+        init = ["init-group", "--name", "G", "--admin-email", "a@b.fr", "--admin-name", "A"]
+        for argv, code in (([command], 0), ([command], 1), (init, 0), (init, 1)):
+            assert cli.main(argv) == code, argv
+            assert engines[-1] in disposed, argv
+    finally:
+        get_settings.cache_clear()

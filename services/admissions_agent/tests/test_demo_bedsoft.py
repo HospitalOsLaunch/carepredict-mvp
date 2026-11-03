@@ -15,7 +15,7 @@ from services.admissions_agent.api_client import HospitalOSClient
 from services.admissions_agent.config import AgentSettings
 from services.admissions_agent.demo_bedsoft import app as bedsoft_module
 from services.admissions_agent.runner import Agent
-from services.admissions_agent.tests.conftest import PASSWORD, db, login
+from services.admissions_agent.tests.conftest import PASSWORD, as_httpx, db, login
 from services.admissions_smr.domain.pseudonym import pseudonym
 from services.admissions_smr.models import Bed, EdVisit, Movement, Site, Stay
 
@@ -36,7 +36,7 @@ def bedsoft_agent(api: TestClient, url: str) -> Agent:
         playbook_path=str(PLAYBOOK),
         allowed_hosts=("127.0.0.1",),
     )
-    return Agent(settings, HospitalOSClient(api, "agent@test.fr", PASSWORD))
+    return Agent(settings, HospitalOSClient(as_httpx(api), "agent@test.fr", PASSWORD))
 
 
 def stay(session: Session, group_id: int, venue: str) -> Stay | None:

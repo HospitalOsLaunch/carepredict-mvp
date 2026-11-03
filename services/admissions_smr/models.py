@@ -16,6 +16,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     Time,
@@ -424,6 +425,33 @@ class AgentAttempt(Base):
     duration_s: Mapped[float] = mapped_column(Float, default=0.0)
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, index=True)
+
+
+class AgentTaskStep(Base):
+    """One step of a task as the player shows it: a plain-French label (never a value read
+    on screen), the gesture, and a JPEG frame masked on the worker before capture."""
+
+    __tablename__ = "agent_task_steps"
+    __table_args__ = (Index("ix_agent_task_steps_task_seq", "task_id", "seq", unique=True),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), index=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("agent_tasks.id"))
+    seq: Mapped[int] = mapped_column(Integer)
+    at: Mapped[datetime] = mapped_column(UTCDateTime)
+    engine: Mapped[str] = mapped_column(String(60))
+    kind: Mapped[str] = mapped_column(String(20))
+    label: Mapped[str] = mapped_column(String(300))
+    target: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    pointer_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    box_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    outcome: Mapped[str] = mapped_column(String(10))
+    duration_ms: Mapped[int] = mapped_column(Integer)
+    viewport_json: Mapped[str] = mapped_column(Text)
+    masks_json: Mapped[str] = mapped_column(Text)
+    transmitted_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    frame: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, index=True)
 
 
 class AgentCalibration(Base):
