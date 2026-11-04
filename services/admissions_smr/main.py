@@ -34,6 +34,7 @@ from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import Settings, get_settings
 from services.admissions_smr.db import make_engine, make_session_factory
 from services.admissions_smr.migrate import upgrade
+from services.admissions_smr.tracing import setup_tracing
 
 
 def create_app(settings: Settings | None = None, clock: Clock | None = None) -> FastAPI:
@@ -103,6 +104,8 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
     ):
         api.include_router(module.router)
     app.include_router(api)
+    # Off unless the group names its collector (OTEL_EXPORTER_OTLP_ENDPOINT): règle 18.
+    setup_tracing(app, engine)
     return app
 
 

@@ -50,6 +50,7 @@ from services.admissions_smr.schemas import (
     SuggestionOut,
 )
 from services.admissions_smr.task_state import decision_changed
+from services.admissions_smr.tracing import span
 from services.admissions_smr.vocab import ALLOWED_TRANSITIONS, REQUEST_STATUSES
 
 HORIZON_DAYS = 14
@@ -195,9 +196,13 @@ def build_forecast(
     session: Session, group_id: int, sites: list[Site], as_of: date, horizon: int = HORIZON_DAYS
 ) -> GroupForecast:
     # Hazards are fitted on the whole group: more data, and mentions behave alike across sites.
-    records = stay_records(session, group_id)
-    plans = plan_history(session, group_id)
-    model = fit_hazard(records, as_of, plans=plans or None)
+    # Each step is named in the traces (tracing.span, off by default): règle 18.
+    with span("forecast.read_stays") as step:
+        records = stay_records(session, group_id)
+        plans = plan_history(session, group_id)
+        step.set_attribute("hospitalos.stays", len(records))
+    with span("forecast.fit_hazard", stays=len(records)):
+        model = fit_hazard(records, as_of, plans=plans or None)
     current = [
         r
         for r in records
@@ -207,20 +212,22 @@ def build_forecast(
     for r in current:
         by_pool[(r.site_id, r.mention)].append(r)
     reserved = reservations(session, group_id)
-    slip = estimate_plan_slip(records, plans, as_of)
+    with span("forecast.plan_slip"):
+        slip = estimate_plan_slip(records, plans, as_of)
     pools: dict[tuple[int, str], PoolForecast] = {}
-    for site in sites:
-        for pool in site.pools:
-            key = (site.id, pool.mention)
-            pools[key] = forecast_pool(
-                by_pool.get(key, []),
-                pool.beds_open,
-                as_of,
-                horizon,
-                model,
-                reservations=reserved.get(key, {}),
-                plan_slip=slip.weights,
-            )
+    with span("forecast.pools", pools=sum(len(site.pools) for site in sites), horizon=horizon):
+        for site in sites:
+            for pool in site.pools:
+                key = (site.id, pool.mention)
+                pools[key] = forecast_pool(
+                    by_pool.get(key, []),
+                    pool.beds_open,
+                    as_of,
+                    horizon,
+                    model,
+                    reservations=reserved.get(key, {}),
+                    plan_slip=slip.weights,
+                )
     low = sorted(m for m, n in model.n_completed.items() if n < DEFAULT_MIN_AT_RISK)
     return GroupForecast(as_of, model, pools, records, low, slip, dict(by_pool))
 

@@ -22,6 +22,7 @@ from services.admissions_smr.domain.forecast import (
 from services.admissions_smr.models import Site, Stay
 from services.admissions_smr.schemas import StayCreate, StayOut, StayUpdate
 from services.admissions_smr.service import get_site, plan_history, record_plan, stay_records
+from services.admissions_smr.tracing import span
 
 router = APIRouter(tags=["sejours"])
 
@@ -105,8 +106,10 @@ def list_stays(
     if scope == "presents":
         records = stay_records(ctx.session, ctx.group.id)
         plans = plan_history(ctx.session, ctx.group.id)
-        model = fit_hazard(records, today, plans=plans or None)
-        slip = estimate_plan_slip(records, plans, today).weights
+        with span("forecast.fit_hazard", stays=len(records)):
+            model = fit_hazard(records, today, plans=plans or None)
+        with span("forecast.plan_slip"):
+            slip = estimate_plan_slip(records, plans, today).weights
     return [stay_out(s, names.get(s.site_id, ""), today, model, slip) for s in rows]
 
 

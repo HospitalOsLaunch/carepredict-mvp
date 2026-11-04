@@ -41,6 +41,7 @@ from services.admissions_smr.service import (
     transition,
 )
 from services.admissions_smr.task_state import decision_changed
+from services.admissions_smr.tracing import span
 from services.admissions_smr.vocab import (
     LOSS_REASONS,
     MENTIONS,
@@ -53,9 +54,11 @@ router = APIRouter(tags=["demandes"])
 
 
 def _context(ctx: Ctx) -> tuple[list[SiteCandidate], dict[int, str]]:
-    sites = all_group_sites(ctx.session, ctx.group.id)
-    forecast = build_forecast(ctx.session, ctx.group.id, sites, ctx.clock.today())
-    candidates = site_candidates(ctx.session, ctx.group.id, sites, forecast)
+    with span("requests.context") as step:
+        sites = all_group_sites(ctx.session, ctx.group.id)
+        forecast = build_forecast(ctx.session, ctx.group.id, sites, ctx.clock.today())
+        candidates = site_candidates(ctx.session, ctx.group.id, sites, forecast)
+        step.set_attribute("hospitalos.sites", len(sites))
     return candidates, {s.id: s.name for s in sites}
 
 
