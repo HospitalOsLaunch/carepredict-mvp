@@ -43,6 +43,7 @@ export ADM_DATABASE_URL=sqlite:///./admissions_demo.db
 python -m services.admissions_smr.cli seed-demo          # groupe synthétique
 python -m services.admissions_smr.cli seed-demo-mco      # hôpital MCO fictif (LISCOP)
 uvicorn services.admissions_smr.main:app --port 8010      # API : http://localhost:8010/api/docs
+# En production (PostgreSQL) : python -m services.admissions_smr.serve, plusieurs processus (docs/perf/INSTANCES.md)
 
 cd services/admissions_web && npm ci && npm run dev       # http://localhost:5174
 ```

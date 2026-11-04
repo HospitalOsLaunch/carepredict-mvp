@@ -16,4 +16,5 @@ USER app
 
 EXPOSE 8010
 HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/health')"
-CMD ["uvicorn", "services.admissions_smr.main:app", "--host", "0.0.0.0", "--port", "8010", "--proxy-headers"]
+# Several processes (ADM_API_WORKERS, default: the cores, 2 to 4): serve.py.
+CMD ["python", "-m", "services.admissions_smr.serve"]

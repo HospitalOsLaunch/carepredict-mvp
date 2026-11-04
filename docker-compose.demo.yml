@@ -52,12 +52,13 @@ services:
       ADM_SECRET_KEY: demo-only-secret-key-not-for-production-0123456789
       ADM_PSEUDONYM_SECRET: demo-only-pseudonym-secret-not-for-production-0123
       ADM_CONNECTOR_KEY: demo-only-connector-key-not-for-production-01234
-    # Migrate and seed once (refused, harmlessly, when the group already exists), then serve:
+    # Migrate and seed once (refused, harmlessly, when the group already exists), then serve
+    # with several processes (serve.py):
     # the SMR group for the computer-use demo, the MCO hospital for LISCOP.
     command: >
       sh -c "python -m services.admissions_smr.cli seed-demo || true;
              python -m services.admissions_smr.cli seed-demo-mco || true;
-             exec uvicorn services.admissions_smr.main:app --host 0.0.0.0 --port 8010"
+             exec python -m services.admissions_smr.serve"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/api/health')"]
       interval: 5s
