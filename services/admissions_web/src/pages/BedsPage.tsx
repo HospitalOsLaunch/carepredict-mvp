@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DoorOpen } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { api } from "../api/client";
 import type { Pool, Site, Stay } from "../api/types";
@@ -17,11 +17,9 @@ export function BedsPage() {
   const [siteId, setSiteId] = useState<number | null>(null);
   const activeSites = (sites.data ?? []).filter((s) => s.active);
 
-  useEffect(() => {
-    if (siteId === null && activeSites.length) setSiteId(activeSites[0].id);
-  }, [activeSites, siteId]);
-
-  const site = activeSites.find((s) => s.id === siteId) ?? null;
+  // The first site until another is chosen, decided while rendering: no empty frame between
+  // the list of sites and the first one's content.
+  const site = activeSites.find((s) => s.id === siteId) ?? activeSites[0] ?? null;
   return (
     <>
       <PageHeader
@@ -40,10 +38,10 @@ export function BedsPage() {
             <button
               key={s.id}
               role="tab"
-              aria-selected={s.id === siteId}
+              aria-selected={s.id === site?.id}
               onClick={() => setSiteId(s.id)}
               className={`rounded-chip px-4 py-2 text-[15px] font-bold ${
-                s.id === siteId ? "bg-ink text-white" : "bg-paper text-ink-soft shadow-lift hover:text-ink"
+                s.id === site?.id ? "bg-ink text-white" : "bg-paper text-ink-soft shadow-lift hover:text-ink"
               }`}
             >
               {s.name}

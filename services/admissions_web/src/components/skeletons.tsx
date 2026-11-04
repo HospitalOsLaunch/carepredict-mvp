@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
  * to look. Sizes come from the loaded screens measured at 1440 px. The pulse stops under
  * `prefers-reduced-motion` (global rule in index.css).
  */
-export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("animate-pulse rounded-xl bg-sky-deep", className)} />;
+export function Skeleton({ className, as: Tag = "div" }: { className?: string; as?: "div" | "span" }) {
+  return <Tag aria-hidden className={cn("block animate-pulse rounded-xl bg-sky-deep", className)} />;
 }
 
 /** Announces the wait once to screen readers; what is inside is hidden from them. */
