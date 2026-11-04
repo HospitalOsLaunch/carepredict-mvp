@@ -98,15 +98,19 @@ jobs:
         run: |
           docker build -f services/forecast_engine/Dockerfile -t hospitalos/forecast-engine:ci .
           docker run --rm hospitalos/forecast-engine:ci --help
-      - name: Smoke test (compose, migrations at start-up, health through nginx)
+      - name: Smoke test (compose, two API containers migrating together, health through nginx)
         env:
           ADM_DB_PASSWORD: ci-only-password
           ADM_SECRET_KEY: ci-only-secret-key-not-for-production-0123456789
           ADM_PSEUDONYM_SECRET: ci-only-pseudonym-secret-not-for-production-0123
           ADM_CONNECTOR_KEY: ci-only-connector-key-not-for-production-01234567
         run: |
-          docker compose -f docker-compose.admissions.yml up -d --build db api web
+          # Two containers of several processes each start together on an empty database:
+          # one migrates, the others wait on the lock (règle 28).
+          docker compose -f docker-compose.admissions.yml up -d --build --scale api=2 db api web
           curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health
+          test "$(docker compose -f docker-compose.admissions.yml ps --status running -q api | wc -l)" -eq 2
+          for i in $(seq 1 20); do curl --fail -s -o /dev/null http://127.0.0.1:8080/api/health; done
           WEB=http://127.0.0.1:8080 sh tools/check_web_headers.sh
           WEB=http://127.0.0.1:8080 sh tools/check_web_compression.sh
           docker compose -f docker-compose.admissions.yml logs api | tail -20
