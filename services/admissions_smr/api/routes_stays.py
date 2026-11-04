@@ -8,6 +8,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, Ctx, ReadCtx, WriteCtx
 from services.admissions_smr.domain.forecast import (
@@ -79,7 +80,10 @@ def list_stays(
     limit: int = Query(500, ge=1, le=5000),
 ) -> list[StayOut]:
     today = ctx.clock.today()
-    query = select(Stay).where(Stay.group_id == ctx.group.id)
+    # The plan changes of every stay in one query (stay_out counts them): not one per stay.
+    query = (
+        select(Stay).where(Stay.group_id == ctx.group.id).options(selectinload(Stay.plan_changes))
+    )
     if ctx.site_scope is not None:
         query = query.where(Stay.site_id == ctx.site_scope)
     if site_id is not None:
