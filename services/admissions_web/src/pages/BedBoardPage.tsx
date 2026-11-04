@@ -303,7 +303,9 @@ function UnitPanel({
     .filter((r) => r.beds.length > 0);
   const headingId = `unit-${unit.pool_id}`;
   return (
-    <section className="panel px-5 py-4" aria-labelledby={headingId}>
+    // An off-screen unit is not styled, laid out nor painted until it nears the screen (règle 23);
+    // its tiles stay in the page, for the browser's search and screen readers.
+    <section className="panel px-5 py-4 [contain-intrinsic-size:auto_415px] [content-visibility:auto]" aria-labelledby={headingId}>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id={headingId}>{unit.label}</h2>
