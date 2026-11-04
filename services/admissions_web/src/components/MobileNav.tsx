@@ -35,7 +35,16 @@ const tab = (active: boolean) =>
   }`;
 
 /** Bottom tab bar for small screens (below lg); the sidebar takes over on a desk. */
-export function MobileNav({ items, primary }: { items: NavItem[]; primary: string[] }) {
+export function MobileNav({
+  items,
+  primary,
+  onIntent
+}: {
+  items: NavItem[];
+  primary: string[];
+  /** Called when a tab is about to be opened (touch down, focus): its screen can be fetched ahead. */
+  onIntent?: (to: string) => void;
+}) {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const main = primary.map((to) => items.find((i) => i.to === to)).filter((i): i is NavItem => Boolean(i));
@@ -53,7 +62,7 @@ export function MobileNav({ items, primary }: { items: NavItem[]; primary: strin
         <ul className="flex gap-1">
           {main.map(({ to, label, short, icon: Icon }) => (
             <li key={to} className="flex flex-1">
-              <NavLink to={to} className={({ isActive }) => tab(isActive)}>
+              <NavLink to={to} onPointerDown={() => onIntent?.(to)} onFocus={() => onIntent?.(to)} className={({ isActive }) => tab(isActive)}>
                 {({ isActive }) => (
                   <>
                     <span
@@ -85,13 +94,13 @@ export function MobileNav({ items, primary }: { items: NavItem[]; primary: strin
           </li>
         </ul>
       </nav>
-      <MoreSheet items={rest} onClose={() => setOpen(false)} />
+      <MoreSheet items={rest} onIntent={onIntent} onClose={() => setOpen(false)} />
     </Sheet>
   );
 }
 
 /** Every other screen, in a sheet that comes up from the bar (shadcn/ui Sheet on Radix). */
-function MoreSheet({ items, onClose }: { items: NavItem[]; onClose: () => void }) {
+function MoreSheet({ items, onIntent, onClose }: { items: NavItem[]; onIntent?: (to: string) => void; onClose: () => void }) {
   return (
     <SheetContent side="bottom" className="px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-2 lg:hidden" aria-describedby={undefined}>
       <div aria-hidden className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-line" />
@@ -101,6 +110,7 @@ function MoreSheet({ items, onClose }: { items: NavItem[]; onClose: () => void }
           <li key={to}>
             <NavLink
               to={to}
+              onPointerDown={() => onIntent?.(to)}
               onClick={onClose}
               className={({ isActive }) =>
                 `flex min-h-[56px] items-center gap-3 rounded-2xl px-3 py-2 text-[15px] font-bold transition-colors ${
