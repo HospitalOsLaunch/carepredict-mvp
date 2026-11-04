@@ -630,3 +630,21 @@ class RorOutbox(Base):
     payload_json: Mapped[str] = mapped_column(Text)
     digest: Mapped[str] = mapped_column(String(64))
     status: Mapped[str] = mapped_column(String(20), default="simulated")
+
+
+class WebVital(Base):
+    """One Core Web Vitals measure of a real visit (règle 30): the screen as its route
+    template, the device class and the network type. No user, no address, no browser, no
+    time of day: nothing that ties it to a person."""
+
+    __tablename__ = "web_vitals"
+    __table_args__ = (Index("ix_web_vitals_group_day", "group_id", "recorded_on"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"))
+    recorded_on: Mapped[date] = mapped_column(Date)
+    page: Mapped[str] = mapped_column(String(40))
+    metric: Mapped[str] = mapped_column(String(8))
+    value: Mapped[float] = mapped_column(Float)
+    device: Mapped[str] = mapped_column(String(10))
+    connection: Mapped[str] = mapped_column(String(10))

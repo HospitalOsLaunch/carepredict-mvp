@@ -29,6 +29,7 @@ from services.admissions_smr.api import (
     routes_ror,
     routes_sites,
     routes_stays,
+    routes_web_vitals,
 )
 from services.admissions_smr.clock import Clock
 from services.admissions_smr.config import Settings, get_settings
@@ -101,6 +102,7 @@ def create_app(settings: Settings | None = None, clock: Clock | None = None) -> 
         routes_ed,
         routes_hl7,
         routes_forecast_store,
+        routes_web_vitals,
     ):
         api.include_router(module.router)
     app.include_router(api)
