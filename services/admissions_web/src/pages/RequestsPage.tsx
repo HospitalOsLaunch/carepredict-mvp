@@ -10,6 +10,7 @@ import { Empty, ErrorNote, Meter, PageHeader, Spinner, StatusChip } from "../com
 import { fmtHours, fmtShort, plural } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { useRequests, type Scope } from "../lib/requests";
+import { useDebouncedValue } from "../lib/useDebouncedValue";
 
 const SCOPES: Array<{ value: Scope; label: string }> = [
   { value: "a_traiter", label: "À traiter" },
@@ -29,7 +30,9 @@ export function RequestsPage() {
   const [creating, setCreating] = useState(false);
   const vocab = useVocabulary();
   const sites = useSites();
-  const list = useRequests({ scope, site_id: siteId, mention, q: q.trim() || undefined });
+  // One request when the typing pauses, not one per letter.
+  const search = useDebouncedValue(q.trim());
+  const list = useRequests({ scope, site_id: siteId, mention, q: search || undefined });
   const pending = useRequests({ scope: "a_traiter" });
 
   const headline = useMemo(() => {
