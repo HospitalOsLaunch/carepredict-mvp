@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { LiveDot } from "../components/AgentPlayer";
 import { ConnectionForm, WEEKDAYS } from "../components/ConnectionForm";
 import { Empty, ErrorNote, Modal, PageHeader } from "../components/common";
+import { EnginesSection } from "./AgentEngines";
 import {
   KIND_LABEL,
   TASK_LABEL,
@@ -88,9 +89,9 @@ export function AgentsPage() {
         actions={
           isAdmin && (
             <>
-              <Link to="/parametres?rubrique=agent" className="btn-ghost">
-                <SlidersHorizontal className="h-4 w-4" aria-hidden /> Routage, moteurs et budgets
-              </Link>
+              <a href="#moteurs" className="btn-ghost">
+                <SlidersHorizontal className="h-4 w-4" aria-hidden /> Moteurs et routage
+              </a>
               {paused ? (
                 <Button variant="primary" disabled={groupPause.isPending} onClick={() => toggleGroup(false)}>
                   <Play className="h-4 w-4" aria-hidden /> Lever la pause générale
@@ -194,6 +195,9 @@ export function AgentsPage() {
           )}
         </div>
       </section>
+
+      {/* Engines and routing: the administrator sets them here, next to the workers and connections. */}
+      <EnginesSection status={status.data} workers={list} loading={status.isLoading || workers.isLoading} canEdit={isAdmin} />
 
       {editing && (
         <ConnectionForm
