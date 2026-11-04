@@ -48,3 +48,15 @@ Le modèle de sortie s'ajuste en 11 ms. Le temps part dans la lecture des 10 955
 du groupe, chargés en objets ORM complets à chaque appel pour n'en garder que sept
 colonnes. La durée « SQL » d'une trace ne compte que l'exécution, pas la construction des
 objets : c'est l'étape nommée qui l'a révélé.
+
+**Corrigé** : `stay_records` lit les sept colonnes utiles au lieu d'objets complets.
+
+| Appel | Avant | Après (deux mesures) |
+|---|---|---|
+| `/api/dashboard` | 366 ms | 101 à 172 ms |
+| `/api/requests?scope=a_traiter` | 362 ms | 102 à 125 ms |
+| `/api/forecast` | 374 ms | 88 à 118 ms |
+| `/api/stays` | 360 ms | 97 à 101 ms |
+
+Piste suivante, à mesurer avant d'y toucher : la prévision est recalculée à chaque appel
+alors que ses entrées ne changent qu'avec un mouvement ou une date de sortie prévue.

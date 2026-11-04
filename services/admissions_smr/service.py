@@ -93,20 +93,30 @@ def get_site(ctx: Ctx, site_id: int) -> Site:
 def stay_records(
     session: Session, group_id: int, site_ids: list[int] | None = None
 ) -> list[StayRecord]:
-    query = select(Stay).where(Stay.group_id == group_id)
+    # The seven columns the forecast needs, not whole Stay objects: the group's every stay is
+    # read on each forecast, and building ORM objects cost 320 ms for 11 000 stays (traces).
+    query = select(
+        Stay.id,
+        Stay.site_id,
+        Stay.mention,
+        Stay.admission_date,
+        Stay.discharge_date,
+        Stay.planned_discharge_date,
+        Stay.care_level,
+    ).where(Stay.group_id == group_id)
     if site_ids is not None:
         query = query.where(Stay.site_id.in_(site_ids))
     return [
         StayRecord(
-            stay_id=s.id,
-            site_id=s.site_id,
-            mention=s.mention,
-            admission_date=s.admission_date,
-            discharge_date=s.discharge_date,
-            planned_discharge_date=s.planned_discharge_date,
-            care_level=s.care_level,
+            stay_id=row.id,
+            site_id=row.site_id,
+            mention=row.mention,
+            admission_date=row.admission_date,
+            discharge_date=row.discharge_date,
+            planned_discharge_date=row.planned_discharge_date,
+            care_level=row.care_level,
         )
-        for s in session.scalars(query)
+        for row in session.execute(query)
     ]
 
 
