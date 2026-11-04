@@ -798,14 +798,55 @@ def agent_status(ctx: ReadCtx) -> AgentStatusOut:
     )
 
 
+BASIS_LABELS = {
+    "hds": "hébergement HDS",
+    "contrat": "contrat couvrant les données de santé",
+    "demonstration": "données de démonstration",
+}
+
+
 @router.put("/policy", response_model=AgentPolicy)
 def put_policy(body: dict[str, Any], ctx: AdminCtx) -> AgentPolicy:
     try:
         policy = AgentPolicy.model_validate(body)
     except ValidationError as exc:
         raise HTTPException(UNPROCESSABLE, str(exc.errors()[0].get("msg"))) from exc
+    # The agent reads movements by script only (router.skip_reason): no model goal exists.
+    if any(name != "playbook" for name in policy.routes.get("sync_movements", [])):
+        raise HTTPException(UNPROCESSABLE, "La relève des mouvements se fait par script seulement")
+    for engine in policy.engines.values():
+        if engine.kind == "playbook":
+            continue
+        if engine.identifiable_data_allowed and engine.identifiable_basis is None:
+            raise HTTPException(
+                UNPROCESSABLE,
+                f"Pour laisser « {engine.label} » voir des données identifiantes, "
+                "indiquez sur quoi repose l'autorisation",
+            )
+        if not engine.identifiable_data_allowed:
+            engine.identifiable_basis = None
+            engine.identifiable_reference = None
     state = get_state(ctx)
     assert state is not None
+    before = policy_of(state)
+    # Each permission given or withdrawn to see identifiable data, in words, in the audit.
+    for name, engine in policy.engines.items():
+        was = before.engines.get(name)
+        if engine.kind == "playbook" or (
+            was is not None
+            and was.identifiable_data_allowed == engine.identifiable_data_allowed
+            and was.identifiable_basis == engine.identifiable_basis
+            and was.identifiable_reference == engine.identifiable_reference
+        ):
+            continue
+        if engine.identifiable_data_allowed:
+            assert engine.identifiable_basis is not None
+            basis = BASIS_LABELS[engine.identifiable_basis]
+            ref = f" : {engine.identifiable_reference}" if engine.identifiable_reference else ""
+            detail = f"{name} autorisé ({basis}{ref})"
+        else:
+            detail = f"{name} n'est plus autorisé"
+        ctx.audit("agent.donnees_identifiantes", "agent", None, detail)
     state.policy_json = policy.model_dump_json()
     state.updated_at = ctx.clock.now()
     ctx.audit("agent.politique", "agent", None, policy.model_dump_json()[:1000])
