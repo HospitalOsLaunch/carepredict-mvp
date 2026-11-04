@@ -4,8 +4,9 @@ import { lazy, Suspense, useState } from "react";
 
 import { api } from "../api/client";
 import type { ForecastDay, ForecastScope, ForecastSeries, LiscopForecast } from "../api/types_liscop";
-import { Empty, ErrorNote, PageHeader, Spinner } from "../components/common";
+import { Empty, ErrorNote, PageHeader } from "../components/common";
 import { fmtDateTime, fmtDay, fmtHours, fmtNum, fmtPct, fmtShort } from "../lib/format";
+import { ChartSkeleton, Loading, Skeleton } from "../components/skeletons";
 
 // recharts stays out of the main bundle (as for the other chart pages).
 const BoardingChart = lazy(() => import("./PrevisionChart").then((m) => ({ default: m.BoardingChart })));
@@ -322,7 +323,12 @@ export function PrevisionPage() {
         }
       />
 
-      {main.isLoading && <Spinner />}
+      {main.isLoading && (
+        <Loading label="Chargement de la prévision" className="space-y-6">
+          <Skeleton className="h-5 w-72" />
+          <ChartSkeleton height="h-[420px]" />
+        </Loading>
+      )}
       {main.error && <ErrorNote error={main.error} />}
       {data && !data.run && (
         <Empty title="Aucune prévision calculée pour l'instant">
@@ -355,7 +361,11 @@ export function PrevisionPage() {
           </section>
           <section className="panel px-5 py-4" aria-labelledby="brancards">
             <h2 id="brancards">Lits brancards à 10 h</h2>
-            {boarding.isLoading && <Spinner />}
+            {boarding.isLoading && (
+              <Loading label="Chargement des lits brancards">
+                <Skeleton className="mt-4 h-[220px] rounded-2xl" />
+              </Loading>
+            )}
             {boarding.error && <ErrorNote error={boarding.error} />}
             {boarding.data && !boardingSeries.length && (
               <p className="mt-2 text-[14px] text-ink-soft">Aucun service d'urgences à cette échelle.</p>
@@ -364,7 +374,7 @@ export function PrevisionPage() {
               {boardingSeries.map((s) => (
                 <div key={s.scope_key}>
                   <h3 className="mb-2">{s.label}</h3>
-                  <Suspense fallback={<Spinner />}>
+                  <Suspense fallback={<Skeleton className="h-[220px] rounded-2xl" />}>
                     <BoardingChart series={s} />
                   </Suspense>
                 </div>

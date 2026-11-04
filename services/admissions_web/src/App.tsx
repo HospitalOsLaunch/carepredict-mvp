@@ -21,6 +21,7 @@ import { LegacyAgentsRedirect } from "./components/LegacyAgentsRedirect";
 import { Mark } from "./components/Mark";
 import { MobileNav, primaryFor, type NavItem } from "./components/MobileNav";
 import { PageBoundary } from "./components/PageBoundary";
+import { PageSkeleton } from "./components/skeletons";
 import { Spinner } from "./components/common";
 import { lazyPage, whenIdle, type LazyPage } from "./lib/lazyPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -159,7 +160,7 @@ export function App() {
       <MobileNav items={items} primary={primary} onIntent={preloadPage} />
       <main id="contenu" className="min-w-0 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:py-9">
         <PageBoundary resetKey={pathname}>
-          <Suspense fallback={<Spinner label="Chargement de l'écran" />}>
+          <Suspense fallback={<PageSkeleton />}>
             <Routes>
               <Route path="/" element={<Navigate to="/demandes" replace />} />
               <Route path="/demandes" element={<RequestsPage />} />

@@ -6,11 +6,12 @@ import type { AdmissionRequest } from "../api/types";
 import { useAuth } from "../auth";
 import { RequestDetailPanel } from "../components/RequestDetail";
 import { NewRequestModal } from "../components/RequestForms";
-import { Empty, ErrorNote, Meter, PageHeader, Spinner, StatusChip } from "../components/common";
+import { Empty, ErrorNote, Meter, PageHeader, StatusChip } from "../components/common";
 import { fmtHours, fmtShort, plural } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { useRequests, type Scope } from "../lib/requests";
 import { useDebouncedValue } from "../lib/useDebouncedValue";
+import { ListSkeleton, Loading } from "../components/skeletons";
 
 const SCOPES: Array<{ value: Scope; label: string }> = [
   { value: "a_traiter", label: "À traiter" },
@@ -125,7 +126,11 @@ export function RequestsPage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(340px,440px)_1fr]">
         <section aria-label="Liste des demandes" className={`min-w-0 ${selected ? "hidden xl:block" : ""}`}>
-          {list.isLoading && <Spinner />}
+          {list.isLoading && (
+            <Loading label="Chargement des demandes">
+              <ListSkeleton />
+            </Loading>
+          )}
           {list.error && <ErrorNote error={list.error} />}
           {list.data && list.data.length === 0 && (
             <Empty title={scope === "a_traiter" ? "Rien à traiter" : "Aucune demande"}>

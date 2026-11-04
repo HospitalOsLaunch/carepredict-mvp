@@ -13,9 +13,10 @@ import {
 } from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { Freshness, LiveNumber, useChanged } from "../components/live";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
+import { Empty, ErrorNote, Modal, PageHeader } from "../components/common";
 import { useBedAction, useBedBoard } from "../lib/liscop";
 import { TensionChip } from "./RorPage";
+import { BedGridSkeleton, KpiRowSkeleton, Loading } from "../components/skeletons";
 
 const STATUS: Record<BedStatus, { label: string; tile: string; icon: LucideIcon }> = {
   libre: { label: "Libre", tile: "border-lagoon bg-lagoon-soft text-lagoon-dark", icon: Check },
@@ -105,7 +106,32 @@ export function BedBoardPage() {
     [visibleSites, poolId]
   );
 
-  if (board.isLoading) return <Spinner />;
+  const header = (
+    <PageHeader
+      title="Plan des lits"
+      lead={
+        <>
+          Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé.
+          <span className="hidden sm:inline">
+            {" "}
+            Les disponibilités par genre et en isolement suivent les définitions du ROR.
+          </span>
+        </>
+      }
+    />
+  );
+
+  if (board.isLoading)
+    return (
+      <>
+        {header}
+        <Loading label="Chargement du plan des lits">
+          <KpiRowSkeleton className="mb-6" />
+          <div className="panel mb-6 h-[138px]" aria-hidden />
+          <BedGridSkeleton />
+        </Loading>
+      </>
+    );
   if (board.error) return <ErrorNote error={board.error} />;
 
   const toggle = (status: BedStatus) =>
@@ -118,18 +144,7 @@ export function BedBoardPage() {
 
   return (
     <>
-      <PageHeader
-        title="Plan des lits"
-        lead={
-          <>
-            Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé.
-            <span className="hidden sm:inline">
-              {" "}
-              Les disponibilités par genre et en isolement suivent les définitions du ROR.
-            </span>
-          </>
-        }
-      />
+      {header}
 
       {sites.length === 0 ? (
         <Empty title="Aucun lit décrit pour l'instant">

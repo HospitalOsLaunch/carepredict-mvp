@@ -4,10 +4,11 @@ import { lazy, Suspense, useState, type FormEvent } from "react";
 import type { EdCensus, HetCriterion, HetLevel, TensionDeclaration, TensionStatus } from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { LiveNumber } from "../components/live";
-import { ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
+import { ErrorNote, Modal, PageHeader } from "../components/common";
 import { fmtDateTime, fmtHours, fmtNum, fmtPct } from "../lib/format";
 import { useDeclarations, useEdCensus, useEdWrite, useSnapshots, useTensionStatus } from "../lib/liscop";
 import { TensionChip } from "./RorPage";
+import { ChartSkeleton, KpiRowSkeleton, Loading, PanelSkeleton } from "../components/skeletons";
 
 // recharts is heavy: loaded with the chart only, as for the other chart pages.
 const BoardingChart = lazy(() => import("./UrgencesChart").then((m) => ({ default: m.BoardingChart })));
@@ -23,12 +24,27 @@ const LEVELS: Record<keyof typeof KINDS, Record<string, string>> = {
   plan_blanc: { alerte: "Mise en alerte", declenche: "Déclenché" }
 };
 
+const LEAD =
+  "Le recensement des urgences calculé à partir des mouvements patients, l'indicateur « lits brancards à 10 h » et l'aide à la déclaration d'hôpital en tension.";
+
 export function UrgencesPage() {
   const [siteId, setSiteId] = useState<number | null>(null);
   const census = useEdCensus(siteId);
   const status = useTensionStatus(siteId);
 
-  if (census.isLoading) return <Spinner />;
+  if (census.isLoading)
+    return (
+      <>
+        <PageHeader title="Urgences et tension" lead={LEAD} />
+        <Loading label="Chargement du recensement des urgences">
+          <KpiRowSkeleton height="h-[164px]" />
+          <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <ChartSkeleton />
+            <PanelSkeleton lines={6} height="h-[449px]" />
+          </div>
+        </Loading>
+      </>
+    );
   if (census.error) return <ErrorNote error={census.error} />;
   const c = census.data;
   if (!c) return null;
@@ -37,7 +53,7 @@ export function UrgencesPage() {
     <>
       <PageHeader
         title="Urgences et tension"
-        lead="Le recensement des urgences calculé à partir des mouvements patients, l'indicateur « lits brancards à 10 h » et l'aide à la déclaration d'hôpital en tension."
+        lead={LEAD}
         actions={
           c.ed_sites.length > 1 ? (
             <label className="field">
@@ -55,10 +71,16 @@ export function UrgencesPage() {
       />
       <CensusCards census={c} />
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <Suspense fallback={<Spinner />}>
+        <Suspense fallback={<ChartSkeleton />}>
           <BoardingChart siteId={c.site_id} />
         </Suspense>
-        {status.data ? <AidCard status={status.data} boardingIsYesterday={!c.today_10h.reached} /> : status.error ? <ErrorNote error={status.error} /> : <Spinner />}
+        {status.data ? <AidCard status={status.data} boardingIsYesterday={!c.today_10h.reached} /> : status.error ? (
+          <ErrorNote error={status.error} />
+        ) : (
+          <Loading label="Chargement de l'aide à la déclaration">
+            <PanelSkeleton lines={6} height="h-[449px]" />
+          </Loading>
+        )}
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Declarations status={status.data} siteId={c.site_id} siteName={c.site_name} />

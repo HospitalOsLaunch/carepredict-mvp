@@ -15,6 +15,7 @@ qui impose son style : on possède le code, et on l'adapte.
 | `src/components/ui/badge.tsx` | `Badge` : tons `neutral`, `violet`, `lagoon`, `lagoon-solid`, `coral`, `coral-solid`, `sun`, `ink` (tous AA) |
 | `src/components/ui/dialog.tsx` | `Dialog` (Radix) : focus piégé puis rendu, Échap et le fond ferment, page masquée aux lecteurs d'écran |
 | `src/components/ui/sheet.tsx` | `Sheet` : panneau qui glisse depuis un bord (le « Plus » du menu mobile) |
+| `src/components/skeletons.tsx` | Squelettes de chargement : `Skeleton` (shadcn), `Loading` (annonce unique aux lecteurs d'écran), et des formes prêtes (`KpiRowSkeleton`, `ChartSkeleton`, `ListSkeleton`, `TableSkeleton`, `BedGridSkeleton`, `LampStripSkeleton`, `PageSkeleton`) |
 
 Déjà migrés : `Modal` (toutes les boîtes de dialogue de l'application, même interface),
 `StatusChip` (sur `Badge`), le panneau « Plus » du menu mobile (sur `Sheet`), les boutons
@@ -30,6 +31,11 @@ de l'écran Agents (sur `Button`). Les composants maison restent dans
 - **Couleurs** : uniquement les jetons (`ink`, `violet`, `sun`, `coral`, `lagoon`, `sky`,
   `paper`, `line`) ; les variantes des composants respectent le contraste AA (audit dans
   `UX_REVIEW.md`).
+- **Chargement** : un squelette à la forme et à la taille de ce qui arrive, pas un
+  spinner, sur les écrans quotidiens ; le titre de l'écran reste affiché s'il ne dépend
+  pas des données. Mesurer la hauteur réelle du bloc chargé (1440 px) et la reprendre :
+  c'est ce qui évite que la page saute (CLS). `Spinner` reste pour les actions courtes
+  et les écrans d'administration.
 - **Tactile** : la classe `touch-target` (dans `Button` et les fermetures) garantit 44 px
   sur écran tactile.
 - **Mouvement** : animations d'entrée et de sortie de `tailwindcss-animate`

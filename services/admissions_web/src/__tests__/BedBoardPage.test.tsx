@@ -94,6 +94,24 @@ beforeEach(() => {
 });
 
 describe("BedBoardPage", () => {
+  it("keeps its title while the beds load, shows their shape, and announces the wait once", async () => {
+    let arrive: (b: BedBoard) => void = () => undefined;
+    vi.mocked(api).mockImplementation(((path: string) =>
+      path === "/beds" ? new Promise<BedBoard>((resolve) => (arrive = resolve)) : Promise.resolve({})) as never);
+    renderPage();
+
+    expect(screen.getByRole("heading", { level: 1, name: "Plan des lits" })).toBeInTheDocument();
+    const wait = screen.getByRole("status");
+    expect(wait).toHaveAttribute("aria-busy", "true");
+    expect(wait).toHaveTextContent("Chargement du plan des lits…");
+    expect(screen.getAllByRole("status")).toHaveLength(1);
+
+    arrive(board);
+    await screen.findByRole("region", { name: "Cardiologie" });
+    expect(screen.queryByTestId("skeleton")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+  });
+
   it("shows the availability KPIs and each bed with its status and sex", async () => {
     renderPage();
 

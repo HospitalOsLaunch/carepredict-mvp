@@ -6,10 +6,11 @@ import { api } from "../api/client";
 import type { Pool, Site, Stay } from "../api/types";
 import { useAuth } from "../auth";
 import { LampLegend, LampStrip } from "../components/LampStrip";
-import { Empty, ErrorNote, Meter, Modal, PageHeader, Spinner } from "../components/common";
+import { Empty, ErrorNote, Meter, Modal, PageHeader } from "../components/common";
 import { fmtDate, fmtDay, fmtNum, fmtPct, isoDay, plural } from "../lib/format";
 import { unitLabel, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";
+import { LampStripSkeleton, Loading, PanelSkeleton, Skeleton, TableSkeleton } from "../components/skeletons";
 
 export function BedsPage() {
   const sites = useSites();
@@ -27,7 +28,11 @@ export function BedsPage() {
         title="Lits et sorties"
         lead="Les sorties attendues sur quatorze jours, calculées à partir des durées de séjour observées et des dates de sortie prévues par les équipes."
       />
-      {sites.isLoading && <Spinner />}
+      {sites.isLoading && (
+        <Loading label="Chargement des sites">
+          <PanelSkeleton lines={4} height="h-[300px]" />
+        </Loading>
+      )}
       {sites.error && <ErrorNote error={sites.error} />}
       {activeSites.length > 1 && (
         <div role="tablist" aria-label="Sites" className="mb-6 flex flex-wrap gap-2">
@@ -106,7 +111,12 @@ function SiteBeds({ site }: { site: Site }) {
                     </p>
                   </>
                 ) : (
-                  <Spinner label="Prévision" />
+                  <>
+                    <div className="mt-3">
+                      <LampStripSkeleton />
+                    </div>
+                    <Skeleton className="mt-2 h-[21px] w-3/4" />
+                  </>
                 )}
               </article>
             );
@@ -127,7 +137,11 @@ function SiteBeds({ site }: { site: Site }) {
           Renseigner une date de sortie prévue rend la prévision plus précise que la seule durée de séjour habituelle.
         </p>
         <div className="mt-4">
-          {stays.isLoading && <Spinner />}
+          {stays.isLoading && (
+            <Loading label="Chargement des patients présents">
+              <TableSkeleton />
+            </Loading>
+          )}
           {stays.error && <ErrorNote error={stays.error} />}
           {stays.data && stays.data.length === 0 && <Empty title="Aucun patient présent" />}
           {stays.data && stays.data.length > 0 && <StaysTable stays={stays.data} canWrite={canWrite} />}
