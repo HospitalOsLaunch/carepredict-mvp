@@ -8,6 +8,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from services.admissions_smr.api.deps import UNPROCESSABLE, Ctx, ReadCtx, WriteCtx
 from services.admissions_smr.domain.forecast import (
@@ -21,6 +22,7 @@ from services.admissions_smr.domain.forecast import (
 from services.admissions_smr.models import Site, Stay
 from services.admissions_smr.schemas import StayCreate, StayOut, StayUpdate
 from services.admissions_smr.service import get_site, plan_history, record_plan, stay_records
+from services.admissions_smr.tracing import span
 
 router = APIRouter(tags=["sejours"])
 
@@ -79,7 +81,10 @@ def list_stays(
     limit: int = Query(500, ge=1, le=5000),
 ) -> list[StayOut]:
     today = ctx.clock.today()
-    query = select(Stay).where(Stay.group_id == ctx.group.id)
+    # The plan changes of every stay in one query (stay_out counts them): not one per stay.
+    query = (
+        select(Stay).where(Stay.group_id == ctx.group.id).options(selectinload(Stay.plan_changes))
+    )
     if ctx.site_scope is not None:
         query = query.where(Stay.site_id == ctx.site_scope)
     if site_id is not None:
@@ -101,8 +106,10 @@ def list_stays(
     if scope == "presents":
         records = stay_records(ctx.session, ctx.group.id)
         plans = plan_history(ctx.session, ctx.group.id)
-        model = fit_hazard(records, today, plans=plans or None)
-        slip = estimate_plan_slip(records, plans, today).weights
+        with span("forecast.fit_hazard", stays=len(records)):
+            model = fit_hazard(records, today, plans=plans or None)
+        with span("forecast.plan_slip"):
+            slip = estimate_plan_slip(records, plans, today).weights
     return [stay_out(s, names.get(s.site_id, ""), today, model, slip) for s in rows]
 
 

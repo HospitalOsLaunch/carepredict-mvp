@@ -218,7 +218,9 @@ def claude_factory(fake: ScriptedClaude) -> Callable[[str, dict[str, Any]], Any]
 
 
 def enable_claude(policy: dict[str, Any]) -> None:
-    policy["engines"]["closed_best"].update(enabled=True, identifiable_data_allowed=True)
+    policy["engines"]["closed_best"].update(
+        enabled=True, identifiable_data_allowed=True, identifiable_basis="demonstration"
+    )
 
 
 def typed(day: str) -> str:
@@ -379,7 +381,9 @@ def test_open_weights_engine_reads_the_inbox(
 
     def only_open(p: dict[str, Any]) -> None:
         p["engines"]["playbook"]["enabled"] = False
-        p["engines"]["open_light"].update(enabled=True, identifiable_data_allowed=True)
+        p["engines"]["open_light"].update(
+            enabled=True, identifiable_data_allowed=True, identifiable_basis="demonstration"
+        )
 
     agent = make_agent(build, OPEN)
     agent.api.heartbeat("agent-test", "test", [])  # creates the agent state

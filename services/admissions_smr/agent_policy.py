@@ -29,6 +29,9 @@ TASK_KINDS = ("sync_inbox", "reply_portal", "sync_movements")
 ENGINE_NAMES = ("playbook", "open_light", "open_heavy", "closed_fast", "closed_best")
 
 EngineKind = Literal["playbook", "openai_compatible", "anthropic"]
+# What lets a model see screens with identifiable patient data: an HDS-certified hosting
+# (self-hosted models), a provider contract covering health data, or fictitious data only.
+IdentifiableBasis = Literal["hds", "contrat", "demonstration"]
 
 
 class EnginePolicy(BaseModel):
@@ -40,6 +43,8 @@ class EnginePolicy(BaseModel):
     model: str | None = None
     open_weights: bool = False
     identifiable_data_allowed: bool = False
+    identifiable_basis: IdentifiableBasis | None = None
+    identifiable_reference: str | None = Field(default=None, max_length=120)
     input_usd_per_mtok: float = Field(default=0.0, ge=0)
     output_usd_per_mtok: float = Field(default=0.0, ge=0)
     usd_per_hour: float = Field(default=0.0, ge=0)

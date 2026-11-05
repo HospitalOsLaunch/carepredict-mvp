@@ -4,9 +4,11 @@ from collections.abc import Callable
 from datetime import timedelta
 
 from fastapi.testclient import TestClient
+from sqlalchemy import event, select
+from sqlalchemy.orm import Session
 
-from services.admissions_smr.models import Group
-from services.admissions_smr.tests.conftest import TODAY
+from services.admissions_smr.models import Group, Stay, StayPlanChange
+from services.admissions_smr.tests.conftest import NOW, TODAY
 
 Login = Callable[[str], dict[str, str]]
 MakeGroup = Callable[[str], Group]
@@ -122,3 +124,46 @@ def test_workload_backtest_runs(
     make_group("g1")
     result = app_client.get("/api/metrics/backtest/workload", headers=login("dir@g1.fr")).json()
     assert result["points"] and result["coverage_80"] is not None
+
+
+def test_stay_list_costs_the_same_number_of_queries_for_10_or_50_patients(
+    app_client: TestClient, make_group: MakeGroup, login: Login, db: Session
+) -> None:
+    """The list loaded each stay's plan changes one by one (N+1: 216 queries for 210 stays)."""
+    group = make_group("g1")
+    h = login("coord@g1.fr")
+    engine = db.get_bind()
+    count = {"n": 0}
+
+    def tick(*_: object) -> None:
+        count["n"] += 1
+
+    def queries(path: str) -> tuple[int, list[dict[str, object]]]:
+        count["n"] = 0
+        event.listen(engine, "before_cursor_execute", tick)
+        try:
+            body = app_client.get(path, headers=h).json()
+        finally:
+            event.remove(engine, "before_cursor_execute", tick)
+        return count["n"], body
+
+    few, before = queries("/api/stays?scope=sortis")
+    site = db.scalars(select(Stay.site_id).where(Stay.group_id == group.id)).first()
+    for i in range(40):
+        stay = Stay(
+            group_id=group.id, site_id=site, mention="geriatrie", patient_ref=f"N-{i}",
+            admission_date=TODAY - timedelta(days=30), discharge_date=TODAY - timedelta(days=2),
+            created_at=NOW, updated_at=NOW,
+        )  # fmt: skip
+        stay.plan_changes.append(
+            StayPlanChange(recorded_on=TODAY - timedelta(days=9), planned_date=TODAY)
+        )
+        db.add(stay)
+    db.commit()
+    many, after = queries("/api/stays?scope=sortis")
+    assert len(after) == len(before) + 40
+    assert many == few, f"{few} queries for {len(before)} stays, {many} for {len(after)}"
+    assert (
+        sum(int(str(s["plan_changes"])) for s in after if str(s["patient_ref"]).startswith("N-"))
+        == 40
+    )

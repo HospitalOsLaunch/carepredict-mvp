@@ -5,9 +5,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { ReplayOut } from "../api/types_agent";
 import { useAuth } from "../auth";
 import { AgentPlayer, LiveDot, type PlayerView } from "../components/AgentPlayer";
-import { ErrorNote, Spinner } from "../components/common";
+import { ErrorNote } from "../components/common";
 import { FloatingWindow } from "../components/FloatingWindow";
 import { TASK_STATUS, useReplay } from "../lib/agent";
+import { Loading, Skeleton } from "../components/skeletons";
 const VIEW_KEY = "hospitalos.player.view";
 const VIEWS: Array<{ id: PlayerView; label: string; icon: typeof MonitorPlay }> = [
   { id: "video", label: "Vidéo", icon: MonitorPlay },
@@ -94,7 +95,10 @@ function Replay({ taskId, onClose }: { taskId: number; onClose: () => void }) {
     >
       <div ref={bodyRef} className="h-full p-2 sm:p-3">
         {replay.isLoading ? (
-          <Spinner label="Chargement du passage" />
+          <Loading label="Chargement du passage" className="flex h-full flex-col gap-2">
+            <Skeleton className="min-h-0 flex-1 rounded-2xl" />
+            <Skeleton className="h-11 shrink-0 rounded-2xl" />
+          </Loading>
         ) : status === 403 ? (
           <Restricted />
         ) : replay.error ? (

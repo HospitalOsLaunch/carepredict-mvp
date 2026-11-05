@@ -10,7 +10,8 @@ import { label, useVocabulary } from "../lib/queries";
 import { useForecast, useRequest, useRequestAction } from "../lib/requests";
 import { LampLegend, LampStrip } from "./LampStrip";
 import { AdmitModal, ReasonModal } from "./RequestForms";
-import { ErrorNote, Spinner, StatusChip } from "./common";
+import { ErrorNote, StatusChip } from "./common";
+import { LampStripSkeleton, Loading, PanelSkeleton } from "./skeletons";
 
 interface Pick {
   siteId: number;
@@ -21,7 +22,13 @@ const OPEN = ["nouvelle", "en_etude", "accord", "confirmee"];
 
 export function RequestDetailPanel({ id, onBack }: { id: number; onBack: () => void }) {
   const query = useRequest(id);
-  if (query.isLoading) return <Spinner />;
+  if (query.isLoading)
+    return (
+      <Loading label="Chargement de la demande" className="space-y-4">
+        <PanelSkeleton lines={4} height="h-[220px]" />
+        <PanelSkeleton lines={6} height="h-[320px]" />
+      </Loading>
+    );
   if (query.error) return <ErrorNote error={query.error} />;
   if (!query.data) return null;
   return <Detail key={query.data.id} request={query.data} onBack={onBack} />;
@@ -426,7 +433,7 @@ function SiteOption({
             <LampStrip days={days} onPick={onPick} highlight={selected ? pick?.day : null} />
           </div>
         ) : (
-          <Spinner label="Prévision" />
+          <LampStripSkeleton />
         )
       ) : (
         <ul className="mt-1 list-disc pl-5 text-[14px] text-ink-soft">

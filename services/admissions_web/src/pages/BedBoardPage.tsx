@@ -13,9 +13,10 @@ import {
 } from "../api/types_liscop";
 import { useAuth } from "../auth";
 import { Freshness, LiveNumber, useChanged } from "../components/live";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
-import { useBedAction, useBedBoard } from "../lib/liscop";
+import { Empty, ErrorNote, Modal, PageHeader } from "../components/common";
+import { useBedAction, useBedBoard, usePendingBeds, type BedActionInput } from "../lib/liscop";
 import { TensionChip } from "./RorPage";
+import { BedGridSkeleton, KpiRowSkeleton, Loading } from "../components/skeletons";
 
 const STATUS: Record<BedStatus, { label: string; tile: string; icon: LucideIcon }> = {
   libre: { label: "Libre", tile: "border-lagoon bg-lagoon-soft text-lagoon-dark", icon: Check },
@@ -92,6 +93,19 @@ export function BedBoardPage() {
   const [place, setPlace] = useRememberedPlace();
   const [statuses, setStatuses] = useState<Set<BedStatus>>(new Set());
   const [selected, setSelected] = useState<Bed | null>(null);
+  // The action lives here, not in the dialog: the dialog closes at once and the tile changes
+  // (règle 14) ; a refusal is said on the page, where the bed went back to its status.
+  const bedAction = useBedAction();
+  const pending = usePendingBeds();
+  const [failure, setFailure] = useState<string | null>(null);
+  const act = (input: BedActionInput, bed: Bed) => {
+    setFailure(null);
+    bedAction.mutate(input, {
+      onError: (error) =>
+        setFailure(`Lit ${bed.label} : ${error instanceof Error ? error.message : "l'action n'a pas été enregistrée"}. Il a repris son état.`)
+    });
+    setSelected(null);
+  };
 
   const sites = board.data?.sites ?? [];
   // A remembered site or unit that no longer exists falls back to everything.
@@ -105,7 +119,32 @@ export function BedBoardPage() {
     [visibleSites, poolId]
   );
 
-  if (board.isLoading) return <Spinner />;
+  const header = (
+    <PageHeader
+      title="Plan des lits"
+      lead={
+        <>
+          Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé.
+          <span className="hidden sm:inline">
+            {" "}
+            Les disponibilités par genre et en isolement suivent les définitions du ROR.
+          </span>
+        </>
+      }
+    />
+  );
+
+  if (board.isLoading)
+    return (
+      <>
+        {header}
+        <Loading label="Chargement du plan des lits">
+          <KpiRowSkeleton className="mb-6" />
+          <div className="panel mb-6 h-[138px]" aria-hidden />
+          <BedGridSkeleton />
+        </Loading>
+      </>
+    );
   if (board.error) return <ErrorNote error={board.error} />;
 
   const toggle = (status: BedStatus) =>
@@ -118,18 +157,7 @@ export function BedBoardPage() {
 
   return (
     <>
-      <PageHeader
-        title="Plan des lits"
-        lead={
-          <>
-            Chaque lit, tel que le reçoivent les mouvements patients : libre, occupé, à nettoyer, bloqué ou réservé.
-            <span className="hidden sm:inline">
-              {" "}
-              Les disponibilités par genre et en isolement suivent les définitions du ROR.
-            </span>
-          </>
-        }
-      />
+      {header}
 
       {sites.length === 0 ? (
         <Empty title="Aucun lit décrit pour l'instant">
@@ -211,6 +239,14 @@ export function BedBoardPage() {
             </div>
           </section>
 
+          {failure && (
+            <div role="alert" className="mb-4 flex items-start justify-between gap-3 rounded-xl bg-coral-soft px-4 py-3 text-[15px] text-coral-dark">
+              <span>{failure}</span>
+              <button type="button" className="touch-target shrink-0 font-bold underline" onClick={() => setFailure(null)}>
+                Compris
+              </button>
+            </div>
+          )}
           <div className="grid gap-6 2xl:grid-cols-2">
             {units.map((u) => (
               <UnitPanel
@@ -218,6 +254,7 @@ export function BedBoardPage() {
                 unit={u}
                 site={visibleSites.length > 1 ? visibleSites.find((s) => s.units.includes(u))?.site_name : undefined}
                 statuses={statuses}
+                pending={pending}
                 onSelect={canWrite ? setSelected : undefined}
               />
             ))}
@@ -225,7 +262,9 @@ export function BedBoardPage() {
           <Legend />
         </>
       )}
-      {selected && <BedDialog bed={selected} onClose={() => setSelected(null)} />}
+      {selected && (
+        <BedDialog bed={selected} saving={pending.has(selected.id)} onAction={(input) => act(input, selected)} onClose={() => setSelected(null)} />
+      )}
     </>
   );
 }
@@ -248,11 +287,14 @@ function UnitPanel({
   unit,
   site,
   statuses,
+  pending,
   onSelect
 }: {
   unit: BoardUnit;
   site?: string;
   statuses: Set<BedStatus>;
+  /** Beds whose action is being saved. */
+  pending: Set<number>;
   onSelect?: (bed: Bed) => void;
 }) {
   const a = unit.availability;
@@ -261,7 +303,9 @@ function UnitPanel({
     .filter((r) => r.beds.length > 0);
   const headingId = `unit-${unit.pool_id}`;
   return (
-    <section className="panel px-5 py-4" aria-labelledby={headingId}>
+    // An off-screen unit is not styled, laid out nor painted until it nears the screen (règle 23);
+    // its tiles stay in the page, for the browser's search and screen readers.
+    <section className="panel px-5 py-4 [contain-intrinsic-size:auto_415px] [content-visibility:auto]" aria-labelledby={headingId}>
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id={headingId}>{unit.label}</h2>
@@ -289,7 +333,13 @@ function UnitPanel({
               <p className="px-1 pb-1 text-[12px] font-bold text-ink-faint">Ch. {r.room}</p>
               <div className="flex gap-1 sm:gap-1.5">
                 {r.beds.map((b) => (
-                  <BedTile key={b.id} bed={b} shown={shortBedLabel(b.label, r.room, r.beds.length > 1)} onSelect={onSelect} />
+                  <BedTile
+                    key={b.id}
+                    bed={b}
+                    shown={shortBedLabel(b.label, r.room, r.beds.length > 1)}
+                    saving={pending.has(b.id)}
+                    onSelect={onSelect}
+                  />
                 ))}
               </div>
             </li>
@@ -300,7 +350,7 @@ function UnitPanel({
   );
 }
 
-function BedTile({ bed, shown, onSelect }: { bed: Bed; shown: string; onSelect?: (bed: Bed) => void }) {
+function BedTile({ bed, shown, saving, onSelect }: { bed: Bed; shown: string; saving: boolean; onSelect?: (bed: Bed) => void }) {
   const s = STATUS[bed.status];
   const Icon = s.icon;
   const changed = useChanged(bed.status);
@@ -317,12 +367,15 @@ function BedTile({ bed, shown, onSelect }: { bed: Bed; shown: string; onSelect?:
       <span className="num mt-1 block truncate text-[13px] font-bold" aria-hidden>
         {shown}
       </span>
-      <span className="sr-only">{bedTitle(bed)}</span>
+      <span className="sr-only">
+        {bedTitle(bed)}
+        {saving ? " · enregistrement en cours" : ""}
+      </span>
     </>
   );
-  const cls = `block min-h-[3.5rem] min-w-0 flex-1 rounded-lg border-2 px-1 py-1 text-left sm:px-1.5 ${s.tile} ${
+  const cls = `relative block min-h-[3.5rem] min-w-0 flex-1 rounded-lg border-2 px-1 py-1 text-left sm:px-1.5 ${s.tile} ${
     changed ? "live-changed" : ""
-  }`;
+  } ${saving ? "border-dashed" : ""}`;
   if (!onSelect)
     return (
       <span className={cls} title={bedTitle(bed)}>
@@ -330,8 +383,15 @@ function BedTile({ bed, shown, onSelect }: { bed: Bed; shown: string; onSelect?:
       </span>
     );
   return (
-    <button type="button" className={`${cls} transition-transform hover:-translate-y-0.5`} title={bedTitle(bed)} onClick={() => onSelect(bed)}>
+    <button
+      type="button"
+      className={`${cls} transition-transform hover:-translate-y-0.5`}
+      title={bedTitle(bed)}
+      aria-busy={saving || undefined}
+      onClick={() => onSelect(bed)}
+    >
       {content}
+      {saving && <span aria-hidden className="absolute right-1 top-1 h-1.5 w-1.5 animate-pulse rounded-full bg-current" />}
     </button>
   );
 }
@@ -372,16 +432,23 @@ const ACTIONS: Record<BedStatus, { action: BedAction; label: string; danger?: bo
   occupe: []
 };
 
-function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
-  const mutation = useBedAction();
+function BedDialog({
+  bed,
+  saving,
+  onAction,
+  onClose
+}: {
+  bed: Bed;
+  /** The last action on this bed is still being saved: no new one until it is. */
+  saving: boolean;
+  onAction: (input: BedActionInput) => void;
+  onClose: () => void;
+}) {
   const [reason, setReason] = useState<BedBlockReason | "">("");
   const [note, setNote] = useState("");
   const [blocking, setBlocking] = useState(false);
   const run = (action: BedAction) =>
-    mutation.mutate(
-      action === "bloquer" ? { id: bed.id, action, reason, note: note.trim() || undefined } : { id: bed.id, action },
-      { onSuccess: onClose }
-    );
+    onAction(action === "bloquer" ? { id: bed.id, action, reason, note: note.trim() || undefined } : { id: bed.id, action });
   const actions = ACTIONS[bed.status];
   return (
     <Modal title={`Lit ${bed.label}`} onClose={onClose}>
@@ -436,7 +503,7 @@ function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
             {BED_NOTE_MAX} caractères au plus, sans nom de patient. Affiché sur le plan des lits, pas dans le journal.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button type="submit" className="btn-danger" disabled={mutation.isPending || !reason}>
+            <button type="submit" className="btn-danger" disabled={saving || !reason}>
               Confirmer le blocage
             </button>
             <button type="button" className="btn-quiet" onClick={() => setBlocking(false)}>
@@ -451,7 +518,7 @@ function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
               key={a.action}
               type="button"
               className={a.danger ? "btn-danger" : "btn-primary"}
-              disabled={mutation.isPending}
+              disabled={saving}
               onClick={() => (a.action === "bloquer" ? setBlocking(true) : run(a.action))}
             >
               {a.label}
@@ -462,11 +529,7 @@ function BedDialog({ bed, onClose }: { bed: Bed; onClose: () => void }) {
           </button>
         </div>
       )}
-      {mutation.error && (
-        <div className="mt-4">
-          <ErrorNote error={mutation.error} />
-        </div>
-      )}
+      {saving && <p className="mt-3 text-[14px] text-ink-soft">La dernière action sur ce lit est en cours d'enregistrement.</p>}
     </Modal>
   );
 }

@@ -98,25 +98,36 @@ jobs:
         run: |
           docker build -f services/forecast_engine/Dockerfile -t hospitalos/forecast-engine:ci .
           docker run --rm hospitalos/forecast-engine:ci --help
-      - name: Smoke test (compose, migrations at start-up, health through nginx)
+      - name: Smoke test (compose, two API containers migrating together, health through nginx)
         env:
           ADM_DB_PASSWORD: ci-only-password
           ADM_SECRET_KEY: ci-only-secret-key-not-for-production-0123456789
           ADM_PSEUDONYM_SECRET: ci-only-pseudonym-secret-not-for-production-0123
           ADM_CONNECTOR_KEY: ci-only-connector-key-not-for-production-01234567
         run: |
-          docker compose -f docker-compose.admissions.yml up -d --build db api web
+          # Two containers of several processes each start together on an empty database:
+          # one migrates, the others wait on the lock (règle 28).
+          docker compose -f docker-compose.admissions.yml up -d --build --scale api=2 db api web
           curl --fail --retry 20 --retry-delay 3 --retry-all-errors http://127.0.0.1:8080/api/health
+          test "$(docker compose -f docker-compose.admissions.yml ps --status running -q api | wc -l)" -eq 2
+          for i in $(seq 1 20); do curl --fail -s -o /dev/null http://127.0.0.1:8080/api/health; done
           WEB=http://127.0.0.1:8080 sh tools/check_web_headers.sh
+          WEB=http://127.0.0.1:8080 sh tools/check_web_compression.sh
           docker compose -f docker-compose.admissions.yml logs api | tail -20
           docker compose -f docker-compose.admissions.yml down -v
-      - name: Demo end to end (computer use, then LISCOP HL7, forecast, ROR export, census)
+      - name: Demo end to end (computer use, then LISCOP HL7, forecast, ROR export, census), then a slow phone
         run: |
-          python -m pip install "httpx>=0.27,<1"
+          python -m pip install "httpx>=0.27,<1" "playwright>=1.48,<2"
+          python -m playwright install --with-deps chromium
           docker compose -f docker-compose.demo.yml up -d --build
           set +e
           python tools/demo_check.py --web http://127.0.0.1:8080 --portal http://127.0.0.1:8020 --timeout 300
           status=$?
+          # Règle 31 : the daily screens on a mid-range phone (CPU x4, slow 4G), within budgets.
+          if [ $status -eq 0 ]; then
+            python tools/slow_device_check.py --web http://127.0.0.1:8080
+            status=$?
+          fi
           if [ $status -ne 0 ]; then
             for svc in api agent agent-mco portal bedsoft forecast; do
               docker compose -f docker-compose.demo.yml logs --tail 60 $svc | sed "s/^/::error title=$svc::/" | tail -25

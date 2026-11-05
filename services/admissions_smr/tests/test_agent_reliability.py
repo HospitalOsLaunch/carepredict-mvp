@@ -224,7 +224,9 @@ def test_attempt_and_completion_reports_are_idempotent(queue: Queue, db: Session
 def test_daily_budget_is_reserved_between_workers_and_retries(queue: Queue) -> None:
     policy = queue.client.get("/api/agent/status", headers=queue.admin).json()["policy"]
     policy["daily_budget_usd"] = 0.5
-    policy["engines"]["closed_best"].update(enabled=True, identifiable_data_allowed=True)
+    policy["engines"]["closed_best"].update(
+        enabled=True, identifiable_data_allowed=True, identifiable_basis="demonstration"
+    )
     policy["routes"]["sync_inbox"].append("closed_best")
     assert (
         queue.client.put("/api/agent/policy", headers=queue.admin, json=policy).status_code == 200

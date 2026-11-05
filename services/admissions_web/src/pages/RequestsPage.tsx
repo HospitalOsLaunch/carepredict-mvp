@@ -6,16 +6,24 @@ import type { AdmissionRequest } from "../api/types";
 import { useAuth } from "../auth";
 import { RequestDetailPanel } from "../components/RequestDetail";
 import { NewRequestModal } from "../components/RequestForms";
-import { Empty, ErrorNote, Meter, PageHeader, Spinner, StatusChip } from "../components/common";
+import { Empty, ErrorNote, Meter, PageHeader, StatusChip } from "../components/common";
 import { fmtHours, fmtShort, plural } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { useRequests, type Scope } from "../lib/requests";
+import { useDebouncedValue } from "../lib/useDebouncedValue";
+import { ListSkeleton, Loading, Skeleton } from "../components/skeletons";
 
 const SCOPES: Array<{ value: Scope; label: string }> = [
   { value: "a_traiter", label: "À traiter" },
   { value: "ouvertes", label: "En cours" },
   { value: "fermees", label: "Clôturées" }
 ];
+
+/**
+ * A filter's width does not depend on its options (a long site name arriving after the page
+ * would push the search field to the next line): two per line on a phone, fixed above.
+ */
+const FILTER = "input mt-0 min-w-0 flex-1 basis-[9rem] sm:w-56 sm:flex-none";
 
 export function RequestsPage() {
   const { id } = useParams();
@@ -29,12 +37,31 @@ export function RequestsPage() {
   const [creating, setCreating] = useState(false);
   const vocab = useVocabulary();
   const sites = useSites();
-  const list = useRequests({ scope, site_id: siteId, mention, q: q.trim() || undefined });
+  // One request when the typing pauses, not one per letter.
+  const search = useDebouncedValue(q.trim());
+  const list = useRequests({ scope, site_id: siteId, mention, q: search || undefined });
   const pending = useRequests({ scope: "a_traiter" });
 
   const headline = useMemo(() => {
     const rows = pending.data ?? [];
-    if (!pending.data) return { title: "Demandes d'admission", lead: undefined };
+    // Until the count is known, the place of the sentence is kept (two lines each on a phone),
+    // so the list does not move down when it arrives.
+    if (!pending.data)
+      return {
+        title: (
+          <>
+            <span className="sr-only">Demandes d'admission</span>
+            <Skeleton as="span" className="h-8 w-[min(24rem,90%)]" />
+            <Skeleton as="span" className="mt-2 h-8 w-44 sm:hidden" />
+          </>
+        ),
+        lead: (
+          <>
+            <Skeleton as="span" className="mt-1 h-4 w-[min(36rem,95%)]" />
+            <Skeleton as="span" className="mt-3 h-4 w-2/3" />
+          </>
+        )
+      };
     if (rows.length === 0) {
       return {
         title: "Toutes les demandes ont une réponse",
@@ -81,7 +108,7 @@ export function RequestsPage() {
         <label className="sr-only" htmlFor="f-site">
           Site
         </label>
-        <select id="f-site" className="input mt-0 w-auto" value={siteId} onChange={(e) => setSiteId(e.target.value)}>
+        <select id="f-site" className={FILTER} value={siteId} onChange={(e) => setSiteId(e.target.value)}>
           <option value="">Tous les sites</option>
           {sites.data?.map((s) => (
             <option key={s.id} value={s.id}>
@@ -94,7 +121,7 @@ export function RequestsPage() {
         </label>
         <select
           id="f-mention"
-          className="input mt-0 w-auto"
+          className={FILTER}
           value={mention}
           onChange={(e) => setMention(e.target.value)}
         >
@@ -122,7 +149,11 @@ export function RequestsPage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(340px,440px)_1fr]">
         <section aria-label="Liste des demandes" className={`min-w-0 ${selected ? "hidden xl:block" : ""}`}>
-          {list.isLoading && <Spinner />}
+          {list.isLoading && (
+            <Loading label="Chargement des demandes">
+              <ListSkeleton />
+            </Loading>
+          )}
           {list.error && <ErrorNote error={list.error} />}
           {list.data && list.data.length === 0 && (
             <Empty title={scope === "a_traiter" ? "Rien à traiter" : "Aucune demande"}>

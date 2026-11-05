@@ -386,6 +386,9 @@ export interface EnginePolicy {
   model: string | null;
   open_weights: boolean;
   identifiable_data_allowed: boolean;
+  /** What allows it: HDS hosting, a contract covering health data, or demonstration data. */
+  identifiable_basis?: "hds" | "contrat" | "demonstration" | null;
+  identifiable_reference?: string | null;
   input_usd_per_mtok: number;
   output_usd_per_mtok: number;
   usd_per_hour: number;

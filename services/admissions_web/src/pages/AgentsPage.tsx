@@ -22,7 +22,8 @@ import { useAuth } from "../auth";
 import { Button } from "@/components/ui/button";
 import { LiveDot } from "../components/AgentPlayer";
 import { ConnectionForm, WEEKDAYS } from "../components/ConnectionForm";
-import { Empty, ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
+import { Empty, ErrorNote, Modal, PageHeader } from "../components/common";
+import { EnginesSection } from "./AgentEngines";
 import {
   KIND_LABEL,
   TASK_LABEL,
@@ -36,6 +37,7 @@ import {
   useWorkers
 } from "../lib/agent";
 import { fmtDateTime, fmtRelative } from "../lib/format";
+import { ListSkeleton, Loading, PanelSkeleton } from "../components/skeletons";
 
 const DONE: Record<ConnectionAction, (name: string) => string> = {
   start: (n) => `« ${n} » est démarrée : première relève au prochain signal du poste.`,
@@ -87,9 +89,9 @@ export function AgentsPage() {
         actions={
           isAdmin && (
             <>
-              <Link to="/parametres?rubrique=agent" className="btn-ghost">
-                <SlidersHorizontal className="h-4 w-4" aria-hidden /> Routage, moteurs et budgets
-              </Link>
+              <a href="#moteurs" className="btn-ghost">
+                <SlidersHorizontal className="h-4 w-4" aria-hidden /> Moteurs et routage
+              </a>
               {paused ? (
                 <Button variant="primary" disabled={groupPause.isPending} onClick={() => toggleGroup(false)}>
                   <Play className="h-4 w-4" aria-hidden /> Lever la pause générale
@@ -132,7 +134,9 @@ export function AgentsPage() {
         <p className="mt-1 text-[15px] text-ink-soft">Les machines de l'établissement qui exécutent l'agent.</p>
         <div className="mt-4">
           {workers.isLoading ? (
-            <Spinner />
+            <Loading label="Chargement des machines" className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <PanelSkeleton lines={5} height="h-[261px]" />
+            </Loading>
           ) : workers.error ? (
             <ErrorNote error={workers.error} />
           ) : list.length === 0 ? (
@@ -164,7 +168,9 @@ export function AgentsPage() {
         </div>
         <div className="mt-4 space-y-4">
           {connections.isLoading ? (
-            <Spinner />
+            <Loading label="Chargement des connexions">
+              <PanelSkeleton lines={5} height="h-[259px]" />
+            </Loading>
           ) : connections.error ? (
             <ErrorNote error={connections.error} />
           ) : (connections.data ?? []).length === 0 ? (
@@ -189,6 +195,9 @@ export function AgentsPage() {
           )}
         </div>
       </section>
+
+      {/* Engines and routing: the administrator sets them here, next to the workers and connections. */}
+      <EnginesSection status={status.data} workers={list} loading={status.isLoading || workers.isLoading} canEdit={isAdmin} />
 
       {editing && (
         <ConnectionForm
@@ -475,7 +484,12 @@ function Fact({ label, title, alert = false, children }: { label: string; title?
 function Runs({ id, canAct, canWatch }: { id: number; canAct: boolean; canWatch: boolean }) {
   const runs = useConnectionRuns(id, true);
   const act = useTaskAction();
-  if (runs.isLoading) return <Spinner />;
+  if (runs.isLoading)
+    return (
+      <Loading label="Chargement des passages">
+        <ListSkeleton rows={3} rowHeight="h-14" />
+      </Loading>
+    );
   if (runs.error) return <ErrorNote error={runs.error} />;
   if (!runs.data?.length) return <p className="text-[14px] text-ink-soft">Aucun passage pour l'instant.</p>;
   return (

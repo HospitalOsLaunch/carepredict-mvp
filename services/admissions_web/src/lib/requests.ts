@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "../api/client";
 import type { AdmissionRequest, Forecast, RequestDetail } from "../api/types";
@@ -13,7 +13,9 @@ export function useRequests(params: { scope: Scope; site_id?: string; mention?: 
   return useQuery({
     queryKey: ["requests", params],
     queryFn: () => api<AdmissionRequest[]>(`/requests?${search.toString()}`),
-    refetchInterval: 60_000
+    refetchInterval: 60_000,
+    // While a new search or filter loads, the list keeps showing the previous results.
+    placeholderData: keepPreviousData
   });
 }
 

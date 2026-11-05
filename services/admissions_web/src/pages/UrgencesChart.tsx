@@ -1,6 +1,7 @@
 import { Area, Bar, CartesianGrid, Cell, ComposedChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { ErrorNote, Spinner } from "../components/common";
+import { ErrorNote } from "../components/common";
+import { Loading, Skeleton } from "../components/skeletons";
 import { fmtNum, fmtShort } from "../lib/format";
 import { useBoarding } from "../lib/liscop";
 
@@ -19,7 +20,9 @@ export function BoardingChart({ siteId }: { siteId: number }) {
         </p>
       </div>
       {series.isLoading ? (
-        <Spinner />
+        <Loading label="Chargement de la courbe">
+          <Skeleton className="mt-3 h-72 rounded-2xl" />
+        </Loading>
       ) : series.error ? (
         <ErrorNote error={series.error} />
       ) : (

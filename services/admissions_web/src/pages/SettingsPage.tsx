@@ -10,8 +10,9 @@ import { ErrorNote, Modal, PageHeader, Spinner } from "../components/common";
 import { fmtDate, fmtDateTime, fmtPct } from "../lib/format";
 import { label, useSites, useVocabulary } from "../lib/queries";
 import { AgentTab } from "./AgentSettings";
+import { VitalsTab } from "./VitalsSettings";
 
-type Tab = "sites" | "utilisateurs" | "contrat" | "priorite" | "charge" | "agent" | "audit";
+type Tab = "sites" | "utilisateurs" | "contrat" | "priorite" | "charge" | "agent" | "vitesse" | "audit";
 
 const TABS: Array<{ value: Tab; label: string }> = [
   { value: "sites", label: "Sites et lits" },
@@ -20,6 +21,7 @@ const TABS: Array<{ value: Tab; label: string }> = [
   { value: "priorite", label: "Priorisation" },
   { value: "charge", label: "Charge en soins" },
   { value: "agent", label: "Agent et routage" },
+  { value: "vitesse", label: "Vitesse ressentie" },
   { value: "audit", label: "Journal d'audit" }
 ];
 
@@ -50,6 +52,7 @@ export function SettingsPage() {
       {tab === "priorite" && <WeightsTab />}
       {tab === "charge" && <CareMinutesTab />}
       {tab === "agent" && <AgentTab />}
+      {tab === "vitesse" && <VitalsTab />}
       {tab === "audit" && <AuditTab />}
     </>
   );

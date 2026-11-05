@@ -26,7 +26,7 @@ import {
   TriangleAlert,
   type LucideIcon
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 
 import type { MaskReason, ReplayOut, ReplayStep, StepKind, StepMask, StepOutcome, StepRect } from "../api/types_agent";
 import { engineLabel, useFrames, type FrameState } from "../lib/agent";
@@ -555,6 +555,19 @@ function Scrubber({
 }) {
   const max = Math.max(0, steps.length - 1);
   const at = (k: number) => (max ? (k / max) * 100 : 0);
+  // The marks of the steps do not move with the playhead: built once per list of steps.
+  const marks = useMemo(
+    () =>
+      steps.map((s, k) => (
+        <span
+          key={s.id}
+          data-outcome={s.outcome}
+          className={`absolute top-1/2 h-3.5 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full ${OUTCOME[s.outcome]?.mark ?? "bg-ink-faint"}`}
+          style={{ left: `${max ? (k / max) * 100 : 0}%` }}
+        />
+      )),
+    [steps, max]
+  );
   return (
     <div className="flex items-center gap-3">
       <span className="num w-10 shrink-0 text-right text-[13px] text-ink-soft">{fmtClock(elapsed)}</span>
@@ -562,14 +575,7 @@ function Scrubber({
         <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-sky-deep" aria-hidden />
         <div className="absolute left-0 top-1/2 h-2 -translate-y-1/2 rounded-full bg-violet/30" style={{ width: `${at(index)}%` }} aria-hidden />
         <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2" aria-hidden data-testid="markers">
-          {steps.map((s, k) => (
-            <span
-              key={s.id}
-              data-outcome={s.outcome}
-              className={`absolute top-1/2 h-3.5 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full ${OUTCOME[s.outcome]?.mark ?? "bg-ink-faint"}`}
-              style={{ left: `${at(k)}%` }}
-            />
-          ))}
+          {marks}
         </div>
         <input
           type="range"
@@ -623,6 +629,73 @@ export function phases(steps: ReplayStep[]): Array<{ name: string; start: number
   return out;
 }
 
+/**
+ * One line of the transcript. Memoised: when the player moves on, only the two lines whose
+ * state changes are drawn again, not the 2,000 of a long passage (règle 23 de l'audit). An
+ * off-screen line is not laid out nor painted until it is scrolled near.
+ */
+const StepItem = memo(function StepItem({
+  step: s,
+  k,
+  state,
+  lastOfGroup,
+  fill,
+  onSeek
+}: {
+  step: ReplayStep;
+  k: number;
+  state: "done" | "current" | "next";
+  lastOfGroup: boolean;
+  fill: boolean;
+  onSeek: (k: number) => void;
+}) {
+  const current = state === "current";
+  const upcoming = state === "next";
+  const engine = engineLabel(s.engine);
+  const out = OUTCOME[s.outcome] ?? OUTCOME.info;
+  return (
+    <li aria-current={current ? "step" : undefined} className={`[contain-intrinsic-size:auto_64px] [content-visibility:auto] ${current ? "bg-violet-soft" : ""}`}>
+      <button
+        type="button"
+        onClick={() => onSeek(k)}
+        className={`relative flex w-full items-start gap-3 py-2 pl-4 pr-4 text-left transition-colors ${current ? "" : "hover:bg-sky"} ${
+          upcoming ? "opacity-60" : ""
+        }`}
+      >
+        {current && <span className="absolute inset-y-0 left-0 w-1 bg-violet" aria-hidden />}
+        {/* The thread of the flow, from one step to the next. */}
+        {!lastOfGroup && <span aria-hidden className="absolute bottom-0 left-[1.875rem] top-9 w-px bg-line" />}
+        <span
+          className={`relative mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg ${
+            s.outcome === "fail" ? "bg-coral-soft text-coral-dark" : current ? "bg-violet text-white" : upcoming ? "bg-sky text-ink-faint" : "bg-sky text-violet-dark"
+          }`}
+        >
+          <StepIcon kind={s.kind} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-bold leading-snug">{s.label}</span>
+          <span className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px]">
+            <span className={`chip px-2 py-0 text-[12px] ${ENGINE_CHIP[engine] ?? "bg-sky-deep text-ink-soft"}`}>{engine}</span>
+            {s.duration_ms !== null && <span className="num text-ink-faint">{fmtDuration(s.duration_ms)}</span>}
+            <span className={`chip px-2 py-0 text-[12px] ${out.chip}`}>{out.text}</span>
+            {fill && s.target && <span className="max-w-full truncate font-mono text-[12px] text-ink-faint">{readableTarget(s.target)}</span>}
+            {fill && s.has_frame && <span className="text-ink-faint">· image</span>}
+          </span>
+          {s.transmitted && (
+            <span className="mt-1.5 flex items-start gap-1.5 rounded-lg bg-lagoon-soft px-2 py-1 text-[13px] text-lagoon-dark">
+              <Send className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>
+                {transmittedText(s.transmitted)}
+                {s.transmitted.fields.length > 0 && <span className="block text-[12px] opacity-80">champs : {s.transmitted.fields.join(", ")}</span>}
+              </span>
+            </span>
+          )}
+        </span>
+      </button>
+    </li>
+  );
+});
+
 function Transcript({
   steps,
   index,
@@ -653,8 +726,12 @@ function Transcript({
     }
   }, [index]);
 
-  const groups = phases(steps);
+  const groups = useMemo(() => phases(steps), [steps]);
   const doneCount = steps.length ? index + 1 : 0;
+  // A seek that never changes, so the memoised lines are not all drawn again on each step.
+  const seekRef = useRef(onSeek);
+  seekRef.current = onSeek;
+  const seekStep = useCallback((k: number) => seekRef.current(k), []);
 
   return (
     <div className={`panel flex min-w-0 flex-col overflow-hidden ${fill ? "min-h-0 flex-1" : contained ? "h-full lg:absolute lg:inset-0" : "lg:self-stretch"}`}>
@@ -694,51 +771,16 @@ function Transcript({
             </li>,
             ...steps.slice(g.start, g.end + 1).map((s, offset) => {
               const k = g.start + offset;
-              const current = k === index;
-              const upcoming = k > index;
-              const engine = engineLabel(s.engine);
-              const out = OUTCOME[s.outcome] ?? OUTCOME.info;
-              const lastOfGroup = k === g.end;
               return (
-                <li key={s.id} aria-current={current ? "step" : undefined} className={current ? "bg-violet-soft" : ""}>
-                  <button
-                    type="button"
-                    onClick={() => onSeek(k)}
-                    className={`relative flex w-full items-start gap-3 py-2 pl-4 pr-4 text-left transition-colors ${current ? "" : "hover:bg-sky"} ${
-                      upcoming ? "opacity-60" : ""
-                    }`}
-                  >
-                    {current && <span className="absolute inset-y-0 left-0 w-1 bg-violet" aria-hidden />}
-                    {/* The thread of the flow, from one step to the next. */}
-                    {!lastOfGroup && <span aria-hidden className="absolute bottom-0 left-[1.875rem] top-9 w-px bg-line" />}
-                    <span
-                      className={`relative mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg ${
-                        s.outcome === "fail" ? "bg-coral-soft text-coral-dark" : current ? "bg-violet text-white" : upcoming ? "bg-sky text-ink-faint" : "bg-sky text-violet-dark"
-                      }`}
-                    >
-                      <StepIcon kind={s.kind} />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] font-bold leading-snug">{s.label}</span>
-                      <span className="mt-1 flex flex-wrap items-center gap-1.5 text-[12px]">
-                        <span className={`chip px-2 py-0 text-[12px] ${ENGINE_CHIP[engine] ?? "bg-sky-deep text-ink-soft"}`}>{engine}</span>
-                        {s.duration_ms !== null && <span className="num text-ink-faint">{fmtDuration(s.duration_ms)}</span>}
-                        <span className={`chip px-2 py-0 text-[12px] ${out.chip}`}>{out.text}</span>
-                        {fill && s.target && <span className="max-w-full truncate font-mono text-[12px] text-ink-faint">{readableTarget(s.target)}</span>}
-                        {fill && s.has_frame && <span className="text-ink-faint">· image</span>}
-                      </span>
-                      {s.transmitted && (
-                        <span className="mt-1.5 flex items-start gap-1.5 rounded-lg bg-lagoon-soft px-2 py-1 text-[13px] text-lagoon-dark">
-                          <Send className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
-                          <span>
-                            {transmittedText(s.transmitted)}
-                            {s.transmitted.fields.length > 0 && <span className="block text-[12px] opacity-80">champs : {s.transmitted.fields.join(", ")}</span>}
-                          </span>
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                </li>
+                <StepItem
+                  key={s.id}
+                  step={s}
+                  k={k}
+                  state={k === index ? "current" : k > index ? "next" : "done"}
+                  lastOfGroup={k === g.end}
+                  fill={fill}
+                  onSeek={seekStep}
+                />
               );
             })
           ];

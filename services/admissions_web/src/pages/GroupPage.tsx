@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 
 import type { PoolForecast, Site } from "../api/types";
 import { LampLegend, LampStrip, type LampDay } from "../components/LampStrip";
-import { ErrorNote, Meter, PageHeader, Spinner } from "../components/common";
+import { ErrorNote, Meter, PageHeader } from "../components/common";
 import { fmtHours, fmtNum, fmtPct, plural } from "../lib/format";
 import { unitLabel, useDashboard, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";
+import { HeaderSkeleton, LampStripSkeleton, Loading, PanelSkeleton, Skeleton } from "../components/skeletons";
 
 /** Site-level lamps: a bed is free somewhere on the site if any mention has one. */
 function siteDays(pools: PoolForecast[]): LampDay[] {
@@ -28,7 +29,19 @@ export function GroupPage() {
   const vocab = useVocabulary();
   const d = dashboard.data;
 
-  if (dashboard.isLoading) return <Spinner />;
+  if (dashboard.isLoading)
+    return (
+      <Loading label="Chargement de la vue groupe">
+        <HeaderSkeleton />
+        <div className="mb-3 flex justify-end">
+          <Skeleton className="h-5 w-64" />
+        </div>
+        <div className="space-y-4">
+          <PanelSkeleton lines={2} height="h-[167px]" />
+          <PanelSkeleton lines={2} height="h-[167px]" />
+        </div>
+      </Loading>
+    );
   if (dashboard.error) return <ErrorNote error={dashboard.error} />;
   if (!d) return null;
 
@@ -96,7 +109,7 @@ export function GroupPage() {
                 </dl>
               </div>
               <div className="min-w-0 overflow-x-auto lg:self-center">
-                {pools.length ? <LampStrip days={siteDays(pools)} animate /> : <Spinner label="Prévision" />}
+                {pools.length ? <LampStrip days={siteDays(pools)} animate /> : <LampStripSkeleton />}
                 <Link to="/lits" className="mt-2 inline-block text-[14px] font-bold text-violet hover:underline">
                   Voir les lits du site
                 </Link>

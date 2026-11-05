@@ -13,29 +13,56 @@ import {
   Siren,
   TrendingUp
 } from "lucide-react";
-import { lazy, Suspense } from "react";
-import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { Suspense, useEffect } from "react";
+import { Navigate, NavLink, Route, Routes, useLocation } from "react-router-dom";
 
 import { useAuth } from "./auth";
 import { LegacyAgentsRedirect } from "./components/LegacyAgentsRedirect";
 import { Mark } from "./components/Mark";
 import { MobileNav, primaryFor, type NavItem } from "./components/MobileNav";
+import { PageBoundary } from "./components/PageBoundary";
+import { PageSkeleton } from "./components/skeletons";
 import { Spinner } from "./components/common";
-import { AgentReplayPage } from "./pages/AgentReplayPage";
-import { BedBoardPage } from "./pages/BedBoardPage";
-import { BedsPage } from "./pages/BedsPage";
-import { AgentsPage } from "./pages/AgentsPage";
-import { GroupPage } from "./pages/GroupPage";
-import { ImportsPage } from "./pages/ImportsPage";
+import { lazyPage, whenIdle, type LazyPage } from "./lib/lazyPage";
 import { LoginPage } from "./pages/LoginPage";
-import { PrevisionPage } from "./pages/PrevisionPage";
-import { RequestsPage } from "./pages/RequestsPage";
-import { RorPage } from "./pages/RorPage";
-import { SettingsPage } from "./pages/SettingsPage";
-import { UrgencesPage } from "./pages/UrgencesPage";
 
-const ChargePage = lazy(() => import("./pages/ChargePage").then((m) => ({ default: m.ChargePage })));
-const MetricsPage = lazy(() => import("./pages/MetricsPage").then((m) => ({ default: m.MetricsPage })));
+// Each screen is its own file, downloaded when it is first opened: the first screen after
+// login no longer waits for the code of the eleven others (règle 22 de l'audit).
+const RequestsPage = lazyPage(() => import("./pages/RequestsPage"), "RequestsPage");
+const BedsPage = lazyPage(() => import("./pages/BedsPage"), "BedsPage");
+const BedBoardPage = lazyPage(() => import("./pages/BedBoardPage"), "BedBoardPage");
+const UrgencesPage = lazyPage(() => import("./pages/UrgencesPage"), "UrgencesPage");
+const PrevisionPage = lazyPage(() => import("./pages/PrevisionPage"), "PrevisionPage");
+const ChargePage = lazyPage(() => import("./pages/ChargePage"), "ChargePage");
+const GroupPage = lazyPage(() => import("./pages/GroupPage"), "GroupPage");
+const MetricsPage = lazyPage(() => import("./pages/MetricsPage"), "MetricsPage");
+const RorPage = lazyPage(() => import("./pages/RorPage"), "RorPage");
+const AgentsPage = lazyPage(() => import("./pages/AgentsPage"), "AgentsPage");
+const AgentReplayPage = lazyPage(() => import("./pages/AgentReplayPage"), "AgentReplayPage");
+const ImportsPage = lazyPage(() => import("./pages/ImportsPage"), "ImportsPage");
+const SettingsPage = lazyPage(() => import("./pages/SettingsPage"), "SettingsPage");
+
+/** The file of each menu entry, fetched ahead on hover or focus of its link. */
+const PAGE_OF: Record<string, LazyPage> = {
+  "/demandes": RequestsPage,
+  "/lits": BedsPage,
+  "/plan-des-lits": BedBoardPage,
+  "/urgences": UrgencesPage,
+  "/prevision": PrevisionPage,
+  "/charge": ChargePage,
+  "/groupe": GroupPage,
+  "/indicateurs": MetricsPage,
+  "/ror": RorPage,
+  "/agents": AgentsPage,
+  "/imports": ImportsPage,
+  "/parametres": SettingsPage
+};
+
+function preloadPage(to: string) {
+  void PAGE_OF[to]?.preload().catch(() => undefined);
+  // From Agents, the next step is watching a passage: its player comes along.
+  if (to === "/agents") void AgentReplayPage.preload().catch(() => undefined);
+}
 
 const NAV: NavItem[] = [
   { to: "/demandes", label: "Demandes", icon: Inbox },
@@ -54,6 +81,13 @@ const NAV: NavItem[] = [
 
 export function App() {
   const { user, ready, groupName, logout, isAdmin } = useAuth();
+  const { pathname } = useLocation();
+  const primary = primaryFor(user?.role);
+  // Once the first screen is shown, the persona's other daily screens are fetched in the background.
+  useEffect(() => {
+    if (!user || user.role === "ingestion") return;
+    return whenIdle(() => primary.forEach(preloadPage));
+  }, [user, primary]);
   if (!ready) {
     return (
       <div className="grid min-h-screen place-items-center">
@@ -100,6 +134,8 @@ export function App() {
               <li key={to}>
                 <NavLink
                   to={to}
+                  onPointerEnter={() => preloadPage(to)}
+                  onFocus={() => preloadPage(to)}
                   className={({ isActive }) =>
                     `flex items-center gap-3 whitespace-nowrap rounded-xl px-3 py-2.5 text-[15px] font-bold transition-colors ${
                       isActive ? "bg-violet text-white" : "text-ink-soft hover:bg-sky hover:text-ink"
@@ -121,43 +157,41 @@ export function App() {
           </button>
         </div>
       </aside>
-      <MobileNav items={items} primary={primaryFor(user.role)} />
+      <MobileNav items={items} primary={primary} onIntent={preloadPage} />
       <main id="contenu" className="min-w-0 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:py-9">
-        <Routes>
-          <Route path="/" element={<Navigate to="/demandes" replace />} />
-          <Route path="/demandes" element={<RequestsPage />} />
-          <Route path="/demandes/:id" element={<RequestsPage />} />
-          <Route path="/lits" element={<BedsPage />} />
-          <Route path="/plan-des-lits" element={<BedBoardPage />} />
-          <Route path="/urgences" element={<UrgencesPage />} />
-          <Route path="/prevision" element={<PrevisionPage />} />
-          <Route
-            path="/charge"
-            element={
-              <Suspense fallback={<Spinner />}>
-                <ChargePage />
-              </Suspense>
-            }
-          />
-          <Route path="/groupe" element={<GroupPage />} />
-          <Route
-            path="/indicateurs"
-            element={
-              <Suspense fallback={<Spinner />}>
-                <MetricsPage />
-              </Suspense>
-            }
-          />
-          <Route path="/ror" element={<RorPage />} />
-          {/* The player opens in a window over the Agents screen; its address can be shared. */}
-          <Route path="/agents" element={<AgentsPage />}>
-            <Route path="passages/:taskId" element={<AgentReplayPage />} />
-          </Route>
-          <Route path="/computer-use/*" element={<LegacyAgentsRedirect />} />
-          {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
-          {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
-          <Route path="*" element={<Navigate to="/demandes" replace />} />
-        </Routes>
+        <PageBoundary resetKey={pathname}>
+          <Suspense fallback={<PageSkeleton />}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/demandes" replace />} />
+              <Route path="/demandes" element={<RequestsPage />} />
+              <Route path="/demandes/:id" element={<RequestsPage />} />
+              <Route path="/lits" element={<BedsPage />} />
+              <Route path="/plan-des-lits" element={<BedBoardPage />} />
+              <Route path="/urgences" element={<UrgencesPage />} />
+              <Route path="/prevision" element={<PrevisionPage />} />
+              <Route path="/charge" element={<ChargePage />} />
+              <Route path="/groupe" element={<GroupPage />} />
+              <Route path="/indicateurs" element={<MetricsPage />} />
+              <Route path="/ror" element={<RorPage />} />
+              {/* The player opens in a window over the Agents screen; its address can be shared.
+                  Its own Suspense keeps the Agents screen in place while the player file arrives. */}
+              <Route path="/agents" element={<AgentsPage />}>
+                <Route
+                  path="passages/:taskId"
+                  element={
+                    <Suspense fallback={null}>
+                      <AgentReplayPage />
+                    </Suspense>
+                  }
+                />
+              </Route>
+              <Route path="/computer-use/*" element={<LegacyAgentsRedirect />} />
+              {isAdmin && <Route path="/imports" element={<ImportsPage />} />}
+              {isAdmin && <Route path="/parametres" element={<SettingsPage />} />}
+              <Route path="*" element={<Navigate to="/demandes" replace />} />
+            </Routes>
+          </Suspense>
+        </PageBoundary>
       </main>
     </div>
   );

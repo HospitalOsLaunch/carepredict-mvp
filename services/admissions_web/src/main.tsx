@@ -10,10 +10,14 @@ import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./App";
 import { AuthProvider } from "./auth";
+import { startWebVitals } from "./lib/webVitals";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 20_000, refetchOnWindowFocus: true, retry: 1 } }
 });
+
+// Real visits measure how fast the application feels, for the group only (règle 30).
+if (import.meta.env.PROD) void startWebVitals();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -50,6 +50,7 @@ from services.admissions_smr.schemas import (
     SuggestionOut,
 )
 from services.admissions_smr.task_state import decision_changed
+from services.admissions_smr.tracing import span
 from services.admissions_smr.vocab import ALLOWED_TRANSITIONS, REQUEST_STATUSES
 
 HORIZON_DAYS = 14
@@ -92,20 +93,30 @@ def get_site(ctx: Ctx, site_id: int) -> Site:
 def stay_records(
     session: Session, group_id: int, site_ids: list[int] | None = None
 ) -> list[StayRecord]:
-    query = select(Stay).where(Stay.group_id == group_id)
+    # The seven columns the forecast needs, not whole Stay objects: the group's every stay is
+    # read on each forecast, and building ORM objects cost 320 ms for 11 000 stays (traces).
+    query = select(
+        Stay.id,
+        Stay.site_id,
+        Stay.mention,
+        Stay.admission_date,
+        Stay.discharge_date,
+        Stay.planned_discharge_date,
+        Stay.care_level,
+    ).where(Stay.group_id == group_id)
     if site_ids is not None:
         query = query.where(Stay.site_id.in_(site_ids))
     return [
         StayRecord(
-            stay_id=s.id,
-            site_id=s.site_id,
-            mention=s.mention,
-            admission_date=s.admission_date,
-            discharge_date=s.discharge_date,
-            planned_discharge_date=s.planned_discharge_date,
-            care_level=s.care_level,
+            stay_id=row.id,
+            site_id=row.site_id,
+            mention=row.mention,
+            admission_date=row.admission_date,
+            discharge_date=row.discharge_date,
+            planned_discharge_date=row.planned_discharge_date,
+            care_level=row.care_level,
         )
-        for s in session.scalars(query)
+        for row in session.execute(query)
     ]
 
 
@@ -195,9 +206,13 @@ def build_forecast(
     session: Session, group_id: int, sites: list[Site], as_of: date, horizon: int = HORIZON_DAYS
 ) -> GroupForecast:
     # Hazards are fitted on the whole group: more data, and mentions behave alike across sites.
-    records = stay_records(session, group_id)
-    plans = plan_history(session, group_id)
-    model = fit_hazard(records, as_of, plans=plans or None)
+    # Each step is named in the traces (tracing.span, off by default): règle 18.
+    with span("forecast.read_stays") as step:
+        records = stay_records(session, group_id)
+        plans = plan_history(session, group_id)
+        step.set_attribute("hospitalos.stays", len(records))
+    with span("forecast.fit_hazard", stays=len(records)):
+        model = fit_hazard(records, as_of, plans=plans or None)
     current = [
         r
         for r in records
@@ -207,20 +222,22 @@ def build_forecast(
     for r in current:
         by_pool[(r.site_id, r.mention)].append(r)
     reserved = reservations(session, group_id)
-    slip = estimate_plan_slip(records, plans, as_of)
+    with span("forecast.plan_slip"):
+        slip = estimate_plan_slip(records, plans, as_of)
     pools: dict[tuple[int, str], PoolForecast] = {}
-    for site in sites:
-        for pool in site.pools:
-            key = (site.id, pool.mention)
-            pools[key] = forecast_pool(
-                by_pool.get(key, []),
-                pool.beds_open,
-                as_of,
-                horizon,
-                model,
-                reservations=reserved.get(key, {}),
-                plan_slip=slip.weights,
-            )
+    with span("forecast.pools", pools=sum(len(site.pools) for site in sites), horizon=horizon):
+        for site in sites:
+            for pool in site.pools:
+                key = (site.id, pool.mention)
+                pools[key] = forecast_pool(
+                    by_pool.get(key, []),
+                    pool.beds_open,
+                    as_of,
+                    horizon,
+                    model,
+                    reservations=reserved.get(key, {}),
+                    plan_slip=slip.weights,
+                )
     low = sorted(m for m, n in model.n_completed.items() if n < DEFAULT_MIN_AT_RISK)
     return GroupForecast(as_of, model, pools, records, low, slip, dict(by_pool))
 

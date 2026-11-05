@@ -13,9 +13,12 @@ from alembic import command
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic.script import ScriptDirectory
-from sqlalchemy import Engine
+from sqlalchemy import Engine, text
 
 MIGRATIONS = os.path.join(os.path.dirname(__file__), "migrations")
+# Several API processes start together (règle 28): on PostgreSQL, one migrates while the
+# others wait on this lock, then find the schema current. Any constant, the same everywhere.
+MIGRATION_LOCK = 7_261_600_128
 
 
 def alembic_config(database_url: str) -> Config:
@@ -28,6 +31,9 @@ def alembic_config(database_url: str) -> Config:
 def upgrade(engine: Engine) -> None:
     config = alembic_config(str(engine.url.render_as_string(hide_password=False)))
     with engine.begin() as connection:
+        if connection.dialect.name == "postgresql":
+            # Held until this transaction ends, migration included.
+            connection.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": MIGRATION_LOCK})
         config.attributes["connection"] = connection
         command.upgrade(config, "head")
 

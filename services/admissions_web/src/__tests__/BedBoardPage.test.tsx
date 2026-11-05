@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { Availability, Bed, BedBoard } from "../api/types_liscop";
@@ -94,6 +94,24 @@ beforeEach(() => {
 });
 
 describe("BedBoardPage", () => {
+  it("keeps its title while the beds load, shows their shape, and announces the wait once", async () => {
+    let arrive: (b: BedBoard) => void = () => undefined;
+    vi.mocked(api).mockImplementation(((path: string) =>
+      path === "/beds" ? new Promise<BedBoard>((resolve) => (arrive = resolve)) : Promise.resolve({})) as never);
+    renderPage();
+
+    expect(screen.getByRole("heading", { level: 1, name: "Plan des lits" })).toBeInTheDocument();
+    const wait = screen.getByRole("status");
+    expect(wait).toHaveAttribute("aria-busy", "true");
+    expect(wait).toHaveTextContent("Chargement du plan des lits…");
+    expect(screen.getAllByRole("status")).toHaveLength(1);
+
+    arrive(board);
+    await screen.findByRole("region", { name: "Cardiologie" });
+    expect(screen.queryByTestId("skeleton")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+  });
+
   it("shows the availability KPIs and each bed with its status and sex", async () => {
     renderPage();
 
@@ -177,6 +195,45 @@ describe("BedBoardPage", () => {
       method: "PATCH",
       json: { action: "bloquer", reason: "equipement", note: "Fuite d'eau" }
     });
+  });
+
+  it("shows a cleaned bed as free at once, before the API answers, then confirms it", async () => {
+    let answer: (value: unknown) => void = () => undefined;
+    vi.mocked(api).mockImplementation(((path: string, init?: { method?: string }) =>
+      init?.method === "PATCH"
+        ? new Promise((resolve) => (answer = resolve))
+        : Promise.resolve(path === "/beds" ? board : {})) as never);
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: /Lit 2303 · À nettoyer/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Marquer nettoyé" }));
+
+    // The dialog is gone and the tile already says « Libre », marked as being saved.
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    const tile = screen.getByRole("button", { name: /Lit 2303 · Libre.*enregistrement en cours/ });
+    expect(tile).toHaveAttribute("aria-busy", "true");
+    const boardFetches = () => vi.mocked(api).mock.calls.filter(([path]) => path === "/beds").length;
+    const before = boardFetches();
+
+    answer({});
+    await waitFor(() => expect(boardFetches()).toBeGreaterThan(before)); // the counts follow the API
+    await waitFor(() => expect(screen.getByRole("button", { name: /Lit 2303/ })).not.toHaveAttribute("aria-busy"));
+  });
+
+  it("puts the bed back and says why when the API refuses the action", async () => {
+    vi.mocked(api).mockImplementation(((path: string, init?: { method?: string }) =>
+      init?.method === "PATCH"
+        ? Promise.reject(new Error("Action impossible dans l'état actuel du lit"))
+        : Promise.resolve(path === "/beds" ? board : {})) as never);
+    renderPage();
+    await userEvent.click(await screen.findByRole("button", { name: /Lit 2303 · À nettoyer/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Marquer nettoyé" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Lit 2303 : Action impossible dans l'état actuel du lit. Il a repris son état."
+    );
+    expect(screen.getByRole("button", { name: /Lit 2303 · À nettoyer/ })).not.toHaveAttribute("aria-busy");
+    await userEvent.click(screen.getByRole("button", { name: "Compris" }));
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("blocks without a note when none is given", async () => {

@@ -1,33 +1,37 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DoorOpen } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { defaultRangeExtractor, useWindowVirtualizer, type Range } from "@tanstack/react-virtual";
+import { DoorOpen, Search } from "lucide-react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { api } from "../api/client";
 import type { Pool, Site, Stay } from "../api/types";
 import { useAuth } from "../auth";
 import { LampLegend, LampStrip } from "../components/LampStrip";
-import { Empty, ErrorNote, Meter, Modal, PageHeader, Spinner } from "../components/common";
+import { Empty, ErrorNote, Meter, Modal, PageHeader } from "../components/common";
 import { fmtDate, fmtDay, fmtNum, fmtPct, isoDay, plural } from "../lib/format";
 import { unitLabel, useSites, useVocabulary } from "../lib/queries";
 import { useForecast } from "../lib/requests";
+import { LampStripSkeleton, Loading, PanelSkeleton, Skeleton, TableSkeleton } from "../components/skeletons";
 
 export function BedsPage() {
   const sites = useSites();
   const [siteId, setSiteId] = useState<number | null>(null);
   const activeSites = (sites.data ?? []).filter((s) => s.active);
 
-  useEffect(() => {
-    if (siteId === null && activeSites.length) setSiteId(activeSites[0].id);
-  }, [activeSites, siteId]);
-
-  const site = activeSites.find((s) => s.id === siteId) ?? null;
+  // The first site until another is chosen, decided while rendering: no empty frame between
+  // the list of sites and the first one's content.
+  const site = activeSites.find((s) => s.id === siteId) ?? activeSites[0] ?? null;
   return (
     <>
       <PageHeader
         title="Lits et sorties"
         lead="Les sorties attendues sur quatorze jours, calculées à partir des durées de séjour observées et des dates de sortie prévues par les équipes."
       />
-      {sites.isLoading && <Spinner />}
+      {sites.isLoading && (
+        <Loading label="Chargement des sites">
+          <PanelSkeleton lines={4} height="h-[300px]" />
+        </Loading>
+      )}
       {sites.error && <ErrorNote error={sites.error} />}
       {activeSites.length > 1 && (
         <div role="tablist" aria-label="Sites" className="mb-6 flex flex-wrap gap-2">
@@ -35,10 +39,10 @@ export function BedsPage() {
             <button
               key={s.id}
               role="tab"
-              aria-selected={s.id === siteId}
+              aria-selected={s.id === site?.id}
               onClick={() => setSiteId(s.id)}
               className={`rounded-chip px-4 py-2 text-[15px] font-bold ${
-                s.id === siteId ? "bg-ink text-white" : "bg-paper text-ink-soft shadow-lift hover:text-ink"
+                s.id === site?.id ? "bg-ink text-white" : "bg-paper text-ink-soft shadow-lift hover:text-ink"
               }`}
             >
               {s.name}
@@ -106,7 +110,12 @@ function SiteBeds({ site }: { site: Site }) {
                     </p>
                   </>
                 ) : (
-                  <Spinner label="Prévision" />
+                  <>
+                    <div className="mt-3">
+                      <LampStripSkeleton />
+                    </div>
+                    <Skeleton className="mt-2 h-[21px] w-3/4" />
+                  </>
                 )}
               </article>
             );
@@ -127,7 +136,11 @@ function SiteBeds({ site }: { site: Site }) {
           Renseigner une date de sortie prévue rend la prévision plus précise que la seule durée de séjour habituelle.
         </p>
         <div className="mt-4">
-          {stays.isLoading && <Spinner />}
+          {stays.isLoading && (
+            <Loading label="Chargement des patients présents">
+              <TableSkeleton />
+            </Loading>
+          )}
           {stays.error && <ErrorNote error={stays.error} />}
           {stays.data && stays.data.length === 0 && <Empty title="Aucun patient présent" />}
           {stays.data && stays.data.length > 0 && <StaysTable stays={stays.data} canWrite={canWrite} />}
@@ -139,55 +152,184 @@ function SiteBeds({ site }: { site: Site }) {
   );
 }
 
-function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
+/** Above this many patients, only the rows on screen are drawn (règle 23 de l'audit). */
+export const VIRTUALIZE_FROM = 40;
+const ROW_HEIGHT = 87; // a loaded row at 1440 px
+
+export function StaysTable({ stays, canWrite }: { stays: Stay[]; canWrite: boolean }) {
   const vocab = useVocabulary();
   const [sort, setSort] = useState<"sortie" | "duree">("sortie");
-  const rows = [...stays].sort((a, b) =>
-    sort === "duree" ? b.length_of_stay - a.length_of_stay : (b.prob_within_7_days ?? 0) - (a.prob_within_7_days ?? 0)
+  const [find, setFind] = useState("");
+  // A planned date typed and not saved yet survives its row leaving the screen.
+  const [drafts, setDrafts] = useState<Record<number, string>>({});
+  const rows = useMemo(() => {
+    const q = find.trim().toLowerCase();
+    return [...stays]
+      .filter((s) => !q || s.patient_ref.toLowerCase().includes(q) || unitLabel(vocab.data, s.mention).toLowerCase().includes(q))
+      .sort((a, b) =>
+        sort === "duree" ? b.length_of_stay - a.length_of_stay : (b.prob_within_7_days ?? 0) - (a.prob_within_7_days ?? 0)
+      );
+  }, [stays, find, sort, vocab.data]);
+  const virtual = rows.length >= VIRTUALIZE_FROM;
+  const setDraft = useCallback(
+    (id: number, value: string | null) =>
+      setDrafts((d) => {
+        const next = { ...d };
+        if (value === null) delete next[id];
+        else next[id] = value;
+        return next;
+      }),
+    []
   );
+  const row = (s: Stay, index: number, measure?: (el: HTMLTableRowElement | null) => void) => (
+    <StayRow
+      key={s.id}
+      stay={s}
+      index={index}
+      rowRef={measure}
+      mention={unitLabel(vocab.data, s.mention)}
+      canWrite={canWrite}
+      draft={drafts[s.id]}
+      onDraft={setDraft}
+    />
+  );
+
   return (
-    <div className="panel relative overflow-x-auto">
-      <table className="w-full min-w-[880px] text-[15px]">
-        <caption className="sr-only">Patients présents et sortie attendue</caption>
-        <thead>
-          <tr className="border-b border-line text-left text-[13px] text-ink-faint">
-            <th className="px-5 py-3 font-normal">Patient</th>
-            <th className="px-3 py-3 font-normal">Mention</th>
-            <th className="px-3 py-3 font-normal">
-              <button className="font-bold hover:text-ink" onClick={() => setSort("duree")} aria-pressed={sort === "duree"}>
-                Durée
-              </button>
-            </th>
-            <th className="px-3 py-3 font-normal">
-              <button className="font-bold hover:text-ink" onClick={() => setSort("sortie")} aria-pressed={sort === "sortie"}>
-                Sortie sous 7 jours
-              </button>
-            </th>
-            <th className="px-3 py-3 font-normal">Soins</th>
-            <th className="px-3 py-3 font-normal">Sortie prévue</th>
-            <th className="px-5 py-3 font-normal">
-              <span className="sr-only">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((s) => (
-            <StayRow key={s.id} stay={s} mention={unitLabel(vocab.data, s.mention)} canWrite={canWrite} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <>
+      {stays.length >= VIRTUALIZE_FROM && (
+        <div className="relative mb-3 max-w-sm">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint" aria-hidden />
+          <label className="sr-only" htmlFor="find-stay">
+            Rechercher un patient présent
+          </label>
+          <input
+            id="find-stay"
+            className="input mt-0 pl-9"
+            placeholder="Référence du patient ou unité"
+            value={find}
+            onChange={(e) => setFind(e.target.value)}
+          />
+        </div>
+      )}
+      <div className="panel relative overflow-x-auto">
+        <table className="w-full min-w-[880px] text-[15px]" aria-rowcount={rows.length + 1}>
+          <caption className="sr-only">Patients présents et sortie attendue</caption>
+          <thead>
+            <tr className="border-b border-line text-left text-[13px] text-ink-faint" aria-rowindex={1}>
+              <th className="px-5 py-3 font-normal">Patient</th>
+              <th className="px-3 py-3 font-normal">Mention</th>
+              <th className="px-3 py-3 font-normal">
+                <button className="font-bold hover:text-ink" onClick={() => setSort("duree")} aria-pressed={sort === "duree"}>
+                  Durée
+                </button>
+              </th>
+              <th className="px-3 py-3 font-normal">
+                <button className="font-bold hover:text-ink" onClick={() => setSort("sortie")} aria-pressed={sort === "sortie"}>
+                  Sortie sous 7 jours
+                </button>
+              </th>
+              <th className="px-3 py-3 font-normal">Soins</th>
+              <th className="px-3 py-3 font-normal">Sortie prévue</th>
+              <th className="px-5 py-3 font-normal">
+                <span className="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          {virtual ? <WindowedRows rows={rows} pinned={drafts} render={row} /> : <tbody>{rows.map((s, i) => row(s, i))}</tbody>}
+        </table>
+        {rows.length === 0 && <p className="px-5 py-4 text-ink-soft">Aucun patient présent ne correspond à « {find.trim()} ».</p>}
+      </div>
+    </>
+  );
+}
+
+/**
+ * The rows on screen and a margin, between two spacers of the height of the others: 120
+ * patients cost the work of about twenty. The row being edited (focus inside, or a date not
+ * saved yet) stays drawn, so the keyboard never loses its place.
+ */
+function WindowedRows({
+  rows,
+  pinned,
+  render
+}: {
+  rows: Stay[];
+  pinned: Record<number, string>;
+  render: (s: Stay, index: number, measure: (el: HTMLTableRowElement | null) => void) => JSX.Element;
+}) {
+  const bodyRef = useRef<HTMLTableSectionElement>(null);
+  const [offset, setOffset] = useState(0);
+  const [focused, setFocused] = useState<number | null>(null);
+  // Where the table starts in the page: what is above it (forecast cards) may change height.
+  useLayoutEffect(() => {
+    const measure = () => setOffset((bodyRef.current?.getBoundingClientRect().top ?? 0) + window.scrollY);
+    measure();
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    ro?.observe(document.body);
+    return () => ro?.disconnect();
+  }, []);
+  const keep = useMemo(() => {
+    const ids = new Set(Object.keys(pinned).map(Number));
+    return rows.flatMap((s, i) => (ids.has(s.id) || i === focused ? [i] : []));
+  }, [rows, pinned, focused]);
+  const virtualizer = useWindowVirtualizer({
+    count: rows.length,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 6,
+    scrollMargin: offset,
+    getItemKey: (i) => rows[i].id,
+    rangeExtractor: useCallback((range: Range) => [...new Set([...keep, ...defaultRangeExtractor(range)])].sort((a, b) => a - b), [keep])
+  });
+  const items = virtualizer.getVirtualItems();
+  const top = items.length ? items[0].start - offset : 0;
+  const bottom = items.length ? virtualizer.getTotalSize() - (items[items.length - 1].end - offset) : 0;
+
+  return (
+    <tbody
+      ref={bodyRef}
+      onFocus={(e) => {
+        const i = Number((e.target as HTMLElement).closest("tr")?.dataset.index);
+        if (Number.isFinite(i)) setFocused(i);
+      }}
+    >
+      {top > 0 && <tr aria-hidden style={{ height: top }} />}
+      {items.map((v, k) => {
+        // A pinned row far from the window is drawn where it belongs, without a spacer of its own.
+        const gap = k > 0 ? v.start - items[k - 1].end : 0;
+        return [gap > 0 ? <tr key={`gap-${v.key}`} aria-hidden style={{ height: gap }} /> : null, render(rows[v.index], v.index, virtualizer.measureElement)];
+      })}
+      {bottom > 0 && <tr aria-hidden style={{ height: bottom }} />}
+    </tbody>
   );
 }
 
 const CARE_LABELS: Record<number, string> = { 1: "1 · léger", 2: "2 · modéré", 3: "3 · lourd", 4: "4 · très lourd" };
 
-function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; canWrite: boolean }) {
+function StayRow({
+  stay,
+  index,
+  rowRef,
+  mention,
+  canWrite,
+  draft,
+  onDraft
+}: {
+  stay: Stay;
+  index: number;
+  rowRef?: (el: HTMLTableRowElement | null) => void;
+  mention: string;
+  canWrite: boolean;
+  /** The planned date typed and not saved yet (kept by the table). */
+  draft: string | undefined;
+  onDraft: (id: number, value: string | null) => void;
+}) {
   const queryClient = useQueryClient();
-  const [planned, setPlanned] = useState(stay.planned_discharge_date ?? "");
+  const planned = draft ?? stay.planned_discharge_date ?? "";
+  const setPlanned = (value: string) => onDraft(stay.id, value === (stay.planned_discharge_date ?? "") ? null : value);
   const update = useMutation({
     mutationFn: (body: Record<string, unknown>) => api<Stay>(`/stays/${stay.id}`, { method: "PATCH", json: body }),
     onSuccess: () => {
+      onDraft(stay.id, null);
       void queryClient.invalidateQueries({ queryKey: ["stays"] });
       void queryClient.invalidateQueries({ queryKey: ["forecast"] });
       void queryClient.invalidateQueries({ queryKey: ["workload"] });
@@ -199,7 +341,7 @@ function StayRow({ stay, mention, canWrite }: { stay: Stay; mention: string; can
   const p = stay.prob_within_7_days ?? 0;
   const dirty = planned !== (stay.planned_discharge_date ?? "");
   return (
-    <tr className="border-b border-line last:border-0">
+    <tr ref={rowRef} data-index={index} aria-rowindex={index + 2} className="border-b border-line last:border-0">
       <td className="px-5 py-3">
         <p className="font-bold">{stay.patient_ref}</p>
         <p className="text-[13px] text-ink-faint">Entré le {fmtDate(stay.admission_date)}</p>
