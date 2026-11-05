@@ -3,6 +3,7 @@ software (real Chromium) and HospitalOS applies them, without ever storing a nam
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -22,6 +23,24 @@ from services.admissions_smr.models import Bed, EdVisit, Movement, Site, Stay
 PLAYBOOK = Path(bedsoft_module.__file__).parent.parent / "playbooks" / "demo_bedsoft.yaml"
 ON_SCREEN_ONLY = ["Rosalie", "Exemplaire", "Gaston", "Odile", "Hector", "1941", "12/03"]
 CLEAR_IDS = ["4000101", "7000101", "4000102", "7000102"]
+
+
+def leaked(value: str, text: str) -> bool:
+    """``value`` appears in ``text`` as a whole word, whatever its case: « 12/03/1941 » or
+    « ROSALIE » are leaks; « 1941 » inside a hex digest, a hash or a token is not."""
+    pattern = rf"(?<![0-9A-Za-z]){re.escape(value)}(?![0-9A-Za-z])"
+    return re.search(pattern, text, re.IGNORECASE) is not None
+
+
+def test_a_leak_is_a_whole_word_not_four_digits_inside_a_digest() -> None:
+    assert leaked("1941", "née le 12/03/1941")
+    assert leaked("12/03", "12/03/1941")
+    assert leaked("Rosalie", "Mme ROSALIE EXEMPLAIRE")
+    assert leaked("4000101", "IPP 4000101")
+    # A SHA-256 of a message or a token can hold these digits by chance: not a leak.
+    assert not leaked("1941", "9f2c1941ab07e3")
+    assert not leaked("1941", "a3b71941")
+    assert not leaked("4000101", "P-84000101")
 
 
 def bedsoft_agent(api: TestClient, url: str) -> Agent:
@@ -84,7 +103,7 @@ def test_agent_reads_movements_and_hospitalos_applies_them(
         str(v) for t in metadata.sorted_tables for row in session.execute(t.select()) for v in row
     )
     session.close()
-    assert [v for v in ON_SCREEN_ONLY + CLEAR_IDS if v in dump] == []
+    assert [v for v in ON_SCREEN_ONLY + CLEAR_IDS if leaked(v, dump)] == []
 
 
 def test_resync_is_idempotent_and_a_later_cancellation_is_applied(
