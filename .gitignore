@@ -64,3 +64,6 @@ artifacts/
 pyproject.toml.backup
 pyproject.toml.before_*
 runs/
+
+# Private local evidence journals and research agent workspaces
+.research-lab*/
