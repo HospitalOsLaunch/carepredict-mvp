@@ -4,6 +4,8 @@ from typing import Any
 
 import pytest
 
+from research_lab.export_local_review import export_review
+
 from research_lab.cli import (
     STAGES,
     budget_summary,
@@ -209,3 +211,42 @@ def test_budget_summary_is_reservations_not_actual_charge() -> None:
     assert summary['reserved_usd'] == '0.80'
     assert summary['minimum_cap_to_continue_usd'] == '1.07'
     assert summary['shortfall_usd'] == '0.07'
+
+
+def test_private_review_export_from_verified_live_journal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import research_lab.cli as lab
+
+    class FakeProvider:
+        def complete(
+            self, *, stage: lab.Stage, prompt: str, max_output_tokens: int
+        ) -> tuple[str, dict[str, Any]]:
+            assert prompt and max_output_tokens
+            if stage.name == 'red_team':
+                raise ValueError('controlled stop')
+            answer = {'claims': [f'Test proposal {stage.name}'], 'falsifiers': [],
+                      'prior_art': [], 'next_steps': [], 'gate': 'NOT_TESTED'}
+            return json.dumps(answer), {
+                'response_status': 'completed', 'incomplete_reason': 'none',
+                'input_tokens': 10, 'output_tokens': 20,
+            }
+
+    monkeypatch.setattr(lab, 'OpenAIProvider', lambda: FakeProvider())
+    workspace = tmp_path / 'local'
+    with pytest.raises(ValueError, match='controlled stop'):
+        lab.run_cycle(BRIEF, workspace, mode='live', allow_api=True, budget_usd='5')
+    exported = export_review(workspace)
+    report = exported.read_text(encoding='utf-8')
+    assert 'prior_art' in report and 'hypotheses' in report
+    assert 'red_team' not in report
+    assert 'PRIVATE' in report and 'unverified' in report
+    with pytest.raises(FileExistsError):
+        export_review(workspace)
+
+
+def test_private_review_rejects_fixture(tmp_path: Path) -> None:
+    workspace = tmp_path / 'fixture'
+    run_cycle(BRIEF, workspace, mode='smoke')
+    with pytest.raises(ValueError, match='Fixture results'):
+        export_review(workspace)
