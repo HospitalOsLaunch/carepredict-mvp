@@ -1,13 +1,13 @@
 import json
-from typing import Any
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from research_lab.cli import (
     STAGES,
-    load_resume,
     api_error_details,
+    load_resume,
     digest,
     read_brief,
     run_cycle,
@@ -146,10 +146,51 @@ def test_resume_reuses_prior_stage_without_new_sol_call(
     assert lab.verify_journal(first)[-1]['event']['type'] == 'ABORTED'
 
 
-def test_resume_rejects_changed_brief(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resume_rejects_changed_brief(tmp_path: Path) -> None:
     import research_lab.cli as lab
 
     work = tmp_path / 'fixture'
     lab.run_cycle(BRIEF, work, mode='smoke')
     with pytest.raises(ValueError, match='Resume source does not match'):
         load_resume(work, 'changed brief', 'live')
+
+
+def test_multihop_resume_carries_original_reservations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import research_lab.cli as lab
+
+    class FakeProvider:
+        calls: list[str] = []
+
+        def complete(
+            self, *, stage: lab.Stage, prompt: str, max_output_tokens: int
+        ) -> tuple[str, dict[str, Any]]:
+            self.calls.append(stage.name)
+            if stage.name in ('hypotheses', 'red_team'):
+                raise ValueError('simulated incomplete response')
+            answer = {'claims': [], 'falsifiers': [], 'prior_art': [],
+                      'next_steps': [], 'gate': 'NOT_TESTED'}
+            return json.dumps(answer), {
+                'response_status': 'completed', 'incomplete_reason': 'none',
+                'input_tokens': 20, 'output_tokens': 30,
+            }
+
+    fake = FakeProvider()
+    monkeypatch.setattr(lab, 'OpenAIProvider', lambda: fake)
+    first = tmp_path / 'first'
+    with pytest.raises(ValueError, match='simulated incomplete'):
+        lab.run_cycle(BRIEF, first, mode='live', allow_api=True, budget_usd='5')
+    second = tmp_path / 'second'
+    with pytest.raises(ValueError, match='simulated incomplete'):
+        lab.run_cycle(BRIEF, second, mode='live', allow_api=True,
+                      budget_usd='5', resume_from=first)
+    third = tmp_path / 'third'
+    _, first_reserved, _ = lab.load_resume(first, BRIEF, 'live')
+    _, second_reserved, _ = lab.load_resume(second, BRIEF, 'live')
+    assert second_reserved > first_reserved
+    # Previous reservations are inherited even when the second run aborts.
+    events = lab.verify_journal(second)
+    assert events[0]['event']['carried_reserved_usd'] == str(first_reserved)
+    assert fake.calls.count('prior_art') == 1
+    assert not third.exists()
