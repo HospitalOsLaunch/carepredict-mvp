@@ -337,12 +337,22 @@ def main(argv: list[str] | None = None) -> int:
         # API failures must not trigger retries or reveal keys / request details.
         if getattr(exc, 'status_code', None) == 429:
             code, kind = api_error_details(exc)
+            if code == 'credit_balance_exhausted':
+                guidance = (
+                    'The API organization used by this key has no usable prepaid '
+                    'credits. Check that purchased credits appear in THAT '
+                    'organization and match the key\'s project. '
+                )
+            elif code in ('project_spend_limit_exceeded',
+                          'organization_spend_limit_exceeded',
+                          'organization_usage_limit_exceeded'):
+                guidance = 'Review the named spend/usage limit for the API account. '
+            else:
+                guidance = 'Review the API error code and account limits. '
             print(
                 f'REFUSED: OpenAI API 429; error.code={code}; error.type={kind}. '
-                'If insufficient_quota, check credits for the API organization '
-                'used by this project. If a spend/usage limit, inspect that limit. '
-                'If rate_limited, inspect model RPM/TPM. '
-                'No retry; preserve the event journal and use a NEW workspace later.',
+                + guidance
+                + 'No retry; preserve the journal and use a NEW workspace later.',
                 file=sys.stderr,
             )
         else:
