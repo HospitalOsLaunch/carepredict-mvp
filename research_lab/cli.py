@@ -372,6 +372,34 @@ def run_cycle(brief: str, workspace: Path, *, mode: str,
 
 
 
+def budget_summary(events: list[dict[str, Any]]) -> dict[str, str | None]:
+    """Summarize local *reservations*, never claim these are provider charges."""
+    if not events:
+        return {
+            'budget_usd': None, 'reserved_usd': None,
+            'next_quote_usd': None, 'minimum_cap_to_continue_usd': None,
+            'shortfall_usd': None,
+        }
+    records = [item['event'] for item in events]
+    first = records[0]
+    cap = Decimal(str(first.get('budget_usd', '0')))
+    reserved = Decimal(str(first.get('carried_reserved_usd') or '0'))
+    for event in records:
+        if event['type'] == 'CALL_RESERVED':
+            reserved = max(reserved, Decimal(event['running_reservation_usd']))
+    stops = [event for event in records if event['type'] == 'BUDGET_STOP']
+    quote = Decimal(stops[-1]['next_quote_usd']) if stops else None
+    required = reserved + quote if quote is not None else None
+    shortfall = max(Decimal('0'), required - cap) if required is not None else None
+    return {
+        'budget_usd': str(cap),
+        'reserved_usd': str(reserved),
+        'next_quote_usd': str(quote) if quote is not None else None,
+        'minimum_cap_to_continue_usd': str(required) if required is not None else None,
+        'shortfall_usd': str(shortfall) if shortfall is not None else None,
+    }
+
+
 def api_error_details(exc: Exception) -> tuple[str, str]:
     """Return only non-sensitive provider error identifiers, never raw body/message."""
     body = getattr(exc, 'body', None)
@@ -430,6 +458,7 @@ def main(argv: list[str] | None = None) -> int:
                 'last_incomplete_reason': last_response.get('incomplete_reason'),
                 'last_output_tokens': last_response.get('usage', {}).get('output_tokens'),
                 'last_reasoning_tokens': last_response.get('usage', {}).get('reasoning_tokens'),
+                'budget': budget_summary(events),
             }))
         else:
             result = run_cycle(read_brief(args.brief), args.workspace,
