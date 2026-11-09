@@ -17,7 +17,8 @@ mkdir -p "$HOME/.venvs"
 if [[ ! -x "$VENV/bin/python" ]]; then
   python3 -m venv "$VENV"
 fi
-"$VENV/bin/python" -m pip install --disable-pip-version-check 'openai>=2,<4'
+"$VENV/bin/python" -m pip install --disable-pip-version-check 'openai>=2,<4' 'pytest>=8,<10'
+"$VENV/bin/python" -m pytest -q tests/test_research_lab.py
 
 if [[ -z "${OPENAI_API_KEY:-}" ]]; then
   printf 'OpenAI API key (input hidden): '
