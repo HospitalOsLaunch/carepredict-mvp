@@ -112,6 +112,27 @@ class OpenAIProvider:
             input=[{'role': 'system', 'content': SYSTEM + '\n' + stage.instruction},
                    {'role': 'user', 'content': prompt}],
             max_output_tokens=max_output_tokens,
+            text={'format': {
+                'type': 'json_schema',
+                'name': 'research_stage',
+                'strict': True,
+                'schema': {
+                    'type': 'object',
+                    'properties': {
+                        'claims': {'type': 'array', 'items': {'type': 'string'}},
+                        'falsifiers': {'type': 'array', 'items': {'type': 'string'}},
+                        'prior_art': {'type': 'array', 'items': {'type': 'string'}},
+                        'next_steps': {'type': 'array', 'items': {'type': 'string'}},
+                        'gate': {'type': 'string', 'enum': [
+                            'NOT_TESTED', 'INDETERMINATE', 'NO_GO'
+                        ]},
+                    },
+                    'required': [
+                        'claims', 'falsifiers', 'prior_art', 'next_steps', 'gate'
+                    ],
+                    'additionalProperties': False,
+                },
+            }},
             store=False,
         )
         usage = getattr(response, 'usage', None)
