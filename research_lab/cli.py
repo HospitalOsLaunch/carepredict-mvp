@@ -21,7 +21,7 @@ from typing import Any, Protocol
 
 DEFAULT_WORKSPACE = Path('.research-lab')
 MAX_BRIEF_BYTES = 12_000
-MAX_STAGE_OUTPUT = 1_600
+MAX_STAGE_OUTPUT = 3_200
 ASTRA_STAGE_OUTPUT = 3_500
 SCHEMA = 'hospitalos-research-lab-v1'
 # Conservative standard-tier input/output dollar prices per 1M tokens, 2026-11-09.
@@ -68,7 +68,9 @@ SYSTEM = (
     'claims (array of strings), falsifiers (array of strings), '
     'prior_art (array of strings), next_steps (array of strings), '
     'gate (string, one of NOT_TESTED, INDETERMINATE, NO_GO). '
-    'Write concise French technical text. All new claims are hypotheses, not proven advances.'
+    'Write concise French technical text: at most three short statements per array, '
+    'ideally below 250 characters per item. All new claims are hypotheses, '
+    'not proven advances.'
 )
 
 
@@ -263,7 +265,8 @@ def load_resume(source: Path, brief: str, mode: str) -> tuple[
         raise ValueError('Completed cycle cannot be resumed')
 
     prior: list[tuple[str, dict[str, Any]]] = []
-    reserved = Decimal('0')
+    # Include earlier reservations inherited through preceding aborted runs.
+    reserved = Decimal(str(first.get('carried_reserved_usd') or '0'))
     for entry in events:
         event = entry['event']
         if event['type'] == 'CALL_RESERVED':
@@ -403,8 +406,31 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == 'status':
             events = verify_journal(args.workspace)
-            print(json.dumps({'events': len(events), 'verified': True,
-                              'last_event': events[-1]['event']['type'] if events else 'EMPTY'}))
+            records = [entry['event'] for entry in events]
+            completed = [
+                entry['stage'] for entry in records
+                if entry['type'] in ('STAGE_OUTPUT', 'RESUMED_STAGE')
+            ]
+            attempted = [
+                entry['stage'] for entry in records
+                if entry['type'] == 'CALL_RESERVED'
+            ]
+            responses = [
+                entry for entry in records
+                if entry['type'] == 'RESPONSE_RECEIVED'
+            ]
+            last_response = responses[-1] if responses else {}
+            print(json.dumps({
+                'events': len(events),
+                'verified': True,
+                'last_event': records[-1]['type'] if records else 'EMPTY',
+                'completed_stages': completed,
+                'last_attempted_stage': attempted[-1] if attempted else None,
+                'last_response_status': last_response.get('status'),
+                'last_incomplete_reason': last_response.get('incomplete_reason'),
+                'last_output_tokens': last_response.get('usage', {}).get('output_tokens'),
+                'last_reasoning_tokens': last_response.get('usage', {}).get('reasoning_tokens'),
+            }))
         else:
             result = run_cycle(read_brief(args.brief), args.workspace,
                                mode=args.mode, allow_api=args.allow_api,
