@@ -339,7 +339,7 @@ def main(argv: list[str] | None = None) -> int:
             code, kind = api_error_details(exc)
             print(
                 f'REFUSED: OpenAI API 429; error.code={code}; error.type={kind}. '
-                'If credit_balance_exhausted, check credits for the API organization '
+                'If insufficient_quota, check credits for the API organization '
                 'used by this project. If a spend/usage limit, inspect that limit. '
                 'If rate_limited, inspect model RPM/TPM. '
                 'No retry; preserve the event journal and use a NEW workspace later.',
