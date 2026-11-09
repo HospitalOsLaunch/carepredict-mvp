@@ -1,0 +1,44 @@
+HOSPITALOS — WORLD MODELS RESEARCH LAB — MANDAT CYCLE 01
+EXPERIENCE 01 : falsification temporelle et observabilite.
+
+OBJECTIF
+Formuler et critiquer des hypotheses scientifiques originales, sans pretendre avoir execute
+des simulations ou entraine un modele. Toute proposition reste NON VALIDEE.
+
+QUESTION
+Quelles proprietes d'une representation latente distinguent l'exploitation de structures
+temporelles et actionnelles d'un simple usage de statistiques marginales, des regimes locaux,
+des routines d'observation, ou de fuites provenant de donnees futures ?
+
+CONTEXTE PARTAGEABLE
+HospitalOS etudie des modeles du fonctionnement hospitalier sous observabilite partielle.
+Des architectures temporelles de type JEPA et RSSM sont candidates, mais aucune
+identification causale ni superiorite generalisable aux donnees reelles n'est acquise.
+Les baselines simples (persistance, saisonnalite, moyennes conditionnelles) doivent etre
+conservees. Les observations sont contraintes par leur temps de disponibilite (as-of).
+Le travail doit distinguer predictions et decisions sous intervention.
+
+HYPOTHESES A OPPOSER
+H1: L'alignement temporel apporte une information exploitable au-dela des marges.
+H2: La prise en compte de l'information disponible et manquante peut rendre un
+belief-state utile sous decalage de distribution.
+H3: Sous variations suffisamment informatives des actions, le latent peut distinguer
+differents mecanismes de transition, sous hypotheses d'identifiabilite explicites.
+
+MANDAT SCIENTIFIQUE
+1. Proposer une representation et un mecanisme testable, pas seulement un nouvel empilement
+de modules connus.
+2. Comparer a des temoins preservant autant que possible budget d'information, marges,
+masques, granularite, heures, regime et contextes de site.
+3. Proposer au moins un temoin qui detruit l'appariement temporel ou action-observation.
+4. Preciser estimands, splits, facteurs confondants, conditions de falsification, criteres
+d'arret et exigences de replication independante.
+5. Marquer toute originalite, reference non fournie ou conclusion theorique comme
+NON VERIFIEE ; ne pas inventer de litterature ou de resultats.
+6. Ne pas planifier d'exploitation clinique ni de calcul couteux sans autorisation distincte.
+
+CONTRAINTES
+Aucune donnee patient, aucun secret, aucun checkpoint prive, aucun dossier hospitalier reel.
+Aucun entrainement, aucune execution de modele scientifique, aucun forward, aucun simulateur.
+Les reponses de six agents utilisant potentiellement des modeles proches ne constituent
+pas six validations independantes. Verdict initial obligatoire: NOT_TESTED.
