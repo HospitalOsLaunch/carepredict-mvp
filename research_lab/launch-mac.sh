@@ -2,9 +2,18 @@
 set -euo pipefail
 
 # Explicit local-only API access; never paste the key into GitHub or this chat.
-if [[ "${1:-}" != "--live" ]]; then
+if [[ "${1:-}" != "--live" && "${1:-}" != "--resume" ]]; then
   echo "Usage: bash research_lab/launch-mac.sh --live"
+  echo "       bash research_lab/launch-mac.sh --resume EXISTING_ABORTED_WORKSPACE"
   echo "Requires an API key and may incur up to the locally estimated budget."
+  exit 2
+fi
+if [[ "${1:-}" == "--resume" && -z "${2:-}" ]]; then
+  echo "Resume requires an explicit existing workspace path." >&2
+  exit 2
+fi
+if [[ "${1:-}" == "--resume" && ! -f "${2}/events.jsonl" ]]; then
+  echo "Resume workspace missing its events.jsonl." >&2
   exit 2
 fi
 if [[ ! -f "research_lab/mandate-cycle-01.txt" ]]; then
@@ -46,10 +55,15 @@ PY
 
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 WORKSPACE=".research-lab-live-${RUN_ID}"
+EXTRA_ARGS=()
+if [[ "${1:-}" == "--resume" ]]; then
+  EXTRA_ARGS=(--resume-from "$2")
+  echo "Resuming from existing journal $2 into a NEW workspace."
+fi
 echo "Launching six-stage text-only cycle into $WORKSPACE"
 "$VENV/bin/python" -m research_lab run \
   --mode live --allow-api --budget-usd 1.00 \
   --brief research_lab/mandate-cycle-01.txt \
-  --workspace "$WORKSPACE"
+  --workspace "$WORKSPACE" "${EXTRA_ARGS[@]}"
 "$VENV/bin/python" -m research_lab status --workspace "$WORKSPACE"
 echo "Private results remain locally in: $WORKSPACE"
