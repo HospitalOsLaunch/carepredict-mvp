@@ -22,6 +22,7 @@ from typing import Any, Protocol
 DEFAULT_WORKSPACE = Path('.research-lab')
 MAX_BRIEF_BYTES = 12_000
 MAX_STAGE_OUTPUT = 1_600
+ASTRA_STAGE_OUTPUT = 3_500
 SCHEMA = 'hospitalos-research-lab-v1'
 # Conservative standard-tier input/output dollar prices per 1M tokens, 2026-11-09.
 # Check current official pricing before live use. Cached/batch discounts ignored.
@@ -74,7 +75,7 @@ SYSTEM = (
 class Provider(Protocol):
     def complete(
         self, *, stage: Stage, prompt: str, max_output_tokens: int
-    ) -> tuple[str, dict[str, int]]:
+    ) -> tuple[str, dict[str, Any]]:
         """Return generated text and optional token usage."""
 
 
@@ -83,7 +84,7 @@ class FixtureProvider:
 
     def complete(
         self, *, stage: Stage, prompt: str, max_output_tokens: int
-    ) -> tuple[str, dict[str, int]]:
+    ) -> tuple[str, dict[str, Any]]:
         _ = prompt, max_output_tokens
         return json.dumps({
             'claims': [f'FIXTURE ONLY: {stage.name}; no scientific claim'],
@@ -106,12 +107,13 @@ class OpenAIProvider:
 
     def complete(
         self, *, stage: Stage, prompt: str, max_output_tokens: int
-    ) -> tuple[str, dict[str, int]]:
+    ) -> tuple[str, dict[str, Any]]:
         response = self.client.responses.create(
             model=stage.model,
             input=[{'role': 'system', 'content': SYSTEM + '\n' + stage.instruction},
                    {'role': 'user', 'content': prompt}],
             max_output_tokens=max_output_tokens,
+            reasoning={'effort': 'medium'},
             text={'format': {
                 'type': 'json_schema',
                 'name': 'research_stage',
@@ -140,7 +142,14 @@ class OpenAIProvider:
             'input_tokens': int(getattr(usage, 'input_tokens', 0) or 0),
             'output_tokens': int(getattr(usage, 'output_tokens', 0) or 0),
         }
-        return str(response.output_text), tokens
+        reason = getattr(getattr(response, 'incomplete_details', None), 'reason', None)
+        details = getattr(usage, 'output_tokens_details', None)
+        tokens['reasoning_tokens'] = int(getattr(details, 'reasoning_tokens', 0) or 0)
+        return str(response.output_text or ''), {
+            **tokens,
+            'response_status': str(getattr(response, 'status', 'unknown')),
+            'incomplete_reason': str(reason or 'none'),
+        }
 
 
 def canonical(value: Any) -> bytes:
@@ -232,8 +241,54 @@ def read_brief(path: Path) -> str:
     return brief
 
 
+def stage_output_cap(stage: Stage) -> int:
+    return ASTRA_STAGE_OUTPUT if stage.model == 'gpt-6-astra' else MAX_STAGE_OUTPUT
+
+
+def load_resume(source: Path, brief: str, mode: str) -> tuple[
+    list[tuple[str, dict[str, Any]]], Decimal, str
+]:
+    """Read a verified aborted journal without ever modifying its records."""
+    events = verify_journal(source)
+    if len(events) < 2:
+        raise ValueError('Resume source is empty or too short')
+    first = events[0]['event']
+    if (first.get('type') != 'START' or first.get('schema') != SCHEMA
+            or first.get('mode') != mode
+            or first.get('brief_hash') != hashlib.sha256(brief.encode()).hexdigest()):
+        raise ValueError('Resume source does not match brief/schema/mode')
+    if events[-1]['event'].get('type') != 'ABORTED':
+        raise ValueError('Only explicitly aborted runs may be resumed')
+    if any(e['event']['type'] == 'COMPLETE' for e in events):
+        raise ValueError('Completed cycle cannot be resumed')
+
+    prior: list[tuple[str, dict[str, Any]]] = []
+    reserved = Decimal('0')
+    for entry in events:
+        event = entry['event']
+        if event['type'] == 'CALL_RESERVED':
+            reserved = max(reserved, Decimal(event['running_reservation_usd']))
+        if event['type'] == 'STAGE_OUTPUT':
+            index = len(prior)
+            if (index >= len(STAGES) or event['stage'] != STAGES[index].name
+                    or event.get('scientific_status') != 'UNVERIFIED_MODEL_PROPOSAL'):
+                raise ValueError('Resume stages are inconsistent or unverified fixtures')
+            prior.append((event['stage'], validate_answer(json.dumps(event['result']))))
+        if event['type'] == 'RESUMED_STAGE':
+            index = len(prior)
+            if index >= len(STAGES) or event['stage'] != STAGES[index].name:
+                raise ValueError('Invalid inherited stage order')
+            prior.append((event['stage'], validate_answer(json.dumps(event['result']))))
+    if not prior or len(prior) == len(STAGES):
+        raise ValueError('No partially completed scientific stages to resume')
+    if reserved < 0:
+        raise ValueError('Invalid reserved budget')
+    return prior, reserved, events[-1]['entry_hash']
+
+
 def run_cycle(brief: str, workspace: Path, *, mode: str,
-              allow_api: bool = False, budget_usd: str = '0') -> dict[str, Any]:
+              allow_api: bool = False, budget_usd: str = '0',
+              resume_from: Path | None = None) -> dict[str, Any]:
     if mode not in ('smoke', 'live'):
         raise ValueError('mode must be smoke or live')
     budget = Decimal(budget_usd)
@@ -244,19 +299,28 @@ def run_cycle(brief: str, workspace: Path, *, mode: str,
     # A clean, new workspace per run. Prevent running in an existing evidence directory.
     if workspace.exists():
         raise FileExistsError('Workspace already exists; use a unique path per run')
+    if resume_from is not None and mode != 'live':
+        raise ValueError('Resume is available only for live runs')
+    prior, reserved, source_hash = (load_resume(resume_from, brief, mode)
+                                    if resume_from is not None else ([], Decimal('0'), ''))
     provider: Provider = OpenAIProvider() if mode == 'live' else FixtureProvider()
     workspace.mkdir(parents=True, exist_ok=False, mode=0o700)
     run_id = str(uuid.uuid4())
     record(workspace, {'type': 'START', 'schema': SCHEMA, 'run_id': run_id,
                        'mode': mode, 'brief_hash': hashlib.sha256(brief.encode()).hexdigest(),
-                       'budget_usd': str(budget)})
-    prior: list[tuple[str, dict[str, Any]]] = []
-    reserved = Decimal('0')
+                       'budget_usd': str(budget),
+                       'resumed_from': str(resume_from) if resume_from else None,
+                       'source_hash': source_hash, 'carried_reserved_usd': str(reserved)})
+    if resume_from is not None:
+        for name, result in prior:
+            record(workspace, {'type': 'RESUMED_STAGE', 'stage': name,
+                               'result': result, 'source_hash': source_hash})
     try:
-        for stage in STAGES:
+        for stage in STAGES[len(prior):]:
             prompt = make_prompt(brief, stage, prior)
+            output_cap = stage_output_cap(stage)
             quote = (
-                reserve_cost(stage.model, prompt, MAX_STAGE_OUTPUT)
+                reserve_cost(stage.model, prompt, output_cap)
                 if mode == 'live' else Decimal('0')
             )
             if reserved + quote > budget:
@@ -270,7 +334,23 @@ def run_cycle(brief: str, workspace: Path, *, mode: str,
                                'running_reservation_usd': str(reserved),
                                'prompt_sha256': hashlib.sha256(prompt.encode()).hexdigest()})
             output_text, usage = provider.complete(stage=stage, prompt=prompt,
-                                                   max_output_tokens=MAX_STAGE_OUTPUT)
+                                                   max_output_tokens=output_cap)
+            if mode == 'live':
+                record(workspace, {
+                    'type': 'RESPONSE_RECEIVED', 'stage': stage.name,
+                    'status': usage.get('response_status', 'unknown'),
+                    'incomplete_reason': usage.get('incomplete_reason', 'none'),
+                    'output_chars': len(output_text),
+                    'output_sha256': hashlib.sha256(output_text.encode()).hexdigest(),
+                    'usage': usage,
+                })
+                if usage.get('response_status') != 'completed':
+                    raise ValueError(
+                        f"API response {usage.get('response_status')} "
+                        f"(reason={usage.get('incomplete_reason')}; "
+                        f"output_tokens={usage.get('output_tokens')}; "
+                        f"reasoning_tokens={usage.get('reasoning_tokens')}); no auto-retry"
+                    )
             parsed = validate_answer(output_text)
             record(workspace, {'type': 'STAGE_OUTPUT', 'stage': stage.name,
                                'model': stage.model, 'result': parsed, 'usage': usage,
@@ -316,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument('--workspace', type=Path, default=DEFAULT_WORKSPACE)
     run.add_argument('--allow-api', action='store_true')
     run.add_argument('--budget-usd', default='0')
+    run.add_argument('--resume-from', type=Path, default=None)
     status = sub.add_parser('status', help='Verify a private local event journal')
     status.add_argument('--workspace', type=Path, default=DEFAULT_WORKSPACE)
     args = parser.parse_args(argv)
@@ -327,7 +408,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             result = run_cycle(read_brief(args.brief), args.workspace,
                                mode=args.mode, allow_api=args.allow_api,
-                               budget_usd=args.budget_usd)
+                               budget_usd=args.budget_usd,
+                               resume_from=args.resume_from)
             print(json.dumps(result))
         return 0
     except (ValueError, OSError, PermissionError, RuntimeError) as exc:
