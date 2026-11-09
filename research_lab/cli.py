@@ -13,7 +13,7 @@ import re
 import sys
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Protocol
@@ -41,10 +41,10 @@ STAGES = (
           'Clearly mark novelty UNVERIFIED if references do not establish it.'),
     Stage('hypotheses', 'gpt-6-astra',
           'Propose exactly three nontrivial competing, falsifiable world-model hypotheses. '
-          'For each specify observable prediction, needed assumptions and a disconfirming outcome.'),
+          'For each specify an observable prediction, assumptions and a refuting outcome.'),
     Stage('red_team', 'gpt-6-astra',
           'Challenge every hypothesis: leakage, marginal shortcuts, as-of errors, observability, '
-          'unidentified interventions, confounding, and baseline competitiveness. Prefer refutation.'),
+          'unidentified interventions, confounding, and baselines. Prefer refutation.'),
     Stage('preregistration', 'gpt-6.1-sol',
           'Draft a prospective protocol: data requirements, frozen splits, primary metrics, '
           'baselines, negative controls, uncertainty, evidence thresholds and stopping rules. '
@@ -71,14 +71,18 @@ SYSTEM = (
 
 
 class Provider(Protocol):
-    def complete(self, *, stage: Stage, prompt: str, max_output_tokens: int) -> tuple[str, dict[str, int]]:
+    def complete(
+        self, *, stage: Stage, prompt: str, max_output_tokens: int
+    ) -> tuple[str, dict[str, int]]:
         """Return generated text and optional token usage."""
 
 
 class FixtureProvider:
     """Exercise plumbing without LLM calls; never a scientific finding."""
 
-    def complete(self, *, stage: Stage, prompt: str, max_output_tokens: int) -> tuple[str, dict[str, int]]:
+    def complete(
+        self, *, stage: Stage, prompt: str, max_output_tokens: int
+    ) -> tuple[str, dict[str, int]]:
         _ = prompt, max_output_tokens
         return json.dumps({
             'claims': [f'FIXTURE ONLY: {stage.name}; no scientific claim'],
@@ -99,7 +103,9 @@ class OpenAIProvider:
             raise RuntimeError('Install optional dependency: pip install openai') from exc
         self.client = OpenAI(max_retries=0, timeout=90.0)
 
-    def complete(self, *, stage: Stage, prompt: str, max_output_tokens: int) -> tuple[str, dict[str, int]]:
+    def complete(
+        self, *, stage: Stage, prompt: str, max_output_tokens: int
+    ) -> tuple[str, dict[str, int]]:
         response = self.client.responses.create(
             model=stage.model,
             input=[{'role': 'system', 'content': SYSTEM + '\n' + stage.instruction},
@@ -130,7 +136,7 @@ def record(workspace: Path, event: dict[str, Any]) -> None:
     entry: dict[str, Any] = {
         'sequence': len(previous) + 1,
         'previous_hash': previous[-1]['entry_hash'] if previous else 'GENESIS',
-        'timestamp': datetime.now(timezone.utc).isoformat(),
+        'timestamp': datetime.now(UTC).isoformat(),
         'event': event,
     }
     entry['entry_hash'] = digest(entry)
@@ -227,7 +233,10 @@ def run_cycle(brief: str, workspace: Path, *, mode: str,
     try:
         for stage in STAGES:
             prompt = make_prompt(brief, stage, prior)
-            quote = reserve_cost(stage.model, prompt, MAX_STAGE_OUTPUT) if mode == 'live' else Decimal('0')
+            quote = (
+                reserve_cost(stage.model, prompt, MAX_STAGE_OUTPUT)
+                if mode == 'live' else Decimal('0')
+            )
             if reserved + quote > budget:
                 record(workspace, {'type': 'BUDGET_STOP', 'stage': stage.name,
                                    'reserved_usd': str(reserved), 'next_quote_usd': str(quote)})
