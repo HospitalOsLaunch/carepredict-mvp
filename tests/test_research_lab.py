@@ -6,9 +6,10 @@ import pytest
 
 from research_lab.cli import (
     STAGES,
+    budget_summary,
     api_error_details,
-    load_resume,
     digest,
+    load_resume,
     read_brief,
     run_cycle,
     validate_answer,
@@ -194,3 +195,17 @@ def test_multihop_resume_carries_original_reservations(
     assert events[0]['event']['carried_reserved_usd'] == str(first_reserved)
     assert fake.calls.count('prior_art') == 1
     assert not third.exists()
+
+
+def test_budget_summary_is_reservations_not_actual_charge() -> None:
+    events: list[dict[str, Any]] = [
+        {'event': {'type': 'START', 'budget_usd': '1.00',
+                   'carried_reserved_usd': '0.65'}},
+        {'event': {'type': 'CALL_RESERVED', 'running_reservation_usd': '0.80'}},
+        {'event': {'type': 'BUDGET_STOP', 'next_quote_usd': '0.27'}},
+        {'event': {'type': 'ABORTED'}},
+    ]
+    summary = budget_summary(events)
+    assert summary['reserved_usd'] == '0.80'
+    assert summary['minimum_cap_to_continue_usd'] == '1.07'
+    assert summary['shortfall_usd'] == '0.07'
