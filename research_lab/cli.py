@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import os
 import re
@@ -98,7 +99,7 @@ class OpenAIProvider:
         if not os.getenv('OPENAI_API_KEY'):
             raise ValueError('OPENAI_API_KEY missing; live run refused')
         try:
-            from openai import OpenAI
+            OpenAI = importlib.import_module('openai').OpenAI
         except ImportError as exc:
             raise RuntimeError('Install optional dependency: pip install openai') from exc
         self.client = OpenAI(max_retries=0, timeout=90.0)
