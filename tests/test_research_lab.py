@@ -1,10 +1,12 @@
 import json
+from typing import Any
 from pathlib import Path
 
 import pytest
 
 from research_lab.cli import (
     STAGES,
+    load_resume,
     api_error_details,
     digest,
     read_brief,
@@ -95,3 +97,59 @@ def test_sanitized_api_error_rejects_untrusted_identifiers() -> None:
         body = {'error': {'code': 'key=secret sk-123', 'type': ['unknown']}}
 
     assert api_error_details(FakeError()) == ('unknown', 'unknown')
+
+
+def test_resume_reuses_prior_stage_without_new_sol_call(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import research_lab.cli as lab
+
+    class FakeProvider:
+        calls: list[str] = []
+
+        def __init__(self) -> None:
+            pass
+
+        def complete(
+            self, *, stage: lab.Stage, prompt: str, max_output_tokens: int
+        ) -> tuple[str, dict[str, Any]]:
+            self.calls.append(stage.name)
+            if stage.name == 'hypotheses' and len(self.calls) == 2:
+                raise ValueError('synthetic truncated first attempt')
+            assert prompt and max_output_tokens
+            answer = {'claims': [f'Hypothesis {stage.name}'], 'falsifiers': [],
+                      'prior_art': [], 'next_steps': [], 'gate': 'NOT_TESTED'}
+            return json.dumps(answer), {
+                'input_tokens': 5, 'output_tokens': 40, 'reasoning_tokens': 0,
+                'response_status': 'completed', 'incomplete_reason': 'none',
+            }
+
+    provider = FakeProvider()
+    monkeypatch.setattr(lab, 'OpenAIProvider', lambda: provider)
+    first = tmp_path / 'old'
+    with pytest.raises(ValueError, match='synthetic truncated'):
+        lab.run_cycle(BRIEF, first, mode='live', allow_api=True, budget_usd='5')
+    assert provider.calls == ['prior_art', 'hypotheses']
+    assert lab.verify_journal(first)[-1]['event']['type'] == 'ABORTED'
+    carry, spent, source_hash = load_resume(first, BRIEF, 'live')
+    assert [name for name, _ in carry] == ['prior_art']
+    assert spent > 0 and len(source_hash) == 64
+    second = tmp_path / 'new'
+    result = lab.run_cycle(BRIEF, second, mode='live', allow_api=True,
+                           budget_usd='5', resume_from=first)
+    assert result['stages'] == 6
+    assert provider.calls.count('prior_art') == 1
+    events = [e['event'] for e in lab.verify_journal(second)]
+    assert [e['type'] for e in events].count('RESUMED_STAGE') == 1
+    assert [e['type'] for e in events].count('STAGE_OUTPUT') == 5
+    assert events[-1]['type'] == 'COMPLETE'
+    assert lab.verify_journal(first)[-1]['event']['type'] == 'ABORTED'
+
+
+def test_resume_rejects_changed_brief(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import research_lab.cli as lab
+
+    work = tmp_path / 'fixture'
+    lab.run_cycle(BRIEF, work, mode='smoke')
+    with pytest.raises(ValueError, match='Resume source does not match'):
+        load_resume(work, 'changed brief', 'live')
