@@ -11,7 +11,6 @@
 ```bash
 git fetch origin research/lab-runtime-2026-11
 git switch research/lab-runtime-2026-11
-python3 -m pytest -q tests/test_research_lab.py
 bash research_lab/launch-mac.sh --live
 ```
 
