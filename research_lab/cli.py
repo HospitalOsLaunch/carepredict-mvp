@@ -314,6 +314,23 @@ def main(argv: list[str] | None = None) -> int:
     except (ValueError, OSError, PermissionError, RuntimeError) as exc:
         print(f'REFUSED: {exc}', file=sys.stderr)
         return 2
+    except Exception as exc:
+        # API failures must not trigger retries or reveal keys / request details.
+        if getattr(exc, 'status_code', None) == 429:
+            print(
+                'REFUSED: OpenAI API 429 (credits or rate limit). '
+                'Check project billing/credits and limits. '
+                'No automatic retry; keep the existing event journal. '
+                'After billing is resolved, start a NEW workspace.',
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f'REFUSED: provider call failed ({type(exc).__name__}). '
+                'No retry; inspect the local event journal before a new run.',
+                file=sys.stderr,
+            )
+        return 2
 
 
 if __name__ == '__main__':
