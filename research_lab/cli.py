@@ -288,6 +288,25 @@ def run_cycle(brief: str, workspace: Path, *, mode: str,
         raise
 
 
+
+def api_error_details(exc: Exception) -> tuple[str, str]:
+    """Return only non-sensitive provider error identifiers, never raw body/message."""
+    body = getattr(exc, 'body', None)
+    error = body.get('error', body) if isinstance(body, dict) else {}
+    code = error.get('code') if isinstance(error, dict) else None
+    kind = error.get('type') if isinstance(error, dict) else None
+    # Some SDK error objects expose these fields directly.
+    code = code if code is not None else getattr(exc, 'code', None)
+    kind = kind if kind is not None else getattr(exc, 'type', None)
+
+    def safe(value: object) -> str:
+        if isinstance(value, str) and re.fullmatch(r'[a-z][a-z0-9_]{0,79}', value):
+            return value
+        return 'unknown'
+
+    return safe(code), safe(kind)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description='HospitalOS guarded world-models research lab')
     sub = parser.add_subparsers(dest='command', required=True)
@@ -317,11 +336,13 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         # API failures must not trigger retries or reveal keys / request details.
         if getattr(exc, 'status_code', None) == 429:
+            code, kind = api_error_details(exc)
             print(
-                'REFUSED: OpenAI API 429 (credits or rate limit). '
-                'Check project billing/credits and limits. '
-                'No automatic retry; keep the existing event journal. '
-                'After billing is resolved, start a NEW workspace.',
+                f'REFUSED: OpenAI API 429; error.code={code}; error.type={kind}. '
+                'If credit_balance_exhausted, check credits for the API organization '
+                'used by this project. If a spend/usage limit, inspect that limit. '
+                'If rate_limited, inspect model RPM/TPM. '
+                'No retry; preserve the event journal and use a NEW workspace later.',
                 file=sys.stderr,
             )
         else:
