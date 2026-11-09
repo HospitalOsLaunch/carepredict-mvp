@@ -29,7 +29,9 @@ def test_live_requires_explicit_permission_and_no_workspace_written(tmp_path: Pa
     assert not work.exists()
 
 
-def test_live_requires_api_key_before_workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_live_requires_api_key_before_workspace(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv('OPENAI_API_KEY', raising=False)
     work = tmp_path / 'lab'
     with pytest.raises(ValueError, match='OPENAI_API_KEY'):
