@@ -4,8 +4,6 @@ from typing import Any
 
 import pytest
 
-from research_lab.export_local_review import export_review
-
 from research_lab.cli import (
     STAGES,
     budget_summary,
@@ -17,6 +15,7 @@ from research_lab.cli import (
     validate_answer,
     verify_journal,
 )
+from research_lab.export_local_review import export_review
 
 BRIEF = ('Under partial observability, can an action-conditioned latent state '
          'distinguish dynamic information from conditional marginal shortcuts?')
