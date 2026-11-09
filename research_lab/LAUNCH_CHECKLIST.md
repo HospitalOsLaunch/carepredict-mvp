@@ -25,3 +25,30 @@ Inspect `events.jsonl` offline with `python3 -m research_lab status --workspace 
 ## Unconnected dependencies
 
 This repository cannot receive or store your secret through the available GitHub connector. GitHub Actions must remain keyless and offline. The live engine does not yet have a private persistent remote executor, asynchronous API monitoring, or retrieval of proprietary scientific artifacts. These require an explicitly connected private environment and independent access controls.
+
+
+## Safe recovery from the 2026-11-09 partial live run
+
+If the original journal is intact, the cycle can continue without calling the already completed
+`prior_art` stage. The first run must remain untouched. After fetching this branch,
+perform the new preflight and run:
+
+```bash
+cd ~/hospitalos-research-lab
+git pull --ff-only
+python3 -m research_lab status --workspace .research-lab-live-20261109T195551Z
+bash research_lab/launch-mac.sh --resume .research-lab-live-20261109T195551Z
+```
+
+The second command only checks the journal; the final command may incur API charges.
+The launcher starts a **new** workspace and copies verified previous stage outputs with
+provenance hashes. It accounts for reservations from the original failed attempt in
+the same nominal local 1 USD budget; the balance is an estimate, not an actual spend.
+It increases Astra's output token cap, adds medium reasoning effort, and records sanitized
+response status, incomplete reason and token usage *before parsing*. It does not
+automatically retry failed calls, and never sends raw provider errors to public GitHub.
+Do not copy or publish the events journal: it contains proprietary research text.
+
+The original five-event record verifies its integrity, but does not prove why Astra's
+response failed schema validation. This change improves future diagnosis; no scientific
+conclusion is inferred from a partially completed run.
