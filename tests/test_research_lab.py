@@ -3,7 +3,15 @@ from pathlib import Path
 
 import pytest
 
-from research_lab.cli import STAGES, digest, read_brief, run_cycle, validate_answer, verify_journal
+from research_lab.cli import (
+    STAGES,
+    api_error_details,
+    digest,
+    read_brief,
+    run_cycle,
+    validate_answer,
+    verify_journal,
+)
 
 BRIEF = ('Under partial observability, can an action-conditioned latent state '
          'distinguish dynamic information from conditional marginal shortcuts?')
@@ -71,3 +79,19 @@ def test_brief_email_rejected(tmp_path: Path) -> None:
 
 def test_journal_hash_is_stable() -> None:
     assert digest({'a': 1, 'b': 2}) == digest({'b': 2, 'a': 1})
+
+
+def test_sanitized_api_429_diagnostics() -> None:
+    class FakeError(Exception):
+        status_code = 429
+        body = {'error': {'code': 'insufficient_quota', 'type': 'insufficient_quota',
+                          'message': 'sensitive text'}}
+
+    assert api_error_details(FakeError()) == ('insufficient_quota', 'insufficient_quota')
+
+
+def test_sanitized_api_error_rejects_untrusted_identifiers() -> None:
+    class FakeError(Exception):
+        body = {'error': {'code': 'key=secret sk-123', 'type': ['unknown']}}
+
+    assert api_error_details(FakeError()) == ('unknown', 'unknown')
