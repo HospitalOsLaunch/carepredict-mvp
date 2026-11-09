@@ -3,8 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from research_lab.cli import (STAGES, digest, read_brief, run_cycle,
-                              validate_answer, verify_journal)
+from research_lab.cli import STAGES, digest, read_brief, run_cycle, validate_answer, verify_journal
 
 BRIEF = ('Under partial observability, can an action-conditioned latent state '
          'distinguish dynamic information from conditional marginal shortcuts?')
@@ -56,7 +55,7 @@ def test_tampering_detected(tmp_path: Path):
 
 
 def test_no_model_promotion_in_schema():
-    answer = dict(claims=[], falsifiers=[], prior_art=[], next_steps=[], gate='PROMOTED')
+    answer = {'claims': [], 'falsifiers': [], 'prior_art': [], 'next_steps': [], 'gate': 'PROMOTED'}
     with pytest.raises(ValueError, match='cannot authorize'):
         validate_answer(json.dumps(answer))
 
