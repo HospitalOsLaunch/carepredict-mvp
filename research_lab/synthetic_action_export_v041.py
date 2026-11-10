@@ -9,6 +9,7 @@ at its END h+1, aligned to the operational unit snapshot for the same hour.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import gzip
 import hashlib
@@ -18,7 +19,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .synthetic_adapter_v1 import ACTION_SCHEMA, instant
+from .synthetic_adapter_v1 import ACTION_SCHEMA
 
 LEVER_CHANNELS = (
     "anticipation_sorties",
@@ -260,3 +261,25 @@ def export_existing_truth(source: Path, destination: Path) -> dict[str, Any]:
         )
         stage.rename(destination)
     return result
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="S0a export from an EXISTING verified synthetic truth archive; no simulation."
+    )
+    parser.add_argument("--truth", required=True, type=Path)
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args(argv)
+    receipt = export_existing_truth(args.truth, args.output)
+    print(json.dumps({
+        "status": "S0A_ACTION_EXPORT_COMPLETE_UNTRAINED",
+        "source_manifest_sha256": receipt["source_manifest_sha256"],
+        "action_channels": receipt["coverage"]["channels"],
+        "hour_intervals": receipt["coverage"]["hour_intervals"],
+        "simulation": False, "forward": False, "training": False,
+    }, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
