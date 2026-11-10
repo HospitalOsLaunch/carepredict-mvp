@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .synthetic_adapter_v1 import ACTION_SCHEMA, build_window
+from .synthetic_adapter_v1 import ACTION_SCHEMA, V041_ACTIONS, build_window
 
 OBSERVED_SCHEMA = "OPERATIONAL_V2_RESEARCH_1"
 ALLOWED_PARTITIONS = frozenset(("train", "development", "validation"))
@@ -132,6 +132,7 @@ def read_sources(
         ).hexdigest(),
         "shared_generator_manifest_sha256": obs["source_manifest_sha256"],
         "source_clock": obs.get("source_clock"),
+        "action_coverage": actions.get("coverage"),
         "partition": partition,
         "same_run_asserted_by_export_manifests": True,
         "real_hospital_verified": False,
@@ -150,10 +151,24 @@ def build_from_archives(
     observed_root: Path, action_root: Path, entity_id: str,
     spec: dict[str, Any], origin: str, label_cutoff: str,
     max_age_hours: int,
+    stage1: Any | None = None,
 ) -> dict[str, Any]:
     observations, actions, topology, partition, provenance = read_sources(
         observed_root, action_root, entity_id
     )
+    s0b_receipt = None
+    if spec.get("action_features") == list(V041_ACTIONS):
+        if stage1 is None:
+            raise ValueError(
+                "Four-channel native actions require an explicit Stage1 configuration"
+            )
+        from .s0b_four_channel_bridge import verify_four_channel_binding
+
+        s0b_receipt = verify_four_channel_binding(
+            spec=spec, stage1=stage1, ledger=actions,
+            coverage=provenance["action_coverage"],
+            entity_id=entity_id, source_clock=provenance["source_clock"],
+        )
     row = build_window(
         spec=spec, observations=observations, action_intervals=actions,
         topology=topology, entity_id=entity_id, origin=origin,
@@ -161,4 +176,6 @@ def build_from_archives(
         max_age_hours=max_age_hours,
     )
     row["provenance"]["archives"] = provenance
+    if s0b_receipt is not None:
+        row["provenance"]["s0b_four_channel_binding"] = s0b_receipt
     return row
