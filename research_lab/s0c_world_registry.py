@@ -10,7 +10,7 @@ import hashlib
 import json
 import re
 from collections import defaultdict
-from typing import Any
+from typing import Any, cast
 
 SCHEMA = "hospitalos.synthetic_world_registry_v1"
 SPLITS = ("train", "development", "validation", "ood_blind")
@@ -69,7 +69,7 @@ def validate_world(raw: Any) -> dict[str, Any]:
         raise PermissionError("Blind world cannot be readable by research agents")
     if raw["partition"] != "ood_blind" and not raw["readable_by_lab"]:
         raise ValueError("Development world must have a declared readable source")
-    return json.loads(_canonical(raw))
+    return cast(dict[str, Any], json.loads(_canonical(raw)))
 
 
 def build_registry(
