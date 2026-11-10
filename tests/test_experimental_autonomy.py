@@ -1,6 +1,7 @@
 """Offline, no-network tests of the guarded experimental queue."""
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import shutil
@@ -124,7 +125,7 @@ def test_one_active_worker_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     repo, queue, work, _ = fixture(tmp_path)
     def locked(*_args: object) -> None:
         raise BlockingIOError("already locked")
-    monkeypatch.setattr(lab.fcntl, "flock", locked)
+    monkeypatch.setattr(fcntl, "flock", locked)
     result = lab.tick(queue, repo, work, None, None, False)
     assert result["status"] == "BLOCKED_WORKER_ALREADY_ACTIVE"
     assert not (work / "events.jsonl").exists()
