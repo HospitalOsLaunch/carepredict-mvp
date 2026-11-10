@@ -58,7 +58,7 @@ def _hash_check(root: Path, relative: str, expected: Any) -> Path:
 
 
 def _jsonl_gz(path: Path) -> list[dict[str, Any]]:
-    out = []
+    out: list[dict[str, Any]] = []
     count_bytes = 0
     with gzip.open(path, mode="rt", encoding="utf-8", newline="") as stream:
         for line in stream:
