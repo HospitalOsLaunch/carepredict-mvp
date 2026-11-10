@@ -1,14 +1,13 @@
 """Offline synthetic_adapter_v1 tests: no simulator, torch, or model forward."""
 from __future__ import annotations
 
-from typing import Any
-
 import copy
 import datetime as dt
 import gzip
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
