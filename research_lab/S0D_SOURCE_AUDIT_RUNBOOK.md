@@ -70,6 +70,13 @@ S0d consomme actuellement la seconde interface. Le chemin de **conversion contr�
 
 ## 5. Tests et limites
 
+Le contrôle complémentaire des métadonnées multi-mondes est décrit dans
+[S0D_COHORT_SEPARATION_RUNBOOK.md](S0D_COHORT_SEPARATION_RUNBOOK.md).
+Il réconcilie les rôles S0c, les composantes de dépendance et les supports
+temporels déclarés, sans ouvrir d'archives. Son succès reste
+`CONSISTENT_METADATA_ONLY` : il ne certifie ni le lignage réel, ni les sources,
+ni la séparation avec les partitions réservées.
+
 ```bash
 python3 -m pytest -q tests/test_s0d_source_audit.py
 ```
