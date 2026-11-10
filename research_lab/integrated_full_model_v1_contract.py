@@ -92,6 +92,11 @@ def validate_spec(raw: Any) -> dict[str, Any]:
             raise ValueError(f"Invalid {name}")
     if not raw["action_features"]:
         raise ValueError("Action-conditioned RSSM requires explicit action channels")
+    if raw["action_features"] != ["staffing_delta", "discharge_delta"]:
+        raise ValueError(
+            "Integrated v1 accepts only the existing RS-JEPA synthetic action order; "
+            "a separate approved adapter is required for operational actions"
+        )
     targets = raw["targets"]
     if not isinstance(targets, list) or not 1 <= len(targets) <= 32:
         raise ValueError("No forecast targets")
@@ -235,7 +240,7 @@ def make_example_spec() -> dict[str, Any]:
              "source": "observed_age"},
         ],
         "static_features": ["bed_capacity"],
-        "action_features": ["discharge_planning", "bed_management"],
+        "action_features": ["staffing_delta", "discharge_delta"],
         "targets": [
             {"name": "ed_waiting", "unit": "patients", "level": "hospital",
              "definition": "Demande de placement en lit depuis les urgences pour ce périmètre."},
