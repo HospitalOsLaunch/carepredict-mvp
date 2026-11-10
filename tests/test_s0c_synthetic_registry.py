@@ -171,7 +171,9 @@ def output_fixture(root: Path, *, index: dict[str, Any] | None = None) -> None:
 
 def test_lower_privilege_inspector_needs_only_redacted_index(tmp_path: Path) -> None:
     output_fixture(tmp_path / "exposure")
-    receipt = inspect(tmp_path / "exposure")
+    root = tmp_path / "exposure"
+    expected_sha = hashlib.sha256((root / "index.json").read_bytes()).hexdigest()
+    receipt = inspect(root, expected_index_sha256=expected_sha)
     assert receipt["status"] == "S0C_METADATA_HASH_VERIFIED_NO_HOLDOUT_ACCESS"
     assert receipt["training"] is False
     assert receipt["summary"]["reserved_test_world_count"] == 1
@@ -186,10 +188,44 @@ def test_inspector_rejects_tamper_and_reserved_partition_even_with_new_hash(
     changed = copy.deepcopy(source)
     changed["partitions"]["test"] = [{"world_id": "LEAK"}]
     (root / "index.json").write_text(json.dumps(changed))
+    expected_sha = hashlib.sha256((root / "index.json").read_bytes()).hexdigest()
     with pytest.raises(ValueError):
-        inspect(root)
+        inspect(root, expected_index_sha256=expected_sha)
     manifest = json.loads((root / "manifest.json").read_text())
     manifest["index_sha256"] = hashlib.sha256((root / "index.json").read_bytes()).hexdigest()
     (root / "manifest.json").write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="test or unknown partition"):
-        inspect(root)
+        inspect(root, expected_index_sha256=expected_sha)
+
+
+
+def test_external_operator_pin_is_mandatory_and_rejects_rewritten_manifest(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "exposure"
+    output_fixture(root)
+    with pytest.raises(PermissionError, match="externally pinned"):
+        inspect(root, expected_index_sha256="")
+    with pytest.raises(ValueError, match="Corrupt"):
+        inspect(root, expected_index_sha256="f" * 64)
+
+
+def test_semantic_overlap_is_rejected_even_with_a_matching_new_pin(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "exposure"
+    output_fixture(root)
+    index = json.loads((root / "index.json").read_text())
+    temporal = index["partitions"]["development_temporal"][0]
+    train = index["partitions"]["train"][0]
+    temporal["origin_hours"]["first_origin_h"] = (
+        train["origin_hours"]["last_origin_h"] + 1
+    )
+    raw = json.dumps(index, sort_keys=True)
+    (root / "index.json").write_text(raw)
+    sha = hashlib.sha256(raw.encode()).hexdigest()
+    manifest = json.loads((root / "manifest.json").read_text())
+    manifest["index_sha256"] = sha
+    (root / "manifest.json").write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="overlaps"):
+        inspect(root, expected_index_sha256=sha)
