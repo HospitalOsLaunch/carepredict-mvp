@@ -6,8 +6,8 @@ import pytest
 
 from research_lab.cli import (
     STAGES,
-    budget_summary,
     api_error_details,
+    budget_summary,
     digest,
     load_resume,
     read_brief,
