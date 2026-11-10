@@ -24,11 +24,14 @@ def _open_file(root: Path, relative: str) -> Path:
     if not isinstance(relative, str) or not relative or Path(relative).is_absolute():
         raise ValueError("Only relative archive paths are allowed")
     root = root.resolve(strict=True)
-    result = (root / relative).resolve(strict=True)
+    logical = root / relative
+    if logical.is_symlink():
+        raise ValueError("Symlinked archive source is forbidden")
+    result = logical.resolve(strict=True)
     if not result.is_relative_to(root):
         raise ValueError("Archive path escapes its dataset directory")
-    if not result.is_file() or result.is_symlink():
-        raise ValueError("Missing or symlinked archive source")
+    if not result.is_file():
+        raise ValueError("Missing archive source")
     if result.stat().st_size > MAX_COMPRESSED_BYTES:
         raise ValueError("Archive source exceeds bounded read limit")
     return result
@@ -105,8 +108,10 @@ def read_sources(
             or actions.get("entity_level") != "hospital"
             or actions.get("file") != "actions/intervals.jsonl.gz"):
         raise ValueError("Action ledger is not a compatible same-run synthetic export")
-    if not isinstance(obs.get("source_manifest_sha256"), str):
-        raise ValueError("Missing generator source identity")
+    source_sha = obs.get("source_manifest_sha256")
+    if (not isinstance(source_sha, str) or len(source_sha) != 64
+            or any(ch not in "0123456789abcdef" for ch in source_sha)):
+        raise ValueError("Missing or invalid generator source SHA256 identity")
     o_hashes = obs.get("files_sha256", {})
     a_hashes = actions.get("files_sha256", {})
     o_path = _hash_check(
