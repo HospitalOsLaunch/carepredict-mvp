@@ -11,7 +11,7 @@ from .synthetic_adapter_v1 import ACTION_SCHEMA, build_window
 def main() -> int:
     spec = make_example_spec()
     spec["history_steps"] = 3
-    origin = dt.datetime(2026, 11, 10, 12, tzinfo=dt.timezone.utc)
+    origin = dt.datetime(2026, 11, 10, 12, tzinfo=dt.UTC)
 
     def time(hour: int) -> str:
         return (origin + dt.timedelta(hours=hour)).isoformat()
