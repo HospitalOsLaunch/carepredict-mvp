@@ -17,7 +17,7 @@ from .integrated_full_model_v1_contract import (
     validate_against_stage1,
     validate_spec,
 )
-from .synthetic_adapter_v1 import V041_ACTIONS, instant, validate_action_ledger
+from .synthetic_adapter_v1 import V041_ACTIONS, validate_action_ledger
 
 S0B_SCHEMA = "hospitalos.s0b_v041_four_channel_bridge_v1"
 SOURCE_CLOCK = "fixed_utc_plus_01_no_dst"
