@@ -9,7 +9,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 MODEL_SCHEMA = "hospitalos.integrated_full_model_v1"
 CHECKPOINT_SCHEMA = "hospitalos.integrated_checkpoint_v1"
@@ -117,7 +117,7 @@ def validate_spec(raw: Any) -> dict[str, Any]:
         raise ValueError("As-of source versions are mandatory")
     if raw["action_policy"] != "EXPLICIT_KNOWN_PLAN_OR_COUNTERFACTUAL":
         raise ValueError("Future actions must never be silently sourced from future facts")
-    return json.loads(canonical_bytes(raw))
+    return cast(dict[str, Any], json.loads(canonical_bytes(raw)))
 
 
 def validate_against_stage1(spec: dict[str, Any], stage1: Any) -> None:
@@ -193,7 +193,7 @@ def validate_checkpoint_manifest(raw: Any, *, spec: dict[str, Any]) -> dict[str,
     if (raw["training_status"] == "SYNTHETIC_EVALUATED_NO_PROMOTION"
             and not all(raw["evidence"].values())):
         raise ValueError("Evaluated status needs independent source and review evidence")
-    return json.loads(canonical_bytes(raw))
+    return cast(dict[str, Any], json.loads(canonical_bytes(raw)))
 
 
 def inspect_checkpoint(directory: Path) -> dict[str, Any]:
