@@ -22,6 +22,10 @@ METRICS = frozenset((
     "nurse_count", "aide_count", "care_workload_proxy", "siips_score",
 ))
 ACTIONS = ("staffing_delta", "discharge_delta")
+V041_ACTIONS = (
+    "anticipation_sorties", "lits_supplementaires",
+    "renfort_soignant", "acceleration_aval",
+)
 FEATURE_SOURCES = {
     "observed_value": "operational_observed",
     "observation_mask": "observed_mask",
@@ -114,9 +118,13 @@ def validate_observations(rows: list[dict[str, Any]],
     return out
 
 
-def validate_action_ledger(rows: list[dict[str, Any]],
-                           entity_id: str, step_hours: int) -> list[dict[str, Any]]:
+def validate_action_ledger(
+    rows: list[dict[str, Any]], entity_id: str, step_hours: int,
+    channels: tuple[str, ...],
+) -> list[dict[str, Any]]:
     """Every interval is explicit, including true zeros. Never impute absent actions."""
+    if channels not in (ACTIONS, V041_ACTIONS):
+        raise ValueError("Unsupported action channel semantics")
     expected = {
         "schema", "event_id", "version", "entity_id", "source_system",
         "interval_start", "interval_end", "recorded_at", "available_at",
@@ -143,9 +151,13 @@ def validate_action_ledger(rows: list[dict[str, Any]],
                 or not (start <= end <= recorded <= available)):
             raise ValueError("Bad action interval or availability order")
         if (not isinstance(row["values"], dict)
-                or set(row["values"]) != set(ACTIONS)
+                or set(row["values"]) != set(channels)
                 or not all(_action_number(v) for v in row["values"].values())):
-            raise ValueError("Action channels must be in exact RS-JEPA order")
+            raise ValueError("Action channels must match one exact synthetic contract")
+        if (channels == V041_ACTIONS and any(
+                type(row["values"][name]) is not int or row["values"][name] < 0
+                for name in channels)):
+            raise ValueError("Native V0.4.1 lever counts must be nonnegative integers")
         sig = json.dumps(row, sort_keys=True, separators=(",", ":")).encode()
         key = (row["event_id"], row["version"])
         if key in seen:
@@ -239,7 +251,7 @@ def _spec_metrics(spec: dict[str, Any]) -> dict[str, dict[str, str]]:
         raise ValueError("Each observed metric needs value, missingness and age features")
     if spec["static_features"] != ["bed_capacity"]:
         raise ValueError("Only known as-of topology capacity may be a static v1 feature")
-    if spec["action_features"] != list(ACTIONS):
+    if spec["action_features"] not in (list(ACTIONS), list(V041_ACTIONS)):
         raise ValueError("Incompatible synthetic action semantics")
     if any(t["name"] not in METRICS for t in spec["targets"]):
         raise ValueError("Only target measurements actually provided by observations allowed")
@@ -279,7 +291,10 @@ def build_window(
         raise ValueError("Hospital entity ID required")
     static = [_topology_capacity(topology, entity_id, D)]
     obs = validate_observations(observations, entity_id)
-    acts = validate_action_ledger(action_intervals, entity_id, spec["step_hours"])
+    channels = tuple(spec["action_features"])
+    acts = validate_action_ledger(
+        action_intervals, entity_id, spec["step_hours"], channels
+    )
     sources = _latest_versions(obs, D)
     obs_slots = _slots_unique(sources, "event")
     action_slots = _slots_unique(_latest_versions(acts, D), "end")
@@ -320,7 +335,7 @@ def build_window(
         if (action is None or action["start"] != timestamp - step
                 or action["end"] != timestamp):
             raise ValueError("Missing complete synthetic action interval; never impute zero")
-        actions_context.append([float(action["values"][k]) for k in ACTIONS])
+        actions_context.append([float(action["values"][k]) for k in channels])
         action_available_ns.append(ns(action["available"]))
     # Future targets are frozen separately, under a later label maturity cutoff.
     labels = _slots_unique(_latest_versions(obs, L), "event")
