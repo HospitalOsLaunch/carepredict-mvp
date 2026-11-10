@@ -209,9 +209,9 @@ def audit_world(
     missing_features = 0
     latest_known_action = None
     for D in sorted(timestamps):
-        if D - history < source_start or D + H > source_end:
+        if D - history < source_start or source_end < D + H:
             raise ValueError("Context or forecast target crosses source simulation boundary")
-        if L < D + H or L > source_end:
+        if D + H > L or source_end < L:
             raise ValueError("Labels not matured inside source extraction interval")
         sample = build_window(
             spec=spec, observations=observed_rows, action_intervals=action_rows,
@@ -219,7 +219,7 @@ def audit_world(
             origin=D.isoformat(), label_cutoff=L.isoformat(),
             partition=partition, max_age_hours=max_age_hours,
         )
-        if (not sample["supervision_alignment"]["training_loss_authorized"] is False
+        if (sample["supervision_alignment"]["training_loss_authorized"] is not False
                 or sample["action_mode"] != "no_op"
                 or sample["forward_executed"] is not False):
             raise ValueError("Source window misrepresented training permission or action mode")
