@@ -1,9 +1,8 @@
 """No-simulation/no-ML tests for native four-lever S0a action export."""
 from __future__ import annotations
 
-from typing import Any
-
 from copy import deepcopy
+from typing import Any
 
 import pytest
 
