@@ -282,3 +282,64 @@ def test_invalid_evidence_role_or_partition_refused(tmp_path: Path) -> None:
     }))
     with pytest.raises(ValueError, match="legacy partition"):
         summarize_evidence(doc)
+
+
+@pytest.mark.parametrize(
+    ("origin", "cutoff", "error"),
+    [
+        (at(1), at(60), "Context or forecast target"),
+        (at(60), at(70), "Context or forecast target"),
+        (at(28), at(40), "Labels not matured"),
+        (at(28), at(74), "Labels not matured"),
+    ],
+)
+def test_temporal_boundaries_refuse_bad_source_windows(
+    tmp_path: Path, origin: str, cutoff: str, error: str
+) -> None:
+    with pytest.raises(ValueError, match=error):
+        audit(tmp_path, origins=[origin], label_cutoff=cutoff)
+
+
+def test_incomplete_same_run_actions_refused_even_if_sha_updated(
+    tmp_path: Path,
+) -> None:
+    truth, observed, actions = source_dirs(tmp_path)
+    file = actions / "actions/intervals.jsonl.gz"
+    with gzip.open(file, "rt", encoding="utf-8") as stream:
+        records = [json.loads(line) for line in stream]
+    # Delete a historical interval: never silently reinterpret it as zero.
+    write_gz(file, records[:-1])
+    path = actions / "manifest.json"
+    metadata = json.loads(path.read_text())
+    metadata["files_sha256"]["actions/intervals.jsonl.gz"] = sha(file)
+    write_json(path, metadata)
+    registry = world_registry(truth, observed, actions)
+    model = make_v041_synthetic_spec()
+    model["history_steps"] = 3
+    with pytest.raises(ValueError, match="Incomplete"):
+        audit_world(
+            registry=registry, world_id="w0", truth_root=truth,
+            observed_root=observed, action_root=actions,
+            spec=model, origins=[at(28)], label_cutoff=at(60),
+            max_age_hours=6,
+        )
+
+
+def test_cross_world_action_source_reference_fails(
+    tmp_path: Path,
+) -> None:
+    truth, observed, actions = source_dirs(tmp_path)
+    path = actions / "manifest.json"
+    metadata = json.loads(path.read_text())
+    metadata["source_manifest_sha256"] = "9" * 64
+    write_json(path, metadata)
+    registry = world_registry(truth, observed, actions)
+    model = make_v041_synthetic_spec()
+    model["history_steps"] = 3
+    with pytest.raises(ValueError, match="same run"):
+        audit_world(
+            registry=registry, world_id="w0", truth_root=truth,
+            observed_root=observed, action_root=actions,
+            spec=model, origins=[at(28)], label_cutoff=at(60),
+            max_age_hours=6,
+        )
