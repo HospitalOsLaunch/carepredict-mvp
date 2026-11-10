@@ -277,17 +277,25 @@ def freeze(
     return result
 
 
-def inspect(output: Path) -> dict[str, Any]:
-    """Lower-privilege worker may inspect only the sanitized S0c directory."""
+def inspect(output: Path, *, expected_index_sha256: str) -> dict[str, Any]:
+    """Read only sanitized metadata, with an independent operator-pinned hash.
+
+    A local manifest + index checksum alone is not an integrity trust anchor.
+    """
     if not output.is_dir() or output.is_symlink():
         raise ValueError("S0c index directory missing")
+    if (not isinstance(expected_index_sha256, str)
+            or len(expected_index_sha256) != 64
+            or any(ch not in "0123456789abcdef" for ch in expected_index_sha256)):
+        raise PermissionError("An externally pinned S0c index SHA256 is mandatory")
     manifest = _json(output / "manifest.json")
     index_file = output / "index.json"
     index = _json(index_file)
     if (manifest.get("schema") != SCHEMA or index.get("schema") != SCHEMA
             or manifest.get("status") != "EXPOSURE_METADATA_ONLY_NO_TRAINING"
             or manifest.get("holdout_status") != "TEST_TRAJECTORIES_UNOPENED"
-            or manifest.get("index_sha256") != _sha(index_file)
+            or manifest.get("index_sha256") != expected_index_sha256
+            or _sha(index_file) != expected_index_sha256
             or manifest.get("model_spec_sha256") != index.get("model_spec_sha256")
             or index.get("training_allowed") is not False
             or index.get("simulation") is not False):
@@ -297,18 +305,81 @@ def inspect(output: Path) -> dict[str, Any]:
         "train", "development_temporal", "development_ood"
     }:
         raise ValueError("Unexpected test or unknown partition in worker index")
-    all_ids: dict[str, str] = {}
+    if set(index) != {
+        "schema", "synthetic_only", "model_spec_sha256", "split_axis",
+        "policy", "partitions", "training_allowed", "model_forward", "simulation",
+    } or index["synthetic_only"] is not True or index["model_forward"] is not False:
+        raise ValueError("Worker index schema or non-ML guarantees changed")
+    policy = index.get("policy")
+    if not isinstance(policy, dict) or set(policy) != {
+        "history_steps", "max_horizon_hours", "temporal_dev_days",
+        "embargo_hours", "temporal_split_footprints_disjoint",
+        "ood_axis_disjoint_from_train", "reserved_test_excluded",
+    } or any(policy[k] is not True for k in (
+        "temporal_split_footprints_disjoint",
+        "ood_axis_disjoint_from_train", "reserved_test_excluded",
+    )):
+        raise ValueError("Missing synthetic holdout policy commitments")
+    fields = {
+        "world_id", "hospital_id", "replicate", "seed",
+        "structure_sha256", "config_content_sha256", "heldout_axis",
+        "heldout_axis_value", "mechanism_family", "days",
+        "observation_profile_sha256", "data_role", "origin_hours",
+    }
+    by_partition: dict[str, dict[str, dict[str, Any]]] = {}
     for partition, worlds in entries.items():
         if not isinstance(worlds, list) or not worlds:
             raise ValueError("Empty S0c partition")
+        mapping: dict[str, dict[str, Any]] = {}
         for world in worlds:
-            if not isinstance(world, dict) or "origin_hours" not in world:
-                raise ValueError("Invalid worker world entry")
-            owner = all_ids.setdefault(world["world_id"], partition)
-            if owner != partition and {
-                owner, partition
-            } != {"train", "development_temporal"}:
-                raise ValueError("World reused across OOD/training partitions")
+            if not isinstance(world, dict) or set(world) != fields:
+                raise ValueError("Worker world fields contain unknown or withheld data")
+            wid = world["world_id"]
+            span = world["origin_hours"]
+            if (not isinstance(wid, str) or not wid or wid in mapping
+                    or world["data_role"] != "metadata_only_no_trajectories"
+                    or world["heldout_axis"] != index["split_axis"]
+                    or not isinstance(span, dict)
+                    or set(span) != {"first_origin_h", "last_origin_h"}
+                    or any(type(x) is not int for x in span.values())):
+                raise ValueError("Malformed synthetic exposure world")
+            _range(
+                span["first_origin_h"], span["last_origin_h"],
+                days=world["days"], history=policy["history_steps"],
+                horizon=policy["max_horizon_hours"],
+            )
+            mapping[wid] = world
+        by_partition[partition] = mapping
+    train = by_partition["train"]
+    temporal = by_partition["development_temporal"]
+    ood = by_partition["development_ood"]
+    if set(train) != set(temporal) or set(train) & set(ood):
+        raise ValueError("Temporal worlds must match train; OOD must be disjoint")
+    for wid, first in train.items():
+        second = temporal[wid]
+        if any(first[k] != second[k] for k in fields - {"origin_hours"}):
+            raise ValueError("Temporal and training world metadata differ")
+        train_last = first["origin_hours"]["last_origin_h"]
+        dev_first = second["origin_hours"]["first_origin_h"]
+        if (dev_first - policy["history_steps"] + 1
+                <= train_last + policy["max_horizon_hours"] + policy["embargo_hours"]):
+            raise ValueError("Temporal validation overlaps train context/targets")
+    train_hospitals = {w["hospital_id"] for w in train.values()}
+    train_axes = {w["heldout_axis_value"] for w in train.values()}
+    if (any(w["hospital_id"] in train_hospitals for w in ood.values())
+            or any(w["heldout_axis_value"] in train_axes for w in ood.values())):
+        raise ValueError("OOD hospital or mechanism/structure leaks into train")
+    summary = manifest.get("summary")
+    if (not isinstance(summary, dict)
+            or summary.get("train_worlds") != len(train)
+            or summary.get("development_temporal_worlds") != len(temporal)
+            or summary.get("development_ood_worlds") != len(ood)
+            or type(summary.get("reserved_test_world_count")) is not int
+            or summary["reserved_test_world_count"] < 1
+            or summary.get("source_worlds_total") != (
+                len(train) + len(ood) + summary["reserved_test_world_count"]
+            )):
+        raise ValueError("Worker index summary is inconsistent")
     return {
         "status": "S0C_METADATA_HASH_VERIFIED_NO_HOLDOUT_ACCESS",
         "summary": manifest["summary"],
@@ -331,6 +402,7 @@ def main() -> int:
     create.add_argument("--embargo-hours", type=int, default=24)
     check = cmd.add_parser("inspect")
     check.add_argument("--index", type=Path, required=True)
+    check.add_argument("--expected-index-sha256", required=True)
     args = parser.parse_args()
     try:
         if args.command == "freeze":
@@ -340,8 +412,8 @@ def main() -> int:
                 embargo_hours=args.embargo_hours,
             )
         else:
-            report = inspect(args.index)
-    except (ValueError, OSError, KeyError, ImportError) as exc:
+            report = inspect(args.index, expected_index_sha256=args.expected_index_sha256)
+    except (ValueError, PermissionError, OSError, KeyError, ImportError) as exc:
         parser.exit(2, f"REFUSED: {type(exc).__name__}: {exc}\n")
     print(json.dumps(report, sort_keys=True, indent=2))
     return 0
