@@ -143,7 +143,7 @@ def validate_action_ledger(rows: list[dict[str, Any]],
                 or not (start <= end <= recorded <= available)):
             raise ValueError("Bad action interval or availability order")
         if (not isinstance(row["values"], dict)
-                or tuple(row["values"]) != ACTIONS
+                or set(row["values"]) != set(ACTIONS)
                 or not all(_action_number(v) for v in row["values"].values())):
             raise ValueError("Action channels must be in exact RS-JEPA order")
         sig = json.dumps(row, sort_keys=True, separators=(",", ":")).encode()
