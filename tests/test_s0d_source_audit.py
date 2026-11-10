@@ -1,7 +1,6 @@
 """S0d archive triplet, lineage and time-leakage tests. Zero model execution."""
 from __future__ import annotations
 
-import copy
 import datetime as dt
 import gzip
 import hashlib
