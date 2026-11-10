@@ -6,12 +6,10 @@ No simulation, inference or model training is invoked.
 from __future__ import annotations
 
 import argparse
-import datetime as dt
 import gzip
 import hashlib
 import json
 import tempfile
-from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
