@@ -1,6 +1,8 @@
 """No-simulation/no-ML tests for native four-lever S0a action export."""
 from __future__ import annotations
 
+from typing import Any
+
 from copy import deepcopy
 
 import pytest
@@ -12,7 +14,7 @@ from research_lab.s0a_native_action_exporter import (
 )
 
 
-def fixture() -> list[dict]:
+def fixture() -> list[dict[str, Any]]:
     return [
         {
             "event_id": f"H:E{index}",
@@ -28,7 +30,7 @@ def fixture() -> list[dict]:
     ]
 
 
-def build(events: list[dict] | None = None) -> list[dict]:
+def build(events: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     return build_native_intervals(
         fixture() if events is None else events,
         hospital_id="H", units=("u1", "u2"), days=1, warmup_hours=24,
