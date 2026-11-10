@@ -1,0 +1,3 @@
+Research question: Under partial observability and intervention, how can a hospital operations world model distinguish latent temporal and action-dependent information from marginal-statistic shortcuts?
+No claims of causal identification or model performance are currently authorized.
+Propose falsifiable hypotheses and tests only. Use the evidence protocol and leave all human scientific decisions open.

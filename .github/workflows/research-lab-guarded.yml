@@ -1,0 +1,52 @@
+name: research-lab-guarded
+
+on:
+  pull_request:
+    paths:
+      - 'research_lab/**'
+      - 'tests/test_research_lab.py'
+      - 'tests/test_experimental_autonomy.py'
+      - 'tests/test_integrated_full_model_v1.py'
+      - 'tests/test_synthetic_adapter_v1.py'
+      - 'tests/test_s0a_native_action_exporter.py'
+      - 'tests/test_synthetic_action_export_v041.py'
+      - 'tests/test_s0b_four_channel_bridge.py'
+      - 'tests/test_s0c_synthetic_registry.py'
+      - 'tests/test_s0c_world_registry.py'
+      - 'tests/test_s0d_source_audit.py'
+      - '.github/workflows/research-lab-guarded.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      OPENAI_API_KEY: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependency only
+        run: python -m pip install 'pytest>=8,<10'
+      - name: Test guarded runtime without network or LLM
+        run: |
+          python -m pytest -q tests/test_research_lab.py tests/test_experimental_autonomy.py
+          python -m pytest -q tests/test_integrated_full_model_v1.py tests/test_synthetic_adapter_v1.py tests/test_s0a_native_action_exporter.py
+          python -m pytest -q tests/test_synthetic_action_export_v041.py tests/test_s0b_four_channel_bridge.py
+          python -m pytest -q tests/test_s0c_synthetic_registry.py tests/test_s0c_world_registry.py tests/test_s0d_source_audit.py
+      - name: Verify zero-ML experiment queue end-to-end
+        run: |
+          python -m research_lab.queue_smoke
+          python -m research_lab.integrated_full_model_v1_smoke
+          python -m research_lab.synthetic_adapter_v1_smoke
+          python -m research_lab.s0a_native_action_smoke
+          python -m research_lab.synthetic_action_export_v041_smoke
+          python -m research_lab.s0b_four_channel_smoke
+          python -m research_lab.s0c_registry_smoke
+          python -m research_lab.s0c_world_registry_smoke
+          python -m research_lab.s0d_legacy_evidence docs/synthetic/evidence/lot05_cohort_manifest.json
