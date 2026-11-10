@@ -197,13 +197,15 @@ def build_ledger(
 
 
 def _write_gzip(path: Path, rows: list[dict[str, Any]]) -> None:
-    with path.open("wb") as sink:
-        with gzip.GzipFile(filename="", fileobj=sink, mode="wb", mtime=0) as packed:
-            with io.TextIOWrapper(packed, encoding="utf-8", newline="\n") as stream:
-                for row in rows:
-                    stream.write(json.dumps(
-                        row, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-                    ) + "\n")
+    with (
+        path.open("wb") as sink,
+        gzip.GzipFile(filename="", fileobj=sink, mode="wb", mtime=0) as packed,
+        io.TextIOWrapper(packed, encoding="utf-8", newline="\n") as stream,
+    ):
+        for row in rows:
+            stream.write(json.dumps(
+                row, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+            ) + "\n")
 
 
 def export_existing_truth(source: Path, destination: Path) -> dict[str, Any]:
