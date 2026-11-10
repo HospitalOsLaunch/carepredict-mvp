@@ -154,8 +154,12 @@ def test_missing_duplicate_and_nonzero_outside_policy_rejected() -> None:
     _spec, ledger, _coverage = fixture()
     with pytest.raises(ValueError, match="Incomplete"):
         verify(ledger=ledger[:-1])
-    with pytest.raises(ValueError, match="Incomplete"):
-        verify(ledger=ledger + [ledger[0]])
+    altered = copy.deepcopy(ledger)
+    bad_retry = copy.deepcopy(ledger[0])
+    bad_retry["values"]["renfort_soignant"] = 1
+    altered.append(bad_retry)
+    with pytest.raises(ValueError, match="Conflicting action version"):
+        verify(ledger=altered)
     altered = copy.deepcopy(ledger)
     altered[12]["values"]["lits_supplementaires"] = 1
     with pytest.raises(ValueError, match="outside 09"):
