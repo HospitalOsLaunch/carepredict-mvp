@@ -1,13 +1,12 @@
 """S0b four-channel compatibility tests; fixture-only, no torch or simulator."""
 from __future__ import annotations
 
-from typing import Any
-
 import ast
 import copy
 import datetime as dt
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import pytest
 
