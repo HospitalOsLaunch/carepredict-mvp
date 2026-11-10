@@ -188,9 +188,9 @@ def validate_checkpoint_manifest(raw: Any, *, spec: dict[str, Any]) -> dict[str,
             "normalization_sha256"))
           or any(raw["evidence"].values())):
         raise ValueError("Untrained assembly cannot claim training or independent evidence")
-    if raw["training_status"] == "SYNTHETIC_EVALUATED_NO_PROMOTION":
-        if not all(raw["evidence"].values()):
-            raise ValueError("Evaluated status needs independent source and review evidence")
+    if (raw["training_status"] == "SYNTHETIC_EVALUATED_NO_PROMOTION"
+            and not all(raw["evidence"].values())):
+        raise ValueError("Evaluated status needs independent source and review evidence")
     return json.loads(canonical_bytes(raw))
 
 
