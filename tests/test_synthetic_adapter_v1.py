@@ -179,7 +179,7 @@ def test_incompatible_action_oracle_and_invalid_provenance_rejected() -> None:
     assert build(action_intervals=altered)["actions_context"][0][0] == [0.0, 0.0]
     altered = copy.deepcopy(actions)
     altered[0]["values"]["extra_oracle_action"] = 2.0
-    with pytest.raises(ValueError, match="exact RS-JEPA order"):
+    with pytest.raises(ValueError, match="exact synthetic contract"):
         build(action_intervals=altered)
     altered = copy.deepcopy(actions)
     altered[0]["synthetic_only"] = False
