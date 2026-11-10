@@ -6,6 +6,7 @@ provider billing limit. Keep its files and training outputs private.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -78,8 +79,10 @@ def validate(spec: dict[str, Any], repo: Path) -> dict[str, Any]:
 
 
 def verify_permit(spec_file: Path, public_key: Path, approvals: Path) -> None:
-    if not public_key.is_file():
-        raise PermissionError("A pinned human-approval public key is required")
+    expected_fingerprint = os.environ.get("HOS_LAB_TRUSTED_PUBKEY_SHA256", "")
+    if (not SHA256.fullmatch(expected_fingerprint) or not public_key.is_file()
+            or sha(public_key) != expected_fingerprint):
+        raise PermissionError("Operator-pinned public key fingerprint is required")
     signature = approvals / (spec_file.stem + ".sig")
     if not signature.is_file() or signature.is_symlink():
         raise PermissionError("A separate operator signature is missing")
@@ -183,8 +186,11 @@ def execute(spec: dict[str, Any], repo: Path, workspace: Path, permit_ok: bool) 
 
 
 def inspect_queue(queue: Path, repo: Path, journal: Path) -> list[dict[str, Any]]:
-    completed = {row["event"]["run_id"] for row in verify_journal(journal)
-                 if row["event"].get("type") in ("FINISHED", "FAILED")}
+    latest: dict[str, str] = {}
+    for row in verify_journal(journal):
+        ev = row["event"]
+        if ev.get("type") in ("STARTED", "FINISHED", "FAILED"):
+            latest[ev["run_id"]] = ev["type"]
     items = []
     for path in sorted(queue.glob("*.json")):
         try:
@@ -194,7 +200,9 @@ def inspect_queue(queue: Path, repo: Path, journal: Path) -> list[dict[str, Any]
             if path.stem != spec["run_id"]:
                 raise ValueError("Run ID and filename must match")
             items.append({"run_id": spec["run_id"], "runner": spec["runner"],
-                          "state": "RECORDED" if spec["run_id"] in completed else "QUEUED"})
+                          "state": {"FINISHED": "COMPLETED", "FAILED": "FAILED_HALTED",
+                                    "STARTED": "INTERRUPTED_NEEDS_REVIEW"}.get(
+                                        latest.get(spec["run_id"], ""), "QUEUED")})
         except (ValueError, KeyError, TypeError, OSError, json.JSONDecodeError) as exc:
             items.append({"run_id": path.name, "state": "INVALID", "error": str(exc)})
     return items
@@ -207,38 +215,49 @@ def tick(queue: Path, repo: Path, workspace: Path, public_key: Path | None,
     if not queue.is_dir() or not repo.is_dir():
         raise ValueError("Queue and repository must already exist")
     workspace.mkdir(mode=0o700, parents=True, exist_ok=True)
-    journal = workspace / "events.jsonl"
-    status = inspect_queue(queue, repo, journal)
-    invalid = [i for i in status if i["state"] == "INVALID"]
-    if invalid:
-        return {"status": "STOP_INVALID_QUEUE", "invalid": invalid}
-    pending = next((i for i in status if i["state"] == "QUEUED"), None)
-    if pending is None:
-        return {"status": "IDLE", "completed_or_empty": True}
-    file = queue / (pending["run_id"] + ".json")
-    spec = validate(json.loads(file.read_text()), repo)
-    is_training = spec["runner"] != "offline_manifest_verify"
-    if is_training and not allow_training:
-        return {"status": "BLOCKED_G2_NO_EXECUTION_FLAG", "run_id": spec["run_id"]}
-    if is_training:
-        if public_key is None or approvals is None:
-            return {"status": "BLOCKED_SIGNED_PERMIT_REQUIRED", "run_id": spec["run_id"]}
+    lock = workspace / ".worker.lock"
+    # Exclusive non-blocking lock: concurrent workers cannot double-bill a run.
+    with lock.open("a+") as lock_file:
         try:
-            verify_permit(file, public_key, approvals)
-        except PermissionError:
-            return {"status": "BLOCKED_PERMIT_INVALID", "run_id": spec["run_id"]}
-    append(journal, {"type": "STARTED", "run_id": spec["run_id"],
-                     "spec_sha256": sha(file), "runner": spec["runner"]})
-    try:
-        result = execute(spec, repo, workspace, permit_ok=is_training)
-        append(journal, {"type": "FINISHED", "run_id": spec["run_id"], "result": result})
-        return {"run_id": spec["run_id"], **result}
-    except Exception as exc:
-        # Do not automatically retry a failed or ambiguous experiment.
-        append(journal, {"type": "FAILED", "run_id": spec["run_id"],
-                         "error_type": type(exc).__name__})
-        return {"status": "FAILED_NO_RETRY", "run_id": spec["run_id"],
-                "error_type": type(exc).__name__}
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return {"status": "BLOCKED_WORKER_ALREADY_ACTIVE"}
+        journal = workspace / "events.jsonl"
+        status = inspect_queue(queue, repo, journal)
+        invalid = [i for i in status if i["state"] == "INVALID"]
+        if invalid:
+            return {"status": "STOP_INVALID_QUEUE", "invalid": invalid}
+        unresolved = [i for i in status if i["state"] in (
+            "INTERRUPTED_NEEDS_REVIEW", "FAILED_HALTED")]
+        if unresolved:
+            return {"status": "HALTED_REQUIRES_HUMAN_REVIEW", "unresolved": unresolved}
+        pending = next((i for i in status if i["state"] == "QUEUED"), None)
+        if pending is None:
+            return {"status": "IDLE", "completed_or_empty": True}
+        file = queue / (pending["run_id"] + ".json")
+        spec = validate(json.loads(file.read_text()), repo)
+        is_training = spec["runner"] != "offline_manifest_verify"
+        if is_training and not allow_training:
+            return {"status": "BLOCKED_G2_NO_EXECUTION_FLAG", "run_id": spec["run_id"]}
+        if is_training:
+            if public_key is None or approvals is None:
+                return {"status": "BLOCKED_SIGNED_PERMIT_REQUIRED", "run_id": spec["run_id"]}
+            try:
+                verify_permit(file, public_key, approvals)
+            except PermissionError:
+                return {"status": "BLOCKED_PERMIT_INVALID", "run_id": spec["run_id"]}
+        append(journal, {"type": "STARTED", "run_id": spec["run_id"],
+                         "spec_sha256": sha(file), "runner": spec["runner"]})
+        try:
+            result = execute(spec, repo, workspace, permit_ok=is_training)
+            append(journal, {"type": "FINISHED", "run_id": spec["run_id"], "result": result})
+            return {"run_id": spec["run_id"], **result}
+        except Exception as exc:
+            # Never automatically retry a failed/ambiguous experiment.
+            append(journal, {"type": "FAILED", "run_id": spec["run_id"],
+                             "error_type": type(exc).__name__})
+            return {"status": "FAILED_NO_RETRY", "run_id": spec["run_id"],
+                    "error_type": type(exc).__name__}
 
 
 def main(argv: list[str] | None = None) -> int:
