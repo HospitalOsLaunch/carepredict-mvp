@@ -321,7 +321,7 @@ def build_window(
             value = None if last is None else last["values"].get(metric)
             missing = value is None
             if feature["kind"] == "observed_value":
-                row_values.append(0.0 if missing else float(value))
+                row_values.append(0.0 if value is None else float(value))
             elif feature["kind"] == "observation_mask":
                 row_values.append(float(missing))
                 masks += int(missing)
