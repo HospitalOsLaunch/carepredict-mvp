@@ -14,7 +14,7 @@ from research_lab.integrated_full_model_v1_contract import make_example_spec
 from research_lab.synthetic_adapter_v1 import ACTION_SCHEMA, build_window
 from research_lab.synthetic_adapter_v1_files import build_from_archives, read_sources
 
-T = dt.datetime(2026, 11, 10, 12, tzinfo=dt.timezone.utc)
+T = dt.datetime(2026, 11, 10, 12, tzinfo=dt.UTC)
 STEP = dt.timedelta(hours=1)
 SOURCE_HASH = "b" * 64
 
