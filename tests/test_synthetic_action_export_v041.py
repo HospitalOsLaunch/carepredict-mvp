@@ -1,6 +1,8 @@
 """S0a exporter verification, only fabricated archived events (no simulation)."""
 from __future__ import annotations
 
+from typing import Any
+
 import copy
 import datetime as dt
 import gzip
@@ -26,7 +28,7 @@ def clock(h: int) -> str:
     return (START + dt.timedelta(hours=h)).isoformat()
 
 
-def decision(h: int, u: str, *active: str) -> dict:
+def decision(h: int, u: str, *active: str) -> dict[str, Any]:
     return {
         "event_id": f"S0:E:{h}:{u}",
         "hospital_id": "S0",
@@ -39,7 +41,7 @@ def decision(h: int, u: str, *active: str) -> dict:
     }
 
 
-def sample(days: int = 2) -> tuple[dict, dict, list[dict]]:
+def sample(days: int = 2) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
     config = {
         "start": "2026-11-10", "hospital_id": "S0", "partition": "development",
         "days": days, "warmup_days": 1,
@@ -123,7 +125,7 @@ def test_reserved_holdout_fails_without_extraction() -> None:
         build_ledger(truth=truth, config=cfg, events=events)
 
 
-def _write_gz(path: Path, rows: list[dict]) -> str:
+def _write_gz(path: Path, rows: list[dict[str, Any]]) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wt", encoding="utf-8") as out:
         for row in rows:
@@ -146,7 +148,7 @@ def truth_archive(root: Path) -> Path:
 
 def observation_archive(root: Path, source: Path) -> Path:
     root.mkdir()
-    def observation(t: int, waiting: int) -> dict:
+    def observation(t: int, waiting: int) -> dict[str, Any]:
         return {
             "schema_version": "OPERATIONAL_V2_RESEARCH_1",
             "event_id": f"S0:obs:{t}", "version": 1,
