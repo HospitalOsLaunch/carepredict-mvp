@@ -25,7 +25,6 @@ SCHEMA = "hospitalos.s0d_source_readiness_v1"
 MAX_ORIGINS = 64
 MAX_MANIFEST_BYTES = 262_144
 MAX_SOURCE_BYTES = 128 * 1024 * 1024
-HOUR = dt.timedelta(hours=1)
 
 
 def _sha_file(path: Path) -> str:
