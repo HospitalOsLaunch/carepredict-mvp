@@ -1,6 +1,8 @@
 """S0b four-channel compatibility tests; fixture-only, no torch or simulator."""
 from __future__ import annotations
 
+from typing import Any
+
 import ast
 import copy
 import datetime as dt
@@ -38,7 +40,7 @@ def make_hour(h: int) -> str:
     return (START + dt.timedelta(hours=h)).isoformat()
 
 
-def fixture(days: int = 2) -> tuple[dict, list[dict], dict]:
+def fixture(days: int = 2) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
     config = {
         "start": "2026-11-10", "hospital_id": "H",
         "partition": "development", "days": days,
@@ -71,12 +73,12 @@ def fixture(days: int = 2) -> tuple[dict, list[dict], dict]:
 
 def verify(
     *,
-    spec: dict | None = None,
+    spec: dict[str, Any] | None = None,
     stage1: FakeStage1Config | None = None,
-    ledger: list[dict] | None = None,
-    coverage: dict | None = None,
+    ledger: list[dict[str, Any]] | None = None,
+    coverage: dict[str, Any] | None = None,
     source_clock: str = "fixed_utc_plus_01_no_dst",
-) -> dict:
+) -> dict[str, Any]:
     model, events, source = fixture()
     return verify_four_channel_binding(
         spec=model if spec is None else spec,
