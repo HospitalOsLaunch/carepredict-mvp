@@ -117,6 +117,7 @@ class IntegratedFullModelV1(nn.Module):
         x: Tensor,
         static: Tensor | None,
         actions_context: Tensor,
+        action_available_ns: Tensor,
         origin_ns: Tensor,
         event_ns: Tensor,
         available_ns: Tensor,
@@ -142,13 +143,17 @@ class IntegratedFullModelV1(nn.Module):
         if not torch.isfinite(actions_context).all().item():
             raise ValueError("Nonfinite context actions")
         if (origin_ns.ndim != 1 or origin_ns.shape[0] != b
-                or event_ns.shape != (b, t) or available_ns.shape != (b, t)):
+                or event_ns.shape != (b, t) or available_ns.shape != (b, t)
+                or action_available_ns.shape != (b, t)):
+
             raise ValueError("Per-version event, availability and origin clocks are required")
-        for clock in (origin_ns, event_ns, available_ns):
+        for clock in (origin_ns, event_ns, available_ns, action_available_ns):
             if clock.dtype != torch.int64:
                 raise ValueError("As-of clocks must be UTC int64 nanoseconds")
         if ((event_ns > available_ns).any() or (available_ns > origin_ns[:, None]).any()):
             raise ValueError("Observations unavailable at decision origin (as-of leakage)")
+        if (action_available_ns > origin_ns[:, None]).any():
+            raise ValueError("Historical actions unavailable at decision origin")
         if action_mode not in ("no_op", "known_plan", "counterfactual"):
             raise ValueError("Future action scenario must be explicitly declared")
         if action_mode == "no_op":
@@ -177,6 +182,7 @@ class IntegratedFullModelV1(nn.Module):
         *,
         static: Tensor | None,
         actions_context: Tensor,
+        action_available_ns: Tensor,
         origin_ns: Tensor,
         event_ns: Tensor,
         available_ns: Tensor,
@@ -185,8 +191,9 @@ class IntegratedFullModelV1(nn.Module):
         future_actions_available_ns: Tensor | None = None,
     ) -> ForecastOutput:
         self._check_input(
-            x, static, actions_context, origin_ns, event_ns,
-            available_ns, future_actions, future_actions_available_ns, action_mode,
+            x, static, actions_context, action_available_ns, origin_ns,
+            event_ns, available_ns, future_actions, future_actions_available_ns,
+            action_mode,
         )
         z_context = self.encoder(x, static)
         rollout = self.rssm.rollout(
