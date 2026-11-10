@@ -179,8 +179,10 @@ def execute(spec: dict[str, Any], repo: Path, workspace: Path, permit_ok: bool) 
             raise RuntimeError("Wall-time limit exceeded; subprocess terminated") from exc
     if result.returncode != 0:
         raise RuntimeError(f"Approved synthetic trainer failed: exit {result.returncode}")
+    if not ckpt.is_file():
+        raise RuntimeError("Trainer returned success without a checkpoint")
     return {"status": "COMPLETE_UNREVIEWED_SYNTHETIC_STAGE1",
-            "checkpoint_sha256": sha(ckpt) if ckpt.is_file() else None,
+            "checkpoint_sha256": sha(ckpt),
             "log_sha256": sha(log), "model_forward": True,
             "note": "No integrated world-model or independent scientific promotion"}
 
@@ -235,7 +237,8 @@ def tick(queue: Path, repo: Path, workspace: Path, public_key: Path | None,
         if pending is None:
             return {"status": "IDLE", "completed_or_empty": True}
         file = queue / (pending["run_id"] + ".json")
-        spec = validate(json.loads(file.read_text()), repo)
+        signed_bytes = file.read_bytes()
+        spec = validate(json.loads(signed_bytes), repo)
         is_training = spec["runner"] != "offline_manifest_verify"
         if is_training and not allow_training:
             return {"status": "BLOCKED_G2_NO_EXECUTION_FLAG", "run_id": spec["run_id"]}
@@ -246,6 +249,10 @@ def tick(queue: Path, repo: Path, workspace: Path, public_key: Path | None,
                 verify_permit(file, public_key, approvals)
             except PermissionError:
                 return {"status": "BLOCKED_PERMIT_INVALID", "run_id": spec["run_id"]}
+        # Do not bind a signature to a different in-memory job after a file race.
+        if file.read_bytes() != signed_bytes:
+            return {"status": "BLOCKED_SPEC_CHANGED_DURING_PREFLIGHT",
+                    "run_id": spec["run_id"]}
         append(journal, {"type": "STARTED", "run_id": spec["run_id"],
                          "spec_sha256": sha(file), "runner": spec["runner"]})
         try:
