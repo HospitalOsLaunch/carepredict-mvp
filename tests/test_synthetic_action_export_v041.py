@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -204,11 +205,17 @@ def test_genuine_same_run_export_wires_into_v041_adapter_fixture(tmp_path: Path)
     assert provenance["same_run_asserted_by_export_manifests"] is True
     spec = make_v041_synthetic_spec()
     spec["history_steps"] = 3
+    stage1 = SimpleNamespace(
+        latent_dim=128, rssm_deter_dim=256, rssm_stoch_dim=32,
+        action_dim=4, encoder_max_steps=512,
+    )
     built = build_from_archives(
         observed_root=observed, action_root=action_root,
         entity_id="S0", spec=spec,
         origin=clock(12), label_cutoff=clock(37), max_age_hours=3,
+        stage1=stage1,
     )
+    assert built["provenance"]["s0b_four_channel_binding"]["rssm_action_dim"] == 4
     assert len(built["actions_context"][0][0]) == 4
     assert built["actions_context"][0][0][2] == 1.0  # 09:00 staffing action @ 10:00
     assert built["actions_context"][0][1] == [0.0] * 4
