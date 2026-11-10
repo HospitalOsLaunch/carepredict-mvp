@@ -50,7 +50,7 @@ def test_contract_is_complete_and_deterministic() -> None:
     spec = make_example_spec()
     assert spec["schema"] == MODEL_SCHEMA
     assert spec["horizons_hours"] == [1, 6, 24]
-    assert spec["action_features"] == ["discharge_planning", "bed_management"]
+    assert spec["action_features"] == ["staffing_delta", "discharge_delta"]
     assert spec["targets"][0]["name"] == "ed_waiting"
     assert spec["targets"][0]["definition"] != spec["targets"][1]["definition"]
     assert validate_spec(spec) == spec
