@@ -27,3 +27,5 @@ jobs:
         run: python -m pip install 'pytest>=8,<10'
       - name: Test guarded runtime without network or LLM
         run: python -m pytest -q tests/test_research_lab.py tests/test_experimental_autonomy.py
+      - name: Verify zero-ML experiment queue end-to-end
+        run: python -m research_lab.queue_smoke
