@@ -262,7 +262,7 @@ def tick(queue: Path, repo: Path, workspace: Path, public_key: Path | None,
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("mode", choices=("inspect", "tick"))
+    p.add_argument("mode", choices=("inspect", "tick", "loop"))
     p.add_argument("--repo", type=Path, default=Path("."))
     p.add_argument("--queue", required=True, type=Path)
     p.add_argument("--workspace", required=True, type=Path)
@@ -270,16 +270,34 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--approvals", type=Path)
     p.add_argument("--allow-training", action="store_true",
                    help="Still requires a signature and private sandbox per job")
+    p.add_argument("--max-jobs", type=int, default=1,
+                   help="Bounded queue loop, maximum 100 jobs per invocation")
     a = p.parse_args(argv)
+    if not (1 <= a.max_jobs <= 100):
+        p.error("--max-jobs must be between 1 and 100")
     try:
         if a.mode == "inspect":
             report = {"queue": inspect_queue(a.queue, a.repo, a.workspace / "events.jsonl"),
                       "execution": False}
-        else:
+        elif a.mode == "tick":
             report = tick(a.queue, a.repo, a.workspace, a.public_key,
                           a.approvals, a.allow_training)
+        else:
+            history = []
+            for _ in range(a.max_jobs):
+                result = tick(a.queue, a.repo, a.workspace, a.public_key,
+                              a.approvals, a.allow_training)
+                history.append(result)
+                if result.get("status") not in (
+                    "COMPLETE_OFFLINE_METADATA_ONLY",
+                    "COMPLETE_UNREVIEWED_SYNTHETIC_STAGE1",
+                ):
+                    break
+            report = {"mode": "bounded_loop", "results": history,
+                      "note": "No adaptive model-agent planner or automatic permit grants"}
         print(json.dumps(report, indent=2))
-        return 0 if report.get("status") not in ("FAILED_NO_RETRY", "STOP_INVALID_QUEUE") else 2
+        final = report.get("status") if a.mode != "loop" else history[-1].get("status")
+        return 0 if final not in ("FAILED_NO_RETRY", "STOP_INVALID_QUEUE") else 2
     except (ValueError, PermissionError, RuntimeError, OSError) as exc:
         print(f"REFUSED: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 2
