@@ -1,14 +1,13 @@
 """S0a exporter verification, only fabricated archived events (no simulation)."""
 from __future__ import annotations
 
-from typing import Any
-
 import copy
 import datetime as dt
 import gzip
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 from types import SimpleNamespace
 
 import pytest
