@@ -336,7 +336,7 @@ def test_cross_world_action_source_reference_fails(
     registry = world_registry(truth, observed, actions)
     model = make_v041_synthetic_spec()
     model["history_steps"] = 3
-    with pytest.raises(ValueError, match="same run"):
+    with pytest.raises(ValueError, match="one run"):
         audit_world(
             registry=registry, world_id="w0", truth_root=truth,
             observed_root=observed, action_root=actions,
