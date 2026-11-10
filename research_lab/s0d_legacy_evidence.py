@@ -10,7 +10,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 SCHEMA = "hospitalos.s0d_legacy_evidence_inventory_v1"
 ALLOWED_ROLES = frozenset((
