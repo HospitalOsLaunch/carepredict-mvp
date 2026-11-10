@@ -121,6 +121,9 @@ def test_temporal_alignment_and_explicit_no_op() -> None:
     assert item["training_targets"] == [[[8.0, 21.0], [10.0, 25.0], [15.0, 30.0]]]
     assert item["training_target_mask"] == [[[1, 1], [1, 1], [1, 1]]]
     assert item["origin_ns"][0] == item["event_ns"][0][-1]
+    assert all(t <= item["origin_ns"][0] for t in item["action_available_ns"][0])
+    assert item["supervision_alignment"]["no_op_forecast_can_be_scored_against_labels"] is False
+    assert item["supervision_alignment"]["training_loss_authorized"] is False
     assert item["forward_executed"] is False
     assert item["training_executed"] is False
 
