@@ -35,7 +35,7 @@ def with_v041_action_dim(stage1: Any) -> Any:
         raise TypeError("Expected a Stage1Config dataclass instance")
     if not hasattr(stage1, "action_dim"):
         raise ValueError("Stage 1 is missing action_dim")
-    action_dim = getattr(stage1, "action_dim")
+    action_dim = stage1.action_dim  # type: ignore[attr-defined]
     if action_dim not in (2, 4):
         raise ValueError("Only explicit Phase-A(2) to native V0.4.1(4) is supported")
     return replace(stage1, action_dim=4)
