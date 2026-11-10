@@ -289,6 +289,7 @@ def build_window(
     event_ns: list[int] = []
     available_ns: list[int] = []
     actions_context: list[list[float]] = []
+    action_available_ns: list[int] = []
     masks = 0
     ages = []
     for timestamp in grid:
@@ -320,6 +321,7 @@ def build_window(
                 or action["end"] != timestamp):
             raise ValueError("Missing complete synthetic action interval; never impute zero")
         actions_context.append([float(action["values"][k]) for k in ACTIONS])
+        action_available_ns.append(ns(action["available"]))
     # Future targets are frozen separately, under a later label maturity cutoff.
     labels = _slots_unique(_latest_versions(obs, L), "event")
     target_values: list[list[float]] = []
@@ -345,6 +347,7 @@ def build_window(
         "x": [x],
         "static": [static],
         "actions_context": [actions_context],
+        "action_available_ns": [action_available_ns],
         "origin_ns": [ns(D)],
         "event_ns": [event_ns],
         "available_ns": [available_ns],
@@ -353,6 +356,14 @@ def build_window(
         "future_actions_available_ns": None,
         "training_targets": [target_values],
         "training_target_mask": [target_masks],
+        "supervision_alignment": {
+            "labels_are_factual_future_observations": True,
+            "future_intervention_schedule_known_at_origin": False,
+            "no_op_forecast_can_be_scored_against_labels": False,
+            "training_loss_authorized": False,
+            "reason": "Factual labels may include post-origin actions; the no-op "
+                      "scenario is not a factual policy forecast.",
+        },
         "provenance": {
             "observed_versions_at_origin": len(sources),
             "action_versions_at_origin": len(action_slots),
