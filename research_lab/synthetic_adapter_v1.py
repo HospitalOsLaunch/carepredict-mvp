@@ -16,7 +16,7 @@ from .integrated_full_model_v1_contract import fingerprint, validate_spec
 
 SCHEMA = "hospitalos.synthetic_adapter_v1"
 ACTION_SCHEMA = "hospitalos.synthetic_action_ledger_v1"
-CLOCK = dt.timezone.utc
+CLOCK = dt.UTC
 METRICS = frozenset((
     "ed_waiting", "occupancy", "open_beds", "medically_ready",
     "nurse_count", "aide_count", "care_workload_proxy", "siips_score",
@@ -273,7 +273,7 @@ def build_window(
     L = instant(label_cutoff)
     step = dt.timedelta(hours=spec["step_hours"])
     max_h = max(spec["horizons_hours"])
-    if L < D + dt.timedelta(hours=max_h):
+    if D + dt.timedelta(hours=max_h) > L:
         raise ValueError("Labels not mature at requested cutoff")
     if not entity_id or not isinstance(entity_id, str):
         raise ValueError("Hospital entity ID required")
