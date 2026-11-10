@@ -60,18 +60,12 @@ def test_tampered_journal_refuses_execution(tmp_path: Path) -> None:
 
 def test_training_requires_flag_then_external_signature(tmp_path: Path) -> None:
     repo, queue, work, _ = fixture(tmp_path, "rs_jepa_stage1")
-    assert (
-        lab.tick(queue, repo, work, None, None, False)
-        ["status"] == "BLOCKED_G2_NO_EXECUTION_FLAG"
-    )
-    assert (
-        lab.tick(queue, repo, work, None, None, True)
-        ["status"] == "BLOCKED_SIGNED_PERMIT_REQUIRED"
-    )
-    assert (
-        lab.tick(queue, repo, work, repo / "fake.pem", queue, True)
-        ["status"] == "BLOCKED_PERMIT_INVALID"
-    )
+    result = lab.tick(queue, repo, work, None, None, False)
+    assert result["status"] == "BLOCKED_G2_NO_EXECUTION_FLAG"
+    result = lab.tick(queue, repo, work, None, None, True)
+    assert result["status"] == "BLOCKED_SIGNED_PERMIT_REQUIRED"
+    result = lab.tick(queue, repo, work, repo / "fake.pem", queue, True)
+    assert result["status"] == "BLOCKED_PERMIT_INVALID"
     assert not (work / "events.jsonl").exists()
 
 
@@ -102,13 +96,10 @@ def test_aborted_run_is_not_automatically_retried(tmp_path: Path) -> None:
     repo, queue, work, _ = fixture(tmp_path)
     work.mkdir()
     lab.append(work / "events.jsonl", {"type": "STARTED", "run_id": "test-run-001"})
-    assert (
-        lab.inspect_queue(queue, repo, work / "events.jsonl")[0]["state"] == "INTERRUPTED_NEEDS_REVIEW"
-    )
-    assert (
-        lab.tick(queue, repo, work, None, None, False)
-        ["status"] == "HALTED_REQUIRES_HUMAN_REVIEW"
-    )
+    states = lab.inspect_queue(queue, repo, work / "events.jsonl")
+    assert states[0]["state"] == "INTERRUPTED_NEEDS_REVIEW"
+    result = lab.tick(queue, repo, work, None, None, False)
+    assert result["status"] == "HALTED_REQUIRES_HUMAN_REVIEW"
 
 
 def test_failure_halts_queue_without_running_next_job(
@@ -122,10 +113,8 @@ def test_failure_halts_queue_without_running_next_job(
         raise RuntimeError("offline fixture failure")
     monkeypatch.setattr(lab, "execute", fail)
     assert lab.tick(queue, repo, work, None, None, False)["status"] == "FAILED_NO_RETRY"
-    assert (
-        lab.tick(queue, repo, work, None, None, False)
-        ["status"] == "HALTED_REQUIRES_HUMAN_REVIEW"
-    )
+    result = lab.tick(queue, repo, work, None, None, False)
+    assert result["status"] == "HALTED_REQUIRES_HUMAN_REVIEW"
     items = lab.inspect_queue(queue, repo, work / "events.jsonl")
     assert {x["run_id"]: x["state"] for x in items} == {
         "test-run-001": "FAILED_HALTED", "test-run-002": "QUEUED"}
@@ -136,10 +125,8 @@ def test_one_active_worker_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     def locked(*_args: object) -> None:
         raise BlockingIOError("already locked")
     monkeypatch.setattr(lab.fcntl, "flock", locked)
-    assert (
-        lab.tick(queue, repo, work, None, None, False)
-        ["status"] == "BLOCKED_WORKER_ALREADY_ACTIVE"
-    )
+    result = lab.tick(queue, repo, work, None, None, False)
+    assert result["status"] == "BLOCKED_WORKER_ALREADY_ACTIVE"
     assert not (work / "events.jsonl").exists()
 
 
