@@ -1,6 +1,8 @@
 """Offline synthetic_adapter_v1 tests: no simulator, torch, or model forward."""
 from __future__ import annotations
 
+from typing import Any
+
 import copy
 import datetime as dt
 import gzip
@@ -23,7 +25,7 @@ def ts(hours: int) -> str:
     return (T + hours * STEP).isoformat()
 
 
-def spec() -> dict:
+def spec() -> dict[str, Any]:
     out = make_example_spec()
     out["history_steps"] = 3
     return out
@@ -31,7 +33,7 @@ def spec() -> dict:
 
 def obs(hours: int, waiting: int | None, occupancy: int, *,
         version: int = 1, delivery_hours: int | None = None,
-        event_id: str | None = None) -> dict:
+        event_id: str | None = None) -> dict[str, Any]:
     return {
         "schema_version": "OPERATIONAL_V2_RESEARCH_1",
         "event_id": event_id or f"H:{hours}",
@@ -48,7 +50,7 @@ def obs(hours: int, waiting: int | None, occupancy: int, *,
 
 
 def action(hours: int, staffing: float, discharge: float, *,
-           version: int = 1, delivery_hours: int | None = None) -> dict:
+           version: int = 1, delivery_hours: int | None = None) -> dict[str, Any]:
     return {
         "schema": ACTION_SCHEMA,
         "event_id": f"H:action:{hours}",
@@ -64,7 +66,7 @@ def action(hours: int, staffing: float, discharge: float, *,
     }
 
 
-def topology() -> dict:
+def topology() -> dict[str, Any]:
     return {
         "schema_version": "OPERATIONAL_V2_RESEARCH_1",
         "topology_id": "H:structure",
@@ -79,7 +81,7 @@ def topology() -> dict:
     }
 
 
-def fixture() -> tuple[dict, list[dict], list[dict], dict]:
+def fixture() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     observations = [
         obs(-2, 5, 18),
         obs(-1, 6, 19),
@@ -94,9 +96,9 @@ def fixture() -> tuple[dict, list[dict], list[dict], dict]:
     return spec(), observations, actions, topology()
 
 
-def build(**changes: object) -> dict:
+def build(**changes: object) -> dict[str, Any]:
     model, observations, actions, structure = fixture()
-    args = {
+    args: dict[str, Any] = {
         "spec": model, "observations": observations,
         "action_intervals": actions, "topology": structure,
         "entity_id": "H", "origin": ts(0), "label_cutoff": ts(25),
@@ -231,7 +233,7 @@ def test_topology_or_label_availability_fail_closed() -> None:
         build(label_cutoff=ts(23))
 
 
-def _write_gz(path: Path, records: list[dict]) -> str:
+def _write_gz(path: Path, records: list[dict[str, Any]]) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wt", encoding="utf-8") as stream:
         for row in records:
