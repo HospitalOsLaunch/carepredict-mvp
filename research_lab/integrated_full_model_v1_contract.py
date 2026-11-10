@@ -92,11 +92,13 @@ def validate_spec(raw: Any) -> dict[str, Any]:
             raise ValueError(f"Invalid {name}")
     if not raw["action_features"]:
         raise ValueError("Action-conditioned RSSM requires explicit action channels")
-    if raw["action_features"] != ["staffing_delta", "discharge_delta"]:
-        raise ValueError(
-            "Integrated v1 accepts only the existing RS-JEPA synthetic action order; "
-            "a separate approved adapter is required for operational actions"
-        )
+    supported_actions = (
+        ["staffing_delta", "discharge_delta"],
+        ["anticipation_sorties", "lits_supplementaires",
+         "renfort_soignant", "acceleration_aval"],
+    )
+    if raw["action_features"] not in supported_actions:
+        raise ValueError("Only the two explicitly mapped synthetic action sets are approved")
     targets = raw["targets"]
     if not isinstance(targets, list) or not 1 <= len(targets) <= 32:
         raise ValueError("No forecast targets")
@@ -254,3 +256,13 @@ def make_example_spec() -> dict[str, Any]:
         "asof_contract": "VERSIONED_AVAILABLE_AT_PER_SOURCE",
         "action_policy": "EXPLICIT_KNOWN_PLAN_OR_COUNTERFACTUAL",
     })
+
+
+def make_v041_synthetic_spec() -> dict[str, Any]:
+    """V0.4.1 native requested-action counts, not Phase-A action deltas."""
+    spec = make_example_spec()
+    spec["action_features"] = [
+        "anticipation_sorties", "lits_supplementaires",
+        "renfort_soignant", "acceleration_aval",
+    ]
+    return validate_spec(spec)
