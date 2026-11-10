@@ -74,7 +74,7 @@ def _time(start: dt.datetime, h: int) -> str:
 
 
 def _read_events(path: Path, expected_count: int) -> list[dict[str, Any]]:
-    rows = []
+    rows: list[dict[str, Any]] = []
     decompressed = 0
     with gzip.open(path, "rt", encoding="utf-8") as stream:
         for line in stream:
@@ -153,7 +153,8 @@ def build_ledger(
         slot = (h, u)
         if slot in by_day_unit:
             raise ValueError("Duplicate decision for one unit and day")
-        by_day_unit[slot] = {name: payload[name] for name in LEVER_CHANNELS}
+        assert isinstance(u, str)
+        by_day_unit[(h, u)] = {name: payload[name] for name in LEVER_CHANNELS}
     expected = {
         (day * 24 + 9, unit) for day in range(days) for unit in units
     }
