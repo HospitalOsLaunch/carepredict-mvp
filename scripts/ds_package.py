@@ -27,15 +27,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "claude/hospitalos-auto-first-p0-p4-s2dywn"
 BASE = "a5e737eec2cfdf0f52a68f41b523f928181c03e6"
-NAME = "HospitalOS_DS_P0-P4_20261114_v4"
+NAME = "HospitalOS_DS_P0-P4_20261114_v5"
 LEDGER = ROOT / "evidence/decision_support/BUDGET_LEDGER.jsonl"
 
 RESTORE = r"""#!/bin/sh
 # Restore the HospitalOS decision-support P0-P4 work and verify it.
-#   sh restore.sh <new_empty_dir>   full: integrity, ledger terminal, tests, regenerated results
-#   sh restore.sh --verify-only      integrity of both manifests + ledger terminal only
+#   sh restore.sh <new_empty_dir>   full restoration + replay, counted in the TARGET's ledger
+#   sh restore.sh --verify-only      integrity of the manifests + ledger lineage only
 # Optional env PYTEST_PATH = site-packages holding pytest.
-# Source: exact tree of HEAD (source_head.tar; the session clone was shallow). With history:
+# Ledger (V4-D01): the most recent ledger of the package (final > sealed terminal > build-time
+# evidence copy) is installed in the target, after checking that the tree's older copy is an
+# exact prefix of it; the replay then appends to it. The counter is never taken from the tree.
+# Source: exact tree of HEAD (source_head.tar). With history:
 #   git checkout -b __BRANCH__ __BASE__ && git am patches/*.patch
 set -eu
 PKG=$(cd "$(dirname "$0")" && pwd)
@@ -45,42 +48,44 @@ cd "$PKG"
 if ! sha256sum -c SHA256SUMS --quiet; then
   echo "ABORT: main manifest check failed; nothing restored or executed" >&2; exit 2
 fi
-SEALED=no
+SOURCE=evidence/BUDGET_LEDGER.jsonl
+LINEAGE=build_time_unsealed
 if [ -f SHA256SUMS.post ]; then
-  if ! sha256sum -c SHA256SUMS.post --quiet; then
-    echo "ABORT: detached manifest SHA256SUMS.post check failed" >&2; exit 2
-  fi
-  SEALED=yes
+  sha256sum -c SHA256SUMS.post --quiet || { echo "ABORT: SHA256SUMS.post failed" >&2; exit 2; }
+  SOURCE=ledger/BUDGET_LEDGER.jsonl; LINEAGE=sealed_terminal
 fi
-if [ "$SEALED" = yes ]; then
-  mkdir -p "$PKG/.verify"
-  tar -xf "$PKG/source_head.tar" -C "$PKG/.verify" scripts/ds_budget_run.py
-  if ! python3 - "$PKG" <<'PY'
+if [ -f SHA256SUMS.final ]; then
+  sha256sum -c SHA256SUMS.final --quiet || { echo "ABORT: SHA256SUMS.final failed" >&2; exit 2; }
+  SOURCE=ledger/BUDGET_LEDGER.final.jsonl; LINEAGE=final_after_postseal_restore
+fi
+rm -rf "$PKG/.verify"; mkdir -p "$PKG/.verify"
+tar -xf "$PKG/source_head.tar" -C "$PKG/.verify" scripts/ds_budget_run.py
+if ! python3 - "$PKG" "$SOURCE" <<'PY'
 import importlib.util, json, sys
 from pathlib import Path
-pkg = Path(sys.argv[1])
+pkg, source = Path(sys.argv[1]), sys.argv[2]
 spec = importlib.util.spec_from_file_location("b", pkg / ".verify/scripts/ds_budget_run.py")
 b = importlib.util.module_from_spec(spec); spec.loader.exec_module(b)
-terminal = json.loads((pkg / "LEDGER_TERMINAL.json").read_text())
-ledger = pkg / "ledger/BUDGET_LEDGER.jsonl"
-records = b.read_ledger(ledger)  # verifies hash chain + anchor
-used = round(b.used_seconds(records), 3)
-ok = (len(records) == terminal["records"]
-      and records[-1]["record_sha256"] == terminal["last_record_sha256"]
-      and used == terminal["used_wall_seconds"])
-print(json.dumps({"ledger_records": len(records), "restored_used_wall_seconds": used,
-                  "terminal_used_wall_seconds": terminal["used_wall_seconds"],
-                  "remaining_wall_seconds": round(600 - used, 3), "match": ok}))
+records = b.read_ledger(pkg / source)  # hash chain + anchor next to it
+out = {"ledger_source": source, "records": len(records),
+       "used_wall_seconds": round(b.used_seconds(records), 3)}
+terminal_file = pkg / "LEDGER_TERMINAL.json"
+ok = True
+if terminal_file.exists():
+    t = json.loads(terminal_file.read_text())
+    n = t["records"]
+    ok = (len(records) >= n and records[n - 1]["record_sha256"] == t["last_record_sha256"]
+          and out["used_wall_seconds"] >= t["used_wall_seconds"])
+    out.update({"terminal_records": n, "terminal_used_wall_seconds": t["used_wall_seconds"],
+                "terminal_is_prefix": ok})
+print(json.dumps(out))
 sys.exit(0 if ok else 1)
 PY
-  then
-    rm -rf "$PKG/.verify"; echo "ABORT: ledger terminal mismatch" >&2; exit 6
-  fi
-  rm -rf "$PKG/.verify"
-else
-  echo "UNSEALED: ledger terminal not yet written (pre-seal restore test)"
+then
+  rm -rf "$PKG/.verify"; echo "ABORT: ledger lineage check failed" >&2; exit 6
 fi
-if [ "$MODE" = verify ]; then echo "VERIFY-ONLY: OK (sealed=$SEALED)"; exit 0; fi
+rm -rf "$PKG/.verify"
+if [ "$MODE" = verify ]; then echo "VERIFY-ONLY: OK (lineage=$LINEAGE)"; exit 0; fi
 TARGET=${1:?usage: sh restore.sh <new_empty_dir> | --verify-only}
 if [ -e "$TARGET" ] && [ -n "$(ls -A "$TARGET" 2>/dev/null)" ]; then
   echo "ABORT: target directory is not empty" >&2; exit 3
@@ -88,24 +93,63 @@ fi
 mkdir -p "$TARGET"
 tar -xf "$PKG/source_head.tar" -C "$TARGET"
 cd "$TARGET"
+if ! python3 - "$PKG" "$SOURCE" "$LINEAGE" <<'PY'
+import importlib.util, json, shutil, sys
+from datetime import UTC, datetime
+from pathlib import Path
+pkg, source, lineage = Path(sys.argv[1]), Path(sys.argv[1]) / sys.argv[2], sys.argv[3]
+spec = importlib.util.spec_from_file_location("b", Path("scripts/ds_budget_run.py"))
+b = importlib.util.module_from_spec(spec); spec.loader.exec_module(b)
+target = b.DEFAULT_LEDGER
+tree_lines = [l for l in target.read_text().splitlines() if l.strip()] if target.exists() else []
+src_lines = [l for l in source.read_text().splitlines() if l.strip()]
+if src_lines[:len(tree_lines)] != tree_lines:
+    print("tree ledger is not an exact prefix of the package ledger", file=sys.stderr)
+    sys.exit(1)
+shutil.copyfile(source, target)
+b.write_anchor(target, b.read_ledger(target))  # tree anchor still holds: exact prefix
+b.append(target, {"kind": "note", "at_utc": datetime.now(UTC).isoformat(), "lot": "RESTORE",
+                  "label": "ledger installed from package", "wall_seconds": 0.0,
+                  "note": f"{lineage}: {source.name} ({len(src_lines)} records) installed over "
+                          f"the tree copy ({len(tree_lines)} records, exact prefix)"})
+print(json.dumps({"installed_records": len(src_lines), "tree_records": len(tree_lines)}))
+PY
+then
+  echo "ABORT: ledger installation in target failed" >&2; exit 7
+fi
 HEAD=$(cat "$PKG/HEAD.txt")
 export PYTHONPATH="${PYTEST_PATH:+$PYTEST_PATH:}src:."
-python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 \
+python3 scripts/ds_budget_run.py --lot RESTORE --label "restore: pytest tests/decision_support" \
+  -- python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 \
   && T=pass || T=fail
-python3 -m hospitalos.decision_support export --out restore_results > /dev/null
-python3 - "$PKG" "$TARGET" "$HEAD" "$T" "$SEALED" <<'PY'
-import hashlib, json, sys
+python3 scripts/ds_budget_run.py --lot RESTORE --label "restore: regenerate results" \
+  -- python3 -m hospitalos.decision_support export --out restore_results > restore_export.log 2>&1
+python3 - "$PKG" "$TARGET" "$HEAD" "$T" "$SOURCE" "$LINEAGE" <<'PY'
+import hashlib, importlib.util, json, re, sys
 from pathlib import Path
-pkg, target, head, tests, sealed = Path(sys.argv[1]), Path(sys.argv[2]), *sys.argv[3:]
+pkg, target, head, tests, source, lineage = Path(sys.argv[1]), Path(sys.argv[2]), *sys.argv[3:]
+spec = importlib.util.spec_from_file_location("b", target / "scripts/ds_budget_run.py")
+b = importlib.util.module_from_spec(spec); spec.loader.exec_module(b)
 index = json.loads((pkg / "evidence/results/index.json").read_text())
 def digest(name):
     return hashlib.sha256((target / "restore_results" / name).read_bytes()).hexdigest()
 diff = [f["file"] for f in index["files"] if digest(f["file"]) != f["sha256"]]
-summary = (target / "restore_pytest.log").read_text().strip().splitlines()[-1]
+summary = next((m.group(0) for m in re.finditer(r"\d+ passed[^\n]*",
+                (target / "restore_pytest.log").read_text())), "no pytest summary")
+src = [l for l in (pkg / source).read_text().splitlines() if l.strip()]
+now = [l for l in b.DEFAULT_LEDGER.read_text().splitlines() if l.strip()]
+status = b.status(b.DEFAULT_LEDGER)
+src_used = round(sum(float(json.loads(l).get("wall_seconds", 0)) for l in src), 3)
+prefix = now[:len(src)] == src
 receipt = {"test": "T30", "restored_tree_of_head": head, "method": "source_head.tar",
-           "package_sealed_at_restore": sealed == "yes", "tests": tests, "pytest": summary,
-           "results_compared": len(index["files"]), "results_differing": diff,
-           "status": "PASS" if tests == "pass" and not diff else "FAIL"}
+           "ledger_lineage": lineage, "ledger_source": source,
+           "source_records": len(src), "source_used_wall_seconds": src_used,
+           "target_status_after_replay": status,
+           "package_ledger_is_exact_prefix_of_target": prefix,
+           "tests": tests, "pytest": summary,
+           "results_compared": len(index["files"]), "results_differing": diff}
+receipt["status"] = "PASS" if (tests == "pass" and not diff and prefix and
+                               status["used_wall_seconds"] >= src_used) else "FAIL"
 (target / "RESTORE_RECEIPT.json").write_text(json.dumps(receipt, indent=1) + "\n")
 print(json.dumps(receipt))
 sys.exit(0 if receipt["status"] == "PASS" else 1)
@@ -167,7 +211,9 @@ def build(reference: Path, out: Path) -> int:
             "exact Python 3.11.9 patch level: the full suite passes under 3.11.18 (163/163, "
             "results identical); downloading a 3.11.9 interpreter is not covered by the "
             "authorisations",
-            "independent re-audit of the P2/P3bis corrections (A01-A10 now pass locally)",
+            "independent re-audit of the v5 corrections (V4-R01/R02/R03, V4-D01); A01-A10 and "
+            "B01-B04 pass locally",
+            "cockpit Vitest/e2e are the author's runs, not an independent browser replay",
         ],
         "scientific_status": "PROTOTYPE_UNVALIDATED",
         "clinical_validation": False,
@@ -182,6 +228,11 @@ def build(reference: Path, out: Path) -> int:
             "findings_fixed": ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08"],
             "independent_tests_A01_A10": "red 9/10 failing on d7844ea and on b5d09be; "
             "green 10/10 after correction (file kept byte for byte)",
+            "reaudit_v4": "v4 sha256 c8885375...045e (tree bebb95b); findings V4-R01, V4-R02, "
+            "V4-R03, V4-D01 fixed; B01-B04 red 3/4 then green 4/4; restored counter red "
+            "102<105 then green (files kept byte for byte)",
+            "budget_lineage": "auditor ledger (114 records, 260.024 s) adopted: exact extension "
+            "of the v4 terminal, no double counting",
         },
         "branch": BRANCH, "base": BASE, "code_commit": head, "pushed": False,
         "tests": {
@@ -255,6 +306,40 @@ def seal(out: Path, receipt: Path, checks: Path) -> int:
     return 0
 
 
+def finalize(out: Path, target: Path, counter_junit: Path) -> int:
+    """After the post-seal restoration: record the target lineage (terminal + replay)."""
+    pkg = out / NAME
+    b = budget()
+    terminal = json.loads((pkg / "LEDGER_TERMINAL.json").read_text())
+    tgt = target / "evidence/decision_support/BUDGET_LEDGER.jsonl"
+    records = b.read_ledger(tgt)
+    sealed = [ln for ln in (pkg / "ledger/BUDGET_LEDGER.jsonl").read_text().splitlines() if ln]
+    lines = [ln for ln in tgt.read_text().splitlines() if ln]
+    if lines[: len(sealed)] != sealed or len(records) < terminal["records"]:
+        print("refusing: target ledger does not extend the sealed terminal", file=sys.stderr)
+        return 2
+    final = pkg / "ledger/BUDGET_LEDGER.final.jsonl"
+    shutil.copy2(tgt, final)
+    b.write_anchor(final, records)
+    shutil.copy2(target / "RESTORE_RECEIPT.json", pkg / "RESTORE_RECEIPT_POSTSEAL.json")
+    shutil.copy2(counter_junit, pkg / "RESTORATION_COUNTER_TEST.xml")
+    summary = {
+        "final_records": len(records),
+        "final_used_wall_seconds": round(b.used_seconds(records), 3),
+        "final_remaining_wall_seconds": round(600.0 - b.used_seconds(records), 3),
+        "last_record_sha256": records[-1]["record_sha256"],
+        "extends_sealed_terminal": True,
+        "terminal_records": terminal["records"],
+    }
+    (pkg / "LEDGER_FINAL.json").write_text(json.dumps(summary, indent=1) + "\n")
+    files = ["ledger/BUDGET_LEDGER.final.jsonl", f"ledger/{b.anchor_path(final).name}",
+             "RESTORE_RECEIPT_POSTSEAL.json", "RESTORATION_COUNTER_TEST.xml", "LEDGER_FINAL.json",
+             "SHA256SUMS.post"]
+    (pkg / "SHA256SUMS.final").write_text("".join(f"{sha(pkg / f)}  {f}\n" for f in files))
+    print(json.dumps(summary))
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -265,9 +350,15 @@ def main() -> int:
     ps.add_argument("--out", type=Path, required=True)
     ps.add_argument("--receipt", type=Path, required=True)
     ps.add_argument("--checks", type=Path, required=True)
+    pf = sub.add_parser("finalize")
+    pf.add_argument("--out", type=Path, required=True)
+    pf.add_argument("--target", type=Path, required=True)
+    pf.add_argument("--counter-junit", type=Path, required=True)
     args = parser.parse_args()
     if args.cmd == "build":
         return build(args.reference, args.out)
+    if args.cmd == "finalize":
+        return finalize(args.out, args.target, args.counter_junit)
     return seal(args.out, args.receipt, args.checks)
 
 

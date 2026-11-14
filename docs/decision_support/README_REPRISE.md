@@ -22,6 +22,11 @@ python3 web/decision/serve.py --port 8765             # puis http://127.0.0.1:87
 node web/decision/e2e.mjs                             # e2e (démarre et arrête lui-même le serveur)
 ```
 
+Restauration d'un paquet : `sh restore.sh <dossier_neuf>` installe dans la cible le registre le
+plus récent du paquet (final > terminal scellé), après avoir vérifié que la copie de l'arbre en est
+un préfixe exact, puis compte le rejeu dans ce registre ; `sh restore.sh --verify-only` contrôle
+les manifestes et la lignée sans rien exécuter.
+
 Pour rester dans le cadre budgété de la reprise, préfixer chaque commande d'exécution par
 `python3 scripts/ds_budget_run.py --lot <lot> --label "<texte>" --` (600 s cumulées,
 30 s par commande, registre chaîné jamais remis à zéro ; `--status` affiche le reste).

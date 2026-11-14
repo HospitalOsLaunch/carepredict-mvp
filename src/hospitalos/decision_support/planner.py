@@ -43,6 +43,7 @@ from .resources import (
     option_admissibility,
     roster_known,
     team_capacity,
+    touched_hours,
 )
 from .snapshot import CONFIG_DIR, load_json, load_profile, sha
 
@@ -794,24 +795,25 @@ def _reservation_requests(
         if a.type == "reinforcement":
             requests.append((a.target, a.window_start.isoformat(), a.idempotency_key, 1))
             option = options.get(a.target)
-            if option is not None and option.source == "shared_unit" and option.lending_unit:
-                # F02 across requests: loans from one lender share its spare staff per hour.
+            if option is not None and option.source == "shared_unit":
+                # F02/V4-R01: loans from one lender share its spare staff per hour, on the
+                # same common hourly grid as the cumulative check. V4-R02: an unidentified
+                # lender gives an unknown capacity, hence a refusal, never a skipped check.
+                lender = option.lending_unit or "UNKNOWN_LENDER"
                 spare = None
-                if option.lending_unit_scheduled is not None and (
+                if option.lending_unit and option.lending_unit_scheduled is not None and (
                     option.lending_unit_minimum is not None
                 ):
                     spare = max(0, option.lending_unit_scheduled - option.lending_unit_minimum)
-                h = option.start
-                while h < option.end:
+                for h in touched_hours(option.start, option.end):
                     requests.append(
                         (
-                            f"lend:{option.lending_unit}:{option.skill}",
+                            f"lend:{lender}:{option.skill}",
                             h.isoformat(),
                             f"{a.idempotency_key}:{h.isoformat()}",
                             spare,
                         )
                     )
-                    h += timedelta(hours=1)
         elif "transport_team" in a.resources:
             h = hour_index(start, a.window_start)
             cap = transport[h] if 0 <= h < len(transport) else 0

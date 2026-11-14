@@ -1,10 +1,9 @@
 # Point de reprise
 
-État : P0–P4 livrés puis corrigés après audit (P2/P3bis, P4bis) : **`PARTIAL_WITH_CHECKPOINT`**.
-P5 et P6 **fermés** (mandat et budget distincts requis). Portes ouvertes : niveau exact
-Python 3.11.9 (3.11.18 testé : 163/163, résultats identiques) et ré-audit indépendant des correctifs.
-Branche locale : `claude/hospitalos-auto-first-p0-p4-s2dywn`, base `a5e737e` (`claude/cockpit-web`).
-Rien n'a été poussé.
+État : P0–P4 livrés, corrigés après deux audits indépendants (P2/P3bis, puis v5 :
+V4-R01/R02/R03, V4-D01) : **`PARTIAL_WITH_CHECKPOINT`**. P5 et P6 **fermés**. Portes ouvertes :
+niveau exact Python 3.11.9 (3.11.18 : suite complète verte), ré-audit indépendant de la v5,
+rejeu navigateur indépendant du cockpit.
 
 ## Reprise exacte
 
@@ -15,7 +14,8 @@ sh restore.sh /chemin/vers/dossier_neuf
 # depuis un clone existant à a5e737e : appliquer les patchs
 git checkout -b claude/hospitalos-auto-first-p0-p4-s2dywn a5e737eec2cfdf0f52a68f41b523f928181c03e6
 git am patches/*.patch
-python3 scripts/ds_budget_run.py --status     # retrouve les compteurs, jamais remis à zéro
+python3 scripts/ds_budget_run.py --status     # DANS le dossier restauré : registre le plus récent
+                                              # du paquet installé, prolongé par le rejeu
 ```
 
 Le registre `evidence/decision_support/BUDGET_LEDGER.jsonl` est chaîné : toute modification

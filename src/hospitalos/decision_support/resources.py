@@ -36,14 +36,15 @@ def lending_violations(
     used (lowest scheduled, highest minimum).
     """
     per_hour: dict[tuple[str, str, datetime], list[ReinforcementOption]] = {}
-    for o in options:
-        if o.source != "shared_unit" or o.lending_unit is None:
-            continue
-        h = o.start
-        while h < o.end:
-            per_hour.setdefault((o.lending_unit, o.skill, h), []).append(o)
-            h += timedelta(hours=1)
     problems = []
+    for o in options:
+        if o.source != "shared_unit":
+            continue
+        if o.lending_unit is None:  # V4-R02
+            problems.append(f"lending_unit_unknown:{o.option_id}")
+            continue
+        for h in touched_hours(o.start, o.end):  # V4-R01: common grid
+            per_hour.setdefault((o.lending_unit, o.skill, h), []).append(o)
     for (unit, skill, h), taken in sorted(per_hour.items()):
         scheduled = [o.lending_unit_scheduled for o in taken]
         minimum = [o.lending_unit_minimum for o in taken]
@@ -64,16 +65,41 @@ def covers(window_start: datetime, window_end: datetime, hour_start: datetime) -
     return window_start <= hour_start and hour_start + timedelta(hours=1) <= window_end
 
 
+def on_hour_grid(value: datetime) -> bool:
+    return not (value.minute or value.second or value.microsecond)
+
+
+def touched_hours(start: datetime, end: datetime) -> list[datetime]:
+    """Common hourly grid covering [start, end): every whole hour the window touches.
+
+    Conservative for commitments (an hour partly used by a loan counts as used). Shared by
+    the cumulative check and the reservations so that two windows always meet on the same
+    keys, whatever their starts (V4-R01).
+    """
+    h = start.replace(minute=0, second=0, microsecond=0)
+    hours = []
+    while h < end:
+        hours.append(h)
+        h += timedelta(hours=1)
+    return hours
+
+
 def option_admissibility(
     option: ReinforcementOption, horizon_start: datetime, horizon_end: datetime
 ) -> tuple[bool, str]:
     if option.end <= option.start:
         return False, "empty_window"
+    if not (on_hour_grid(option.start) and on_hour_grid(option.end)):
+        # V4-R01: the engine is hourly; a window off the grid is refused, never rounded.
+        return False, "unsupported_time_precision:reinforcement_window_not_on_whole_hours"
     if option.start < horizon_start or option.end > horizon_end:
         return False, "outside_supported_horizon"
     if option.confirmation == "unknown":
         return False, "confirmation_unknown"
     if option.source == "shared_unit":
+        if option.lending_unit is None:
+            # V4-R02: without the lender's identity its cumulative margin cannot be checked.
+            return False, "lending_unit_unknown"
         if option.lending_unit_scheduled is None or option.lending_unit_minimum is None:
             return False, "external_commitment_unknown"
         if option.lending_unit_scheduled - 1 < option.lending_unit_minimum:
@@ -167,9 +193,11 @@ def coverage(base_minutes: int, tasks: list[tuple[int, int]], staff: int) -> Cov
 class ResourceLedger:
     """Local, idempotent reservations for the demo review step (no external system)."""
 
-    capacity: dict[tuple[str, str], int] = field(default_factory=dict)
+    capacity: dict[tuple[str, str], int | None] = field(default_factory=dict)
     by_key: dict[str, tuple[str, str]] = field(default_factory=dict)
     used: dict[tuple[str, str], list[str]] = field(default_factory=dict)
+    # Append-only trace of capacity reconciliations that conflict with existing holds.
+    conflicts: list[str] = field(default_factory=list)
 
     def reserve_all(
         self, requests: list[tuple[str, str, str, int | None]]
@@ -188,8 +216,22 @@ class ResourceLedger:
         details = []
         ok_all = True
         for resource, slot, key, cap in requests:
-            if cap is not None:
-                staged.capacity.setdefault((resource, slot), cap)
+            # V4-R03: the capacity of the CURRENT snapshot replaces any remembered one,
+            # including when it became unknown. Existing holds are kept, never erased; a
+            # capacity now below them is traced as a conflict and blocks new holds.
+            holders = staged.used.get((resource, slot), [])
+            previous = staged.capacity.get((resource, slot))
+            staged.capacity[(resource, slot)] = cap
+            if previous is not None and cap != previous and holders:
+                if cap is None:
+                    self.conflicts.append(
+                        f"capacity_now_unknown:{resource}@{slot}:holds={len(holders)}"
+                    )
+                elif len(holders) > cap:
+                    self.conflicts.append(
+                        f"capacity_below_existing_holds:{resource}@{slot}:"
+                        f"{len(holders)}>{cap}"
+                    )
             ok, why = staged.reserve(resource, slot, key)
             details.append(f"{resource}@{slot}:{why}")
             ok_all = ok_all and ok

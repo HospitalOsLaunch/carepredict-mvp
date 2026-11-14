@@ -2,8 +2,9 @@
 
 Entrée : `HospitalOS_Audit_DS_20261114` (35/35 empreintes conformes ; rapport identique au fichier
 transmis), portant sur `HospitalOS_DS_P0-P4_20261114.zip` (SHA-256 `431e2e44…cda4e`, arbre
-`d7844ea`). Statut de livraison : **`PARTIAL_WITH_CHECKPOINT`** (deux portes restent ouvertes, voir
-§ 6). Statut scientifique inchangé : `PROTOTYPE_UNVALIDATED`, `clinical_validation=false`, `G2=NO-GO`.
+`d7844ea`). Statut de livraison : **`PARTIAL_WITH_CHECKPOINT`** (portes restantes : § 6 et § 9). Ce rapport
+interne au dépôt et au paquet fait foi ; une copie transmise séparément plus tôt était antérieure
+au § 8 (exécution Python 3.11). Statut scientifique inchangé : `PROTOTYPE_UNVALIDATED`, `clinical_validation=false`, `G2=NO-GO`.
 
 ## 1. Reproduction avant modification (état rouge)
 
@@ -99,3 +100,29 @@ Environnement virtuel isolé (dossier de travail de la session, Python système 
 
 Ces exécutions sont postérieures au scellement du
 paquet v3 : elles figurent dans le registre du dépôt, pas dans le terminal de v3.
+
+## 9. Correctif v5 — après le ré-audit indépendant de la v4
+
+Entrée : `HospitalOS_Audit_DS_v4_Correctifs_20261114.zip` (SHA-256 `4bec5b3d…ac1c2`, 37/37
+empreintes conformes ; rapport et prompt identiques aux fichiers transmis), portant sur la v4
+(SHA-256 `c8885375…045e`, arbre `bebb95b`).
+
+**Budget (étape 0).** Le registre de l'audit prolonge **exactement** le terminal v4 (105 lignes
+identiques, chaîne et ancre valides avec le vérificateur du dépôt) et ajoute 22,885 s
+(`HospitalOS_DS_v4_independent_20261114`). Le dépôt n'ayant rien enregistré après le scellement
+de la v4, cette lignée a été adoptée telle quelle : 114 enregistrements, 260,024 s, sans double
+comptage. Les journaux 107–114 de l'audit sont copiés dans `runlogs/` (leurs chemins enregistrés
+renvoient à l'environnement de l'auditeur).
+
+**Rouge.** Tests de l'audit copiés octet pour octet : `test_v4_resource_boundaries.py` = B01, B02,
+B03 en échec, B04 réussi ; `test_v4_restoration_counter.py` contre la vraie restauration v4 =
+échec « Restored 102 records, sealed terminal 105 ».
+
+| Constat | Correction | Preuves |
+|---|---|---|
+| **V4-R01** fenêtres décalées | Une fenêtre de renfort hors grille horaire est **refusée** (`unsupported_time_precision:reinforcement_window_not_on_whole_hours`), jamais arrondie. En défense, cumul et réservations utilisent une **grille commune** (`touched_hours` : toute heure touchée compte). Même règle pour l'énumération, les verrous et l'approbation (`plan_precondition_errors` réutilise `option_admissibility`). | B01 ; `test_corrections_v5::test_r01_*` (raison exacte, R1 aligné toujours utilisable, chevauchement détecté même si l'admissibilité était contournée, clés communes, témoin sans chevauchement autorisé) |
+| **V4-R02** prêteur inconnu | `shared_unit` sans `lending_unit` : offre refusée (`lending_unit_unknown`), violation dans le cumul, et réservation à capacité inconnue (donc refusée) au lieu d'un contrôle sauté. Les autres sources ne sont pas touchées. | B02 ; `test_r02_*` |
+| **V4-R03** capacité historique conservée | `reserve_all` applique la capacité **courante** de l'instantané (y compris inconnue), conserve les engagements existants, refuse le nouvel engagement incompatible et trace le conflit (`capacity_below_existing_holds`, `capacity_now_unknown`) dans `ResourceLedger.conflicts`. | B03 ; `test_r03_*` |
+| **V4-D01** compteur restauré antérieur | `restore.sh` choisit le registre le plus récent du paquet (final > terminal scellé > copie de construction), vérifie que la copie de l'arbre en est un **préfixe exact**, l'installe dans `evidence/decision_support/` de la cible avec une note tracée, puis exécute les tests et l'export **via le compteur de la cible**. Le reçu donne le `--status` de la cible après rejeu. | `test_v4_restoration_counter.py` vert contre la restauration post-scellement ; `RESTORE_RECEIPT_POSTSEAL.json` |
+
+Les chiffres nominaux restent 1040 / 905 / 640 / 435 / 795 (sorties de fixture).
