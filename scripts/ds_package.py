@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "claude/hospitalos-auto-first-p0-p4-s2dywn"
 BASE = "a5e737eec2cfdf0f52a68f41b523f928181c03e6"
-NAME = "HospitalOS_DS_P0-P4_20261114_v3"
+NAME = "HospitalOS_DS_P0-P4_20261114_v4"
 LEDGER = ROOT / "evidence/decision_support/BUDGET_LEDGER.jsonl"
 
 RESTORE = r"""#!/bin/sh
@@ -158,13 +158,15 @@ def build(reference: Path, out: Path) -> int:
     suite = junit if junit.tag == "testsuite" else junit[0]
     e2e = json.loads((ROOT / "evidence/decision_support/e2e_result.json").read_text())
     e2e_react = json.loads((ROOT / "evidence/decision_support/e2e_react_result.json").read_text())
+    py311 = ET.parse(ROOT / "evidence/decision_support/pytest_py311.xml").getroot()
+    py311 = py311 if py311.tag == "testsuite" else py311[0]
     status = {
         "schema": "HOSPITALOS_DS_STATUS_2",
         "delivery_status": "PARTIAL_WITH_CHECKPOINT",
         "open_gates": [
-            "Python 3.11.9 runtime verification: only Python 3.11.18 is present, without pydantic/"
-            "numpy/pytest; installing them needs a network authorisation (syntax parse under "
-            "3.11 passes)",
+            "exact Python 3.11.9 patch level: the full suite passes under 3.11.18 (163/163, "
+            "results identical); downloading a 3.11.9 interpreter is not covered by the "
+            "authorisations",
             "independent re-audit of the P2/P3bis corrections (A01-A10 now pass locally)",
         ],
         "scientific_status": "PROTOTYPE_UNVALIDATED",
@@ -191,6 +193,12 @@ def build(reference: Path, out: Path) -> int:
                 "checks": len(e2e_react["checks"]), "failed": e2e_react["failed"]
             },
             "cockpit_vitest": "72 passed (66 pre-existing + 6 new; runlog in ledger)",
+            "python_3_11_18_full_suite": {
+                **{k: py311.get(k) for k in ("tests", "failures", "errors", "skipped")},
+                "venv": "isolated; pydantic 2.14.3, numpy 2.4.6, pytest 8.4.2, jsonschema "
+                "4.26.0 (installs authorised by the user, charged to the ledger)",
+                "results_regenerated_identical": "11/11 byte for byte",
+            },
             "T30_restore": "RESTORE_RECEIPT.json (sealed later, SHA256SUMS.post)",
         },
         "budget_at_build": budget().status(LEDGER),
@@ -200,15 +208,15 @@ def build(reference: Path, out: Path) -> int:
             "not a scientific failure",
         },
         "limits": [
-            "npm ci in web/ was performed earlier under the user's explicit authorisation; no "
-            "new install in this correction cycle; restore.sh replays the Python suite only",
+            "npm ci in web/ and the Python 3.11 venv installs were performed under the user's "
+            "explicit authorisations; restore.sh replays the Python suite only",
             "tests/hybrid/test_decision_guard.py not run: fit_benchmark fits models (training)",
             "mypy --strict not run",
             "browser e2e run by the author, not independently revalidated",
             "all parameters synthetic; no interviews; no calibration",
         ],
         "not_executed": ["training", "weight loading", "AJ-H inference", "lots B/C",
-                         "statistical campaign", "paid API/GPU", "network install", "push",
+                         "statistical campaign", "paid API/GPU", "unauthorised network install", "push",
                          "merge", "rebase", "SIH action", "background process"],
     }
     (pkg / "STATUS.json").write_text(json.dumps(status, indent=1, ensure_ascii=False) + "\n")

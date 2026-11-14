@@ -1,0 +1,12 @@
+E501 Line too long (104 > 100)
+   --> scripts/ds_package.py:219:101
+    |
+217 |         ],
+218 |         "not_executed": ["training", "weight loading", "AJ-H inference", "lots B/C",
+219 |                          "statistical campaign", "paid API/GPU", "unauthorised network install", "push",
+    |                                                                                                     ^^^^
+220 |                          "merge", "rebase", "SIH action", "background process"],
+221 |     }
+    |
+
+Found 1 error.
