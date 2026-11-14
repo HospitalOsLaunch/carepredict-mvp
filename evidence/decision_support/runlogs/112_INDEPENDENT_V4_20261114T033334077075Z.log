@@ -1,0 +1,8 @@
+{
+  "ledger": "/mnt/data/ds_v4_independent_audit/restored/evidence/decision_support/BUDGET_LEDGER.jsonl",
+  "commands": 94,
+  "used_wall_seconds": 229.062,
+  "limit_wall_seconds": 600.0,
+  "remaining_wall_seconds": 370.938,
+  "stopped": false
+}

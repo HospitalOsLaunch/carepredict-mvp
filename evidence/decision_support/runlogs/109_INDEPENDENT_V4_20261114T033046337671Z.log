@@ -1,0 +1,2 @@
+{"ledger_records": 105, "restored_used_wall_seconds": 237.139, "terminal_used_wall_seconds": 237.139, "remaining_wall_seconds": 362.861, "match": true}
+{"test": "T30", "restored_tree_of_head": "bebb95bba231536331bcf80f658efddc99e44196", "method": "source_head.tar", "package_sealed_at_restore": true, "tests": "pass", "pytest": "77 passed in 4.77s", "results_compared": 11, "results_differing": [], "status": "PASS"}

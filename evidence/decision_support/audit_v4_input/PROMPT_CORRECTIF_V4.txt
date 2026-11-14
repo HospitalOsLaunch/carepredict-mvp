@@ -1,0 +1,24 @@
+HospitalOS — correctif ciblé après ré-audit indépendant de v4 (14 novembre 2026)
+
+Entrée : HospitalOS_DS_P0-P4_20261114_v4.zip ; SHA-256 calculé c88853750b80a085d1dfd7ed9b9db8a8b6ccf6c3c79b1c428598e646160e045e ; arbre déclaré bebb95bba231536331bcf80f658efddc99e44196.
+Lire RAPPORT_AUDIT_V4.md, AUDIT_SUMMARY.json, evidence/new_boundary_probes.json, evidence/restored_budget_mismatch.json et les deux tests ajoutés.
+
+Acquis : A01–A10 inchangés 10/10 ; suite DS/hybride ciblée 163/163 ; restauration 77/77 et 11 résultats identiques ; intégration React présente dans les sources. Ne pas réécrire ce travail ni remettre en cause ces résultats couverts. Statut scientifique PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO. Livraison PARTIAL_WITH_CHECKPOINT tant que les contrôles requis restent ouverts.
+
+Périmètre demandé : correction des ressources et du transfert du compteur, puis revalidation technique. Aucun entraînement, poids, inférence AJ-H, P5/P6, campagne statistique, installation réseau, dépense, push, merge ou rebase sans accord distinct. Aucun changement de mvp/computer-use. Les installations précédemment rapportées n'autorisent pas de nouvelles installations dans une autre session. Ne pas modifier les tests d'origine pour les rendre verts.
+
+0. Vérifier le paquet et réconcilier le budget avant les tests. Le terminal de v4 est 237,139 s /105 lignes. Le dossier restauré ne restitue que 229,062 s /102 lignes : ne pas reprendre ce compteur. Ce nouvel audit ajoute 22.885 s (ID HospitalOS_DS_v4_independent_20261114) ; sa lignée complète est fournie, total 260.024 s, reliquat 339.976 s /600, maximum30 s par commande. Préserver tout historique plus récent et réconcilier sans double comptage. Ne pas appliquer la copie ancienne du registre sur une lignée plus récente.
+
+1. V4-R01 : prêts aux fenêtres décalées. R1 14–20 h et R2 14 h30–19 h30, même prêteur4 IDE/minimum3 : les deux sont actuellement approuvés. Le cumul est calculé par dates générées à partir de chaque début, donc les grilles ne se croisent pas. Refuser explicitement les fenêtres non supportées par le moteur horaire OU calculer les chevauchements sur une grille commune. Même contrôle dans contrat, candidats et réservations ; aucun arrondi favorable silencieux. Ajouter un témoin sans chevauchement et conserver les fenêtres entières valides.
+
+2. V4-R02 : source=shared_unit nécessite une unité prêteuse identifiée. Avec lending_unit=None, le code saute le cumul et les réservations du prêteur. Refuser l'offre/exécution avec diagnostic explicite (ou hypothèse non approuvable), même si l'effectif et le minimum sont connus. Ne pas bloquer les autres catégories de renfort à tort.
+
+3. V4-R03 : réconcilier les capacités des créneaux avec le nouvel instantané. Premier prêt à effectif5/minimum3 ; nouvel instantané effectif4/minimum3 ; second prêt à refuser car le premier consomme déjà toute la marge. Ne pas garder une capacité historique2 via setdefault lorsque la marge actuelle est1. Contrôler aussi une capacité devenue inconnue, préserver les engagements antérieurs et tracer les conflits. Pas d'effacement d'engagement pour faire passer un test.
+
+4. V4-D01 : restore.sh vérifie le terminal dans le paquet mais ne l'installe pas dans le runner du dossier cible. Restaurer registre+ancre au chemin d'exécution et faire consommer les vérifications de reprise à ce registre. Vérifier le terminal comme préfixe exact du registre cible, le status exécuté DANS ce dossier et le compteur après vérifications. Ne pas seulement comparer le terminal à sa propre copie dans le paquet.
+
+5. Reproduire le rouge puis le vert des tests ajoutés. V4 actuelle : test_v4_resource_boundaries.py =3 échecs/1 réussite ; test_v4_restoration_counter.py =1 échec lorsqu'il pointe vers une vraie restauration. Rejouer A01–A10, les 163 tests ciblés et les résultats nominaux. Les nouveaux cas sont des tests fonctionnels synthétiques bornés, pas des expériences scientifiques. Ne pas annoncer l'absence générale de bugs sur la base de ces tests.
+
+6. Harmoniser le rapport externe et le rapport interne : la v4 comporte déjà un addendum d'exécution sous Python3.11.18 (163/163) ; ne pas répéter l'ancien blocage des dépendances. Ne pas revendiquer 3.11.9 testé sans preuve. Faire les tests React dans l'environnement disposant des dépendances autorisées ; sinon conserver la réserve de relecture indépendante. Relevés navigateur de l'auteur != rejeu indépendant.
+
+Livrer : sources/patchs exacts, tests rouges/verts et commandes, résultats régénérés, registre complet terminal, reçu de restauration vérifiant le compteur de la cible, statut et limites exacts, nouvelle archive téléchargeable avec SHA-256. Aucun lien /workspace/scratch présenté comme livrable.

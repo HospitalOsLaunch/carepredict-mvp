@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_restored_runtime_preserves_sealed_terminal_history ____________
+
+    def test_restored_runtime_preserves_sealed_terminal_history():
+        package = os.environ.get('AUDIT_PACKAGE')
+        restored = os.environ.get('AUDIT_RESTORED')
+        if not package or not restored:
+            pytest.skip('Set AUDIT_PACKAGE and AUDIT_RESTORED after a real fresh restoration.')
+        package = Path(package)
+        restored = Path(restored)
+        terminal = json.loads((package/'LEDGER_TERMINAL.json').read_text())
+        expected = [json.loads(l) for l in (package/'ledger/BUDGET_LEDGER.jsonl').read_text().splitlines() if l.strip()]
+        actual = [json.loads(l) for l in (restored/'evidence/decision_support/BUDGET_LEDGER.jsonl').read_text().splitlines() if l.strip()]
+>       assert len(actual) >= terminal['records'], (
+            f"Restored {len(actual)} records, sealed terminal {terminal['records']}; lost consumed budget.")
+E       AssertionError: Restored 102 records, sealed terminal 105; lost consumed budget.
+E       assert 102 >= 105
+E        +  where 102 = len([{'at_utc': '2026-11-14T00:14:44.321635+00:00', 'command': ['python3', '-m', 'pytest', '-q', '-p', 'no:cacheprovider',...port', 'recommend', 'tests/decision_support/fixtures/nominal_auto.json'], 'exit_code': 0, 'kind': 'command', ...}, ...])
+
+../test_v4_restoration_counter.py:25: AssertionError
+=========================== short test summary info ============================
+FAILED ../test_v4_restoration_counter.py::test_restored_runtime_preserves_sealed_terminal_history - AssertionError: Restored 102 records, sealed terminal 105; lost consumed budget.
+assert 102 >= 105
+ +  where 102 = len([{'at_utc': '2026-11-14T00:14:44.321635+00:00', 'command': ['python3', '-m', 'pytest', '-q', '-p', 'no:cacheprovider',...port', 'recommend', 'tests/decision_support/fixtures/nominal_auto.json'], 'exit_code': 0, 'kind': 'command', ...}, ...])
+1 failed in 0.03s
