@@ -33,6 +33,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    autorisé.** Budget distinct proposé, non activé : 1200 s avec échelle de repli (ou 1800 s),
    30 s par commande, 0 € ; devis ≈ 494–1377 s. scikit-learn requis pour P5b (installation à
    autoriser séparément). Aucun budget P0–P4 ni AJ-H antérieur n'est réutilisable.
+   **D1–D12 approuvées** selon les recommandations (`P5_DECISIONS_v2.md`) : protocole approuvé,
+   exécution **non autorisée** ; restent à accorder : (i) mise en œuvre + pilote P5.0–P5.2,
+   installation de scikit-learn, (ii) évaluation P5a, (iii) ajustements et évaluation P5b.
 
 ## Hors de ce projet
 
