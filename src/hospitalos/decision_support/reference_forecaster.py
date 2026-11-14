@@ -401,6 +401,13 @@ def simulate(
             if f <= h and (b not in occupied_from or occupied_from[b] > h)
             and beds[b].status != "closed"
         )
+    # Admission work of a patient who arrived but is still waiting at the horizon end remains
+    # owed: counted as uncovered, so refusing/delaying an admission can never lower the score.
+    for rid in arrivals:
+        if rid not in admissions and hours:
+            owed = reqs[rid].admission_task_minutes
+            uncovered_wait[hours - 1] += owed
+            uncovered_skill["IDE"][hours - 1] += owed
     return Run(
         hours, departures, admissions, arrivals, bed_clean_at, events, demand, uncovered_unit,
         uncovered_skill, cleaning_jobs, uncovered_wait, shortfall, sched, extra, staff_required, waiting, clean_free, blockers,

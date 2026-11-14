@@ -89,7 +89,7 @@ Unités natives des métriques :
 
 | Métrique | Unité |
 |---|---|
-| `uncovered_care_minutes` | minutes-soignant non couvertes sur l'horizon = dans l'unité (compétence et présence simultanée) + soins des patients attribués en attente de lit |
+| `uncovered_care_minutes` | minutes-soignant non couvertes sur l'horizon = dans l'unité (compétence et présence simultanée) + soins des patients attribués en attente de lit + travail d'admission encore dû à la fin de l'horizon pour un patient arrivé non admis |
 | `waiting_patient_hours` | patients × heures d'attente de lit |
 | `beds_returned` | lits remis à disposition après départ (une fois par lit/départ) |
 | `staff_scheduled` / `staff_reinforcement` / `staff_required` | personnes présentes par heure et compétence |
@@ -108,5 +108,5 @@ Statut scientifique figé : `PROTOTYPE_UNVALIDATED`, `clinical_validation=false`
    d'équivalence 15 minutes.
 2. À résultat équivalent : moins d'heures de renfort ; 3. moins d'interventions.
 Égalité : la pratique habituelle gagne. Rapportés sans être optimisés : attente, lits remis à
-disposition, admissions, trajectoire de pression. Les admissions ne sont **pas** un levier.
+disposition, admissions, trajectoire de pression. Les admissions ne sont **pas** un levier : le travail d'admission d'un patient arrivé et non admis reste dû (ajouté à la dernière heure), donc retarder ou refuser une admission ne peut jamais réduire le score (règle ajoutée en P2 après l'échec initial de T14, avant tout résultat de planification utilisé).
 Convention de démonstration, pas une politique clinique validée.

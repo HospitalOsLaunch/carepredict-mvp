@@ -7,7 +7,7 @@
   "tiers": [
     {"rank": 0, "metric": "admissibility", "rule": "hard: no safety, eligibility, resource, ordering or lock violation"},
     {"rank": 1, "metric": "uncovered_care_minutes", "unit": "staff_minutes_over_horizon", "sense": "min", "aggregation": "mean_over_selection_scenarios", "equivalence_tolerance": 15,
-     "definition": "in-unit minutes not covered by present staff of the required skill (including tasks needing more simultaneous staff than present) + care minutes of patients assigned to the unit but still waiting for a bed"},
+     "definition": "in-unit minutes not covered by present staff of the required skill (including tasks needing more simultaneous staff than present) + care minutes of patients assigned to the unit but still waiting for a bed + admission work still owed at the horizon end for an arrived, non-admitted patient (added in P2 after test T14 exposed a refusal incentive)"},
     {"rank": 2, "metric": "reinforcement_hours", "unit": "staff_hours", "sense": "min"},
     {"rank": 3, "metric": "interventions", "unit": "actions", "sense": "min"}
   ],

@@ -1,0 +1,50 @@
+....F.....F...                                                           [100%]
+=================================== FAILURES ===================================
+_______ test_t08_no_cleaning_before_departure_and_transport_rescheduled ________
+
+nominal = PublicSnapshot(schema_version='DS_PUBLIC_SNAPSHOT_1', snapshot_id='snap-aa7de9d195c5', fingerprint='aa7de9d195c5fd040b... external_commitments=1)), issues=(), excluded_observations={'event_after_decision': 1, 'available_after_decision': 1})
+settings = Settings(profile={'schema': 'DS_UNIT_PROFILE_1', 'profile_id': 'U-MED-SYN-01', 'version': '1', 'synthetic': True, 'sta...n objective'}, backend=<hospitalos.decision_support.reference_forecaster.ReferenceForecaster object at 0x7f5927f27e00>)
+
+    def test_t08_no_cleaning_before_departure_and_transport_rescheduled(nominal, settings):
+        early = Decisions({"S01": (1, "observed_authorization")}, {}, {}, ())
+        for seed in (101, 102, 103, 104):
+            run = _run(nominal, settings, early, seed)
+            ready = 14 + run.departures["S01"] - run.departures["S01"]  # 09:00 Paris = index 14
+>           assert run.departures["S01"] >= ready  # moved to readiness, never before
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           assert 13 >= 14
+
+tests/decision_support/test_p2_backend.py:107: AssertionError
+_________ test_t14_bed_returned_once_and_no_gain_by_refusing_admission _________
+
+nominal = PublicSnapshot(schema_version='DS_PUBLIC_SNAPSHOT_1', snapshot_id='snap-aa7de9d195c5', fingerprint='aa7de9d195c5fd040b... external_commitments=1)), issues=(), excluded_observations={'event_after_decision': 1, 'available_after_decision': 1})
+settings = Settings(profile={'schema': 'DS_UNIT_PROFILE_1', 'profile_id': 'U-MED-SYN-01', 'version': '1', 'synthetic': True, 'sta...n objective'}, backend=<hospitalos.decision_support.reference_forecaster.ReferenceForecaster object at 0x7f5927f27e00>)
+
+    def test_t14_bed_returned_once_and_no_gain_by_refusing_admission(nominal, settings):
+        coord = Decisions({"S01": (15, "x")}, {}, {}, ())
+        run = _run(nominal, settings, coord)
+        assert run.admissions.get("A02") is not None  # L01 re-occupied after cleaning
+        assert run.beds_returned == len(run.departures)  # one return per departure, not per use
+        refused = snapshot_with("nominal_auto.json", [{
+            "obs_id": "o-adm-A02-v2", "kind": "admission_request", "subject": "A02",
+            "event_time": "2026-11-16T18:30:00+00:00", "available_at": "2026-11-16T18:35:00+00:00",
+            "source": "synthetic_feed",
+            "value": {"requirements": ["unavailable_capability"],
+                      "expected_arrival": "2026-11-17T08:00:00+00:00",
+                      "arrival_delay": {"support": [0, 1], "weights": [1, 1]},
+                      "care": [{"skill": "IDE", "day_minutes_per_hour": 30,
+                                "night_minutes_per_hour": 12, "status": "estimated"}],
+                      "admission_task_minutes": 45}}])
+        blocked = _run(refused, settings, coord)
+        total = lambda r: sum(r.uncovered_unit) + sum(r.uncovered_waiting)  # noqa: E731
+        assert "A02" not in blocked.admissions
+>       assert total(blocked) >= total(run)
+E       AssertionError: assert 910 >= 930
+E        +  where 910 = <function test_t14_bed_returned_once_and_no_gain_by_refusing_admission.<locals>.<lambda> at 0x7f5927ed0c20>(Run(hours=24, departures={'S01': 15, 'S02': 16}, admissions={'A01': 12}, arrivals={'A01': 0, 'A02': 13}, bed_clean_at=...=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], beds_returned=2, violations=[], warnings=[]))
+E        +  and   930 = <function test_t14_bed_returned_once_and_no_gain_by_refusing_admission.<locals>.<lambda> at 0x7f5927ed0c20>(Run(hours=24, departures={'S01': 15, 'S02': 16}, admissions={'A01': 12, 'A02': 17}, arrivals={'A01': 0, 'A02': 13}, be...=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], beds_returned=2, violations=[], warnings=[]))
+
+tests/decision_support/test_p2_backend.py:214: AssertionError
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_p2_backend.py::test_t08_no_cleaning_before_departure_and_transport_rescheduled
+FAILED tests/decision_support/test_p2_backend.py::test_t14_bed_returned_once_and_no_gain_by_refusing_admission
+2 failed, 12 passed in 0.28s
