@@ -1,0 +1,27 @@
+.............................F
+=================================== FAILURES ===================================
+_________________________ test_T_PLAN_07_same_item_set _________________________
+
+val_est = EstablishmentData(partition='VAL', index=1, population='REF', n_beds={'A': 15, 'B': 11}, b2=array([[1.4, 0.1, 0. , ......, 'BB02': 'B', 'BB03': 'B', 'BB04': 'B', 'BB05': 'B', 'BB06': 'B', 'BB07': 'B', 'BB08': 'B', 'BB09': 'B', 'BB10': 'B'})
+b0p = B0Params(base={'auth': array([ -9.95396964,  -9.76878894,  -9.6272635 ,  -9.40068893,
+        -9.22163386,  -9.0236160...[2.4887622 , 3.21644098]]]), care_sigma=array([0.48553328, 0.4907501 ]), presence_p=0.875, tau={}, new_profile_freq={})
+
+    def test_T_PLAN_07_same_item_set(val_est, b0p):
+        od = val_est.origins[100]
+        preds = preds_all(b0p, val_est, 100)
+        fp = item_set_fingerprint(od)
+        for p in preds.values():
+            sc = member_logscores(p, od, 24)
+>           assert len(sc["care"]) == int(od.care_mask.sum())
+E           AssertionError: assert 812 == 406
+E            +  where 812 = len(array([-0.98124456, -0.73532092, -0.98124456, -0.93010646, -0.56018159,\n       -0.93010646, -1.27833435, -1.03883189, ... -0.56018159,\n       -0.93010646, -0.56018159, -0.93010646, -0.56018159, -0.93010646,\n       -0.56018159, -2.28495947]))
+E            +  and   406 = int(np.int64(406))
+E            +    where np.int64(406) = <built-in method sum of numpy.ndarray object at 0x7faf042642d0>()
+E            +      where <built-in method sum of numpy.ndarray object at 0x7faf042642d0> = array([[ True,  True,  True,  True,  True,  True,  True,  True,  True,\n         True,  True,  True,  True,  True,  Tru...      True,  True,  True,  True,  True,  True,  True,  True,  True,\n         True,  True,  True,  True,  True,  True]]).sum
+E            +        where array([[ True,  True,  True,  True,  True,  True,  True,  True,  True,\n         True,  True,  True,  True,  True,  Tru...      True,  True,  True,  True,  True,  True,  True,  True,  True,\n         True,  True,  True,  True,  True,  True]]) = OriginData(H=100, items={'auth': [{'ref': 'SA0004_0', 'start': 240, 'unit': 'A', 'acuity': 1, 'iso': False, 'transport...(15.0, 3.0), (4.0, 10.0), (3.0, 3.0), (4.0, 5.0), (5.0, 6.0), (2.0, 5.0), (5.0, 3.0), (4.0, 5.0)], 'presence': [True]}).care_mask
+
+tests/howm/test_howm_r0.py:365: AssertionError
+=========================== short test summary info ============================
+FAILED tests/howm/test_howm_r0.py::test_T_PLAN_07_same_item_set - AssertionEr...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 29 passed in 3.38s

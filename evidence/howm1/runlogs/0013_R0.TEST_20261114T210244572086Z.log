@@ -1,0 +1,25 @@
+verify 0 103 ['cleaning_not_after_departure:BB15@43', 'cleaning_done_without_start:BB15', 'cleaning_not_after_departure:BA23@48']
+verify 1 90 ['departure_without_authorisation_or_readiness:SAinit_BA05', 'cleaning_not_after_departure:BB16@72', 'present_without_confirmation:OAIDEpool@64']
+verify 2 98 ['present_without_confirmation:OBIDEpool@48', 'cleaning_not_after_departure:BA11@55', 'cleaning_done_without_start:BA11']
+/home/user/carepredict-mvp/src/hospitalos/howm/heads.py:71: RuntimeWarning: divide by zero encountered in log1p
+  return a + np.log1p(-np.exp(np.minimum(b - a, 0.0)))
+b0 arr r 2.2 care sigma [0.486 0.491] pres 0.875
+items {'auth': 16, 'ready': 1, 'transport': 0, 'cleaning': 0, 'confirmation': 0, 'presence': 0} care stays 19
+B0 pool {'auth': 0.845, 'ready': 6.944, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.371, 'care': 1.627}
+B0 local {'auth': 0.845, 'ready': 4.939, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.373, 'care': 1.644}
+/home/user/carepredict-mvp/scripts/dev/howm_integration.py:34: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  print(kind, nets.n_params(m)["total"], {f: round(float(v[0]) / max(v[1], 1), 3) for f, v in parts.items()})
+B2 53902 {'auth': 4.194, 'ready': 7.069, 'cleaning': 1.745, 'confirmation': 1.506, 'arrivals': 0.319, 'care': 1.604}
+B2 pred {'auth': 0.845, 'ready': 6.944, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.371, 'care': 1.627}
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/dev/howm_integration.py", line 32, in <module>
+    t0 = time.time(); parts = nets.forward_losses(m, batch); T[f"{kind}_fwd"] = time.time() - t0
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm/nets.py", line 299, in forward_losses
+    z, enc = model.encode(batch)
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm/nets.py", line 141, in encode
+    x[idx] = self.enc[t](g["feats"][t][k])
+                         ~~~~~~~~~~^^^
+TypeError: list indices must be integers or slices, not str

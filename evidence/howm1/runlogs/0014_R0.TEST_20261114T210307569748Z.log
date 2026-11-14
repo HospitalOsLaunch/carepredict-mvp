@@ -1,0 +1,19 @@
+verify 0 22 ['staff_not_matching_presence:B:IDE:84', 'staff_not_matching_presence:B:IDE:85', 'staff_not_matching_presence:B:IDE:86']
+verify 1 10 ['staff_not_matching_presence:A:IDE:16', 'staff_not_matching_presence:A:IDE:17', 'staff_not_matching_presence:A:IDE:18']
+verify 2 17 ['staff_not_matching_presence:B:IDE:8', 'staff_not_matching_presence:B:IDE:9', 'staff_not_matching_presence:B:IDE:10']
+b0 arr r 2.2 care sigma [0.486 0.491] pres 0.875
+items {'auth': 16, 'ready': 1, 'transport': 0, 'cleaning': 0, 'confirmation': 0, 'presence': 0} care stays 19
+B0 pool {'auth': 0.845, 'ready': 6.944, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.371, 'care': 1.627}
+B0 local {'auth': 0.845, 'ready': 4.939, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.373, 'care': 1.644}
+/home/user/carepredict-mvp/scripts/dev/howm_integration.py:34: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  print(kind, nets.n_params(m)["total"], {f: round(float(v[0]) / max(v[1], 1), 3) for f, v in parts.items()})
+B2 53902 {'auth': 4.194, 'ready': 7.069, 'cleaning': 1.745, 'confirmation': 1.506, 'arrivals': 0.319, 'care': 1.604}
+B2 pred {'auth': 0.845, 'ready': 6.944, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.371, 'care': 1.627}
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:149: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  a = a - torch.zeros(g["n_origins"]).index_reduce_(0, g["origin"], a, "amax", include_self=False)[g["origin"]]
+H1 138127 {'auth': 4.194, 'ready': 7.069, 'cleaning': 1.745, 'confirmation': 1.506, 'arrivals': 0.319, 'care': 1.604}
+H1 pred {'auth': 0.845, 'ready': 6.944, 'transport': None, 'cleaning': None, 'confirmation': None, 'presence': None, 'arrivals': 0.371, 'care': 1.627}
+crps h6 [ 1.18  1.06  0.    0.   27.48  9.48  0.76  0.76  0.    0.   19.95  9.87] U mean 917.0 rej 0
+instant {'C_full': 4853.2, 'C_param': 4853.2, 'C_pub_snap': 4853.2, 'habitual': 5187.0} oracle 4844.8 {'C_full': 10, 'C_param': 10, 'C_pub_snap': 10}
+{"gen3": 0.446, "b0fit": 0.475, "build_val": 0.393, "B2_batch": 0.004, "B2_fwd": 0.025, "B2_bwd": 0.029, "H1_batch": 0.034, "H1_fwd": 0.239, "H1_bwd": 0.244, "16_rollouts_b0": 0.172, "instant_truth_controllers": 4.43}

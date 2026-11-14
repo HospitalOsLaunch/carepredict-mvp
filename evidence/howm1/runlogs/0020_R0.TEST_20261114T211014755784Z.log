@@ -1,0 +1,3789 @@
+E501 Line too long (108 > 100)
+  --> scripts/howm_budget_run.py:12:101
+   |
+10 |     python3 scripts/howm_budget_run.py --genesis
+11 |     python3 scripts/howm_budget_run.py --note <kind> --lot <lot> --label L --json f.json
+12 |     python3 scripts/howm_budget_run.py --lot R0.TEST --test --label tests -- <venv>/bin/python -m pytest ...
+   |                                                                                                     ^^^^^^^^
+13 |     python3 scripts/howm_budget_run.py --status
+14 | """
+   |
+
+E501 Line too long (102 > 100)
+  --> scripts/howm_budget_run.py:55:101
+   |
+53 |     "RESERVE": 1500.0,
+54 | }
+55 | AUTHORISED_LOTS = set(LOT_CAPS) - {"RESERVE"}  # RESERVE only after a logged 'reserve_allocation' note
+   |                                                                                                     ^^
+56 | VENV = Path(
+57 |     os.environ.get(
+   |
+
+E501 Line too long (146 > 100)
+   --> scripts/howm_budget_run.py:109:101
+    |
+107 | …sion']}")
+108 | …t("==")[0].lower())) + "\n"
+109 | …"), "freeze_sha256": hashlib.sha256(freeze.encode()).hexdigest(), "packages": len(lines)}
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (123 > 100)
+   --> scripts/howm_budget_run.py:112:101
+    |
+112 | def launch_refusal(command: list[str], lot: str, records: list[dict[str, object]]) -> tuple[str | None, dict[str, object]]:
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+113 |     program = program_of(command)
+114 |     env_info = environment()
+    |
+
+E501 Line too long (107 > 100)
+   --> scripts/howm_budget_run.py:117:101
+    |
+115 |     if program in ALLOWED_TOOLS:
+116 |         return None, env_info
+117 |     if lot == "R0.ENV":  # installation lot: base interpreter (venv creation) or the venv's own interpreter
+    |                                                                                                     ^^^^^^^
+118 |         if program in interpreters() | {BASE_PYTHON}:
+119 |             return None, env_info
+    |
+
+E501 Line too long (101 > 100)
+   --> scripts/howm_budget_run.py:149:101
+    |
+147 |         "ceiling_wall_seconds": CEILING_S,
+148 |         "remaining_wall_seconds": round(max(0.0, CEILING_S - used), 3),
+149 |         "lots": {k: {"used": round(lot_used(records, k), 3), "cap": v} for k, v in LOT_CAPS.items()},
+    |                                                                                                     ^
+150 |     }
+    |
+
+E501 Line too long (156 > 100)
+   --> scripts/howm_budget_run.py:182:101
+    |
+180 | …
+181 | …
+182 | …me.now(UTC).isoformat(), "lot": lot, "label": label, "payload": payload, "wall_seconds": 0.0})
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (103 > 100)
+   --> scripts/howm_budget_run.py:185:101
+    |
+185 | def _refuse(kind: str, lot: str, label: str, command: list[str], reason: str, **extra: object) -> None:
+    |                                                                                                     ^^^
+186 |     base.append(LEDGER, {"kind": kind, "at_utc": datetime.now(UTC).isoformat(), "lot": lot, "label": label, "refused_command": comman…
+    |
+
+E501 Line too long (184 > 100)
+   --> scripts/howm_budget_run.py:186:101
+    |
+185 | …, **extra: object) -> None:
+186 | …(), "lot": lot, "label": label, "refused_command": command, "reason": reason, "wall_seconds": 0.0, **extra})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (112 > 100)
+   --> scripts/howm_budget_run.py:193:101
+    |
+191 |     if not records or records[0].get("kind") != "genesis":
+192 |         raise base.LedgerError("HOWM-1 ledger has no genesis record")
+193 |     if lot not in LOT_CAPS or (lot not in AUTHORISED_LOTS and not (lot == "RESERVE" and reserve_open(records))):
+    |                                                                                                     ^^^^^^^^^^^^
+194 |         _refuse("refused", lot, label, command, f"lot_not_authorised:{lot}")
+195 |         print(f"[howm-budget] lot {lot} not authorised: refused", file=sys.stderr)
+    |
+
+E501 Line too long (111 > 100)
+   --> scripts/howm_budget_run.py:201:101
+    |
+199 |     lot_remaining = LOT_CAPS[lot] - lot_used(records, lot)
+200 |     if remaining <= 0 or lot_remaining <= 0:
+201 |         _refuse("stop", lot, label, command, "global_ceiling_reached" if remaining <= 0 else "lot_cap_reached")
+    |                                                                                                     ^^^^^^^^^^^
+202 |         print(json.dumps(status()), file=sys.stderr)
+203 |         return 3
+    |
+
+E501 Line too long (107 > 100)
+   --> scripts/howm_budget_run.py:217:101
+    |
+215 |     started = time.monotonic()
+216 |     timed_out = False
+217 |     env = dict(os.environ, PYTHONPATH=f"{ROOT / 'src'}:{ROOT}", HOWM_LEDGER_SEQUENCE=str(len(records) + 1))
+    |                                                                                                     ^^^^^^^
+218 |     with log_path.open("wb") as log:
+219 |         process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT, start_new_session=True, env=env)
+    |
+
+E501 Line too long (124 > 100)
+   --> scripts/howm_budget_run.py:219:101
+    |
+217 |     env = dict(os.environ, PYTHONPATH=f"{ROOT / 'src'}:{ROOT}", HOWM_LEDGER_SEQUENCE=str(len(records) + 1))
+218 |     with log_path.open("wb") as log:
+219 |         process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT, start_new_session=True, env=env)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+220 |         try:
+221 |             code = process.wait(timeout=timeout)
+    |
+
+E501 Line too long (111 > 100)
+   --> scripts/howm_budget_run.py:260:101
+    |
+258 |     st = status()
+259 |     print(
+260 |         f"\n[howm-budget] #{record['sequence']} {lot} '{label}': {wall:.2f}s wall, {cpu:.1f}s cpu, exit={code}"
+    |                                                                                                     ^^^^^^^^^^^
+261 |         f"{' TIMEOUT' if timed_out else ''}{' ORPHANS-KILLED' if orphans else ''} | lot {st['lots'][lot]['used']}/{LOT_CAPS[lot]}s"  …
+262 |         f" | total {st['used_wall_seconds']}/{CEILING_S}s"
+    |
+
+E501 Line too long (131 > 100)
+   --> scripts/howm_budget_run.py:261:101
+    |
+259 | …
+260 | …ot} '{label}': {wall:.2f}s wall, {cpu:.1f}s cpu, exit={code}"
+261 | …ANS-KILLED' if orphans else ''} | lot {st['lots'][lot]['used']}/{LOT_CAPS[lot]}s"  # type: ignore[index]
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+262 | …ING_S}s"
+263 | …
+    |
+
+E501 Line too long (132 > 100)
+  --> scripts/howm_r0.py:48:101
+   |
+46 |         "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+47 |         "code": C.code_hashes(),
+48 |         "norm": {p: sha(ROOT / p) for p in ("docs/howm1/NORME_HOWM1_R0_R1_v1_2.md", "docs/howm1/EXPERIMENT_HOWM1_R0_R1_v1_2.json")},
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+49 |         "accord_sha256": sha(ROOT / "docs/howm1/inputs/accord/ACCORD_HOWM1_v1_1_ADOPTE.txt"),
+50 |         "partitions": PARTITION_SIZES,
+   |
+
+E501 Line too long (110 > 100)
+  --> scripts/howm_r0.py:53:101
+   |
+51 |         "origins": {k: [v[0], v[-1], len(v)] for k, v in C.ORIGINS.items()},
+52 |         "sealed_reserve_seed_digest": C.sealed_seed_digest(),
+53 |         "seed_rule": "establishment key = key('HOWM1', partition, index); realisation r and primitives keyed",
+   |                                                                                                     ^^^^^^^^^^
+54 |         "bootstrap_seed": int(key("HOWM1", "bootstrap") % (2**31)),
+55 |         "decision_instants": {"day": EVAL_DAY, "local_hours": list(INSTANT_HOURS)},
+   |
+
+E501 Line too long (131 > 100)
+  --> scripts/howm_r0.py:57:101
+   |
+55 |         "decision_instants": {"day": EVAL_DAY, "local_hours": list(INSTANT_HOURS)},
+56 |         "delta_dec": DELTA_DEC,
+57 |         "rules": "population laws/mixtures fixed by code hash; never tuned on any model gain; DEVTEST/DIAG_DEV read once after F1",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     }
+59 |     G0.write_text(json.dumps(body, indent=1) + "\n")
+   |
+
+E501 Line too long (108 > 100)
+  --> scripts/howm_r0.py:72:101
+   |
+70 | def cmd_gen(partition: str) -> None:
+71 |     _check_g0()
+72 |     man = json.loads(C.MANIFEST.read_text()) if C.MANIFEST.exists() else {"g0_sha256": sha(G0), "files": {}}
+   |                                                                                                     ^^^^^^^^
+73 |     t0 = time.time()
+74 |     for i in range(PARTITION_SIZES[partition]):
+   |
+
+E501 Line too long (119 > 100)
+  --> scripts/howm_r0.py:80:101
+   |
+78 |         man["files"][k] = C.write_establishment(partition, i)
+79 |         C.MANIFEST.write_text(json.dumps(man, indent=1) + "\n")
+80 |     print(json.dumps({"partition": partition, "n": PARTITION_SIZES[partition], "seconds": round(time.time() - t0, 2)}))
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (135 > 100)
+  --> scripts/howm_r0.py:93:101
+   |
+91 |     arr = np.array(vals, float)
+92 |     s = {n: float(np.nanstd(arr[:, j])) for j, n in enumerate(TARGET_NAMES)}
+93 |     out = {"rule": "s_c = std of the target over TRAIN establishments x hours 24..167 (TRAIN only); s_c == 0 -> excluded and reported",
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+94 |            "s_c": s, "excluded": [n for n, v in s.items() if v == 0.0]}
+95 |     (EVID / "CRPS_SCALES.json").write_text(json.dumps(out, indent=1) + "\n")
+   |
+
+E501 Line too long (120 > 100)
+   --> scripts/howm_r0.py:115:101
+    |
+113 |             ps = PublicStream(ep.observations)
+114 |             ps.advance(tau * 15)
+115 |             out = evaluate_instant(ep, tau, ps.to_engine(tau * 15), {}, controllers=("C_full", "C_param", "C_pub_snap"))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+116 |             rows.append(out)
+117 |         f.write_text(json.dumps({"index": i, "mech": ep.spec.mech, "instants": rows}) + "\n")
+    |
+
+E501 Line too long (103 > 100)
+   --> scripts/howm_r0.py:118:101
+    |
+116 |             rows.append(out)
+117 |         f.write_text(json.dumps({"index": i, "mech": ep.spec.mech, "instants": rows}) + "\n")
+118 |         print(i, {r["tau"]: {k: round(v, 1) for k, v in r["value"].items()} for r in rows}, flush=True)
+    |                                                                                                     ^^^
+
+E501 Line too long (139 > 100)
+   --> scripts/howm_r0.py:131:101
+    |
+129 | …
+130 | …ar"])
+131 | … **{k: round(x, 2) for k, x in v.items()}, "oracle": round(ins["oracle_U_star"], 2)})
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+132 | …
+133 | …nformation (NORM N2.3)", "V_param": float(np.mean(vp)), "V_latent": float(np.mean(vl)),
+    |
+
+E501 Line too long (141 > 100)
+   --> scripts/howm_r0.py:133:101
+    |
+131 | …**{k: round(x, 2) for k, x in v.items()}, "oracle": round(ins["oracle_U_star"], 2)})
+132 | …
+133 | …formation (NORM N2.3)", "V_param": float(np.mean(vp)), "V_latent": float(np.mean(vl)),
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+134 | …le": float(np.mean(ceil)), "delta_dec": DELTA_DEC,
+135 | … DELTA_DEC, "n_instants": len(vp), "per_instant": per,
+    |
+
+E501 Line too long (105 > 100)
+   --> scripts/howm_r0.py:134:101
+    |
+132 |     margin = float(np.mean(vp) + np.mean(vl))
+133 |     out = {"name": "margin observed under privileged information (NORM N2.3)", "V_param": float(np.mean(vp)), "V_latent": float(np.me…
+134 |            "margin": margin, "ceiling_C_full_minus_oracle": float(np.mean(ceil)), "delta_dec": DELTA_DEC,
+    |                                                                                                     ^^^^^
+135 |            "decision_comparison_informative": margin >= DELTA_DEC, "n_instants": len(vp), "per_instant": per,
+136 |            "note": "C_full is an evaluated privileged controller, not a certified optimum; the generator is NOT modified whatever the…
+    |
+
+E501 Line too long (109 > 100)
+   --> scripts/howm_r0.py:135:101
+    |
+133 |     out = {"name": "margin observed under privileged information (NORM N2.3)", "V_param": float(np.mean(vp)), "V_latent": float(np.me…
+134 |            "margin": margin, "ceiling_C_full_minus_oracle": float(np.mean(ceil)), "delta_dec": DELTA_DEC,
+135 |            "decision_comparison_informative": margin >= DELTA_DEC, "n_instants": len(vp), "per_instant": per,
+    |                                                                                                     ^^^^^^^^^
+136 |            "note": "C_full is an evaluated privileged controller, not a certified optimum; the generator is NOT modified whatever the…
+137 |     (EVID / "PRECHECK.json").write_text(json.dumps(out, indent=1) + "\n")
+    |
+
+E501 Line too long (143 > 100)
+   --> scripts/howm_r0.py:136:101
+    |
+134 | …e": float(np.mean(ceil)), "delta_dec": DELTA_DEC,
+135 | …DELTA_DEC, "n_instants": len(vp), "per_instant": per,
+136 | …ntroller, not a certified optimum; the generator is NOT modified whatever the outcome"}
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+137 | …indent=1) + "\n")
+138 | …!= "per_instant"}))
+    |
+
+E501 Line too long (115 > 100)
+   --> scripts/howm_r0.py:148:101
+    |
+146 |     ap.add_argument("--stop", type=int, default=10**6)
+147 |     a = ap.parse_args()
+148 |     {"g0": cmd_g0, "constants": cmd_constants, "precheck-summary": cmd_precheck_summary}.get(a.cmd, lambda: None)()
+    |                                                                                                     ^^^^^^^^^^^^^^^
+149 |     if a.cmd == "gen":
+150 |         cmd_gen(a.partition)
+    |
+
+E501 Line too long (101 > 100)
+ --> src/hospitalos/howm/b0.py:5:101
+  |
+3 | B0-pool: hazards (base[b] + tod[quarter] per family), arrivals NB (log mu = a + log n_beds +
+4 | tod_h[hour]), care log-normal (mu per skill x acuity x day/night, sigma per skill), pool presence.
+5 | B0-local: same mechanisms + one intercept per family estimated by penalised MLE (prior N(0, tau_f^2))
+  |                                                                                                     ^
+6 | from the SAME public window W = 24 h as the networks; tau_f chosen on TRAIN only by the
+7 | predictive log-likelihood of the following 24 h (grid).
+  |
+
+E501 Line too long (113 > 100)
+  --> src/hospitalos/howm/b0.py:61:101
+   |
+61 | def to_bins(start: int, entry: int, end: int | None, cutoff: int, width: int = 15) -> tuple[int, int, bool, int]:
+   |                                                                                                     ^^^^^^^^^^^^^
+62 |     """-> (q_start, e_bin, event, b_bin) with censoring at ``cutoff`` (minutes, absolute).
+63 |     Event iff end < cutoff (outcomes {T=b, e<=b<c} and {T>=c} partition the space)."""
+   |
+
+E501 Line too long (123 > 100)
+  --> src/hospitalos/howm/b0.py:73:101
+   |
+73 | def _rows(items: list[tuple[int, int, bool, int]], step: int = 1) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+74 |     ks, qs, ys, ids = [], [], [], []
+75 |     for i, (q, e, ev, b) in enumerate(items):
+   |
+
+E501 Line too long (104 > 100)
+  --> src/hospitalos/howm/b0.py:93:101
+   |
+93 | def fit_hazard(items: list[tuple[int, int, bool, int]], step: int = 1) -> tuple[np.ndarray, np.ndarray]:
+   |                                                                                                     ^^^^
+94 |     k, q, y, _ = _rows(items, step)
+   |
+
+E501 Line too long (179 > 100)
+   --> src/hospitalos/howm/b0.py:126:101
+    |
+125 | …
+126 | ….tolist() if isinstance(vv, np.ndarray) else vv) for kk, vv in v.items()} if isinstance(v, dict) else v))
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+127 | …
+    |
+
+E501 Line too long (122 > 100)
+   --> src/hospitalos/howm/b0.py:131:101
+    |
+129 |     @staticmethod
+130 |     def from_json(d: dict[str, Any]) -> B0Params:
+131 |         return B0Params({k: np.asarray(v) for k, v in d["base"].items()}, {k: np.asarray(v) for k, v in d["tod"].items()},
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+132 |                         float(d["arr_a"]), np.asarray(d["arr_tod"]), float(d["arr_r"]), np.asarray(d["care_mu"]),
+133 |                         np.asarray(d["care_sigma"]), float(d["presence_p"]), dict(d.get("tau", {})), dict(d.get("new_profile_freq", {…
+    |
+
+E501 Line too long (113 > 100)
+   --> src/hospitalos/howm/b0.py:132:101
+    |
+130 |     def from_json(d: dict[str, Any]) -> B0Params:
+131 |         return B0Params({k: np.asarray(v) for k, v in d["base"].items()}, {k: np.asarray(v) for k, v in d["tod"].items()},
+132 |                         float(d["arr_a"]), np.asarray(d["arr_tod"]), float(d["arr_r"]), np.asarray(d["care_mu"]),
+    |                                                                                                     ^^^^^^^^^^^^^
+133 |                         np.asarray(d["care_sigma"]), float(d["presence_p"]), dict(d.get("tau", {})), dict(d.get("new_profile_freq", {…
+    |
+
+E501 Line too long (137 > 100)
+   --> src/hospitalos/howm/b0.py:133:101
+    |
+131 | … d["base"].items()}, {k: np.asarray(v) for k, v in d["tod"].items()},
+132 | …(d["arr_tod"]), float(d["arr_r"]), np.asarray(d["care_mu"]),
+133 | …float(d["presence_p"]), dict(d.get("tau", {})), dict(d.get("new_profile_freq", {})))
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+B007 Loop control variable `ev` not used within loop body
+   --> src/hospitalos/howm/b0.py:168:13
+    |
+166 |     for ep in episodes:
+167 |         acu = {}
+168 |         for ev, _a, kind, subj, _u, v in ep.observations:
+    |             ^^
+169 |             if kind == "placed":
+170 |                 acu[subj] = v["acuity"]
+    |
+help: Rename unused `ev` to `_ev`
+
+B007 Loop control variable `ev` not used within loop body
+   --> src/hospitalos/howm/b0.py:171:13
+    |
+169 |             if kind == "placed":
+170 |                 acu[subj] = v["acuity"]
+171 |         for ev, _a, kind, subj, _u, v in ep.observations:
+    |             ^^
+172 |             if kind == "care_due" and subj in acu:
+173 |                 per = day_period(v["hour"])
+    |
+help: Rename unused `ev` to `_ev`
+
+B023 Function definition does not bind loop variable `s`
+   --> src/hospitalos/howm/b0.py:186:32
+    |
+184 |             for a in range(3):
+185 |                 for p in range(2):
+186 |                     c = counts[s, a, p]
+    |                                ^
+187 |                     if c.sum() == 0:
+188 |                         continue
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/b0.py:195:101
+    |
+193 |         care_mu[s] = rc.x[:6].reshape(3, 2)
+194 |         care_sigma[s] = math.exp(rc.x[6])
+195 |     pres = [kind == "offer_present" for ep in episodes for _e, _a, kind, subj, _u, _v in ep.observations
+    |                                                                                                     ^^^^
+196 |             if kind in ("offer_present", "offer_absent") and "pool" in subj]
+197 |     p = (sum(pres) + 0.5) / (len(pres) + 1.0)  # Jeffreys-type estimate, declared (avoids p=1 on finite data)
+    |
+
+E501 Line too long (109 > 100)
+   --> src/hospitalos/howm/b0.py:197:101
+    |
+195 |     pres = [kind == "offer_present" for ep in episodes for _e, _a, kind, subj, _u, _v in ep.observations
+196 |             if kind in ("offer_present", "offer_absent") and "pool" in subj]
+197 |     p = (sum(pres) + 0.5) / (len(pres) + 1.0)  # Jeffreys-type estimate, declared (avoids p=1 on finite data)
+    |                                                                                                     ^^^^^^^^^
+198 |     return B0Params(base, tod, float(ra.x[0]), arr_tod, float(math.exp(ra.x[24])), care_mu, care_sigma, float(p))
+    |
+
+E501 Line too long (113 > 100)
+   --> src/hospitalos/howm/b0.py:198:101
+    |
+196 |             if kind in ("offer_present", "offer_absent") and "pool" in subj]
+197 |     p = (sum(pres) + 0.5) / (len(pres) + 1.0)  # Jeffreys-type estimate, declared (avoids p=1 on finite data)
+198 |     return B0Params(base, tod, float(ra.x[0]), arr_tod, float(math.exp(ra.x[24])), care_mu, care_sigma, float(p))
+    |                                                                                                     ^^^^^^^^^^^^^
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/b0.py:215:101
+    |
+215 | def local_hazard_delta(p: B0Params, fam: str, window_items: list[tuple[int, int, bool, int]], tau: float) -> float:
+    |                                                                                                     ^^^^^^^^^^^^^^^
+216 |     k, q, y, _ = _rows(window_items, BIN_MIN[fam] // 15)
+217 |     if len(k) == 0:
+    |
+
+E501 Line too long (116 > 100)
+   --> src/hospitalos/howm/b0.py:228:101
+    |
+228 | def local_arrivals_delta(p: B0Params, counts: np.ndarray, n_beds: dict[str, int], t_hour: int, tau: float) -> float:
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+229 |     mu0 = np.array([[math.exp(p.arr_a + math.log(n_beds[un]) + p.arr_tod[(t_hour - 24 + j) % 24]) for j in range(24)] for un in "AB"])
+230 |     n = counts.astype(float)
+    |
+
+E501 Line too long (134 > 100)
+   --> src/hospitalos/howm/b0.py:229:101
+    |
+228 | def local_arrivals_delta(p: B0Params, counts: np.ndarray, n_beds: dict[str, int], t_hour: int, tau: float) -> float:
+229 |     mu0 = np.array([[math.exp(p.arr_a + math.log(n_beds[un]) + p.arr_tod[(t_hour - 24 + j) % 24]) for j in range(24)] for un in "AB"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+230 |     n = counts.astype(float)
+231 |     r = p.arr_r
+    |
+
+E501 Line too long (126 > 100)
+   --> src/hospitalos/howm/b0.py:274:101
+    |
+272 | def local_deltas(p: B0Params, window: dict[str, Any], n_beds: dict[str, int]) -> dict[str, float]:
+273 |     t_hour = window["t"] // 60
+274 |     out = {fam: local_hazard_delta(p, fam, window_hazard_items(window, fam), p.tau.get(fam, 0.35)) for fam in HAZARD_FAMILIES}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+275 |     out["arrivals"] = local_arrivals_delta(p, window["arrivals"], n_beds, t_hour, p.tau.get("arrivals", 0.35))
+276 |     out["care"] = local_care_delta(p, window["care"], p.tau.get("care", 0.35))
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/b0.py:275:101
+    |
+273 |     t_hour = window["t"] // 60
+274 |     out = {fam: local_hazard_delta(p, fam, window_hazard_items(window, fam), p.tau.get(fam, 0.35)) for fam in HAZARD_FAMILIES}
+275 |     out["arrivals"] = local_arrivals_delta(p, window["arrivals"], n_beds, t_hour, p.tau.get("arrivals", 0.35))
+    |                                                                                                     ^^^^^^^^^^
+276 |     out["care"] = local_care_delta(p, window["care"], p.tau.get("care", 0.35))
+277 |     out["presence"] = local_presence_delta(p, window["presence"], p.tau.get("presence", 0.35))
+    |
+
+E501 Line too long (142 > 100)
+  --> src/hospitalos/howm/ckpt.py:22:101
+   |
+20 | …
+21 | …
+22 | …h.tensor(py[1], dtype=torch.int64), "gauss": py[2] if py[2] is None else float(py[2])},
+   |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+23 | …pe(np.int64)), "pos": int(np_state[2]), "has_gauss": int(np_state[3]), "cached": float(np_state[4])},
+24 | …
+   |
+
+E501 Line too long (156 > 100)
+  --> src/hospitalos/howm/ckpt.py:23:101
+   |
+21 | …
+22 | …r(py[1], dtype=torch.int64), "gauss": py[2] if py[2] is None else float(py[2])},
+23 | …nt64)), "pos": int(np_state[2]), "has_gauss": int(np_state[3]), "cached": float(np_state[4])},
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 | …
+25 | …
+   |
+
+E501 Line too long (112 > 100)
+  --> src/hospitalos/howm/ckpt.py:32:101
+   |
+30 |     random.setstate((p["version"], tuple(int(x) for x in p["state"].tolist()), p["gauss"]))
+31 |     n = s["numpy"]
+32 |     np.random.set_state(("MT19937", n["keys"].numpy().astype(np.uint32), n["pos"], n["has_gauss"], n["cached"]))
+   |                                                                                                     ^^^^^^^^^^^^
+33 |     torch.set_rng_state(s["torch"])
+   |
+
+E501 Line too long (101 > 100)
+  --> src/hospitalos/howm/ckpt.py:51:101
+   |
+49 |     """Only tranche-produced checkpoints whose hash was recorded; weights_only=True always."""
+50 |     p = Path(path)
+51 |     if "evidence/howm1" not in p.resolve().as_posix() and "howm1_ckpt" not in p.resolve().as_posix():
+   |                                                                                                     ^
+52 |         raise CheckpointRefused(f"not a HOWM-1 checkpoint location: {p}")
+53 |     digest = hashlib.sha256(p.read_bytes()).hexdigest()
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/hospitalos/howm/controllers.py:15:1
+   |
+13 |   """
+14 |
+15 | / from __future__ import annotations
+16 | |
+17 | | from dataclasses import replace
+18 | | from typing import Any, Callable
+19 | |
+20 | | import numpy as np
+21 | |
+22 | | from .generator import PRIOR_CENTRE, EstablishmentSpec, TruthProvider, stationary_regime, true_regime_at
+23 | | from .rollout import rollout
+24 | | from .world import Engine, Plan, candidates
+   | |___________________________________________^
+25 |
+26 |   EVAL_R = (1, 2, 3, 4)
+   |
+help: Organize imports
+   |
+21 |
+   - from .generator import PRIOR_CENTRE, EstablishmentSpec, TruthProvider, stationary_regime, true_regime_at
+22 + from .generator import (
+23 +     PRIOR_CENTRE,
+24 +     EstablishmentSpec,
+25 +     TruthProvider,
+26 +     stationary_regime,
+27 +     true_regime_at,
+28 + )
+29 | from .rollout import rollout
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+  --> src/hospitalos/howm/controllers.py:18:1
+   |
+17 | from dataclasses import replace
+18 | from typing import Any, Callable
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+19 |
+20 | import numpy as np
+   |
+help: Import from `collections.abc`
+   |
+17 | from dataclasses import replace
+   - from typing import Any, Callable
+18 + from typing import Any
+19 + from collections.abc import Callable
+20 |
+   |
+
+E501 Line too long (104 > 100)
+  --> src/hospitalos/howm/controllers.py:22:101
+   |
+20 | import numpy as np
+21 |
+22 | from .generator import PRIOR_CENTRE, EstablishmentSpec, TruthProvider, stationary_regime, true_regime_at
+   |                                                                                                     ^^^^
+23 | from .rollout import rollout
+24 | from .world import Engine, Plan, candidates
+   |
+
+E501 Line too long (155 > 100)
+  --> src/hospitalos/howm/controllers.py:48:101
+   |
+46 | …
+47 | …centre mechanism flags (declared)."""
+48 | …: True, "m2_common": False, "slow": 1.8, "m3_kappa": 0.35, "m5_drop": False, "simple": False})
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (131 > 100)
+  --> src/hospitalos/howm/controllers.py:51:101
+   |
+51 | def truth_u(engine: Engine, spec: EstablishmentSpec, r: int, anchor: dict[str, tuple[int, int]], plans: list[Plan]) -> list[float]:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+52 |     prov = TruthProvider(spec, r, regime_anchor=anchor)
+53 |     return [rollout(engine, prov, p)["U"] for p in plans]
+   |
+
+E501 Line too long (108 > 100)
+  --> src/hospitalos/howm/controllers.py:56:101
+   |
+56 | def evaluate_instant(ep: Any, tau: int, public_engine: Engine, model_choosers: dict[str, Callable[[], int]],
+   |                                                                                                     ^^^^^^^^
+57 |                      plans: list[Plan] | None = None, controllers: tuple[str, ...] = ("C_full", "C_param")) -> dict[str, Any]:
+58 |     plans = plans or candidates()
+   |
+
+E501 Line too long (126 > 100)
+  --> src/hospitalos/howm/controllers.py:57:101
+   |
+56 | def evaluate_instant(ep: Any, tau: int, public_engine: Engine, model_choosers: dict[str, Callable[[], int]],
+57 |                      plans: list[Plan] | None = None, controllers: tuple[str, ...] = ("C_full", "C_param")) -> dict[str, Any]:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     plans = plans or candidates()
+59 |     spec = ep.spec
+   |
+
+E501 Line too long (122 > 100)
+  --> src/hospitalos/howm/controllers.py:69:101
+   |
+67 |         choices["C_full"] = obj_lex(list(cu))
+68 |     if "C_param" in controllers:
+69 |         cu = np.array([truth_u(public_engine, spec, r, stationary_regime(spec, r, tau), plans) for r in CHOICE_R]).mean(0)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+70 |         choices["C_param"] = obj_lex(list(cu))
+71 |     if "C_pub_snap" in controllers:
+   |
+
+E501 Line too long (118 > 100)
+  --> src/hospitalos/howm/controllers.py:73:101
+   |
+71 |     if "C_pub_snap" in controllers:
+72 |         ps = prior_spec(spec)
+73 |         cu = np.array([truth_u(public_engine, ps, r, stationary_regime(ps, r, tau), plans) for r in CHOICE_R]).mean(0)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^
+74 |         choices["C_pub_snap"] = obj_lex(list(cu))
+75 |     for name, fn in model_choosers.items():
+   |
+
+E501 Line too long (111 > 100)
+  --> src/hospitalos/howm/controllers.py:79:101
+   |
+77 |     value = {name: float(eval_u[:, c].mean()) for name, c in choices.items()}
+78 |     value["habitual"] = float(eval_u[:, 0].mean())
+79 |     return {"tau": tau, "eval_u": eval_u.tolist(), "oracle_U_star": oracle, "choices": choices, "value": value}
+   |                                                                                                     ^^^^^^^^^^^
+
+E501 Line too long (141 > 100)
+  --> src/hospitalos/howm/controllers.py:82:101
+   |
+82 | …t[Any], plans: list[Plan] | None = None) -> tuple[int, list[float], list[list[float]]]:
+   |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+83 | …iders (CRN across candidates)."""
+84 | …
+   |
+
+E501 Line too long (149 > 100)
+  --> src/hospitalos/howm/corpus.py:23:101
+   |
+21 | …
+22 | …
+23 | …/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/howm1_corpus"))
+   |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 | …
+25 | …
+   |
+
+E501 Line too long (140 > 100)
+  --> src/hospitalos/howm/corpus.py:26:101
+   |
+24 | …
+25 | …
+26 | …st(range(24, 144)), "DEVTEST": list(range(24, 144)), "DIAG_DEV": list(range(24, 144))}
+   |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+27 | …
+   |
+
+E501 Line too long (118 > 100)
+  --> src/hospitalos/howm/corpus.py:39:101
+   |
+38 | def code_hashes() -> dict[str, str]:
+39 |     files = sorted((ROOT / "src" / "hospitalos" / "howm").glob("*.py")) + sorted((ROOT / "scripts").glob("howm_*.py"))
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^
+40 |     return {str(f.relative_to(ROOT)): sha_file(f) for f in files}
+   |
+
+E501 Line too long (102 > 100)
+  --> src/hospitalos/howm/corpus.py:64:101
+   |
+62 |         pickle.dump({"episode": ep, "data": est}, f, protocol=pickle.HIGHEST_PROTOCOL)
+63 |     return {"file": str(p.relative_to(CORPUS)), "sha256": sha_file(p), "bytes": p.stat().st_size,
+64 |             "rejected_actions": ep.rejections, "population": ep.spec.population, "mech": ep.spec.mech}
+   |                                                                                                     ^^
+
+E501 Line too long (102 > 100)
+  --> src/hospitalos/howm/corpus.py:82:101
+   |
+80 |         raise GuardError("sealed partition")
+81 |     if partition in GUARDED and not (allow_guarded and f1_recorded()):
+82 |         raise GuardError(f"{partition} cannot be read before F1 (and only by the evaluation command)")
+   |                                                                                                     ^^
+83 |     entry = manifest()["files"][f"{partition}/{index:03d}"]
+84 |     p = CORPUS / entry["file"]
+   |
+
+E501 Line too long (101 > 100)
+  --> src/hospitalos/howm/dataset.py:24:101
+   |
+22 | NB = 192  # hazard bins of 15 min (48 h); index 192 = tail "T >= 48 h"
+23 | HAZARD_FAMILIES = ("auth", "ready", "transport", "cleaning", "confirmation")
+24 | SCORED_HAZARD = ("ready", "transport", "cleaning", "confirmation")  # 'departure' = ready (NORM N3.4)
+   |                                                                                                     ^
+25 | ITEM_DIM = 20
+26 | CARE_EDGES = np.array([5.0 * k for k in range(1, 121)])  # bin uppers 5..600; last bin [600, inf)
+   |
+
+E501 Line too long (109 > 100)
+  --> src/hospitalos/howm/dataset.py:45:101
+   |
+43 |         max(0.0, (t - start)) / 1440.0,
+44 |         math.sin(2 * math.pi * q / 96), math.cos(2 * math.pi * q / 96),
+45 |         float(it.get("kind") == "offer"), float(it.get("skill") == "IDE"), float(it.get("source") == "pool"),
+   |                                                                                                     ^^^^^^^^^
+46 |         (start - t) / 240.0 if fam == "presence" else 0.0, 1.0,
+47 |     ]
+   |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/howm/dataset.py:104:101
+    |
+102 |         e = first.get(("transport_accepted" if kind == "T" else "offer_confirmed", ref))
+103 |     elif fam == "cleaning":
+104 |         e = next(((ev, av) for ev, av in idx["clean_done"].get(it["ref"], []) if ev >= it["start"]), None)
+    |                                                                                                     ^^^^^^
+105 |     else:
+106 |         raise ValueError(fam)
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/dataset.py:124:101
+    |
+122 |                     pos[t][ref] = len(refs[t])
+123 |                     refs[t].append(ref)
+124 |     nodes = {t: np.zeros((N_HOURS, max(1, len(refs[t])), NODE_DIMS[t]), np.float32) for t in NODE_TYPES}
+    |                                                                                                     ^^^^
+125 |     present = {t: np.zeros((N_HOURS, max(1, len(refs[t]))), bool) for t in NODE_TYPES}
+126 |     edges: list[dict[str, np.ndarray]] = []
+    |
+
+E501 Line too long (161 > 100)
+   --> src/hospitalos/howm/dataset.py:183:101
+    |
+181 | …
+182 | …
+183 | …cuity": st["acuity"], "iso": st["iso"], "transport": st["transport"], "start": st["placed"]}, t)
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+184 | …
+185 | …
+    |
+
+E501 Line too long (121 > 100)
+   --> src/hospitalos/howm/dataset.py:189:101
+    |
+187 |                     care[i, k] = val
+188 |                     mask[i, k] = True
+189 |         out[H] = OriginData(H, items, arr, care_ref, cx, care, mask, _window(ps, t, arrivals_obs=_arrivals_known(ps, t)))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+190 |     return EstablishmentData(ep.spec.partition, ep.spec.index, ep.spec.population, dict(ep.spec.beds), tables.b2, nodes, present,
+191 |                              refs, edges, out, dict(ep.spec.mech),
+    |
+
+E501 Line too long (129 > 100)
+   --> src/hospitalos/howm/dataset.py:190:101
+    |
+188 |                     mask[i, k] = True
+189 |         out[H] = OriginData(H, items, arr, care_ref, cx, care, mask, _window(ps, t, arrivals_obs=_arrivals_known(ps, t)))
+190 |     return EstablishmentData(ep.spec.partition, ep.spec.index, ep.spec.population, dict(ep.spec.beds), tables.b2, nodes, present,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+191 |                              refs, edges, out, dict(ep.spec.mech),
+192 |                              {b: un for un, d in _public_static(obs)["units"].items() for b, _ in d["beds"]})
+    |
+
+E501 Line too long (109 > 100)
+   --> src/hospitalos/howm/dataset.py:192:101
+    |
+190 |     return EstablishmentData(ep.spec.partition, ep.spec.index, ep.spec.population, dict(ep.spec.beds), tables.b2, nodes, present,
+191 |                              refs, edges, out, dict(ep.spec.mech),
+192 |                              {b: un for un, d in _public_static(obs)["units"].items() for b, _ in d["beds"]})
+    |                                                                                                     ^^^^^^^^^
+
+B007 Loop control variable `av` not used within loop body
+   --> src/hospitalos/howm/dataset.py:214:13
+    |
+212 |     known = ps.obs[: ps.i]
+213 |     first: dict[tuple[str, str], int] = {}
+214 |     for ev, av, kind, subj, _u, _v in known:
+    |             ^^
+215 |         first.setdefault((kind, subj), ev)
+216 |     starts = {"auth": "placed", "ready": "authorised", "transport": "transport_start", "confirmation": "transport_requested"}
+    |
+help: Rename unused `av` to `_av`
+
+E501 Line too long (125 > 100)
+   --> src/hospitalos/howm/dataset.py:216:101
+    |
+214 |     for ev, av, kind, subj, _u, _v in known:
+215 |         first.setdefault((kind, subj), ev)
+216 |     starts = {"auth": "placed", "ready": "authorised", "transport": "transport_start", "confirmation": "transport_requested"}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+217 |     ends = {"auth": "authorised", "ready": "ready", "transport": "transport_done", "confirmation": "transport_accepted"}
+218 |     avail_end: dict[tuple[str, str], int] = {}
+    |
+
+E501 Line too long (120 > 100)
+   --> src/hospitalos/howm/dataset.py:217:101
+    |
+215 |         first.setdefault((kind, subj), ev)
+216 |     starts = {"auth": "placed", "ready": "authorised", "transport": "transport_start", "confirmation": "transport_requested"}
+217 |     ends = {"auth": "authorised", "ready": "ready", "transport": "transport_done", "confirmation": "transport_accepted"}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+218 |     avail_end: dict[tuple[str, str], int] = {}
+219 |     for ev, av, kind, subj, _u, _v in known:
+    |
+
+B007 Loop control variable `ev` not used within loop body
+   --> src/hospitalos/howm/dataset.py:219:9
+    |
+217 |     ends = {"auth": "authorised", "ready": "ready", "transport": "transport_done", "confirmation": "transport_accepted"}
+218 |     avail_end: dict[tuple[str, str], int] = {}
+219 |     for ev, av, kind, subj, _u, _v in known:
+    |         ^^
+220 |         avail_end.setdefault((kind, subj), av)
+221 |     for fam in ("auth", "ready", "transport", "confirmation"):
+    |
+help: Rename unused `ev` to `_ev`
+
+B007 Loop control variable `av` not used within loop body
+   --> src/hospitalos/howm/dataset.py:228:13
+    |
+226 |             w[fam].append((ev, end, {}))
+227 |     cl_start: dict[str, int] = {}
+228 |     for ev, av, kind, subj, _u, _v in known:
+    |             ^^
+229 |         if kind == "cleaning_start" and ev >= lo:
+230 |             cl_start[f"{subj}@{ev}"] = ev
+    |
+help: Rename unused `av` to `_av`
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/dataset.py:236:101
+    |
+234 |         end = next((av for ev, av, b in done if b == bed and ev >= s), None)
+235 |         w["cleaning"].append((s, end, {}))
+236 |     care = [(v["ide"], v["as_"]) for ev, av, kind, subj, _u, v in known if kind == "care_due" and ev >= lo]
+    |                                                                                                     ^^^^^^^
+237 |     pres = [kind == "offer_present" for ev, av, kind, subj, _u, v in known if kind in ("offer_present", "offer_absent") and ev >= lo]
+238 |     return {"t": t, "hazard": w, "arrivals": arrivals_obs, "care": care, "presence": pres}
+    |
+
+E501 Line too long (133 > 100)
+   --> src/hospitalos/howm/dataset.py:237:101
+    |
+235 |         w["cleaning"].append((s, end, {}))
+236 |     care = [(v["ide"], v["as_"]) for ev, av, kind, subj, _u, v in known if kind == "care_due" and ev >= lo]
+237 |     pres = [kind == "offer_present" for ev, av, kind, subj, _u, v in known if kind in ("offer_present", "offer_absent") and ev >= lo]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+238 |     return {"t": t, "hazard": w, "arrivals": arrivals_obs, "care": care, "presence": pres}
+    |
+
+E501 Line too long (115 > 100)
+  --> src/hospitalos/howm/galt.py:12:101
+   |
+12 | def simulate_queue(n_jobs: int, servers: int, median_min: float, sigma: float, inter_arrival_min: float, seed: int,
+   |                                                                                                     ^^^^^^^^^^^^^^^
+13 |                    cleaning_hours: tuple[int, int] | None = None) -> dict[str, np.ndarray]:
+14 |     rng = np.random.default_rng(seed)
+   |
+
+E501 Line too long (121 > 100)
+  --> src/hospitalos/howm/galt.py:16:101
+   |
+14 |     rng = np.random.default_rng(seed)
+15 |     arrivals = np.cumsum(rng.exponential(inter_arrival_min, n_jobs)).astype(int)
+16 |     durations = np.maximum(15, np.ceil(median_min * np.exp(sigma * rng.standard_normal(n_jobs)) / 15.0) * 15).astype(int)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+17 |     free_at = np.zeros(servers, int)
+18 |     start = np.zeros(n_jobs, int)
+   |
+
+E501 Line too long (102 > 100)
+  --> src/hospitalos/howm/galt.py:28:101
+   |
+26 |             q.append(nxt)
+27 |             nxt += 1
+28 |         open_ = cleaning_hours is None or cleaning_hours[0] <= (minute // 60) % 24 < cleaning_hours[1]
+   |                                                                                                     ^^
+29 |         if minute % 15 == 0 and open_:
+30 |             for s in range(servers):
+   |
+
+E501 Line too long (112 > 100)
+  --> src/hospitalos/howm/generator.py:28:101
+   |
+26 | INSTANT_HOURS = (7, 11, 15, 19)
+27 | EVAL_DAY = 5
+28 | PARTITION_SIZES = {"TRAIN": 48, "VAL": 12, "DEVTEST": 24, "DIAG_DEV": 12, "RESERVE_REF": 48, "RESERVE_DIAG": 16}
+   |                                                                                                     ^^^^^^^^^^^^
+29 | POPULATION_OF = {"TRAIN": "REF", "VAL": "REF", "DEVTEST": "REF", "DIAG_DEV": "DIAG", "RESERVE_REF": "REF", "RESERVE_DIAG": "DIAG"}
+30 | SEALED = {"RESERVE_REF", "RESERVE_DIAG"}
+   |
+
+E501 Line too long (130 > 100)
+  --> src/hospitalos/howm/generator.py:29:101
+   |
+27 | EVAL_DAY = 5
+28 | PARTITION_SIZES = {"TRAIN": 48, "VAL": 12, "DEVTEST": 24, "DIAG_DEV": 12, "RESERVE_REF": 48, "RESERVE_DIAG": 16}
+29 | POPULATION_OF = {"TRAIN": "REF", "VAL": "REF", "DEVTEST": "REF", "DIAG_DEV": "DIAG", "RESERVE_REF": "REF", "RESERVE_DIAG": "DIAG"}
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+30 | SEALED = {"RESERVE_REF", "RESERVE_DIAG"}
+31 | CARE_MEAN = {"IDE": {1: 8.0, 2: 12.0, 3: 20.0}, "AS": {1: 10.0, 2: 14.0, 3: 22.0}}
+   |
+
+E501 Line too long (135 > 100)
+  --> src/hospitalos/howm/generator.py:34:101
+   |
+32 | ACUITY_P = (0.4, 0.4, 0.2)
+33 | P_ISO, P_TRANSPORT = 0.15, 0.6
+34 | HOUR_PROFILE = [0.3, 0.2, 0.2, 0.2, 0.2, 0.3, 0.5, 0.8, 1.2, 1.5, 1.6, 1.6, 1.5, 1.5, 1.6, 1.6, 1.5, 1.4, 1.2, 1.0, 0.8, 0.6, 0.5, 0.4]
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+35 | _HP = sum(HOUR_PROFILE) / 24.0
+36 | HOUR_PROFILE = [x / _HP for x in HOUR_PROFILE]
+   |
+
+E501 Line too long (112 > 100)
+  --> src/hospitalos/howm/generator.py:94:101
+   |
+92 |     theta = {
+93 |         "los_days": r("los", 2.5, 5.0), "ready_h": r("ready", 1.0, 5.0), "tr_min": r("tr", 30, 90),
+94 |         "cl_min": r("cl", 30, 75), "conf_tr_min": r("conf_tr", 15, 120), "conf_off_min": r("conf_off", 30, 240),
+   |                                                                                                     ^^^^^^^^^^^^
+95 |         "noshow": r("noshow", 0.0, 0.25), "arr_mult": r("arr", 0.85, 1.15), "care_mult": r("care", 0.85, 1.15),
+96 |         "lag_min": r("lag", 0.0, 60.0 if pop == "REF" else 120.0),
+   |
+
+E501 Line too long (111 > 100)
+  --> src/hospitalos/howm/generator.py:95:101
+   |
+93 |         "los_days": r("los", 2.5, 5.0), "ready_h": r("ready", 1.0, 5.0), "tr_min": r("tr", 30, 90),
+94 |         "cl_min": r("cl", 30, 75), "conf_tr_min": r("conf_tr", 15, 120), "conf_off_min": r("conf_off", 30, 240),
+95 |         "noshow": r("noshow", 0.0, 0.25), "arr_mult": r("arr", 0.85, 1.15), "care_mult": r("care", 0.85, 1.15),
+   |                                                                                                     ^^^^^^^^^^^
+96 |         "lag_min": r("lag", 0.0, 60.0 if pop == "REF" else 120.0),
+97 |     }
+   |
+
+E501 Line too long (130 > 100)
+   --> src/hospitalos/howm/generator.py:101:101
+    |
+ 99 |         simple = u(ek, 0, "mix", "simple") < 0.3
+100 |         m2 = (not simple) and u(ek, 0, "mix", "m2") < 0.5 / 0.7
+101 |         mech = {"m2": m2, "m2_common": False, "slow": 1.8, "m3_kappa": 0.0 if simple else 0.5, "m5_drop": False, "simple": simple}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+102 |     else:
+103 |         mech = {"m2": True, "m2_common": True, "slow": 2.5, "m3_kappa": 1.5, "m5_drop": True, "simple": False}
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/generator.py:103:101
+    |
+101 |         mech = {"m2": m2, "m2_common": False, "slow": 1.8, "m3_kappa": 0.0 if simple else 0.5, "m5_drop": False, "simple": simple}
+102 |     else:
+103 |         mech = {"m2": True, "m2_common": True, "slow": 2.5, "m3_kappa": 1.5, "m5_drop": True, "simple": False}
+    |                                                                                                     ^^^^^^^^^^
+104 |     mondays = [datetime(2027, 1, 4) + timedelta(days=7 * k) for k in range(11)]
+105 |     local0 = mondays[int(u(ek, 0, "start", "") * len(mondays))].replace(tzinfo=PARIS)
+    |
+
+E501 Line too long (127 > 100)
+   --> src/hospitalos/howm/generator.py:106:101
+    |
+104 |     mondays = [datetime(2027, 1, 4) + timedelta(days=7 * k) for k in range(11)]
+105 |     local0 = mondays[int(u(ek, 0, "start", "") * len(mondays))].replace(tzinfo=PARIS)
+106 |     return EstablishmentSpec(partition, index, pop, ek, local0.astimezone(UTC).isoformat(), beds, iso, c_tr, c_cl, theta, mech)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (113 > 100)
+   --> src/hospitalos/howm/generator.py:153:101
+    |
+151 |         if hour <= a_hour:
+152 |             return a_state
+153 |         state = self._reg.get((team, hour - 1)) if (team, hour - 1) in self._reg else self.regime(team, hour - 1)
+    |                                                                                                     ^^^^^^^^^^^^^
+154 |         p = 1.0 / 6.0 if state else 1.0 / 24.0
+155 |         new = (1 - state) if self._u("regime", team, hour) < p else state
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/generator.py:175:101
+    |
+174 |     def _load(self, eng: Engine, unit: str, hour: int) -> float:
+175 |         dem = sum(CARE_MEAN["IDE"][s.acuity] for s in eng.stays.values() if s.unit == unit and s.departed is None)
+    |                                                                                                     ^^^^^^^^^^^^^^
+176 |         dem *= 1.25 if 7 <= hour % 24 < 21 else 0.6
+177 |         cap = 60.0 * max(1, eng.units[unit].roster["IDE"][min(hour, len(eng.units[unit].roster["IDE"]) - 1)])
+    |
+
+E501 Line too long (109 > 100)
+   --> src/hospitalos/howm/generator.py:177:101
+    |
+175 |         dem = sum(CARE_MEAN["IDE"][s.acuity] for s in eng.stays.values() if s.unit == unit and s.departed is None)
+176 |         dem *= 1.25 if 7 <= hour % 24 < 21 else 0.6
+177 |         cap = 60.0 * max(1, eng.units[unit].roster["IDE"][min(hour, len(eng.units[unit].roster["IDE"]) - 1)])
+    |                                                                                                     ^^^^^^^^^
+178 |         return dem / cap
+    |
+
+E501 Line too long (109 > 100)
+   --> src/hospitalos/howm/generator.py:213:101
+    |
+211 |         med = self.th["cl_min"] * self.slow("cleaning", start)
+212 |         elapsed = (eng.tick - start) * 15
+213 |         uu = cond_uniform(lognormal_cdf(elapsed, med, 0.35), self._u("cleaning", bed.bed_id, bed.dirty_tick))
+    |                                                                                                     ^^^^^^^^^
+214 |         return max(eng.tick + 1, start + max(1, math.ceil(lognormal_minutes(med, 0.35, uu) / 15)))
+    |
+
+E501 Line too long (105 > 100)
+   --> src/hospitalos/howm/generator.py:223:101
+    |
+221 |     def arrivals(self, eng: Engine, unit: str, hour: int) -> list[tuple[bool, int, bool]]:
+222 |         n_beds = len(eng.units[unit].beds)
+223 |         mean = n_beds * 0.93 / (self.th["los_days"] * 24) * HOUR_PROFILE[hour % 24] * self.th["arr_mult"]
+    |                                                                                                     ^^^^^
+224 |         rr = 3.0
+225 |         n = int(nbinom.ppf(self._u("arrivals", unit, hour), rr, rr / (rr + mean)))
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/generator.py:230:101
+    |
+228 |             a = self._u("acuity", unit, hour, i)
+229 |             acuity = 1 if a < ACUITY_P[0] else (2 if a < ACUITY_P[0] + ACUITY_P[1] else 3)
+230 |             out.append((self._u("iso", unit, hour, i) < P_ISO, acuity, self._u("tr", unit, hour, i) < P_TRANSPORT))
+    |                                                                                                     ^^^^^^^^^^^^^^^
+231 |         return out
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/generator.py:237:101
+    |
+235 |         out = []
+236 |         for skill in SKILLS:
+237 |             med = CARE_MEAN[skill][st.acuity] * (1.25 if day else 0.6) * self.th["care_mult"] / math.exp(0.125)
+    |                                                                                                     ^^^^^^^^^^^
+238 |             out.append(round(lognormal_minutes(med, 0.5, self._u("care", st.sid, hour, skill))))
+239 |         return float(out[0]), float(out[1])
+    |
+
+E501 Line too long (124 > 100)
+   --> src/hospitalos/howm/generator.py:282:101
+    |
+280 | class Episode:
+281 |     spec: EstablishmentSpec
+282 |     observations: list[tuple[int, int, str, str, str, dict[str, Any]]]  # (event_min, avail_min, kind, subject, unit, value)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+283 |     hourly: list[dict[str, Any]]
+284 |     demand: dict[tuple[str, str, int], float]
+    |
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/generator.py:287:101
+    |
+285 |     capacity: dict[tuple[str, str, int], int]
+286 |     stays: dict[str, dict[str, Any]]  # private per-stay truth (labels)
+287 |     instants: dict[int, Engine]  # true engine at evaluated decision instants (before the behaviour action)
+    |                                                                                                     ^^^^^^^
+288 |     regimes: dict[str, list[int]]
+289 |     truth_log: list[tuple[int, str, str, dict[str, Any]]]
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/generator.py:309:101
+    |
+307 |     eng = initial_engine(spec, prov)
+308 |     obs: list[tuple[int, int, str, str, str, dict[str, Any]]] = []
+309 |     truth_log: list[tuple[int, str, str, dict[str, Any]]] = []  # private emission order (verifier only)
+    |                                                                                                     ^^^^
+310 |
+311 |     def on_event(tick: int, kind: str, subject: str, value: dict[str, Any]) -> None:
+    |
+
+E501 Line too long (139 > 100)
+   --> src/hospitalos/howm/generator.py:314:101
+    |
+312 | …lue)))
+313 | … else 0)
+314 | …ta["lag_min"] * math.log(1 - u(spec.ekey, 0, "lag", kind, subject, tick) * 0.999999))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+315 | …t, str(value.get("unit", "")), dict(value)))
+    |
+
+E501 Line too long (203 > 100)
+   --> src/hospitalos/howm/generator.py:320:101
+    |
+318 | …
+319 | …
+320 | …[: EPISODE_TICKS // TPH + 48] for k, v in un.roster.items()}, "minimum": un.minimum} for n, un in eng.units.items()},
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+321 | …
+322 | …
+    |
+
+E501 Line too long (119 > 100)
+   --> src/hospitalos/howm/generator.py:323:101
+    |
+321 |         "c_tr": spec.c_tr, "c_cl": spec.c_cl, "start_utc": spec.start_utc,
+322 |     }
+323 |     obs.append((0, 0, "static", "establishment", "", {"units": static["units"], "c_tr": spec.c_tr, "c_cl": spec.c_cl}))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+324 |     # initial public state: stays present at t0 (with their public attributes)
+325 |     for st in sorted(eng.stays.values(), key=lambda s: s.sid):
+    |
+
+E501 Line too long (185 > 100)
+   --> src/hospitalos/howm/generator.py:326:101
+    |
+324 | …)
+325 | …
+326 | …st.unit, "acuity": st.acuity, "iso": st.iso, "transport": st.transport, "placed_min": st.placed_tick * 15}))
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+327 | …
+328 | …
+    |
+
+E501 Line too long (163 > 100)
+   --> src/hospitalos/howm/generator.py:338:101
+    |
+336 | …
+337 | …
+338 | …{"coordinate": plan.coordinate, "cleaning": plan.cleaning, "reinforcement": plan.reinforcement}))
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+339 | …
+340 | …
+    |
+
+E501 Line too long (144 > 100)
+   --> src/hospitalos/howm/generator.py:342:101
+    |
+340 | …
+341 | …
+342 | … "auth": s.auth_tick, "ready": s.ready_tick, "departed": s.departed, "acuity": s.acuity}
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+343 | …
+344 | …
+    |
+
+E501 Line too long (119 > 100)
+   --> src/hospitalos/howm/generator.py:345:101
+    |
+343 |         for s in eng.stays.values()
+344 |     }
+345 |     regimes = {team: [prov.regime(team, h) for h in range(EPISODE_TICKS // TPH)] for team in ("transport", "cleaning")}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+346 |     obs.sort(key=lambda o: (o[1], o[0], o[2], o[3]))
+347 |     init_log = [(0, "placed", o[3], o[5]) for o in obs if o[2] == "placed" and o[0] == 0 and "placed_min" in o[5]]
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/generator.py:347:101
+    |
+345 |     regimes = {team: [prov.regime(team, h) for h in range(EPISODE_TICKS // TPH)] for team in ("transport", "cleaning")}
+346 |     obs.sort(key=lambda o: (o[1], o[0], o[2], o[3]))
+347 |     init_log = [(0, "placed", o[3], o[5]) for o in obs if o[2] == "placed" and o[0] == 0 and "placed_min" in o[5]]
+    |                                                                                                     ^^^^^^^^^^^^^^
+348 |     return Episode(spec, obs, eng.hourly, dict(eng.demand), dict(eng.capacity), stays, instants, regimes, init_log + truth_log, eng.r…
+    |
+
+E501 Line too long (171 > 100)
+   --> src/hospitalos/howm/generator.py:348:101
+    |
+346 | …
+347 | …ced" and o[0] == 0 and "placed_min" in o[5]]
+348 | …apacity), stays, instants, regimes, init_log + truth_log, eng.rejected, dict(eng.rejections), static)
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (128 > 100)
+  --> src/hospitalos/howm/heads.py:28:101
+   |
+28 | BIN_MIN = {"auth": 60, "ready": 15, "transport": 15, "cleaning": 15, "confirmation": 15}  # auth: unscored family, 8-day support
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (122 > 100)
+  --> src/hospitalos/howm/heads.py:31:101
+   |
+31 | def hazard_logits(base: np.ndarray, tod: np.ndarray, delta: np.ndarray, q_start: np.ndarray, step: int = 1) -> np.ndarray:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+32 |     """step = bin width in quarters (1 for 15-min bins, 4 for hourly auth bins)."""
+33 |     b = np.arange(NB)
+   |
+
+E501 Line too long (102 > 100)
+  --> src/hospitalos/howm/heads.py:37:101
+   |
+37 | def hazard_logprob(logits: np.ndarray, e: np.ndarray, b: np.ndarray, event: np.ndarray) -> np.ndarray:
+   |                                                                                                     ^^
+38 |     """Per item: event -> log P(T=b|T>=e); not event -> log P(T>=b|T>=e) (b may be NB = tail)."""
+39 |     ls_neg = logsig(-logits)  # log(1-h)
+   |
+
+E501 Line too long (116 > 100)
+  --> src/hospitalos/howm/heads.py:40:101
+   |
+38 |     """Per item: event -> log P(T=b|T>=e); not event -> log P(T>=b|T>=e) (b may be NB = tail)."""
+39 |     ls_neg = logsig(-logits)  # log(1-h)
+40 |     cum = np.concatenate([np.zeros((logits.shape[0], 1)), np.cumsum(ls_neg, axis=1)], axis=1)  # cum[:,k] = log S(k)
+   |                                                                                                     ^^^^^^^^^^^^^^^^
+41 |     rows = np.arange(logits.shape[0])
+42 |     log_s_b = cum[rows, b]
+   |
+
+E501 Line too long (110 > 100)
+  --> src/hospitalos/howm/heads.py:66:101
+   |
+64 | def nb_logpmf(n: np.ndarray, mu: np.ndarray, r: float | np.ndarray) -> np.ndarray:
+65 |     r = np.asarray(r, float)
+66 |     return gammaln(n + r) - gammaln(r) - gammaln(n + 1) + r * np.log(r / (r + mu)) + n * np.log(mu / (r + mu))
+   |                                                                                                     ^^^^^^^^^^
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/heads.py:102:101
+    |
+101 | # ------------------------------------------------------------------------------- torch
+102 | def t_hazard_logprob(logits: torch.Tensor, e: torch.Tensor, b: torch.Tensor, event: torch.Tensor) -> torch.Tensor:
+    |                                                                                                     ^^^^^^^^^^^^^^
+103 |     ls_neg = torch.nn.functional.logsigmoid(-logits)
+104 |     cum = torch.cat([torch.zeros_like(logits[:, :1]), torch.cumsum(ls_neg, dim=1)], dim=1)
+    |
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/heads.py:108:101
+    |
+106 |     log_s_b = cum[rows, b]
+107 |     log_s_e = cum[rows, e]
+108 |     lp_event = torch.nn.functional.logsigmoid(logits[rows, torch.clamp(b, max=NB - 1)]) + log_s_b - log_s_e
+    |                                                                                                     ^^^^^^^
+109 |     lp_surv = log_s_b - log_s_e
+110 |     return torch.where(event & (b < NB), lp_event, lp_surv)
+    |
+
+E501 Line too long (125 > 100)
+   --> src/hospitalos/howm/heads.py:122:101
+    |
+120 |     lo = 5.0 * k
+121 |     hi = 5.0 * (k + 1)
+122 |     z_hi = (torch.log(torch.where(k < 120, hi.double(), torch.ones_like(hi, dtype=torch.float64)).to(mu.dtype)) - mu) / sigma
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+123 |     z_lo = (torch.log(torch.clamp(lo, min=1e-30).to(mu.dtype)) - mu) / sigma
+124 |     log_f_hi = torch.special.log_ndtr(z_hi)
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/heads.py:137:101
+    |
+136 | def t_bernoulli_logprob(y: torch.Tensor, logit: torch.Tensor) -> torch.Tensor:
+137 |     return torch.where(y, torch.nn.functional.logsigmoid(logit), torch.nn.functional.logsigmoid(-logit))
+    |                                                                                                     ^^^^
+
+F401 [*] `.world.SKILLS` imported but unused
+  --> src/hospitalos/howm/history.py:21:20
+   |
+19 | import numpy as np
+20 |
+21 | from .world import SKILLS, TPH, Bed, Engine, Offer, Request, Stay, Unit
+   |                    ^^^^^^
+22 |
+23 | TEAMS = ("transport", "cleaning", "IDE_A", "AS_A", "IDE_B", "AS_B")
+   |
+help: Remove unused import: `.world.SKILLS`
+   |
+20 |
+   - from .world import SKILLS, TPH, Bed, Engine, Offer, Request, Stay, Unit
+21 + from .world import TPH, Bed, Engine, Offer, Request, Stay, Unit
+22 |
+   |
+
+B007 Loop control variable `un` not used within loop body
+  --> src/hospitalos/howm/history.py:74:17
+   |
+72 |         if kind == "static":
+73 |             self.static = v
+74 |             for un, d in v["units"].items():
+   |                 ^^
+75 |                 for b, iso in d["beds"]:
+76 |                     self.beds.setdefault(b, EntityState(data={"state": "free", "since": 0}))
+   |
+help: Rename unused `un` to `_un`
+
+B007 Loop control variable `iso` not used within loop body
+  --> src/hospitalos/howm/history.py:75:24
+   |
+73 |             self.static = v
+74 |             for un, d in v["units"].items():
+75 |                 for b, iso in d["beds"]:
+   |                        ^^^
+76 |                     self.beds.setdefault(b, EntityState(data={"state": "free", "since": 0}))
+77 |             return
+   |
+help: Rename unused `iso` to `_iso`
+
+E501 Line too long (141 > 100)
+  --> src/hospitalos/howm/history.py:80:101
+   |
+78 | …
+79 | …
+80 | …"], "iso": v["iso"], "acuity": v["acuity"], "transport": v["transport"], "arrival": ev}
+   |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+81 | …
+82 | …
+   |
+
+E501 Line too long (127 > 100)
+  --> src/hospitalos/howm/history.py:87:101
+   |
+85 |                 self.requests.pop(v["rid"], None)
+86 |             st = self.stays.setdefault(subj, {})
+87 |             st.update({"unit": v["unit"], "bed": v["bed"], "acuity": v["acuity"], "iso": v["iso"], "transport": v["transport"],
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+88 |                        "placed": v.get("placed_min", ev), "care": {}})
+89 |             self._bed(v["bed"], ev, "occ", stay=subj)
+   |
+
+E501 Line too long (206 > 100)
+  --> src/hospitalos/howm/history.py:91:101
+   |
+89 | …
+90 | …
+91 | …", "transport_requested", "transport_accepted", "transport_start", "transport_done", "departure", "care_due"} else None
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+92 | …
+93 | …
+   |
+
+E501 Line too long (103 > 100)
+   --> src/hospitalos/howm/history.py:119:101
+    |
+118 |     def present_stays(self) -> dict[str, dict[str, Any]]:
+119 |         """Stays publicly present: placed, not departed, and still the latest occupant of their bed."""
+    |                                                                                                     ^^^
+120 |         out = {}
+121 |         for sid, st in self.stays.items():
+    |
+
+E501 Line too long (136 > 100)
+   --> src/hospitalos/howm/history.py:133:101
+    |
+131 | …ORM N3.1). Requires advance(t) first."""
+132 | …
+133 | … [] for f in ("auth", "ready", "transport", "cleaning", "confirmation", "presence")}
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+134 | …tems()):
+135 | …["acuity"], "iso": st["iso"], "transport": st["transport"]}
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/history.py:135:101
+    |
+133 | …     items: dict[str, list[dict[str, Any]]] = {f: [] for f in ("auth", "ready", "transport", "cleaning", "confirmation", "presence")}
+134 | …     for sid, st in sorted(self.present_stays().items()):
+135 | …         prof = {"unit": st["unit"], "acuity": st["acuity"], "iso": st["iso"], "transport": st["transport"]}
+    |                                                                                                   ^^^^^^^^^^^
+136 | …         if "authorised" not in st:
+137 | …             items["auth"].append({"ref": sid, "start": st["placed"], **prof})
+    |
+
+E501 Line too long (142 > 100)
+   --> src/hospitalos/howm/history.py:143:101
+    |
+141 | …"start": st["transport_start"], **prof})
+142 | …rt_accepted" not in st:
+143 | …T:{sid}", "start": st["transport_requested"], "kind": "transport", "unit": st["unit"]})
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 | …
+145 | …
+    |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/howm/history.py:147:101
+    |
+145 |         for b, es in sorted(self.beds.items()):
+146 |             if es.data.get("state") == "cleaning":
+147 |                 items["cleaning"].append({"ref": b, "start": es.data["clean_start"], "unit": bed_unit[b]})
+    |                                                                                                     ^^^^^^
+148 |         for oid, of in sorted(self.offers.items()):
+149 |             if "requested" not in of:
+    |
+
+E501 Line too long (128 > 100)
+   --> src/hospitalos/howm/history.py:152:101
+    |
+150 | …         continue
+151 | …     if of.get("source") == "pool" and "offer_confirmed" not in of:
+152 | …         items["confirmation"].append({"ref": f"O:{oid}", "start": of["requested"], "kind": "offer", "unit": of["unit"]})
+    |                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+153 | …     # presence family: POOL offers only (lending presence is a public rule, always present)
+154 | …     if of.get("source") == "pool" and "offer_confirmed" in of and "offer_present" not in of and "offer_absent" not in of and of["st…
+    |
+
+E501 Line too long (154 > 100)
+   --> src/hospitalos/howm/history.py:154:101
+    |
+152 | …}", "start": of["requested"], "kind": "offer", "unit": of["unit"]})
+153 | …ence is a public rule, always present)
+154 | …d" in of and "offer_present" not in of and "offer_absent" not in of and of["start"] * 15 > t:
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 | … of["unit"], "skill": of["skill"], "source": "pool" if of["source"] == "pool" else "lend", "slot_start": of["start"] * 15})
+156 | …
+    |
+
+E501 Line too long (184 > 100)
+   --> src/hospitalos/howm/history.py:155:101
+    |
+153 | …c rule, always present)
+154 | …ffer_present" not in of and "offer_absent" not in of and of["start"] * 15 > t:
+155 | …kill": of["skill"], "source": "pool" if of["source"] == "pool" else "lend", "slot_start": of["start"] * 15})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+156 | …
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/history.py:160:101
+    |
+158 |     # --------------------------------------------------------------------------------------
+159 |     def to_engine(self, t: int) -> Engine:
+160 |         """Public-state engine at t (private future times unknown -> None; prime with a provider)."""
+    |                                                                                                     ^
+161 |         assert self.static is not None and self.t == t
+162 |         units, beds = {}, {}
+    |
+
+E501 Line too long (125 > 100)
+   --> src/hospitalos/howm/history.py:166:101
+    |
+164 |             for b, iso in d["beds"]:
+165 |                 beds[b] = Bed(b, un, iso)
+166 |             units[un] = Unit(un, [b for b, _ in d["beds"]], {k: list(v) for k, v in d["roster"].items()}, dict(d["minimum"]))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+167 |         eng = Engine(units, beds, self.static["c_tr"], self.static["c_cl"], tick=t // 15)
+168 |         eng.emit_log = False
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/history.py:184:101
+    |
+182 |                 bed.clean_end = 10**9  # placeholder, replaced when primed
+183 |         for sid, st in present.items():
+184 |             s = Stay(sid, st["unit"], st["bed"], st["acuity"], st["iso"], st["transport"], st["placed"] // 15)
+    |                                                                                                     ^^^^^^^^^^
+185 |             s.authorised = "authorised" in st
+186 |             s.auth_tick = st["authorised"] // 15 if s.authorised else None
+    |
+
+E501 Line too long (144 > 100)
+   --> src/hospitalos/howm/history.py:199:101
+    |
+197 | …
+198 | …=lambda kv: (kv[1]["arrival"], kv[0])):
+199 | …Request(rid, rq["unit"], rq["iso"], rq["acuity"], rq["transport"], rq["arrival"] // 15))
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+200 | …
+201 | …
+    |
+
+E501 Line too long (112 > 100)
+   --> src/hospitalos/howm/history.py:203:101
+    |
+201 |             if "requested" not in of:
+202 |                 continue
+203 |             o = Offer(oid, of["unit"], of["skill"], of["source"], of["start"], of["end"], of["requested"] // 15)
+    |                                                                                                     ^^^^^^^^^^^^
+204 |             o.confirmed = "offer_confirmed" in of
+205 |             o.conf_tick = of["offer_confirmed"] // 15 if o.confirmed else None
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/history.py:220:101
+    |
+218 | # Hourly features (B2 aggregates; H1 entity graph) — as known at the end of each hour
+219 | # ------------------------------------------------------------------------------------------
+220 | UNIT_FEATS = ("occ", "free", "dirty", "cleaning", "adm_queue", "auth_not_ready", "ready_wait_tr", "tr_pending",
+    |                                                                                                     ^^^^^^^^^^^
+221 |               "arrivals", "departures", "cleanings_done", "transports_done", "cl_dur_mean", "cl_n", "tr_dur_mean", "tr_n",
+222 |               "care_ide", "care_as", "roster_ide", "roster_as", "offers_present", "offers_absent")
+    |
+
+E501 Line too long (122 > 100)
+   --> src/hospitalos/howm/history.py:221:101
+    |
+219 | # ------------------------------------------------------------------------------------------
+220 | UNIT_FEATS = ("occ", "free", "dirty", "cleaning", "adm_queue", "auth_not_ready", "ready_wait_tr", "tr_pending",
+221 |               "arrivals", "departures", "cleanings_done", "transports_done", "cl_dur_mean", "cl_n", "tr_dur_mean", "tr_n",
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+222 |               "care_ide", "care_as", "roster_ide", "roster_as", "offers_present", "offers_absent")
+223 | SHARED_FEATS = ("c_tr", "c_cl", "cl_busy", "tr_busy", "hsin", "hcos", "weekday", "plan_coord", "plan_compat", "plan_reinf")
+    |
+
+E501 Line too long (123 > 100)
+   --> src/hospitalos/howm/history.py:223:101
+    |
+221 |               "arrivals", "departures", "cleanings_done", "transports_done", "cl_dur_mean", "cl_n", "tr_dur_mean", "tr_n",
+222 |               "care_ide", "care_as", "roster_ide", "roster_as", "offers_present", "offers_absent")
+223 | SHARED_FEATS = ("c_tr", "c_cl", "cl_busy", "tr_busy", "hsin", "hcos", "weekday", "plan_coord", "plan_compat", "plan_reinf")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+224 | B2_DIM = 2 * len(UNIT_FEATS) + len(SHARED_FEATS)
+225 | NODE_TYPES = ("stay", "bed", "unit", "team", "offer")
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/history.py:232:101
+    |
+230 | def clock_feats(hour: int) -> tuple[float, float, float]:
+231 |     lh = hour % 24
+232 |     return math.sin(2 * math.pi * lh / 24), math.cos(2 * math.pi * lh / 24), float((hour // 24) % 7 < 5)
+    |                                                                                                     ^^^^
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/history.py:237:101
+    |
+235 | @dataclass
+236 | class HourlyTables:
+237 |     """Per establishment: B2 matrix [H, B2_DIM]; H1 per-hour graphs; entity index (refs only for joins)."""
+    |                                                                                                     ^^^^^^^
+238 |
+239 |     b2: np.ndarray
+    |
+
+E501 Line too long (112 > 100)
+   --> src/hospitalos/howm/history.py:262:101
+    |
+260 |     states = [ps.beds[b].data.get("state", "free") for b in beds]
+261 |     mine = [e for e in evs if e[4] == un]
+262 |     cl_d = [e[0] - st for e in mine if e[2] == "cleaning_done" for st in [_last_start(ps, e)] if st is not None]
+    |                                                                                                     ^^^^^^^^^^^^
+263 |     tr_d = [e[0] - ps.stays[e[3]]["transport_start"] for e in mine if e[2] == "transport_done" and "transport_start" in ps.stays.get(…
+264 |     care_i = sum(st["care"].get(h - 1, (0, 0))[0] for st in ps.stays.values() if st.get("unit") == un)
+    |
+
+E501 Line too long (143 > 100)
+   --> src/hospitalos/howm/history.py:263:101
+    |
+261 | …
+262 | …_done" for st in [_last_start(ps, e)] if st is not None]
+263 | … e in mine if e[2] == "transport_done" and "transport_start" in ps.stays.get(e[3], {})]
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+264 | … in ps.stays.values() if st.get("unit") == un)
+265 | … in ps.stays.values() if st.get("unit") == un)
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/history.py:264:101
+    |
+262 |     cl_d = [e[0] - st for e in mine if e[2] == "cleaning_done" for st in [_last_start(ps, e)] if st is not None]
+263 |     tr_d = [e[0] - ps.stays[e[3]]["transport_start"] for e in mine if e[2] == "transport_done" and "transport_start" in ps.stays.get(…
+264 |     care_i = sum(st["care"].get(h - 1, (0, 0))[0] for st in ps.stays.values() if st.get("unit") == un)
+    |                                                                                                     ^^
+265 |     care_a = sum(st["care"].get(h - 1, (0, 0))[1] for st in ps.stays.values() if st.get("unit") == un)
+266 |     roster = ps.static["units"][un]["roster"]
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/history.py:265:101
+    |
+263 |     tr_d = [e[0] - ps.stays[e[3]]["transport_start"] for e in mine if e[2] == "transport_done" and "transport_start" in ps.stays.get(…
+264 |     care_i = sum(st["care"].get(h - 1, (0, 0))[0] for st in ps.stays.values() if st.get("unit") == un)
+265 |     care_a = sum(st["care"].get(h - 1, (0, 0))[1] for st in ps.stays.values() if st.get("unit") == un)
+    |                                                                                                     ^^
+266 |     roster = ps.static["units"][un]["roster"]
+267 |     offers = [o for o in ps.offers.values() if o.get("unit") == un]
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/history.py:269:101
+    |
+267 |     offers = [o for o in ps.offers.values() if o.get("unit") == un]
+268 |     return [
+269 |         len(present) / 10, states.count("free") / 10, states.count("dirty") / 5, states.count("cleaning") / 5,
+    |                                                                                                     ^^^^^^^^^^
+270 |         sum(1 for r in ps.requests.values() if r["unit"] == un) / 5,
+271 |         sum(1 for st in present.values() if "authorised" in st and "ready" not in st) / 5,
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/history.py:272:101
+    |
+270 |         sum(1 for r in ps.requests.values() if r["unit"] == un) / 5,
+271 |         sum(1 for st in present.values() if "authorised" in st and "ready" not in st) / 5,
+272 |         sum(1 for st in present.values() if "ready" in st and st["transport"] and "transport_start" not in st) / 5,
+    |                                                                                                     ^^^^^^^^^^^^^^^
+273 |         sum(1 for st in present.values() if "transport_requested" in st and "transport_done" not in st) / 5,
+274 |         sum(1 for e in mine if e[2] == "request_arrival") / 3, sum(1 for e in mine if e[2] == "departure") / 3,
+    |
+
+E501 Line too long (108 > 100)
+   --> src/hospitalos/howm/history.py:273:101
+    |
+271 |         sum(1 for st in present.values() if "authorised" in st and "ready" not in st) / 5,
+272 |         sum(1 for st in present.values() if "ready" in st and st["transport"] and "transport_start" not in st) / 5,
+273 |         sum(1 for st in present.values() if "transport_requested" in st and "transport_done" not in st) / 5,
+    |                                                                                                     ^^^^^^^^
+274 |         sum(1 for e in mine if e[2] == "request_arrival") / 3, sum(1 for e in mine if e[2] == "departure") / 3,
+275 |         sum(1 for e in mine if e[2] == "cleaning_done") / 3, sum(1 for e in mine if e[2] == "transport_done") / 3,
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/history.py:274:101
+    |
+272 |         sum(1 for st in present.values() if "ready" in st and st["transport"] and "transport_start" not in st) / 5,
+273 |         sum(1 for st in present.values() if "transport_requested" in st and "transport_done" not in st) / 5,
+274 |         sum(1 for e in mine if e[2] == "request_arrival") / 3, sum(1 for e in mine if e[2] == "departure") / 3,
+    |                                                                                                     ^^^^^^^^^^^
+275 |         sum(1 for e in mine if e[2] == "cleaning_done") / 3, sum(1 for e in mine if e[2] == "transport_done") / 3,
+276 |         (np.mean(cl_d) / 60 if cl_d else 0.0), len(cl_d) / 3, (np.mean(tr_d) / 60 if tr_d else 0.0), len(tr_d) / 3,
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/history.py:275:101
+    |
+273 |         sum(1 for st in present.values() if "transport_requested" in st and "transport_done" not in st) / 5,
+274 |         sum(1 for e in mine if e[2] == "request_arrival") / 3, sum(1 for e in mine if e[2] == "departure") / 3,
+275 |         sum(1 for e in mine if e[2] == "cleaning_done") / 3, sum(1 for e in mine if e[2] == "transport_done") / 3,
+    |                                                                                                     ^^^^^^^^^^^^^^
+276 |         (np.mean(cl_d) / 60 if cl_d else 0.0), len(cl_d) / 3, (np.mean(tr_d) / 60 if tr_d else 0.0), len(tr_d) / 3,
+277 |         care_i / 300, care_a / 300, roster["IDE"][h] / 5, roster["AS"][h] / 5,
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/history.py:276:101
+    |
+274 |         sum(1 for e in mine if e[2] == "request_arrival") / 3, sum(1 for e in mine if e[2] == "departure") / 3,
+275 |         sum(1 for e in mine if e[2] == "cleaning_done") / 3, sum(1 for e in mine if e[2] == "transport_done") / 3,
+276 |         (np.mean(cl_d) / 60 if cl_d else 0.0), len(cl_d) / 3, (np.mean(tr_d) / 60 if tr_d else 0.0), len(tr_d) / 3,
+    |                                                                                                     ^^^^^^^^^^^^^^^
+277 |         care_i / 300, care_a / 300, roster["IDE"][h] / 5, roster["AS"][h] / 5,
+278 |         sum(1 for o in offers if "offer_present" in o and o["start"] // TPH <= h < o["end"] // TPH) / 2,
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/history.py:278:101
+    |
+276 |         (np.mean(cl_d) / 60 if cl_d else 0.0), len(cl_d) / 3, (np.mean(tr_d) / 60 if tr_d else 0.0), len(tr_d) / 3,
+277 |         care_i / 300, care_a / 300, roster["IDE"][h] / 5, roster["AS"][h] / 5,
+278 |         sum(1 for o in offers if "offer_present" in o and o["start"] // TPH <= h < o["end"] // TPH) / 2,
+    |                                                                                                     ^^^^
+279 |         sum(1 for o in offers if "offer_absent" in o and o["start"] // TPH <= h < o["end"] // TPH) / 2,
+280 |     ]
+    |
+
+E501 Line too long (103 > 100)
+   --> src/hospitalos/howm/history.py:279:101
+    |
+277 |         care_i / 300, care_a / 300, roster["IDE"][h] / 5, roster["AS"][h] / 5,
+278 |         sum(1 for o in offers if "offer_present" in o and o["start"] // TPH <= h < o["end"] // TPH) / 2,
+279 |         sum(1 for o in offers if "offer_absent" in o and o["start"] // TPH <= h < o["end"] // TPH) / 2,
+    |                                                                                                     ^^^
+280 |     ]
+    |
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/history.py:284:101
+    |
+283 | def _last_start(ps: PublicStream, e: Obs) -> int | None:
+284 |     # cleaning_done applied already -> bed state is free; start is recorded in the done event's predecessor
+    |                                                                                                     ^^^^^^^
+285 |     # we keep the cleaning start per bed in a side table
+286 |     return ps.__dict__.setdefault("_clean_start", {}).get(e[3])
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/history.py:307:101
+    |
+305 |         ps.static["c_tr"] / 3, ps.static["c_cl"] / 2,
+306 |         sum(1 for es in ps.beds.values() if es.data.get("state") == "cleaning") / 2,
+307 |         sum(1 for st in ps.present_stays().values() if "transport_start" in st and "transport_done" not in st) / 2,
+    |                                                                                                     ^^^^^^^^^^^^^^^
+308 |         hs, hc, wd,
+309 |         float(any(p.get("coordinate") for p in plans)), float(any(p.get("cleaning") == "compat" for p in plans)),
+    |
+
+E501 Line too long (113 > 100)
+   --> src/hospitalos/howm/history.py:309:101
+    |
+307 |         sum(1 for st in ps.present_stays().values() if "transport_start" in st and "transport_done" not in st) / 2,
+308 |         hs, hc, wd,
+309 |         float(any(p.get("coordinate") for p in plans)), float(any(p.get("cleaning") == "compat" for p in plans)),
+    |                                                                                                     ^^^^^^^^^^^^^
+310 |         float(any(p.get("reinforcement") != "none" for p in plans)),
+311 |     ]
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/history.py:325:101
+    |
+323 |         care = st["care"].get(h - 1, (0, 0))
+324 |         nodes["stay"].append((sid, [
+325 |             1.0, float("authorised" in st), float("ready" in st), float("transport_requested" in st),
+    |                                                                                                     ^
+326 |             float("transport_accepted" in st), float("transport_start" in st and "transport_done" not in st),
+327 |             float(st["acuity"] == 1), float(st["acuity"] == 2), float(st["acuity"] == 3), float(st["iso"]), float(st["transport"]),
+    |
+
+E501 Line too long (109 > 100)
+   --> src/hospitalos/howm/history.py:326:101
+    |
+324 |         nodes["stay"].append((sid, [
+325 |             1.0, float("authorised" in st), float("ready" in st), float("transport_requested" in st),
+326 |             float("transport_accepted" in st), float("transport_start" in st and "transport_done" not in st),
+    |                                                                                                     ^^^^^^^^^
+327 |             float(st["acuity"] == 1), float(st["acuity"] == 2), float(st["acuity"] == 3), float(st["iso"]), float(st["transport"]),
+328 |             (t - st["placed"]) / 1440, ((t - st["authorised"]) / 60 if "authorised" in st else 0.0),
+    |
+
+E501 Line too long (131 > 100)
+   --> src/hospitalos/howm/history.py:327:101
+    |
+325 |             1.0, float("authorised" in st), float("ready" in st), float("transport_requested" in st),
+326 |             float("transport_accepted" in st), float("transport_start" in st and "transport_done" not in st),
+327 |             float(st["acuity"] == 1), float(st["acuity"] == 2), float(st["acuity"] == 3), float(st["iso"]), float(st["transport"]),
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+328 |             (t - st["placed"]) / 1440, ((t - st["authorised"]) / 60 if "authorised" in st else 0.0),
+329 |             ((t - st["transport_start"]) / 60 if "transport_start" in st and "transport_done" not in st else 0.0),
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/history.py:329:101
+    |
+327 |             float(st["acuity"] == 1), float(st["acuity"] == 2), float(st["acuity"] == 3), float(st["iso"]), float(st["transport"]),
+328 |             (t - st["placed"]) / 1440, ((t - st["authorised"]) / 60 if "authorised" in st else 0.0),
+329 |             ((t - st["transport_start"]) / 60 if "transport_start" in st and "transport_done" not in st else 0.0),
+    |                                                                                                     ^^^^^^^^^^^^^^
+330 |             care[0] / 30, care[1] / 30,
+331 |         ]))
+    |
+
+E501 Line too long (167 > 100)
+   --> src/hospitalos/howm/history.py:340:101
+    |
+338 | …
+339 | …
+340 | …"occ"), float(s == "dirty"), float(s == "cleaning"), float(iso), (t - es.get("since", 0)) / 1440]))
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+341 | …
+342 | …
+    |
+
+E501 Line too long (134 > 100)
+   --> src/hospitalos/howm/history.py:347:101
+    |
+345 |     for team in TEAMS:
+346 |         if team == "transport":
+347 |             cap, busy = ps.static["c_tr"], sum(1 for st in present.values() if "transport_start" in st and "transport_done" not in st)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+348 |             queue = sum(1 for st in present.values() if "transport_requested" in st and "transport_start" not in st)
+349 |         elif team == "cleaning":
+    |
+
+E501 Line too long (116 > 100)
+   --> src/hospitalos/howm/history.py:348:101
+    |
+346 |         if team == "transport":
+347 |             cap, busy = ps.static["c_tr"], sum(1 for st in present.values() if "transport_start" in st and "transport_done" not in st)
+348 |             queue = sum(1 for st in present.values() if "transport_requested" in st and "transport_start" not in st)
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+349 |         elif team == "cleaning":
+350 |             cap, busy = ps.static["c_cl"], sum(1 for es in ps.beds.values() if es.data.get("state") == "cleaning")
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/history.py:350:101
+    |
+348 |             queue = sum(1 for st in present.values() if "transport_requested" in st and "transport_start" not in st)
+349 |         elif team == "cleaning":
+350 |             cap, busy = ps.static["c_cl"], sum(1 for es in ps.beds.values() if es.data.get("state") == "cleaning")
+    |                                                                                                     ^^^^^^^^^^^^^^
+351 |             queue = sum(1 for es in ps.beds.values() if es.data.get("state") == "dirty")
+352 |         else:
+    |
+
+E501 Line too long (152 > 100)
+   --> src/hospitalos/howm/history.py:355:101
+    |
+353 | …
+354 | …r"][skill][h], 0, 0
+355 | …e" if team == "transport" else "cleaning_done")) if team in ("transport", "cleaning") else 0
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+356 | …e / 5, done / 3, float(team in ("transport", "cleaning")), float(team.endswith("_A"))]))
+357 | …
+    |
+
+E501 Line too long (148 > 100)
+   --> src/hospitalos/howm/history.py:356:101
+    |
+354 | …ter"][skill][h], 0, 0
+355 | …one" if team == "transport" else "cleaning_done")) if team in ("transport", "cleaning") else 0
+356 | …eue / 5, done / 3, float(team in ("transport", "cleaning")), float(team.endswith("_A"))]))
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+357 | …
+358 | …ndswith("_" + un):
+    |
+
+E501 Line too long (132 > 100)
+   --> src/hospitalos/howm/history.py:363:101
+    |
+361 |         if "requested" not in of or of["end"] // TPH < h - 24:
+362 |             continue
+363 |         nodes["offer"].append((oid, [1.0, float("offer_confirmed" in of), float("offer_present" in of), float("offer_absent" in of),
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+364 |                                      float(of["skill"] == "IDE"), float(of["source"] == "pool"), (of["start"] * 15 - t) / 240,
+365 |                                      float(of["start"] // TPH <= h < of["end"] // TPH), float(of["unit"] == "A")]))
+    |
+
+E501 Line too long (126 > 100)
+   --> src/hospitalos/howm/history.py:364:101
+    |
+362 |             continue
+363 |         nodes["offer"].append((oid, [1.0, float("offer_confirmed" in of), float("offer_present" in of), float("offer_absent" in of),
+364 |                                      float(of["skill"] == "IDE"), float(of["source"] == "pool"), (of["start"] * 15 - t) / 240,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+365 |                                      float(of["start"] // TPH <= h < of["end"] // TPH), float(of["unit"] == "A")]))
+366 |         edges["reserves"].append((f"offer:{oid}", f"unit:{of['unit']}"))
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/history.py:365:101
+    |
+363 |         nodes["offer"].append((oid, [1.0, float("offer_confirmed" in of), float("offer_present" in of), float("offer_absent" in of),
+364 |                                      float(of["skill"] == "IDE"), float(of["source"] == "pool"), (of["start"] * 15 - t) / 240,
+365 |                                      float(of["start"] // TPH <= h < of["end"] // TPH), float(of["unit"] == "A")]))
+    |                                                                                                     ^^^^^^^^^^^^^^^
+366 |         edges["reserves"].append((f"offer:{oid}", f"unit:{of['unit']}"))
+367 |     edges["lends_to"] += [("unit:B", "unit:A"), ("unit:A", "unit:B")]
+    |
+
+E501 Line too long (101 > 100)
+ --> src/hospitalos/howm/manual.py:1:101
+  |
+1 | """Manual mode = constraints on the SAME candidate generator and operator (DESIGN 1.4; T-LIFE-04/05).
+  |                                                                                                     ^
+2 |
+3 | Locks restrict the 16-candidate universe (same code path, never a separate route). A hypothesis
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/hospitalos/howm/nets.py:8:1
+   |
+ 6 |   """
+ 7 |
+ 8 | / from __future__ import annotations
+ 9 | |
+10 | | import math
+11 | | from dataclasses import dataclass
+12 | | from typing import Any
+13 | |
+14 | | import numpy as np
+15 | | import torch
+16 | | from torch import nn
+17 | |
+18 | | from .b0 import B0Params, day_period
+19 | | from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, OriginData, item_features
+20 | | from .heads import NB
+21 | | from .history import B2_DIM, NODE_DIMS, NODE_TYPES, SHARED_FEATS
+22 | | from .predict import N_PROFILES, Prediction
+   | |___________________________________________^
+23 |
+24 |   W = 24
+   |
+help: Organize imports
+   |
+18 | from .b0 import B0Params, day_period
+   - from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, OriginData, item_features
+19 + from .dataset import (
+20 +     HAZARD_FAMILIES,
+21 +     ITEM_DIM,
+22 +     TYPED_RELATIONS,
+23 +     EstablishmentData,
+24 +     OriginData,
+25 +     item_features,
+26 + )
+27 | from .heads import NB
+   |
+
+F401 [*] `.dataset.OriginData` imported but unused
+  --> src/hospitalos/howm/nets.py:19:85
+   |
+18 | from .b0 import B0Params, day_period
+19 | from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, OriginData, item_features
+   |                                                                                     ^^^^^^^^^^
+20 | from .heads import NB
+21 | from .history import B2_DIM, NODE_DIMS, NODE_TYPES, SHARED_FEATS
+   |
+help: Remove unused import: `.dataset.OriginData`
+   |
+18 | from .b0 import B0Params, day_period
+   - from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, OriginData, item_features
+19 + from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, item_features
+20 | from .heads import NB
+   |
+
+E501 Line too long (109 > 100)
+  --> src/hospitalos/howm/nets.py:19:101
+   |
+18 | from .b0 import B0Params, day_period
+19 | from .dataset import HAZARD_FAMILIES, ITEM_DIM, TYPED_RELATIONS, EstablishmentData, OriginData, item_features
+   |                                                                                                     ^^^^^^^^^
+20 | from .heads import NB
+21 | from .history import B2_DIM, NODE_DIMS, NODE_TYPES, SHARED_FEATS
+   |
+
+E501 Line too long (113 > 100)
+  --> src/hospitalos/howm/nets.py:40:101
+   |
+39 |     def __post_init__(self) -> None:
+40 |         if (self.context, self.contrast_weight, self.jepa, self.stochastic_latent) != ("off", 0.0, "off", "off"):
+   |                                                                                                     ^^^^^^^^^^^^^
+41 |             raise ValueError("R1: context/contrast/JEPA/stochastic latent interfaces stay disabled (one variation at a time, R2)")
+   |
+
+E501 Line too long (130 > 100)
+  --> src/hospitalos/howm/nets.py:41:101
+   |
+39 |     def __post_init__(self) -> None:
+40 |         if (self.context, self.contrast_weight, self.jepa, self.stochastic_latent) != ("off", 0.0, "off", "off"):
+41 |             raise ValueError("R1: context/contrast/JEPA/stochastic latent interfaces stay disabled (one variation at a time, R2)")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (106 > 100)
+  --> src/hospitalos/howm/nets.py:46:101
+   |
+44 | def clock(hour: int) -> list[float]:
+45 |     lh = hour % 24
+46 |     return [math.sin(2 * math.pi * lh / 24), math.cos(2 * math.pi * lh / 24), float((hour // 24) % 7 < 5)]
+   |                                                                                                     ^^^^^^
+
+E501 Line too long (127 > 100)
+  --> src/hospitalos/howm/nets.py:53:101
+   |
+51 |         super().__init__()
+52 |         self.ent = ent
+53 |         self.base = nn.ParameterDict({f: nn.Parameter(torch.tensor(b0.base[f], dtype=torch.float32)) for f in HAZARD_FAMILIES})
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |         self.tod = nn.ParameterDict({f: nn.Parameter(torch.tensor(b0.tod[f], dtype=torch.float32)) for f in HAZARD_FAMILIES})
+55 |         d_in = Z + ent + ITEM_DIM
+   |
+
+E501 Line too long (125 > 100)
+  --> src/hospitalos/howm/nets.py:54:101
+   |
+52 |         self.ent = ent
+53 |         self.base = nn.ParameterDict({f: nn.Parameter(torch.tensor(b0.base[f], dtype=torch.float32)) for f in HAZARD_FAMILIES})
+54 |         self.tod = nn.ParameterDict({f: nn.Parameter(torch.tensor(b0.tod[f], dtype=torch.float32)) for f in HAZARD_FAMILIES})
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+55 |         d_in = Z + ent + ITEM_DIM
+56 |         self.haz = nn.Sequential(nn.Linear(d_in, 32), nn.ReLU(), nn.Linear(32, 1))
+   |
+
+E501 Line too long (115 > 100)
+  --> src/hospitalos/howm/nets.py:64:101
+   |
+62 |         self.care_logsig = nn.Parameter(torch.tensor(np.log(b0.care_sigma), dtype=torch.float32))
+63 |         self.care = nn.Sequential(nn.Linear(Z + ent + ITEM_DIM, 32), nn.ReLU(), nn.Linear(32, 2))
+64 |         self.pres0 = nn.Parameter(torch.tensor(math.log(b0.presence_p / (1 - b0.presence_p)), dtype=torch.float32))
+   |                                                                                                     ^^^^^^^^^^^^^^^
+65 |         self.pres = nn.Sequential(nn.Linear(Z + ent + ITEM_DIM, 32), nn.ReLU(), nn.Linear(32, 1))
+66 |         for m in (self.haz, self.arr, self.care, self.pres):  # start at B0 (zero correction), declared
+   |
+
+E501 Line too long (103 > 100)
+  --> src/hospitalos/howm/nets.py:66:101
+   |
+64 |         self.pres0 = nn.Parameter(torch.tensor(math.log(b0.presence_p / (1 - b0.presence_p)), dtype=torch.float32))
+65 |         self.pres = nn.Sequential(nn.Linear(Z + ent + ITEM_DIM, 32), nn.ReLU(), nn.Linear(32, 1))
+66 |         for m in (self.haz, self.arr, self.care, self.pres):  # start at B0 (zero correction), declared
+   |                                                                                                     ^^^
+67 |             nn.init.zeros_(m[-1].weight)
+68 |             nn.init.zeros_(m[-1].bias)
+   |
+
+E501 Line too long (103 > 100)
+  --> src/hospitalos/howm/nets.py:78:101
+   |
+76 |         self.cell = nn.GRUCell(4, Z)
+77 |
+78 |     def forward(self, z: torch.Tensor, hours: torch.Tensor) -> torch.Tensor:  # hours [B] origin hour H
+   |                                                                                                     ^^^
+79 |         out = []
+80 |         for k in range(24):
+   |
+
+E501 Line too long (199 > 100)
+  --> src/hospitalos/howm/nets.py:83:101
+   |
+81 | …
+82 | …
+83 | ….pi * lh / 24), (torch.remainder(torch.div(h, 24, rounding_mode="floor"), 7) < 5).float(), torch.zeros_like(lh)], 1)
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+84 | …
+85 | …
+   |
+
+B008 Do not perform function call `NetConfig` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> src/hospitalos/howm/nets.py:90:55
+   |
+89 | class B2(nn.Module):
+90 |     def __init__(self, b0: B0Params, cfg: NetConfig = NetConfig("B2")):
+   |                                                       ^^^^^^^^^^^^^^^
+91 |         super().__init__()
+92 |         self.cfg = cfg
+   |
+
+B008 Do not perform function call `NetConfig` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> src/hospitalos/howm/nets.py:105:55
+    |
+104 | class H1(nn.Module):
+105 |     def __init__(self, b0: B0Params, cfg: NetConfig = NetConfig("H1")):
+    |                                                       ^^^^^^^^^^^^^^^
+106 |         super().__init__()
+107 |         self.cfg = cfg
+    |
+
+E501 Line too long (112 > 100)
+   --> src/hospitalos/howm/nets.py:108:101
+    |
+106 |         super().__init__()
+107 |         self.cfg = cfg
+108 |         self.enc = nn.ModuleDict({t: nn.Sequential(nn.Linear(NODE_DIMS[t], HN), nn.ReLU()) for t in NODE_TYPES})
+    |                                                                                                     ^^^^^^^^^^^^
+109 |         self.type_emb = nn.Embedding(len(NODE_TYPES), HN)
+110 |         # one Linear(2*HN -> HN)+ReLU per typed relation and direction, stored as grouped weights:
+    |
+
+E501 Line too long (117 > 100)
+   --> src/hospitalos/howm/nets.py:124:101
+    |
+122 |         self.heads = Heads(HN, b0)
+123 |
+124 |     def _mp(self, h: torch.Tensor, e: tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]) -> torch.Tensor:
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+125 |         src, dst, rel, deg = e
+126 |         if src.numel() == 0:
+    |
+
+E501 Line too long (117 > 100)
+   --> src/hospitalos/howm/nets.py:155:101
+    |
+153 |             h = torch.where(pres[:, None], hn, h)
+154 |         a = self.att(h).squeeze(1)
+155 |         a = a - torch.zeros(g["n_origins"]).index_reduce_(0, g["origin"], a, "amax", include_self=False)[g["origin"]]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+156 |         w = torch.exp(a)
+157 |         den = torch.zeros(g["n_origins"]).index_add_(0, g["origin"], w)
+    |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/howm/nets.py:158:101
+    |
+156 |         w = torch.exp(a)
+157 |         den = torch.zeros(g["n_origins"]).index_add_(0, g["origin"], w)
+158 |         pooled = torch.zeros(g["n_origins"], HN).index_add_(0, g["origin"], w[:, None] * h) / den[:, None]
+    |                                                                                                     ^^^^^^
+159 |         z = self.read(torch.cat([h[g["unit_A"]], h[g["unit_B"]], pooled], 1))
+160 |         return z, {"h": h}
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/nets.py:171:101
+    |
+169 |     """Union of nodes present in each window; edges remapped to batch indices."""
+170 |     type_id_of = {t: i for i, t in enumerate(NODE_TYPES)}
+171 |     offsets: list[dict[str, np.ndarray]] = []  # per origin: type -> global-local -> batch index (-1 if absent)
+    |                                                                                                     ^^^^^^^^^^^
+172 |     n = 0
+173 |     origin_of, type_ids, type_lists = [], [], {t: [] for t in NODE_TYPES}
+    |
+
+E501 Line too long (145 > 100)
+   --> src/hospitalos/howm/nets.py:210:101
+    |
+208 | …
+209 | …
+210 | …]) if fk[t] else np.zeros((0, NODE_DIMS[t])), dtype=torch.float32) for t in NODE_TYPES})
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+211 | …
+212 | …PED_RELATIONS)}
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:216:25
+    |
+214 |         for rel, (s_, d_) in ek.items():
+215 |             a, b = np.concatenate(s_), np.concatenate(d_)
+216 |             ss.append(a); dd.append(b); rr.append(np.full(len(a), rel_id[rel]))
+    |                         ^
+217 |         src = torch.tensor(np.concatenate(ss) if ss else np.zeros(0, np.int64), dtype=torch.long)
+218 |         dst = torch.tensor(np.concatenate(dd) if dd else np.zeros(0, np.int64), dtype=torch.long)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:216:39
+    |
+214 |         for rel, (s_, d_) in ek.items():
+215 |             a, b = np.concatenate(s_), np.concatenate(d_)
+216 |             ss.append(a); dd.append(b); rr.append(np.full(len(a), rel_id[rel]))
+    |                                       ^
+217 |         src = torch.tensor(np.concatenate(ss) if ss else np.zeros(0, np.int64), dtype=torch.long)
+218 |         dst = torch.tensor(np.concatenate(dd) if dd else np.zeros(0, np.int64), dtype=torch.long)
+    |
+
+E501 Line too long (132 > 100)
+   --> src/hospitalos/howm/nets.py:222:101
+    |
+220 |         deg = torch.ones(n, 1)
+221 |         if src.numel():
+222 |             deg = torch.clamp(torch.bincount(dst, minlength=n).float() + torch.bincount(src, minlength=n).float(), min=1.0)[:, None]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+223 |         edges.append((src, dst, relt, deg))
+224 |     unit_a = [offsets[oi]["unit"][pairs[oi][0].refs["unit"].index("A")] for oi in range(len(pairs))]
+    |
+
+E501 Line too long (137 > 100)
+   --> src/hospitalos/howm/nets.py:226:101
+    |
+224 | …unit"].index("A")] for oi in range(len(pairs))]
+225 | …unit"].index("B")] for oi in range(len(pairs))]
+226 | …, "type_idx": {t: torch.tensor(v, dtype=torch.long) for t, v in type_lists.items()},
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+227 | …s": edges, "origin": torch.tensor(origin_of, dtype=torch.long),
+228 | …tensor(unit_a), "unit_B": torch.tensor(unit_b), "offsets": offsets}
+    |
+
+E501 Line too long (116 > 100)
+   --> src/hospitalos/howm/nets.py:227:101
+    |
+225 |     unit_b = [offsets[oi]["unit"][pairs[oi][0].refs["unit"].index("B")] for oi in range(len(pairs))]
+226 |     return {"n": n, "type_id": torch.tensor(type_ids), "type_idx": {t: torch.tensor(v, dtype=torch.long) for t, v in type_lists.items…
+227 |             "feats": feats, "present": present, "edges": edges, "origin": torch.tensor(origin_of, dtype=torch.long),
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+228 |             "n_origins": len(pairs), "unit_A": torch.tensor(unit_a), "unit_B": torch.tensor(unit_b), "offsets": offsets}
+    |
+
+E501 Line too long (120 > 100)
+   --> src/hospitalos/howm/nets.py:228:101
+    |
+226 |     return {"n": n, "type_id": torch.tensor(type_ids), "type_idx": {t: torch.tensor(v, dtype=torch.long) for t, v in type_lists.items…
+227 |             "feats": feats, "present": present, "edges": edges, "origin": torch.tensor(origin_of, dtype=torch.long),
+228 |             "n_origins": len(pairs), "unit_A": torch.tensor(unit_a), "unit_B": torch.tensor(unit_b), "offsets": offsets}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/nets.py:245:101
+    |
+245 | def make_batch(pairs: list[tuple[EstablishmentData, int]], kind: str, with_labels: bool = True) -> dict[str, Any]:
+    |                                                                                                     ^^^^^^^^^^^^^^
+246 |     from .b0 import to_bins
+247 |     from .dataset import DATA_END_MIN
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/nets.py:252:101
+    |
+250 |     batch: dict[str, Any] = {"hours": torch.tensor([H for _, H in pairs])}
+251 |     if kind == "B2":
+252 |         batch["b2"] = torch.tensor(np.stack([b2_window(e, H) for e, H in pairs]), dtype=torch.float32)
+    |                                                                                                     ^^
+253 |         offsets = None
+254 |     else:
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/nets.py:269:101
+    |
+267 |                 oi_.append(oi)
+268 |                 if fam != "presence":
+269 |                     qq, ee, evv, bb = to_bins(it["start"], t, it.get("end_avail"), DATA_END_MIN, BIN_MIN[fam])
+    |                                                                                                     ^^^^^^^^^^
+270 |                     q.append(qq), e.append(ee), ev.append(evv), b.append(bb)
+271 |                 else:
+    |
+
+E501 Line too long (132 > 100)
+   --> src/hospitalos/howm/nets.py:278:101
+    |
+276 | …t.refs[en[0]].index(en[1])])
+277 | …
+278 | …(xs, np.float32).reshape(-1, ITEM_DIM)), "o": torch.tensor(oi_, dtype=torch.long),
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+279 | …orch.long), "e": torch.tensor(e, dtype=torch.long), "b": torch.tensor(b, dtype=torch.long),
+280 | …=torch.bool), "ent": torch.tensor(ent, dtype=torch.long), "y": torch.tensor(lab, dtype=torch.bool)}
+    |
+
+E501 Line too long (141 > 100)
+   --> src/hospitalos/howm/nets.py:279:101
+    |
+277 | …
+278 | …np.float32).reshape(-1, ITEM_DIM)), "o": torch.tensor(oi_, dtype=torch.long),
+279 | …long), "e": torch.tensor(e, dtype=torch.long), "b": torch.tensor(b, dtype=torch.long),
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+280 | …h.bool), "ent": torch.tensor(ent, dtype=torch.long), "y": torch.tensor(lab, dtype=torch.bool)}
+281 | …
+    |
+
+E501 Line too long (149 > 100)
+   --> src/hospitalos/howm/nets.py:280:101
+    |
+278 | …loat32).reshape(-1, ITEM_DIM)), "o": torch.tensor(oi_, dtype=torch.long),
+279 | …), "e": torch.tensor(e, dtype=torch.long), "b": torch.tensor(b, dtype=torch.long),
+280 | …ol), "ent": torch.tensor(ent, dtype=torch.long), "y": torch.tensor(lab, dtype=torch.bool)}
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+281 | …
+282 | …])  # [B,2,24]
+    |
+
+E501 Line too long (126 > 100)
+   --> src/hospitalos/howm/nets.py:284:101
+    |
+282 |     arr = np.stack([e.origins[H].arrivals for e, H in pairs])  # [B,2,24]
+283 |     batch["arr"] = torch.tensor(arr, dtype=torch.float32)
+284 |     batch["lognb"] = torch.tensor([[math.log(e.n_beds["A"]), math.log(e.n_beds["B"])] for e, _ in pairs], dtype=torch.float32)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+285 |     cx, cv, cm, co, ca, cent = [], [], [], [], [], []
+286 |     for oi, (est, H) in enumerate(pairs):
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:289:36
+    |
+287 |         od = est.origins[H]
+288 |         for i, sid in enumerate(od.care_ref):
+289 |             cx.append(od.care_x[i]); cv.append(od.care[i]); cm.append(od.care_mask[i]); co.append(oi)
+    |                                    ^
+290 |             ca.append(int(np.argmax(od.care_x[i][7:10])))
+291 |             gi = -1
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:289:59
+    |
+287 |         od = est.origins[H]
+288 |         for i, sid in enumerate(od.care_ref):
+289 |             cx.append(od.care_x[i]); cv.append(od.care[i]); cm.append(od.care_mask[i]); co.append(oi)
+    |                                                           ^
+290 |             ca.append(int(np.argmax(od.care_x[i][7:10])))
+291 |             gi = -1
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:289:87
+    |
+287 |         od = est.origins[H]
+288 |         for i, sid in enumerate(od.care_ref):
+289 |             cx.append(od.care_x[i]); cv.append(od.care[i]); cm.append(od.care_mask[i]); co.append(oi)
+    |                                                                                       ^
+290 |             ca.append(int(np.argmax(od.care_x[i][7:10])))
+291 |             gi = -1
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/nets.py:289:101
+    |
+287 |         od = est.origins[H]
+288 |         for i, sid in enumerate(od.care_ref):
+289 |             cx.append(od.care_x[i]); cv.append(od.care[i]); cm.append(od.care_mask[i]); co.append(oi)
+    |                                                                                                     ^
+290 |             ca.append(int(np.argmax(od.care_x[i][7:10])))
+291 |             gi = -1
+    |
+
+E501 Line too long (155 > 100)
+   --> src/hospitalos/howm/nets.py:295:101
+    |
+293 | …index(sid)])
+294 | …
+295 | …32).reshape(-1, ITEM_DIM)), "v": torch.tensor(np.asarray(cv, np.float32).reshape(-1, 24, 2)),
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+296 | …shape(-1, 24)), "o": torch.tensor(co, dtype=torch.long), "a": torch.tensor(ca, dtype=torch.long),
+297 | …g)}
+    |
+
+E501 Line too long (159 > 100)
+   --> src/hospitalos/howm/nets.py:296:101
+    |
+294 | …
+295 | …).reshape(-1, ITEM_DIM)), "v": torch.tensor(np.asarray(cv, np.float32).reshape(-1, 24, 2)),
+296 | …ape(-1, 24)), "o": torch.tensor(co, dtype=torch.long), "a": torch.tensor(ca, dtype=torch.long),
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+297 | …}
+298 | …
+    |
+
+E501 Line too long (131 > 100)
+   --> src/hospitalos/howm/nets.py:328:101
+    |
+326 |         step = BIN_MIN[fam] // 15
+327 |         bins = torch.arange(NB)
+328 |         logits = hd.base[fam][None, :] + hd.tod[fam][torch.remainder(it["q"][:, None] + step * bins[None, :], 96)] + delta[:, None]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+329 |         lp = t_hazard_logprob(logits, it["e"], it["b"], it["ev"])
+330 |         out[fam] = (-lp.sum(), n)
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/nets.py:333:101
+    |
+331 |     it = batch["items"]["presence"]
+332 |     if it["x"].shape[0]:
+333 |         logit = hd.pres0 + hd.pres(torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1)).squeeze(1)
+    |                                                                                                     ^^^^^^^^^^^
+334 |         out["presence"] = (-t_bernoulli_logprob(it["y"], logit).sum(), it["x"].shape[0])
+335 |     # arrivals
+    |
+
+E501 Line too long (103 > 100)
+   --> src/hospitalos/howm/nets.py:341:101
+    |
+339 |     for ui in range(2):
+340 |         d = hd.arr(torch.cat([zk, torch.full((B, 24, 1), float(ui))], -1)).squeeze(-1)
+341 |         lt.append(hd.arr_a + batch["lognb"][:, ui:ui + 1] + hd.arr_tod[torch.remainder(hours, 24)] + d)
+    |                                                                                                     ^^^
+342 |     logmu = torch.stack(lt, 1)
+343 |     ok = batch["arr"] >= 0
+    |
+
+E501 Line too long (116 > 100)
+   --> src/hospitalos/howm/nets.py:353:101
+    |
+351 |         xc = c["x"][:, None, :].expand(-1, 24, -1)
+352 |         d = hd.care(torch.cat([zc, ent, xc], -1))  # [n,24,2]
+353 |         per = torch.tensor([[day_period(int(h0) + k) for k in range(24)] for h0 in batch["hours"][c["o"]].tolist()])
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+354 |         base = hd.care_base.permute(1, 2, 0)[c["a"][:, None].expand(-1, 24), per]  # [n,24,2]
+355 |         mu = base + d
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/nets.py:363:101
+    |
+363 | def total_loss(parts: dict[str, tuple[torch.Tensor, int]], scales: dict[str, float]) -> torch.Tensor:
+    |                                                                                                     ^
+364 |     from .heads import check_scales
+365 |     check_scales(scales)
+    |
+
+E501 Line too long (132 > 100)
+   --> src/hospitalos/howm/nets.py:386:101
+    |
+384 |             delta_items[fam] = np.zeros(0)
+385 |             continue
+386 |         delta_items[fam] = hd.haz(torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1)).squeeze(1).numpy().astype(float)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+387 |     # existing entities: future items (ready/transport/confirmation for stays, cleaning for beds)
+388 |     delta_entity: dict[str, dict[str, float]] = {f: {} for f in HAZARD_FAMILIES}
+    |
+
+E501 Line too long (128 > 100)
+   --> src/hospitalos/howm/nets.py:400:101
+    |
+398 |             fx[("auth", "ready", "transport", "cleaning", "confirmation").index(fam)] = 1.0
+399 |             fx[12] = 0.0  # elapsed 0 at the future start
+400 |             gi = int(offsets[0]["stay"][est.refs["stay"].index(sid)]) if offsets is not None and sid in est.refs["stay"] else -1
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+401 |             rows.append((fx, gi)); keys.append((fam, sid))
+402 |     for bed in est.refs["bed"]:
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:401:34
+    |
+399 |             fx[12] = 0.0  # elapsed 0 at the future start
+400 |             gi = int(offsets[0]["stay"][est.refs["stay"].index(sid)]) if offsets is not None and sid in est.refs["stay"] else -1
+401 |             rows.append((fx, gi)); keys.append((fam, sid))
+    |                                  ^
+402 |     for bed in est.refs["bed"]:
+403 |         fx = np.array(item_features("cleaning", {"unit": est.bed_unit[bed], "start": t}, t), np.float32)
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/nets.py:403:101
+    |
+401 |             rows.append((fx, gi)); keys.append((fam, sid))
+402 |     for bed in est.refs["bed"]:
+403 |         fx = np.array(item_features("cleaning", {"unit": est.bed_unit[bed], "start": t}, t), np.float32)
+    |                                                                                                     ^^^^
+404 |         gi = int(offsets[0]["bed"][est.refs["bed"].index(bed)]) if offsets is not None else -1
+405 |         rows.append((fx, gi)); keys.append(("cleaning", bed))
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> src/hospitalos/howm/nets.py:405:30
+    |
+403 |         fx = np.array(item_features("cleaning", {"unit": est.bed_unit[bed], "start": t}, t), np.float32)
+404 |         gi = int(offsets[0]["bed"][est.refs["bed"].index(bed)]) if offsets is not None else -1
+405 |         rows.append((fx, gi)); keys.append(("cleaning", bed))
+    |                              ^
+406 |     if rows:
+407 |         xs = torch.tensor(np.stack([r[0] for r in rows]))
+    |
+
+E501 Line too long (127 > 100)
+   --> src/hospitalos/howm/nets.py:409:101
+    |
+407 |         xs = torch.tensor(np.stack([r[0] for r in rows]))
+408 |         ents = torch.tensor([r[1] for r in rows], dtype=torch.long)
+409 |         dd = hd.haz(torch.cat([z[torch.zeros(len(rows), dtype=torch.long)], _ent(model, enc, ents), xs], 1)).squeeze(1).numpy()
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+410 |         for (fam, ref), v in zip(keys, dd):
+411 |             delta_entity[fam][ref] = float(v)
+    |
+
+B905 `zip()` without an explicit `strict=` parameter
+   --> src/hospitalos/howm/nets.py:410:30
+    |
+408 |         ents = torch.tensor([r[1] for r in rows], dtype=torch.long)
+409 |         dd = hd.haz(torch.cat([z[torch.zeros(len(rows), dtype=torch.long)], _ent(model, enc, ents), xs], 1)).squeeze(1).numpy()
+410 |         for (fam, ref), v in zip(keys, dd):
+    |                              ^^^^^^^^^^^^^
+411 |             delta_entity[fam][ref] = float(v)
+412 |     # new stays (profiles), entity state zero
+    |
+help: Add explicit value for parameter `strict=`
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/nets.py:418:101
+    |
+416 |             for iso in (False, True):
+417 |                 for tr in (False, True):
+418 |                     prof_x.append({"unit": un, "acuity": a, "iso": iso, "transport": tr, "start": t})
+    |                                                                                                     ^
+419 |     delta_new = {}
+420 |     for fam in HAZARD_FAMILIES:
+    |
+
+E501 Line too long (152 > 100)
+   --> src/hospitalos/howm/nets.py:422:101
+    |
+420 | …
+421 | … for p in prof_x], np.float32))
+422 | …ES, -1), torch.zeros(N_PROFILES, model.heads.ent), xs], 1)).squeeze(1).numpy().astype(float)
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+423 | …
+424 | …
+    |
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/nets.py:428:101
+    |
+426 |     for ui in range(2):
+427 |         d = hd.arr(torch.cat([zk[0], torch.full((24, 1), float(ui))], -1)).squeeze(-1)
+428 |         mu.append(torch.exp(hd.arr_a + batch["lognb"][0, ui] + hd.arr_tod[torch.remainder(hours, 24)] + d))
+    |                                                                                                     ^^^^^^^
+429 |     arr_mu = torch.stack(mu).numpy().astype(float)
+430 |     # care
+    |
+
+E501 Line too long (118 > 100)
+   --> src/hospitalos/howm/nets.py:437:101
+    |
+435 |         ent = _ent(model, enc, c["ent"])[:, None, :].expand(-1, 24, -1)
+436 |         d = hd.care(torch.cat([zk[c["o"]], ent, c["x"][:, None, :].expand(-1, 24, -1)], -1))
+437 |         base = hd.care_base.permute(1, 2, 0)[c["a"][:, None].expand(-1, 24), per[None, :].expand(c["x"].shape[0], -1)]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^
+438 |         care_mu = (base + d).numpy().astype(float)
+439 |     else:
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/nets.py:444:101
+    |
+442 |     for ui, un in enumerate("AB"):
+443 |         for a in (1, 2, 3):
+444 |             x = torch.tensor(np.array(item_features("care", {"unit": un, "acuity": a, "start": t}, t), np.float32))
+    |                                                                                                     ^^^^^^^^^^^^^^^
+445 |             d = hd.care(torch.cat([zk[0], torch.zeros(24, model.heads.ent), x[None, :].expand(24, -1)], -1))
+446 |             base = hd.care_base.permute(1, 2, 0)[torch.full((24,), a - 1), per]
+    |
+
+E501 Line too long (108 > 100)
+   --> src/hospitalos/howm/nets.py:445:101
+    |
+443 |         for a in (1, 2, 3):
+444 |             x = torch.tensor(np.array(item_features("care", {"unit": un, "acuity": a, "start": t}, t), np.float32))
+445 |             d = hd.care(torch.cat([zk[0], torch.zeros(24, model.heads.ent), x[None, :].expand(24, -1)], -1))
+    |                                                                                                     ^^^^^^^^
+446 |             base = hd.care_base.permute(1, 2, 0)[torch.full((24,), a - 1), per]
+447 |             care_new[ui, a - 1] = (base + d).numpy()
+    |
+
+E501 Line too long (108 > 100)
+   --> src/hospitalos/howm/nets.py:450:101
+    |
+448 |     it = batch["items"]["presence"]
+449 |     if it["x"].shape[0]:
+450 |         pl = hd.pres0 + hd.pres(torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1)).squeeze(1)
+    |                                                                                                     ^^^^^^^^
+451 |         pres = torch.sigmoid(pl).numpy().astype(float)
+452 |     else:
+    |
+
+E501 Line too long (146 > 100)
+   --> src/hospitalos/howm/nets.py:454:101
+    |
+452 | …
+453 | …
+454 | … {"unit": "A", "skill": "IDE", "source": "pool", "slot_start": t + 60}, t)], np.float32))
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+455 | …cat([z, torch.zeros(1, model.heads.ent), xo], 1))).item())
+456 | …on", {"unit": "A", "kind": "offer", "start": t}, t)], np.float32))
+    |
+
+E501 Line too long (115 > 100)
+   --> src/hospitalos/howm/nets.py:455:101
+    |
+453 |         pres = np.zeros(0)
+454 |     xo = torch.tensor(np.array([item_features("presence", {"unit": "A", "skill": "IDE", "source": "pool", "slot_start": t + 60}, t)],…
+455 |     p_new = float(torch.sigmoid(hd.pres0 + hd.pres(torch.cat([z, torch.zeros(1, model.heads.ent), xo], 1))).item())
+    |                                                                                                     ^^^^^^^^^^^^^^^
+456 |     xc = torch.tensor(np.array([item_features("confirmation", {"unit": "A", "kind": "offer", "start": t}, t)], np.float32))
+457 |     conf_new = float(hd.haz(torch.cat([z, torch.zeros(1, model.heads.ent), xc], 1)).item())
+    |
+
+E501 Line too long (123 > 100)
+   --> src/hospitalos/howm/nets.py:456:101
+    |
+454 |     xo = torch.tensor(np.array([item_features("presence", {"unit": "A", "skill": "IDE", "source": "pool", "slot_start": t + 60}, t)],…
+455 |     p_new = float(torch.sigmoid(hd.pres0 + hd.pres(torch.cat([z, torch.zeros(1, model.heads.ent), xo], 1))).item())
+456 |     xc = torch.tensor(np.array([item_features("confirmation", {"unit": "A", "kind": "offer", "start": t}, t)], np.float32))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+457 |     conf_new = float(hd.haz(torch.cat([z, torch.zeros(1, model.heads.ent), xc], 1)).item())
+458 |     return Prediction({f: hd.base[f].detach().numpy().astype(float) for f in HAZARD_FAMILIES},
+    |
+
+E501 Line too long (122 > 100)
+   --> src/hospitalos/howm/nets.py:460:101
+    |
+458 |     return Prediction({f: hd.base[f].detach().numpy().astype(float) for f in HAZARD_FAMILIES},
+459 |                       {f: hd.tod[f].detach().numpy().astype(float) for f in HAZARD_FAMILIES},
+460 |                       delta_items, delta_entity, delta_new, arr_mu, float(torch.exp(hd.arr_logr)), care_mu, sig, care_new,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+461 |                       pres, p_new, conf_new, {"system": kind, "t": t})
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/hospitalos/howm/predict.py:8:1
+   |
+ 6 |   """
+ 7 |
+ 8 | / from __future__ import annotations
+ 9 | |
+10 | | import math
+11 | | from dataclasses import dataclass, field
+12 | | from typing import Any
+13 | |
+14 | | import numpy as np
+15 | | from scipy.special import logsumexp
+16 | |
+17 | | from .b0 import B0Params, day_period, local_deltas, to_bins
+18 | | from .dataset import DATA_END_MIN, HAZARD_FAMILIES, EstablishmentData, OriginData
+19 | | from .heads import BIN_MIN, NB, bernoulli_logprob, care_logprob, hazard_logits, hazard_logprob, nb_logpmf
+   | |_________________________________________________________________________________________________________^
+20 |
+21 |   HORIZONS = (1, 6, 24)
+   |
+help: Organize imports
+   |
+18 | from .dataset import DATA_END_MIN, HAZARD_FAMILIES, EstablishmentData, OriginData
+   - from .heads import BIN_MIN, NB, bernoulli_logprob, care_logprob, hazard_logits, hazard_logprob, nb_logpmf
+19 + from .heads import (
+20 +     BIN_MIN,
+21 +     NB,
+22 +     bernoulli_logprob,
+23 +     care_logprob,
+24 +     hazard_logits,
+25 +     hazard_logprob,
+26 +     nb_logpmf,
+27 + )
+28 |
+   |
+
+E501 Line too long (105 > 100)
+  --> src/hospitalos/howm/predict.py:19:101
+   |
+17 | from .b0 import B0Params, day_period, local_deltas, to_bins
+18 | from .dataset import DATA_END_MIN, HAZARD_FAMILIES, EstablishmentData, OriginData
+19 | from .heads import BIN_MIN, NB, bernoulli_logprob, care_logprob, hazard_logits, hazard_logprob, nb_logpmf
+   |                                                                                                     ^^^^^
+20 |
+21 | HORIZONS = (1, 6, 24)
+   |
+
+E501 Line too long (111 > 100)
+  --> src/hospitalos/howm/predict.py:35:101
+   |
+33 |     tod: dict[str, np.ndarray]
+34 |     delta_items: dict[str, np.ndarray]  # cohort items (order of od.items[fam]) for hazard families
+35 |     delta_entity: dict[str, dict[str, float]]  # fam -> entity ref -> delta (future items of existing entities)
+   |                                                                                                     ^^^^^^^^^^^
+36 |     delta_new: dict[str, np.ndarray]  # fam -> [N_PROFILES] (new stays during a rollout)
+37 |     arr_mu: np.ndarray  # [2, 24]
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/predict.py:49:62
+   |
+48 | def b0_predict(p: B0Params, od: OriginData, est: EstablishmentData, local: bool) -> Prediction:
+49 |     d = local_deltas(p, od.window, est.n_beds) if local else {k: 0.0 for k in (*HAZARD_FAMILIES, "arrivals", "care", "presence")}
+   |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 |     t = od.H * 60
+51 |     delta_items = {fam: np.full(len(od.items.get(fam, [])), d[fam]) for fam in HAZARD_FAMILIES}
+   |
+help: Replace with `dict.fromkeys(iterable)`)
+   |
+48 | def b0_predict(p: B0Params, od: OriginData, est: EstablishmentData, local: bool) -> Prediction:
+   -     d = local_deltas(p, od.window, est.n_beds) if local else {k: 0.0 for k in (*HAZARD_FAMILIES, "arrivals", "care", "presence")}
+49 +     d = local_deltas(p, od.window, est.n_beds) if local else dict.fromkeys((*HAZARD_FAMILIES, "arrivals", "care", "presence"), 0.0)
+50 |     t = od.H * 60
+   |
+
+E501 Line too long (129 > 100)
+  --> src/hospitalos/howm/predict.py:49:101
+   |
+48 | def b0_predict(p: B0Params, od: OriginData, est: EstablishmentData, local: bool) -> Prediction:
+49 |     d = local_deltas(p, od.window, est.n_beds) if local else {k: 0.0 for k in (*HAZARD_FAMILIES, "arrivals", "care", "presence")}
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 |     t = od.H * 60
+51 |     delta_items = {fam: np.full(len(od.items.get(fam, [])), d[fam]) for fam in HAZARD_FAMILIES}
+   |
+
+E501 Line too long (150 > 100)
+  --> src/hospitalos/howm/predict.py:54:101
+   |
+52 | …r fam in HAZARD_FAMILIES}
+53 | …n HAZARD_FAMILIES}
+54 | …eds[un]) + p.arr_tod[(od.H + k) % 24] + d["arrivals"]) for k in range(24)] for un in "AB"])
+   |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+55 | …en(od.care_x) else []
+56 | …
+   |
+
+E501 Line too long (112 > 100)
+  --> src/hospitalos/howm/predict.py:68:101
+   |
+66 |     lp = math.log(p.presence_p / (1 - p.presence_p)) + d["presence"]
+67 |     pp = 1 / (1 + math.exp(-lp))
+68 |     return Prediction(dict(p.base), dict(p.tod), delta_items, delta_entity, delta_new, arr_mu, p.arr_r, care_mu,
+   |                                                                                                     ^^^^^^^^^^^^
+69 |                       p.care_sigma.copy(), care_mu_new, np.full(len(od.items.get("presence", [])), pp), pp, d["confirmation"],
+70 |                       {"system": "B0-local" if local else "B0-pool", "deltas": d, "t": t})
+   |
+
+E501 Line too long (126 > 100)
+  --> src/hospitalos/howm/predict.py:69:101
+   |
+67 |     pp = 1 / (1 + math.exp(-lp))
+68 |     return Prediction(dict(p.base), dict(p.tod), delta_items, delta_entity, delta_new, arr_mu, p.arr_r, care_mu,
+69 |                       p.care_sigma.copy(), care_mu_new, np.full(len(od.items.get("presence", [])), pp), pp, d["confirmation"],
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+70 |                       {"system": "B0-local" if local else "B0-pool", "deltas": d, "t": t})
+   |
+
+E501 Line too long (107 > 100)
+  --> src/hospitalos/howm/predict.py:74:101
+   |
+73 | # ------------------------------------------------------------------------------ log-scores
+74 | def _member_hazard_lp(pr: Prediction, fam: str, items: list[dict[str, Any]], t: int, h: int) -> np.ndarray:
+   |                                                                                                     ^^^^^^^
+75 |     if not items:
+76 |         return np.zeros(0)
+   |
+
+E501 Line too long (104 > 100)
+  --> src/hospitalos/howm/predict.py:92:101
+   |
+90 |     out = {fam: _member_hazard_lp(pr, fam, od.items.get(fam, []), t, h) for fam in HAZARD_FAMILIES}
+91 |     pres = od.items.get("presence", [])
+92 |     sel = [i for i, it in enumerate(pres) if it["label"] is not None and it["slot_start"] <= t + 60 * h]
+   |                                                                                                     ^^^^
+93 |     out["presence"] = bernoulli_logprob(np.array([pres[i]["label"] for i in sel], bool), pr.presence_p[sel]) if sel else np.zeros(0)
+94 |     k = np.arange(h)
+   |
+
+E501 Line too long (132 > 100)
+  --> src/hospitalos/howm/predict.py:93:101
+   |
+91 |     pres = od.items.get("presence", [])
+92 |     sel = [i for i, it in enumerate(pres) if it["label"] is not None and it["slot_start"] <= t + 60 * h]
+93 |     out["presence"] = bernoulli_logprob(np.array([pres[i]["label"] for i in sel], bool), pr.presence_p[sel]) if sel else np.zeros(0)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+94 |     k = np.arange(h)
+95 |     arr = od.arrivals[:, :h]
+   |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/predict.py:102:101
+    |
+100 |         vals = od.care[:, :h, :]
+101 |         mu = pr.care_mu[:, :h, :]
+102 |         lp = care_logprob(vals.reshape(-1), mu.reshape(-1), np.tile(pr.care_sigma, vals.shape[0] * h))
+    |                                                                                                     ^^
+103 |         lp = lp.reshape(vals.shape)
+104 |         out["care"] = lp[m].reshape(-1)
+    |
+
+E501 Line too long (123 > 100)
+   --> src/hospitalos/howm/predict.py:124:101
+    |
+122 |     """T-PLAN-07: identical scored item set for every system (refs only)."""
+123 |     import hashlib
+124 |     parts = [f"{fam}:{it['ref']}" for fam in sorted(od.items) for it in od.items[fam]] + [f"care:{r}" for r in od.care_ref]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+125 |     return hashlib.sha256("|".join(parts).encode()).hexdigest()
+    |
+
+E501 Line too long (113 > 100)
+  --> src/hospitalos/howm/rollout.py:44:101
+   |
+42 |     """Draws from a member's Prediction; ``origin_tick`` = 4H."""
+43 |
+44 |     def __init__(self, pred: Prediction, od: Any, origin_tick: int, m: int, base_key: int, freq: NewProfileFreq):
+   |                                                                                                     ^^^^^^^^^^^^^
+45 |         self.p = pred
+46 |         self.t0 = origin_tick
+   |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> src/hospitalos/howm/rollout.py:53:26
+   |
+51 |         self.item_delta: dict[tuple[str, str], float] = {}
+52 |         for fam, arr in pred.delta_items.items():
+53 |             for it, d in zip(od.items.get(fam, []), arr):
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |                 self.item_delta[(fam, it["ref"])] = float(d)
+55 |         self.pres_p = {it["ref"]: float(pp) for it, pp in zip(od.items.get("presence", []), pred.presence_p)}
+   |
+help: Add explicit value for parameter `strict=`
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> src/hospitalos/howm/rollout.py:55:59
+   |
+53 |             for it, d in zip(od.items.get(fam, []), arr):
+54 |                 self.item_delta[(fam, it["ref"])] = float(d)
+55 |         self.pres_p = {it["ref"]: float(pp) for it, pp in zip(od.items.get("presence", []), pred.presence_p)}
+   |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+56 |         self.care_row = {sid: i for i, sid in enumerate(od.care_ref)}
+57 |         cdf = []
+   |
+help: Add explicit value for parameter `strict=`
+
+E501 Line too long (109 > 100)
+  --> src/hospitalos/howm/rollout.py:55:101
+   |
+53 |             for it, d in zip(od.items.get(fam, []), arr):
+54 |                 self.item_delta[(fam, it["ref"])] = float(d)
+55 |         self.pres_p = {it["ref"]: float(pp) for it, pp in zip(od.items.get("presence", []), pred.presence_p)}
+   |                                                                                                     ^^^^^^^^^
+56 |         self.care_row = {sid: i for i, sid in enumerate(od.care_ref)}
+57 |         cdf = []
+   |
+
+E501 Line too long (104 > 100)
+  --> src/hospitalos/howm/rollout.py:78:101
+   |
+76 |             return d
+77 |         if st is not None:
+78 |             return float(self.p.delta_new[fam][profile_index(st.unit, st.acuity, st.iso, st.transport)])
+   |                                                                                                     ^^^^
+79 |         return float(self.p.conf_offer_delta_new) if fam == "confirmation" else 0.0
+   |
+
+E501 Line too long (114 > 100)
+  --> src/hospitalos/howm/rollout.py:84:101
+   |
+82 |         width = BIN_MIN[fam] // 15  # ticks per bin
+83 |         q = np.array([start_tick % 96])
+84 |         logits = hazard_logits(self.p.base[fam], self.p.tod[fam], np.array([self._delta(fam, ref, st)]), q, width)
+   |                                                                                                     ^^^^^^^^^^^^^^
+85 |         e = np.array([min(NB, max(0, (now - start_tick) // width))])
+86 |         b = int(hazard_sample(logits, e, np.array([self._u(fam, ref, start_tick)]))[0])
+   |
+
+E501 Line too long (120 > 100)
+   --> src/hospitalos/howm/rollout.py:129:101
+    |
+127 |             a = self._u("acu", unit, hour, i)
+128 |             acuity = 1 if a < f.p_acuity[0] else (2 if a < f.p_acuity[0] + f.p_acuity[1] else 3)
+129 |             out.append((self._u("iso", unit, hour, i) < f.p_iso, acuity, self._u("trn", unit, hour, i) < f.p_transport))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+130 |         return out
+    |
+
+E501 Line too long (127 > 100)
+   --> src/hospitalos/howm/rollout.py:137:101
+    |
+135 |         out = []
+136 |         for s, _sk in enumerate(SKILLS):
+137 |             mu = self.p.care_mu[row, k, s] if row is not None else self.p.care_mu_new["AB".index(st.unit), st.acuity - 1, k, s]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+138 |             out.append(float(round(math.exp(mu + self.p.care_sigma[s] * _norm_inv(self._u("care", st.sid, hour, s))))))
+139 |         return out[0], out[1]
+    |
+
+E501 Line too long (119 > 100)
+   --> src/hospitalos/howm/rollout.py:138:101
+    |
+136 |         for s, _sk in enumerate(SKILLS):
+137 |             mu = self.p.care_mu[row, k, s] if row is not None else self.p.care_mu_new["AB".index(st.unit), st.acuity - 1, k, s]
+138 |             out.append(float(round(math.exp(mu + self.p.care_sigma[s] * _norm_inv(self._u("care", st.sid, hour, s))))))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+139 |         return out[0], out[1]
+    |
+
+E501 Line too long (114 > 100)
+   --> src/hospitalos/howm/rollout.py:148:101
+    |
+148 | def rollout(engine0: Engine, prov: Any, plan: Plan | None, hours: int = 24, prime: bool = True) -> dict[str, Any]:
+    |                                                                                                     ^^^^^^^^^^^^^^
+149 |     eng = engine0.clone()
+150 |     eng.emit_log = False
+    |
+
+E501 Line too long (124 > 100)
+   --> src/hospitalos/howm/rollout.py:165:101
+    |
+163 |     snaps[hours] = eng.snapshot_hour()
+164 |     h0 = t0 // TPH
+165 |     care = {(un, sk, h): eng.demand.get((un, sk, h0 + h - 1), 0.0) for un in eng.units for sk in SKILLS for h in (1, 6, 24)}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+166 |     return {"U": objective_u(eng, t0, wait0), "snaps": snaps, "care": care, "rejected": eng.rejected,
+167 |             "reinforcement_hours": sum(4 for o in eng.offers.values() if o.req >= t0 and o.confirmed),
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/rollout.py:166:101
+    |
+164 |     h0 = t0 // TPH
+165 |     care = {(un, sk, h): eng.demand.get((un, sk, h0 + h - 1), 0.0) for un in eng.units for sk in SKILLS for h in (1, 6, 24)}
+166 |     return {"U": objective_u(eng, t0, wait0), "snaps": snaps, "care": care, "rejected": eng.rejected,
+    |                                                                                                     ^
+167 |             "reinforcement_hours": sum(4 for o in eng.offers.values() if o.req >= t0 and o.confirmed),
+168 |             "present_hours": sum(4 for o in eng.offers.values() if o.req >= t0 and o.present)}
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/rollout.py:167:101
+    |
+165 |     care = {(un, sk, h): eng.demand.get((un, sk, h0 + h - 1), 0.0) for un in eng.units for sk in SKILLS for h in (1, 6, 24)}
+166 |     return {"U": objective_u(eng, t0, wait0), "snaps": snaps, "care": care, "rejected": eng.rejected,
+167 |             "reinforcement_hours": sum(4 for o in eng.offers.values() if o.req >= t0 and o.confirmed),
+    |                                                                                                     ^^
+168 |             "present_hours": sum(4 for o in eng.offers.values() if o.req >= t0 and o.present)}
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/rollout.py:180:101
+    |
+180 | def truth_vector(ep: Any, H: int, h: int, units: tuple[str, ...] = ("A", "B")) -> list[float] | None:
+    |                                                                                                     ^
+181 |     j = H + h
+182 |     if j >= len(ep.hourly):
+    |
+
+E501 Line too long (141 > 100)
+  --> src/hospitalos/howm/train.py:45:101
+   |
+45 | …airs: list[tuple[EstablishmentData, int]], scales: dict[str, float]) -> dict[str, Any]:
+   |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+46 | …
+47 | …
+   |
+
+E501 Line too long (130 > 100)
+  --> src/hospitalos/howm/train.py:58:101
+   |
+58 | …ule, opt: torch.optim.Optimizer, st: dict[str, Any], cfg: dict[str, Any]) -> str:
+   |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+59 | …r": opt.state_dict(), "scheduler": {"kind": "none"}, "rng": ckpt.pack_rng(),
+60 | …tch_pos": st["batch_pos"]}, "state_json": json.dumps(st), "config_json": json.dumps(cfg)}
+   |
+
+E501 Line too long (125 > 100)
+  --> src/hospitalos/howm/train.py:59:101
+   |
+58 | def _save(d: Path, name: str, model: torch.nn.Module, opt: torch.optim.Optimizer, st: dict[str, Any], cfg: dict[str, Any]) -> str:
+59 |     obj = {"model": model.state_dict(), "optimizer": opt.state_dict(), "scheduler": {"kind": "none"}, "rng": ckpt.pack_rng(),
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+60 |            "position": {"epoch": st["epoch"], "batch_pos": st["batch_pos"]}, "state_json": json.dumps(st), "config_json": json.dumps(c…
+61 |     return ckpt.save(obj, d / name)
+   |
+
+E501 Line too long (138 > 100)
+  --> src/hospitalos/howm/train.py:60:101
+   |
+58 | … opt: torch.optim.Optimizer, st: dict[str, Any], cfg: dict[str, Any]) -> str:
+59 | …opt.state_dict(), "scheduler": {"kind": "none"}, "rng": ckpt.pack_rng(),
+60 | …pos": st["batch_pos"]}, "state_json": json.dumps(st), "config_json": json.dumps(cfg)}
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 | …
+   |
+
+E501 Line too long (109 > 100)
+  --> src/hospitalos/howm/train.py:64:101
+   |
+64 | def train(kind: str, lr: float, seed: int, budget_s: float, train_pairs: list[tuple[EstablishmentData, int]],
+   |                                                                                                     ^^^^^^^^^
+65 |           val_pairs: list[tuple[EstablishmentData, int]], b0: B0Params, scales: dict[str, float], max_steps: int | None = None) -> dic…
+66 |     t_start = time.monotonic()
+   |
+
+E501 Line too long (146 > 100)
+  --> src/hospitalos/howm/train.py:65:101
+   |
+64 | …t, train_pairs: list[tuple[EstablishmentData, int]],
+65 | … b0: B0Params, scales: dict[str, float], max_steps: int | None = None) -> dict[str, Any]:
+   |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+66 | …
+67 | …
+   |
+
+E501 Line too long (112 > 100)
+  --> src/hospitalos/howm/train.py:70:101
+   |
+68 |     d.mkdir(parents=True, exist_ok=True)
+69 |     meta_p = d / "state.json"
+70 |     cfg = {"kind": kind, "lr": lr, "seed": seed, "batch": BATCH, "max_epochs": MAX_EPOCHS, "patience": PATIENCE,
+   |                                                                                                     ^^^^^^^^^^^^
+71 |            "scales": scales, "code": code_hashes(), "n_train": len(train_pairs), "n_val": len(val_pairs)}
+72 |     model = new_model(kind, b0, seed)
+   |
+
+E501 Line too long (105 > 100)
+  --> src/hospitalos/howm/train.py:71:101
+   |
+69 |     meta_p = d / "state.json"
+70 |     cfg = {"kind": kind, "lr": lr, "seed": seed, "batch": BATCH, "max_epochs": MAX_EPOCHS, "patience": PATIENCE,
+71 |            "scales": scales, "code": code_hashes(), "n_train": len(train_pairs), "n_val": len(val_pairs)}
+   |                                                                                                     ^^^^^
+72 |     model = new_model(kind, b0, seed)
+73 |     opt = torch.optim.Adam(model.parameters(), lr=lr)
+   |
+
+E501 Line too long (138 > 100)
+  --> src/hospitalos/howm/train.py:85:101
+   |
+83 | …
+84 | …
+85 | … None, "best_epoch": None, "bad": 0, "done": False, "steps": 0, "train_seconds": 0.0}
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 | …
+87 | …
+   |
+
+E501 Line too long (108 > 100)
+   --> src/hospitalos/howm/train.py:100:101
+    |
+ 98 |         nb = (len(perm) + BATCH - 1) // BATCH
+ 99 |         while st["batch_pos"] < nb:
+100 |             if time.monotonic() - t_start > budget_s or (max_steps is not None and steps_here >= max_steps):
+    |                                                                                                     ^^^^^^^^
+101 |                 checkpoint()
+102 |                 return {"status": "incomplete", **st}
+    |
+
+E501 Line too long (122 > 100)
+   --> src/hospitalos/howm/train.py:129:101
+    |
+127 |         else:
+128 |             st["bad"] += 1
+129 |         meta["log"].append({"epoch": st["epoch"], "val_total": v["total"], "val_means": v["means"], "improved": improved})
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+130 |         if st["bad"] >= PATIENCE or st["epoch"] >= MAX_EPOCHS:
+131 |             st["done"] = True
+    |
+
+E501 Line too long (134 > 100)
+  --> src/hospitalos/howm/verify.py:13:101
+   |
+13 | def events_from_observations(obs: list[tuple[int, int, str, str, str, dict[str, Any]]]) -> list[tuple[int, str, str, dict[str, Any]]]:
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+14 |     out = []
+15 |     for ev_min, _avail, kind, subject, _unit, value in sorted(obs, key=lambda o: o[0]):
+   |
+
+E501 Line too long (116 > 100)
+  --> src/hospitalos/howm/verify.py:31:101
+   |
+29 | …     "ready": {s for s, st in eng.stays.items() if st.ready},
+30 | …     "accepted": {s for s, st in eng.stays.items() if st.tr_accepted},
+31 | …     "in_tr": {s: st.tr_start for s, st in eng.stays.items() if st.tr_start is not None and st.departed is None},
+   |                                                                                                   ^^^^^^^^^^^^^^^^
+32 | …     "in_cl": {b: bed.clean_start for b, bed in eng.beds.items() if bed.state == "cleaning"},
+33 | …     "offers": {o: {"unit": of.unit, "skill": of.skill, "source": of.source, "start": of.start, "end": of.end} for o, of in eng.offer…
+   |
+
+E501 Line too long (147 > 100)
+  --> src/hospitalos/howm/verify.py:33:101
+   |
+31 | …tems() if st.tr_start is not None and st.departed is None},
+32 | …ds.items() if bed.state == "cleaning"},
+33 | …, "source": of.source, "start": of.start, "end": of.end} for o, of in eng.offers.items()},
+   |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+34 | …f of.confirmed},
+35 | …ers.items() if of.present},
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/verify.py:47:39
+   |
+45 |         for b, iso in d["beds"]:
+46 |             bed_unit[b], bed_iso[b] = un, iso
+47 |     occupant: dict[str, str | None] = {b: None for b in bed_unit}
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+48 |     bed_state: dict[str, str] = {b: "free" for b in bed_unit}
+49 |     stay_bed: dict[str, str] = {}
+   |
+help: Replace with `dict.fromkeys(iterable, value)`)
+   |
+46 |             bed_unit[b], bed_iso[b] = un, iso
+   -     occupant: dict[str, str | None] = {b: None for b in bed_unit}
+47 +     occupant: dict[str, str | None] = dict.fromkeys(bed_unit)
+48 |     bed_state: dict[str, str] = {b: "free" for b in bed_unit}
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/verify.py:48:33
+   |
+46 |             bed_unit[b], bed_iso[b] = un, iso
+47 |     occupant: dict[str, str | None] = {b: None for b in bed_unit}
+48 |     bed_state: dict[str, str] = {b: "free" for b in bed_unit}
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+49 |     stay_bed: dict[str, str] = {}
+50 |     stay_unit: dict[str, str] = {}
+   |
+help: Replace with `dict.fromkeys(iterable)`)
+   |
+47 |     occupant: dict[str, str | None] = {b: None for b in bed_unit}
+   -     bed_state: dict[str, str] = {b: "free" for b in bed_unit}
+48 +     bed_state: dict[str, str] = dict.fromkeys(bed_unit, "free")
+49 |     stay_bed: dict[str, str] = {}
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/verify.py:53:36
+   |
+51 |     authorised, ready, departed, accepted = set(), set(), set(), set()
+52 |     req_info: dict[str, dict[str, Any]] = {}
+53 |     placed_count: dict[str, int] = {u: 0 for u in static["units"]}
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |     departed_count: dict[str, int] = {u: 0 for u in static["units"]}
+55 |     tr_busy: dict[int, int] = {}
+   |
+help: Replace with `dict.fromkeys(iterable)`)
+   |
+52 |     req_info: dict[str, dict[str, Any]] = {}
+   -     placed_count: dict[str, int] = {u: 0 for u in static["units"]}
+53 +     placed_count: dict[str, int] = dict.fromkeys(static["units"], 0)
+54 |     departed_count: dict[str, int] = {u: 0 for u in static["units"]}
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/verify.py:54:38
+   |
+52 |     req_info: dict[str, dict[str, Any]] = {}
+53 |     placed_count: dict[str, int] = {u: 0 for u in static["units"]}
+54 |     departed_count: dict[str, int] = {u: 0 for u in static["units"]}
+   |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+55 |     tr_busy: dict[int, int] = {}
+56 |     cl_busy: dict[int, int] = {}
+   |
+help: Replace with `dict.fromkeys(iterable)`)
+   |
+53 |     placed_count: dict[str, int] = {u: 0 for u in static["units"]}
+   -     departed_count: dict[str, int] = {u: 0 for u in static["units"]}
+54 +     departed_count: dict[str, int] = dict.fromkeys(static["units"], 0)
+55 |     tr_busy: dict[int, int] = {}
+   |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+  --> src/hospitalos/howm/verify.py:63:32
+   |
+61 |     present_tick: dict[str, int] = {}
+62 |
+63 |     init_occ: dict[str, int] = {u: 0 for u in static["units"]}
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+64 |     if initial is not None:
+65 |         bed_state.update(initial["bed_state"])
+   |
+help: Replace with `dict.fromkeys(iterable)`)
+   |
+62 |
+   -     init_occ: dict[str, int] = {u: 0 for u in static["units"]}
+63 +     init_occ: dict[str, int] = dict.fromkeys(static["units"], 0)
+64 |     if initial is not None:
+   |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/howm/verify.py:130:101
+    |
+128 |                 occupant[bed], bed_state[bed] = None, "dirty"
+129 |             departed.add(subj)
+130 |             departed_count[stay_unit.get(subj, "?")] = departed_count.get(stay_unit.get(subj, "?"), 0) + 1
+    |                                                                                                     ^^^^^^
+131 |         elif kind == "cleaning_start":
+132 |             if bed_state.get(subj) != "dirty":
+    |
+
+B007 Loop control variable `s` not used within loop body
+   --> src/hospitalos/howm/verify.py:155:9
+    |
+153 |             accepted.add(subj)
+154 |     end = max((e[0] for e in events), default=0) + 1
+155 |     for s, t0 in in_tr.items():
+    |         ^
+156 |         tick_busy(tr_busy, t0, end)
+157 |     for b, t0 in in_cl.items():
+    |
+help: Rename unused `s` to `_s`
+
+B007 Loop control variable `b` not used within loop body
+   --> src/hospitalos/howm/verify.py:157:9
+    |
+155 |     for s, t0 in in_tr.items():
+156 |         tick_busy(tr_busy, t0, end)
+157 |     for b, t0 in in_cl.items():
+    |         ^
+158 |         tick_busy(cl_busy, t0, end)
+159 |     problems += [f"transport_over_capacity@{t}" for t, n in tr_busy.items() if n > static["c_tr"]]
+    |
+help: Rename unused `b` to `_b`
+
+E501 Line too long (120 > 100)
+   --> src/hospitalos/howm/verify.py:164:101
+    |
+162 |     for un in static["units"]:
+163 |         occ = sum(1 for b, s in occupant.items() if s is not None and bed_unit[b] == un)
+164 |         init = init_occ[un] + sum(1 for e in events if e[1] == "placed" and "placed_min" in e[3] and e[3]["unit"] == un)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+165 |         if occ != init + placed_count[un] - departed_count.get(un, 0):
+166 |             problems.append(f"conservation:{un}:{occ}!={init}+{placed_count[un]}-{departed_count.get(un, 0)}")
+    |
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/howm/verify.py:166:101
+    |
+164 |         init = init_occ[un] + sum(1 for e in events if e[1] == "placed" and "placed_min" in e[3] and e[3]["unit"] == un)
+165 |         if occ != init + placed_count[un] - departed_count.get(un, 0):
+166 |             problems.append(f"conservation:{un}:{occ}!={init}+{placed_count[un]}-{departed_count.get(un, 0)}")
+    |                                                                                                     ^^^^^^^^^^
+167 |     # staff counted only when present; lender minimum
+168 |     if capacity is not None:
+    |
+
+E501 Line too long (117 > 100)
+   --> src/hospitalos/howm/verify.py:171:101
+    |
+169 | …     for (un, skill, h), staff in capacity.items():
+170 | …         roster = static["units"][un]["roster"][skill][h]
+171 | …         def counted(o: str, v: dict[str, Any]) -> bool:  # present, known at the start of hour h, inside the slot
+    |                                                                                                   ^^^^^^^^^^^^^^^^^
+172 | …             return o in present and present_tick[o] <= 4 * h and v["skill"] == skill and v["start"] // 4 <= h < (v["end"] + 3) // 4
+173 | …         plus = sum(1 for o, v in offers.items() if counted(o, v) and v["unit"] == un)
+    |
+
+B023 Function definition does not bind loop variable `h`
+   --> src/hospitalos/howm/verify.py:172:64
+    |
+170 | …     roster = static["units"][un]["roster"][skill][h]
+171 | …     def counted(o: str, v: dict[str, Any]) -> bool:  # present, known at the start of hour h, inside the slot
+172 | …         return o in present and present_tick[o] <= 4 * h and v["skill"] == skill and v["start"] // 4 <= h < (v["end"] + 3) // 4
+    |                                                          ^
+173 | …     plus = sum(1 for o, v in offers.items() if counted(o, v) and v["unit"] == un)
+174 | …     minus = sum(1 for o, v in offers.items() if counted(o, v) and v["source"] == un)
+    |
+
+B023 Function definition does not bind loop variable `skill`
+   --> src/hospitalos/howm/verify.py:172:84
+    |
+170 | …     roster = static["units"][un]["roster"][skill][h]
+171 | …     def counted(o: str, v: dict[str, Any]) -> bool:  # present, known at the start of hour h, inside the slot
+172 | …         return o in present and present_tick[o] <= 4 * h and v["skill"] == skill and v["start"] // 4 <= h < (v["end"] + 3) // 4
+    |                                                                              ^^^^^
+173 | …     plus = sum(1 for o, v in offers.items() if counted(o, v) and v["unit"] == un)
+174 | …     minus = sum(1 for o, v in offers.items() if counted(o, v) and v["source"] == un)
+    |
+
+E501 Line too long (135 > 100)
+   --> src/hospitalos/howm/verify.py:172:101
+    |
+170 | …kill][h]
+171 | …> bool:  # present, known at the start of hour h, inside the slot
+172 | …[o] <= 4 * h and v["skill"] == skill and v["start"] // 4 <= h < (v["end"] + 3) // 4
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+173 | …if counted(o, v) and v["unit"] == un)
+174 | … if counted(o, v) and v["source"] == un)
+    |
+
+B023 Function definition does not bind loop variable `h`
+   --> src/hospitalos/howm/verify.py:172:113
+    |
+170 | …     roster = static["units"][un]["roster"][skill][h]
+171 | …     def counted(o: str, v: dict[str, Any]) -> bool:  # present, known at the start of hour h, inside the slot
+172 | …         return o in present and present_tick[o] <= 4 * h and v["skill"] == skill and v["start"] // 4 <= h < (v["end"] + 3) // 4
+    |                                                                                                           ^
+173 | …     plus = sum(1 for o, v in offers.items() if counted(o, v) and v["unit"] == un)
+174 | …     minus = sum(1 for o, v in offers.items() if counted(o, v) and v["source"] == un)
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/howm/world.py:197:101
+    |
+196 |     def request_transport(self, st: Stay, prov: Provider) -> bool:
+197 |         if st.departed is not None or st.tr_req is not None or not st.authorised or not st.transport:
+    |                                                                                                     ^
+198 |             self._reject("transport_request_precondition")
+199 |             return False
+    |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/howm/world.py:239:101
+    |
+237 |             off.conf_tick = prov.confirm_tick(self, "offer", oid, self.tick)
+238 |         else:
+239 |             off.conf_tick, off.confirmed = self.tick, True  # presence drawn at slot start (always True)
+    |                                                                                                     ^^^^
+240 |         self.offers[oid] = off
+241 |         self.emit("offer_requested", oid, unit=unit, skill=skill, source=source, start=start, end=end)
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/world.py:241:101
+    |
+239 |             off.conf_tick, off.confirmed = self.tick, True  # presence drawn at slot start (always True)
+240 |         self.offers[oid] = off
+241 |         self.emit("offer_requested", oid, unit=unit, skill=skill, source=source, start=start, end=end)
+    |                                                                                                     ^^
+242 |         if source != "pool":
+243 |             self.emit("offer_confirmed", oid)
+    |
+
+E501 Line too long (133 > 100)
+   --> src/hospitalos/howm/world.py:258:101
+    |
+256 |         key = (req.unit, "IDE", self.tick // TPH)
+257 |         self.demand[key] = self.demand.get(key, 0.0) + ADMISSION_WORK_MIN
+258 |         self.emit("placed", sid, rid=req.rid, bed=bed.bed_id, unit=req.unit, acuity=req.acuity, iso=req.iso, transport=req.transport)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+259 |
+260 |     def depart(self, st: Stay) -> None:
+    |
+
+E501 Line too long (118 > 100)
+   --> src/hospitalos/howm/world.py:282:101
+    |
+280 |             if off.confirmed and off.present is None and off.start <= t:
+281 |                 off.present = prov.presence(self, off)
+282 |                 self.emit("offer_present" if off.present else "offer_absent", off.oid, unit=off.unit, skill=off.skill)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^
+283 |         if t % TPH == 0:
+284 |             self._hour_start(prov, hour)
+    |
+
+E501 Line too long (107 > 100)
+   --> src/hospitalos/howm/world.py:305:101
+    |
+303 |         # confirmations
+304 |         for st in self.stays.values():
+305 |             if st.tr_req is not None and not st.tr_accepted and st.tr_conf is not None and st.tr_conf <= t:
+    |                                                                                                     ^^^^^^^
+306 |                 st.tr_accepted = True
+307 |                 self.emit("transport_accepted", st.sid, unit=st.unit)
+    |
+
+E501 Line too long (120 > 100)
+   --> src/hospitalos/howm/world.py:316:101
+    |
+314 |                 self.depart(st)
+315 |         waiting = sorted(
+316 |             (s for s in self.stays.values() if s.departed is None and s.ready and s.tr_accepted and s.tr_start is None),
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+317 |             key=lambda s: (max(s.ready_tick or 0, s.tr_conf or 0), s.sid),
+318 |         )
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/howm/world.py:340:101
+    |
+338 |             iso_wait = {u for u, q in self.queue.items() if any(r.iso for r in q)}
+339 |             if self.cleaning_mode == "compat":
+340 |                 dirty.sort(key=lambda b: (not (b.iso and b.unit in iso_wait), b.dirty_tick, b.bed_id))
+    |                                                                                                     ^^
+341 |             else:
+342 |                 dirty.sort(key=lambda b: (b.dirty_tick, b.bed_id))
+    |
+
+E501 Line too long (111 > 100)
+   --> src/hospitalos/howm/world.py:354:101
+    |
+352 |             for req in list(q):
+353 |                 free = self.free_beds(unit)
+354 |                 cand = [b for b in free if b.iso] if req.iso else sorted(free, key=lambda b: (b.iso, b.bed_id))
+    |                                                                                                     ^^^^^^^^^^^
+355 |                 if cand:
+356 |                     q.remove(req)
+    |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/howm/world.py:357:101
+    |
+355 |                 if cand:
+356 |                     q.remove(req)
+357 |                     self.place(req, sorted(cand, key=lambda b: b.bed_id)[0] if req.iso else cand[0], prov)
+    |                                                                                                     ^^^^^^
+358 |             self.waiting_ticks[unit] = self.waiting_ticks.get(unit, 0) + len(q)
+359 |         self.tick += 1
+    |
+
+E501 Line too long (105 > 100)
+   --> src/hospitalos/howm/world.py:368:101
+    |
+366 |                 req = Request(rid, unit, iso, acuity, transport, self.tick)
+367 |                 self.queue.setdefault(unit, []).append(req)
+368 |                 self.emit("request_arrival", rid, unit=unit, iso=iso, acuity=acuity, transport=transport)
+    |                                                                                                     ^^^^^
+369 |         # care demand of present stays + staff capacity for this hour
+370 |         for st in sorted(self.stays.values(), key=lambda s: s.sid):
+    |
+
+E501 Line too long (116 > 100)
+   --> src/hospitalos/howm/world.py:381:101
+    |
+379 |                 staff = u.roster[skill][hour]
+380 |                 for off in self.offers.values():
+381 |                     if off.skill == skill and off.start // TPH <= hour < (off.end + TPH - 1) // TPH and off.present:
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+382 |                         if off.unit == name:
+383 |                             staff += 1
+    |
+
+E501 Line too long (137 > 100)
+   --> src/hospitalos/howm/world.py:398:101
+    |
+396 | …     "cleaning_queue": sum(b.state in ("dirty", "cleaning") for b in beds),
+397 | …     "transport_queue": sum(
+398 | …         1 for s in self.stays.values() if s.unit == name and s.departed is None and s.tr_req is not None and s.tr_end is None
+    |                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+399 | …     ),
+400 | …     "admission_queue": len(self.queue.get(name, [])),
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/howm/test_howm_r0.py:3:1
+   |
+ 1 |   """HOWM-1 R0/R1 blocking tests (TEST_MATRIX_HOWM1 + NORM v1.2 additions). Synthetic only."""
+ 2 |
+ 3 | / from __future__ import annotations
+ 4 | |
+ 5 | | import ast
+ 6 | | import hashlib
+ 7 | | import json
+ 8 | | import math
+ 9 | | import random
+10 | | import subprocess
+11 | | from pathlib import Path
+12 | |
+13 | | import numpy as np
+14 | | import pytest
+15 | | import torch
+16 | |
+17 | | from hospitalos.howm import ckpt, heads, keys
+18 | | from hospitalos.howm.b0 import to_bins
+19 | | from hospitalos.howm.controllers import CHOICE_R, EVAL_R, evaluate_instant, obj_lex
+20 | | from hospitalos.howm.dataset import build
+21 | | from hospitalos.howm.galt import simulate_queue
+22 | | from hospitalos.howm.generator import (EVAL_DAY, PARTITION_SIZES, SEALED, SealedPartitionError, TruthProvider, establishment,
+23 | |                                        generate, refresh_private)
+24 | | from hospitalos.howm.history import PublicStream, assert_no_private, hourly_tables
+25 | | from hospitalos.howm.manual import Hypothesis, Locks, manual_universe, simulate_hypothesis
+26 | | from hospitalos.howm.nets import B2, H1, NetConfig, forward_losses, make_batch, n_params, predict
+27 | | from hospitalos.howm.predict import b0_predict, item_set_fingerprint, member_logscores
+28 | | from hospitalos.howm.rollout import ModelProvider, NewProfileFreq, rollout, rollout_key
+29 | | from hospitalos.howm.verify import check, initial_from_engine
+30 | | from hospitalos.howm.world import A3_OPTIONS, Plan, candidates
+   | |______________________________________________________________^
+31 |
+32 |   ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+21 | from hospitalos.howm.galt import simulate_queue
+   - from hospitalos.howm.generator import (EVAL_DAY, PARTITION_SIZES, SEALED, SealedPartitionError, TruthProvider, establishment,
+   -                                        generate, refresh_private)
+22 + from hospitalos.howm.generator import (
+23 +     EVAL_DAY,
+24 +     PARTITION_SIZES,
+25 +     SEALED,
+26 +     SealedPartitionError,
+27 +     TruthProvider,
+28 +     establishment,
+29 +     generate,
+30 +     refresh_private,
+31 + )
+32 | from hospitalos.howm.history import PublicStream, assert_no_private, hourly_tables
+   |
+
+F401 [*] `hospitalos.howm.b0.to_bins` imported but unused
+  --> tests/howm/test_howm_r0.py:18:32
+   |
+17 | from hospitalos.howm import ckpt, heads, keys
+18 | from hospitalos.howm.b0 import to_bins
+   |                                ^^^^^^^
+19 | from hospitalos.howm.controllers import CHOICE_R, EVAL_R, evaluate_instant, obj_lex
+20 | from hospitalos.howm.dataset import build
+   |
+help: Remove unused import: `hospitalos.howm.b0.to_bins`
+   |
+17 | from hospitalos.howm import ckpt, heads, keys
+   - from hospitalos.howm.b0 import to_bins
+18 | from hospitalos.howm.controllers import CHOICE_R, EVAL_R, evaluate_instant, obj_lex
+   |
+
+E501 Line too long (125 > 100)
+  --> tests/howm/test_howm_r0.py:22:101
+   |
+20 | from hospitalos.howm.dataset import build
+21 | from hospitalos.howm.galt import simulate_queue
+22 | from hospitalos.howm.generator import (EVAL_DAY, PARTITION_SIZES, SEALED, SealedPartitionError, TruthProvider, establishment,
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+23 |                                        generate, refresh_private)
+24 | from hospitalos.howm.history import PublicStream, assert_no_private, hourly_tables
+   |
+
+F401 [*] `hospitalos.howm.world.Plan` imported but unused
+  --> tests/howm/test_howm_r0.py:30:47
+   |
+28 | from hospitalos.howm.rollout import ModelProvider, NewProfileFreq, rollout, rollout_key
+29 | from hospitalos.howm.verify import check, initial_from_engine
+30 | from hospitalos.howm.world import A3_OPTIONS, Plan, candidates
+   |                                               ^^^^
+31 |
+32 | ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Remove unused import: `hospitalos.howm.world.Plan`
+   |
+29 | from hospitalos.howm.verify import check, initial_from_engine
+   - from hospitalos.howm.world import A3_OPTIONS, Plan, candidates
+30 + from hospitalos.howm.world import A3_OPTIONS, candidates
+31 |
+   |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> tests/howm/test_howm_r0.py:75:22
+   |
+73 |     out = {}
+74 |     for fam, arr in pred.delta_items.items():
+75 |         for it, d in zip(od.items.get(fam, []), arr):
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |             out[(fam, it["ref"])] = float(d)
+77 |     for i, sid in enumerate(od.care_ref):
+   |
+help: Add explicit value for parameter `strict=`
+
+E501 Line too long (119 > 100)
+   --> tests/howm/test_howm_r0.py:99:101
+    |
+ 97 |     ps = PublicStream(val_ep.observations)
+ 98 |     ps.advance(100 * 60)
+ 99 |     assert_no_private({"stays": ps.stays, "requests": ps.requests, "offers": ps.offers, "cohort": ps.cohort(100 * 60)})
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+100 |     with pytest.raises(AssertionError):
+101 |         assert_no_private({"x": {"theta": 1}})
+    |
+
+E501 Line too long (108 > 100)
+   --> tests/howm/test_howm_r0.py:107:101
+    |
+105 |     H = 100
+106 |     e1 = build(val_ep, [H])
+107 |     ep2 = type(val_ep)(**{**val_ep.__dict__, "observations": future_perturbed(val_ep.observations, H * 60)})
+    |                                                                                                     ^^^^^^^^
+108 |     e2 = build(ep2, [H])
+109 |     p1, p2 = preds_all(b0p, e1, H), preds_all(b0p, e2, H)
+    |
+
+E501 Line too long (142 > 100)
+   --> tests/howm/test_howm_r0.py:118:101
+    |
+117 | …
+118 | …pe(val_ep.spec)(**{**val_ep.spec.__dict__, "start_utc": "2027-03-08T23:00:00+00:00"})})
+    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+119 | …(ep2, [60]).b2)
+    |
+
+E501 Line too long (101 > 100)
+   --> tests/howm/test_howm_r0.py:134:101
+    |
+132 |         r2 = {}
+133 |         for (fam, ref), v in by_ref(p2[name], e2.origins[H]).items():
+134 |             back = ref.split(":", 1)[0] + ":" + inv[ref.split(":", 1)[1]] if ":" in ref else inv[ref]
+    |                                                                                                     ^
+135 |             r2[(fam, back)] = v
+136 |         assert r1.keys() == r2.keys()
+    |
+
+E501 Line too long (107 > 100)
+   --> tests/howm/test_howm_r0.py:156:101
+    |
+154 |     for ep in train_eps:
+155 |         assert check(ep.truth_log, ep.static, ep.capacity) == []
+156 |         assert set(ep.rejections) <= {"lender_minimum", "duplicate_offer"}  # refused planner requests only
+    |                                                                                                     ^^^^^^^
+
+E501 Line too long (148 > 100)
+   --> tests/howm/test_howm_r0.py:161:101
+    |
+159 | …
+160 | …leaning_not_after_departure"),
+161 | …"bed"] for e in L if e[1] == "placed"), "unit": "A", "iso": False})], "double_occupancy"),
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+162 | …ent_without_confirmation"),
+163 | …": "BA00"})], "departure_without_authorisation"),
+    |
+
+E501 Line too long (107 > 100)
+   --> tests/howm/test_howm_r0.py:163:101
+    |
+161 |     (lambda L: L + [(5, "placed", "SX", {"bed": next(e[3]["bed"] for e in L if e[1] == "placed"), "unit": "A", "iso": False})], "doub…
+162 |     (lambda L: L + [(3, "offer_present", "OZ", {})], "present_without_confirmation"),
+163 |     (lambda L: L + [(9, "departure", "SAinit_never", {"bed": "BA00"})], "departure_without_authorisation"),
+    |                                                                                                     ^^^^^^^
+164 |     (lambda L: L + [(9, "transport_start", "Snot", {})], "executed_without_acceptance"),
+165 | ])
+    |
+
+E501 Line too long (122 > 100)
+   --> tests/howm/test_howm_r0.py:176:101
+    |
+174 |     extra = [(400, "transport_start", f"S{i}", {}) for i in range(ep.static["c_tr"] + 1)]
+175 |     extra += [(401, "transport_accepted", f"S{i}", {}) for i in range(4)]
+176 |     assert any("transport_over_capacity" in p for p in check(sorted(ep.truth_log + extra, key=lambda e: e[0]), ep.static))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+
+E501 Line too long (107 > 100)
+   --> tests/howm/test_howm_r0.py:218:101
+    |
+216 |     for name in ("B0-local", "H1"):
+217 |         for m in range(2):
+218 |             prov = ModelProvider(preds[name], val_est.origins[H], 4 * H, m, rollout_key("VAL", 1, H), FREQ)
+    |                                                                                                     ^^^^^^^
+219 |             for plan in (candidates()[0], candidates()[15]):
+220 |                 eng, init, t0 = _rollout_log(eng0, prov, plan)
+    |
+
+E501 Line too long (110 > 100)
+   --> tests/howm/test_howm_r0.py:222:101
+    |
+220 |                 eng, init, t0 = _rollout_log(eng0, prov, plan)
+221 |                 cap = {k: v for k, v in eng.capacity.items() if k[2] >= t0 // 4}
+222 |                 assert check(eng.log, val_ep.static, cap, start_tick=t0, initial=init) == [], (name, plan.cid)
+    |                                                                                                     ^^^^^^^^^^
+223 |                 assert all(v >= 0 for v in eng.waiting_ticks.values())
+    |
+
+E501 Line too long (101 > 100)
+   --> tests/howm/test_howm_r0.py:231:101
+    |
+229 |     eng = val_ep.instants[EVAL_DAY * 96 + 11 * 4]
+230 |     sid = next(s for s, st in eng.stays.items() if not st.authorised and st.departed is None)
+231 |     res = simulate_hypothesis(eng, candidates()[0], Hypothesis([sid]), TruthProvider(val_ep.spec, 2))
+    |                                                                                                     ^
+232 |     assert res["approvable"] is False and res["hypothetical"] is True
+233 |     assert not eng.stays[sid].authorised  # real state untouched
+    |
+
+E501 Line too long (103 > 100)
+   --> tests/howm/test_howm_r0.py:279:101
+    |
+277 |     a = generate(establishment("TRAIN", 5)).observations
+278 |     b = generate(establishment("TRAIN", 5)).observations
+279 |     assert hashlib.sha256(repr(a).encode()).hexdigest() == hashlib.sha256(repr(b).encode()).hexdigest()
+    |                                                                                                     ^^^
+
+E501 Line too long (137 > 100)
+   --> tests/howm/test_howm_r0.py:287:101
+    |
+285 | …ed=7)["duration"]
+286 | …
+287 | …_, "theta": {**spec.theta, "cl_min": 50.0}, "mech": {**spec.mech, "m2": False}}), 9)
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+288 | …
+289 | …
+    |
+
+E501 Line too long (103 > 100)
+   --> tests/howm/test_howm_r0.py:303:101
+    |
+303 | # ----------------------------------------------------------------------------- T-DIST / T-NORM / T-BIN
+    |                                                                                                     ^^^
+304 | def test_T_DIST_01_02_hazard_valid_and_exact():
+305 |     rng = np.random.default_rng(0)
+    |
+
+E501 Line too long (125 > 100)
+   --> tests/howm/test_howm_r0.py:307:101
+    |
+305 |     rng = np.random.default_rng(0)
+306 |     logits = rng.normal(-2, 1, (5, heads.NB))
+307 |     lp = np.stack([heads.hazard_logprob(logits, np.zeros(5, int), np.full(5, b), np.ones(5, bool)) for b in range(heads.NB)])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+308 |     tail = heads.hazard_logprob(logits, np.zeros(5, int), np.full(5, heads.NB), np.zeros(5, bool))
+309 |     assert np.allclose(np.exp(lp).sum(0) + np.exp(tail), 1.0)
+    |
+
+E501 Line too long (140 > 100)
+   --> tests/howm/test_howm_r0.py:315:101
+    |
+313 | …np.array([b]), np.array([True]))[0]
+314 | ….log(1 - h))) < 1e-9
+315 | …orch.zeros(5, dtype=torch.long), torch.full((5,), 7), torch.ones(5, dtype=torch.bool))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+316 | …(logits, np.zeros(5, int), np.full(5, 7), np.ones(5, bool)))
+    |
+
+E501 Line too long (114 > 100)
+   --> tests/howm/test_howm_r0.py:316:101
+    |
+314 |         assert abs(got - (math.log(h) + (b - 2) * math.log(1 - h))) < 1e-9
+315 |     t = heads.t_hazard_logprob(torch.tensor(logits), torch.zeros(5, dtype=torch.long), torch.full((5,), 7), torch.ones(5, dtype=torch…
+316 |     assert np.allclose(t.numpy(), heads.hazard_logprob(logits, np.zeros(5, int), np.full(5, 7), np.ones(5, bool)))
+    |                                                                                                     ^^^^^^^^^^^^^^
+
+E501 Line too long (140 > 100)
+   --> tests/howm/test_howm_r0.py:323:101
+    |
+321 | ….4), np.full(121, 0.5)))
+322 | …
+323 | ….full((121,), 2.4, dtype=torch.float64), torch.full((121,), 0.5, dtype=torch.float64))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+324 | …
+325 | …**6])).tolist() == [0, 0, 1, 120, 120]
+    |
+
+E501 Line too long (124 > 100)
+   --> tests/howm/test_howm_r0.py:335:101
+    |
+333 |     assert heads.normalised_loss({"f": 1.0}, s) < heads.normalised_loss({"f": 1.5}, s)
+334 |     y = np.array([True, False, True, True])
+335 |     assert -heads.bernoulli_logprob(y, np.array([0.7] * 4)).mean() < -heads.bernoulli_logprob(y, np.array([0.3] * 4)).mean()
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+336 |     assert (-heads.nb_logpmf(np.arange(10.0), np.full(10, 3.0), 2.0) >= 0).all()
+    |
+
+E501 Line too long (103 > 100)
+   --> tests/howm/test_howm_r0.py:346:101
+    |
+346 | # ----------------------------------------------------------------------------- T-PLAN / T-CFG / T-CKPT
+    |                                                                                                     ^^^
+347 | def test_T_PLAN_03b_disjoint_and_oracle(val_ep):
+348 |     assert not set(EVAL_R) & set(CHOICE_R)
+    |
+
+C420 [*] Unnecessary dict comprehension for iterable; use `dict.fromkeys` instead
+   --> tests/howm/test_howm_r0.py:390:14
+    |
+388 |     monkeypatch.setattr(T, "RUNS", tmp_path / "evidence" / "howm1" / "train")
+389 |     pairs = [(val_est, H) for H in (40, 60, 100, 120)] * 16
+390 |     scales = {f: 1.0 for f in ("auth", "ready", "transport", "cleaning", "confirmation", "presence", "arrivals", "care")}
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+391 |     T.train("B2", 1e-3, 0, 10**6, pairs, pairs[:4], b0p, scales, max_steps=4)
+392 |     full = torch.load(T.run_dir("B2", 1e-3, 0) / "last.pt", weights_only=True)
+    |
+help: Replace with `dict.fromkeys(iterable)`)
+    |
+389 |     pairs = [(val_est, H) for H in (40, 60, 100, 120)] * 16
+    -     scales = {f: 1.0 for f in ("auth", "ready", "transport", "cleaning", "confirmation", "presence", "arrivals", "care")}
+390 +     scales = dict.fromkeys(("auth", "ready", "transport", "cleaning", "confirmation", "presence", "arrivals", "care"), 1.0)
+391 |     T.train("B2", 1e-3, 0, 10**6, pairs, pairs[:4], b0p, scales, max_steps=4)
+    |
+
+E501 Line too long (121 > 100)
+   --> tests/howm/test_howm_r0.py:390:101
+    |
+388 |     monkeypatch.setattr(T, "RUNS", tmp_path / "evidence" / "howm1" / "train")
+389 |     pairs = [(val_est, H) for H in (40, 60, 100, 120)] * 16
+390 |     scales = {f: 1.0 for f in ("auth", "ready", "transport", "cleaning", "confirmation", "presence", "arrivals", "care")}
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+391 |     T.train("B2", 1e-3, 0, 10**6, pairs, pairs[:4], b0p, scales, max_steps=4)
+392 |     full = torch.load(T.run_dir("B2", 1e-3, 0) / "last.pt", weights_only=True)
+    |
+
+E501 Line too long (107 > 100)
+   --> tests/howm/test_howm_r0.py:397:101
+    |
+395 |     T.train("B2", 1e-3, 0, 10**6, pairs, pairs[:4], b0p, scales, max_steps=2)
+396 |     resumed = torch.load(T.run_dir("B2", 1e-3, 0) / "last.pt", weights_only=True)
+397 |     assert set(full) >= {"model", "optimizer", "scheduler", "rng", "position", "state_json", "config_json"}
+    |                                                                                                     ^^^^^^^
+398 |     for k in full["model"]:
+399 |         assert torch.allclose(full["model"][k], resumed["model"][k], atol=1e-6), k
+    |
+
+E501 Line too long (145 > 100)
+   --> tests/howm/test_howm_r0.py:408:101
+    |
+407 | …
+408 | …7c", "--", "src/hospitalos/decision_support"], cwd=ROOT, capture_output=True, text=True)
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+409 | …""
+    |
+
+B017 Do not assert blind exception: `Exception`
+   --> tests/howm/test_howm_r0.py:441:10
+    |
+439 |     tampered["reason"] = "edited"
+440 |     (tmp_path / "L.jsonl").write_text("\n".join([lines[0], json.dumps(tampered), lines[2]]) + "\n")
+441 |     with pytest.raises(Exception):
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^
+442 |         hbr.run(["/usr/bin/true"], "R1.B2", "x", False)
+    |
+
+E501 Line too long (105 > 100)
+   --> tests/howm/test_howm_r0.py:446:101
+    |
+445 | def test_T_V0_03_p5b_regression_one_parent(tmp_path):
+446 |     """Known P5b reserved parent (already read): v6 planner choice and U reproduced (regression only)."""
+    |                                                                                                     ^^^^^
+447 |     from hospitalos.decision_support.planner import Settings
+448 |     from hospitalos.decision_support.snapshot import load_json, load_profile
+    |
+
+E501 Line too long (119 > 100)
+   --> tests/howm/test_howm_r0.py:454:101
+    |
+452 |     ident = json.loads((ex / "RUN_IDENTITY.json").read_text())
+453 |     rec = json.loads((ex / "parents.jsonl").read_text().splitlines()[0])
+454 |     seeds = json.loads((ROOT / "evidence/decision_support/p5/SEEDS_SEALED.json").read_text())["partitions"]["P5b_eval"]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+455 |     profile = load_profile()
+456 |     valid, _ = generate_structure("P5b_eval", seeds[rec["structure_index"]], int(ident["n_parents"]), profile, twins=True)
+    |
+
+E501 Line too long (122 > 100)
+   --> tests/howm/test_howm_r0.py:456:101
+    |
+454 |     seeds = json.loads((ROOT / "evidence/decision_support/p5/SEEDS_SEALED.json").read_text())["partitions"]["P5b_eval"]
+455 |     profile = load_profile()
+456 |     valid, _ = generate_structure("P5b_eval", seeds[rec["structure_index"]], int(ident["n_parents"]), profile, twins=True)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+457 |     cand = next(c for c in valid if c.parent_index == rec["parent_index"])
+458 |     out = B.evaluate_twin(cand.episodes["A"], run_dir=tmp_path, identity=ident, where={}, profile=profile,
+    |
+
+E501 Line too long (106 > 100)
+   --> tests/howm/test_howm_r0.py:458:101
+    |
+456 |     valid, _ = generate_structure("P5b_eval", seeds[rec["structure_index"]], int(ident["n_parents"]), profile, twins=True)
+457 |     cand = next(c for c in valid if c.parent_index == rec["parent_index"])
+458 |     out = B.evaluate_twin(cand.episodes["A"], run_dir=tmp_path, identity=ident, where={}, profile=profile,
+    |                                                                                                     ^^^^^^
+459 |                           score=load_json(ROOT / "configs/decision_support/PRESSURE_SCORE_CONFIG.json"), with_planner=True,
+460 |                           settings=Settings.default())
+    |
+
+E501 Line too long (123 > 100)
+   --> tests/howm/test_howm_r0.py:459:101
+    |
+457 |     cand = next(c for c in valid if c.parent_index == rec["parent_index"])
+458 |     out = B.evaluate_twin(cand.episodes["A"], run_dir=tmp_path, identity=ident, where={}, profile=profile,
+459 |                           score=load_json(ROOT / "configs/decision_support/PRESSURE_SCORE_CONFIG.json"), with_planner=True,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+460 |                           settings=Settings.default())
+461 |     assert out["planner"] == rec["twins"]["A"]["planner"]
+    |
+
+Found 341 errors.
+[*] 16 fixable with the `--fix` option (7 hidden fixes can be enabled with the `--unsafe-fixes` option).

@@ -1,0 +1,294 @@
+{
+  "schema": "HOWM1_COMPLEMENT_REVIEW_20261114",
+  "scope": "documentary, static and arithmetic only",
+  "input_zip": {
+    "name": "HOWM1_R0R1_complement_v1_1.zip",
+    "sha256": "44951a90dea55c364f0aa58cdbf2fd53baaada195252e167180dac43a8ecef87",
+    "bytes": 72132,
+    "crc_check": "PASS"
+  },
+  "manifest": {
+    "sha256_entries": 14,
+    "sha256_matches": 14,
+    "completeness_entries": 13,
+    "completeness_matches": 13,
+    "original_announced_entries": 7,
+    "original_matches": 7
+  },
+  "hash_checks": [
+    {
+      "path": "AMENDEMENT_HOWM1_R0_R1_v1_1.md",
+      "expected": "d41f44a0cb3a94fd86788fafd9a738c691825b275c7b1e28fb9026b7a8f82063",
+      "actual": "d41f44a0cb3a94fd86788fafd9a738c691825b275c7b1e28fb9026b7a8f82063",
+      "pass": true
+    },
+    {
+      "path": "CHANGEMENTS_v1_v1_1.md",
+      "expected": "32b593cc2be46c1ba243c41c1e7b12af10d56181b80b32aafa503b3f60295093",
+      "actual": "32b593cc2be46c1ba243c41c1e7b12af10d56181b80b32aafa503b3f60295093",
+      "pass": true
+    },
+    {
+      "path": "COMPUTE_PLAN_HOWM1.md",
+      "expected": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+      "actual": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+      "pass": true
+    },
+    {
+      "path": "DESIGN_HOWM1_R0_R1.md",
+      "expected": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+      "actual": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+      "pass": true
+    },
+    {
+      "path": "EXPERIMENT_HOWM1_R0_R1.json",
+      "expected": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+      "actual": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+      "pass": true
+    },
+    {
+      "path": "EXPERIMENT_HOWM1_R0_R1_v1_1.json",
+      "expected": "5cbd41421fb997ade256f93e7eef29cb47413e53bc366f12ca060aaa94a3b442",
+      "actual": "5cbd41421fb997ade256f93e7eef29cb47413e53bc366f12ca060aaa94a3b442",
+      "pass": true
+    },
+    {
+      "path": "INPUT_PROVENANCE.json",
+      "expected": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+      "actual": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+      "pass": true
+    },
+    {
+      "path": "MANIFESTE_COMPLETUDE_v1_1.json",
+      "expected": "57149201adfa7580d8a6ed8ffdab30df115cde3cb9fe2f74cb6b5d55ae4af3de",
+      "actual": "57149201adfa7580d8a6ed8ffdab30df115cde3cb9fe2f74cb6b5d55ae4af3de",
+      "pass": true
+    },
+    {
+      "path": "PROPOSITION_TRANCHE_R0_R1.md",
+      "expected": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+      "actual": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+      "pass": true
+    },
+    {
+      "path": "PROPOSITION_TRANCHE_R0_R1_v1_1.md",
+      "expected": "b01244ff6bf8a0ac84d1675c3ba4b1f084bb8015226604cfeeeb315f8526d9d8",
+      "actual": "b01244ff6bf8a0ac84d1675c3ba4b1f084bb8015226604cfeeeb315f8526d9d8",
+      "pass": true
+    },
+    {
+      "path": "RESUME_HOWM1_PREP.md",
+      "expected": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+      "actual": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+      "pass": true
+    },
+    {
+      "path": "TEST_MATRIX_HOWM1.md",
+      "expected": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+      "actual": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+      "pass": true
+    },
+    {
+      "path": "inputs/PROGRAMME_HOWM1.md",
+      "expected": "61d4d9ec1352d19064087117c7680635ef848614e9518aa834ff6a81307cc17f",
+      "actual": "61d4d9ec1352d19064087117c7680635ef848614e9518aa834ff6a81307cc17f",
+      "pass": true
+    },
+    {
+      "path": "inputs/PROMPT_CODEX_CLAUDE_HOWM1.txt",
+      "expected": "56f9005eec6f1d9485ac4e3bf97f62148d728af109a3481858cd98e89c25beb7",
+      "actual": "56f9005eec6f1d9485ac4e3bf97f62148d728af109a3481858cd98e89c25beb7",
+      "pass": true
+    }
+  ],
+  "completeness_checks": [
+    {
+      "path": "inputs/PROGRAMME_HOWM1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "inputs/PROMPT_CODEX_CLAUDE_HOWM1.txt",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "DESIGN_HOWM1_R0_R1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "EXPERIMENT_HOWM1_R0_R1.json",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "TEST_MATRIX_HOWM1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "COMPUTE_PLAN_HOWM1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "INPUT_PROVENANCE.json",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "PROPOSITION_TRANCHE_R0_R1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "RESUME_HOWM1_PREP.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "AMENDEMENT_HOWM1_R0_R1_v1_1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "EXPERIMENT_HOWM1_R0_R1_v1_1.json",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "CHANGEMENTS_v1_v1_1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    },
+    {
+      "path": "PROPOSITION_TRANCHE_R0_R1_v1_1.md",
+      "bytes_ok": true,
+      "hash_ok": true
+    }
+  ],
+  "original_checks": [
+    {
+      "path": "DESIGN_HOWM1_R0_R1.md",
+      "hash": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+      "announced": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+      "ok": true
+    },
+    {
+      "path": "EXPERIMENT_HOWM1_R0_R1.json",
+      "hash": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+      "announced": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+      "ok": true
+    },
+    {
+      "path": "TEST_MATRIX_HOWM1.md",
+      "hash": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+      "announced": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+      "ok": true
+    },
+    {
+      "path": "COMPUTE_PLAN_HOWM1.md",
+      "hash": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+      "announced": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+      "ok": true
+    },
+    {
+      "path": "INPUT_PROVENANCE.json",
+      "hash": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+      "announced": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+      "ok": true
+    },
+    {
+      "path": "PROPOSITION_TRANCHE_R0_R1.md",
+      "hash": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+      "announced": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+      "ok": true
+    },
+    {
+      "path": "RESUME_HOWM1_PREP.md",
+      "hash": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+      "announced": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+      "ok": true
+    }
+  ],
+  "repo_metadata_read": {
+    "tool": "GitHub.get_repo",
+    "repository": "HospitalOsLaunch/carepredict-mvp",
+    "visibility": "public",
+    "repository_id": "1260893274",
+    "writes": 0,
+    "local_commits_not_verified": true
+  },
+  "external_checks": {
+    "torch_2_15_0_release_confirmed": true,
+    "cp311_linux_wheel_confirmed": true,
+    "new_advisory_confirmed": true,
+    "sole_version_claim_supported": false,
+    "builder_proxy_restriction_independently_reproduced": false,
+    "cpu_wheel_availability_independently_checked": false
+  },
+  "arithmetic": {
+    "sum_lot_caps_seconds": 21600,
+    "evaluation_establishments": 36,
+    "forecast_origins_per_establishment": 120,
+    "trajectories_per_origin_per_system": 16,
+    "public_systems": 4,
+    "prediction_24h_trajectory_count_before_batching": 276480,
+    "counts_h1_h6_h24_reuse_same_trajectory": true,
+    "reference_lognormal_y": 1.0,
+    "reference_lognormal_mu": 0.0,
+    "negative_initial_nll_sigma_0_1": -1.383646559789373,
+    "worse_nll_sigma_0_2": -0.6904993792294277
+  },
+  "findings": [
+    {
+      "id": "HOWM-C11-01",
+      "kind": "mandatory_before_training",
+      "finding": "Signed initial NLL used as divisor can invert a continuous likelihood objective; require positive common scales."
+    },
+    {
+      "id": "HOWM-C11-02",
+      "kind": "mandatory_before_G0",
+      "finding": "T-PLAN-03 includes the clairvoyant oracle in disjoint choice/evaluation samples; exclude it. Privileged controller gap is not certified public-accessible margin."
+    },
+    {
+      "id": "HOWM-C11-03",
+      "kind": "mandatory_contract_clarification_before_G0",
+      "finding": "Care-score mask uses future observed presence despite assertion of public-only target set. Define common truth-only scoring mask and conditional estimand; no future inputs."
+    },
+    {
+      "id": "HOWM-C11-04",
+      "kind": "execution_guard",
+      "finding": "Full predictive evaluation volume must enter pilot, including all origins and model systems; current cost is not demonstrated."
+    },
+    {
+      "id": "HOWM-C11-05",
+      "kind": "persistence_guard",
+      "finding": "G0/F1/final-only delivery can leave training unsaved externally. Incremental bundle requires base. Add intermediate packages and self-contained restoration."
+    },
+    {
+      "id": "HOWM-C11-06",
+      "kind": "nonblocking_factual_correction",
+      "finding": "Torch 2.15.0 exists and patches cited advisories, but not proven unique outside affected ranges; retain pin without exclusivity claim."
+    }
+  ],
+  "recommendation": {
+    "installation": "A then B only if A unavailable/refused and within original caps",
+    "persistence": "P2 with intermediate recoverable packages, no push",
+    "execution": "not authorised by this review",
+    "overall": "favourable to tranche with attached targeted conditions before G0/training"
+  },
+  "not_executed": [
+    "product tests",
+    "simulation",
+    "corpus generation",
+    "model fitting",
+    "checkpoint load",
+    "installation",
+    "git mutation",
+    "push",
+    "budget ledger modification"
+  ],
+  "source_files_read": "All preparation documents in archive; historical refs listed in INPUT_PROVENANCE are not all independently rehashed here."
+}
