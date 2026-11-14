@@ -1,0 +1,27 @@
+{
+  "expected_final_records": 137,
+  "actual_records_before_probe_end": 145,
+  "final_is_exact_prefix": true,
+  "source_final": {
+    "final_records": 137,
+    "final_used_wall_seconds": 315.676,
+    "final_remaining_wall_seconds": 284.324,
+    "last_record_sha256": "5b4edfa6e42c1a564412438303245bdc14e322dbcdc3d1693cd610add861b69b",
+    "extends_sealed_terminal": true,
+    "terminal_records": 133
+  },
+  "restored_status_before_probe_end": {
+    "ledger": "/mnt/data/ds_v5_independent_audit/restored/evidence/decision_support/BUDGET_LEDGER.jsonl",
+    "commands": 133,
+    "used_wall_seconds": 341.29,
+    "limit_wall_seconds": 600.0,
+    "remaining_wall_seconds": 258.71,
+    "stopped": false
+  },
+  "altered_package": {
+    "method": "unmodified restore.sh with original manifest; corrupted HEAD and absent payloads",
+    "exit_code": 2,
+    "target_created": false,
+    "reason": "main manifest fails before extraction/execution"
+  }
+}

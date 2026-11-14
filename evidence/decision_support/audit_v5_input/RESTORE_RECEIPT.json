@@ -1,0 +1,23 @@
+{
+ "test": "T30",
+ "restored_tree_of_head": "56ad3cfeda775a20396cb80dfa4554f6a8899321",
+ "method": "source_head.tar",
+ "ledger_lineage": "final_after_postseal_restore",
+ "ledger_source": "ledger/BUDGET_LEDGER.final.jsonl",
+ "source_records": 137,
+ "source_used_wall_seconds": 315.676,
+ "target_status_after_replay": {
+  "ledger": "/mnt/data/ds_v5_independent_audit/restored/evidence/decision_support/BUDGET_LEDGER.jsonl",
+  "commands": 129,
+  "used_wall_seconds": 324.813,
+  "limit_wall_seconds": 600.0,
+  "remaining_wall_seconds": 275.187,
+  "stopped": false
+ },
+ "package_ledger_is_exact_prefix_of_target": true,
+ "tests": "pass",
+ "pytest": "88 passed in 5.83s",
+ "results_compared": 11,
+ "results_differing": [],
+ "status": "PASS"
+}

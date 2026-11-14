@@ -1,0 +1,311 @@
+{
+  "test": "V5 consistent capacity of same lender / same snapshot / same hours",
+  "input": {
+    "as_of": "2026-11-16T19:00:00+00:00",
+    "R1": {
+      "confirmation": "confirmed",
+      "end": "2026-11-17T19:00:00+00:00",
+      "skill": "IDE",
+      "source": "shared_unit",
+      "start": "2026-11-17T13:00:00+00:00",
+      "lending_unit": "U-LOAN",
+      "lending_unit_scheduled": 4,
+      "lending_unit_minimum": 3
+    },
+    "R2": {
+      "confirmation": "confirmed",
+      "end": "2026-11-17T19:00:00+00:00",
+      "skill": "IDE",
+      "source": "shared_unit",
+      "start": "2026-11-17T13:00:00+00:00",
+      "lending_unit": "U-LOAN",
+      "lending_unit_scheduled": 5,
+      "lending_unit_minimum": 3
+    }
+  },
+  "R1_then_R2": {
+    "actions": [
+      {
+        "option": "R1",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-dd400804bd62a29f",
+          "recommendation_id": "reco-8e2849a181242f83",
+          "decision": "approve",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": [],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "created_in_demo",
+            "approval": "approved_in_demo",
+            "reservation": "local_demo_ledger_only",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [
+            "R1@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+          ],
+          "idempotency_key": "v5-probe-R1",
+          "request_fingerprint": "cdc617208af82b5987adebe5ba6834a286605b0eec85047fb75704f4b2fefcbf",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      },
+      {
+        "option": "R2",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-de169b33f001c7d2",
+          "recommendation_id": "reco-21896d553f0fd7ce",
+          "decision": "approve",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": [],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "created_in_demo",
+            "approval": "approved_in_demo",
+            "reservation": "local_demo_ledger_only",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [
+            "R2@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+          ],
+          "idempotency_key": "v5-probe-R2",
+          "request_fingerprint": "7f0edded91291f88d390759eec14b5e220461e7844fe3f6f55734366453105c6",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      }
+    ],
+    "lender_holds": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 2
+    },
+    "lender_capacity": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 2
+    },
+    "conflicts": []
+  },
+  "R2_then_R1": {
+    "actions": [
+      {
+        "option": "R2",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-de169b33f001c7d2",
+          "recommendation_id": "reco-21896d553f0fd7ce",
+          "decision": "approve",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": [],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "created_in_demo",
+            "approval": "approved_in_demo",
+            "reservation": "local_demo_ledger_only",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [
+            "R2@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+          ],
+          "idempotency_key": "v5-probe-R2",
+          "request_fingerprint": "7f0edded91291f88d390759eec14b5e220461e7844fe3f6f55734366453105c6",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      },
+      {
+        "option": "R1",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-dd400804bd62a29f",
+          "recommendation_id": "reco-8e2849a181242f83",
+          "decision": "approve",
+          "outcome": "REFUSED",
+          "reasons": [
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:capacity_exhausted"
+          ],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "none",
+            "approval": "refused",
+            "reservation": "none",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [],
+          "idempotency_key": "v5-probe-R1",
+          "request_fingerprint": "cdc617208af82b5987adebe5ba6834a286605b0eec85047fb75704f4b2fefcbf",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      }
+    ],
+    "lender_holds": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 1,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 1,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 1,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 1,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 1,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 1
+    },
+    "lender_capacity": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 2
+    },
+    "conflicts": []
+  },
+  "combined_candidate": {
+    "rejected": {
+      "S02": "no_target_hour_before_habitual_plan",
+      "S03": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "S04": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "S05": "medical_authorization_revoked,readiness_estimate_unknown",
+      "S06": "obstacle:aval_non_confirme",
+      "S07": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "R3": "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3",
+      "R1+R2": "lending_unit_minimum_cumulative:U-LOAN:IDE:2026-11-17T13:00:00+00:00:4-2<3:R1+R2"
+    }
+  },
+  "positive_consistent_capacity_5": {
+    "actions": [
+      {
+        "option": "R1",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-c24336c0a1b8e26d",
+          "recommendation_id": "reco-8979a7706ba58480",
+          "decision": "approve",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": [],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "created_in_demo",
+            "approval": "approved_in_demo",
+            "reservation": "local_demo_ledger_only",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [
+            "R1@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+          ],
+          "idempotency_key": "v5-probe-R1",
+          "request_fingerprint": "8ae34c4b5227a31f9ec0a3a5bc9c486fe7ac112ce35e5356f49b7f39d1fbbcce",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      },
+      {
+        "option": "R2",
+        "recommendation_status": "NO_ACTION_PREFERRED",
+        "approvable": true,
+        "review": {
+          "review_id": "rev-4caaba6d026dc95f",
+          "recommendation_id": "reco-b45b8d65835201d4",
+          "decision": "approve",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": [],
+          "recompute_required": false,
+          "external_command_sent": false,
+          "lifecycle": {
+            "request": "created_in_demo",
+            "approval": "approved_in_demo",
+            "reservation": "local_demo_ledger_only",
+            "execution": "not_executed_no_external_system",
+            "result": "not_observed"
+          },
+          "reservations": [
+            "R2@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+            "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+          ],
+          "idempotency_key": "v5-probe-R2",
+          "request_fingerprint": "accd2fa7e9c2cc88e87661a7b27b83f647d39eb0f4434a6bb386442f45b0a4e9",
+          "at": "2026-11-16T19:00:00Z",
+          "replayed": false,
+          "current_validity": null
+        }
+      }
+    ],
+    "lender_holds": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 2
+    },
+    "lender_capacity": {
+      "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 2,
+      "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 2
+    },
+    "conflicts": []
+  },
+  "positive_offgrid_snapshot_rejected": "1 validation error for PublicSnapshot\nas_of\n  Value error, This prototype requires as_of on a whole hour [type=value_error, input_value=datetime.datetime(2026, 1...o=datetime.timezone.utc), input_type=datetime]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+}

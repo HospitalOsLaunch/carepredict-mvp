@@ -52,3 +52,10 @@ def auto(nominal, settings):
 @pytest.fixture(scope="session")
 def manual(nominal, settings):
     return simulate(nominal, locks_of("scenario_x1x2.json"), settings)
+
+
+# The independent v5 audit tests import their helper as a top-level module
+# (``from test_v4_resource_boundaries import ...``); expose this directory without editing them.
+import sys as _sys  # noqa: E402
+
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
