@@ -1,0 +1,10 @@
+{
+ "declared_reading": "confirmatory",
+ "note": "validation: only the projection is read before F_b",
+ "partition": "P5b_val",
+ "precision_sufficient": true,
+ "projected_half_width": 2.131137237160298,
+ "sd_between_structure_means_delta_rep": 5.955578506233912,
+ "structures": 8,
+ "threshold": 7.5
+}

@@ -1,0 +1,15 @@
+{
+ "informative": true,
+ "parents_used": 300,
+ "parents_without_homologous_plan": 60,
+ "rate_best_homologous_plan_changes": 0.1,
+ "rms_effect_difference_point": 29.098245038446688,
+ "structures": 24,
+ "theta_lower_one_sided_95": 581.8525027226045,
+ "theta_point": 846.7078643174873,
+ "threshold": 25.0,
+ "train_exclusions": {
+  "candidates": 366,
+  "excluded": 6
+ }
+}

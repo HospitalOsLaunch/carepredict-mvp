@@ -1,0 +1,79 @@
+{
+ "bootstrap_resamples": 2000,
+ "declared_reading": "confirmatory",
+ "delta": 15.0,
+ "effective_commitment": {
+  "ledger_record": "74c79b7c130cd5de2a5d3490938cc52227b3884596e1bfe4607e9fdd9d7c75b4",
+  "stage": "E8"
+ },
+ "exclusion_max": 0.05,
+ "files_sha256": {
+  "configs/decision_support/OBJECTIVE_CONFIG.json": "267b2f8c1d565760c589533fdbde841e861152486985aeaf8ca63c369ec80e0b",
+  "configs/decision_support/PRESSURE_SCORE_CONFIG.json": "b4e319609ab87b8c0a6648a4c7be4d0686370ea88269effd62f5b9dbf0451c81",
+  "configs/decision_support/UNIT_PROFILE.json": "1ae26eb8cc87a21c787c655b5833c0ce4cd5cebe8d83e5f141d83c4dd6154bba",
+  "docs/decision_support/P5_DECISIONS_v7_P5b.json": "add18cfb70ef9fb2205e80aa50f4fc2ae9d2cd8fe117bd6b709365d0ff9f8b70",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json": "653a426a343713a17a55102787b73f6b1f2080c6206837d67d156fbededc18ac",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json": "c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4",
+  "docs/decision_support/P5_PROTOCOL_v3.md": "dbf517ca2a639505d4db728266f60b2c56a33fb665945bce6f67383907804ab6",
+  "docs/decision_support/P5_PROTOCOL_v3_1.md": "e0cbe6dea64c5579176064864a8cc5fc67c2f887381581b37ee9810dfe00ec62",
+  "evidence/decision_support/p5/p5b/CONTROLS.json": "8e81f1011c51775ebeeea34713a0949bceda77bfb93a0ecdf324a380831e2430",
+  "evidence/decision_support/p5/p5b/ISOLATION50_SUMMARY.json": "971d148a81de918c01e424e45dcf40f748d703ae9d3e473739e01e8ffd8ed882",
+  "evidence/decision_support/p5/p5b/PRECHECK.json": "521e159abc04d4902a4f68255b73f7d5ce1c75f50a971580e394ead68261d9ea",
+  "evidence/decision_support/p5/p5b/PRECISION_P5b.json": "98a387de55e2aeedf073bd02030f775bd58230fccbeff21c6af81265e28b32e7",
+  "evidence/decision_support/p5/p5b/SELECTION.json": "5045227727ef01fcbbcadd25cfbce06c3badd4c4647a8b468d0e2ac7bccdea68",
+  "evidence/decision_support/p5/p5b/artifacts/model_M_agg_d5_lr0.05_it400_s0.pkl": "886e6d9ecf991f96e82ed3812e77fd9016840463fa740df3e80bcaa647595992",
+  "evidence/decision_support/p5/p5b/artifacts/model_M_ent_d5_lr0.1_it400_s0.pkl": "6fca27e2a7efa4518c954c31ef5b01f066f57c3fcda34b65290410aab2014491",
+  "scripts/p5_p5b.py": "be8890da78c7ebf9760350ad15aba30db0c3491b6ecfa2945678ecf6aa0613e0",
+  "src/hospitalos/p5/analysis.py": "79f94373889811dec90bde480bfa072b4a5a801f9395edcb5247ca070bb19897",
+  "src/hospitalos/p5/eval_adapter.py": "47874f0c71f7a4f37cc760ff02a3f2a38432fcb3f1a1c94719716297011e1504",
+  "src/hospitalos/p5/features.py": "649138e766f544a8b4c83e2fd59697b2dea5156e1737edf1a342debd37cee592",
+  "src/hospitalos/p5/generator.py": "f300879c97cd1a243b11dbb8f0d6c2145c0e7952e296214f6ddba1648f06a7d8",
+  "src/hospitalos/p5/p5a_analysis.py": "3095466c45c1e61c64669996389158f9cc242d4032eeb3b1d9f00252ef5f0b93",
+  "src/hospitalos/p5/p5b.py": "4b84d44e8d83a4f105217aac1f182626401c539b070257a184a5c7923d5f6694",
+  "src/hospitalos/p5/p5b_analysis.py": "43d80379863b0bd0fe8c188ab5b76d25257275cd1d27e438ad8f74a852789af2",
+  "src/hospitalos/p5/p5b_isolation.py": "d149af600f82ae953de8616016c5bf6b0b3df9fe4e4695143f82e2c1b7fe4fdd",
+  "src/hospitalos/p5/truth.py": "e82a37c4568d18bb12a43611028503ffb766a53d332885bfae1be37e51a686bf"
+ },
+ "half_width_max": 7.5,
+ "harm_max": 0.1,
+ "isolation50": {
+  "T04a_detected": 47,
+  "T04a_non_informatif": 3,
+  "checked": 50,
+  "true_failures": 0
+ },
+ "precision_projection": {
+  "declared_reading": "confirmatory",
+  "note": "validation: only the projection is read before F_b",
+  "partition": "P5b_val",
+  "precision_sufficient": true,
+  "projected_half_width": 2.131137237160298,
+  "sd_between_structure_means_delta_rep": 5.955578506233912,
+  "structures": 8,
+  "threshold": 7.5
+ },
+ "reserved": {
+  "K_eval": 3,
+  "parents": 4,
+  "partition": "P5b_eval",
+  "regimes": [
+   "R1",
+   "R2"
+  ],
+  "structures": 30,
+  "twins": 2
+ },
+ "selected": {
+  "M_agg": [
+   5,
+   0.05,
+   400
+  ],
+  "M_ent": [
+   5,
+   0.1,
+   400
+  ]
+ },
+ "stage": "F_b"
+}

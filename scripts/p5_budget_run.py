@@ -46,7 +46,7 @@ LOT_CAPS = {
     "P5.5": 90.0,
     "RESERVE": 50.0,
 }
-AUTHORISED_LOTS = {"P5.0", "P5.1", "P5.2", "P5.I", "P5.3", "P5.5"}  # D11-i; D14 (P5.I); (ii) P5a (P5.3, P5.5)
+AUTHORISED_LOTS = {"P5.0", "P5.1", "P5.2", "P5.I", "P5.3", "P5.4", "P5.5"}  # D11-i; D14; (ii) P5a; (iii) P5b (P5.4)
 DEFAULT_VENV = Path(
     os.environ.get(
         "P5_VENV",

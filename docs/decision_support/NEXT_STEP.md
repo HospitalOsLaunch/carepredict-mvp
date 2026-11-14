@@ -58,6 +58,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    0 vrai échec ; T04-a non informatif au rang 48 ⇒ clôture de P5A-D02 = décision explicite.
    **P5A-D02 clos avec réserve nommée** (décision adoptée ; `P5A_D02_CLOSURE_RECEIPT.md`) :
    T04-a NON_INFORMATIF au rang 48 conservé ; P5.1 exact = 43,770 s ; registre 88 enr., 134,580 s.
+   **(iii) P5b option A adopté et exécuté** (`P5_P5b_REPORT.md`) : précontrôle informatif ; 28 ajustements
+   (L2, graines identiques) ; précision confirmatoire déclarée avant F_b ; isolation 50/50 sans échec ;
+   Δ_rep R1 = +2,27 [−2,54 ; +6,94] ⇒ `insufficient`. Arrêt après P5b. D16/P6/AJ-H fermés.
 
 ## Hors de ce projet
 

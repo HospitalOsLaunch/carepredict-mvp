@@ -104,10 +104,10 @@ def test_in_process_runtime_check():
 
 
 def test_unauthorised_lot_refusal_is_logged_at_zero_seconds(tmp_ledger):
-    assert runner.run([VENV_PY, "-c", "1"], "P5.4", "t") == 4
+    assert runner.run([VENV_PY, "-c", "1"], "RESERVE", "t") == 4  # P5.4 became authorised under (iii)
     last = base.read_ledger(tmp_ledger)[-1]
-    assert last["kind"] == "refused" and last["reason"] == "lot_not_authorised:P5.4"
-    assert last["wall_seconds"] == 0.0 and last["lot"] == "P5.4"
+    assert last["kind"] == "refused" and last["reason"] == "lot_not_authorised:RESERVE"
+    assert last["wall_seconds"] == 0.0 and last["lot"] == "RESERVE"
 
 
 def test_missing_or_corrupt_ledger_blocks_and_never_restarts_genesis(tmp_path, monkeypatch):
@@ -120,11 +120,11 @@ def test_missing_or_corrupt_ledger_blocks_and_never_restarts_genesis(tmp_path, m
     lines = ledger.read_text().splitlines()
     ledger.write_text(lines[0].replace('"P5.0"', '"P5.X"') + "\n")
     with pytest.raises(base.LedgerError):
-        runner.run([VENV_PY, "-c", "1"], "P5.4", "t")
+        runner.run([VENV_PY, "-c", "1"], "RESERVE", "t")
 
 
 def test_unauthorised_lot_refused_without_launch(tmp_ledger):
-    assert runner.run([VENV_PY, "-c", "1"], "P5.4", "t") == 4
+    assert runner.run([VENV_PY, "-c", "1"], "RESERVE", "t") == 4  # P5.4 became authorised under (iii)
 
 
 def test_static_tool_allowed_by_exact_path():

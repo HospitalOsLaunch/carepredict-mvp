@@ -1,0 +1,261 @@
+{
+ "F_b_declared_reading": "confirmatory",
+ "R1": {
+  "ci95": {
+   "U_agg": [
+    581.887048611111,
+    880.191076388889
+   ],
+   "U_ent": [
+    580.5391666666667,
+    877.7236458333333
+   ],
+   "U_hab": [
+    736.1237152777777,
+    1088.976701388889
+   ],
+   "U_plan": [
+    577.7920833333334,
+    879.9902777777775
+   ],
+   "U_star": [
+    571.3893055555554,
+    868.9234027777776
+   ],
+   "delta_rep": [
+    -2.5350694444444444,
+    6.944791666666666
+   ],
+   "ent_coord_at_equal_res": [
+    75.63038194444444,
+    122.31354166666667
+   ],
+   "ent_interaction": [
+    -9.527777777777775,
+    -0.07465277777777747
+   ],
+   "ent_res_only": [
+    46.3609375,
+    122.52326388888888
+   ],
+   "gain_agg": [
+    137.95989583333338,
+    222.2300347222222
+   ],
+   "gain_ent": [
+    140.64982638888893,
+    223.75711805555554
+   ],
+   "gain_plan": [
+    144.25173611111111,
+    224.16736111111106
+   ],
+   "harm_agg": [
+    0.0,
+    0.0
+   ],
+   "harm_ent": [
+    0.0,
+    0.0
+   ],
+   "planned_hours_agg": [
+    2.4914583333333336,
+    4.391874999999999
+   ],
+   "planned_hours_ent": [
+    2.5082291666666667,
+    4.483333333333333
+   ],
+   "regret_agg": [
+    7.7079861111111105,
+    17.18784722222222
+   ],
+   "regret_ent": [
+    5.631423611111113,
+    14.78472222222222
+   ],
+   "same_choice": [
+    0.5916666666666667,
+    0.8083333333333333
+   ]
+  },
+  "delta": 15.0,
+  "guardrails": {
+   "exclusion_ok": true,
+   "exclusion_rate": 0.0,
+   "harm_M_agg_descriptive": {
+    "cp_upper_one_sided_95": 0.09503385285530415,
+    "harmed_structures": 0
+   },
+   "harm_M_ent": {
+    "cp_upper_one_sided_95": 0.09503385285530415,
+    "event": "twin harmed iff mean over K=3 of (U_ent - U_hab) > 15; parent iff >= 1 twin; structure iff >= 1 parent",
+    "harmed_structures": 0,
+    "ok": true,
+    "structures": 30
+   },
+   "isolation_50_no_true_failure": true
+  },
+  "parents": 120,
+  "point": {
+   "U_agg": 724.8638888888889,
+   "U_ent": 722.5930555555556,
+   "U_hab": 903.8291666666668,
+   "U_plan": 720.9472222222222,
+   "U_star": 712.7736111111111,
+   "delta_rep": 2.2708333333333335,
+   "ent_coord_at_equal_res": 98.42361111111111,
+   "ent_interaction": -4.2847222222222205,
+   "ent_res_only": 82.8125,
+   "gain_agg": 178.9652777777778,
+   "gain_ent": 181.23611111111111,
+   "gain_plan": 182.88194444444443,
+   "harm_agg": 0.0,
+   "harm_ent": 0.0,
+   "planned_hours_agg": 3.4,
+   "planned_hours_ent": 3.4625,
+   "regret_agg": 12.090277777777779,
+   "regret_ent": 9.819444444444445,
+   "same_choice": 0.7041666666666667
+  },
+  "regime": "R1",
+  "role": "primary",
+  "structures": 30,
+  "verdict": "insufficient"
+ },
+ "R2": {
+  "ci95": {
+   "U_agg": [
+    591.7574305555555,
+    892.8697916666666
+   ],
+   "U_ent": [
+    589.0352430555556,
+    892.2661458333334
+   ],
+   "U_hab": [
+    741.3254861111111,
+    1094.0565972222219
+   ],
+   "U_plan": [
+    584.9715972222223,
+    886.3596874999997
+   ],
+   "U_star": [
+    579.5560069444444,
+    881.7944097222222
+   ],
+   "delta_rep": [
+    -3.423611111111114,
+    6.015451388888879
+   ],
+   "ent_coord_at_equal_res": [
+    77.41579861111113,
+    124.95416666666665
+   ],
+   "ent_interaction": [
+    -10.28489583333332,
+    -0.43038194444444117
+   ],
+   "ent_res_only": [
+    42.24097222222222,
+    114.30243055555552
+   ],
+   "gain_agg": [
+    135.55086805555558,
+    215.51718749999998
+   ],
+   "gain_ent": [
+    136.8078125,
+    216.98645833333327
+   ],
+   "gain_plan": [
+    143.2788194444445,
+    222.66770833333334
+   ],
+   "harm_agg": [
+    0.0,
+    0.0
+   ],
+   "harm_ent": [
+    0.0,
+    0.058333333333333334
+   ],
+   "planned_hours_agg": [
+    2.4914583333333336,
+    4.391874999999999
+   ],
+   "planned_hours_ent": [
+    2.5082291666666667,
+    4.483333333333333
+   ],
+   "regret_agg": [
+    7.701041666666666,
+    17.403298611111108
+   ],
+   "regret_ent": [
+    6.326388888888892,
+    16.354340277777776
+   ],
+   "same_choice": [
+    0.5916666666666667,
+    0.8083333333333333
+   ]
+  },
+  "delta": 15.0,
+  "guardrails": {
+   "exclusion_ok": true,
+   "exclusion_rate": 0.0,
+   "harm_M_agg_descriptive": {
+    "cp_upper_one_sided_95": 0.09503385285530415,
+    "harmed_structures": 0
+   },
+   "harm_M_ent": {
+    "cp_upper_one_sided_95": 0.14859606865911318,
+    "event": "twin harmed iff mean over K=3 of (U_ent - U_hab) > 15; parent iff >= 1 twin; structure iff >= 1 parent",
+    "harmed_structures": 1,
+    "ok": false,
+    "structures": 30
+   },
+   "isolation_50_no_true_failure": true
+  },
+  "parents": 120,
+  "point": {
+   "U_agg": 734.2180555555555,
+   "U_ent": 732.8361111111111,
+   "U_hab": 909.2388888888888,
+   "U_plan": 727.4194444444445,
+   "U_star": 721.9263888888888,
+   "delta_rep": 1.381944444444443,
+   "ent_coord_at_equal_res": 100.42361111111111,
+   "ent_interaction": -4.7638888888888875,
+   "ent_res_only": 75.97916666666667,
+   "gain_agg": 175.02083333333334,
+   "gain_ent": 176.4027777777778,
+   "gain_plan": 181.8194444444444,
+   "harm_agg": 0.0,
+   "harm_ent": 0.016666666666666666,
+   "planned_hours_agg": 3.4,
+   "planned_hours_ent": 3.4625,
+   "regret_agg": 12.291666666666664,
+   "regret_ent": 10.909722222222223,
+   "same_choice": 0.7041666666666667
+  },
+  "regime": "R2",
+  "role": "robustness_only_cannot_upgrade_R1",
+  "structures": 30,
+  "verdict": "insufficient (robustness reading only)"
+ },
+ "selected": {
+  "M_agg": [
+   5,
+   0.05,
+   400
+  ],
+  "M_ent": [
+   5,
+   0.1,
+   400
+  ]
+ }
+}

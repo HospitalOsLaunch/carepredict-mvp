@@ -1,0 +1,27 @@
+{
+ "M_agg": {
+  "config": [
+   5,
+   0.05,
+   400
+  ],
+  "identical": true,
+  "max_abs_diff_vs_seed0": {
+   "1": 0.0,
+   "2": 0.0
+  }
+ },
+ "M_ent": {
+  "config": [
+   5,
+   0.1,
+   400
+  ],
+  "identical": true,
+  "max_abs_diff_vs_seed0": {
+   "1": 0.0,
+   "2": 0.0
+  }
+ },
+ "total_fits": 28
+}
