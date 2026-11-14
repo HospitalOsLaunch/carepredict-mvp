@@ -59,7 +59,7 @@ graines, pas une mesure de performance. Rejeu oracle privé (évaluation seule) 
 15 tests P3 + 5 tests d'audit passés. Corrections de tests (indices horaires 10 h Paris = 14,
 12 h = 16 ; T29 : la commande est coupée au reliquat de budget) consignées dans le registre.
 
-## P4 — Cockpit auto puis manuel (porte franchie, avec limite déclarée)
+## P4 — Cockpit auto puis manuel (porte franchie)
 
 `web/decision/` : page sans dépendance, compilée par le `tsc` local, réutilisant `tokens.css`
 et `app.css` du cockpit `web/` ; serveur stdlib local (`serve.py`, 127.0.0.1, aucun point
@@ -73,9 +73,35 @@ recalcul après révocation, abstention, sans action, pas de défilement horizon
 Deux défauts d'interface trouvés et corrigés : attribut `hidden` écrasé par `display:grid`,
 débordement de 54 px sur mobile. Captures : `evidence/decision_support/captures/`.
 
-**Limite** : intégration comme écran React dans `web/src/App.tsx` non faite — `npm ci` exigerait
-une installation réseau non autorisée ; les 66 tests Vitest du cockpit existant n'ont pas pu être
-relancés. Aucun fichier de `web/src` n'a été modifié.
+Limite initiale (levée en P4b) : l'intégration React demandait `npm ci`, non autorisé à ce stade.
+
+## P4b — Intégration au cockpit React (après accord distinct pour `npm ci` dans `web/`)
+
+`npm ci` : 182 paquets en 3,43 s (installation tracée et imputée au registre). Base du cockpit
+vérifiée **avant** modification : typecheck propre, 66/66 tests Vitest.
+
+Nouvelle route **« Plan 24 h »** (`#/plan`, raccourci `P`) dans `web/src/App.tsx` :
+`web/src/ui/DecisionPlan.tsx`, `web/src/data/useDecision.ts`, `web/src/api/decision.ts`,
+`web/src/styles/decision.css` (classes `panel`, `btn`, `pill`, `table`, `page-head` du cockpit ;
+violet `#7049D0` limité à l'écran). À l'arrivée sur la route, la recommandation automatique est
+calculée sans saisie ; « Modifier » ouvre le formulaire X1/X2 prérempli.
+
+- API locale : Vite relaie `/api/decision/*` vers `web/decision/serve.py` (127.0.0.1:8765).
+- Sans API : sorties du vrai moteur embarquées (`web/src/fixtures/decision.json`, générées par
+  `web/dev/build_decision_fixtures.py` ; trajectoires des plans non affichés retirées, SHA-256 de la
+  sortie complète conservé). La saisie libre X1/X2 exige l'API ; hors-ligne, trois scénarios
+  précalculés par le moteur sont proposés.
+- L'écran Unité existant est inchangé ; sur la route Plan, le bandeau de démonstration et
+  l'horloge de l'unité hybride sont masqués pour ne pas mélanger deux unités fictives.
+
+Contrôles : typecheck propre ; **71/71 tests Vitest** (66 existants + 5 nouveaux : auto sans saisie,
+traçabilité de chaque chiffre, validation de démo sans commande, scénarios manuels dont hypothèse
+non approuvable et impossible, abstention, envoi des verrous X1/X2 au moteur) ; build de production ;
+**e2e Playwright 17/17** sur le cockpit construit contre le moteur réel (`web/decision/e2e_react.mjs`).
+Défauts trouvés et corrigés : plantage sur un scénario manuel `INFEASIBLE` (bundle sans plan
+prioritaire), pastille étirée, mots coupés dans le tableau, en-têtes rognés. Avertissement Vite
+conservé : bundle JavaScript > 500 ko (données de démonstration embarquées).
+Captures : `evidence/decision_support/captures/react_*.png`.
 
 Non-régression : 86 tests hybrides préexistants repassés après les modifications ; `ruff` propre
 sur les nouveaux fichiers ; `mypy --strict` non exécuté.

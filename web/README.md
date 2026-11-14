@@ -102,3 +102,11 @@ Système visuel : `DESIGN.md`.
 3. Exposer le TTL de fraîcheur de la politique live dans `LiveSnapshot` (le cockpit
    suppose 5 min pour l'indice visuel « vieillissant »).
 4. Authentification opérateur et périmètre par unité avant tout usage hors poste local.
+
+## Plan à 24 h (moteur d'aide à la décision)
+
+Route `#/plan` (« Plan 24 h », touche `P`) : proposition calculée automatiquement par
+`src/hospitalos/decision_support` sur une unité fictive distincte, puis mode manuel X1/X2 sur le
+même moteur. Vite relaie `/api/decision/*` vers `web/decision/serve.py` (127.0.0.1:8765) ; sans ce
+serveur, l'écran affiche les sorties embarquées (`src/fixtures/decision.json`, générées par
+`web/dev/build_decision_fixtures.py`). Voir `docs/decision_support/README_REPRISE.md`.

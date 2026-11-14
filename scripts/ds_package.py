@@ -21,7 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "claude/hospitalos-auto-first-p0-p4-s2dywn"
 BASE = "a5e737eec2cfdf0f52a68f41b523f928181c03e6"
-NAME = "HospitalOS_DS_P0-P4_20261114"
+NAME = "HospitalOS_DS_P0-P4_20261114_v2"
 
 RESTORE = r"""#!/bin/sh
 # Restore the HospitalOS decision-support P0-P4 work into a NEW directory and replay it.
@@ -46,15 +46,17 @@ tar -xf "$PKG/source_head.tar" -C "$TARGET"
 cd "$TARGET"
 HEAD=$(cat "$PKG/HEAD.txt")
 export PYTHONPATH="${PYTEST_PATH:+$PYTEST_PATH:}src:."
-python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 && T=pass || T=fail
+python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 \
+  && T=pass || T=fail
 python3 -m hospitalos.decision_support export --out restore_results > /dev/null
 python3 - "$PKG" "$TARGET" "$HEAD" "$T" <<'PY'
 import hashlib, json, sys
 from pathlib import Path
 pkg, target, head, tests = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], sys.argv[4]
 index = json.loads((pkg / "evidence/results/index.json").read_text())
-diff = [f["file"] for f in index["files"]
-        if hashlib.sha256((target / "restore_results" / f["file"]).read_bytes()).hexdigest() != f["sha256"]]
+def digest(name):
+    return hashlib.sha256((target / "restore_results" / name).read_bytes()).hexdigest()
+diff = [f["file"] for f in index["files"] if digest(f["file"]) != f["sha256"]]
 receipt = {"test": "T30", "restored_tree_of_head": head, "method": "source_head.tar",
            "tests": tests, "results_compared": len(index["files"]), "results_differing": diff,
            "status": "PASS" if tests == "pass" and not diff else "FAIL"}
@@ -109,6 +111,7 @@ def main() -> int:
     junit = ET.parse(ROOT / "evidence/decision_support/pytest_decision_support.xml").getroot()
     suite = junit if junit.tag == "testsuite" else junit[0]
     e2e = json.loads((ROOT / "evidence/decision_support/e2e_result.json").read_text())
+    e2e_react = json.loads((ROOT / "evidence/decision_support/e2e_react_result.json").read_text())
     status = {
         "schema": "HOSPITALOS_DS_STATUS_1",
         "delivery_status": "P0_P4_TECHNICAL_PASS",
@@ -117,11 +120,14 @@ def main() -> int:
         "G2": "NO-GO",
         "synthetic_data_only": True,
         "lots": {"P0": "PASS", "P1": "PASS", "P2": "PASS", "P3": "PASS",
-                 "P4": "PASS_WITH_DECLARED_LIMIT", "P5": "CLOSED", "P6": "CLOSED"},
+                 "P4": "PASS", "P4b_react_integration": "PASS", "P5": "CLOSED", "P6": "CLOSED"},
         "branch": BRANCH, "base": BASE, "head": head, "pushed": False,
         "tests": {
             "decision_support_pytest": {k: suite.get(k) for k in ("tests", "failures", "errors")},
             "e2e_playwright": {"checks": len(e2e["checks"]), "failed": e2e["failed"]},
+            "e2e_playwright_react_cockpit": {
+                "checks": len(e2e_react["checks"]), "failed": e2e_react["failed"]},
+            "cockpit_vitest": "71 passed (66 pre-existing + 5 new; runlog in ledger)",
             "preexisting_hybrid_non_regression": "86 passed (runlog in ledger)",
             "T30_restore": "see RESTORE_RECEIPT.json (produced after packaging)",
         },
@@ -132,8 +138,9 @@ def main() -> int:
                           "not a scientific failure",
         },
         "limits": [
-            "React integration of the view not done: npm ci requires an unauthorised network "
-            "install; existing 66 Vitest cockpit tests not re-run",
+            "npm ci in web/ performed after separate user authorisation; restore.sh replays the "
+            "Python suite only (cockpit tests need npm ci)",
+            "Vite warns that the JavaScript bundle exceeds 500 kB (embedded demonstration data)",
             "tests/hybrid/test_decision_guard.py not runnable (scikit-learn absent)",
             "mypy --strict not run",
             "Python 3.13 used; repository pins 3.11.9",
@@ -141,7 +148,7 @@ def main() -> int:
             "model-based, not real-world performance",
         ],
         "not_executed": ["training", "weight loading", "AJ-H inference", "lots B/C",
-                         "statistical campaign", "paid API/GPU", "network install", "push",
+                         "statistical campaign", "paid API/GPU", "push",
                          "SIH action", "background process"],
     }
     (pkg / "STATUS.json").write_text(json.dumps(status, indent=1, ensure_ascii=False) + "\n")

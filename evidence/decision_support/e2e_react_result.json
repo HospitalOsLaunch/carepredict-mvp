@@ -1,0 +1,90 @@
+{
+ "checks": [
+  {
+   "id": "cockpit:existing_unit_screen_still_renders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T15:auto_without_input",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T15:no_form_on_arrival",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "api:live_engine_not_fixture",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T11:conditional_visible",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T32:auto",
+   "ok": true,
+   "detail": "{\"total\":18,\"bad\":[]}"
+  },
+  {
+   "id": "P4:manual_prefilled_from_auto",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "P4:manual_computed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T18:locks_shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "P4:three_branches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T32:manual",
+   "ok": true,
+   "detail": "{\"total\":27,\"bad\":[]}"
+  },
+  {
+   "id": "T06:hypothesis_not_approvable",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T27:invalidated",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T05:revoked_stay_not_proposed",
+   "ok": true,
+   "detail": "Renfort IDE 14:00–20:00 (R1, interim)demandé, non confirmé\nRenfort IDE 07:00–11:00 (R2, internal_pool)"
+  },
+  {
+   "id": "P4:approve_in_demo_no_command",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T17:abstention_with_diagnostics",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "P4:no_horizontal_scroll_390px",
+   "ok": true,
+   "detail": "{\"extra\":0,\"wide\":[]}"
+  }
+ ],
+ "failed": 0
+}

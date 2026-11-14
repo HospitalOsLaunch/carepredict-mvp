@@ -20,8 +20,8 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
 
 ## Prochaines étapes possibles (chacune sur accord distinct)
 
-1. **Accord réseau** pour `npm ci` dans `web/` : porter `web/decision` en écran React du cockpit
-   (`App.tsx`, composants `Proposal`/`ProposalDetail`), relancer les 66 tests Vitest existants.
+1. (Fait en P4b : route React « Plan 24 h », 71/71 Vitest, e2e 17/17.) Éventuellement découper le
+   bundle (données de démonstration en import dynamique) pour lever l'avertissement de taille.
 2. Exécuter `mypy --strict` sur `hospitalos.decision_support` et corriger.
 3. Revue métier des paramètres synthétiques (`UNIT_PROFILE.json`) — aucun entretien n'a eu lieu.
 4. P5 (qualification expérimentale bornée) : soumettre protocole, budget, graines, règle d'arrêt.

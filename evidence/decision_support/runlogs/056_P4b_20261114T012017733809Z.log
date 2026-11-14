@@ -1,0 +1,3 @@
+scripts/ds_package.py:49:101: E501 Line too long (109 > 100)
+scripts/ds_package.py:57:101: E501 Line too long (108 > 100)
+Found 2 errors.

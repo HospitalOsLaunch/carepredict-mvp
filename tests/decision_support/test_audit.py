@@ -100,6 +100,9 @@ def test_t32_no_hard_coded_product_figures_in_engine_or_cockpit():
     sources = [
         *ROOT.glob("src/hospitalos/decision_support/*.py"),
         *ROOT.glob("web/decision/*.ts"),
+        *ROOT.glob("web/src/ui/DecisionPlan.tsx"),
+        *ROOT.glob("web/src/data/useDecision.ts"),
+        *ROOT.glob("web/src/api/decision.ts"),
         *ROOT.glob("web/decision/*.html"),
     ]
     assert sources

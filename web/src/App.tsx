@@ -3,16 +3,17 @@ import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
 import { type Assessment, clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
+import { DecisionPlan } from "./ui/DecisionPlan";
 import { Journal } from "./ui/Journal";
 import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
-import { Alert, BoardIcon, BookIcon, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "journal" | "donnees";
+type Route = "unite" | "proposition" | "plan" | "journal" | "donnees";
 
 interface Location {
   route: Route;
@@ -22,7 +23,8 @@ interface Location {
 
 function readRoute(): Location {
   const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
-  const route = head === "proposition" || head === "donnees" || head === "journal" ? head : "unite";
+  const route =
+    head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
   return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
@@ -46,6 +48,7 @@ function useRoute(): Location {
 const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon: () => JSX.Element }> = [
   { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
   { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
+  { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
   { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
   { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
@@ -60,6 +63,7 @@ const ORIGIN: Record<Connection, string> = {
 const TITLES: Record<Route, string> = {
   unite: "Unité",
   proposition: "Proposition",
+  plan: "Plan à 24 h",
   journal: "Journal des décisions",
   donnees: "Qualité des données",
 };
@@ -73,6 +77,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ["R", "Réévaluer l'unité"],
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
+  ["P", "Plan jusqu'à demain (24 h)"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
@@ -103,6 +108,7 @@ function useShortcuts(
       else if (k === "r") store.evaluate();
       else if (k === "a") go("unite");
       else if (k === "d") go("proposition");
+      else if (k === "p") go("plan");
       else if (k === "q") go("donnees");
       else if (digit >= 1 && digit <= 9) {
         // While the "why not" reasons are open, digits pick a reason instead of a unit.
@@ -184,7 +190,7 @@ export function App() {
             ))}
           </nav>
           <div className="topbar__end">
-            {a ? (
+            {a && route !== "plan" ? (
               <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
                 <span className="stateclock__label">État</span>
                 <span className="stateclock__time num">{clock(a.state.at)}</span>
@@ -215,7 +221,7 @@ export function App() {
             <span>{store.error}</span>
           </div>
         ) : null}
-        {store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {route !== "plan" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -238,7 +244,10 @@ export function App() {
             ) : null}
           </div>
         ) : null}
-        {!a || !now ? (
+        {route === "plan" ? (
+          // Independent synthetic unit and engine: computed on arrival, no scenario typed.
+          <DecisionPlan />
+        ) : !a || !now ? (
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />
         ) : route === "proposition" ? (
           <ProposalDetail a={a} />

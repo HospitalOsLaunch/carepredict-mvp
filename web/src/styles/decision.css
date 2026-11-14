@@ -1,0 +1,65 @@
+/* 24-hour plan screen. Builds on tokens.css and app.css; the HospitalOS reference violet is a
+   scoped accent for this screen only (no global redesign of the cockpit). */
+.ds-page {
+  --hos-violet: #7049d0;
+  --hos-violet-wash: #efe9fb;
+  display: grid;
+  gap: var(--s4);
+  min-width: 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ds-page {
+    --hos-violet: #b39af0;
+    --hos-violet-wash: rgb(179 154 240 / 0.14);
+  }
+}
+:root[data-theme="dark"] .ds-page {
+  --hos-violet: #b39af0;
+  --hos-violet-wash: rgb(179 154 240 / 0.14);
+}
+.ds-page .page-head { margin-bottom: 0; }
+.ds-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); }
+.ds-unit { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); color: var(--ink-3); font-size: var(--t-sm); }
+.ds-unit .select { max-width: 100%; }
+.ds-flag { font-size: var(--t-xs); color: var(--hos-violet); border: 1px solid var(--hos-violet); border-radius: 999px; padding: 2px var(--s3); }
+.ds-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s5); align-items: start; }
+@media (max-width: 960px) { .ds-grid { grid-template-columns: minmax(0, 1fr); } }
+.ds-col { display: grid; gap: var(--s4); min-width: 0; align-content: start; }
+.ds-stack { display: grid; gap: var(--s3); }
+.ds-primary { border-top: 4px solid var(--hos-violet); }
+.ds-h2 { font-size: var(--t-xl); margin: 0; font-weight: 650; }
+.ds-pill--ready { border-color: var(--hos-violet); color: var(--hos-violet); background: var(--hos-violet-wash); }
+.ds-actions { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s2); }
+.ds-tag { font-size: var(--t-xs); border-radius: 999px; padding: 1px var(--s2); margin-left: var(--s2); background: var(--well); color: var(--ink-2); white-space: nowrap; }
+.ds-tag--lock { background: var(--sun-wash); color: var(--on-sun); }
+.ds-tag--cond { background: var(--sac-wash); color: var(--sac); }
+.ds-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s3); }
+.ds-fig { background: var(--well); border-radius: var(--r-md); padding: var(--s3); display: grid; gap: 2px; }
+.ds-fig b { font-size: var(--t-xl); font-weight: 650; }
+.ds-fig small { color: var(--ink-3); font-size: var(--t-xs); }
+.ds-page .ds-approve { background: var(--hos-violet); border-color: var(--hos-violet); }
+.ds-page .ds-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+.ds-feedback { font-weight: 600; }
+.ds-warn { color: var(--sac); }
+.ds-err { color: var(--alerte); }
+.ds-chart svg { width: 100%; height: auto; display: block; }
+.ds-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: var(--t-xs); color: var(--ink-3); }
+.ds-sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 4px; }
+.ds-details summary { cursor: pointer; color: var(--ink-2); }
+.ds-form { display: grid; gap: var(--s3); background: var(--sheet); border-radius: var(--r-lg); padding: var(--s4); box-shadow: var(--lift); min-width: 0; }
+.ds-form fieldset { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s3); display: grid; gap: var(--s2); min-width: 0; }
+.ds-form legend { font-weight: 650; padding: 0 var(--s1); }
+.ds-form label { display: grid; gap: 2px; font-size: var(--t-sm); color: var(--ink-2); min-width: 0; }
+.ds-form .select, .ds-form input[type="number"], .ds-form input[type="time"] { width: 100%; min-height: 40px; }
+.ds-form .ds-check { display: flex; align-items: center; gap: var(--s2); }
+.ds-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--s2); }
+.ds-examples { display: grid; gap: var(--s2); }
+.ds-examples .btn { white-space: normal; height: auto; text-align: left; justify-content: flex-start; }
+.ds-page .demobar .btn { white-space: normal; height: auto; text-align: left; }
+.ds-prov { font-size: var(--t-xs); overflow-wrap: anywhere; }
+.ds-page .panel { overflow-wrap: break-word; }
+.ds-page .facts { overflow-wrap: anywhere; }
+.ds-stack > .pill { justify-self: start; }
+.ds-page .table td:first-child { min-width: 9ch; }
+.ds-caption { caption-side: bottom; text-align: left; font-size: var(--t-xs); color: var(--ink-3); padding-top: var(--s2); }
+.ds-page .table { font-size: var(--t-sm); }

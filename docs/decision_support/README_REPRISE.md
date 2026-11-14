@@ -26,6 +26,20 @@ Pour rester dans le cadre budgété de la reprise, préfixer chaque commande d'e
 `python3 scripts/ds_budget_run.py --lot <lot> --label "<texte>" --` (600 s cumulées,
 30 s par commande, registre chaîné jamais remis à zéro ; `--status` affiche le reste).
 
+## Dans le cockpit React (route « Plan 24 h »)
+
+```bash
+cd web && npm ci                                      # accord réseau requis
+PYTHONPATH=src:. python3 web/decision/serve.py --port 8765   # depuis la racine, moteur local
+npm --prefix web run dev                              # http://localhost:5173/#/plan
+npm --prefix web run typecheck && npm --prefix web test   # 71 tests
+npm --prefix web run build && node web/decision/e2e_react.mjs   # e2e contre le moteur réel
+PYTHONPATH=src:. python3 web/dev/build_decision_fixtures.py     # régénère les données hors-ligne
+```
+
+Sans le serveur du moteur, la route affiche les sorties du moteur embarquées (saisie libre X1/X2
+indisponible, scénarios précalculés proposés).
+
 ## Ce que montre la vue
 
 1. À l'ouverture : la proposition calculée automatiquement (ou l'abstention, ou « rien à
