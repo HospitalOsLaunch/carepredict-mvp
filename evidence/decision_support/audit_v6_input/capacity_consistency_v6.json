@@ -1,0 +1,220 @@
+{
+  "case": "V5-R01 revalidated on v6",
+  "snapshot": "13239d005b48e01bcfb099cd052d2a0a3df50b979ce9010db42eaab44931e10f",
+  "observations": [
+    {
+      "available_at": "2026-11-16T16:05:00+00:00",
+      "event_time": "2026-11-16T16:00:00+00:00",
+      "kind": "reinforcement_option",
+      "obs_id": "o-r1",
+      "source": "synthetic_feed",
+      "subject": "R1",
+      "synthetic": true,
+      "value": {
+        "confirmation": "confirmed",
+        "end": "2026-11-17T19:00:00+00:00",
+        "skill": "IDE",
+        "source": "shared_unit",
+        "start": "2026-11-17T13:00:00+00:00",
+        "lending_unit": "U-LOAN",
+        "lending_unit_scheduled": 4,
+        "lending_unit_minimum": 3
+      }
+    },
+    {
+      "available_at": "2026-11-16T16:05:00+00:00",
+      "event_time": "2026-11-16T16:00:00+00:00",
+      "kind": "reinforcement_option",
+      "obs_id": "o-r2",
+      "source": "synthetic_feed",
+      "subject": "R2",
+      "synthetic": true,
+      "value": {
+        "confirmation": "confirmed",
+        "end": "2026-11-17T19:00:00+00:00",
+        "skill": "IDE",
+        "source": "shared_unit",
+        "start": "2026-11-17T13:00:00+00:00",
+        "lending_unit": "U-LOAN",
+        "lending_unit_scheduled": 5,
+        "lending_unit_minimum": 3
+      }
+    }
+  ],
+  "diagnostics": [
+    "lending_declarations_conflict:U-LOAN:IDE:6h from 2026-11-17 14:00 CET:offers=R1+R2:prudent:min_scheduled-max_minimum:spare=1"
+  ],
+  "canonical_capacities": [
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 13:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    },
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 14:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    },
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 15:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    },
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 16:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    },
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 17:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    },
+    {
+      "lender": "U-LOAN",
+      "skill": "IDE",
+      "hour": "2026-11-17 18:00:00+00:00",
+      "spare": 1,
+      "scheduled": 4,
+      "minimum": 3,
+      "sources": [
+        "R1",
+        "R2"
+      ],
+      "conflicting": true,
+      "policy": "prudent:min_scheduled-max_minimum"
+    }
+  ],
+  "joint_offenders": [],
+  "orders": [
+    {
+      "order": [
+        "R1",
+        "R2"
+      ],
+      "reviews": [
+        {
+          "offer": "R1",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": []
+        },
+        {
+          "offer": "R2",
+          "outcome": "REFUSED",
+          "reasons": [
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:capacity_exhausted"
+          ]
+        }
+      ],
+      "first_hold_preserved": true,
+      "lender_hold_counts": {
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 1
+      },
+      "capacity_sources": {
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2"
+      }
+    },
+    {
+      "order": [
+        "R2",
+        "R1"
+      ],
+      "reviews": [
+        {
+          "offer": "R2",
+          "outcome": "APPROVED_IN_DEMO",
+          "reasons": []
+        },
+        {
+          "offer": "R1",
+          "outcome": "REFUSED",
+          "reasons": [
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:capacity_exhausted",
+            "reservation_refused:lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:capacity_exhausted"
+          ]
+        }
+      ],
+      "first_hold_preserved": true,
+      "lender_hold_counts": {
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": 1,
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": 1
+      },
+      "capacity_sources": {
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2",
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00": "snapshot:13239d005b48e01b:prudent:min_scheduled-max_minimum:R1+R2"
+      }
+    }
+  ]
+}

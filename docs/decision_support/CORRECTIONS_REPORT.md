@@ -66,8 +66,10 @@ Dans un environnement neuf, relancer les tests du cockpit exige toujours `npm ci
 
 ## 6. Portes ouvertes et limites
 
-1. **Python 3.11** — exécution complète sous **3.11.18** (voir § 8) : 163/163. Reste ouvert le
-   seul niveau exact **3.11.9** (télécharger cet interpréteur n'est pas couvert par les accords).
+1. **Python 3.11** — exécution complète sous **3.11.18** (voir § 8) : 163/163 au stade v4 ; en v6,
+   181 réussis + 1 ignoré (test du compteur, actif seulement sur une vraie restauration). Reste
+   ouvert le seul niveau exact **3.11.9** (télécharger cet interpréteur n'est pas couvert par les
+   accords).
 2. **Ré-audit indépendant** des correctifs.
 3. `test_decision_guard.py` non lancé : `fit_benchmark()` sélectionne et ajuste des modèles
    (dont un gradient boosting), ce qui est un apprentissage hors périmètre.

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="9" time="0.145" timestamp="2026-11-14T04:23:43.835815+00:00" hostname="ffead562b57e"><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d01_capacity_does_not_depend_on_offer_list_order" time="0.004" /><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d02_conflicting_minimum_also_uses_prudent_capacity[order0]" time="0.003"><failure message="assert {0, 1} == {1}&#10;  &#10;  Extra items in the left set:&#10;  0&#10;  &#10;  Full diff:&#10;    {&#10;  +     0,&#10;        1,&#10;    }">order = ('R1', 'R2')
+
+    @pytest.mark.parametrize('order',[('R1','R2'),('R2','R1')])
+    def test_d02_conflicting_minimum_also_uses_prudent_capacity(order):
+        obs, at, settings = loan_data(scheduled=5)
+        offer(obs,'R2')['lending_unit_minimum'] = 4
+        s = snap(obs, at, settings)
+&gt;       assert {c.spare for c in lender_capacities(s.reinforcements).values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         
+E         Full diff:
+E           {
+E         +     0,
+E               1,
+E           }
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:48: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d02_conflicting_minimum_also_uses_prudent_capacity[order1]" time="0.003"><failure message="assert {0, 1} == {1}&#10;  &#10;  Extra items in the left set:&#10;  0&#10;  &#10;  Full diff:&#10;    {&#10;  +     0,&#10;        1,&#10;    }">order = ('R2', 'R1')
+
+    @pytest.mark.parametrize('order',[('R1','R2'),('R2','R1')])
+    def test_d02_conflicting_minimum_also_uses_prudent_capacity(order):
+        obs, at, settings = loan_data(scheduled=5)
+        offer(obs,'R2')['lending_unit_minimum'] = 4
+        s = snap(obs, at, settings)
+&gt;       assert {c.spare for c in lender_capacities(s.reinforcements).values()} == {1}
+E       assert {0, 1} == {1}
+E         
+E         Extra items in the left set:
+E         0
+E         
+E         Full diff:
+E           {
+E         +     0,
+E               1,
+E           }
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:48: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer[lending_unit_scheduled]" time="0.002"><failure message="assert False&#10; +  where False = all(&lt;generator object test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer.&lt;locals&gt;.&lt;genexpr&gt; at 0x7f21dd4ccee0&gt;)">field = 'lending_unit_scheduled'
+
+    @pytest.mark.parametrize('field',['lending_unit_scheduled','lending_unit_minimum'])
+    def test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer(field):
+        obs, at, settings = loan_data(scheduled=5)
+        offer(obs,'R2')[field] = None
+        s = snap(obs, at, settings)
+        caps=lender_capacities(s.reinforcements)
+&gt;       assert all(c.spare is None and c.policy == 'unknown_commitment' for c in caps.values())
+E       assert False
+E        +  where False = all(&lt;generator object test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer.&lt;locals&gt;.&lt;genexpr&gt; at 0x7f21dd4ccee0&gt;)
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:58: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer[lending_unit_minimum]" time="0.002"><failure message="assert False&#10; +  where False = all(&lt;generator object test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer.&lt;locals&gt;.&lt;genexpr&gt; at 0x7f21dd1ab5e0&gt;)">field = 'lending_unit_minimum'
+
+    @pytest.mark.parametrize('field',['lending_unit_scheduled','lending_unit_minimum'])
+    def test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer(field):
+        obs, at, settings = loan_data(scheduled=5)
+        offer(obs,'R2')[field] = None
+        s = snap(obs, at, settings)
+        caps=lender_capacities(s.reinforcements)
+&gt;       assert all(c.spare is None and c.policy == 'unknown_commitment' for c in caps.values())
+E       assert False
+E        +  where False = all(&lt;generator object test_d03_unknown_other_declaration_is_not_replaced_by_known_selected_offer.&lt;locals&gt;.&lt;genexpr&gt; at 0x7f21dd1ab5e0&gt;)
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:58: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d04_partial_aligned_overlap_is_checked_per_hour[order0]" time="0.003"><failure message="assert {13: 0, 14: 0...0, 16: 0, ...} == {13: 2, 14: 2...1, 16: 1, ...}&#10;  &#10;  Differing items:&#10;  {13: 0} != {13: 2}&#10;  {14: 0} != {14: 2}&#10;  {15: 0} != {15: 1}&#10;  {16: 0} != {16: 1}&#10;  {17: 0} != {17: 1}&#10;  {18: 0} != {18: 1}&#10;  &#10;  Full diff:&#10;    {&#10;  -     13: 2,&#10;  ?         ^&#10;  +     13: 0,&#10;  ?         ^&#10;  -     14: 2,&#10;  ?         ^&#10;  +     14: 0,&#10;  ?         ^&#10;  -     15: 1,&#10;  ?         ^&#10;  +     15: 0,&#10;  ?         ^&#10;  -     16: 1,&#10;  ?         ^&#10;  +     16: 0,&#10;  ?         ^&#10;  -     17: 1,&#10;  ?         ^&#10;  +     17: 0,&#10;  ?         ^&#10;  -     18: 1,&#10;  ?         ^&#10;  +     18: 0,&#10;  ?         ^&#10;    }">order = ('R1', 'R2')
+
+    @pytest.mark.parametrize('order',[('R1','R2'),('R2','R1')])
+    def test_d04_partial_aligned_overlap_is_checked_per_hour(order):
+        obs, at, settings=loan_data(scheduled=5)
+        offer(obs,'R1')['end']='2026-11-17T17:00:00+00:00'
+        offer(obs,'R2').update(start='2026-11-17T15:00:00+00:00',lending_unit_scheduled=4)
+        s=snap(obs,at,settings);caps=lender_capacities(s.reinforcements)
+&gt;       assert {c.hour.hour:c.spare for c in caps.values()} == {13:2,14:2,15:1,16:1,17:1,18:1}
+E       assert {13: 0, 14: 0...0, 16: 0, ...} == {13: 2, 14: 2...1, 16: 1, ...}
+E         
+E         Differing items:
+E         {13: 0} != {13: 2}
+E         {14: 0} != {14: 2}
+E         {15: 0} != {15: 1}
+E         {16: 0} != {16: 1}
+E         {17: 0} != {17: 1}
+E         {18: 0} != {18: 1}
+E         
+E         Full diff:
+E           {
+E         -     13: 2,
+E         ?         ^
+E         +     13: 0,
+E         ?         ^
+E         -     14: 2,
+E         ?         ^
+E         +     14: 0,
+E         ?         ^
+E         -     15: 1,
+E         ?         ^
+E         +     15: 0,
+E         ?         ^
+E         -     16: 1,
+E         ?         ^
+E         +     16: 0,
+E         ?         ^
+E         -     17: 1,
+E         ?         ^
+E         +     17: 0,
+E         ?         ^
+E         -     18: 1,
+E         ?         ^
+E         +     18: 0,
+E         ?         ^
+E           }
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:72: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d04_partial_aligned_overlap_is_checked_per_hour[order1]" time="0.003"><failure message="assert {13: 0, 14: 0...0, 16: 0, ...} == {13: 2, 14: 2...1, 16: 1, ...}&#10;  &#10;  Differing items:&#10;  {13: 0} != {13: 2}&#10;  {14: 0} != {14: 2}&#10;  {15: 0} != {15: 1}&#10;  {16: 0} != {16: 1}&#10;  {17: 0} != {17: 1}&#10;  {18: 0} != {18: 1}&#10;  &#10;  Full diff:&#10;    {&#10;  -     13: 2,&#10;  ?         ^&#10;  +     13: 0,&#10;  ?         ^&#10;  -     14: 2,&#10;  ?         ^&#10;  +     14: 0,&#10;  ?         ^&#10;  -     15: 1,&#10;  ?         ^&#10;  +     15: 0,&#10;  ?         ^&#10;  -     16: 1,&#10;  ?         ^&#10;  +     16: 0,&#10;  ?         ^&#10;  -     17: 1,&#10;  ?         ^&#10;  +     17: 0,&#10;  ?         ^&#10;  -     18: 1,&#10;  ?         ^&#10;  +     18: 0,&#10;  ?         ^&#10;    }">order = ('R2', 'R1')
+
+    @pytest.mark.parametrize('order',[('R1','R2'),('R2','R1')])
+    def test_d04_partial_aligned_overlap_is_checked_per_hour(order):
+        obs, at, settings=loan_data(scheduled=5)
+        offer(obs,'R1')['end']='2026-11-17T17:00:00+00:00'
+        offer(obs,'R2').update(start='2026-11-17T15:00:00+00:00',lending_unit_scheduled=4)
+        s=snap(obs,at,settings);caps=lender_capacities(s.reinforcements)
+&gt;       assert {c.hour.hour:c.spare for c in caps.values()} == {13:2,14:2,15:1,16:1,17:1,18:1}
+E       assert {13: 0, 14: 0...0, 16: 0, ...} == {13: 2, 14: 2...1, 16: 1, ...}
+E         
+E         Differing items:
+E         {13: 0} != {13: 2}
+E         {14: 0} != {14: 2}
+E         {15: 0} != {15: 1}
+E         {16: 0} != {16: 1}
+E         {17: 0} != {17: 1}
+E         {18: 0} != {18: 1}
+E         
+E         Full diff:
+E           {
+E         -     13: 2,
+E         ?         ^
+E         +     13: 0,
+E         ?         ^
+E         -     14: 2,
+E         ?         ^
+E         +     14: 0,
+E         ?         ^
+E         -     15: 1,
+E         ?         ^
+E         +     15: 0,
+E         ?         ^
+E         -     16: 1,
+E         ?         ^
+E         +     16: 0,
+E         ?         ^
+E         -     17: 1,
+E         ?         ^
+E         +     17: 0,
+E         ?         ^
+E         -     18: 1,
+E         ?         ^
+E         +     18: 0,
+E         ?         ^
+E           }
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:72: AssertionError</failure></testcase><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d05_distinct_lenders_are_not_conflated" time="0.021" /><testcase classname="HospitalOS_Audit_DS_v6_20261114.tests.test_v6_canonical_capacity" name="test_d06_equivalent_timezone_notations_share_same_slots" time="0.002"><failure message="AssertionError: assert (12 == 6)&#10; +  where 12 = len({('U-CARDIO-SYN', 'IDE', datetime.datetime(2026, 11, 17, 13, 0, tzinfo=datetime.timezone.utc)): LenderCapacity(lender=...datetime.timezone.utc), spare=0, scheduled=3, minimum=3, sources=('R3',), conflicting=False, policy='concordant'), ...})">def test_d06_equivalent_timezone_notations_share_same_slots():
+        obs,at,settings=loan_data(scheduled=4)
+        offer(obs,'R2').update(start='2026-11-17T14:00:00+01:00',end='2026-11-17T20:00:00+01:00',lending_unit_scheduled=5)
+        s=snap(obs,at,settings)
+        caps=lender_capacities(s.reinforcements)
+&gt;       assert len(caps)==6 and {c.spare for c in caps.values()}=={1}
+E       AssertionError: assert (12 == 6)
+E        +  where 12 = len({('U-CARDIO-SYN', 'IDE', datetime.datetime(2026, 11, 17, 13, 0, tzinfo=datetime.timezone.utc)): LenderCapacity(lender=...datetime.timezone.utc), spare=0, scheduled=3, minimum=3, sources=('R3',), conflicting=False, policy='concordant'), ...})
+
+../../HospitalOS_Audit_DS_v6_20261114/tests/test_v6_canonical_capacity.py:93: AssertionError</failure></testcase></testsuite></testsuites>

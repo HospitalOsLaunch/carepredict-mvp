@@ -1,9 +1,9 @@
 # Point de reprise
 
-État : P0–P4 livrés, corrigés après trois audits indépendants (P2/P3bis ; v5 : V4-R01/R02/R03,
-V4-D01 ; v6 : V5-R01) : **`PARTIAL_WITH_CHECKPOINT`**. P5 et P6 **fermés**. Portes ouvertes :
-ré-audit indépendant de la v6, niveau exact Python 3.11.9 (3.11.18 : suite verte), rejeu
-navigateur indépendant du cockpit.
+État : P0–P4 livrés ; V5-R01 **clos** par l'audit indépendant v6 (voir `CLOSURE_RECEIPT_v6.md`).
+Référence conservée : paquet v6. Statut global **`PARTIAL_WITH_CHECKPOINT`** : portes ouvertes =
+Python 3.11.9 exact, rejeu React/navigateur indépendant. Registre : 175 enregistrements,
+421,325 s, reliquat 178,675 s. P5 et P6 **fermés** (protocole et budget distincts).
 
 ## Reprise exacte
 

@@ -1,0 +1,17 @@
+{
+  "audit_id": "HospitalOS_DS_v6_independent_20261114",
+  "source_records": 166,
+  "source_used_seconds": 396.451,
+  "terminal_records": 175,
+  "terminal_used_seconds": 421.325,
+  "independent_audit_added_seconds": 24.874,
+  "remaining_seconds": 178.675,
+  "limit_seconds": 600,
+  "per_command_limit_seconds": 30,
+  "source_final_is_exact_prefix": true,
+  "prior_v5_audit_lineage_confirmed": true,
+  "last_record_sha256": "9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973",
+  "restoration_overhead_counted_without_double_counting": true,
+  "all_new_commands_below_limit": true,
+  "ledger_file_sha256": "ea161d5778dacc38c154902ec2171a7b600ae5a91670ec3a8e88690905090000"
+}

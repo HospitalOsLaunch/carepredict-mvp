@@ -208,11 +208,10 @@ def build(reference: Path, out: Path) -> int:
         "schema": "HOSPITALOS_DS_STATUS_2",
         "delivery_status": "PARTIAL_WITH_CHECKPOINT",
         "open_gates": [
-            "exact Python 3.11.9 patch level: the full suite passes under 3.11.18 (163/163, "
-            "results identical); downloading a 3.11.9 interpreter is not covered by the "
-            "authorisations",
-            "independent re-audit of the v6 correction (V5-R01); A01-A10, B01-B04 and C01-C04 "
-            "pass locally",
+            "exact Python 3.11.9 patch level: under 3.11.18 the author's full suite gives 181 "
+            "passed + 1 skipped (restoration counter test, active only on a real restoration; "
+            "163/163 was the v4 count), results identical; downloading a 3.11.9 interpreter is "
+            "not covered by the authorisations",
             "cockpit Vitest/e2e are the author's runs, not an independent browser replay",
         ],
         "scientific_status": "PROTOTYPE_UNVALIDATED",

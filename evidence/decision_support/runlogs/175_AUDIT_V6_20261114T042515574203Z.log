@@ -1,0 +1,27 @@
+{
+  "joint_offenders": [],
+  "orders": [
+    {
+      "order": [
+        "R1",
+        "R2"
+      ],
+      "outcomes": [
+        "APPROVED_IN_DEMO",
+        "REFUSED"
+      ],
+      "holds_preserved": true
+    },
+    {
+      "order": [
+        "R2",
+        "R1"
+      ],
+      "outcomes": [
+        "APPROVED_IN_DEMO",
+        "REFUSED"
+      ],
+      "holds_preserved": true
+    }
+  ]
+}
