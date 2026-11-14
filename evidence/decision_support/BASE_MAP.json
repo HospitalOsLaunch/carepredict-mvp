@@ -1,0 +1,105 @@
+{
+  "schema": "hospitalos-decision-support-base-map-v1",
+  "established_at_utc": "2026-11-14",
+  "method": "static inspection (git ls-remote, git fetch of two named refs into remote-tracking refs, git cat-file, sha256sum); no merge, rebase, push or remote write",
+  "reference_package": {
+    "name": "HospitalOS_Reprise_Codex_Claude_v1",
+    "sha256sums_verified": 8,
+    "sha256sums_failed": 0,
+    "plan_sha256": "bf7e4baf0e09fcce00f26a9fd4a739ca751394f92e5aa8fcdd8b2f9f863f2093",
+    "prompt_sha256": "3bc670e1c720e136e7b5492cac4253e8beae8e96fa44dabb80a100618a5da4a4",
+    "acceptance_controls_sha256": "550f2c22e5850f33eac23f61944e6f208b7701a0c2b337aecd3a8cd6e4623691"
+  },
+  "scientific_history_base": {
+    "role": "historical AJ-H source; read-only; not on the critical path of this prototype",
+    "primary_archive": {
+      "name": "HospitalOS_Lot_A_PRIMARY_20261112.zip",
+      "sha256": "a7bf5dcc63fcc2391636b20ed3ac1726c7bcf796b8293beb6dc25003c71f9475",
+      "source_commit": "c1a236e8c872b368198dd3791ff7a62fbbe6a6ff",
+      "present_in_session": false,
+      "commit_present_in_repository_clone": false,
+      "documented_status": "6000 updates on seeds 11/23/37 completed; zero seed meets all lot A criteria (FAIL)"
+    },
+    "detached_archive": {
+      "name": "HospitalOS_Checkpoint_A_DETACHED_2000_20261112.zip",
+      "sha256": "db72732e55d237bea7a0e6fa3714e7d3627e0469add996ead25bb5e8254b387b",
+      "source_commit": "4b230b193a2b3bf3f4432f492fa75c828d558c8b",
+      "present_in_session": false,
+      "commit_present_in_repository_clone": false,
+      "documented_status": "authenticated at 2000 updates for seeds 11/23/37 (TECHNICAL_CHUNK_COMPLETE); final 6000 result not attested by supplied files; this is NOT a scientific failure"
+    },
+    "g2": "NO-GO",
+    "historical_paths_on_engine_base": {
+      "src/hospitalos/synthetic/v041/hospsim.py": {
+        "present": true,
+        "sha256_now": "3c950b507a3e418d694acb465d86f21b4068709646095f46895adee965805d73",
+        "sha256_in_bundle_review": "99f2130ce7a6f6361db158cbb025f5689f3b4418031601c02f150ca679515502",
+        "match": false,
+        "note": "File evolved between the repository base and the bundle commit; pressure-discharge branch still present (lines 1084-1093). Kept unchanged; not reused for planning."
+      },
+      "src/hospitalos/synthetic/policy.py": {
+        "present": true,
+        "sha256_now": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+        "sha256_in_bundle_review": "6e1a7d999c5576373a1dbac888bcf7de8969fea0d59eb4ded27f11a5fd4e74eb",
+        "match": true,
+        "note": "Uses clock 'fixed UTC+01:00' (line 41): not DST-compatible; new contract uses UTC instants + Europe/Paris display."
+      },
+      "tools/ajh_full_stack/data.py": {"present": false},
+      "tools/ajh_full_stack/model.py": {"present": false},
+      "tools/ajh_full_stack/generate_data.py": {"present": false},
+      "tools/corpus_random_paired/pilot_014.py": {"present": false}
+    }
+  },
+  "engine_base": {
+    "role": "base of the new decision-support engine",
+    "ref": "origin/claude/cockpit-web",
+    "commit": "a5e737eec2cfdf0f52a68f41b523f928181c03e6",
+    "ancestry": "linear descendant of main bfa1fa7e0a8bbdd8817157a162d65f507568a251 (merge-base == main HEAD); 15 commits ahead; not merged into main",
+    "reused_modules": {
+      "src/hospitalos/operational/contract.py": "ea19d6bf8b2bf3984b6db1743848eda07cab4696de8da57ee4c1efd33a4763a0",
+      "src/hospitalos/hybrid/innovations.py": "673348e758fe5b4dd126318a31b57106d82562783fa014c3b9f15acf226a3fd6",
+      "src/hospitalos/hybrid/models.py": "93042e3cf3d4e8375d58b628ae4e063e1a8b48d318a3592182c3474c1f6d45c4"
+    },
+    "verified_by_tests": ["tests/hybrid/test_mvp.py (26 passed)", "tests/hybrid/test_pathway.py + tests/hybrid/test_future.py (60 passed)"],
+    "not_runnable_here": {
+      "tests/hybrid/test_decision_guard.py": "requires scikit-learn (not installed; network install not authorised)",
+      "tests/hybrid/test_api.py": "requires fastapi (not installed)",
+      "tests/hybrid/test_learning.py, test_live.py": "import fastapi/sklearn per static grep; not attempted"
+    }
+  },
+  "cockpit_base": {
+    "role": "existing HospitalOS cockpit to reuse",
+    "ref": "origin/claude/cockpit-web",
+    "commit": "a5e737eec2cfdf0f52a68f41b523f928181c03e6",
+    "path": "web/",
+    "stack": "React 18 + Vite 6 + Vitest 2 + TypeScript 5.6",
+    "tokens_sha256": "ed8f268dcb738d0648819080d39adddf63316b5f6d26aa46dcb9908cb8ea05c2",
+    "dependencies_available_offline": false,
+    "evidence": "no web/node_modules; npm cache holds only react/react-dom metadata, no tarballs for react, vite, vitest, typescript 5.6, jsdom",
+    "locally_available_tools": {"tsc": "6.0.2 (global)", "playwright": "global module with preinstalled Chromium", "bun": "1.4.4"},
+    "brand_note": "cockpit tokens use --brand #3047e6 (Outremer); the plan's reference violet #7049D0 is added as a scoped accent token only, without global redesign"
+  },
+  "other_cockpit_candidate": {
+    "ref": "main:services/dashboard",
+    "note": "older CarePredict dashboard (React/Vite, no node_modules); superseded by web/ for HospitalOS hybrid MVP; not modified"
+  },
+  "separated_branches_not_touched": {
+    "main": "bfa1fa7e0a8bbdd8817157a162d65f507568a251",
+    "mvp/computer-use": {
+      "commit": "9cddedd69d23f101eeb4d0192313ac26d6e3b1a8",
+      "note": "no common ancestor with main (independent admissions product history); fetched read-only for inspection; never merged or rebased"
+    }
+  },
+  "work_branch": {
+    "name": "claude/hospitalos-auto-first-p0-p4-s2dywn",
+    "created_from": "a5e737eec2cfdf0f52a68f41b523f928181c03e6",
+    "upstream": "unset (no push in this mandate)"
+  },
+  "runtime": {
+    "python": "3.13.18 (repository pins 3.11.9 in .python-version; contracts use only 3.11-compatible syntax)",
+    "pydantic": "2.13.5",
+    "numpy": "2.5.3",
+    "pytest": "9.1.1 (isolated uv tool venv, imported via PYTHONPATH; no installation)",
+    "node": "22.23.4"
+  }
+}
