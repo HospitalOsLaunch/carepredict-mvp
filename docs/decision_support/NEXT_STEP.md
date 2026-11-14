@@ -1,8 +1,9 @@
 # Point de reprise
 
 État : P0–P4 livrés puis corrigés après audit (P2/P3bis, P4bis) : **`PARTIAL_WITH_CHECKPOINT`**.
-P5 et P6 **fermés** (mandat et budget distincts requis). Portes ouvertes : test d'exécution sous
-Python 3.11.9 (installation réseau à autoriser) et ré-audit indépendant des correctifs.
+P5 et P6 **fermés** (mandat et budget distincts requis). Portes ouvertes : niveau exact
+Python 3.11.9 (3.11.18 testé : 153/153 hors test_p1 ; `jsonschema` à autoriser pour ses 10 tests)
+et ré-audit indépendant des correctifs.
 Branche locale : `claude/hospitalos-auto-first-p0-p4-s2dywn`, base `a5e737e` (`claude/cockpit-web`).
 Rien n'a été poussé.
 

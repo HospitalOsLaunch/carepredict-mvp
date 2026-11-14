@@ -65,10 +65,10 @@ Dans un environnement neuf, relancer les tests du cockpit exige toujours `npm ci
 
 ## 6. Portes ouvertes et limites
 
-1. **Python 3.11.9** : seul Python 3.11.18 est présent, sans pydantic/numpy/pytest (l'extension
-   compilée de pydantic disponible vise 3.13). Un test d'exécution en 3.11 exige une installation
-   réseau, non autorisée. Seule l'analyse syntaxique de tous les fichiers Python modifiés sous
-   3.11 a été faite (réussie).
+1. **Python 3.11** — partiellement fermée (voir § 8) : exécuté sous **3.11.18** après accord de
+   l'utilisateur pour pydantic, numpy et pytest. Restent ouverts : le niveau exact **3.11.9**
+   (télécharger cet interpréteur n'est pas couvert par l'accord) et les 10 tests de
+   `test_p1_contracts.py`, non collectables sans `jsonschema` (paquet non autorisé).
 2. **Ré-audit indépendant** des correctifs.
 3. `test_decision_guard.py` non lancé : `fit_benchmark()` sélectionne et ajuste des modèles
    (dont un gradient boosting), ce qui est un apprentissage hors périmètre.
@@ -83,3 +83,20 @@ dernière empreinte, total) : une troncature ou une perte du fichier sont détec
 Limite déclarée : si registre **et** ancre disparaissent ensemble, seule la copie terminale du paquet
 (`LEDGER_TERMINAL.json`, listée dans `SHA256SUMS.post`) prouve le compteur. `restore.sh` vérifie
 désormais `SHA256SUMS`, `SHA256SUMS.post` et que le compteur restauré égale le terminal.
+
+## 8. Addendum — exécution sous Python 3.11 (après le scellement du paquet v3)
+
+Accord explicite de l'utilisateur : installation de pydantic, numpy et pytest pour Python 3.11.
+Environnement virtuel isolé (dossier de travail de la session, Python système inchangé),
+`/usr/bin/python3.11` = **3.11.18**, contraintes du `pyproject.toml` : pydantic 2.14.3
+(pydantic_core 2.50.4), numpy 2.4.6, pytest 8.4.2, plus leurs dépendances directes
+(`evidence/decision_support/py311_venv_freeze.txt`). Installation : 11,986 s, imputée au registre.
+
+| Contrôle sous 3.11.18 | Résultat |
+|---|---|
+| Suite DS + 86 hybrides, hors `test_p1_contracts.py` | **153 réussis**, 0 échec (`pytest_py311.xml`) |
+| `test_p1_contracts.py` (10 tests) | non collecté : `ModuleNotFoundError: jsonschema` (non autorisé) |
+| 11 résultats régénérés vs index livré | **identiques octet pour octet** |
+
+Les 10 tests de `test_p1` passent sous 3.13. Ces exécutions sont postérieures au scellement du
+paquet v3 : elles figurent dans le registre du dépôt, pas dans le terminal de v3.
