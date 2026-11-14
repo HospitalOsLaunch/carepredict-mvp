@@ -55,9 +55,9 @@ def _prov(o: Observation) -> Provenance:
     )
 
 
-def usable(observations: Iterable[Observation], as_of: datetime) -> tuple[
-    dict[tuple[str, str], Observation], dict[str, int]
-]:
+def usable(
+    observations: Iterable[Observation], as_of: datetime
+) -> tuple[dict[tuple[str, str], Observation], dict[str, int]]:
     as_of = utc(as_of)
     latest: dict[tuple[str, str], Observation] = {}
     excluded = {"event_after_decision": 0, "available_after_decision": 0}
@@ -123,8 +123,12 @@ def build_snapshot(
         logi = of("discharge_logistics", sid)
         ready = of("readiness_estimate", sid)
         planned = of("planned_departure", sid)
-        for name, items in (("medical_authorization", auth), ("discharge_logistics", logi),
-                            ("readiness_estimate", ready), ("planned_departure", planned)):
+        for name, items in (
+            ("medical_authorization", auth),
+            ("discharge_logistics", logi),
+            ("readiness_estimate", ready),
+            ("planned_departure", planned),
+        ):
             if items:
                 prov[name] = _prov(items[-1])
         care = tuple(
@@ -201,7 +205,8 @@ def build_snapshot(
         issues.append(f"stays_exceed_supported_bound:{len(stays)}>{limits['max_present_stays']}")
 
     unit = UnitInfo(
-        unit_id=profile["unit_id"], profile_id=profile["profile_id"],
+        unit_id=profile["unit_id"],
+        profile_id=profile["profile_id"],
         profile_version=profile["version"],
     )
     body = {

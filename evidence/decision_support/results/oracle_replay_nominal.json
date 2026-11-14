@@ -1,6 +1,6 @@
 {
  "backend": {
-  "code_sha256": "6930c187e68f7cbafccf13ae551f60c391b677e416d1f0dc0bc19ef932850904",
+  "code_sha256": "ab80030e1d8439a8d1060f3ef309a6786a2893659db418ed523168031f128014",
   "name": "private_oracle",
   "product_allowed": false,
   "reads_private": true,

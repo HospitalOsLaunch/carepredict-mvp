@@ -10,7 +10,7 @@
    "admissions are not a lever; waiting patients' care counts as uncovered"
   ],
   "backend": {
-   "code_sha256": "91ce98ce2910f189e95b06a1bd98d3482b06937ed884ce5ac762b0b0013cfbb0",
+   "code_sha256": "98f40021acac7c1a5fec2b23b18fd73234e9cc6656c98af02a4138178f3abf72",
    "name": "reference_hybrid",
    "product_allowed": true,
    "reads_private": false,

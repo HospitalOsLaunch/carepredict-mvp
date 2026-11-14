@@ -8,11 +8,11 @@
   },
   {
    "file": "reco_auto_nominal.json",
-   "sha256": "97d2bd94ba3867ad10aa0e12a5b1144de1887e0c91d0319775f8f85e4c21ee0d"
+   "sha256": "7439176ef022987c3a2a692f47501374bf51f0aff504a5acce618c41977214a3"
   },
   {
    "file": "reco_auto_no_action.json",
-   "sha256": "2d84e3cca9adc0e9f2e2e07b84cd3750eeea23142b4e0778e889e7ba839bc23a"
+   "sha256": "9d235f2d0648590d4b04c56836498a68d0f821eb7b9832ac175986ec3e3805c0"
   },
   {
    "file": "reco_auto_insufficient_data.json",
@@ -20,15 +20,15 @@
   },
   {
    "file": "reco_manual_x1x2.json",
-   "sha256": "95d43f1cf6e68058c598464b5e4ade1a034b55f1f706f42aba2b805d8bd4bee3"
+   "sha256": "4267e0cb03444a34b90d87108a9505a72077b22d90bbcf529f4790023690a2a8"
   },
   {
    "file": "reco_manual_hypothesis.json",
-   "sha256": "42fcfa1ac62f48db1d3970f1d699a70050a32210cc7c157dbabb01004854784c"
+   "sha256": "755a6ec65e3b0ae1dbfbc113f9610f15353bdea556af4ea78422bd40cffc6844"
   },
   {
    "file": "reco_manual_impossible.json",
-   "sha256": "09b2d5cb7644824b1abced8423d2faa450d25e1da7f6853d4c09056ff8e67dc6"
+   "sha256": "a62fc0ab07202d7d2ae4af544f67531a98ee36798261f4f7d5489b2ae759fdd6"
   },
   {
    "file": "reco_manual_contradictory.json",
@@ -44,7 +44,7 @@
   },
   {
    "file": "oracle_replay_nominal.json",
-   "sha256": "8ae74b0f86da683e3e2cd86cbd9fca0019f44a19709f4b4d29209f6e2fab459a"
+   "sha256": "fd5f011071fb98926aa31e45244dd825236df8c06ac9b9a4aa61d09765779fc9"
   }
  ],
  "g2": "NO-GO",

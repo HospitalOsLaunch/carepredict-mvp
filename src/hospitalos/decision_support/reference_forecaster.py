@@ -70,9 +70,7 @@ class SampledProvider:
     reads_private: bool = False
 
     def draw(self, mechanism: str, entity: str, dist: Distribution) -> int:
-        u = Fraction(uniform(self.seed, self.scenario, mechanism, entity)).limit_denominator(
-            2**53
-        )
+        u = Fraction(uniform(self.seed, self.scenario, mechanism, entity)).limit_denominator(2**53)
         total = sum(dist.weights)
         acc = 0
         for value, weight in zip(dist.support, dist.weights, strict=True):
@@ -230,7 +228,7 @@ def simulate(
             requests.append((1, max(base, ready), sid, "habitual", ready))
     departures: dict[str, int] = {}
     delayed: dict[str, tuple[int, int]] = {}
-    for order, desired, sid, origin, ready in sorted(requests):
+    for _order, desired, sid, origin, _ready in sorted(requests):
         s = stays[sid]
         needs = s.transport_need in {"seated", "stretcher"}
         if desired >= hours:
@@ -284,9 +282,7 @@ def simulate(
         dist = beds[bed_id].cleaning or Distribution.point(1)
         duration = provider.draw("cleaning", f"{bed_id}|{cause}", dist)
         s = ready_from
-        while s < hours and any(
-            busy[x] >= cleaning[x] for x in range(s, min(s + duration, hours))
-        ):
+        while s < hours and any(busy[x] >= cleaning[x] for x in range(s, min(s + duration, hours))):
             s += 1
         if s >= hours:
             continue
@@ -398,7 +394,8 @@ def simulate(
         clean_free[h] = sum(
             1
             for b, f in free_from.items()
-            if f <= h and (b not in occupied_from or occupied_from[b] > h)
+            if f <= h
+            and (b not in occupied_from or occupied_from[b] > h)
             and beds[b].status != "closed"
         )
     # Admission work of a patient who arrived but is still waiting at the horizon end remains
@@ -409,9 +406,27 @@ def simulate(
             uncovered_wait[hours - 1] += owed
             uncovered_skill["IDE"][hours - 1] += owed
     return Run(
-        hours, departures, admissions, arrivals, bed_clean_at, events, demand, uncovered_unit,
-        uncovered_skill, cleaning_jobs, uncovered_wait, shortfall, sched, extra, staff_required, waiting, clean_free, blockers,
-        returned, violations, warnings,
+        hours,
+        departures,
+        admissions,
+        arrivals,
+        bed_clean_at,
+        events,
+        demand,
+        uncovered_unit,
+        uncovered_skill,
+        cleaning_jobs,
+        uncovered_wait,
+        shortfall,
+        sched,
+        extra,
+        staff_required,
+        waiting,
+        clean_free,
+        blockers,
+        returned,
+        violations,
+        warnings,
     )
 
 
@@ -430,17 +445,22 @@ def check_invariants(
     for h, kind, _, _ in run.events:
         if kind == "transport_used":
             used[h] += 1
-    problems += [f"transport_over_capacity:h{h}" for h in range(run.hours) if used[h] > transport[h]]
+    problems += [
+        f"transport_over_capacity:h{h}" for h in range(run.hours) if used[h] > transport[h]
+    ]
     departure_of_bed = {stays[s].bed_id: h for s, h in run.departures.items()}
     for h, kind, subject, cause in run.events:
-        if kind == "cleaning_start" and cause not in {"initial", "in_progress"}:
-            if subject not in departure_of_bed or h <= departure_of_bed[subject]:
-                problems.append(f"cleaning_before_departure:{subject}")
-    for sid, h in run.departures.items():
+        if (
+            kind == "cleaning_start"
+            and cause not in {"initial", "in_progress"}
+            and (subject not in departure_of_bed or h <= departure_of_bed[subject])
+        ):
+            problems.append(f"cleaning_before_departure:{subject}")
+    for sid in run.departures:
         if stays[sid].medical_authorization != "authorized" and not hypothetical_ok:
             problems.append(f"departure_without_authorization:{sid}")
     beds_taken: dict[str, int] = {}
-    for h, kind, rid, bed in run.events:
+    for h, kind, _rid, bed in run.events:
         if kind != "admission":
             continue
         if bed in beds_taken:
@@ -455,7 +475,8 @@ def check_invariants(
             if occupant is None or run.departures.get(occupant.stay_id, run.hours) >= h:
                 problems.append(f"admission_before_departure:{bed}")
     present_end = (
-        len(snapshot.stays) - sum(1 for h in run.departures.values() if h < run.hours)
+        len(snapshot.stays)
+        - sum(1 for h in run.departures.values() if h < run.hours)
         + len(run.admissions)
     )
     if present_end > len(snapshot.beds):
@@ -467,8 +488,8 @@ def check_invariants(
     problems += [
         f"cleaning_over_capacity:h{h}"
         for h in range(run.hours)
-        if concurrent[h] > cleaning[h] and not all(c[1] == "in_progress" for c in run.cleaning_jobs
-                                                    if c[2] <= h < c[2] + c[3])
+        if concurrent[h] > cleaning[h]
+        and not all(c[1] == "in_progress" for c in run.cleaning_jobs if c[2] <= h < c[2] + c[3])
     ]
     return problems
 
@@ -523,7 +544,9 @@ def summarise(
                 waiting_patients=_mean([r.waiting[h] for r in runs]),
                 clean_free_beds=_mean([r.clean_free[h] for r in runs]),
                 logistic_blockers=_mean([r.blockers[h] for r in runs]),
-                pressure_score=_mean([s[h] for s in scores if s is not None]) if configured else None,
+                pressure_score=_mean([s[h] for s in scores if s is not None])
+                if configured
+                else None,
             )
         )
     totals = [sum(r.uncovered_unit) + sum(r.uncovered_waiting) for r in runs]
@@ -544,15 +567,17 @@ def summarise(
         peak_pressure=peak,
         peak_pressure_hour=next(
             (p.hour_index for p in trajectory if p.pressure_score == peak), None
-        ) if configured else None,
+        )
+        if configured
+        else None,
         hours_above_threshold=_mean(
             [sum(1 for v in s if v >= threshold) for s in scores if s is not None]
-        ) if configured and threshold is not None else None,
+        )
+        if configured and threshold is not None
+        else None,
         worst_scenario_uncovered_minutes=float(max(totals)),
         best_scenario_uncovered_minutes=float(min(totals)),
-        max_total_staff_required={
-            k: max(p.staff_required[k] for p in trajectory) for k in SKILLS
-        },
+        max_total_staff_required={k: max(p.staff_required[k] for p in trajectory) for k in SKILLS},
         max_additional_staff_required={
             k: max(max(0.0, p.staff_required[k] - p.staff_scheduled[k]) for p in trajectory)
             for k in SKILLS
@@ -587,32 +612,51 @@ class ReferenceForecaster:
 
         module = sys.modules[__name__]
         return BackendInfo(
-            name=BACKEND_NAME, version=BACKEND_VERSION, code_sha256=_code_sha(module),
-            reads_private=False, product_allowed=True,
+            name=BACKEND_NAME,
+            version=BACKEND_VERSION,
+            code_sha256=_code_sha(module),
+            reads_private=False,
+            product_allowed=True,
         )
 
-    def runs(self, snapshot: PublicSnapshot, plan: Plan, config: ForecastConfig,
-             drop_unconfirmed: bool = False) -> list[Run]:
+    def runs(
+        self,
+        snapshot: PublicSnapshot,
+        plan: Plan,
+        config: ForecastConfig,
+        drop_unconfirmed: bool = False,
+    ) -> list[Run]:
         decisions = decisions_from_plan(plan, snapshot, config.start)
         if drop_unconfirmed:
             decisions = Decisions(
-                decisions.coordinated, decisions.locked_discharges, decisions.extensions,
+                decisions.coordinated,
+                decisions.locked_discharges,
+                decisions.extensions,
                 tuple(r for r in decisions.reinforcements if r.confirmation == "confirmed"),
             )
         return [
-            simulate(snapshot, config.profile, config.start, config.hours, decisions,
-                     SampledProvider(seed))
+            simulate(
+                snapshot,
+                config.profile,
+                config.start,
+                config.hours,
+                decisions,
+                SampledProvider(seed),
+            )
             for seed in config.seeds
         ]
 
-    def forecast(self, snapshot: PublicSnapshot, plan: Plan, config: ForecastConfig) -> PlanEvaluation:
+    def forecast(
+        self, snapshot: PublicSnapshot, plan: Plan, config: ForecastConfig
+    ) -> PlanEvaluation:
         if not isinstance(snapshot, PublicSnapshot):
             raise LeakageError("forecast() accepts a PublicSnapshot only")
         runs = self.runs(snapshot, plan, config)
         hypothetical = any(a.basis == "hypothesis_only" for a in plan.actions)
-        violations = sorted({v for r in runs for v in r.violations} | {
-            v for r in runs for v in check_invariants(snapshot, config.start, r, hypothetical)
-        })
+        violations = sorted(
+            {v for r in runs for v in r.violations}
+            | {v for r in runs for v in check_invariants(snapshot, config.start, r, hypothetical)}
+        )
         warnings = sorted({w for r in runs for w in r.warnings})
         metrics, trajectory = summarise(runs, plan, config.start, config.score)
         conditional = tuple(
@@ -621,7 +665,9 @@ class ReferenceForecaster:
         confirmed_only = None
         if conditional:
             confirmed_only, _ = summarise(
-                self.runs(snapshot, plan, config, drop_unconfirmed=True), plan, config.start,
+                self.runs(snapshot, plan, config, drop_unconfirmed=True),
+                plan,
+                config.start,
                 config.score,
             )
         return PlanEvaluation(
@@ -649,14 +695,22 @@ class PrivateOracle:
 
     def info(self) -> BackendInfo:
         return BackendInfo(
-            name="private_oracle", version=BACKEND_VERSION, code_sha256=_code_sha(PrivateOracle),
-            reads_private=True, product_allowed=False,
+            name="private_oracle",
+            version=BACKEND_VERSION,
+            code_sha256=_code_sha(PrivateOracle),
+            reads_private=True,
+            product_allowed=False,
         )
 
     def outcome(self, snapshot: PublicSnapshot, plan: Plan, config: ForecastConfig) -> Run:
-        return simulate(snapshot, config.profile, config.start, config.hours,
-                        decisions_from_plan(plan, snapshot, config.start),
-                        TruthProvider(self.truth))
+        return simulate(
+            snapshot,
+            config.profile,
+            config.start,
+            config.hours,
+            decisions_from_plan(plan, snapshot, config.start),
+            TruthProvider(self.truth),
+        )
 
 
 def assert_product_backend(backend: Any) -> None:

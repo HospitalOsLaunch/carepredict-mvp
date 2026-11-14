@@ -1,0 +1,15 @@
+15 files reformatted, 7 files left unchanged
+src/hospitalos/decision_support/__main__.py:3:101: E501 Line too long (115 > 100)
+src/hospitalos/decision_support/__main__.py:4:101: E501 Line too long (115 > 100)
+src/hospitalos/decision_support/__main__.py:5:101: E501 Line too long (102 > 100)
+src/hospitalos/decision_support/audit.py:82:101: E501 Line too long (103 > 100)
+src/hospitalos/decision_support/candidates.py:193:101: E501 Line too long (104 > 100)
+src/hospitalos/decision_support/candidates.py:194:101: E501 Line too long (101 > 100)
+src/hospitalos/decision_support/planner.py:129:101: E501 Line too long (110 > 100)
+src/hospitalos/decision_support/planner.py:133:101: E501 Line too long (112 > 100)
+src/hospitalos/decision_support/planner.py:166:101: E501 Line too long (101 > 100)
+src/hospitalos/decision_support/planner.py:246:101: E501 Line too long (106 > 100)
+src/hospitalos/decision_support/planner.py:248:101: E501 Line too long (102 > 100)
+tests/decision_support/test_p2_backend.py:176:5: E731 Do not assign a `lambda` expression, use a `def`
+Found 12 errors.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

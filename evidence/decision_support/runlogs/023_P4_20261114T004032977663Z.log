@@ -1,0 +1,355 @@
+E501 Line too long (119 > 100)
+ --> src/hospitalos/decision_support/__main__.py:3:101
+  |
+1 | """Local command (no network, no hospital system).
+2 |
+3 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support recommend tests/decision_support/fixtures/nominal_auto.json
+  |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+4 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support simulate tests/decision_support/fixtures/scenario_x1x2.json
+5 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support export --out evidence/decision_support/results
+  |
+
+E501 Line too long (119 > 100)
+ --> src/hospitalos/decision_support/__main__.py:4:101
+  |
+3 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support recommend tests/decision_support/fixtures/nominal_auto.json
+4 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support simulate tests/decision_support/fixtures/scenario_x1x2.json
+  |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+5 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support export --out evidence/decision_support/results
+6 | """
+  |
+
+E501 Line too long (106 > 100)
+ --> src/hospitalos/decision_support/__main__.py:5:101
+  |
+3 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support recommend tests/decision_support/fixtures/nominal_auto.json
+4 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support simulate tests/decision_support/fixtures/scenario_x1x2.json
+5 |     PYTHONPATH=src:. python3 -m hospitalos.decision_support export --out evidence/decision_support/results
+  |                                                                                                     ^^^^^^
+6 | """
+  |
+
+E501 Line too long (103 > 100)
+  --> src/hospitalos/decision_support/audit.py:82:101
+   |
+80 |     if updates > record["attested_updates"]:
+81 |         raise ProvenanceError(
+82 |             f"{record['mode']}: {updates} updates not attested (attested {record['attested_updates']})"
+   |                                                                                                     ^^^
+83 |         )
+84 |     if record["mode"] == "A_detached" and claim.get("status") in {"FAIL", "SCIENTIFIC_FAILURE"}:
+   |
+
+E501 Line too long (104 > 100)
+   --> src/hospitalos/decision_support/candidates.py:180:101
+    |
+178 |         complete=len(combos) <= limit,
+179 |         filter_rules=(
+180 |             "auto discharge coordination only with observed medical authorization and no open obstacle",
+    |                                                                                                     ^^^^
+181 |             "target hours from profile, not before readiness estimate, before any planned departure",
+182 |             "reinforcement options: known confirmation status and external commitment respected",
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/decision_support/candidates.py:181:101
+    |
+179 |         filter_rules=(
+180 |             "auto discharge coordination only with observed medical authorization and no open obstacle",
+181 |             "target hours from profile, not before readiness estimate, before any planned departure",
+    |                                                                                                     ^
+182 |             "reinforcement options: known confirmation status and external commitment respected",
+183 |             f"at most {limits['max_coordinations_per_plan']} coordinations and "
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/decision_support/contracts.py:284:101
+    |
+282 | # --------------------------------------------------------------------------- actions and plans
+283 |
+284 | ActionType = Literal["coordinate_discharge", "reinforcement", "locked_discharge", "locked_extension"]
+    |                                                                                                     ^
+
+E501 Line too long (110 > 100)
+   --> src/hospitalos/decision_support/planner.py:129:101
+    |
+127 |     lines = [
+128 |         f"tier1 uncovered_care_minutes: habitual {b.uncovered_care_minutes} -> plan "
+129 |         f"{c.uncovered_care_minutes} (delta {round(c.uncovered_care_minutes - b.uncovered_care_minutes, 3)}, "
+    |                                                                                                     ^^^^^^^^^^
+130 |         f"equivalence tolerance {tolerance})",
+131 |         f"tier2 reinforcement_hours: {c.reinforcement_hours}",
+    |
+
+E501 Line too long (112 > 100)
+   --> src/hospitalos/decision_support/planner.py:133:101
+    |
+131 |         f"tier2 reinforcement_hours: {c.reinforcement_hours}",
+132 |         f"tier3 interventions: {c.interventions}",
+133 |         f"reported waiting_patient_hours: habitual {b.waiting_patient_hours} -> plan {c.waiting_patient_hours}",
+    |                                                                                                     ^^^^^^^^^^^^
+134 |         f"reported beds_returned: habitual {b.beds_returned} -> plan {c.beds_returned}",
+135 |     ]
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/decision_support/planner.py:157:101
+    |
+155 |         m = primary.metrics
+156 |         uncertainties = [
+157 |             f"{len(primary.per_scenario_uncovered)} forecast scenarios (selection seeds, in-sample)",
+    |                                                                                                     ^
+158 |             f"uncovered minutes range over scenarios: {m.best_scenario_uncovered_minutes}"
+159 |             f"..{m.worst_scenario_uncovered_minutes}",
+    |
+
+E501 Line too long (105 > 100)
+   --> src/hospitalos/decision_support/planner.py:218:101
+    |
+216 |         "pressure_discharges_enabled": settings.profile["pressure_discharges_enabled"],
+217 |     }
+218 |     body = {"fp": snapshot.fingerprint, "config": config, "plans": [e.plan.plan_id for e in evaluations]}
+    |                                                                                                     ^^^^^
+219 |     return ForecastBundle(
+220 |         bundle_id="fb-" + sha(body)[:16],
+    |
+
+E501 Line too long (106 > 100)
+   --> src/hospitalos/decision_support/planner.py:230:101
+    |
+228 |         selection_seeds=tuple(settings.profile["forecast"]["selection_seeds"]),
+229 |         assumptions=(
+230 |             "habitual practice HABITUAL-1 continues in every branch (care, arrivals, ordinary decisions)",
+    |                                                                                                     ^^^^^^
+231 |             "pressure discharges disabled for all policies",
+232 |             "unknown delays sampled from public declared distributions with keyed paired innovations",
+    |
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/decision_support/planner.py:232:101
+    |
+230 |             "habitual practice HABITUAL-1 continues in every branch (care, arrivals, ordinary decisions)",
+231 |             "pressure discharges disabled for all policies",
+232 |             "unknown delays sampled from public declared distributions with keyed paired innovations",
+    |                                                                                                     ^^
+233 |             "admissions are not a lever; waiting patients' care counts as uncovered",
+234 |         ),
+    |
+
+E501 Line too long (105 > 100)
+   --> src/hospitalos/decision_support/planner.py:303:101
+    |
+301 |         return _recommendation(status="NO_ACTION_PREFERRED", mode="auto", snapshot=snapshot,
+302 |                                settings=settings,
+303 |                                reasons=["habitual_practice_preferred_no_material_improvement", *reasons],
+    |                                                                                                     ^^^^^
+304 |                                diagnostics=[], bundle=bundle, baseline=baseline, primary=baseline,
+305 |                                approvable=True)
+    |
+
+B007 Loop control variable `order` not used within loop body
+   --> src/hospitalos/decision_support/reference_forecaster.py:233:9
+    |
+231 |     departures: dict[str, int] = {}
+232 |     delayed: dict[str, tuple[int, int]] = {}
+233 |     for order, desired, sid, origin, ready in sorted(requests):
+    |         ^^^^^
+234 |         s = stays[sid]
+235 |         needs = s.transport_need in {"seated", "stretcher"}
+    |
+help: Rename unused `order` to `_order`
+
+B007 Loop control variable `ready` not used within loop body
+   --> src/hospitalos/decision_support/reference_forecaster.py:233:38
+    |
+231 |     departures: dict[str, int] = {}
+232 |     delayed: dict[str, tuple[int, int]] = {}
+233 |     for order, desired, sid, origin, ready in sorted(requests):
+    |                                      ^^^^^
+234 |         s = stays[sid]
+235 |         needs = s.transport_need in {"seated", "stretcher"}
+    |
+help: Rename unused `ready` to `_ready`
+
+E501 Line too long (127 > 100)
+   --> src/hospitalos/decision_support/reference_forecaster.py:413:101
+    |
+411 |     return Run(
+412 |         hours, departures, admissions, arrivals, bed_clean_at, events, demand, uncovered_unit,
+413 |         uncovered_skill, cleaning_jobs, uncovered_wait, shortfall, sched, extra, staff_required, waiting, clean_free, blockers,
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+414 |         returned, violations, warnings,
+415 |     )
+    |
+
+E501 Line too long (101 > 100)
+   --> src/hospitalos/decision_support/reference_forecaster.py:433:101
+    |
+431 |         if kind == "transport_used":
+432 |             used[h] += 1
+433 |     problems += [f"transport_over_capacity:h{h}" for h in range(run.hours) if used[h] > transport[h]]
+    |                                                                                                     ^
+434 |     departure_of_bed = {stays[s].bed_id: h for s, h in run.departures.items()}
+435 |     for h, kind, subject, cause in run.events:
+    |
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+   --> src/hospitalos/decision_support/reference_forecaster.py:436:9
+    |
+434 |       departure_of_bed = {stays[s].bed_id: h for s, h in run.departures.items()}
+435 |       for h, kind, subject, cause in run.events:
+436 | /         if kind == "cleaning_start" and cause not in {"initial", "in_progress"}:
+437 | |             if subject not in departure_of_bed or h <= departure_of_bed[subject]:
+    | |_________________________________________________________________________________^
+438 |                   problems.append(f"cleaning_before_departure:{subject}")
+439 |       for sid, h in run.departures.items():
+    |
+help: Combine `if` statements using `and`
+
+B007 Loop control variable `h` not used within loop body
+   --> src/hospitalos/decision_support/reference_forecaster.py:439:14
+    |
+437 |             if subject not in departure_of_bed or h <= departure_of_bed[subject]:
+438 |                 problems.append(f"cleaning_before_departure:{subject}")
+439 |     for sid, h in run.departures.items():
+    |              ^
+440 |         if stays[sid].medical_authorization != "authorized" and not hypothetical_ok:
+441 |             problems.append(f"departure_without_authorization:{sid}")
+    |
+help: Rename unused `h` to `_h`
+
+B007 Loop control variable `rid` not used within loop body
+   --> src/hospitalos/decision_support/reference_forecaster.py:443:18
+    |
+441 |             problems.append(f"departure_without_authorization:{sid}")
+442 |     beds_taken: dict[str, int] = {}
+443 |     for h, kind, rid, bed in run.events:
+    |                  ^^^
+444 |         if kind != "admission":
+445 |             continue
+    |
+help: Rename unused `rid` to `_rid`
+
+E501 Line too long (102 > 100)
+   --> src/hospitalos/decision_support/reference_forecaster.py:526:101
+    |
+524 |                 clean_free_beds=_mean([r.clean_free[h] for r in runs]),
+525 |                 logistic_blockers=_mean([r.blockers[h] for r in runs]),
+526 |                 pressure_score=_mean([s[h] for s in scores if s is not None]) if configured else None,
+    |                                                                                                     ^^
+527 |             )
+528 |         )
+    |
+
+E501 Line too long (103 > 100)
+   --> src/hospitalos/decision_support/reference_forecaster.py:608:101
+    |
+606 |         ]
+607 |
+608 |     def forecast(self, snapshot: PublicSnapshot, plan: Plan, config: ForecastConfig) -> PlanEvaluation:
+    |                                                                                                     ^^^
+609 |         if not isinstance(snapshot, PublicSnapshot):
+610 |             raise LeakageError("forecast() accepts a PublicSnapshot only")
+    |
+
+E501 Line too long (101 > 100)
+  --> tests/decision_support/test_audit.py:28:101
+   |
+27 | def _budget():
+28 |     spec = importlib.util.spec_from_file_location("ds_budget_run", ROOT / "scripts/ds_budget_run.py")
+   |                                                                                                     ^
+29 |     module = importlib.util.module_from_spec(spec)
+30 |     assert spec.loader is not None
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/decision_support/test_p2_backend.py:3:1
+   |
+ 1 |   """P2 — reference backend: information boundary, invariants, resources, pairing."""
+ 2 |
+ 3 | / from __future__ import annotations
+ 4 | |
+ 5 | | import hashlib
+ 6 | | from dataclasses import dataclass, field
+ 7 | | from datetime import timedelta
+ 8 | | from pathlib import Path
+ 9 | |
+10 | | import pytest
+11 | |
+12 | | from hospitalos.decision_support.candidates import coordination_action, make_plan, reinforcement_action
+13 | | from hospitalos.decision_support.contracts import Distribution, ReinforcementOption
+14 | | from hospitalos.decision_support.planner import Settings, _config, recommend
+15 | | from hospitalos.decision_support.reference_forecaster import (
+16 | |     Decisions,
+17 | |     LeakageError,
+18 | |     PrivateOracle,
+19 | |     PrivateTruth,
+20 | |     ReferenceForecaster,
+21 | |     SampledProvider,
+22 | |     assert_product_backend,
+23 | |     check_invariants,
+24 | |     check_isolation,
+25 | |     simulate,
+26 | | )
+27 | | from hospitalos.decision_support.resources import ResourceLedger, coverage, option_admissibility
+28 | | from hospitalos.decision_support.snapshot import load_json, snapshot_from_fixture
+29 | |
+30 | | from .conftest import FX, snapshot_with
+   | |_______________________________________^
+31 |
+32 |   ROOT = Path(__file__).resolve().parents[2]
+   |
+help: Organize imports
+   |
+11 |
+   - from hospitalos.decision_support.candidates import coordination_action, make_plan, reinforcement_action
+12 + from hospitalos.decision_support.candidates import (
+13 +     coordination_action,
+14 +     make_plan,
+15 +     reinforcement_action,
+16 + )
+17 | from hospitalos.decision_support.contracts import Distribution, ReinforcementOption
+   |
+
+E501 Line too long (103 > 100)
+  --> tests/decision_support/test_p2_backend.py:12:101
+   |
+10 | import pytest
+11 |
+12 | from hospitalos.decision_support.candidates import coordination_action, make_plan, reinforcement_action
+   |                                                                                                     ^^^
+13 | from hospitalos.decision_support.contracts import Distribution, ReinforcementOption
+14 | from hospitalos.decision_support.planner import Settings, _config, recommend
+   |
+
+E501 Line too long (101 > 100)
+  --> tests/decision_support/test_p2_backend.py:41:101
+   |
+40 | def _run(snapshot, settings, decisions, seed=101):
+41 |     return simulate(snapshot, settings.profile, snapshot.as_of, 24, decisions, SampledProvider(seed))
+   |                                                                                                     ^
+
+E501 Line too long (103 > 100)
+  --> tests/decision_support/test_p3_planner.py:40:101
+   |
+38 |     assert baseline.plan.is_baseline and not primary.plan.is_baseline
+39 |     tolerance = settings.objective["tiers"][1]["equivalence_tolerance"]
+40 |     assert primary.metrics.uncovered_care_minutes < baseline.metrics.uncovered_care_minutes - tolerance
+   |                                                                                                     ^^^
+41 |     assert auto.bundle.search.complete and auto.bundle.search.evaluated <= 16
+42 |     assert auto.reasons and auto.conditions and auto.uncertainties
+   |
+
+E501 Line too long (105 > 100)
+   --> tests/decision_support/test_p3_planner.py:193:101
+    |
+191 |         diff = [i for i, (p, q) in enumerate(zip(a, b, strict=True)) if p != q]
+192 |         assert diff and min(diff) >= departure_index[t]  # nothing changes before X2 leaves
+193 |         assert a[departure_index[t]].demand_minutes["IDE"] != b[departure_index[t]].demand_minutes["IDE"]
+    |                                                                                                     ^^^^^
+194 |     assert len(set(totals.values())) > 1  # a threshold is crossed somewhere in 0..6
+195 |     # no monotonicity is imposed: totals may stay equal or move either way between t values
+    |
+
+Found 29 errors.
+[*] 1 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

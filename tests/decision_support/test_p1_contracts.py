@@ -47,7 +47,8 @@ def test_t02_observation_received_after_decision_is_excluded(nominal):
     assert s07.medical_authorization == "not_authorized"  # late authorisation ignored
     assert s04.medical_authorization == "not_authorized"  # future event ignored
     assert nominal.excluded_observations == {
-        "event_after_decision": 1, "available_after_decision": 1,
+        "event_after_decision": 1,
+        "available_after_decision": 1,
     }
 
 
@@ -71,10 +72,17 @@ def test_private_fields_cannot_enter_public_contracts(nominal):
 
 def test_observation_clocks_and_whole_hour_as_of(nominal):
     with pytest.raises(ValidationError):
-        Observation.model_validate({
-            "obs_id": "x", "kind": "bed", "subject": "L01", "source": "s",
-            "event_time": "2026-11-16T19:00:00+00:00",
-            "available_at": "2026-11-16T18:00:00+00:00", "value": {}})
+        Observation.model_validate(
+            {
+                "obs_id": "x",
+                "kind": "bed",
+                "subject": "L01",
+                "source": "s",
+                "event_time": "2026-11-16T19:00:00+00:00",
+                "available_at": "2026-11-16T18:00:00+00:00",
+                "value": {},
+            }
+        )
     raw = nominal.model_dump(mode="json")
     raw["as_of"] = "2026-11-16T19:30:00+00:00"
     with pytest.raises(ValidationError):

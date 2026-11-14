@@ -1,0 +1,101 @@
+{
+ "url_was_loopback": true,
+ "checks": [
+  {
+   "id": "T15:auto_without_input",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T15:manual_form_closed_on_open",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "P4:actions_listed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T11:conditional_visible",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T32:auto",
+   "ok": true,
+   "detail": "{\"total\":19,\"bad\":[],\"loose\":0}"
+  },
+  {
+   "id": "P4:manual_prefilled_from_auto",
+   "ok": true,
+   "detail": "S01"
+  },
+  {
+   "id": "P4:manual_computed",
+   "ok": true,
+   "detail": "RECOMMENDATION_READY"
+  },
+  {
+   "id": "T18:locks_shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "P4:branches",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T32:manual",
+   "ok": true,
+   "detail": "{\"total\":28,\"bad\":[],\"loose\":0}"
+  },
+  {
+   "id": "T06:hypothesis_not_approvable",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T27:invalidated",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T05:revoked_stay_not_proposed",
+   "ok": true,
+   "detail": "Renfort IDE 14:00–20:00 (R1, interim)demandé, non confirmé\nRenfort IDE 07:00–11:00 (R2, internal_pool)"
+  },
+  {
+   "id": "P4:approve_in_demo_no_command",
+   "ok": true,
+   "detail": "APPROVED_IN_DEMO"
+  },
+  {
+   "id": "T16_T17:insufficient_data",
+   "ok": true,
+   "detail": "INSUFFICIENT_DATA"
+  },
+  {
+   "id": "T17:diagnostics_shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "T16_T17:no_action",
+   "ok": true,
+   "detail": "NO_ACTION_PREFERRED"
+  },
+  {
+   "id": "T32:no_action",
+   "ok": true,
+   "detail": "{\"total\":16,\"bad\":[],\"loose\":0}"
+  },
+  {
+   "id": "P4:no_horizontal_scroll_390px",
+   "ok": true,
+   "detail": "{\"extra\":0,\"wide\":[]}"
+  }
+ ],
+ "failed": 0
+}

@@ -126,21 +126,30 @@ def _explain(chosen: PlanEvaluation, baseline: PlanEvaluation, tolerance: float)
     c, b = chosen.metrics, baseline.metrics
     lines = [
         f"tier1 uncovered_care_minutes: habitual {b.uncovered_care_minutes} -> plan "
-        f"{c.uncovered_care_minutes} (delta {round(c.uncovered_care_minutes - b.uncovered_care_minutes, 3)}, "
+        f"{c.uncovered_care_minutes} (delta {round(c.uncovered_care_minutes - b.uncovered_care_minutes, 3)}, "  # noqa: E501
         f"equivalence tolerance {tolerance})",
         f"tier2 reinforcement_hours: {c.reinforcement_hours}",
         f"tier3 interventions: {c.interventions}",
-        f"reported waiting_patient_hours: habitual {b.waiting_patient_hours} -> plan {c.waiting_patient_hours}",
+        f"reported waiting_patient_hours: habitual {b.waiting_patient_hours} -> plan {c.waiting_patient_hours}",  # noqa: E501
         f"reported beds_returned: habitual {b.beds_returned} -> plan {c.beds_returned}",
     ]
     return lines
 
 
 def _recommendation(
-    *, status: str, mode: str, snapshot: PublicSnapshot, settings: Settings, reasons: list[str],
-    diagnostics: list[str], bundle: ForecastBundle | None, baseline: PlanEvaluation | None = None,
-    primary: PlanEvaluation | None = None, alternative: PlanEvaluation | None = None,
-    locked: PlanEvaluation | None = None, locks: ScenarioLocks | None = None,
+    *,
+    status: str,
+    mode: str,
+    snapshot: PublicSnapshot,
+    settings: Settings,
+    reasons: list[str],
+    diagnostics: list[str],
+    bundle: ForecastBundle | None,
+    baseline: PlanEvaluation | None = None,
+    primary: PlanEvaluation | None = None,
+    alternative: PlanEvaluation | None = None,
+    locked: PlanEvaluation | None = None,
+    locks: ScenarioLocks | None = None,
     approvable: bool = False,
 ) -> Recommendation:
     conditions: list[str] = []
@@ -154,7 +163,7 @@ def _recommendation(
                 )
         m = primary.metrics
         uncertainties = [
-            f"{len(primary.per_scenario_uncovered)} forecast scenarios (selection seeds, in-sample)",
+            f"{len(primary.per_scenario_uncovered)} forecast scenarios (selection seeds, in-sample)",  # noqa: E501
             f"uncovered minutes range over scenarios: {m.best_scenario_uncovered_minutes}"
             f"..{m.worst_scenario_uncovered_minutes}",
             "pointwise scenario means; not a simultaneous guarantee over the horizon",
@@ -162,8 +171,11 @@ def _recommendation(
             *primary.warnings,
         ]
     body = {
-        "fp": snapshot.fingerprint, "mode": mode, "status": status,
-        "objective": settings.objective["objective_id"], "engine": ENGINE_VERSION,
+        "fp": snapshot.fingerprint,
+        "mode": mode,
+        "status": status,
+        "objective": settings.objective["objective_id"],
+        "engine": ENGINE_VERSION,
         "locks": locks.model_dump(mode="json") if locks else None,
         "primary": primary.plan.plan_id if primary else None,
     }
@@ -215,7 +227,11 @@ def _bundle(snapshot, settings, start, end, hours, evaluations, report, mode) ->
         "mode": mode,
         "pressure_discharges_enabled": settings.profile["pressure_discharges_enabled"],
     }
-    body = {"fp": snapshot.fingerprint, "config": config, "plans": [e.plan.plan_id for e in evaluations]}
+    body = {
+        "fp": snapshot.fingerprint,
+        "config": config,
+        "plans": [e.plan.plan_id for e in evaluations],
+    }
     return ForecastBundle(
         bundle_id="fb-" + sha(body)[:16],
         backend=info,
@@ -227,9 +243,9 @@ def _bundle(snapshot, settings, start, end, hours, evaluations, report, mode) ->
         horizon_hours=hours,
         selection_seeds=tuple(settings.profile["forecast"]["selection_seeds"]),
         assumptions=(
-            "habitual practice HABITUAL-1 continues in every branch (care, arrivals, ordinary decisions)",
+            "habitual practice HABITUAL-1 continues in every branch (care, arrivals, ordinary decisions)",  # noqa: E501
             "pressure discharges disabled for all policies",
-            "unknown delays sampled from public declared distributions with keyed paired innovations",
+            "unknown delays sampled from public declared distributions with keyed paired innovations",  # noqa: E501
             "admissions are not a lever; waiting patients' care counts as uncovered",
         ),
         search=report,
@@ -240,8 +256,11 @@ def _bundle(snapshot, settings, start, end, hours, evaluations, report, mode) ->
 
 def _config(settings: Settings, start: datetime, hours: int) -> ForecastConfig:
     return ForecastConfig(
-        profile=settings.profile, score=settings.score,
-        seeds=tuple(settings.profile["forecast"]["selection_seeds"]), start=start, hours=hours,
+        profile=settings.profile,
+        score=settings.score,
+        seeds=tuple(settings.profile["forecast"]["selection_seeds"]),
+        start=start,
+        hours=hours,
     )
 
 
@@ -257,40 +276,61 @@ def _with_onset(e: PlanEvaluation, baseline: PlanEvaluation) -> PlanEvaluation:
     return e.model_copy(update={"effect_onset_hour": onset})
 
 
-def recommend(snapshot: PublicSnapshot, settings: Settings | None = None,
-              max_plans: int | None = None) -> Recommendation:
+def recommend(
+    snapshot: PublicSnapshot, settings: Settings | None = None, max_plans: int | None = None
+) -> Recommendation:
     """Auto mode: no user scenario required (T15)."""
     settings = settings or Settings.default()
     assert_product_backend(settings.backend)
     try:
         start, end, hours = resolve_horizon(snapshot, settings.profile, None)
     except HorizonError as error:
-        return _recommendation(status="INFEASIBLE", mode="auto", snapshot=snapshot,
-                               settings=settings, reasons=[error.code], diagnostics=[str(error)],
-                               bundle=None)
+        return _recommendation(
+            status="INFEASIBLE",
+            mode="auto",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=[error.code],
+            diagnostics=[str(error)],
+            bundle=None,
+        )
     gaps = _data_gaps(snapshot, start, hours)
     if gaps:
-        return _recommendation(status="INSUFFICIENT_DATA", mode="auto", snapshot=snapshot,
-                               settings=settings, reasons=["abstention_data_insufficient"],
-                               diagnostics=gaps, bundle=None)
+        return _recommendation(
+            status="INSUFFICIENT_DATA",
+            mode="auto",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["abstention_data_insufficient"],
+            diagnostics=gaps,
+            bundle=None,
+        )
     validity = snapshot.as_of + timedelta(
         minutes=int(settings.profile["recommendation_validity_minutes"])
     )
-    plans, report = enumerate_plans(snapshot, settings.profile, start, end, validity, "auto",
-                                    limit=max_plans)
+    plans, report = enumerate_plans(
+        snapshot, settings.profile, start, end, validity, "auto", limit=max_plans
+    )
     config = _config(settings, start, hours)
     evaluations = [settings.backend.forecast(snapshot, p, config) for p in plans]
     baseline = evaluations[0]
     evaluations = [baseline] + [_with_onset(e, baseline) for e in evaluations[1:]]
     bundle = _bundle(snapshot, settings, start, end, hours, evaluations, report, "auto")
     if not baseline.admissible:
-        return _recommendation(status="INFEASIBLE", mode="auto", snapshot=snapshot,
-                               settings=settings, reasons=["habitual_practice_invariant_failure"],
-                               diagnostics=list(baseline.violations), bundle=bundle,
-                               baseline=baseline)
+        return _recommendation(
+            status="INFEASIBLE",
+            mode="auto",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["habitual_practice_invariant_failure"],
+            diagnostics=list(baseline.violations),
+            bundle=bundle,
+            baseline=baseline,
+        )
     chosen = select(evaluations, settings.objective)
-    tolerance = float(next(t for t in settings.objective["tiers"] if t["rank"] == 1)[
-        "equivalence_tolerance"])
+    tolerance = float(
+        next(t for t in settings.objective["tiers"] if t["rank"] == 1)["equivalence_tolerance"]
+    )
     reasons = _explain(chosen, baseline, tolerance)
     if not report.complete:
         reasons.append(
@@ -298,35 +338,62 @@ def recommend(snapshot: PublicSnapshot, settings: Settings | None = None,
             "best among evaluated, no optimum claimed"
         )
     if chosen.plan.is_baseline:
-        return _recommendation(status="NO_ACTION_PREFERRED", mode="auto", snapshot=snapshot,
-                               settings=settings,
-                               reasons=["habitual_practice_preferred_no_material_improvement", *reasons],
-                               diagnostics=[], bundle=bundle, baseline=baseline, primary=baseline,
-                               approvable=True)
+        return _recommendation(
+            status="NO_ACTION_PREFERRED",
+            mode="auto",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["habitual_practice_preferred_no_material_improvement", *reasons],
+            diagnostics=[],
+            bundle=bundle,
+            baseline=baseline,
+            primary=baseline,
+            approvable=True,
+        )
     alternatives = [
-        e for e in evaluations
-        if e.admissible and e is not chosen and not e.plan.is_baseline and _distinct(e, chosen)
+        e
+        for e in evaluations
+        if e.admissible
+        and e is not chosen
+        and not e.plan.is_baseline
+        and _distinct(e, chosen)
         and e.metrics.uncovered_care_minutes < baseline.metrics.uncovered_care_minutes - tolerance
     ]
-    alternative = min(alternatives, key=lambda e: (e.metrics.uncovered_care_minutes,
-                                                   e.metrics.reinforcement_hours,
-                                                   e.metrics.interventions), default=None)
+    alternative = min(
+        alternatives,
+        key=lambda e: (
+            e.metrics.uncovered_care_minutes,
+            e.metrics.reinforcement_hours,
+            e.metrics.interventions,
+        ),
+        default=None,
+    )
     residual = chosen.metrics.uncovered_care_minutes
     if residual > 0:
         reasons.append(f"plan remains insufficient: {residual} uncovered staff-minutes expected")
-    return _recommendation(status="RECOMMENDATION_READY", mode="auto", snapshot=snapshot,
-                           settings=settings,
-                           reasons=["lexicographic_objective_improvement_requires_human_approval",
-                                    *reasons],
-                           diagnostics=[], bundle=bundle, baseline=baseline, primary=chosen,
-                           alternative=alternative, approvable=True)
+    return _recommendation(
+        status="RECOMMENDATION_READY",
+        mode="auto",
+        snapshot=snapshot,
+        settings=settings,
+        reasons=["lexicographic_objective_improvement_requires_human_approval", *reasons],
+        diagnostics=[],
+        bundle=bundle,
+        baseline=baseline,
+        primary=chosen,
+        alternative=alternative,
+        approvable=True,
+    )
 
 
 # --------------------------------------------------------------------------- manual mode
 
 
 def locked_actions(
-    snapshot: PublicSnapshot, locks: ScenarioLocks, start: datetime, end: datetime,
+    snapshot: PublicSnapshot,
+    locks: ScenarioLocks,
+    start: datetime,
+    end: datetime,
     valid_until: datetime,
 ) -> tuple[tuple[ActionSpec, ...], list[str], list[str], bool]:
     """Returns (actions, contradictions, diagnostics, hypothetical)."""
@@ -351,7 +418,9 @@ def locked_actions(
             if lock.include:
                 ok, reason = option_admissibility(option, start, end)
                 if not ok:
-                    contradictions.append(f"locked_reinforcement_inadmissible:{lock.option_id}:{reason}")
+                    contradictions.append(
+                        f"locked_reinforcement_inadmissible:{lock.option_id}:{reason}"
+                    )
                     continue
                 actions.append(reinforcement_action(snapshot, option, valid_until, "manual_lock"))
             continue
@@ -374,50 +443,86 @@ def locked_actions(
         kind = "locked_discharge" if isinstance(lock, LockedDischarge) else "locked_extension"
         detail = (
             f"reference {display(lock.reference_time)} + {lock.extension_hours} h"
-            if isinstance(lock, LockedExtension) else "fixed departure hour"
+            if isinstance(lock, LockedExtension)
+            else "fixed departure hour"
         )
-        actions.append(ActionSpec(
-            action_id=f"lock:{kind}:{lock.stay_id}:{at.strftime('%Y%m%dT%H%MZ')}",
-            type=kind,  # type: ignore[arg-type]
-            target=lock.stay_id,
-            window_start=at,
-            window_end=at + timedelta(hours=1),
-            preconditions=(detail, f"basis:{basis}", "user_lock_not_a_system_clinical_decision"),
-            resources=("transport_team",) if stay.transport_need in {"seated", "stretcher"} else (),
-            interventions=0,
-            validator="medecin",
-            idempotency_key="lock-" + sha([kind, lock.stay_id, at.isoformat()])[:16],
-            valid_until=valid_until,
-            origin="manual_lock",
-            basis=basis,  # type: ignore[arg-type]
-        ))
+        actions.append(
+            ActionSpec(
+                action_id=f"lock:{kind}:{lock.stay_id}:{at.strftime('%Y%m%dT%H%MZ')}",
+                type=kind,  # type: ignore[arg-type]
+                target=lock.stay_id,
+                window_start=at,
+                window_end=at + timedelta(hours=1),
+                preconditions=(
+                    detail,
+                    f"basis:{basis}",
+                    "user_lock_not_a_system_clinical_decision",
+                ),
+                resources=("transport_team",)
+                if stay.transport_need in {"seated", "stretcher"}
+                else (),
+                interventions=0,
+                validator="medecin",
+                idempotency_key="lock-" + sha([kind, lock.stay_id, at.isoformat()])[:16],
+                valid_until=valid_until,
+                origin="manual_lock",
+                basis=basis,  # type: ignore[arg-type]
+            )
+        )
     return tuple(actions), contradictions, diagnostics, hypothetical
 
 
-def simulate(snapshot: PublicSnapshot, locks: ScenarioLocks,
-             settings: Settings | None = None, max_plans: int | None = None) -> Recommendation:
+def simulate(
+    snapshot: PublicSnapshot,
+    locks: ScenarioLocks,
+    settings: Settings | None = None,
+    max_plans: int | None = None,
+) -> Recommendation:
     """Manual mode on the same engine: locked scenario, without and with complements."""
     settings = settings or Settings.default()
     assert_product_backend(settings.backend)
     try:
         start, end, hours = resolve_horizon(snapshot, settings.profile, locks)
     except HorizonError as error:
-        return _recommendation(status="INFEASIBLE", mode="manual", snapshot=snapshot,
-                               settings=settings, reasons=[error.code], diagnostics=[str(error)],
-                               bundle=None, locks=locks)
+        return _recommendation(
+            status="INFEASIBLE",
+            mode="manual",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=[error.code],
+            diagnostics=[str(error)],
+            bundle=None,
+            locks=locks,
+        )
     gaps = _data_gaps(snapshot, start, hours)
     if gaps:
-        return _recommendation(status="INSUFFICIENT_DATA", mode="manual", snapshot=snapshot,
-                               settings=settings, reasons=["abstention_data_insufficient"],
-                               diagnostics=gaps, bundle=None, locks=locks)
+        return _recommendation(
+            status="INSUFFICIENT_DATA",
+            mode="manual",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["abstention_data_insufficient"],
+            diagnostics=gaps,
+            bundle=None,
+            locks=locks,
+        )
     validity = snapshot.as_of + timedelta(
-        minutes=int(settings.profile["recommendation_validity_minutes"]))
+        minutes=int(settings.profile["recommendation_validity_minutes"])
+    )
     actions, contradictions, diagnostics, hypothetical = locked_actions(
-        snapshot, locks, start, end, validity)
+        snapshot, locks, start, end, validity
+    )
     if contradictions:
-        return _recommendation(status="INFEASIBLE", mode="manual", snapshot=snapshot,
-                               settings=settings, reasons=["contradictory_or_impossible_scenario"],
-                               diagnostics=contradictions + diagnostics, bundle=None, locks=locks)
+        return _recommendation(
+            status="INFEASIBLE",
+            mode="manual",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["contradictory_or_impossible_scenario"],
+            diagnostics=contradictions + diagnostics,
+            bundle=None,
+            locks=locks,
+        )
     excluded_stays = frozenset(a.target for a in actions if a.type != "reinforcement")
     excluded_options = frozenset(
         lock.option_id for lock in locks.locks if isinstance(lock, LockedReinforcement)
@@ -425,50 +530,104 @@ def simulate(snapshot: PublicSnapshot, locks: ScenarioLocks,
     config = _config(settings, start, hours)
     baseline_plan = make_plan(snapshot, "manual", (), "pratique habituelle")
     if locks.search_complements:
-        plans, report = enumerate_plans(snapshot, settings.profile, start, end, validity,
-                                        "manual", actions, excluded_stays, excluded_options,
-                                        limit=max_plans)
+        plans, report = enumerate_plans(
+            snapshot,
+            settings.profile,
+            start,
+            end,
+            validity,
+            "manual",
+            actions,
+            excluded_stays,
+            excluded_options,
+            limit=max_plans,
+        )
     else:
-        plans = [make_plan(snapshot, "manual", actions, "scénario verrouillé seul",
-                           tuple(a.action_id for a in actions))]
-        report = SearchReport(enumerated=1, evaluated=1, limit=1, complete=True,
-                              filter_rules=("complement search disabled by user",), rejected={})
+        plans = [
+            make_plan(
+                snapshot,
+                "manual",
+                actions,
+                "scénario verrouillé seul",
+                tuple(a.action_id for a in actions),
+            )
+        ]
+        report = SearchReport(
+            enumerated=1,
+            evaluated=1,
+            limit=1,
+            complete=True,
+            filter_rules=("complement search disabled by user",),
+            rejected={},
+        )
     baseline = settings.backend.forecast(snapshot, baseline_plan, config)
-    evaluations = [_with_onset(settings.backend.forecast(snapshot, p, config), baseline)
-                   for p in plans]
+    evaluations = [
+        _with_onset(settings.backend.forecast(snapshot, p, config), baseline) for p in plans
+    ]
     locked_ids = [a.action_id for a in actions]
     for e in evaluations:  # T18: locks identical in every complement
         kept = [a for a in e.plan.actions if a.action_id in locked_ids]
         if [a.model_dump() for a in kept] != [a.model_dump() for a in actions]:
             raise AssertionError(f"locked decision altered in {e.plan.plan_id}")
     locked = evaluations[0]
-    bundle = _bundle(snapshot, settings, start, end, hours, [baseline, *evaluations], report,
-                     "manual")
+    bundle = _bundle(
+        snapshot, settings, start, end, hours, [baseline, *evaluations], report, "manual"
+    )
     if not locked.admissible:
-        return _recommendation(status="INFEASIBLE", mode="manual", snapshot=snapshot,
-                               settings=settings, reasons=["locked_scenario_violates_constraints"],
-                               diagnostics=[*locked.violations, *diagnostics], bundle=bundle,
-                               baseline=baseline, locked=locked, locks=locks)
+        return _recommendation(
+            status="INFEASIBLE",
+            mode="manual",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["locked_scenario_violates_constraints"],
+            diagnostics=[*locked.violations, *diagnostics],
+            bundle=bundle,
+            baseline=baseline,
+            locked=locked,
+            locks=locks,
+        )
     chosen = select(evaluations, settings.objective)
-    tolerance = float(next(t for t in settings.objective["tiers"] if t["rank"] == 1)[
-        "equivalence_tolerance"])
+    tolerance = float(
+        next(t for t in settings.objective["tiers"] if t["rank"] == 1)["equivalence_tolerance"]
+    )
     reasons = _explain(chosen, baseline, tolerance)
     if not report.complete:
         reasons.append(f"search incomplete: {report.evaluated}/{report.enumerated} plans evaluated")
     if hypothetical:
-        return _recommendation(status="HYPOTHETICAL_ONLY", mode="manual", snapshot=snapshot,
-                               settings=settings,
-                               reasons=["conditional_simulation_of_hypothesis_not_executable",
-                                        *reasons],
-                               diagnostics=diagnostics, bundle=bundle, baseline=baseline,
-                               primary=chosen, locked=locked, locks=locks, approvable=False)
+        return _recommendation(
+            status="HYPOTHETICAL_ONLY",
+            mode="manual",
+            snapshot=snapshot,
+            settings=settings,
+            reasons=["conditional_simulation_of_hypothesis_not_executable", *reasons],
+            diagnostics=diagnostics,
+            bundle=bundle,
+            baseline=baseline,
+            primary=chosen,
+            locked=locked,
+            locks=locks,
+            approvable=False,
+        )
     status = "NO_ACTION_PREFERRED" if chosen is locked else "RECOMMENDATION_READY"
-    lead = ("no_complement_improves_locked_scenario" if chosen is locked
-            else "complements_to_locked_scenario_require_human_approval")
-    return _recommendation(status=status, mode="manual", snapshot=snapshot, settings=settings,
-                           reasons=[lead, *reasons], diagnostics=diagnostics, bundle=bundle,
-                           baseline=baseline, primary=chosen, locked=locked, locks=locks,
-                           approvable=True)
+    lead = (
+        "no_complement_improves_locked_scenario"
+        if chosen is locked
+        else "complements_to_locked_scenario_require_human_approval"
+    )
+    return _recommendation(
+        status=status,
+        mode="manual",
+        snapshot=snapshot,
+        settings=settings,
+        reasons=[lead, *reasons],
+        diagnostics=diagnostics,
+        bundle=bundle,
+        baseline=baseline,
+        primary=chosen,
+        locked=locked,
+        locks=locks,
+        approvable=True,
+    )
 
 
 # --------------------------------------------------------------------------- review
@@ -493,14 +652,18 @@ def review(
         return store.results[idempotency_key]
     now = utc(now)
     reasons: list[str] = []
-    outcome = {"approve": "APPROVED_IN_DEMO", "reject": "REJECTED",
-               "modify": "MODIFY_REQUESTED"}[decision]
+    outcome = {"approve": "APPROVED_IN_DEMO", "reject": "REJECTED", "modify": "MODIFY_REQUESTED"}[
+        decision
+    ]
     recompute = False
     reservations: list[str] = []
     primary = None
     if recommendation.bundle is not None and recommendation.primary_plan_id:
-        primary = next(e for e in recommendation.bundle.evaluations
-                       if e.plan.plan_id == recommendation.primary_plan_id)
+        primary = next(
+            e
+            for e in recommendation.bundle.evaluations
+            if e.plan.plan_id == recommendation.primary_plan_id
+        )
     if decision == "approve":
         if not recommendation.approvable:
             outcome = "REFUSED"

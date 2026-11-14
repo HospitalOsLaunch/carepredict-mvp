@@ -79,7 +79,7 @@ def check_result_claim(claim: Mapping[str, Any]) -> dict[str, Any]:
     updates = int(claim.get("updates", -1))
     if updates > record["attested_updates"]:
         raise ProvenanceError(
-            f"{record['mode']}: {updates} updates not attested (attested {record['attested_updates']})"
+            f"{record['mode']}: {updates} updates not attested (attested {record['attested_updates']})"  # noqa: E501
         )
     if record["mode"] == "A_detached" and claim.get("status") in {"FAIL", "SCIENTIFIC_FAILURE"}:
         raise ProvenanceError("A_detached final status is not attested: not a scientific failure")

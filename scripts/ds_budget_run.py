@@ -147,9 +147,9 @@ def run(
             "timed_out": timed_out,
             "exit_code": code,
             "wall_seconds": round(wall, 3),
-            "log": str(log_path.relative_to(ROOT)) if log_path.is_relative_to(ROOT) else str(
-                log_path
-            ),
+            "log": str(log_path.relative_to(ROOT))
+            if log_path.is_relative_to(ROOT)
+            else str(log_path),
             "log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
         },
     )

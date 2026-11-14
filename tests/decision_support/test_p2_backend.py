@@ -9,7 +9,11 @@ from pathlib import Path
 
 import pytest
 
-from hospitalos.decision_support.candidates import coordination_action, make_plan, reinforcement_action
+from hospitalos.decision_support.candidates import (
+    coordination_action,
+    make_plan,
+    reinforcement_action,
+)
 from hospitalos.decision_support.contracts import Distribution, ReinforcementOption
 from hospitalos.decision_support.planner import Settings, _config, recommend
 from hospitalos.decision_support.reference_forecaster import (
@@ -38,7 +42,9 @@ def _cfg(snapshot, settings):
 
 
 def _run(snapshot, settings, decisions, seed=101):
-    return simulate(snapshot, settings.profile, snapshot.as_of, 24, decisions, SampledProvider(seed))
+    return simulate(
+        snapshot, settings.profile, snapshot.as_of, 24, decisions, SampledProvider(seed)
+    )
 
 
 NONE = Decisions({}, {}, {}, ())
@@ -54,16 +60,27 @@ def test_t03_two_private_futures_same_public_recommendation(settings):
     assert a.model_dump_json() == b.model_dump_json()
     snapshot = snapshot_from_fixture(FX / "nominal_auto.json")
     plan = make_plan(snapshot, "auto", (), "pratique habituelle")
-    check_isolation(lambda truth: ReferenceForecaster(), snapshot, plan,
-                    _cfg(snapshot, settings), _truth("nominal_auto.json"),
-                    _truth("nominal_auto_truth_b.json"))
+    check_isolation(
+        lambda truth: ReferenceForecaster(),
+        snapshot,
+        plan,
+        _cfg(snapshot, settings),
+        _truth("nominal_auto.json"),
+        _truth("nominal_auto_truth_b.json"),
+    )
 
 
 def test_t04_forecast_initialised_from_private_truth_is_blocked(nominal, settings):
     plan = make_plan(nominal, "auto", (), "pratique habituelle")
     with pytest.raises(LeakageError):
-        check_isolation(PrivateOracle, nominal, plan, _cfg(nominal, settings),
-                        _truth("nominal_auto.json"), _truth("nominal_auto_truth_b.json"))
+        check_isolation(
+            PrivateOracle,
+            nominal,
+            plan,
+            _cfg(nominal, settings),
+            _truth("nominal_auto.json"),
+            _truth("nominal_auto_truth_b.json"),
+        )
     oracle = PrivateOracle(_truth("nominal_auto.json"))
     assert oracle.info().product_allowed is False
     with pytest.raises(LeakageError):
@@ -84,8 +101,14 @@ def test_t05_revoked_or_missing_authorisation_never_proposed(auto):
 
 def test_t07_pressure_discharges_disabled_under_high_pressure(nominal, settings, auto):
     with pytest.raises(ValueError):
-        simulate(nominal, {**settings.profile, "pressure_discharges_enabled": True},
-                 nominal.as_of, 24, NONE, SampledProvider(1))
+        simulate(
+            nominal,
+            {**settings.profile, "pressure_discharges_enabled": True},
+            nominal.as_of,
+            24,
+            NONE,
+            SampledProvider(1),
+        )
     authorised = {s.stay_id for s in nominal.stays if s.medical_authorization == "authorized"}
     for seed in (101, 102, 103, 104):
         run = _run(nominal, settings, NONE, seed)
@@ -96,7 +119,8 @@ def test_t07_pressure_discharges_disabled_under_high_pressure(nominal, settings,
     # the historical simulator file is preserved unchanged
     hospsim = ROOT / "src/hospitalos/synthetic/v041/hospsim.py"
     assert hashlib.sha256(hospsim.read_bytes()).hexdigest() == (
-        "3c950b507a3e418d694acb465d86f21b4068709646095f46895adee965805d73")
+        "3c950b507a3e418d694acb465d86f21b4068709646095f46895adee965805d73"
+    )
 
 
 def test_t08_no_cleaning_before_departure_and_transport_rescheduled(nominal, settings):
@@ -119,11 +143,20 @@ def test_t08_no_cleaning_before_departure_and_transport_rescheduled(nominal, set
 
 
 def _two_eligible(settings):
-    return snapshot_with("nominal_auto.json", [{
-        "obs_id": "o-obst-S06-closed", "kind": "obstacle", "subject": "S06.aval",
-        "event_time": "2026-11-16T18:00:00+00:00", "available_at": "2026-11-16T18:05:00+00:00",
-        "source": "synthetic_feed", "value": {"stay_id": "S06", "code": "aval_non_confirme",
-                                               "active": False}}])
+    return snapshot_with(
+        "nominal_auto.json",
+        [
+            {
+                "obs_id": "o-obst-S06-closed",
+                "kind": "obstacle",
+                "subject": "S06.aval",
+                "event_time": "2026-11-16T18:00:00+00:00",
+                "available_at": "2026-11-16T18:05:00+00:00",
+                "source": "synthetic_feed",
+                "value": {"stay_id": "S06", "code": "aval_non_confirme", "active": False},
+            }
+        ],
+    )
 
 
 def test_t09_t21_shared_transport_joint_effect_not_sum(settings):
@@ -136,13 +169,19 @@ def test_t09_t21_shared_transport_joint_effect_not_sum(settings):
     used = [e[0] for e in run_j.events if e[1] == "transport_used"]
     assert len(used) == len(set(used))  # capacity 1 per hour: no double booking
     assert (run_j.departures["S01"], run_j.departures["S06"]) != (
-        run_1.departures["S01"], run_6.departures["S06"])  # one is pushed in the joint plan
+        run_1.departures["S01"],
+        run_6.departures["S06"],
+    )  # one is pushed in the joint plan
     assert any(e[1] == "rescheduled_to_next_transport_slot" for e in run_j.events)
-    delta = lambda r: sum(r.uncovered_unit) + sum(r.uncovered_waiting) - (  # noqa: E731
-        sum(run_0.uncovered_unit) + sum(run_0.uncovered_waiting))
+    def delta(r):
+        base = sum(run_0.uncovered_unit) + sum(run_0.uncovered_waiting)
+        return sum(r.uncovered_unit) + sum(r.uncovered_waiting) - base
+
     assert check_invariants(snapshot, snapshot.as_of, run_j, False) == []
     assert delta(run_j) != delta(run_1) + delta(run_6) or run_j.departures != {
-        **run_1.departures, **run_6.departures}
+        **run_1.departures,
+        **run_6.departures,
+    }
     ledger = ResourceLedger(capacity={("transport", "h15"): 1})
     assert ledger.reserve("transport", "h15", "k1") == (True, "reserved")
     assert ledger.reserve("transport", "h15", "k2") == (False, "capacity_exhausted")
@@ -175,8 +214,13 @@ def test_t12_no_compensation_by_total_hours(nominal, settings):
     two = coverage(0, [(20, 2)], staff=2)
     assert two.uncovered_minutes == 0
     as_option = ReinforcementOption(
-        option_id="RAS", skill="AS", start=nominal.as_of + timedelta(hours=19),
-        end=nominal.as_of + timedelta(hours=24), source="internal_pool", confirmation="confirmed")
+        option_id="RAS",
+        skill="AS",
+        start=nominal.as_of + timedelta(hours=19),
+        end=nominal.as_of + timedelta(hours=24),
+        source="internal_pool",
+        confirmation="confirmed",
+    )
     snap = nominal.model_copy(update={"reinforcements": nominal.reinforcements + (as_option,)})
     base = _run(snap, settings, NONE)
     with_as = _run(snap, settings, Decisions({}, {}, {}, (as_option,)))
@@ -187,12 +231,16 @@ def test_t13_external_commitment_visible_or_refused(nominal):
     start, end = nominal.as_of, nominal.as_of + timedelta(hours=24)
     r3 = next(o for o in nominal.reinforcements if o.option_id == "R3")
     assert option_admissibility(r3, start, end) == (
-        False, "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3")
+        False,
+        "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3",
+    )
     unknown = r3.model_copy(update={"lending_unit_minimum": None})
     assert option_admissibility(unknown, start, end) == (False, "external_commitment_unknown")
     margin = r3.model_copy(update={"lending_unit_scheduled": 4})
     assert option_admissibility(margin, start, end) == (
-        True, "external_cost:U-CARDIO-SYN:remaining_margin=0")
+        True,
+        "external_cost:U-CARDIO-SYN:remaining_margin=0",
+    )
 
 
 def test_t14_bed_returned_once_and_no_gain_by_refusing_admission(nominal, settings):
@@ -200,16 +248,33 @@ def test_t14_bed_returned_once_and_no_gain_by_refusing_admission(nominal, settin
     run = _run(nominal, settings, coord)
     assert run.admissions.get("A02") is not None  # L01 re-occupied after cleaning
     assert run.beds_returned == len(run.departures)  # one return per departure, not per use
-    refused = snapshot_with("nominal_auto.json", [{
-        "obs_id": "o-adm-A02-v2", "kind": "admission_request", "subject": "A02",
-        "event_time": "2026-11-16T18:30:00+00:00", "available_at": "2026-11-16T18:35:00+00:00",
-        "source": "synthetic_feed",
-        "value": {"requirements": ["unavailable_capability"],
-                  "expected_arrival": "2026-11-17T08:00:00+00:00",
-                  "arrival_delay": {"support": [0, 1], "weights": [1, 1]},
-                  "care": [{"skill": "IDE", "day_minutes_per_hour": 30,
-                            "night_minutes_per_hour": 12, "status": "estimated"}],
-                  "admission_task_minutes": 45}}])
+    refused = snapshot_with(
+        "nominal_auto.json",
+        [
+            {
+                "obs_id": "o-adm-A02-v2",
+                "kind": "admission_request",
+                "subject": "A02",
+                "event_time": "2026-11-16T18:30:00+00:00",
+                "available_at": "2026-11-16T18:35:00+00:00",
+                "source": "synthetic_feed",
+                "value": {
+                    "requirements": ["unavailable_capability"],
+                    "expected_arrival": "2026-11-17T08:00:00+00:00",
+                    "arrival_delay": {"support": [0, 1], "weights": [1, 1]},
+                    "care": [
+                        {
+                            "skill": "IDE",
+                            "day_minutes_per_hour": 30,
+                            "night_minutes_per_hour": 12,
+                            "status": "estimated",
+                        }
+                    ],
+                    "admission_task_minutes": 45,
+                },
+            }
+        ],
+    )
     blocked = _run(refused, settings, coord)
     total = lambda r: sum(r.uncovered_unit) + sum(r.uncovered_waiting)  # noqa: E731
     assert "A02" not in blocked.admissions
@@ -231,8 +296,9 @@ class Recorder:
 def test_t22_paired_exogenous_primitives(nominal, settings):
     a, b = Recorder(SampledProvider(103)), Recorder(SampledProvider(103))
     simulate(nominal, settings.profile, nominal.as_of, 24, NONE, a)
-    run_b = simulate(nominal, settings.profile, nominal.as_of, 24,
-                     Decisions({"S01": (14, "x")}, {}, {}, ()), b)
+    run_b = simulate(
+        nominal, settings.profile, nominal.as_of, 24, Decisions({"S01": (14, "x")}, {}, {}, ()), b
+    )
     common = set(a.seen) & set(b.seen)
     assert {("readiness", "S01"), ("transport_lead", "S01"), ("arrival", "A02")} <= common
     assert all(a.seen[k] == b.seen[k] for k in common)
@@ -249,10 +315,17 @@ def test_reference_backend_invariants_on_all_auto_plans(auto):
 
 
 def test_coordination_action_contract(nominal):
-    a = coordination_action(nominal, "S01", nominal.as_of + timedelta(hours=14),
-                            nominal.as_of + timedelta(minutes=30))
+    a = coordination_action(
+        nominal, "S01", nominal.as_of + timedelta(hours=14), nominal.as_of + timedelta(minutes=30)
+    )
     assert a.basis == "observed_authorization" and a.validator == "cadre_de_sante"
     assert "cleaning_only_after_effective_departure" in a.preconditions
-    assert a.idempotency_key == coordination_action(
-        nominal, "S01", nominal.as_of + timedelta(hours=14),
-        nominal.as_of + timedelta(minutes=45)).idempotency_key
+    assert (
+        a.idempotency_key
+        == coordination_action(
+            nominal,
+            "S01",
+            nominal.as_of + timedelta(hours=14),
+            nominal.as_of + timedelta(minutes=45),
+        ).idempotency_key
+    )

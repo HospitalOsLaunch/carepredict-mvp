@@ -281,7 +281,9 @@ class PublicSnapshot(Closed):
 
 # --------------------------------------------------------------------------- actions and plans
 
-ActionType = Literal["coordinate_discharge", "reinforcement", "locked_discharge", "locked_extension"]
+ActionType = Literal[
+    "coordinate_discharge", "reinforcement", "locked_discharge", "locked_extension"
+]
 
 
 class ActionSpec(Closed):

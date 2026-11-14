@@ -44,17 +44,20 @@ def evaluate_out_of_sample(
         "plans": {},
     }
     plans = {e.plan.plan_id: e.plan for e in recommendation.bundle.evaluations}
-    for role, pid in (("baseline", recommendation.baseline_plan_id),
-                      ("primary", recommendation.primary_plan_id)):
+    for role, pid in (
+        ("baseline", recommendation.baseline_plan_id),
+        ("primary", recommendation.primary_plan_id),
+    ):
         if pid:
             e = settings.backend.forecast(snapshot, plans[pid], config)
-            out["plans"][role] = {"plan_id": pid,
-                                  "metrics": e.metrics.model_dump(mode="json")}
+            out["plans"][role] = {"plan_id": pid, "metrics": e.metrics.model_dump(mode="json")}
     return out
 
 
 def oracle_replay(
-    snapshot: PublicSnapshot, recommendation: Recommendation, truth: PrivateTruth,
+    snapshot: PublicSnapshot,
+    recommendation: Recommendation,
+    truth: PrivateTruth,
     settings: Settings,
 ) -> dict[str, Any]:
     assert recommendation.bundle is not None
@@ -62,10 +65,15 @@ def oracle_replay(
     config = _config(settings, start, hours)
     oracle = PrivateOracle(truth)
     plans = {e.plan.plan_id: e.plan for e in recommendation.bundle.evaluations}
-    out: dict[str, Any] = {"label": "private_oracle_evaluation_only_not_a_product_backend",
-                           "backend": oracle.info().model_dump(), "plans": {}}
-    for role, pid in (("baseline", recommendation.baseline_plan_id),
-                      ("primary", recommendation.primary_plan_id)):
+    out: dict[str, Any] = {
+        "label": "private_oracle_evaluation_only_not_a_product_backend",
+        "backend": oracle.info().model_dump(),
+        "plans": {},
+    }
+    for role, pid in (
+        ("baseline", recommendation.baseline_plan_id),
+        ("primary", recommendation.primary_plan_id),
+    ):
         if pid:
             run = oracle.outcome(snapshot, plans[pid], config)
             out["plans"][role] = {
@@ -109,17 +117,33 @@ def export_all(out: Path, settings: Settings | None = None) -> dict[str, Any]:
         m = None
         if r.bundle is not None and r.locked_plan_id:
             m = next(e for e in r.bundle.evaluations if e.plan.plan_id == r.locked_plan_id).metrics
-        sweep.append({"t_hours": t, "status": r.status, "recommendation_id": r.recommendation_id,
-                      "diagnostics": list(r.diagnostics),
-                      "locked_metrics": m.model_dump(mode="json") if m else None})
-    files.append(_write(out, "sweep_x2_extension_t.json",
-                        {"label": "locked scenario only (no complements), X2=S02, t=0..8",
-                         "points": sweep}))
-    files.append(_write(out, "evaluation_out_of_sample_nominal.json",
-                        evaluate_out_of_sample(nominal, auto, settings)))
+        sweep.append(
+            {
+                "t_hours": t,
+                "status": r.status,
+                "recommendation_id": r.recommendation_id,
+                "diagnostics": list(r.diagnostics),
+                "locked_metrics": m.model_dump(mode="json") if m else None,
+            }
+        )
+    files.append(
+        _write(
+            out,
+            "sweep_x2_extension_t.json",
+            {"label": "locked scenario only (no complements), X2=S02, t=0..8", "points": sweep},
+        )
+    )
+    files.append(
+        _write(
+            out,
+            "evaluation_out_of_sample_nominal.json",
+            evaluate_out_of_sample(nominal, auto, settings),
+        )
+    )
     truth = PrivateTruth.from_fixture(load_json(FIXTURES / "nominal_auto.json")["private_truth"])
-    files.append(_write(out, "oracle_replay_nominal.json",
-                        oracle_replay(nominal, auto, truth, settings)))
+    files.append(
+        _write(out, "oracle_replay_nominal.json", oracle_replay(nominal, auto, truth, settings))
+    )
     index = {
         "schema": "DS_RESULTS_INDEX_1",
         "engine_version": ENGINE_VERSION,

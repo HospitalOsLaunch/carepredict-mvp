@@ -51,7 +51,9 @@ def coordination_action(
 
 
 def reinforcement_action(
-    snapshot: PublicSnapshot, option: ReinforcementOption, valid_until: datetime,
+    snapshot: PublicSnapshot,
+    option: ReinforcementOption,
+    valid_until: datetime,
     origin: str = "auto",
 ) -> ActionSpec:
     return ActionSpec(
@@ -82,7 +84,10 @@ def plan_id(snapshot: PublicSnapshot, mode: str, actions: tuple[ActionSpec, ...]
 
 
 def make_plan(
-    snapshot: PublicSnapshot, mode: str, actions: tuple[ActionSpec, ...], label: str,
+    snapshot: PublicSnapshot,
+    mode: str,
+    actions: tuple[ActionSpec, ...],
+    label: str,
     locked: tuple[str, ...] = (),
 ) -> Plan:
     return Plan(
@@ -155,18 +160,26 @@ def enumerate_plans(
         for chosen in itertools.combinations(admissible_options, n):
             reinf_sets.append(tuple(reinforcement_action(snapshot, o, valid_until) for o in chosen))
     combos = [c + r for c in coord_sets for r in reinf_sets]
-    combos.sort(key=lambda acts: (
-        len(acts), sum(a.reinforcement_hours for a in acts), tuple(a.action_id for a in acts)
-    ))
+    combos.sort(
+        key=lambda acts: (
+            len(acts),
+            sum(a.reinforcement_hours for a in acts),
+            tuple(a.action_id for a in acts),
+        )
+    )
     locked_ids = tuple(a.action_id for a in locked_actions)
     plans = [
         make_plan(
             snapshot,
             mode,
             locked_actions + acts,
-            ("pratique habituelle" if not acts and not locked_actions
-             else "scénario verrouillé seul" if not acts
-             else " + ".join(a.action_id for a in acts)),
+            (
+                "pratique habituelle"
+                if not acts and not locked_actions
+                else "scénario verrouillé seul"
+                if not acts
+                else " + ".join(a.action_id for a in acts)
+            ),
             locked_ids,
         )
         for acts in combos[:limit]
@@ -177,8 +190,8 @@ def enumerate_plans(
         limit=limit,
         complete=len(combos) <= limit,
         filter_rules=(
-            "auto discharge coordination only with observed medical authorization and no open obstacle",
-            "target hours from profile, not before readiness estimate, before any planned departure",
+            "auto discharge coordination only with observed medical authorization and no open obstacle",  # noqa: E501
+            "target hours from profile, not before readiness estimate, before any planned departure",  # noqa: E501
             "reinforcement options: known confirmation status and external commitment respected",
             f"at most {limits['max_coordinations_per_plan']} coordinations and "
             f"{limits['max_reinforcement_options_per_plan']} reinforcement options per plan",

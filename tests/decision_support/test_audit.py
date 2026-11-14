@@ -25,7 +25,9 @@ DETACHED = "db72732e55d237bea7a0e6fa3714e7d3627e0469add996ead25bb5e8254b387b"
 
 
 def _budget():
-    spec = importlib.util.spec_from_file_location("ds_budget_run", ROOT / "scripts/ds_budget_run.py")
+    spec = importlib.util.spec_from_file_location(
+        "ds_budget_run", ROOT / "scripts/ds_budget_run.py"
+    )
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -78,15 +80,28 @@ def test_t31_primary_result_cannot_be_passed_off_as_detached():
     with pytest.raises(ProvenanceError):
         check_result_claim({"archive_sha256": PRIMARY, "mode": "A_detached", "updates": 6000})
     with pytest.raises(ProvenanceError):  # unattested final != scientific failure
-        check_result_claim({"archive_sha256": DETACHED, "mode": "A_detached", "updates": 2000,
-                            "status": "SCIENTIFIC_FAILURE"})
-    assert check_result_claim({"archive_sha256": PRIMARY, "mode": "primary", "updates": 6000})[
-        "status"] == "COMPLETED_CRITERIA_FAILED"
+        check_result_claim(
+            {
+                "archive_sha256": DETACHED,
+                "mode": "A_detached",
+                "updates": 2000,
+                "status": "SCIENTIFIC_FAILURE",
+            }
+        )
+    assert (
+        check_result_claim({"archive_sha256": PRIMARY, "mode": "primary", "updates": 6000})[
+            "status"
+        ]
+        == "COMPLETED_CRITERIA_FAILED"
+    )
 
 
 def test_t32_no_hard_coded_product_figures_in_engine_or_cockpit():
-    sources = [*ROOT.glob("src/hospitalos/decision_support/*.py"),
-               *ROOT.glob("web/decision/*.ts"), *ROOT.glob("web/decision/*.html")]
+    sources = [
+        *ROOT.glob("src/hospitalos/decision_support/*.py"),
+        *ROOT.glob("web/decision/*.ts"),
+        *ROOT.glob("web/decision/*.html"),
+    ]
     assert sources
     forbidden = re.compile(r"\b2\s*IDE\b|\b9\s*/\s*10\b|\b4\s*/\s*10\b|9/10\s*->\s*4/10", re.I)
     offenders = [str(p) for p in sources if forbidden.search(p.read_text())]

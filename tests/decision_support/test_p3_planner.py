@@ -37,11 +37,16 @@ def test_t15_auto_mode_without_user_scenario(auto, settings):
     primary, baseline = _ev(auto, auto.primary_plan_id), _ev(auto, auto.baseline_plan_id)
     assert baseline.plan.is_baseline and not primary.plan.is_baseline
     tolerance = settings.objective["tiers"][1]["equivalence_tolerance"]
-    assert primary.metrics.uncovered_care_minutes < baseline.metrics.uncovered_care_minutes - tolerance
+    assert (
+        primary.metrics.uncovered_care_minutes < baseline.metrics.uncovered_care_minutes - tolerance
+    )
     assert auto.bundle.search.complete and auto.bundle.search.evaluated <= 16
     assert auto.reasons and auto.conditions and auto.uncertainties
     assert (auto.scientific_status, auto.clinical_validation, auto.g2) == (
-        "PROTOTYPE_UNVALIDATED", False, "NO-GO")
+        "PROTOTYPE_UNVALIDATED",
+        False,
+        "NO-GO",
+    )
     for e in auto.bundle.evaluations:  # every plan respects the auto bounds
         assert sum(a.type == "coordinate_discharge" for a in e.plan.actions) <= 2
         assert sum(a.type == "reinforcement" for a in e.plan.actions) <= 2
@@ -53,9 +58,14 @@ def test_selection_follows_objective_order(auto, settings):
     evs = [e for e in auto.bundle.evaluations if e.admissible]
     best = min(e.metrics.uncovered_care_minutes for e in evs)
     eligible = [e for e in evs if e.metrics.uncovered_care_minutes <= best + tol]
-    expected = min(eligible, key=lambda e: (e.metrics.reinforcement_hours,
-                                            e.metrics.interventions,
-                                            e.metrics.uncovered_care_minutes))
+    expected = min(
+        eligible,
+        key=lambda e: (
+            e.metrics.reinforcement_hours,
+            e.metrics.interventions,
+            e.metrics.uncovered_care_minutes,
+        ),
+    )
     assert auto.primary_plan_id == expected.plan.plan_id
     if auto.alternative_plan_id:
         alt, prim = _ev(auto, auto.alternative_plan_id), _ev(auto, auto.primary_plan_id)
@@ -74,10 +84,20 @@ def test_t17_insufficient_or_contradictory_data(settings):
     r = recommend(snapshot_from_fixture(FX / "insufficient_data.json"), settings)
     assert r.status == "INSUFFICIENT_DATA" and r.bundle is None and not r.approvable
     assert any(d.startswith("roster_unknown:IDE") for d in r.diagnostics)
-    twice = snapshot_with("nominal_auto.json", [{
-        "obs_id": "o-stay-S04-moved", "kind": "stay", "subject": "S04",
-        "event_time": "2026-11-16T18:00:00+00:00", "available_at": "2026-11-16T18:05:00+00:00",
-        "source": "synthetic_feed", "value": {"bed_id": "L03", "present": True}}])
+    twice = snapshot_with(
+        "nominal_auto.json",
+        [
+            {
+                "obs_id": "o-stay-S04-moved",
+                "kind": "stay",
+                "subject": "S04",
+                "event_time": "2026-11-16T18:00:00+00:00",
+                "available_at": "2026-11-16T18:05:00+00:00",
+                "source": "synthetic_feed",
+                "value": {"bed_id": "L03", "present": True},
+            }
+        ],
+    )
     r = recommend(twice, settings)
     assert r.status == "INSUFFICIENT_DATA"
     assert any(d.startswith("bed_claimed_twice:L03") for d in r.diagnostics)
@@ -136,10 +156,20 @@ def test_t10_t27_review_idempotent_and_invalidated_by_new_information(nominal, a
     assert len(store.ledger.by_key) == len(first.reservations)
     expired = review(auto, "approve", nominal, auto.valid_until, "req-2", ReviewStore())
     assert expired.outcome == "INVALIDATED" and expired.recompute_required
-    revoked = snapshot_with("nominal_auto.json", [{
-        "obs_id": "o-auth-S01-revoked", "kind": "medical_authorization", "subject": "S01",
-        "event_time": "2026-11-16T18:55:00+00:00", "available_at": "2026-11-16T18:58:00+00:00",
-        "source": "synthetic_feed", "value": {"status": "revoked", "by_role": "medecin"}}])
+    revoked = snapshot_with(
+        "nominal_auto.json",
+        [
+            {
+                "obs_id": "o-auth-S01-revoked",
+                "kind": "medical_authorization",
+                "subject": "S01",
+                "event_time": "2026-11-16T18:55:00+00:00",
+                "available_at": "2026-11-16T18:58:00+00:00",
+                "source": "synthetic_feed",
+                "value": {"status": "revoked", "by_role": "medecin"},
+            }
+        ],
+    )
     result = review(auto, "approve", revoked, now, "req-3", ReviewStore())
     assert result.outcome == "INVALIDATED" and result.recompute_required
     assert "S01:medical_authorization_revoked" in result.reasons  # T05 at re-examination
@@ -160,7 +190,9 @@ def test_t09_concurrent_approvals_do_not_double_book(nominal, auto):
 
 def test_t18_locked_x1_x2_identical_in_all_complements(manual):
     assert manual.mode == "manual" and manual.status in {
-        "RECOMMENDATION_READY", "NO_ACTION_PREFERRED"}
+        "RECOMMENDATION_READY",
+        "NO_ACTION_PREFERRED",
+    }
     locked = _ev(manual, manual.locked_plan_id)
     lock_ids = [a.action_id for a in locked.plan.actions]
     assert len(lock_ids) == 2
@@ -190,7 +222,10 @@ def test_t19_extension_t_changes_only_after_departure_hour(nominal, settings):
         a, b = trajectories[t], trajectories[t + 1]
         diff = [i for i, (p, q) in enumerate(zip(a, b, strict=True)) if p != q]
         assert diff and min(diff) >= departure_index[t]  # nothing changes before X2 leaves
-        assert a[departure_index[t]].demand_minutes["IDE"] != b[departure_index[t]].demand_minutes["IDE"]
+        assert (
+            a[departure_index[t]].demand_minutes["IDE"]
+            != b[departure_index[t]].demand_minutes["IDE"]
+        )
     assert len(set(totals.values())) > 1  # a threshold is crossed somewhere in 0..6
     # no monotonicity is imposed: totals may stay equal or move either way between t values
 
@@ -202,14 +237,19 @@ def test_t20_same_plan_auto_and_manual_same_forecast(nominal, auto, settings):
     e = settings.backend.forecast(nominal, as_manual, config)
     assert e.metrics == primary.metrics
     assert e.trajectory == primary.trajectory
-    locks = ScenarioLocks(locks=tuple(
-        LockedDischarge(stay_id=a.target, at=a.window_start, basis="validated_instruction")
-        if a.type == "coordinate_discharge" else LockedReinforcement(option_id=a.target,
-                                                                    include=True)
-        for a in primary.plan.actions), search_complements=False)
+    locks = ScenarioLocks(
+        locks=tuple(
+            LockedDischarge(stay_id=a.target, at=a.window_start, basis="validated_instruction")
+            if a.type == "coordinate_discharge"
+            else LockedReinforcement(option_id=a.target, include=True)
+            for a in primary.plan.actions
+        ),
+        search_complements=False,
+    )
     r = simulate(nominal, locks, settings)
-    assert _ev(r, r.locked_plan_id).metrics.model_dump(exclude={"interventions"}) == \
-        primary.metrics.model_dump(exclude={"interventions"})
+    assert _ev(r, r.locked_plan_id).metrics.model_dump(
+        exclude={"interventions"}
+    ) == primary.metrics.model_dump(exclude={"interventions"})
 
 
 def test_t06_hypothesis_is_simulated_but_never_approvable(nominal, settings):
@@ -219,9 +259,19 @@ def test_t06_hypothesis_is_simulated_but_never_approvable(nominal, settings):
     assert locked.admissible and locked.plan.actions[0].basis == "hypothesis_only"
     result = review(r, "approve", nominal, r.created_at, "hyp-1", ReviewStore())
     assert result.outcome == "REFUSED" and "not_approvable:HYPOTHETICAL_ONLY" in result.reasons
-    downgraded = simulate(nominal, ScenarioLocks(locks=(LockedDischarge(
-        stay_id="S04", at=nominal.as_of + timedelta(hours=18), basis="validated_instruction"),)),
-        settings)
+    downgraded = simulate(
+        nominal,
+        ScenarioLocks(
+            locks=(
+                LockedDischarge(
+                    stay_id="S04",
+                    at=nominal.as_of + timedelta(hours=18),
+                    basis="validated_instruction",
+                ),
+            )
+        ),
+        settings,
+    )
     assert downgraded.status == "HYPOTHETICAL_ONLY"
     assert any("treated as hypothesis_only" in d for d in downgraded.diagnostics)
 

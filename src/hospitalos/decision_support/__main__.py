@@ -1,8 +1,10 @@
 """Local command (no network, no hospital system).
 
-    PYTHONPATH=src:. python3 -m hospitalos.decision_support recommend tests/decision_support/fixtures/nominal_auto.json
-    PYTHONPATH=src:. python3 -m hospitalos.decision_support simulate tests/decision_support/fixtures/scenario_x1x2.json
-    PYTHONPATH=src:. python3 -m hospitalos.decision_support export --out evidence/decision_support/results
+    export PYTHONPATH=src:.
+    FX=tests/decision_support/fixtures
+    python3 -m hospitalos.decision_support recommend $FX/nominal_auto.json
+    python3 -m hospitalos.decision_support simulate $FX/scenario_x1x2.json
+    python3 -m hospitalos.decision_support export --out evidence/decision_support/results
 """
 
 from __future__ import annotations
@@ -21,21 +23,33 @@ FIXTURES = Path(__file__).resolve().parents[3] / "tests" / "decision_support" / 
 
 def summary(r: Recommendation) -> dict[str, object]:
     out: dict[str, object] = {
-        "recommendation_id": r.recommendation_id, "status": r.status, "mode": r.mode,
-        "scientific_status": r.scientific_status, "reasons": list(r.reasons),
-        "diagnostics": list(r.diagnostics), "approvable": r.approvable,
+        "recommendation_id": r.recommendation_id,
+        "status": r.status,
+        "mode": r.mode,
+        "scientific_status": r.scientific_status,
+        "reasons": list(r.reasons),
+        "diagnostics": list(r.diagnostics),
+        "approvable": r.approvable,
     }
     if r.bundle is not None:
         ev = {e.plan.plan_id: e for e in r.bundle.evaluations}
-        for name, pid in (("baseline", r.baseline_plan_id), ("primary", r.primary_plan_id),
-                          ("alternative", r.alternative_plan_id), ("locked", r.locked_plan_id)):
+        for name, pid in (
+            ("baseline", r.baseline_plan_id),
+            ("primary", r.primary_plan_id),
+            ("alternative", r.alternative_plan_id),
+            ("locked", r.locked_plan_id),
+        ):
             if pid:
                 e = ev[pid]
-                out[name] = {"plan_id": pid, "label": e.plan.label,
-                             "actions": [a.action_id for a in e.plan.actions],
-                             "metrics": e.metrics.model_dump(mode="json"),
-                             "violations": list(e.violations), "warnings": list(e.warnings),
-                             "conditional_on": list(e.conditional_on)}
+                out[name] = {
+                    "plan_id": pid,
+                    "label": e.plan.label,
+                    "actions": [a.action_id for a in e.plan.actions],
+                    "metrics": e.metrics.model_dump(mode="json"),
+                    "violations": list(e.violations),
+                    "warnings": list(e.warnings),
+                    "conditional_on": list(e.conditional_on),
+                }
         out["search"] = r.bundle.search.model_dump(mode="json")
     return out
 

@@ -1,0 +1,6 @@
+[
+ {"id": "revoke_S01", "unit": "nominal_auto", "label": "Nouvelle information (démo) : autorisation de sortie de S01 révoquée",
+  "observation": {"obs_id": "demo-auth-S01-revoked", "kind": "medical_authorization", "subject": "S01",
+   "event_time": "2026-11-16T18:55:00+00:00", "available_at": "2026-11-16T18:58:00+00:00",
+   "source": "synthetic_demo_event", "synthetic": true, "value": {"status": "revoked", "by_role": "medecin"}}}
+]
