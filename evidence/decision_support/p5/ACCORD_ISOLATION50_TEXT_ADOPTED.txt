@@ -1,0 +1,19 @@
+HospitalOS — proposition de clôture du contrôle d’isolation P5a sur 50 épisodes
+14 novembre 2026 — NON APPROUVÉE, NON ENVOYÉE, AUCUNE EXÉCUTION PAR CE DOCUMENT.
+
+À activer uniquement après accord explicite de l’utilisateur. Le dépôt des compléments et leur revue ne donnent pas cet accord.
+
+État conservé : le défaut de livraison P5A-D01 est clos. Les six fichiers originaux sont disponibles, les relevés réservés correspondent aux empreintes historiques n°54, et les statistiques ont été recalculées indépendamment sans simulation. P5A-D02 est déclaré non exécuté. Lecture P5a = exploratory ; PARTIAL_WITH_CHECKPOINT ; PROTOTYPE_UNVALIDATED ; clinical_validation=false ; G2=NO-GO.
+
+Périmètre proposé, et seulement celui-ci :
+1. Vérifier les archives et adopter sans remise à zéro le dernier registre valable. Référence livrée : 57 enregistrements, 98,501 s, empreinte terminale 0d703a60b70d18377389b778b5bb9e396c4d5c3c316d0fc0923c0016b7dfbbb0. Ne pas écraser une lignée plus récente. Le reçu du recalcul indépendant est distinct ; ne pas lui attribuer une exécution dans le runner expérimental.
+2. Relire les définitions originales de T03 et T04 et le garde-fou sur 50 épisodes de P5-PROTO-3 + 3.1. Définir et consigner la procédure et les assertions avant d’exécuter le contrôle, sans affaiblir les critères.
+3. Choisir de manière reproductible 50 parents parmi les épisodes P5a déjà évalués, par une règle indépendante des gains et regrets. Consigner la règle, la liste des identifiants et son empreinte. Ne sélectionner ni des réussites connues ni les seuls cas faciles. Aucune nouvelle population d’évaluation.
+4. Si les instantanés nécessaires ne sont pas livrés, permettre leur reconstruction déterministe à partir des graines et sources gelées uniquement pour cette vérification, avec preuve de concordance avec l’univers enregistré. Ne pas remplacer les relevés de résultats d’origine ni conduire une nouvelle comparaison d’efficacité.
+5. Exécuter les contrôles d’isolation prescrits, dans l’environnement approuvé, sous compteur et plafonds existants (30 s maximum par commande, plafonds des lots pertinents inchangés, aucun transfert de budget). Il peut être nécessaire d’appeler le planificateur public et ses calculs bornés pour comparer les sorties ; ne pas prétendre qu’il s’agit d’une simple lecture statique. Pas d’entraînement, pas d’installation, pas d’AJ-H, pas de P5b, D16 ou P6, pas de push, merge ou rebase.
+6. En cas d’échec, arrêter et livrer le cas, les entrées, la sortie et le diagnostic. Aucun correctif silencieux, aucune substitution d’épisode, aucune mise à jour rétroactive de F_a ou de RESULTS_P5a.json. Une correction ultérieure exige une décision distincte.
+7. Livrer le reçu par épisode, les assertions, les commandes, les journaux, le registre final, l’environnement, le code de contrôle et les empreintes dans une archive complète vérifiée après extraction neuve.
+
+Qualifier explicitement ce travail : contrôle réalisé APRÈS F_a et après lecture P5a. En cas de réussite, il complète la preuve d’isolation ; il ne crée pas une exécution historique inexistante et ne relève pas le verdict exploratoire imposé par la précision.
+
+Arrêt après livraison. P5b reste soumis à son accord (iii) distinct, à son précontrôle, à son devis et à ses gels. Aucun nouveau correctif du moteur v6 n’est demandé par cette proposition.

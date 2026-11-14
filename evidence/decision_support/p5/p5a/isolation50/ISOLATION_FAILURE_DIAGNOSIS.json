@@ -1,0 +1,207 @@
+{
+ "episode": {
+  "admissions": [
+   "A01"
+  ],
+  "beds": [
+   {
+    "bed_id": "L01",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L02",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L03",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L04",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L05",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L06",
+    "status": "occupied"
+   },
+   {
+    "bed_id": "L07",
+    "status": "occupied"
+   }
+  ],
+  "n_plans": 6,
+  "parent_index": 5,
+  "stays": [
+   {
+    "authorization": "not_authorized",
+    "obstacles": [],
+    "stay_id": "X01",
+    "transport_need": "unknown"
+   },
+   {
+    "authorization": "authorized",
+    "obstacles": [],
+    "stay_id": "X02",
+    "transport_need": "stretcher"
+   },
+   {
+    "authorization": "authorized",
+    "obstacles": [],
+    "stay_id": "X03",
+    "transport_need": "none"
+   },
+   {
+    "authorization": "not_authorized",
+    "obstacles": [],
+    "stay_id": "X04",
+    "transport_need": "unknown"
+   },
+   {
+    "authorization": "not_authorized",
+    "obstacles": [],
+    "stay_id": "X05",
+    "transport_need": "unknown"
+   },
+   {
+    "authorization": "not_authorized",
+    "obstacles": [],
+    "stay_id": "X06",
+    "transport_need": "unknown"
+   },
+   {
+    "authorization": "authorized",
+    "obstacles": [],
+    "stay_id": "X07",
+    "transport_need": "seated"
+   }
+  ],
+  "structure_id": "7f0869e7430c81ce",
+  "universe_matches_record": true
+ },
+ "failure": {
+  "detail": {
+   "parent_index": 5,
+   "structure_id": "7f0869e7430c81ce"
+  },
+  "kind": "no_distinguishable_truth_pair",
+  "procedure_sha256": "94e57c801b3404dc802db4088fd099cadc8c6c52b1f34e5b2ffdce615bbd83a3"
+ },
+ "habitual_truth_runs": {
+  "R1k1": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  },
+  "R1k2": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  },
+  "R1k3": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  },
+  "R2k1": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  },
+  "R2k2": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  },
+  "R2k3": {
+   "admissions": {
+    "A01": 21
+   },
+   "departures": {
+    "X02": 16,
+    "X03": 18,
+    "X07": 20
+   },
+   "uncovered_total": 610
+  }
+ },
+ "note": "read-only diagnosis; no check re-run; F_a and RESULTS unchanged",
+ "primitives_differing_from_truth_A": {
+  "R1k2": [
+   "cleaning:L04|X04",
+   "cleaning:L06|X06",
+   "readiness:X07",
+   "transport_lead:X07"
+  ],
+  "R1k3": [
+   "cleaning:L01|X01",
+   "cleaning:L02|X02",
+   "cleaning:L04|X04",
+   "cleaning:L06|X06",
+   "cleaning:L07|X07",
+   "readiness:X02"
+  ],
+  "R2k1": [
+   "cleaning:L04|X04"
+  ],
+  "R2k2": [
+   "cleaning:L04|X04",
+   "cleaning:L06|X06",
+   "readiness:X07",
+   "transport_lead:X07"
+  ],
+  "R2k3": [
+   "cleaning:L01|X01",
+   "cleaning:L02|X02",
+   "cleaning:L04|X04",
+   "cleaning:L06|X06",
+   "cleaning:L07|X07",
+   "readiness:X02"
+  ]
+ },
+ "recorded_U_habitual": {
+  "R1": [
+   610,
+   610,
+   610
+  ],
+  "R2": [
+   610,
+   610,
+   610
+  ]
+ }
+}

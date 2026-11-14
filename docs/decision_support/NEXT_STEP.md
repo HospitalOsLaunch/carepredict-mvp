@@ -51,6 +51,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **(ii) P5a adopté et exécuté** (`P5_P5a_REPORT.md`) : dev 10×10, F_a, réservé 30×10 R1/R2 K=3 ;
    gain R1 217,1 [187,3 ; 248,0] min-soignant/épisode, part capturée 96,6 %, 0/30 structure dégradée ;
    verdict `exploratory` (précision projetée 33,9 > 7,5 déclarée avant F_a). Arrêt après P5a. (iii) fermé.
+   **Contrôle d'isolation 50 épisodes (adopté, postérieur au gel)** (`P5_P5a_ISOLATION50_REPORT.md`) :
+   47/50 réussis, arrêt au 48ᵉ sur précondition (`no_distinguishable_truth_pair`, pas une fuite) ;
+   P5A-D02 non clos ; amendement de procédure = décision distincte.
 
 ## Hors de ce projet
 

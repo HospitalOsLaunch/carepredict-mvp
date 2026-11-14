@@ -45,11 +45,15 @@ CODE = [
     "src/hospitalos/p5/a5.py",
     "src/hospitalos/p5/p5a.py",
     "src/hospitalos/p5/p5a_analysis.py",
+    "src/hospitalos/p5/isolation50.py",
     "scripts/p5_budget_run.py",
     "scripts/p5_commit.py",
     "scripts/p5_pilot.py",
     "scripts/p5_a5_benchmark.py",
     "scripts/p5_p5a.py",
+    "scripts/p5_isolation50.py",
+    "scripts/p5_isolation50_diag.py",
+    "scripts/p5_complement_check.py",
 ]
 DOCS = [
     "docs/decision_support/P5_PROTOCOL_v2.md",
@@ -62,6 +66,7 @@ DOCS = [
     "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json",
     "docs/decision_support/P5_DECISIONS_v3.json",
     "docs/decision_support/P5_DECISIONS_v4_P5a.json",
+    "docs/decision_support/P5_DECISIONS_v5_isolation50.json",
 ]
 
 
