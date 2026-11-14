@@ -216,7 +216,8 @@ def build(reference: Path, out: Path) -> int:
             "all parameters synthetic; no interviews; no calibration",
         ],
         "not_executed": ["training", "weight loading", "AJ-H inference", "lots B/C",
-                         "statistical campaign", "paid API/GPU", "unauthorised network install", "push",
+                         "statistical campaign", "paid API/GPU",
+                         "unauthorised network install", "push",
                          "merge", "rebase", "SIH action", "background process"],
     }
     (pkg / "STATUS.json").write_text(json.dumps(status, indent=1, ensure_ascii=False) + "\n")
