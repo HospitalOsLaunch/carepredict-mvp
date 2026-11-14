@@ -26,15 +26,68 @@ def hour_index_ceil(start: datetime, at: datetime) -> int:
     return math.ceil((at - start) / timedelta(hours=1))
 
 
+@dataclass(frozen=True)
+class LenderCapacity:
+    """V5-R01: ONE spare capacity per lender x skill x hour for a given snapshot.
+
+    Built from every shared-unit offer of the snapshot touching that hour, never from the
+    offer currently being approved. Contradictory simultaneous declarations are resolved by an
+    explicit, reported prudent policy: lowest scheduled staff minus highest minimum.
+    """
+
+    lender: str
+    skill: str
+    hour: datetime
+    spare: int | None  # None = unknown commitment => no new loan
+    scheduled: int | None
+    minimum: int | None
+    sources: tuple[str, ...]
+    conflicting: bool
+    policy: str
+
+
+def lender_capacities(
+    options: tuple[ReinforcementOption, ...] | list[ReinforcementOption],
+) -> dict[tuple[str, str, datetime], LenderCapacity]:
+    groups: dict[tuple[str, str, datetime], list[ReinforcementOption]] = {}
+    for o in options:
+        if o.source != "shared_unit" or o.lending_unit is None:
+            continue
+        for h in touched_hours(o.start, o.end):  # V4-R01: common grid
+            groups.setdefault((o.lending_unit, o.skill, h), []).append(o)
+    out = {}
+    for (unit, skill, h), offers in groups.items():
+        scheduled = [o.lending_unit_scheduled for o in offers]
+        minimum = [o.lending_unit_minimum for o in offers]
+        ids = tuple(sorted(o.option_id for o in offers))
+        if any(v is None for v in scheduled + minimum):
+            out[(unit, skill, h)] = LenderCapacity(
+                unit, skill, h, None, None, None, ids, False, "unknown_commitment"
+            )
+            continue
+        sched, mini = min(scheduled), max(minimum)  # type: ignore[type-var]
+        conflicting = len(set(scheduled)) > 1 or len(set(minimum)) > 1
+        out[(unit, skill, h)] = LenderCapacity(
+            unit,
+            skill,
+            h,
+            max(0, sched - mini),
+            sched,
+            mini,
+            ids,
+            conflicting,  # type: ignore[operator]
+            "prudent:min_scheduled-max_minimum" if conflicting else "concordant",
+        )
+    return out
+
+
 def lending_violations(
     options: tuple[ReinforcementOption, ...] | list[ReinforcementOption],
+    snapshot_options: tuple[ReinforcementOption, ...] | list[ReinforcementOption] | None = None,
 ) -> list[str]:
-    """F02: cumulative check of loans taken from the same unit, skill and hour.
-
-    Each option may respect the lender's minimum on its own; together they must too. When
-    options of one lender declare different staffing figures, the most conservative pair is
-    used (lowest scheduled, highest minimum).
-    """
+    """F02/V5-R01: loans taken by one plan from the same lender, skill and hour, checked
+    against the snapshot-level capacity (all offers of the snapshot, not only those chosen)."""
+    capacities = lender_capacities(snapshot_options if snapshot_options is not None else options)
     per_hour: dict[tuple[str, str, datetime], list[ReinforcementOption]] = {}
     problems = []
     for o in options:
@@ -43,20 +96,18 @@ def lending_violations(
         if o.lending_unit is None:  # V4-R02
             problems.append(f"lending_unit_unknown:{o.option_id}")
             continue
-        for h in touched_hours(o.start, o.end):  # V4-R01: common grid
+        for h in touched_hours(o.start, o.end):
             per_hour.setdefault((o.lending_unit, o.skill, h), []).append(o)
     for (unit, skill, h), taken in sorted(per_hour.items()):
-        scheduled = [o.lending_unit_scheduled for o in taken]
-        minimum = [o.lending_unit_minimum for o in taken]
-        if any(v is None for v in scheduled + minimum):
+        cap = capacities.get((unit, skill, h))
+        if cap is None or cap.spare is None:
             problems.append(f"lending_unit_commitment_unknown:{unit}:{skill}:{h.isoformat()}")
             continue
-        sched, mini = min(scheduled), max(minimum)  # type: ignore[type-var]
-        if sched - len(taken) < mini:  # type: ignore[operator]
+        if len(taken) > cap.spare:
             ids = "+".join(sorted(o.option_id for o in taken))
             problems.append(
                 f"lending_unit_minimum_cumulative:{unit}:{skill}:{h.isoformat()}:"
-                f"{sched}-{len(taken)}<{mini}:{ids}"
+                f"{cap.scheduled}-{len(taken)}<{cap.minimum}:{ids}"
             )
     return problems
 
@@ -198,9 +249,12 @@ class ResourceLedger:
     used: dict[tuple[str, str], list[str]] = field(default_factory=dict)
     # Append-only trace of capacity reconciliations that conflict with existing holds.
     conflicts: list[str] = field(default_factory=list)
+    # Provenance of the capacity in force per slot (snapshot version + policy + offers).
+    capacity_source: dict[tuple[str, str], str] = field(default_factory=dict)
 
     def reserve_all(
-        self, requests: list[tuple[str, str, str, int | None]]
+        self,
+        requests: list[tuple[str, str, str, int | None] | tuple[str, str, str, int | None, str]],
     ) -> tuple[bool, list[str]]:
         """F03: all-or-nothing. Requests are (resource, slot, key, capacity if known).
 
@@ -212,10 +266,13 @@ class ResourceLedger:
             capacity=dict(self.capacity),
             by_key=dict(self.by_key),
             used={k: list(v) for k, v in self.used.items()},
+            capacity_source=dict(self.capacity_source),
         )
         details = []
         ok_all = True
-        for resource, slot, key, cap in requests:
+        for resource, slot, key, cap, *provenance in requests:
+            if provenance:
+                staged.capacity_source[(resource, slot)] = str(provenance[0])
             # V4-R03: the capacity of the CURRENT snapshot replaces any remembered one,
             # including when it became unknown. Existing holds are kept, never erased; a
             # capacity now below them is traced as a conflict and blocks new holds.
@@ -229,14 +286,14 @@ class ResourceLedger:
                     )
                 elif len(holders) > cap:
                     self.conflicts.append(
-                        f"capacity_below_existing_holds:{resource}@{slot}:"
-                        f"{len(holders)}>{cap}"
+                        f"capacity_below_existing_holds:{resource}@{slot}:{len(holders)}>{cap}"
                     )
             ok, why = staged.reserve(resource, slot, key)
             details.append(f"{resource}@{slot}:{why}")
             ok_all = ok_all and ok
         if ok_all:
             self.capacity, self.by_key, self.used = staged.capacity, staged.by_key, staged.used
+            self.capacity_source = staged.capacity_source
         return ok_all, details
 
     def reserve(self, resource: str, slot: str, key: str) -> tuple[bool, str]:

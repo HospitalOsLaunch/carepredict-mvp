@@ -161,7 +161,7 @@ def enumerate_plans(
     for n in range(1, int(limits["max_reinforcement_options_per_plan"]) + 1):
         for chosen in itertools.combinations(admissible_options, n):
             # F02: options allowed alone may be forbidden together (same lender, skill, hour).
-            cumulative = lending_violations([*locked_options, *chosen])
+            cumulative = lending_violations([*locked_options, *chosen], snapshot.reinforcements)
             if cumulative:
                 rejected["+".join(o.option_id for o in chosen)] = cumulative[0]
                 continue

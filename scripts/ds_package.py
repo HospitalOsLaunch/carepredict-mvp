@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BRANCH = "claude/hospitalos-auto-first-p0-p4-s2dywn"
 BASE = "a5e737eec2cfdf0f52a68f41b523f928181c03e6"
-NAME = "HospitalOS_DS_P0-P4_20261114_v5"
+NAME = "HospitalOS_DS_P0-P4_20261114_v6"
 LEDGER = ROOT / "evidence/decision_support/BUDGET_LEDGER.jsonl"
 
 RESTORE = r"""#!/bin/sh
@@ -211,8 +211,8 @@ def build(reference: Path, out: Path) -> int:
             "exact Python 3.11.9 patch level: the full suite passes under 3.11.18 (163/163, "
             "results identical); downloading a 3.11.9 interpreter is not covered by the "
             "authorisations",
-            "independent re-audit of the v5 corrections (V4-R01/R02/R03, V4-D01); A01-A10 and "
-            "B01-B04 pass locally",
+            "independent re-audit of the v6 correction (V5-R01); A01-A10, B01-B04 and C01-C04 "
+            "pass locally",
             "cockpit Vitest/e2e are the author's runs, not an independent browser replay",
         ],
         "scientific_status": "PROTOTYPE_UNVALIDATED",
@@ -231,8 +231,11 @@ def build(reference: Path, out: Path) -> int:
             "reaudit_v4": "v4 sha256 c8885375...045e (tree bebb95b); findings V4-R01, V4-R02, "
             "V4-R03, V4-D01 fixed; B01-B04 red 3/4 then green 4/4; restored counter red "
             "102<105 then green (files kept byte for byte)",
-            "budget_lineage": "auditor ledger (114 records, 260.024 s) adopted: exact extension "
-            "of the v4 terminal, no double counting",
+            "budget_lineage": "auditor ledgers adopted as exact extensions, no double counting: "
+            "v4 audit 114 records/260.024 s; v5 audit 146 records/343.115 s",
+            "reaudit_v5": "v5 sha256 37cc8cde...a349d (tree 56ad3cf); V4 findings confirmed fixed "
+            "(174/174 independent); new V5-R01 fixed in v6; C01-C04 red 1/5 then green 5/5 "
+            "(file kept byte for byte)",
         },
         "branch": BRANCH, "base": BASE, "code_commit": head, "pushed": False,
         "tests": {

@@ -1,9 +1,9 @@
 # Point de reprise
 
-État : P0–P4 livrés, corrigés après deux audits indépendants (P2/P3bis, puis v5 :
-V4-R01/R02/R03, V4-D01) : **`PARTIAL_WITH_CHECKPOINT`**. P5 et P6 **fermés**. Portes ouvertes :
-niveau exact Python 3.11.9 (3.11.18 : suite complète verte), ré-audit indépendant de la v5,
-rejeu navigateur indépendant du cockpit.
+État : P0–P4 livrés, corrigés après trois audits indépendants (P2/P3bis ; v5 : V4-R01/R02/R03,
+V4-D01 ; v6 : V5-R01) : **`PARTIAL_WITH_CHECKPOINT`**. P5 et P6 **fermés**. Portes ouvertes :
+ré-audit indépendant de la v6, niveau exact Python 3.11.9 (3.11.18 : suite verte), rejeu
+navigateur indépendant du cockpit.
 
 ## Reprise exacte
 

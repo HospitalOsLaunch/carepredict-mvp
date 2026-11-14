@@ -102,7 +102,10 @@ Règles ajoutées après l'audit (P2/P3bis) : heures de verrou et d'échéance *
 un verrou validé doit satisfaire les mêmes préconditions qu'une action automatique, sinon il reste
 une hypothèse (heure conservée) ; un lit pouvant être libéré sans durée de nettoyage connue entraîne
 l'abstention, sauf hypothèse configurée et signalée (`unknown_cleaning_assumption`) ; le planning de
-chaque compétence requise doit être déclaré ; prêts de personnel contrôlés en cumul ; identifiants
+chaque compétence requise doit être déclaré ; prêts de personnel contrôlés en cumul, contre UNE capacité par prêteur × compétence × heure
+calculée sur toutes les offres de l'instantané (déclarations contradictoires : règle prudente
+min(effectif) − max(minimum), signalée) ; fenêtres de renfort sur heures pleines ; prêteur
+identifié obligatoire pour `shared_unit` ; identifiants
 adressés par le contenu ; revue : clé d'idempotence liée à `request_fingerprint`, rejeu avec
 `replayed`/`current_validity`, conflit explicite sinon.
 

@@ -2,7 +2,7 @@
 
 Entrée : `HospitalOS_Audit_DS_20261114` (35/35 empreintes conformes ; rapport identique au fichier
 transmis), portant sur `HospitalOS_DS_P0-P4_20261114.zip` (SHA-256 `431e2e44…cda4e`, arbre
-`d7844ea`). Statut de livraison : **`PARTIAL_WITH_CHECKPOINT`** (portes restantes : § 6 et § 9). Ce rapport
+`d7844ea`). Statut de livraison : **`PARTIAL_WITH_CHECKPOINT`** (portes restantes : § 6, § 9 et § 10). Ce rapport
 interne au dépôt et au paquet fait foi ; une copie transmise séparément plus tôt était antérieure
 au § 8 (exécution Python 3.11). Statut scientifique inchangé : `PROTOTYPE_UNVALIDATED`, `clinical_validation=false`, `G2=NO-GO`.
 
@@ -126,3 +126,39 @@ B03 en échec, B04 réussi ; `test_v4_restoration_counter.py` contre la vraie re
 | **V4-D01** compteur restauré antérieur | `restore.sh` choisit le registre le plus récent du paquet (final > terminal scellé > copie de construction), vérifie que la copie de l'arbre en est un **préfixe exact**, l'installe dans `evidence/decision_support/` de la cible avec une note tracée, puis exécute les tests et l'export **via le compteur de la cible**. Le reçu donne le `--status` de la cible après rejeu. | `test_v4_restoration_counter.py` vert contre la restauration post-scellement ; `RESTORE_RECEIPT_POSTSEAL.json` |
 
 Les chiffres nominaux restent 1040 / 905 / 640 / 435 / 795 (sorties de fixture).
+
+## 10. Correctif v6 — après le ré-audit indépendant de la v5
+
+Entrée : `HospitalOS_Audit_DS_v5_Correctifs_20261114.zip` (SHA-256 `6093ca46…a02f`, 37/37 empreintes
+conformes ; rapport et prompt identiques aux fichiers transmis), portant sur la v5 (SHA-256
+`37cc8cde…a349d`, arbre `56ad3cf`). L'audit confirme V4-R01/R02/R03 et V4-D01 corrigés
+(174/174 indépendants, restauration 88/88, 11 résultats identiques, compteur final installé dans
+la cible).
+
+**Budget.** La lignée de l'audit (146 enregistrements, 343,115 s) prolonge exactement le final v5
+(137 lignes) ; adoptée sans double comptage (`HospitalOS_DS_v5_independent_20261114`, +27,439 s).
+
+**Rouge.** `test_v5_capacity_consistency.py` copié octet pour octet (son helper
+`test_v4_resource_boundaries.py` était déjà identique ; le `conftest.py` du dépôt expose son dossier
+pour l'import) : C01 dans l'ordre R1→R2 échoue, l'ordre inverse et C02–C04 passent.
+
+**V5-R01 — capacité dépendant de l'ordre d'approbation.** `lender_capacities` (`resources.py`)
+calcule **une capacité unique par prêteur × compétence × heure** à partir de **toutes** les offres
+de l'instantané qui touchent ce créneau. Déclarations simultanées contradictoires : politique
+explicite et signalée `prudent:min_scheduled-max_minimum` (diagnostic
+`lending_declarations_conflict:<prêteur>:<compétence>:<n>h…:spare=<k>`). Cette capacité, avec sa
+provenance (`snapshot:<empreinte>:<politique>:<offres>`, conservée dans
+`ResourceLedger.capacity_source`), est partagée par l'énumération, les verrous, la revalidation
+(`plan_precondition_errors`), les invariants du simulateur et les réservations. L'offre approuvée
+n'est jamais la source de la capacité. Une hausse concordante dans un nouvel instantané est prise
+en compte (C03) ; un refus n'efface aucun engagement existant.
+
+| Contrôle | Résultat |
+|---|---|
+| C01 (deux ordres), C02, C03, C04 | rouge 1/5 → vert 5/5 |
+| `test_corrections_v6.py` | 3 réussis : capacité identique quelle que soit l'offre, provenance, conflit signalé, engagement préservé dans les deux ordres, offre seule refusée si marge prudente nulle |
+| Suite DS + 86 hybrides (3.13 et 3.11.18) | 181 réussis, 1 ignoré (test du compteur, exécuté à part contre la vraie restauration) |
+| Chiffres nominaux, balayage t, statuts des scénarios | inchangés (1040 / 905 / 640 / 435 / 795) ; identifiants changés (le code du backend entre dans leur empreinte) |
+| Cockpit (auteur, hors ligne, `node_modules` déjà présents) | Vitest 72/72, build, e2e 17/17 et 19/19 |
+
+Tests d'auteur ≠ relecture indépendante ; Python 3.11.18 ≠ 3.11.9 ; typecheck autonome ≠ React.

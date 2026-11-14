@@ -32,7 +32,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 920.0
    },
-   "recommendation_id": "reco-a647f68dff53be16",
+   "recommendation_id": "reco-2ce9f3a79b179256",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 0
   },
@@ -67,7 +67,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 935.0
    },
-   "recommendation_id": "reco-110fc62238a920d3",
+   "recommendation_id": "reco-ce1d84a18f680328",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 1
   },
@@ -102,7 +102,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 950.0
    },
-   "recommendation_id": "reco-622a9aa4f1d8d7ea",
+   "recommendation_id": "reco-f503dcb834412453",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 2
   },
@@ -137,7 +137,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 965.0
    },
-   "recommendation_id": "reco-1ec97e20e2770988",
+   "recommendation_id": "reco-89292eaf42c54ed8",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 3
   },
@@ -172,7 +172,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 980.0
    },
-   "recommendation_id": "reco-d1c2c6af8e429e55",
+   "recommendation_id": "reco-665e878a65c6af26",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 4
   },
@@ -207,7 +207,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 995.0
    },
-   "recommendation_id": "reco-0a76d3e6417ab1bf",
+   "recommendation_id": "reco-4ea9cfbfb49fc1be",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 5
   },
@@ -242,7 +242,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 1010.0
    },
-   "recommendation_id": "reco-101f4da513e8bdbb",
+   "recommendation_id": "reco-7e68c75e52aa168b",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 6
   },
@@ -277,7 +277,7 @@
     "waiting_patient_hours": 14.5,
     "worst_scenario_uncovered_minutes": 1025.0
    },
-   "recommendation_id": "reco-361c4b162de302c9",
+   "recommendation_id": "reco-f8fb04d522d43c0a",
    "status": "NO_ACTION_PREFERRED",
    "t_hours": 7
   },
@@ -286,7 +286,7 @@
     "locked_time_outside_horizon:S02:2026-11-17 20:00 CET"
    ],
    "locked_metrics": null,
-   "recommendation_id": "reco-176475d059514c90",
+   "recommendation_id": "reco-e6ad484964c28240",
    "status": "INFEASIBLE",
    "t_hours": 8
   }

@@ -94,7 +94,7 @@ def plan_precondition_errors(snapshot: PublicSnapshot, plan: Plan) -> tuple[str,
             if not ok:
                 errors.append(f"{a.target}:{reason}")
             chosen.append(option)
-    errors += lending_violations(chosen)
+    errors += lending_violations(chosen, snapshot.reinforcements)
     return tuple(errors)
 
 

@@ -36,9 +36,11 @@ from .eligibility import (
     revalidate_discharge,
 )
 from .reference_forecaster import ForecastConfig, ReferenceForecaster, assert_product_backend
+from .resources import LenderCapacity as LenderCapacityT
 from .resources import (
     ResourceLedger,
     hour_index,
+    lender_capacities,
     lending_violations,
     option_admissibility,
     roster_known,
@@ -281,9 +283,9 @@ def _data_gaps(
         gaps.append("cleaning_capacity_unknown")
     # F06: beds that any evaluated plan may free need a known cleaning duration, or a
     # configured, versioned replacement assumption that is reported.
-    may_leave = {
-        s.stay_id for s in snapshot.stays if eligible_for_auto_discharge(s)
-    } | set(departing)
+    may_leave = {s.stay_id for s in snapshot.stays if eligible_for_auto_discharge(s)} | set(
+        departing
+    )
     beds = {b.bed_id: b for b in snapshot.beds}
     assumption = profile.get("unknown_cleaning_assumption")
     for s in snapshot.stays:
@@ -296,6 +298,19 @@ def _data_gaps(
                 )
             else:
                 gaps.append(f"cleaning_duration_unknown:{bed.bed_id}")
+    # V5-R01: contradictory simultaneous declarations of one lender are resolved by the
+    # prudent policy and REPORTED, never silently, and never by the order of approvals.
+    conflicts: dict[tuple[str, str], list[LenderCapacityT]] = {}
+    for cap in lender_capacities(snapshot.reinforcements).values():
+        if cap.conflicting:
+            conflicts.setdefault((cap.lender, cap.skill), []).append(cap)
+    for (lender, skill), caps in sorted(conflicts.items()):
+        caps.sort(key=lambda c: c.hour)
+        assumptions.append(
+            f"lending_declarations_conflict:{lender}:{skill}:{len(caps)}h from "
+            f"{display(caps[0].hour)}:offers={'+'.join(caps[0].sources)}:"
+            f"{caps[0].policy}:spare={caps[0].spare}"
+        )
     return gaps, assumptions
 
 
@@ -570,7 +585,10 @@ def locked_actions(
     locked_options = [
         options[a.target] for a in actions if a.type == "reinforcement" and a.target in options
     ]
-    contradictions += [f"locked_reinforcements:{v}" for v in lending_violations(locked_options)]
+    contradictions += [
+        f"locked_reinforcements:{v}"
+        for v in lending_violations(locked_options, snapshot.reinforcements)
+    ]
     return tuple(actions), contradictions, diagnostics, hypothetical
 
 
@@ -790,34 +808,48 @@ def _reservation_requests(
     start = snapshot.as_of
     transport, _ = team_capacity(snapshot.teams, "transport", start, 24)
     options = {o.option_id: o for o in snapshot.reinforcements}
-    requests: list[tuple[str, str, str, int | None]] = []
+    capacities = lender_capacities(snapshot.reinforcements)
+    requests: list[tuple[str, str, str, int | None, str]] = []
     for a in plan_actions:
         if a.type == "reinforcement":
-            requests.append((a.target, a.window_start.isoformat(), a.idempotency_key, 1))
+            requests.append(
+                (a.target, a.window_start.isoformat(), a.idempotency_key, 1, "option:single_staff")
+            )
             option = options.get(a.target)
             if option is not None and option.source == "shared_unit":
-                # F02/V4-R01: loans from one lender share its spare staff per hour, on the
-                # same common hourly grid as the cumulative check. V4-R02: an unidentified
-                # lender gives an unknown capacity, hence a refusal, never a skipped check.
+                # F02/V4-R01/V4-R02/V5-R01: loans from one lender share ONE spare capacity per
+                # skill and hour, computed from all offers of this snapshot (never from the
+                # offer being approved), on the common hourly grid, with its provenance.
                 lender = option.lending_unit or "UNKNOWN_LENDER"
-                spare = None
-                if option.lending_unit and option.lending_unit_scheduled is not None and (
-                    option.lending_unit_minimum is not None
-                ):
-                    spare = max(0, option.lending_unit_scheduled - option.lending_unit_minimum)
                 for h in touched_hours(option.start, option.end):
+                    cap = capacities.get((lender, option.skill, h))
+                    spare = cap.spare if cap is not None else None
+                    source = (
+                        f"snapshot:{snapshot.fingerprint[:16]}:{cap.policy}:{'+'.join(cap.sources)}"
+                        if cap is not None
+                        else f"snapshot:{snapshot.fingerprint[:16]}:unknown_lender"
+                    )
                     requests.append(
                         (
                             f"lend:{lender}:{option.skill}",
                             h.isoformat(),
                             f"{a.idempotency_key}:{h.isoformat()}",
                             spare,
+                            source,
                         )
                     )
         elif "transport_team" in a.resources:
             h = hour_index(start, a.window_start)
             cap = transport[h] if 0 <= h < len(transport) else 0
-            requests.append(("transport", a.window_start.isoformat(), a.idempotency_key, cap))
+            requests.append(
+                (
+                    "transport",
+                    a.window_start.isoformat(),
+                    a.idempotency_key,
+                    cap,
+                    f"snapshot:{snapshot.fingerprint[:16]}:team_capacity",
+                )
+            )
     return requests
 
 
@@ -847,8 +879,9 @@ def review(
         if stored.outcome == "APPROVED_IN_DEMO":
             outcome_now, why, _ = _approval_blockers(recommendation, current_snapshot, now)
             validity = (
-                "still_valid" if outcome_now == "APPROVED_IN_DEMO" else "no_longer_valid:"
-                + ",".join(why)
+                "still_valid"
+                if outcome_now == "APPROVED_IN_DEMO"
+                else "no_longer_valid:" + ",".join(why)
             )
         else:
             validity = "not_applicable"
@@ -869,8 +902,11 @@ def review(
                 reservations = details
             else:
                 outcome = "REFUSED"
-                reasons = [f"reservation_refused:{d}" for d in details if d.endswith(
-                    ("capacity_exhausted", "capacity_unknown", "other_resource"))]
+                reasons = [
+                    f"reservation_refused:{d}"
+                    for d in details
+                    if d.endswith(("capacity_exhausted", "capacity_unknown", "other_resource"))
+                ]
     result = ReviewResult(
         review_id="rev-" + sha({"key": idempotency_key, "request": fingerprint})[:16],
         recommendation_id=recommendation.recommendation_id,

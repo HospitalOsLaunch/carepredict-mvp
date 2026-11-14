@@ -10,20 +10,20 @@
    "admissions are not a lever; waiting patients' care counts as uncovered"
   ],
   "backend": {
-   "code_sha256": "1affe7cf9104504e7d84d0ef64999d34f053528dfa3b46191edaf0c3eaaba581",
+   "code_sha256": "f4054b1bb499807b2e7d61ebec4c77cfbc9107a3fb45a03e85e3f1b77658663b",
    "name": "reference_hybrid",
    "product_allowed": true,
    "reads_private": false,
    "version": "1.0.0"
   },
-  "bundle_id": "fb-c9844c4fc90d1954",
+  "bundle_id": "fb-12ba2249ba88bd8b",
   "config": {
    "mode": "auto",
    "objective": "OBJ-LEX-1@1",
    "pressure_discharges_enabled": false,
    "profile": "U-MED-SYN-01@1",
-   "run_fingerprint": "e1dc506898afdfcbe3b2abf754e46be10a76aa092c6145c678d4e240b0401403",
-   "settings_sha256": "44963814b57af7ec57dca40b5feac6c7748db9d5e8e77ff3a6b795db75767cfb"
+   "run_fingerprint": "369560b5e4104b6f638b799ba08581621b9d5b4f500605f15588cf79ecc92386",
+   "settings_sha256": "60a7863f484ffa3a55a33eb2e48943145734db4c6e675cbb42e24bb80a002d6a"
   },
   "evaluations": [
    {
@@ -9557,7 +9557,7 @@
   "reported beds_returned: habitual 2.0 -> plan 2.0",
   "plan remains insufficient: 435.0 uncovered staff-minutes expected"
  ],
- "recommendation_id": "reco-5a38d523fcd5bf86",
+ "recommendation_id": "reco-1ebf89dd23166c9f",
  "schema_version": "DS_RECOMMENDATION_1",
  "scientific_status": "PROTOTYPE_UNVALIDATED",
  "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",

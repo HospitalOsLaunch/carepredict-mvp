@@ -320,7 +320,7 @@ def simulate(
             if cause != "initial":
                 returned += 1
 
-    violations += lending_violations(decisions.reinforcements)
+    violations += lending_violations(decisions.reinforcements, snapshot.reinforcements)
 
     # ---- admissions: FIFO on the first clean, compatible, unoccupied bed (not a lever)
     occupied_from: dict[str, int] = {}  # bed -> hour of (re)occupation after it became clean
