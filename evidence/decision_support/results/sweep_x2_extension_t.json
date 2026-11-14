@@ -1,0 +1,294 @@
+{
+ "label": "locked scenario only (no complements), X2=S02, t=0..8",
+ "points": [
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 890.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 4.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 905.0
+    },
+    "uncovered_care_minutes": 905.0,
+    "uncovered_in_unit_minutes": 680.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 920.0
+   },
+   "recommendation_id": "reco-a97c659ef81a28b8",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 0
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 905.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 3.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 920.0
+    },
+    "uncovered_care_minutes": 920.0,
+    "uncovered_in_unit_minutes": 695.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 935.0
+   },
+   "recommendation_id": "reco-d331e11decef4963",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 1
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 920.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 4.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 935.0
+    },
+    "uncovered_care_minutes": 935.0,
+    "uncovered_in_unit_minutes": 710.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 950.0
+   },
+   "recommendation_id": "reco-0974b0ad7ede102a",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 2
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 935.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 5.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 950.0
+    },
+    "uncovered_care_minutes": 950.0,
+    "uncovered_in_unit_minutes": 725.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 965.0
+   },
+   "recommendation_id": "reco-4c0f848000c090b0",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 3
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 950.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 6.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 965.0
+    },
+    "uncovered_care_minutes": 965.0,
+    "uncovered_in_unit_minutes": 740.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 980.0
+   },
+   "recommendation_id": "reco-a98f02fc364d2f29",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 4
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 965.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 7.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 980.0
+    },
+    "uncovered_care_minutes": 980.0,
+    "uncovered_in_unit_minutes": 755.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 995.0
+   },
+   "recommendation_id": "reco-43f8865bf508405e",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 5
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 980.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 8.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 995.0
+    },
+    "uncovered_care_minutes": 995.0,
+    "uncovered_in_unit_minutes": 770.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 1010.0
+   },
+   "recommendation_id": "reco-3b065784f9d64760",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 6
+  },
+  {
+   "diagnostics": [],
+   "locked_metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 1.0,
+    "best_scenario_uncovered_minutes": 995.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 9.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 1010.0
+    },
+    "uncovered_care_minutes": 1010.0,
+    "uncovered_in_unit_minutes": 785.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 1025.0
+   },
+   "recommendation_id": "reco-4aaab460e5f24426",
+   "status": "NO_ACTION_PREFERRED",
+   "t_hours": 7
+  },
+  {
+   "diagnostics": [
+    "locked_time_outside_horizon:S02:2026-11-17 20:00 CET"
+   ],
+   "locked_metrics": null,
+   "recommendation_id": "reco-5ca91cf89f0f6e7f",
+   "status": "INFEASIBLE",
+   "t_hours": 8
+  }
+ ]
+}

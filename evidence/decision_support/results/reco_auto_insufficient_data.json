@@ -1,0 +1,31 @@
+{
+ "alternative_plan_id": null,
+ "approvable": false,
+ "baseline_plan_id": null,
+ "bundle": null,
+ "clinical_validation": false,
+ "conditions": [],
+ "created_at": "2026-11-16T19:00:00Z",
+ "diagnostics": [
+  "roster_unknown:IDE:2026-11-17 14:00 CET..2026-11-17 20:00 CET"
+ ],
+ "engine_version": "ds-reference-0.1.0",
+ "g2": "NO-GO",
+ "locked_plan_id": null,
+ "locks": null,
+ "mode": "auto",
+ "objective_version": "OBJ-LEX-1@1",
+ "primary_plan_id": null,
+ "reasons": [
+  "abstention_data_insufficient"
+ ],
+ "recommendation_id": "reco-ffab5ddbc7e2c5d1",
+ "schema_version": "DS_RECOMMENDATION_1",
+ "scientific_status": "PROTOTYPE_UNVALIDATED",
+ "snapshot_fingerprint": "f9dfbd46990e03e48c6673547404354481f77da8495a03289d8af2325ba9a515",
+ "snapshot_id": "snap-f9dfbd46990e",
+ "status": "INSUFFICIENT_DATA",
+ "synthetic": true,
+ "uncertainties": [],
+ "valid_until": "2026-11-16T19:30:00Z"
+}

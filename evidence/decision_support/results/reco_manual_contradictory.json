@@ -1,0 +1,54 @@
+{
+ "alternative_plan_id": null,
+ "approvable": false,
+ "baseline_plan_id": null,
+ "bundle": null,
+ "clinical_validation": false,
+ "conditions": [],
+ "created_at": "2026-11-16T19:00:00Z",
+ "diagnostics": [
+  "contradictory_locks:S02:discharge_at+extend_presence"
+ ],
+ "engine_version": "ds-reference-0.1.0",
+ "g2": "NO-GO",
+ "locked_plan_id": null,
+ "locks": {
+  "deadline": {
+   "day_offset": 1,
+   "fold": null,
+   "local_time": "20:00:00"
+  },
+  "locks": [
+   {
+    "at": "2026-11-17T09:00:00Z",
+    "basis": "validated_instruction",
+    "kind": "discharge_at",
+    "stay_id": "S02"
+   },
+   {
+    "basis": "validated_instruction",
+    "extension_hours": 2,
+    "kind": "extend_presence",
+    "reference_time": "2026-11-17T11:00:00Z",
+    "stay_id": "S02"
+   }
+  ],
+  "schema_version": "DS_SCENARIO_LOCKS_1",
+  "search_complements": true
+ },
+ "mode": "manual",
+ "objective_version": "OBJ-LEX-1@1",
+ "primary_plan_id": null,
+ "reasons": [
+  "contradictory_or_impossible_scenario"
+ ],
+ "recommendation_id": "reco-fbf01f17ec131f8b",
+ "schema_version": "DS_RECOMMENDATION_1",
+ "scientific_status": "PROTOTYPE_UNVALIDATED",
+ "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+ "snapshot_id": "snap-aa7de9d195c5",
+ "status": "INFEASIBLE",
+ "synthetic": true,
+ "uncertainties": [],
+ "valid_until": "2026-11-16T19:30:00Z"
+}

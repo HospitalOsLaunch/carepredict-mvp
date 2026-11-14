@@ -1,0 +1,82 @@
+{
+ "evaluation_seeds": [
+  901,
+  902,
+  903,
+  904
+ ],
+ "label": "model_based_out_of_sample_seeds_not_real_world_performance",
+ "plans": {
+  "baseline": {
+   "metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 1025.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 10.5,
+    "interventions": 0,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 10.0,
+    "peak_pressure_hour": 21,
+    "reinforcement_hours": 0,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 1040.0
+    },
+    "uncovered_care_minutes": 1040.0,
+    "uncovered_in_unit_minutes": 605.0,
+    "uncovered_waiting_minutes": 435.0,
+    "waiting_patient_hours": 21.5,
+    "worst_scenario_uncovered_minutes": 1055.0
+   },
+   "plan_id": "plan-85a8a22276407ba7"
+  },
+  "primary": {
+   "metrics": {
+    "admissions_by_end": 2.0,
+    "beds_returned": 2.0,
+    "best_scenario_uncovered_minutes": 420.0,
+    "departures_by_end": 2.0,
+    "hours_above_threshold": 2.0,
+    "interventions": 3,
+    "max_additional_staff_required": {
+     "AS": 0.0,
+     "IDE": 2.0
+    },
+    "max_total_staff_required": {
+     "AS": 0.0,
+     "IDE": 5.0
+    },
+    "peak_pressure": 9.0,
+    "peak_pressure_hour": 0,
+    "reinforcement_hours": 10,
+    "simultaneity_shortfall_minutes": 0.0,
+    "uncovered_by_skill": {
+     "AS": 0.0,
+     "IDE": 435.0
+    },
+    "uncovered_care_minutes": 435.0,
+    "uncovered_in_unit_minutes": 210.0,
+    "uncovered_waiting_minutes": 225.0,
+    "waiting_patient_hours": 14.5,
+    "worst_scenario_uncovered_minutes": 450.0
+   },
+   "plan_id": "plan-834c6594ab85f17c"
+  }
+ },
+ "recommendation_id": "reco-1b37cf01d1f10f71",
+ "selection_seeds": [
+  101,
+  102,
+  103,
+  104
+ ]
+}

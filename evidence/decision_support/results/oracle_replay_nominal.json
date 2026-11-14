@@ -1,0 +1,38 @@
+{
+ "backend": {
+  "code_sha256": "6930c187e68f7cbafccf13ae551f60c391b677e416d1f0dc0bc19ef932850904",
+  "name": "private_oracle",
+  "product_allowed": false,
+  "reads_private": true,
+  "version": "1.0.0"
+ },
+ "label": "private_oracle_evaluation_only_not_a_product_backend",
+ "plans": {
+  "baseline": {
+   "admissions": {
+    "A01": 12,
+    "A02": 23
+   },
+   "departures": {
+    "S01": 21,
+    "S02": 16
+   },
+   "plan_id": "plan-85a8a22276407ba7",
+   "uncovered_care_minutes": 1025,
+   "waiting_patient_hours": 21
+  },
+  "primary": {
+   "admissions": {
+    "A01": 12,
+    "A02": 16
+   },
+   "departures": {
+    "S01": 14,
+    "S02": 16
+   },
+   "plan_id": "plan-834c6594ab85f17c",
+   "uncovered_care_minutes": 420,
+   "waiting_patient_hours": 14
+  }
+ }
+}

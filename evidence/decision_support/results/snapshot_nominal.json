@@ -1,0 +1,729 @@
+{
+ "admissions": [
+  {
+   "admission_task_minutes": 45,
+   "arrival_delay": {
+    "support": [
+     0
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "care": [
+    {
+     "day_minutes_per_hour": 25,
+     "night_minutes_per_hour": 10,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "expected_arrival": "2026-11-16T17:00:00Z",
+   "provenance": {
+    "available_at": "2026-11-16T17:05:00Z",
+    "event_time": "2026-11-16T17:00:00Z",
+    "obs_id": "o-adm-A01",
+    "source": "synthetic_feed"
+   },
+   "request_id": "A01",
+   "requirements": []
+  },
+  {
+   "admission_task_minutes": 45,
+   "arrival_delay": {
+    "support": [
+     0,
+     1
+    ],
+    "weights": [
+     1,
+     1
+    ]
+   },
+   "care": [
+    {
+     "day_minutes_per_hour": 30,
+     "night_minutes_per_hour": 12,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "expected_arrival": "2026-11-17T08:00:00Z",
+   "provenance": {
+    "available_at": "2026-11-16T18:05:00Z",
+    "event_time": "2026-11-16T18:00:00Z",
+    "obs_id": "o-adm-A02",
+    "source": "synthetic_feed"
+   },
+   "request_id": "A02",
+   "requirements": [
+    "oxygen"
+   ]
+  }
+ ],
+ "as_of": "2026-11-16T19:00:00Z",
+ "beds": [
+  {
+   "bed_id": "L01",
+   "capabilities": [
+    "oxygen"
+   ],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L01",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L02",
+   "capabilities": [],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L02",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L03",
+   "capabilities": [
+    "oxygen"
+   ],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L03",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L04",
+   "capabilities": [],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L04",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L05",
+   "capabilities": [],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L05",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L06",
+   "capabilities": [],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L06",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L07",
+   "capabilities": [
+    "oxygen"
+   ],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L07",
+    "source": "synthetic_feed"
+   },
+   "status": "occupied"
+  },
+  {
+   "bed_id": "L08",
+   "capabilities": [],
+   "cleaning": {
+    "support": [
+     1
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "provenance": {
+    "available_at": "2026-11-16T18:35:00Z",
+    "event_time": "2026-11-16T18:30:00Z",
+    "obs_id": "o-bed-L08",
+    "source": "synthetic_feed"
+   },
+   "status": "dirty"
+  }
+ ],
+ "excluded_observations": {
+  "available_after_decision": 1,
+  "event_after_decision": 1
+ },
+ "fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+ "issues": [],
+ "reinforcements": [
+  {
+   "confirmation": "requested",
+   "end": "2026-11-17T19:00:00Z",
+   "lending_unit": null,
+   "lending_unit_minimum": null,
+   "lending_unit_scheduled": null,
+   "option_id": "R1",
+   "skill": "IDE",
+   "source": "interim",
+   "start": "2026-11-17T13:00:00Z"
+  },
+  {
+   "confirmation": "confirmed",
+   "end": "2026-11-17T10:00:00Z",
+   "lending_unit": null,
+   "lending_unit_minimum": null,
+   "lending_unit_scheduled": null,
+   "option_id": "R2",
+   "skill": "IDE",
+   "source": "internal_pool",
+   "start": "2026-11-17T06:00:00Z"
+  },
+  {
+   "confirmation": "confirmed",
+   "end": "2026-11-17T19:00:00Z",
+   "lending_unit": "U-CARDIO-SYN",
+   "lending_unit_minimum": 3,
+   "lending_unit_scheduled": 3,
+   "option_id": "R3",
+   "skill": "IDE",
+   "source": "shared_unit",
+   "start": "2026-11-17T13:00:00Z"
+  }
+ ],
+ "roster_coverage": [
+  {
+   "end": "2026-11-17T20:00:00Z",
+   "skill": "IDE",
+   "start": "2026-11-16T13:00:00Z"
+  }
+ ],
+ "schema_version": "DS_PUBLIC_SNAPSHOT_1",
+ "shifts": [
+  {
+   "end": "2026-11-16T20:00:00Z",
+   "skill": "IDE",
+   "staff_id": "E1",
+   "start": "2026-11-16T13:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-16T20:00:00Z",
+   "skill": "IDE",
+   "staff_id": "E2",
+   "start": "2026-11-16T13:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T13:00:00Z",
+   "skill": "IDE",
+   "staff_id": "M1",
+   "start": "2026-11-17T06:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T13:00:00Z",
+   "skill": "IDE",
+   "staff_id": "M2",
+   "start": "2026-11-17T06:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T13:00:00Z",
+   "skill": "IDE",
+   "staff_id": "M3",
+   "start": "2026-11-17T06:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T06:00:00Z",
+   "skill": "IDE",
+   "staff_id": "N1",
+   "start": "2026-11-16T20:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T06:00:00Z",
+   "skill": "IDE",
+   "staff_id": "N2",
+   "start": "2026-11-16T20:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T20:00:00Z",
+   "skill": "IDE",
+   "staff_id": "P1",
+   "start": "2026-11-17T13:00:00Z",
+   "status": "scheduled"
+  },
+  {
+   "end": "2026-11-17T20:00:00Z",
+   "skill": "IDE",
+   "staff_id": "P2",
+   "start": "2026-11-17T13:00:00Z",
+   "status": "scheduled"
+  }
+ ],
+ "snapshot_id": "snap-aa7de9d195c5",
+ "stays": [
+  {
+   "bed_id": "L01",
+   "care": [
+    {
+     "day_minutes_per_hour": 20,
+     "night_minutes_per_hour": 8,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "home",
+   "medical_authorization": "authorized",
+   "obstacles": [],
+   "planned_departure": null,
+   "provenance": {
+    "discharge_logistics": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-logi-S01",
+     "source": "synthetic_feed"
+    },
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S01",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S01",
+     "source": "synthetic_feed"
+    },
+    "readiness_estimate": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-ready-S01",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": {
+    "support": [
+     0,
+     1
+    ],
+    "weights": [
+     3,
+     1
+    ]
+   },
+   "ready_earliest": "2026-11-17T08:00:00Z",
+   "stay_id": "S01",
+   "tasks": [],
+   "transport_lead": {
+    "support": [
+     2,
+     3
+    ],
+    "weights": [
+     1,
+     1
+    ]
+   },
+   "transport_need": "seated"
+  },
+  {
+   "bed_id": "L02",
+   "care": [
+    {
+     "day_minutes_per_hour": 15,
+     "night_minutes_per_hour": 6,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "home",
+   "medical_authorization": "authorized",
+   "obstacles": [],
+   "planned_departure": "2026-11-17T11:00:00Z",
+   "provenance": {
+    "discharge_logistics": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-logi-S02",
+     "source": "synthetic_feed"
+    },
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S02",
+     "source": "synthetic_feed"
+    },
+    "planned_departure": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-plan-S02",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S02",
+     "source": "synthetic_feed"
+    },
+    "readiness_estimate": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-ready-S02",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": {
+    "support": [
+     0
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "ready_earliest": "2026-11-17T10:00:00Z",
+   "stay_id": "S02",
+   "tasks": [],
+   "transport_lead": null,
+   "transport_need": "none"
+  },
+  {
+   "bed_id": "L03",
+   "care": [
+    {
+     "day_minutes_per_hour": 30,
+     "night_minutes_per_hour": 12,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "unknown",
+   "medical_authorization": "not_authorized",
+   "obstacles": [],
+   "planned_departure": null,
+   "provenance": {
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S03",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S03",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": null,
+   "ready_earliest": null,
+   "stay_id": "S03",
+   "tasks": [
+    {
+     "minutes": 20,
+     "skill": "IDE",
+     "staff_required": 2,
+     "start": "2026-11-17T07:00:00Z",
+     "status": "known",
+     "task_id": "T-S03-mob"
+    }
+   ],
+   "transport_lead": null,
+   "transport_need": "unknown"
+  },
+  {
+   "bed_id": "L04",
+   "care": [
+    {
+     "day_minutes_per_hour": 25,
+     "night_minutes_per_hour": 10,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "unknown",
+   "medical_authorization": "not_authorized",
+   "obstacles": [],
+   "planned_departure": null,
+   "provenance": {
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S04",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S04",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": null,
+   "ready_earliest": null,
+   "stay_id": "S04",
+   "tasks": [],
+   "transport_lead": null,
+   "transport_need": "unknown"
+  },
+  {
+   "bed_id": "L05",
+   "care": [
+    {
+     "day_minutes_per_hour": 20,
+     "night_minutes_per_hour": 8,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "home",
+   "medical_authorization": "revoked",
+   "obstacles": [],
+   "planned_departure": null,
+   "provenance": {
+    "discharge_logistics": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-logi-S05",
+     "source": "synthetic_feed"
+    },
+    "medical_authorization": {
+     "available_at": "2026-11-16T17:35:00Z",
+     "event_time": "2026-11-16T17:30:00Z",
+     "obs_id": "o-auth-S05-b",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S05",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": null,
+   "ready_earliest": null,
+   "stay_id": "S05",
+   "tasks": [],
+   "transport_lead": {
+    "support": [
+     2
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "transport_need": "seated"
+  },
+  {
+   "bed_id": "L06",
+   "care": [
+    {
+     "day_minutes_per_hour": 20,
+     "night_minutes_per_hour": 8,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "facility",
+   "medical_authorization": "authorized",
+   "obstacles": [
+    "aval_non_confirme"
+   ],
+   "planned_departure": null,
+   "provenance": {
+    "discharge_logistics": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-logi-S06",
+     "source": "synthetic_feed"
+    },
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S06",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S06",
+     "source": "synthetic_feed"
+    },
+    "readiness_estimate": {
+     "available_at": "2026-11-16T15:05:00Z",
+     "event_time": "2026-11-16T15:00:00Z",
+     "obs_id": "o-ready-S06",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": {
+    "support": [
+     0
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "ready_earliest": "2026-11-17T09:00:00Z",
+   "stay_id": "S06",
+   "tasks": [],
+   "transport_lead": {
+    "support": [
+     3
+    ],
+    "weights": [
+     1
+    ]
+   },
+   "transport_need": "stretcher"
+  },
+  {
+   "bed_id": "L07",
+   "care": [
+    {
+     "day_minutes_per_hour": 35,
+     "night_minutes_per_hour": 15,
+     "skill": "IDE",
+     "status": "estimated"
+    }
+   ],
+   "destination": "unknown",
+   "medical_authorization": "not_authorized",
+   "obstacles": [],
+   "planned_departure": null,
+   "provenance": {
+    "medical_authorization": {
+     "available_at": "2026-11-16T14:05:00Z",
+     "event_time": "2026-11-16T14:00:00Z",
+     "obs_id": "o-auth-S07",
+     "source": "synthetic_feed"
+    },
+    "presence": {
+     "available_at": "2026-11-16T07:05:00Z",
+     "event_time": "2026-11-16T07:00:00Z",
+     "obs_id": "o-stay-S07",
+     "source": "synthetic_feed"
+    }
+   },
+   "ready_delay": null,
+   "ready_earliest": null,
+   "stay_id": "S07",
+   "tasks": [],
+   "transport_lead": null,
+   "transport_need": "unknown"
+  }
+ ],
+ "synthetic": true,
+ "teams": [
+  {
+   "capacity": 1,
+   "end": "2026-11-16T20:00:00Z",
+   "external_commitments": 1,
+   "start": "2026-11-16T19:00:00Z",
+   "team": "cleaning"
+  },
+  {
+   "capacity": 1,
+   "end": "2026-11-17T20:00:00Z",
+   "external_commitments": 0,
+   "start": "2026-11-17T06:00:00Z",
+   "team": "cleaning"
+  },
+  {
+   "capacity": 1,
+   "end": "2026-11-17T17:00:00Z",
+   "external_commitments": 0,
+   "start": "2026-11-17T07:00:00Z",
+   "team": "transport"
+  },
+  {
+   "capacity": 1,
+   "end": "2026-11-17T16:00:00Z",
+   "external_commitments": 1,
+   "start": "2026-11-17T15:00:00Z",
+   "team": "transport"
+  }
+ ],
+ "unit": {
+  "profile_id": "U-MED-SYN-01",
+  "profile_version": "1",
+  "timezone": "Europe/Paris",
+  "unit_id": "U-MED-SYN"
+ }
+}

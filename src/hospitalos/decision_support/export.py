@@ -106,10 +106,11 @@ def export_all(out: Path, settings: Settings | None = None) -> dict[str, Any]:
         locks["locks"][1]["extension_hours"] = t
         locks["search_complements"] = False
         r = simulate(nominal, ScenarioLocks.model_validate(locks), settings)
-        assert r.bundle is not None
-        ev = {e.plan.plan_id: e for e in r.bundle.evaluations}
-        m = ev[r.locked_plan_id].metrics if r.locked_plan_id else None
+        m = None
+        if r.bundle is not None and r.locked_plan_id:
+            m = next(e for e in r.bundle.evaluations if e.plan.plan_id == r.locked_plan_id).metrics
         sweep.append({"t_hours": t, "status": r.status, "recommendation_id": r.recommendation_id,
+                      "diagnostics": list(r.diagnostics),
                       "locked_metrics": m.model_dump(mode="json") if m else None})
     files.append(_write(out, "sweep_x2_extension_t.json",
                         {"label": "locked scenario only (no complements), X2=S02, t=0..8",

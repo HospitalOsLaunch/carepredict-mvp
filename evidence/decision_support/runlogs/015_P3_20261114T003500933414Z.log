@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/user/carepredict-mvp/src/hospitalos/decision_support/__main__.py", line 80, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/user/carepredict-mvp/src/hospitalos/decision_support/__main__.py", line 69, in main
+    manifest = export_all(args.out, settings)
+  File "/home/user/carepredict-mvp/src/hospitalos/decision_support/export.py", line 109, in export_all
+    assert r.bundle is not None
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError

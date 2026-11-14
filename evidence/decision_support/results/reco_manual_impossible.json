@@ -1,0 +1,4037 @@
+{
+ "alternative_plan_id": null,
+ "approvable": false,
+ "baseline_plan_id": "plan-853f110d5e02c8c1",
+ "bundle": {
+  "assumptions": [
+   "habitual practice HABITUAL-1 continues in every branch (care, arrivals, ordinary decisions)",
+   "pressure discharges disabled for all policies",
+   "unknown delays sampled from public declared distributions with keyed paired innovations",
+   "admissions are not a lever; waiting patients' care counts as uncovered"
+  ],
+  "backend": {
+   "code_sha256": "91ce98ce2910f189e95b06a1bd98d3482b06937ed884ce5ac762b0b0013cfbb0",
+   "name": "reference_hybrid",
+   "product_allowed": true,
+   "reads_private": false,
+   "version": "1.0.0"
+  },
+  "bundle_id": "fb-6dc82ee2f4e00479",
+  "config": {
+   "mode": "manual",
+   "objective": "OBJ-LEX-1@1",
+   "pressure_discharges_enabled": false,
+   "profile": "U-MED-SYN-01@1"
+  },
+  "evaluations": [
+   {
+    "admissible": true,
+    "conditional_on": [],
+    "confirmed_only": null,
+    "effect_onset_hour": null,
+    "metrics": {
+     "admissions_by_end": 2.0,
+     "beds_returned": 2.0,
+     "best_scenario_uncovered_minutes": 1025.0,
+     "departures_by_end": 2.0,
+     "hours_above_threshold": 10.5,
+     "interventions": 0,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 10.0,
+     "peak_pressure_hour": 21,
+     "reinforcement_hours": 0,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 1040.0
+     },
+     "uncovered_care_minutes": 1040.0,
+     "uncovered_in_unit_minutes": 605.0,
+     "uncovered_waiting_minutes": 435.0,
+     "waiting_patient_hours": 21.5,
+     "worst_scenario_uncovered_minutes": 1055.0
+    },
+    "per_scenario_uncovered": [
+     1055.0,
+     1025.0,
+     1025.0,
+     1055.0
+    ],
+    "plan": {
+     "actions": [],
+     "assumptions": [
+      "synthetic_unit",
+      "public_distributions_are_declared_hypotheses"
+     ],
+     "label": "pratique habituelle",
+     "locked_action_ids": [],
+     "mode": "manual",
+     "plan_id": "plan-853f110d5e02c8c1",
+     "schema_version": "DS_PLAN_1",
+     "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+     "snapshot_id": "snap-aa7de9d195c5"
+    },
+    "trajectory": [
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 0,
+      "local_label": "20:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T19:00:00Z",
+      "uncovered_in_unit_minutes": 45.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 1,
+      "local_label": "21:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T20:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 2,
+      "local_label": "22:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T21:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 3,
+      "local_label": "23:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T22:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 4,
+      "local_label": "00:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T23:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 5,
+      "local_label": "01:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T00:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 6,
+      "local_label": "02:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T01:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 7,
+      "local_label": "03:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T02:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 8,
+      "local_label": "04:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T03:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 9,
+      "local_label": "05:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T04:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 10,
+      "local_label": "06:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T05:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 11,
+      "local_label": "07:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T06:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 275.0
+      },
+      "hour_index": 12,
+      "local_label": "08:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 5.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T07:00:00Z",
+      "uncovered_in_unit_minutes": 95.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 13,
+      "local_label": "09:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T08:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 15.0,
+      "waiting_patients": 0.5
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 14,
+      "local_label": "10:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T09:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 15,
+      "local_label": "11:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T10:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 220.0
+      },
+      "hour_index": 16,
+      "local_label": "12:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T11:00:00Z",
+      "uncovered_in_unit_minutes": 40.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 17,
+      "local_label": "13:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T12:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 18,
+      "local_label": "14:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T13:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 19,
+      "local_label": "15:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T14:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 20,
+      "local_label": "16:00",
+      "logistic_blockers": 0.75,
+      "pressure_score": 8.75,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T15:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 205.0
+      },
+      "hour_index": 21,
+      "local_label": "17:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 10.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T16:00:00Z",
+      "uncovered_in_unit_minutes": 85.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 155.0
+      },
+      "hour_index": 22,
+      "local_label": "18:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T17:00:00Z",
+      "uncovered_in_unit_minutes": 35.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 230.0
+      },
+      "hour_index": 23,
+      "local_label": "19:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T18:00:00Z",
+      "uncovered_in_unit_minutes": 110.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     }
+    ],
+    "violations": [],
+    "warnings": []
+   },
+   {
+    "admissible": false,
+    "conditional_on": [],
+    "confirmed_only": null,
+    "effect_onset_hour": 20,
+    "metrics": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 1035.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 11.5,
+     "interventions": 0,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 10.0,
+     "peak_pressure_hour": 23,
+     "reinforcement_hours": 0,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 1050.0
+     },
+     "uncovered_care_minutes": 1050.0,
+     "uncovered_in_unit_minutes": 540.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 1065.0
+    },
+    "per_scenario_uncovered": [
+     1065.0,
+     1035.0,
+     1035.0,
+     1065.0
+    ],
+    "plan": {
+     "actions": [
+      {
+       "action_id": "lock:locked_discharge:S01:20261117T1500Z",
+       "basis": "validated_instruction",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "lock-9b77980d00f48582",
+       "interventions": 0,
+       "origin": "manual_lock",
+       "preconditions": [
+        "fixed departure hour",
+        "basis:validated_instruction",
+        "user_lock_not_a_system_clinical_decision"
+       ],
+       "reinforcement_hours": 0,
+       "resources": [
+        "transport_team"
+       ],
+       "target": "S01",
+       "type": "locked_discharge",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "medecin",
+       "window_end": "2026-11-17T16:00:00Z",
+       "window_start": "2026-11-17T15:00:00Z"
+      }
+     ],
+     "assumptions": [
+      "synthetic_unit",
+      "public_distributions_are_declared_hypotheses"
+     ],
+     "label": "scénario verrouillé seul",
+     "locked_action_ids": [
+      "lock:locked_discharge:S01:20261117T1500Z"
+     ],
+     "mode": "manual",
+     "plan_id": "plan-996883e227685312",
+     "schema_version": "DS_PLAN_1",
+     "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+     "snapshot_id": "snap-aa7de9d195c5"
+    },
+    "trajectory": [
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 0,
+      "local_label": "20:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T19:00:00Z",
+      "uncovered_in_unit_minutes": 45.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 1,
+      "local_label": "21:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T20:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 2,
+      "local_label": "22:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T21:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 3,
+      "local_label": "23:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T22:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 4,
+      "local_label": "00:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T23:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 5,
+      "local_label": "01:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T00:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 6,
+      "local_label": "02:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T01:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 7,
+      "local_label": "03:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T02:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 8,
+      "local_label": "04:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T03:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 9,
+      "local_label": "05:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T04:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 10,
+      "local_label": "06:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T05:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 11,
+      "local_label": "07:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T06:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 275.0
+      },
+      "hour_index": 12,
+      "local_label": "08:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 5.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T07:00:00Z",
+      "uncovered_in_unit_minutes": 95.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 13,
+      "local_label": "09:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T08:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 15.0,
+      "waiting_patients": 0.5
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 14,
+      "local_label": "10:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T09:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 15,
+      "local_label": "11:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T10:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 220.0
+      },
+      "hour_index": 16,
+      "local_label": "12:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T11:00:00Z",
+      "uncovered_in_unit_minutes": 40.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 17,
+      "local_label": "13:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T12:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 18,
+      "local_label": "14:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T13:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 19,
+      "local_label": "15:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T14:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 20,
+      "local_label": "16:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T15:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 21,
+      "local_label": "17:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T16:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 22,
+      "local_label": "18:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T17:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 23,
+      "local_label": "19:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 10.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T18:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 75.0,
+      "waiting_patients": 1.0
+     }
+    ],
+    "violations": [
+     "locked_transport_unavailable:S01:h20"
+    ],
+    "warnings": []
+   },
+   {
+    "admissible": false,
+    "conditional_on": [],
+    "confirmed_only": null,
+    "effect_onset_hour": 11,
+    "metrics": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 955.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 9.0,
+     "interventions": 1,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 10.0,
+     "peak_pressure_hour": 23,
+     "reinforcement_hours": 4,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 970.0
+     },
+     "uncovered_care_minutes": 970.0,
+     "uncovered_in_unit_minutes": 460.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 985.0
+    },
+    "per_scenario_uncovered": [
+     985.0,
+     955.0,
+     955.0,
+     985.0
+    ],
+    "plan": {
+     "actions": [
+      {
+       "action_id": "lock:locked_discharge:S01:20261117T1500Z",
+       "basis": "validated_instruction",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "lock-9b77980d00f48582",
+       "interventions": 0,
+       "origin": "manual_lock",
+       "preconditions": [
+        "fixed departure hour",
+        "basis:validated_instruction",
+        "user_lock_not_a_system_clinical_decision"
+       ],
+       "reinforcement_hours": 0,
+       "resources": [
+        "transport_team"
+       ],
+       "target": "S01",
+       "type": "locked_discharge",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "medecin",
+       "window_end": "2026-11-17T16:00:00Z",
+       "window_start": "2026-11-17T15:00:00Z"
+      },
+      {
+       "action_id": "renfort:R2",
+       "basis": "resource_option",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "4493035ed154eff2aa6dbbd3",
+       "interventions": 1,
+       "origin": "auto",
+       "preconditions": [
+        "skill:IDE",
+        "confirmation:confirmed"
+       ],
+       "reinforcement_hours": 4,
+       "resources": [
+        "IDE:2026-11-17 07:00 CET-2026-11-17 11:00 CET"
+       ],
+       "target": "R2",
+       "type": "reinforcement",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "cadre_de_sante",
+       "window_end": "2026-11-17T10:00:00Z",
+       "window_start": "2026-11-17T06:00:00Z"
+      }
+     ],
+     "assumptions": [
+      "synthetic_unit",
+      "public_distributions_are_declared_hypotheses"
+     ],
+     "label": "renfort:R2",
+     "locked_action_ids": [
+      "lock:locked_discharge:S01:20261117T1500Z"
+     ],
+     "mode": "manual",
+     "plan_id": "plan-c6cd384a75c3b8fb",
+     "schema_version": "DS_PLAN_1",
+     "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+     "snapshot_id": "snap-aa7de9d195c5"
+    },
+    "trajectory": [
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 0,
+      "local_label": "20:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T19:00:00Z",
+      "uncovered_in_unit_minutes": 45.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 1,
+      "local_label": "21:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T20:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 2,
+      "local_label": "22:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T21:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 3,
+      "local_label": "23:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T22:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 4,
+      "local_label": "00:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T23:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 5,
+      "local_label": "01:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T00:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 6,
+      "local_label": "02:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T01:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 7,
+      "local_label": "03:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T02:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 8,
+      "local_label": "04:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T03:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 9,
+      "local_label": "05:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T04:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 10,
+      "local_label": "06:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T05:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 11,
+      "local_label": "07:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T06:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 275.0
+      },
+      "hour_index": 12,
+      "local_label": "08:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 5.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T07:00:00Z",
+      "uncovered_in_unit_minutes": 35.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 13,
+      "local_label": "09:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T08:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 15.0,
+      "waiting_patients": 0.5
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 14,
+      "local_label": "10:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T09:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 15,
+      "local_label": "11:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T10:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 220.0
+      },
+      "hour_index": 16,
+      "local_label": "12:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T11:00:00Z",
+      "uncovered_in_unit_minutes": 40.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 17,
+      "local_label": "13:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T12:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 18,
+      "local_label": "14:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T13:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 19,
+      "local_label": "15:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T14:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 20,
+      "local_label": "16:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T15:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 21,
+      "local_label": "17:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T16:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 22,
+      "local_label": "18:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T17:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 23,
+      "local_label": "19:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 10.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T18:00:00Z",
+      "uncovered_in_unit_minutes": 55.0,
+      "uncovered_waiting_minutes": 75.0,
+      "waiting_patients": 1.0
+     }
+    ],
+    "violations": [
+     "locked_transport_unavailable:S01:h20"
+    ],
+    "warnings": []
+   },
+   {
+    "admissible": false,
+    "conditional_on": [
+     "R1"
+    ],
+    "confirmed_only": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 1035.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 11.5,
+     "interventions": 1,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 10.0,
+     "peak_pressure_hour": 23,
+     "reinforcement_hours": 6,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 1050.0
+     },
+     "uncovered_care_minutes": 1050.0,
+     "uncovered_in_unit_minutes": 540.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 1065.0
+    },
+    "effect_onset_hour": 18,
+    "metrics": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 705.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 6.5,
+     "interventions": 1,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 9.0,
+     "peak_pressure_hour": 0,
+     "reinforcement_hours": 6,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 720.0
+     },
+     "uncovered_care_minutes": 720.0,
+     "uncovered_in_unit_minutes": 210.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 735.0
+    },
+    "per_scenario_uncovered": [
+     735.0,
+     705.0,
+     705.0,
+     735.0
+    ],
+    "plan": {
+     "actions": [
+      {
+       "action_id": "lock:locked_discharge:S01:20261117T1500Z",
+       "basis": "validated_instruction",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "lock-9b77980d00f48582",
+       "interventions": 0,
+       "origin": "manual_lock",
+       "preconditions": [
+        "fixed departure hour",
+        "basis:validated_instruction",
+        "user_lock_not_a_system_clinical_decision"
+       ],
+       "reinforcement_hours": 0,
+       "resources": [
+        "transport_team"
+       ],
+       "target": "S01",
+       "type": "locked_discharge",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "medecin",
+       "window_end": "2026-11-17T16:00:00Z",
+       "window_start": "2026-11-17T15:00:00Z"
+      },
+      {
+       "action_id": "renfort:R1",
+       "basis": "resource_option",
+       "conditional": true,
+       "depends_on": [],
+       "idempotency_key": "81571cabf1966285ba893536",
+       "interventions": 1,
+       "origin": "auto",
+       "preconditions": [
+        "skill:IDE",
+        "confirmation:requested"
+       ],
+       "reinforcement_hours": 6,
+       "resources": [
+        "IDE:2026-11-17 14:00 CET-2026-11-17 20:00 CET"
+       ],
+       "target": "R1",
+       "type": "reinforcement",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "cadre_de_sante",
+       "window_end": "2026-11-17T19:00:00Z",
+       "window_start": "2026-11-17T13:00:00Z"
+      }
+     ],
+     "assumptions": [
+      "synthetic_unit",
+      "public_distributions_are_declared_hypotheses"
+     ],
+     "label": "renfort:R1",
+     "locked_action_ids": [
+      "lock:locked_discharge:S01:20261117T1500Z"
+     ],
+     "mode": "manual",
+     "plan_id": "plan-c6515732cea3f675",
+     "schema_version": "DS_PLAN_1",
+     "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+     "snapshot_id": "snap-aa7de9d195c5"
+    },
+    "trajectory": [
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 0,
+      "local_label": "20:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T19:00:00Z",
+      "uncovered_in_unit_minutes": 45.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 1,
+      "local_label": "21:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T20:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 2,
+      "local_label": "22:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T21:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 3,
+      "local_label": "23:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T22:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 4,
+      "local_label": "00:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T23:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 5,
+      "local_label": "01:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T00:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 6,
+      "local_label": "02:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T01:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 7,
+      "local_label": "03:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T02:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 8,
+      "local_label": "04:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T03:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 9,
+      "local_label": "05:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T04:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 10,
+      "local_label": "06:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T05:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 11,
+      "local_label": "07:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T06:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 275.0
+      },
+      "hour_index": 12,
+      "local_label": "08:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 8.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 5.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T07:00:00Z",
+      "uncovered_in_unit_minutes": 95.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 13,
+      "local_label": "09:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T08:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 15.0,
+      "waiting_patients": 0.5
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 14,
+      "local_label": "10:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T09:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 15,
+      "local_label": "11:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T10:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 220.0
+      },
+      "hour_index": 16,
+      "local_label": "12:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T11:00:00Z",
+      "uncovered_in_unit_minutes": 40.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 17,
+      "local_label": "13:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T12:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 18,
+      "local_label": "14:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T13:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 19,
+      "local_label": "15:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T14:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 20,
+      "local_label": "16:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T15:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 21,
+      "local_label": "17:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T16:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 22,
+      "local_label": "18:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T17:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 23,
+      "local_label": "19:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T18:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 75.0,
+      "waiting_patients": 1.0
+     }
+    ],
+    "violations": [
+     "locked_transport_unavailable:S01:h20"
+    ],
+    "warnings": []
+   },
+   {
+    "admissible": false,
+    "conditional_on": [
+     "R1"
+    ],
+    "confirmed_only": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 955.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 9.0,
+     "interventions": 2,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 10.0,
+     "peak_pressure_hour": 23,
+     "reinforcement_hours": 10,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 970.0
+     },
+     "uncovered_care_minutes": 970.0,
+     "uncovered_in_unit_minutes": 460.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 985.0
+    },
+    "effect_onset_hour": 11,
+    "metrics": {
+     "admissions_by_end": 1.0,
+     "beds_returned": 1.0,
+     "best_scenario_uncovered_minutes": 625.0,
+     "departures_by_end": 1.0,
+     "hours_above_threshold": 4.0,
+     "interventions": 2,
+     "max_additional_staff_required": {
+      "AS": 0.0,
+      "IDE": 2.0
+     },
+     "max_total_staff_required": {
+      "AS": 0.0,
+      "IDE": 5.0
+     },
+     "peak_pressure": 9.0,
+     "peak_pressure_hour": 0,
+     "reinforcement_hours": 10,
+     "simultaneity_shortfall_minutes": 0.0,
+     "uncovered_by_skill": {
+      "AS": 0.0,
+      "IDE": 640.0
+     },
+     "uncovered_care_minutes": 640.0,
+     "uncovered_in_unit_minutes": 130.0,
+     "uncovered_waiting_minutes": 510.0,
+     "waiting_patient_hours": 22.5,
+     "worst_scenario_uncovered_minutes": 655.0
+    },
+    "per_scenario_uncovered": [
+     655.0,
+     625.0,
+     625.0,
+     655.0
+    ],
+    "plan": {
+     "actions": [
+      {
+       "action_id": "lock:locked_discharge:S01:20261117T1500Z",
+       "basis": "validated_instruction",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "lock-9b77980d00f48582",
+       "interventions": 0,
+       "origin": "manual_lock",
+       "preconditions": [
+        "fixed departure hour",
+        "basis:validated_instruction",
+        "user_lock_not_a_system_clinical_decision"
+       ],
+       "reinforcement_hours": 0,
+       "resources": [
+        "transport_team"
+       ],
+       "target": "S01",
+       "type": "locked_discharge",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "medecin",
+       "window_end": "2026-11-17T16:00:00Z",
+       "window_start": "2026-11-17T15:00:00Z"
+      },
+      {
+       "action_id": "renfort:R1",
+       "basis": "resource_option",
+       "conditional": true,
+       "depends_on": [],
+       "idempotency_key": "81571cabf1966285ba893536",
+       "interventions": 1,
+       "origin": "auto",
+       "preconditions": [
+        "skill:IDE",
+        "confirmation:requested"
+       ],
+       "reinforcement_hours": 6,
+       "resources": [
+        "IDE:2026-11-17 14:00 CET-2026-11-17 20:00 CET"
+       ],
+       "target": "R1",
+       "type": "reinforcement",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "cadre_de_sante",
+       "window_end": "2026-11-17T19:00:00Z",
+       "window_start": "2026-11-17T13:00:00Z"
+      },
+      {
+       "action_id": "renfort:R2",
+       "basis": "resource_option",
+       "conditional": false,
+       "depends_on": [],
+       "idempotency_key": "4493035ed154eff2aa6dbbd3",
+       "interventions": 1,
+       "origin": "auto",
+       "preconditions": [
+        "skill:IDE",
+        "confirmation:confirmed"
+       ],
+       "reinforcement_hours": 4,
+       "resources": [
+        "IDE:2026-11-17 07:00 CET-2026-11-17 11:00 CET"
+       ],
+       "target": "R2",
+       "type": "reinforcement",
+       "valid_until": "2026-11-16T19:30:00Z",
+       "validator": "cadre_de_sante",
+       "window_end": "2026-11-17T10:00:00Z",
+       "window_start": "2026-11-17T06:00:00Z"
+      }
+     ],
+     "assumptions": [
+      "synthetic_unit",
+      "public_distributions_are_declared_hypotheses"
+     ],
+     "label": "renfort:R1 + renfort:R2",
+     "locked_action_ids": [
+      "lock:locked_discharge:S01:20261117T1500Z"
+     ],
+     "mode": "manual",
+     "plan_id": "plan-b935ce72e7a29652",
+     "schema_version": "DS_PLAN_1",
+     "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+     "snapshot_id": "snap-aa7de9d195c5"
+    },
+    "trajectory": [
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 0,
+      "local_label": "20:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T19:00:00Z",
+      "uncovered_in_unit_minutes": 45.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 1,
+      "local_label": "21:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T20:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 2,
+      "local_label": "22:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T21:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 3,
+      "local_label": "23:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T22:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 4,
+      "local_label": "00:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-16T23:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 5,
+      "local_label": "01:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T00:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 6,
+      "local_label": "02:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T01:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 7,
+      "local_label": "03:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T02:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 8,
+      "local_label": "04:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T03:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 9,
+      "local_label": "05:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T04:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 67.0
+      },
+      "hour_index": 10,
+      "local_label": "06:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 5.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T05:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 10.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 165.0
+      },
+      "hour_index": 11,
+      "local_label": "07:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T06:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 25.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 275.0
+      },
+      "hour_index": 12,
+      "local_label": "08:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 5.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T07:00:00Z",
+      "uncovered_in_unit_minutes": 35.0,
+      "uncovered_waiting_minutes": 0.0,
+      "waiting_patients": 0.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 13,
+      "local_label": "09:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T08:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 15.0,
+      "waiting_patients": 0.5
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 14,
+      "local_label": "10:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T09:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 190.0
+      },
+      "hour_index": 15,
+      "local_label": "11:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T10:00:00Z",
+      "uncovered_in_unit_minutes": 10.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 220.0
+      },
+      "hour_index": 16,
+      "local_label": "12:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 9.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 4.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T11:00:00Z",
+      "uncovered_in_unit_minutes": 40.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 0.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 17,
+      "local_label": "13:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 6.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 0.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "start_utc": "2026-11-17T12:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 18,
+      "local_label": "14:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T13:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 19,
+      "local_label": "15:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T14:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 20,
+      "local_label": "16:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T15:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 21,
+      "local_label": "17:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T16:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 22,
+      "local_label": "18:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 4.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T17:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 30.0,
+      "waiting_patients": 1.0
+     },
+     {
+      "clean_free_beds": 1.0,
+      "demand_minutes": {
+       "AS": 0.0,
+       "IDE": 175.0
+      },
+      "hour_index": 23,
+      "local_label": "19:00",
+      "logistic_blockers": 0.0,
+      "pressure_score": 7.0,
+      "simultaneity_shortfall_minutes": 0.0,
+      "staff_reinforcement": {
+       "AS": 0.0,
+       "IDE": 1.0
+      },
+      "staff_required": {
+       "AS": 0.0,
+       "IDE": 3.0
+      },
+      "staff_scheduled": {
+       "AS": 0.0,
+       "IDE": 2.0
+      },
+      "start_utc": "2026-11-17T18:00:00Z",
+      "uncovered_in_unit_minutes": 0.0,
+      "uncovered_waiting_minutes": 75.0,
+      "waiting_patients": 1.0
+     }
+    ],
+    "violations": [
+     "locked_transport_unavailable:S01:h20"
+    ],
+    "warnings": []
+   }
+  ],
+  "horizon_end": "2026-11-17T19:00:00Z",
+  "horizon_hours": 24,
+  "horizon_start": "2026-11-16T19:00:00Z",
+  "schema_version": "DS_FORECAST_BUNDLE_1",
+  "score": {
+   "comparable_only_with_same_formula_sha256": true,
+   "formula_sha256": "df54fddd9d7b1a1594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef",
+   "score_id": "PS-EXP-1",
+   "score_status": "EXPERIMENTAL_SYNTHETIC",
+   "threshold": 7,
+   "version": "1"
+  },
+  "search": {
+   "complete": true,
+   "enumerated": 4,
+   "evaluated": 4,
+   "filter_rules": [
+    "auto discharge coordination only with observed medical authorization and no open obstacle",
+    "target hours from profile, not before readiness estimate, before any planned departure",
+    "reinforcement options: known confirmation status and external commitment respected",
+    "at most 2 coordinations and 2 reinforcement options per plan",
+    "ordering: fewer actions, fewer reinforcement hours, then identifiers; prefix kept when the universe exceeds the bound"
+   ],
+   "limit": 16,
+   "rejected": {
+    "R3": "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3",
+    "S01": "locked_by_user",
+    "S02": "no_target_hour_before_habitual_plan",
+    "S03": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+    "S04": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+    "S05": "medical_authorization_revoked,readiness_estimate_unknown",
+    "S06": "obstacle:aval_non_confirme",
+    "S07": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown"
+   }
+  },
+  "seed_role": "selection_in_sample",
+  "selection_seeds": [
+   101,
+   102,
+   103,
+   104
+  ],
+  "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+  "snapshot_id": "snap-aa7de9d195c5"
+ },
+ "clinical_validation": false,
+ "conditions": [],
+ "created_at": "2026-11-16T19:00:00Z",
+ "diagnostics": [
+  "locked_transport_unavailable:S01:h20"
+ ],
+ "engine_version": "ds-reference-0.1.0",
+ "g2": "NO-GO",
+ "locked_plan_id": "plan-996883e227685312",
+ "locks": {
+  "deadline": {
+   "day_offset": 1,
+   "fold": null,
+   "local_time": "20:00:00"
+  },
+  "locks": [
+   {
+    "at": "2026-11-17T15:00:00Z",
+    "basis": "validated_instruction",
+    "kind": "discharge_at",
+    "stay_id": "S01"
+   }
+  ],
+  "schema_version": "DS_SCENARIO_LOCKS_1",
+  "search_complements": true
+ },
+ "mode": "manual",
+ "objective_version": "OBJ-LEX-1@1",
+ "primary_plan_id": null,
+ "reasons": [
+  "locked_scenario_violates_constraints"
+ ],
+ "recommendation_id": "reco-47bbe81f25b811b2",
+ "schema_version": "DS_RECOMMENDATION_1",
+ "scientific_status": "PROTOTYPE_UNVALIDATED",
+ "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
+ "snapshot_id": "snap-aa7de9d195c5",
+ "status": "INFEASIBLE",
+ "synthetic": true,
+ "uncertainties": [],
+ "valid_until": "2026-11-16T19:30:00Z"
+}
