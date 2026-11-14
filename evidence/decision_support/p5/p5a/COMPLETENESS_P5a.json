@@ -1,0 +1,124 @@
+{
+ "complete_and_matching": true,
+ "ledger_54_hashes": {
+  "evidence/decision_support/p5/p5a/F_a.json": {
+   "actual": "055a4d2692472f6a6f64f51bea876bd5be808acc90c50bb9891f606af9b7a6bc",
+   "expected": "055a4d2692472f6a6f64f51bea876bd5be808acc90c50bb9891f606af9b7a6bc",
+   "ok": true
+  },
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/pilot_parents.jsonl": {
+   "actual": "445cf7de829c0ab69fd7c92c84247b0191ee417291687507d95d587423c64347",
+   "expected": "445cf7de829c0ab69fd7c92c84247b0191ee417291687507d95d587423c64347",
+   "ok": true
+  },
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/structures.jsonl": {
+   "actual": "3d965995e291ffbcc41a87bb83e9e34ee38288876a975acf286a967eaa968c89",
+   "expected": "3d965995e291ffbcc41a87bb83e9e34ee38288876a975acf286a967eaa968c89",
+   "ok": true
+  },
+  "evidence/decision_support/p5/p5a/RESULTS_P5a.json": {
+   "actual": "1a7974176def47c24c6ee929e357de56824a43cf77ffa78148bbd2cc15d85c89",
+   "expected": "1a7974176def47c24c6ee929e357de56824a43cf77ffa78148bbd2cc15d85c89",
+   "ok": true
+  }
+ },
+ "missing": [],
+ "required_files": [
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/RUN_IDENTITY.json",
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/pilot_parents.jsonl",
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/structures.jsonl",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/RUN_IDENTITY.json",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/pilot_parents.jsonl",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/structures.jsonl",
+  "evidence/decision_support/p5/p5a/F_a.json",
+  "evidence/decision_support/p5/p5a/RESULTS_P5a.json",
+  "evidence/decision_support/p5/p5a/PRECISION_DEV.json"
+ ],
+ "root": ".",
+ "runs": [
+  {
+   "K": 3,
+   "abstentions": 0,
+   "candidates": 103,
+   "chosen_class_counts": {
+    "C": 35,
+    "CR": 35,
+    "H": 13,
+    "R": 17
+   },
+   "class_support_parents": {
+    "C": 85,
+    "CR": 51,
+    "R": 61
+   },
+   "excluded": 3,
+   "identity": {
+    "K": 3,
+    "commitment_stage": "E4",
+    "n_parents": 10,
+    "partition": "P5a_dev",
+    "regimes": [
+     "R1",
+     "R2"
+    ],
+    "run_id": "0108da5768b4c2023181"
+   },
+   "parents": 100,
+   "problems": [],
+   "regimes": [
+    "R1",
+    "R2"
+   ],
+   "run": "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181",
+   "structures": 10
+  },
+  {
+   "K": 3,
+   "abstentions": 0,
+   "candidates": 300,
+   "chosen_class_counts": {
+    "C": 127,
+    "CR": 109,
+    "H": 19,
+    "R": 45
+   },
+   "class_support_parents": {
+    "C": 269,
+    "CR": 151,
+    "R": 176
+   },
+   "excluded": 0,
+   "identity": {
+    "K": 3,
+    "commitment_stage": "E4",
+    "n_parents": 10,
+    "partition": "P5a_eval",
+    "regimes": [
+     "R1",
+     "R2"
+    ],
+    "run_id": "ece90db4e6159a03bf84"
+   },
+   "parents": 300,
+   "problems": [],
+   "regimes": [
+    "R1",
+    "R2"
+   ],
+   "run": "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84",
+   "structures": 30
+  }
+ ],
+ "schema": "HOSPITALOS_P5a_COMPLETENESS_1",
+ "sha256": {
+  "evidence/decision_support/p5/p5a/F_a.json": "055a4d2692472f6a6f64f51bea876bd5be808acc90c50bb9891f606af9b7a6bc",
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/RUN_IDENTITY.json": "9ac841e18f75f04dfb58cd50c6ca151f5633ce36a91d786a7e55a5faa87d2bf8",
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/pilot_parents.jsonl": "5024764e1c02032d41de2d7896097200c80c1640af8255621acedc481f92a92b",
+  "evidence/decision_support/p5/p5a/P5a_dev/runs/0108da5768b4c2023181/structures.jsonl": "dc9784e2fa149013e64f0c97cc76257c78e1f2ed1b8a672bc944b75715087b46",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/RUN_IDENTITY.json": "5f1ee0963ae36367bb85cf646ab969324ee4949210de9b396f103776ee1f4933",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/pilot_parents.jsonl": "445cf7de829c0ab69fd7c92c84247b0191ee417291687507d95d587423c64347",
+  "evidence/decision_support/p5/p5a/P5a_eval/runs/ece90db4e6159a03bf84/structures.jsonl": "3d965995e291ffbcc41a87bb83e9e34ee38288876a975acf286a967eaa968c89",
+  "evidence/decision_support/p5/p5a/PRECISION_DEV.json": "d0fa640aa40f8ce6fb8fe95638b80643bdeec8b9d10176ee1de0dbe7539c6235",
+  "evidence/decision_support/p5/p5a/RESULTS_P5a.json": "1a7974176def47c24c6ee929e357de56824a43cf77ffa78148bbd2cc15d85c89"
+ }
+}
