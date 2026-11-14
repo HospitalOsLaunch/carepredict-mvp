@@ -40,6 +40,18 @@ def _utc(value: datetime | None) -> datetime | None:
     return utc(value) if value is not None else None
 
 
+def whole_hour(value: datetime) -> datetime:
+    """The engine runs on an hourly grid: a locked time with minutes is refused (F05), never
+    silently moved to the previous hour."""
+    value = utc(value)
+    if value.minute or value.second or value.microsecond:
+        raise ValueError(
+            f"unsupported_time_precision: {value.isoformat()} is not on a whole hour; "
+            "this version only accepts whole-hour locks"
+        )
+    return value
+
+
 class Distribution(Closed):
     """Finite synthetic distribution over whole hours (integer weights, exact arithmetic).
 
@@ -346,6 +358,13 @@ class CivilDeadline(Closed):
     local_time: time
     fold: Literal[0, 1] | None = None
 
+    @field_validator("local_time")
+    @classmethod
+    def _whole_hour(cls, value: time) -> time:
+        if value.minute or value.second or value.microsecond:
+            raise ValueError("unsupported_time_precision: deadline must be on a whole hour")
+        return value
+
     def resolve(self, as_of: datetime) -> datetime:
         local_date: date = utc(as_of).astimezone(PARIS).date() + timedelta(days=self.day_offset)
         return resolve_local(local_date, self.local_time, PARIS, self.fold)
@@ -360,7 +379,7 @@ class LockedDischarge(Closed):
     @field_validator("at")
     @classmethod
     def _at(cls, value: datetime) -> datetime:
-        return utc(value)
+        return whole_hour(value)
 
 
 class LockedExtension(Closed):
@@ -375,7 +394,7 @@ class LockedExtension(Closed):
     @field_validator("reference_time")
     @classmethod
     def _ref(cls, value: datetime) -> datetime:
-        return utc(value)
+        return whole_hour(value)
 
     @property
     def target_time(self) -> datetime:
@@ -530,4 +549,9 @@ class ReviewResult(Closed):
     lifecycle: dict[str, str]  # request/approval/reservation/execution/result, kept separate
     reservations: tuple[str, ...]
     idempotency_key: str
+    # F04: the key is bound to this canonical fingerprint of (recommendation, decision).
+    request_fingerprint: str
     at: datetime
+    # A replay returns the historical receipt unchanged, plus the validity re-evaluated now.
+    replayed: bool = False
+    current_validity: str | None = None

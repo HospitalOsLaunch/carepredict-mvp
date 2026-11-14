@@ -7,14 +7,23 @@
   "unit_id": "U-MED-SYN",
   "timezone": "Europe/Paris",
   "beds": 8,
-  "day_local_hours": {"start": 7, "end": 21, "meaning": "day care rate applies to local hours start..end-1"},
+  "day_local_hours": {
+    "start": 7,
+    "end": 21,
+    "meaning": "day care rate applies to local hours start..end-1"
+  },
   "habitual_practice": {
     "policy_id": "HABITUAL-1",
     "discharge_organisation_local_hour": 14,
     "description": "Authorised discharges are organised at the habitual hour: transport requested then, departure when ready and transport available. Cleaning first-in-first-out with the cleaning team. Admissions first-in-first-out on the first clean compatible bed. Roster only, no reinforcement. Planned departures are kept as planned. This is NOT 'do nothing': care, arrivals and ordinary decisions continue."
   },
-  "coordination_target_local_hours": [10, 13],
-  "discharge_task_minutes": {"IDE": 30},
+  "coordination_target_local_hours": [
+    10,
+    13
+  ],
+  "discharge_task_minutes": {
+    "IDE": 30
+  },
   "pressure_discharges_enabled": false,
   "supported_horizon_hours": 24,
   "limits": {
@@ -25,8 +34,20 @@
   },
   "forecast": {
     "backend": "reference_hybrid",
-    "selection_seeds": [101, 102, 103, 104],
-    "evaluation_seeds": [901, 902, 903, 904]
+    "selection_seeds": [
+      101,
+      102,
+      103,
+      104
+    ],
+    "evaluation_seeds": [
+      901,
+      902,
+      903,
+      904
+    ]
   },
-  "recommendation_validity_minutes": 30
+  "recommendation_validity_minutes": 30,
+  "unknown_cleaning_assumption": null,
+  "unknown_cleaning_assumption_note": "null = no replacement: a bed that a plan may free without a known cleaning duration makes the engine abstain (INSUFFICIENT_DATA). To use a replacement, set {id, version, hours:{support, weights}}; it is then reported as assumed_cleaning_duration:<bed>:<id>@<version>."
 }

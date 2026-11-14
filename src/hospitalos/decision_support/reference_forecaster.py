@@ -43,8 +43,15 @@ from .contracts import (
     PublicSnapshot,
     ReinforcementOption,
 )
-from .eligibility import eligible_for_auto_discharge
-from .resources import coverage, hour_index, staff_per_hour, team_capacity
+from .eligibility import discharge_blockers, eligible_for_auto_discharge
+from .resources import (
+    coverage,
+    hour_index,
+    hour_index_ceil,
+    lending_violations,
+    staff_per_hour,
+    team_capacity,
+)
 
 BACKEND_NAME = "reference_hybrid"
 BACKEND_VERSION = "1.0.0"
@@ -197,7 +204,7 @@ def simulate(
     for sid, s in sorted(stays.items()):
         ready = None
         if s.ready_earliest is not None and s.ready_delay is not None:
-            ready = max(0, hour_index(start, s.ready_earliest)) + provider.draw(
+            ready = max(0, hour_index_ceil(start, s.ready_earliest)) + provider.draw(
                 "readiness", sid, s.ready_delay
             )
         lead = 0
@@ -205,12 +212,19 @@ def simulate(
             lead = provider.draw("transport_lead", sid, s.transport_lead)
         if sid in decisions.locked_discharges or sid in decisions.extensions:
             hour, basis = decisions.locked_discharges.get(sid) or decisions.extensions[sid]
+            # F01: a validated lock obeys the same hard preconditions as an automatic action.
+            # Its hour is never moved; an unmet precondition makes the plan inadmissible.
+            # A hypothesis stays simulable, with the gap reported as a warning.
+            sink = warnings if basis == "hypothesis_only" else violations
             if basis != "hypothesis_only" and s.medical_authorization != "authorized":
                 violations.append(f"locked_discharge_without_authorization:{sid}")
+            for blocker in discharge_blockers(s):
+                if not blocker.startswith("medical_authorization"):
+                    sink.append(f"locked_precondition:{sid}:{blocker}")
             if ready is not None and ready > hour:
-                warnings.append(f"lock_precondition_unmet:{sid}:ready_after_locked_hour")
+                sink.append(f"lock_precondition_unmet:{sid}:ready_after_locked_hour")
             if lead > hour:
-                warnings.append(f"lock_precondition_unmet:{sid}:transport_lead")
+                sink.append(f"lock_precondition_unmet:{sid}:transport_lead")
             requests.append((0, hour, sid, "locked", ready if ready is not None else 0))
         elif sid in decisions.coordinated:
             target, _ = decisions.coordinated[sid]
@@ -222,7 +236,7 @@ def simulate(
         elif eligible_for_auto_discharge(s):
             assert ready is not None
             if s.planned_departure is not None:
-                base = hour_index(start, s.planned_departure)
+                base = hour_index_ceil(start, s.planned_departure)
             else:
                 base = organisation + lead
             requests.append((1, max(base, ready), sid, "habitual", ready))
@@ -278,8 +292,18 @@ def simulate(
         assert bed_id is not None
         jobs.append((h + 1, bed_id, sid))
     returned = 0
+    assumption = profile.get("unknown_cleaning_assumption")
     for ready_from, bed_id, cause in sorted(jobs):
-        dist = beds[bed_id].cleaning or Distribution.point(1)
+        dist = beds[bed_id].cleaning
+        if dist is None:
+            # F06: no silent default. Only a configured, versioned assumption may stand in.
+            if not assumption:
+                violations.append(f"cleaning_duration_unknown:{bed_id}")
+                continue
+            dist = Distribution.model_validate(assumption["hours"])
+            warnings.append(
+                f"assumed_cleaning_duration:{bed_id}:{assumption['id']}@{assumption['version']}"
+            )
         duration = provider.draw("cleaning", f"{bed_id}|{cause}", dist)
         s = ready_from
         while s < hours and any(busy[x] >= cleaning[x] for x in range(s, min(s + duration, hours))):
@@ -295,6 +319,8 @@ def simulate(
             events.append((s + duration, "bed_clean", bed_id, cause))
             if cause != "initial":
                 returned += 1
+
+    violations += lending_violations(decisions.reinforcements)
 
     # ---- admissions: FIFO on the first clean, compatible, unoccupied bed (not a lever)
     occupied_from: dict[str, int] = {}  # bed -> hour of (re)occupation after it became clean

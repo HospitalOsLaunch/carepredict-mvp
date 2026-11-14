@@ -8,7 +8,6 @@ Locked decisions are never modified to improve the score. ``review`` never sends
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -30,10 +29,48 @@ from .contracts import (
     ScenarioLocks,
     SearchReport,
 )
-from .eligibility import revalidate_discharge
+from .eligibility import (
+    eligible_for_auto_discharge,
+    lock_precondition_issues,
+    plan_precondition_errors,
+    revalidate_discharge,
+)
 from .reference_forecaster import ForecastConfig, ReferenceForecaster, assert_product_backend
-from .resources import ResourceLedger, hour_index, option_admissibility, roster_known, team_capacity
+from .resources import (
+    ResourceLedger,
+    hour_index,
+    lending_violations,
+    option_admissibility,
+    roster_known,
+    team_capacity,
+)
 from .snapshot import CONFIG_DIR, load_json, load_profile, sha
+
+
+class IdempotencyConflict(ValueError):
+    """F04: an idempotency key reused for a different request content."""
+
+
+def settings_fingerprint(settings: Settings) -> str:
+    """F08: full configuration content (not only version labels) + backend code."""
+    return sha(
+        {
+            "profile": dict(settings.profile),
+            "objective": dict(settings.objective),
+            "score": dict(settings.score) if settings.score else None,
+            "backend": settings.backend.info().model_dump(mode="json"),
+        }
+    )
+
+
+def run_fingerprint(settings: Settings, start: datetime, hours: int) -> str:
+    return sha(
+        {
+            "settings": settings_fingerprint(settings),
+            "seeds": list(settings.profile["forecast"]["selection_seeds"]),
+            "horizon": [start.isoformat(), hours],
+        }
+    )
 
 
 class HorizonError(ValueError):
@@ -152,6 +189,7 @@ def _recommendation(
     locks: ScenarioLocks | None = None,
     approvable: bool = False,
 ) -> Recommendation:
+    """Identity covers the full configuration and the result (F08): one id, one content."""
     conditions: list[str] = []
     uncertainties: list[str] = []
     if primary is not None:
@@ -178,6 +216,10 @@ def _recommendation(
         "engine": ENGINE_VERSION,
         "locks": locks.model_dump(mode="json") if locks else None,
         "primary": primary.plan.plan_id if primary else None,
+        "settings": settings_fingerprint(settings),
+        "bundle": bundle.bundle_id if bundle else None,
+        "diagnostics": list(diagnostics),
+        "approvable": approvable,
     }
     validity = timedelta(minutes=int(settings.profile["recommendation_validity_minutes"]))
     return Recommendation(
@@ -204,24 +246,63 @@ def _recommendation(
     )
 
 
-def _data_gaps(snapshot: PublicSnapshot, start: datetime, hours: int) -> list[str]:
+def required_skills(snapshot: PublicSnapshot, profile: Mapping[str, Any]) -> list[str]:
+    """Skills with a declared care need (stays, tasks, admissions, discharge work)."""
+    skills = set(profile["discharge_task_minutes"])
+    for s in snapshot.stays:
+        skills |= {c.skill for c in s.care if c.day_minutes_per_hour or c.night_minutes_per_hour}
+        skills |= {t.skill for t in s.tasks}
+    for a in snapshot.admissions:
+        skills |= {c.skill for c in a.care if c.day_minutes_per_hour or c.night_minutes_per_hour}
+    return sorted(skills)
+
+
+def _data_gaps(
+    snapshot: PublicSnapshot,
+    profile: Mapping[str, Any],
+    start: datetime,
+    hours: int,
+    departing: frozenset[str] = frozenset(),
+) -> tuple[list[str], list[str]]:
+    """Returns (gaps -> abstention, assumptions used -> reported). Unknown is never zero."""
     gaps = list(snapshot.issues)
-    known = roster_known(snapshot, "IDE", start, hours)
-    missing = [h for h, k in enumerate(known) if not k]
-    if missing:
-        gaps.append(
-            f"roster_unknown:IDE:{display(start + timedelta(hours=missing[0]))}"
-            f"..{display(start + timedelta(hours=missing[-1] + 1))}"
-        )
+    assumptions: list[str] = []
+    for skill in required_skills(snapshot, profile):  # F07: every required skill
+        known = roster_known(snapshot, skill, start, hours)
+        missing = [h for h, k in enumerate(known) if not k]
+        if missing:
+            gaps.append(
+                f"roster_unknown:{skill}:{display(start + timedelta(hours=missing[0]))}"
+                f"..{display(start + timedelta(hours=missing[-1] + 1))}"
+            )
     _, cleaning_known = team_capacity(snapshot.teams, "cleaning", start, hours)
     if not any(cleaning_known):
         gaps.append("cleaning_capacity_unknown")
-    return gaps
+    # F06: beds that any evaluated plan may free need a known cleaning duration, or a
+    # configured, versioned replacement assumption that is reported.
+    may_leave = {
+        s.stay_id for s in snapshot.stays if eligible_for_auto_discharge(s)
+    } | set(departing)
+    beds = {b.bed_id: b for b in snapshot.beds}
+    assumption = profile.get("unknown_cleaning_assumption")
+    for s in snapshot.stays:
+        bed = beds.get(s.bed_id or "")
+        if s.stay_id in may_leave and bed is not None and bed.cleaning is None:
+            if assumption:
+                assumptions.append(
+                    f"assumed_cleaning_duration:{bed.bed_id}:{assumption['id']}@"
+                    f"{assumption['version']}"
+                )
+            else:
+                gaps.append(f"cleaning_duration_unknown:{bed.bed_id}")
+    return gaps, assumptions
 
 
 def _bundle(snapshot, settings, start, end, hours, evaluations, report, mode) -> ForecastBundle:
     info = settings.backend.info()
     config = {
+        "run_fingerprint": run_fingerprint(settings, start, hours),
+        "settings_sha256": settings_fingerprint(settings),
         "profile": f"{settings.profile['profile_id']}@{settings.profile['version']}",
         "objective": f"{settings.objective['objective_id']}@{settings.objective['version']}",
         "mode": mode,
@@ -230,7 +311,8 @@ def _bundle(snapshot, settings, start, end, hours, evaluations, report, mode) ->
     body = {
         "fp": snapshot.fingerprint,
         "config": config,
-        "plans": [e.plan.plan_id for e in evaluations],
+        "evaluations": [e.model_dump(mode="json") for e in evaluations],
+        "search": report.model_dump(mode="json"),
     }
     return ForecastBundle(
         bundle_id="fb-" + sha(body)[:16],
@@ -294,7 +376,7 @@ def recommend(
             diagnostics=[str(error)],
             bundle=None,
         )
-    gaps = _data_gaps(snapshot, start, hours)
+    gaps, assumed = _data_gaps(snapshot, settings.profile, start, hours)
     if gaps:
         return _recommendation(
             status="INSUFFICIENT_DATA",
@@ -344,7 +426,7 @@ def recommend(
             snapshot=snapshot,
             settings=settings,
             reasons=["habitual_practice_preferred_no_material_improvement", *reasons],
-            diagnostics=[],
+            diagnostics=assumed,
             bundle=bundle,
             baseline=baseline,
             primary=baseline,
@@ -377,7 +459,7 @@ def recommend(
         snapshot=snapshot,
         settings=settings,
         reasons=["lexicographic_objective_improvement_requires_human_approval", *reasons],
-        diagnostics=[],
+        diagnostics=assumed,
         bundle=bundle,
         baseline=baseline,
         primary=chosen,
@@ -439,6 +521,21 @@ def locked_actions(
                 "-> treated as hypothesis_only"
             )
             basis = "hypothesis_only"
+        elif basis == "validated_instruction":
+            # F01: same preconditions as an automatic action. The locked hour is kept
+            # exactly; if a precondition is unmet (obstacle, readiness or transport lead
+            # contradicted in some or all scenarios) the scenario stays a hypothesis.
+            issues = [
+                i
+                for i in lock_precondition_issues(stay, start, at)
+                if not i.startswith("medical_authorization")
+            ]
+            if issues:
+                diagnostics.append(
+                    f"validated_instruction_preconditions_unmet:{lock.stay_id}:"
+                    f"{','.join(issues)} -> treated as hypothesis_only, time kept"
+                )
+                basis = "hypothesis_only"
         hypothetical = hypothetical or basis == "hypothesis_only"
         kind = "locked_discharge" if isinstance(lock, LockedDischarge) else "locked_extension"
         detail = (
@@ -469,6 +566,10 @@ def locked_actions(
                 basis=basis,  # type: ignore[arg-type]
             )
         )
+    locked_options = [
+        options[a.target] for a in actions if a.type == "reinforcement" and a.target in options
+    ]
+    contradictions += [f"locked_reinforcements:{v}" for v in lending_violations(locked_options)]
     return tuple(actions), contradictions, diagnostics, hypothetical
 
 
@@ -494,7 +595,15 @@ def simulate(
             bundle=None,
             locks=locks,
         )
-    gaps = _data_gaps(snapshot, start, hours)
+    validity = snapshot.as_of + timedelta(
+        minutes=int(settings.profile["recommendation_validity_minutes"])
+    )
+    actions, contradictions, diagnostics, hypothetical = locked_actions(
+        snapshot, locks, start, end, validity
+    )
+    departing = frozenset(a.target for a in actions if a.type != "reinforcement")
+    gaps, assumed = _data_gaps(snapshot, settings.profile, start, hours, departing)
+    diagnostics = [*diagnostics, *assumed]
     if gaps:
         return _recommendation(
             status="INSUFFICIENT_DATA",
@@ -502,16 +611,10 @@ def simulate(
             snapshot=snapshot,
             settings=settings,
             reasons=["abstention_data_insufficient"],
-            diagnostics=gaps,
+            diagnostics=gaps + diagnostics,
             bundle=None,
             locks=locks,
         )
-    validity = snapshot.as_of + timedelta(
-        minutes=int(settings.profile["recommendation_validity_minutes"])
-    )
-    actions, contradictions, diagnostics, hypothetical = locked_actions(
-        snapshot, locks, start, end, validity
-    )
     if contradictions:
         return _recommendation(
             status="INFEASIBLE",
@@ -639,6 +742,83 @@ class ReviewStore:
     ledger: ResourceLedger = field(default_factory=ResourceLedger)
 
 
+def _request_fingerprint(recommendation: Recommendation, decision: str) -> str:
+    return sha(
+        {
+            "recommendation_id": recommendation.recommendation_id,
+            "snapshot": recommendation.snapshot_fingerprint,
+            "decision": decision,
+        }
+    )
+
+
+def _primary(recommendation: Recommendation) -> PlanEvaluation | None:
+    if recommendation.bundle is None or not recommendation.primary_plan_id:
+        return None
+    return next(
+        e
+        for e in recommendation.bundle.evaluations
+        if e.plan.plan_id == recommendation.primary_plan_id
+    )
+
+
+def _approval_blockers(
+    recommendation: Recommendation, current_snapshot: PublicSnapshot, now: datetime
+) -> tuple[str, list[str], bool]:
+    """(outcome, reasons, recompute). Same revalidation for auto and manual plans (F01)."""
+    if not recommendation.approvable:
+        return "REFUSED", [f"not_approvable:{recommendation.status}"], False
+    if now >= recommendation.valid_until:
+        return "INVALIDATED", ["recommendation_expired"], True
+    primary = _primary(recommendation)
+    errors = list(plan_precondition_errors(current_snapshot, primary.plan)) if primary else []
+    if current_snapshot.fingerprint != recommendation.snapshot_fingerprint:
+        if primary is not None:
+            for a in primary.plan.actions:
+                if a.type in {"coordinate_discharge", "locked_discharge", "locked_extension"}:
+                    errors += revalidate_discharge(current_snapshot, a.target)
+        return "INVALIDATED", ["new_information_since_recommendation", *dict.fromkeys(errors)], True
+    if errors:
+        return "REFUSED", [f"precondition_unmet:{e}" for e in errors], True
+    return "APPROVED_IN_DEMO", [], False
+
+
+def _reservation_requests(
+    plan_actions: tuple[ActionSpec, ...], snapshot: PublicSnapshot
+) -> list[tuple[str, str, str, int | None]]:
+    start = snapshot.as_of
+    transport, _ = team_capacity(snapshot.teams, "transport", start, 24)
+    options = {o.option_id: o for o in snapshot.reinforcements}
+    requests: list[tuple[str, str, str, int | None]] = []
+    for a in plan_actions:
+        if a.type == "reinforcement":
+            requests.append((a.target, a.window_start.isoformat(), a.idempotency_key, 1))
+            option = options.get(a.target)
+            if option is not None and option.source == "shared_unit" and option.lending_unit:
+                # F02 across requests: loans from one lender share its spare staff per hour.
+                spare = None
+                if option.lending_unit_scheduled is not None and (
+                    option.lending_unit_minimum is not None
+                ):
+                    spare = max(0, option.lending_unit_scheduled - option.lending_unit_minimum)
+                h = option.start
+                while h < option.end:
+                    requests.append(
+                        (
+                            f"lend:{option.lending_unit}:{option.skill}",
+                            h.isoformat(),
+                            f"{a.idempotency_key}:{h.isoformat()}",
+                            spare,
+                        )
+                    )
+                    h += timedelta(hours=1)
+        elif "transport_team" in a.resources:
+            h = hour_index(start, a.window_start)
+            cap = transport[h] if 0 <= h < len(transport) else 0
+            requests.append(("transport", a.window_start.isoformat(), a.idempotency_key, cap))
+    return requests
+
+
 def review(
     recommendation: Recommendation,
     decision: str,
@@ -647,57 +827,50 @@ def review(
     idempotency_key: str,
     store: ReviewStore,
 ) -> ReviewResult:
-    """Demo review. Never transmits anything to a hospital system."""
-    if idempotency_key in store.results:  # T10: same request twice -> same result
-        return store.results[idempotency_key]
+    """Demo review. Never transmits anything to a hospital system.
+
+    F04: the idempotency key is bound to the request content. Same key + same content returns
+    the historical receipt (replayed=True) with its validity re-evaluated now; same key +
+    different content raises IdempotencyConflict. F03: reservations are all-or-nothing.
+    """
     now = utc(now)
+    fingerprint = _request_fingerprint(recommendation, decision)
+    if idempotency_key in store.results:
+        stored = store.results[idempotency_key]
+        if stored.request_fingerprint != fingerprint:
+            raise IdempotencyConflict(
+                f"idempotency key {idempotency_key!r} already used for another request "
+                f"({stored.decision} on {stored.recommendation_id})"
+            )
+        if stored.outcome == "APPROVED_IN_DEMO":
+            outcome_now, why, _ = _approval_blockers(recommendation, current_snapshot, now)
+            validity = (
+                "still_valid" if outcome_now == "APPROVED_IN_DEMO" else "no_longer_valid:"
+                + ",".join(why)
+            )
+        else:
+            validity = "not_applicable"
+        return stored.model_copy(update={"replayed": True, "current_validity": validity})
     reasons: list[str] = []
     outcome = {"approve": "APPROVED_IN_DEMO", "reject": "REJECTED", "modify": "MODIFY_REQUESTED"}[
         decision
     ]
     recompute = False
     reservations: list[str] = []
-    primary = None
-    if recommendation.bundle is not None and recommendation.primary_plan_id:
-        primary = next(
-            e
-            for e in recommendation.bundle.evaluations
-            if e.plan.plan_id == recommendation.primary_plan_id
-        )
     if decision == "approve":
-        if not recommendation.approvable:
-            outcome = "REFUSED"
-            reasons.append(f"not_approvable:{recommendation.status}")
-        elif now >= recommendation.valid_until:
-            outcome, recompute = "INVALIDATED", True
-            reasons.append("recommendation_expired")
-        elif current_snapshot.fingerprint != recommendation.snapshot_fingerprint:
-            outcome, recompute = "INVALIDATED", True
-            reasons.append("new_information_since_recommendation")
-            if primary is not None:
-                for a in primary.plan.actions:
-                    if a.type in {"coordinate_discharge", "locked_discharge", "locked_extension"}:
-                        reasons += revalidate_discharge(current_snapshot, a.target)
-        elif primary is not None:
-            start = current_snapshot.as_of
-            transport, _ = team_capacity(current_snapshot.teams, "transport", start, 24)
-            for a in primary.plan.actions:
-                if a.type == "reinforcement":
-                    resource, slot, cap = a.target, a.window_start.isoformat(), 1
-                elif "transport_team" in a.resources:
-                    h = hour_index(start, a.window_start)
-                    resource, slot = "transport", a.window_start.isoformat()
-                    cap = transport[h] if 0 <= h < len(transport) else 0
-                else:
-                    continue
-                store.ledger.capacity.setdefault((resource, slot), cap)
-                ok, why = store.ledger.reserve(resource, slot, a.idempotency_key)
-                reservations.append(f"{a.action_id}:{why}")
-                if not ok:
-                    outcome = "REFUSED"
-                    reasons.append(f"reservation_refused:{a.action_id}:{why}")
+        outcome, reasons, recompute = _approval_blockers(recommendation, current_snapshot, now)
+        primary = _primary(recommendation)
+        if outcome == "APPROVED_IN_DEMO" and primary is not None:
+            requests = _reservation_requests(primary.plan.actions, current_snapshot)
+            ok, details = store.ledger.reserve_all(requests)
+            if ok:
+                reservations = details
+            else:
+                outcome = "REFUSED"
+                reasons = [f"reservation_refused:{d}" for d in details if d.endswith(
+                    ("capacity_exhausted", "capacity_unknown", "other_resource"))]
     result = ReviewResult(
-        review_id="rev-" + hashlib.sha256(idempotency_key.encode()).hexdigest()[:16],
+        review_id="rev-" + sha({"key": idempotency_key, "request": fingerprint})[:16],
         recommendation_id=recommendation.recommendation_id,
         decision=decision,  # type: ignore[arg-type]
         outcome=outcome,  # type: ignore[arg-type]
@@ -712,6 +885,7 @@ def review(
         },
         reservations=tuple(reservations),
         idempotency_key=idempotency_key,
+        request_fingerprint=fingerprint,
         at=now,
     )
     store.results[idempotency_key] = result

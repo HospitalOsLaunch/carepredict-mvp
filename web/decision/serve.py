@@ -30,6 +30,7 @@ from hospitalos.decision_support.contracts import (  # noqa: E402
     ScenarioLocks,
 )
 from hospitalos.decision_support.planner import (  # noqa: E402
+    IdempotencyConflict,
     ReviewStore,
     Settings,
     recommend,
@@ -72,7 +73,11 @@ class State:
         return build_snapshot(observations, as_of, self.settings.profile)
 
     def keep(self, reco: Recommendation) -> dict[str, Any]:
+        """Immutable store: one identifier never designates two different contents (F08)."""
         body = reco.model_dump(mode="json")
+        old = self.docs.get(reco.recommendation_id)
+        if old is not None and old != body:
+            raise ValueError(f"document identity conflict: {reco.recommendation_id}")
         self.docs[reco.recommendation_id] = body
         self.recos[reco.recommendation_id] = reco
         return body
@@ -164,14 +169,17 @@ class Handler(BaseHTTPRequestHandler):
                 if reco is None:
                     return self._json({"error": "unknown recommendation"}, 404)
                 now = reco.created_at + timedelta(minutes=int(payload.get("minutes_after", 5)))
-                result = review(
-                    reco,
-                    payload["decision"],
-                    STATE.snapshot(unit),
-                    now,
-                    payload["idempotency_key"],
-                    STATE.store,
-                )
+                try:
+                    result = review(
+                        reco,
+                        payload["decision"],
+                        STATE.snapshot(unit),
+                        now,
+                        payload["idempotency_key"],
+                        STATE.store,
+                    )
+                except IdempotencyConflict as error:
+                    return self._json({"error": str(error)}, 409)
                 body = result.model_dump(mode="json")
                 STATE.docs[result.review_id] = body
                 return self._json({"doc_id": result.review_id, "review": body})

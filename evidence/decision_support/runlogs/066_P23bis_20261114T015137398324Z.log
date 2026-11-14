@@ -1,0 +1,20 @@
+...............................................F
+=================================== FAILURES ===================================
+______ test_t10_t27_review_idempotent_and_invalidated_by_new_information _______
+
+nominal = PublicSnapshot(schema_version='DS_PUBLIC_SNAPSHOT_1', snapshot_id='snap-aa7de9d195c5', fingerprint='aa7de9d195c5fd040b... external_commitments=1)), issues=(), excluded_observations={'event_after_decision': 1, 'available_after_decision': 1})
+auto = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-5a38d523fcd5bf86', status='RECOMMENDATION...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True}))
+
+    def test_t10_t27_review_idempotent_and_invalidated_by_new_information(nominal, auto):
+        store = ReviewStore()
+        now = auto.created_at + timedelta(minutes=5)
+        first = review(auto, "approve", nominal, now, "req-1", store)
+        second = review(auto, "approve", nominal, now, "req-1", store)
+>       assert first is second and first.outcome == "APPROVED_IN_DEMO"
+E       AssertionError: assert (ReviewResult(review_id='rev-18f1edf7a3f416ff', recommendation_id='reco-5a38d523fcd5bf86', decision='approve', outcome=...c503d', at=datetime.datetime(2026, 11, 16, 19, 5, tzinfo=datetime.timezone.utc), replayed=False, current_validity=None) is ReviewResult(review_id='rev-18f1edf7a3f416ff', recommendation_id='reco-5a38d523fcd5bf86', decision='approve', outcome=...at=datetime.datetime(2026, 11, 16, 19, 5, tzinfo=datetime.timezone.utc), replayed=True, current_validity='still_valid'))
+
+tests/decision_support/test_p3_planner.py:153: AssertionError
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_p3_planner.py::test_t10_t27_review_idempotent_and_invalidated_by_new_information
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 47 passed in 1.74s

@@ -6,6 +6,18 @@
    "title": "At",
    "type": "string"
   },
+  "current_validity": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null,
+   "title": "Current Validity"
+  },
   "decision": {
    "enum": [
     "approve",
@@ -58,6 +70,15 @@
    "title": "Recompute Required",
    "type": "boolean"
   },
+  "replayed": {
+   "default": false,
+   "title": "Replayed",
+   "type": "boolean"
+  },
+  "request_fingerprint": {
+   "title": "Request Fingerprint",
+   "type": "string"
+  },
   "reservations": {
    "items": {
     "type": "string"
@@ -80,6 +101,7 @@
   "lifecycle",
   "reservations",
   "idempotency_key",
+  "request_fingerprint",
   "at"
  ],
  "title": "ReviewResult",

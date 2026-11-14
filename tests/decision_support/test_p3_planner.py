@@ -15,6 +15,7 @@ from hospitalos.decision_support.contracts import (
 )
 from hospitalos.decision_support.export import SeedReuseError, evaluate_out_of_sample
 from hospitalos.decision_support.planner import (
+    IdempotencyConflict,
     ReviewStore,
     Settings,
     _config,
@@ -150,7 +151,14 @@ def test_t10_t27_review_idempotent_and_invalidated_by_new_information(nominal, a
     now = auto.created_at + timedelta(minutes=5)
     first = review(auto, "approve", nominal, now, "req-1", store)
     second = review(auto, "approve", nominal, now, "req-1", store)
-    assert first is second and first.outcome == "APPROVED_IN_DEMO"
+    assert first.outcome == "APPROVED_IN_DEMO" and not first.replayed
+    # same key + same content: historical receipt unchanged, current validity re-evaluated
+    assert second.replayed and second.current_validity == "still_valid"
+    assert second.model_dump(exclude={"replayed", "current_validity"}) == first.model_dump(
+        exclude={"replayed", "current_validity"}
+    )
+    with pytest.raises(IdempotencyConflict):  # same key + other content: explicit conflict
+        review(auto, "reject", nominal, now, "req-1", store)
     assert first.external_command_sent is False
     assert first.lifecycle["execution"] == "not_executed_no_external_system"
     assert len(store.ledger.by_key) == len(first.reservations)

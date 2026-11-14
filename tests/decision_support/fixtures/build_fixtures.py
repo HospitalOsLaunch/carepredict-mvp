@@ -482,6 +482,52 @@ def insufficient() -> dict:
     return fx
 
 
+def staff_threshold() -> dict:
+    """Hand-checkable staffing threshold for T19 (one IDE present at every hour).
+
+    SA (not authorised) needs 40 IDE-min/h by day; X2=SB needs 30 IDE-min/h by day and leaves
+    at 12:00 + t. Night needs are 0. Day = 07:00-20:59 local, and 20:00 (as_of) is day.
+    While both are present: 70 min/h > 60 -> 10 uncovered, 2 IDE required. At SB's departure
+    hour the 30-min discharge task is added: 100 -> 40 uncovered, 2 required. Afterwards:
+    40 -> 0 uncovered, 1 required. Hence, for 0 <= t <= 7 (departure index d = 16 + t):
+    uncovered_in_unit = 10 (20:00) + 10 * (d - 11) + 40 = 100 + 10 t, and the number of
+    hours requiring 2 IDE = 1 + (d - 10) = 7 + t.
+    """
+    o: list[dict] = []
+    for b in ("L1", "L2"):
+        o.append(obs(f"t-bed-{b}", "bed", b, at(0, 19),
+                      {"status": "occupied", "capabilities": [], "cleaning_hours": dist((1, 1))}))
+    for sid, bed, day in (("SA", "L1", 40), ("SB", "L2", 30)):
+        o.append(obs(f"t-stay-{sid}", "stay", sid, at(0, 8), {"bed_id": bed, "present": True}))
+        o.append(obs(f"t-care-{sid}", "care_profile", f"{sid}.IDE", at(0, 19),
+                     {"stay_id": sid, "skill": "IDE", "day_minutes_per_hour": day,
+                      "night_minutes_per_hour": 0, "status": "estimated"}))
+    o.append(obs("t-auth-SA", "medical_authorization", "SA", at(0, 15),
+                 {"status": "not_authorized", "by_role": "medecin"}))
+    o.append(obs("t-auth-SB", "medical_authorization", "SB", at(0, 15),
+                 {"status": "authorized", "by_role": "medecin"}))
+    o.append(obs("t-logi-SB", "discharge_logistics", "SB", at(0, 16),
+                 {"destination": "home", "transport_need": "none"}))
+    o.append(obs("t-ready-SB", "readiness_estimate", "SB", at(0, 16),
+                 {"earliest": at(1, 10), "delay_hours": dist((0, 1))}))
+    o.append(obs("t-plan-SB", "planned_departure", "SB", at(0, 16), {"at": at(1, 12)}))
+    for sid, d0, h0, d1, h1 in (("E1", 0, 20, 0, 21), ("N1", 0, 21, 1, 7), ("D1", 1, 7, 1, 21)):
+        o.append(obs(f"t-shift-{sid}", "staff_shift", sid, at(0, 12),
+                     {"skill": "IDE", "start": at(d0, h0), "end": at(d1, h1),
+                      "status": "scheduled"}))
+    o.append(obs("t-roster", "roster_coverage", "IDE-window", at(0, 12),
+                 {"skill": "IDE", "start": at(0, 20), "end": at(1, 21)}))
+    o.append(obs("t-team-cl", "team_capacity", "cleaning-day1", at(0, 12),
+                 {"team": "cleaning", "start": at(1, 7), "end": at(1, 21), "capacity": 1,
+                  "external_commitments": 0}))
+    return {"fixture_id": "FX-STAFF-THRESHOLD", "version": "1", "synthetic": True,
+            "description": "Two stays, one IDE per hour; X2 extension crosses the 60 min/h "
+                           "staffing threshold in a hand-computable way (T19).",
+            "as_of": AS_OF_LOCAL.astimezone(ZoneInfo("UTC")).isoformat(),
+            "observations": o,
+            "private_truth": {"note": "not used by T19", "primitives": {}, "legacy": {}}}
+
+
 SCENARIOS = {
     "scenario_x1x2.json": {
         "scenario_id": "SC-X1X2",
@@ -579,6 +625,7 @@ def main() -> None:
         "nominal_auto_truth_b.json": truth_variant(fx),
         "no_action.json": no_action(),
         "insufficient_data.json": insufficient(),
+        "staff_threshold.json": staff_threshold(),
         **SCENARIOS,
     }
     for name, body in files.items():

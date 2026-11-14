@@ -20,6 +20,46 @@ def hour_index(start: datetime, at: datetime) -> int:
     return math.floor((at - start) / timedelta(hours=1))
 
 
+def hour_index_ceil(start: datetime, at: datetime) -> int:
+    """Conservative index for 'not before' times (readiness, planned departure): a time with
+    minutes is moved to the NEXT whole hour, never earlier than what was observed."""
+    return math.ceil((at - start) / timedelta(hours=1))
+
+
+def lending_violations(
+    options: tuple[ReinforcementOption, ...] | list[ReinforcementOption],
+) -> list[str]:
+    """F02: cumulative check of loans taken from the same unit, skill and hour.
+
+    Each option may respect the lender's minimum on its own; together they must too. When
+    options of one lender declare different staffing figures, the most conservative pair is
+    used (lowest scheduled, highest minimum).
+    """
+    per_hour: dict[tuple[str, str, datetime], list[ReinforcementOption]] = {}
+    for o in options:
+        if o.source != "shared_unit" or o.lending_unit is None:
+            continue
+        h = o.start
+        while h < o.end:
+            per_hour.setdefault((o.lending_unit, o.skill, h), []).append(o)
+            h += timedelta(hours=1)
+    problems = []
+    for (unit, skill, h), taken in sorted(per_hour.items()):
+        scheduled = [o.lending_unit_scheduled for o in taken]
+        minimum = [o.lending_unit_minimum for o in taken]
+        if any(v is None for v in scheduled + minimum):
+            problems.append(f"lending_unit_commitment_unknown:{unit}:{skill}:{h.isoformat()}")
+            continue
+        sched, mini = min(scheduled), max(minimum)  # type: ignore[type-var]
+        if sched - len(taken) < mini:  # type: ignore[operator]
+            ids = "+".join(sorted(o.option_id for o in taken))
+            problems.append(
+                f"lending_unit_minimum_cumulative:{unit}:{skill}:{h.isoformat()}:"
+                f"{sched}-{len(taken)}<{mini}:{ids}"
+            )
+    return problems
+
+
 def covers(window_start: datetime, window_end: datetime, hour_start: datetime) -> bool:
     return window_start <= hour_start and hour_start + timedelta(hours=1) <= window_end
 
@@ -130,6 +170,32 @@ class ResourceLedger:
     capacity: dict[tuple[str, str], int] = field(default_factory=dict)
     by_key: dict[str, tuple[str, str]] = field(default_factory=dict)
     used: dict[tuple[str, str], list[str]] = field(default_factory=dict)
+
+    def reserve_all(
+        self, requests: list[tuple[str, str, str, int | None]]
+    ) -> tuple[bool, list[str]]:
+        """F03: all-or-nothing. Requests are (resource, slot, key, capacity if known).
+
+        Everything is checked on a staged copy first; the ledger is changed only if every
+        request succeeds, so a refused plan leaves no new commitment and touches no
+        reservation held by another request.
+        """
+        staged = ResourceLedger(
+            capacity=dict(self.capacity),
+            by_key=dict(self.by_key),
+            used={k: list(v) for k, v in self.used.items()},
+        )
+        details = []
+        ok_all = True
+        for resource, slot, key, cap in requests:
+            if cap is not None:
+                staged.capacity.setdefault((resource, slot), cap)
+            ok, why = staged.reserve(resource, slot, key)
+            details.append(f"{resource}@{slot}:{why}")
+            ok_all = ok_all and ok
+        if ok_all:
+            self.capacity, self.by_key, self.used = staged.capacity, staged.by_key, staged.used
+        return ok_all, details
 
     def reserve(self, resource: str, slot: str, key: str) -> tuple[bool, str]:
         if key in self.by_key:

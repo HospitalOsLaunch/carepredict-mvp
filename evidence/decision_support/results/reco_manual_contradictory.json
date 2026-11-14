@@ -7,7 +7,8 @@
  "conditions": [],
  "created_at": "2026-11-16T19:00:00Z",
  "diagnostics": [
-  "contradictory_locks:S02:discharge_at+extend_presence"
+  "contradictory_locks:S02:discharge_at+extend_presence",
+  "validated_instruction_preconditions_unmet:S02:lock_before_readiness_estimate:certain -> treated as hypothesis_only, time kept"
  ],
  "engine_version": "ds-reference-0.1.0",
  "g2": "NO-GO",
@@ -42,7 +43,7 @@
  "reasons": [
   "contradictory_or_impossible_scenario"
  ],
- "recommendation_id": "reco-fbf01f17ec131f8b",
+ "recommendation_id": "reco-6abb3ad26811c5ed",
  "schema_version": "DS_RECOMMENDATION_1",
  "scientific_status": "PROTOTYPE_UNVALIDATED",
  "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",

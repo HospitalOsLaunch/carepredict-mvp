@@ -10,18 +10,20 @@
    "admissions are not a lever; waiting patients' care counts as uncovered"
   ],
   "backend": {
-   "code_sha256": "98f40021acac7c1a5fec2b23b18fd73234e9cc6656c98af02a4138178f3abf72",
+   "code_sha256": "1affe7cf9104504e7d84d0ef64999d34f053528dfa3b46191edaf0c3eaaba581",
    "name": "reference_hybrid",
    "product_allowed": true,
    "reads_private": false,
    "version": "1.0.0"
   },
-  "bundle_id": "fb-1bb4793ab06f8976",
+  "bundle_id": "fb-7d07f4b23909d85f",
   "config": {
    "mode": "manual",
    "objective": "OBJ-LEX-1@1",
    "pressure_discharges_enabled": false,
-   "profile": "U-MED-SYN-01@1"
+   "profile": "U-MED-SYN-01@1",
+   "run_fingerprint": "e1dc506898afdfcbe3b2abf754e46be10a76aa092c6145c678d4e240b0401403",
+   "settings_sha256": "44963814b57af7ec57dca40b5feac6c7748db9d5e8e77ff3a6b795db75767cfb"
   },
   "evaluations": [
    {
@@ -1509,7 +1511,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -2292,7 +2298,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -3075,7 +3085,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -3854,7 +3868,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -4663,7 +4681,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -5469,7 +5491,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -6275,7 +6301,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -7111,7 +7141,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -7947,7 +7981,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -8779,7 +8817,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -9638,7 +9680,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    },
    {
     "admissible": true,
@@ -10497,7 +10543,11 @@
      }
     ],
     "violations": [],
-    "warnings": []
+    "warnings": [
+     "locked_precondition:S04:destination_unknown",
+     "locked_precondition:S04:readiness_estimate_unknown",
+     "locked_precondition:S04:transport_need_unknown"
+    ]
    }
   ],
   "horizon_end": "2026-11-17T19:00:00Z",
@@ -10520,6 +10570,7 @@
     "auto discharge coordination only with observed medical authorization and no open obstacle",
     "target hours from profile, not before readiness estimate, before any planned departure",
     "reinforcement options: known confirmation status and external commitment respected",
+    "reinforcement combinations: cumulative loans per lender, skill and hour respected",
     "at most 2 coordinations and 2 reinforcement options per plan",
     "ordering: fewer actions, fewer reinforcement hours, then identifiers; prefix kept when the universe exceeds the bound"
    ],
@@ -10592,7 +10643,7 @@
   "reported waiting_patient_hours: habitual 21.5 -> plan 14.5",
   "reported beds_returned: habitual 2.0 -> plan 3.0"
  ],
- "recommendation_id": "reco-5be571edcd28f13c",
+ "recommendation_id": "reco-d6894c8017c54686",
  "schema_version": "DS_RECOMMENDATION_1",
  "scientific_status": "PROTOTYPE_UNVALIDATED",
  "snapshot_fingerprint": "aa7de9d195c5fd040bc88992c815e9f5223bdf1c2c862714368876aa12faae6c",
@@ -10603,7 +10654,10 @@
   "4 forecast scenarios (selection seeds, in-sample)",
   "uncovered minutes range over scenarios: 420.0..450.0",
   "pointwise scenario means; not a simultaneous guarantee over the horizon",
-  "synthetic declared distributions; no real-world calibration"
+  "synthetic declared distributions; no real-world calibration",
+  "locked_precondition:S04:destination_unknown",
+  "locked_precondition:S04:readiness_estimate_unknown",
+  "locked_precondition:S04:transport_need_unknown"
  ],
  "valid_until": "2026-11-16T19:30:00Z"
 }

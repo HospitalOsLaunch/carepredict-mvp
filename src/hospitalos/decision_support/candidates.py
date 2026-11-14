@@ -17,7 +17,7 @@ from typing import Any
 from .clock import display, local_hour
 from .contracts import ActionSpec, Plan, PublicSnapshot, ReinforcementOption, SearchReport
 from .eligibility import discharge_blockers
-from .resources import option_admissibility
+from .resources import lending_violations, option_admissibility
 
 
 def _key(*parts: object) -> str:
@@ -155,9 +155,16 @@ def enumerate_plans(
     for n in range(1, int(limits["max_coordinations_per_plan"]) + 1):
         for chosen in itertools.combinations(stays, n):
             coord_sets += list(itertools.product(*(per_stay[s] for s in chosen)))
+    by_id = {o.option_id: o for o in snapshot.reinforcements}
+    locked_options = [by_id[a.target] for a in locked_actions if a.type == "reinforcement"]
     reinf_sets: list[tuple[ActionSpec, ...]] = [()]
     for n in range(1, int(limits["max_reinforcement_options_per_plan"]) + 1):
         for chosen in itertools.combinations(admissible_options, n):
+            # F02: options allowed alone may be forbidden together (same lender, skill, hour).
+            cumulative = lending_violations([*locked_options, *chosen])
+            if cumulative:
+                rejected["+".join(o.option_id for o in chosen)] = cumulative[0]
+                continue
             reinf_sets.append(tuple(reinforcement_action(snapshot, o, valid_until) for o in chosen))
     combos = [c + r for c in coord_sets for r in reinf_sets]
     combos.sort(
@@ -193,6 +200,7 @@ def enumerate_plans(
             "auto discharge coordination only with observed medical authorization and no open obstacle",  # noqa: E501
             "target hours from profile, not before readiness estimate, before any planned departure",  # noqa: E501
             "reinforcement options: known confirmation status and external commitment respected",
+            "reinforcement combinations: cumulative loans per lender, skill and hour respected",
             f"at most {limits['max_coordinations_per_plan']} coordinations and "
             f"{limits['max_reinforcement_options_per_plan']} reinforcement options per plan",
             "ordering: fewer actions, fewer reinforcement hours, then identifiers; "
