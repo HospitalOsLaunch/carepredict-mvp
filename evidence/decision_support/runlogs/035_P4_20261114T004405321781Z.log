@@ -1,0 +1,4 @@
+.git/rebase-apply/patch:62115: trailing whitespace.
+FAIL T15:manual_form_closed_on_open 
+warning: 1 line adds whitespace errors.
+{"base_tree_match": false, "git_am": "ok", "head_tree_match": false, "altered_package_exit": 2, "altered_target_created": false}
