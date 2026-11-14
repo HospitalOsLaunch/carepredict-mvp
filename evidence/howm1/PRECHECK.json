@@ -1,0 +1,445 @@
+{
+ "name": "margin observed under privileged information (NORM N2.3)",
+ "V_param": -7.5625,
+ "V_latent": 61.798177083333336,
+ "margin": 54.235677083333336,
+ "ceiling_C_full_minus_oracle": 13.302083333333334,
+ "delta_dec": 15.0,
+ "decision_comparison_informative": true,
+ "n_instants": 48,
+ "per_instant": [
+  {
+   "index": 0,
+   "tau": 508,
+   "C_full": 5506.25,
+   "C_param": 5507.75,
+   "C_pub_snap": 5507.75,
+   "habitual": 5507.75,
+   "oracle": 5493.0
+  },
+  {
+   "index": 0,
+   "tau": 524,
+   "C_full": 4853.25,
+   "C_param": 4853.25,
+   "C_pub_snap": 4853.25,
+   "habitual": 5187.0,
+   "oracle": 4844.75
+  },
+  {
+   "index": 0,
+   "tau": 540,
+   "C_full": 5436.56,
+   "C_param": 5621.12,
+   "C_pub_snap": 5621.12,
+   "habitual": 5621.12,
+   "oracle": 5416.06
+  },
+  {
+   "index": 0,
+   "tau": 556,
+   "C_full": 4902.25,
+   "C_param": 4902.25,
+   "C_pub_snap": 4902.25,
+   "habitual": 5356.69,
+   "oracle": 4891.25
+  },
+  {
+   "index": 1,
+   "tau": 508,
+   "C_full": 6373.5,
+   "C_param": 6373.5,
+   "C_pub_snap": 6373.5,
+   "habitual": 6420.75,
+   "oracle": 6369.0
+  },
+  {
+   "index": 1,
+   "tau": 524,
+   "C_full": 5552.19,
+   "C_param": 5887.81,
+   "C_pub_snap": 5887.81,
+   "habitual": 5942.31,
+   "oracle": 5538.19
+  },
+  {
+   "index": 1,
+   "tau": 540,
+   "C_full": 6162.06,
+   "C_param": 6156.81,
+   "C_pub_snap": 6156.81,
+   "habitual": 6533.06,
+   "oracle": 6131.31
+  },
+  {
+   "index": 1,
+   "tau": 556,
+   "C_full": 7151.0,
+   "C_param": 7151.0,
+   "C_pub_snap": 7151.0,
+   "habitual": 7471.38,
+   "oracle": 7151.0
+  },
+  {
+   "index": 2,
+   "tau": 508,
+   "C_full": 4645.94,
+   "C_param": 4645.94,
+   "C_pub_snap": 4645.94,
+   "habitual": 4660.94,
+   "oracle": 4645.94
+  },
+  {
+   "index": 2,
+   "tau": 524,
+   "C_full": 4428.38,
+   "C_param": 4670.25,
+   "C_pub_snap": 4622.25,
+   "habitual": 4670.25,
+   "oracle": 4380.25
+  },
+  {
+   "index": 2,
+   "tau": 540,
+   "C_full": 3976.5,
+   "C_param": 4051.5,
+   "C_pub_snap": 4051.5,
+   "habitual": 4051.5,
+   "oracle": 3969.5
+  },
+  {
+   "index": 2,
+   "tau": 556,
+   "C_full": 2224.44,
+   "C_param": 2234.94,
+   "C_pub_snap": 2234.94,
+   "habitual": 2234.94,
+   "oracle": 2224.44
+  },
+  {
+   "index": 3,
+   "tau": 508,
+   "C_full": 4926.06,
+   "C_param": 4962.56,
+   "C_pub_snap": 4962.56,
+   "habitual": 4962.56,
+   "oracle": 4922.56
+  },
+  {
+   "index": 3,
+   "tau": 524,
+   "C_full": 4334.0,
+   "C_param": 4408.5,
+   "C_pub_snap": 4334.0,
+   "habitual": 4784.81,
+   "oracle": 4330.5
+  },
+  {
+   "index": 3,
+   "tau": 540,
+   "C_full": 4183.56,
+   "C_param": 4528.62,
+   "C_pub_snap": 4519.88,
+   "habitual": 4528.62,
+   "oracle": 4183.56
+  },
+  {
+   "index": 3,
+   "tau": 556,
+   "C_full": 4408.44,
+   "C_param": 4440.19,
+   "C_pub_snap": 4440.19,
+   "habitual": 4453.19,
+   "oracle": 4401.19
+  },
+  {
+   "index": 4,
+   "tau": 508,
+   "C_full": 5813.94,
+   "C_param": 5813.94,
+   "C_pub_snap": 5813.94,
+   "habitual": 5966.94,
+   "oracle": 5790.56
+  },
+  {
+   "index": 4,
+   "tau": 524,
+   "C_full": 4068.5,
+   "C_param": 4209.5,
+   "C_pub_snap": 4209.5,
+   "habitual": 4519.94,
+   "oracle": 4048.5
+  },
+  {
+   "index": 4,
+   "tau": 540,
+   "C_full": 4596.38,
+   "C_param": 4895.38,
+   "C_pub_snap": 4719.38,
+   "habitual": 4895.38,
+   "oracle": 4596.38
+  },
+  {
+   "index": 4,
+   "tau": 556,
+   "C_full": 4877.94,
+   "C_param": 4922.19,
+   "C_pub_snap": 4922.19,
+   "habitual": 4922.19,
+   "oracle": 4869.94
+  },
+  {
+   "index": 5,
+   "tau": 508,
+   "C_full": 3836.06,
+   "C_param": 3836.06,
+   "C_pub_snap": 3836.06,
+   "habitual": 3862.94,
+   "oracle": 3819.62
+  },
+  {
+   "index": 5,
+   "tau": 524,
+   "C_full": 3452.12,
+   "C_param": 3452.12,
+   "C_pub_snap": 3452.12,
+   "habitual": 3555.94,
+   "oracle": 3447.44
+  },
+  {
+   "index": 5,
+   "tau": 540,
+   "C_full": 3781.88,
+   "C_param": 3781.88,
+   "C_pub_snap": 3781.88,
+   "habitual": 3781.88,
+   "oracle": 3772.62
+  },
+  {
+   "index": 5,
+   "tau": 556,
+   "C_full": 3751.44,
+   "C_param": 3751.44,
+   "C_pub_snap": 3730.19,
+   "habitual": 3751.44,
+   "oracle": 3725.94
+  },
+  {
+   "index": 6,
+   "tau": 508,
+   "C_full": 7498.5,
+   "C_param": 7627.81,
+   "C_pub_snap": 7627.81,
+   "habitual": 7761.31,
+   "oracle": 7498.5
+  },
+  {
+   "index": 6,
+   "tau": 524,
+   "C_full": 7009.5,
+   "C_param": 7155.81,
+   "C_pub_snap": 7155.81,
+   "habitual": 7254.31,
+   "oracle": 6991.94
+  },
+  {
+   "index": 6,
+   "tau": 540,
+   "C_full": 6960.44,
+   "C_param": 6960.44,
+   "C_pub_snap": 6960.44,
+   "habitual": 7030.44,
+   "oracle": 6920.19
+  },
+  {
+   "index": 6,
+   "tau": 556,
+   "C_full": 7160.38,
+   "C_param": 7272.12,
+   "C_pub_snap": 7272.12,
+   "habitual": 7385.75,
+   "oracle": 7134.94
+  },
+  {
+   "index": 7,
+   "tau": 508,
+   "C_full": 10187.81,
+   "C_param": 10187.81,
+   "C_pub_snap": 10187.81,
+   "habitual": 10397.69,
+   "oracle": 10186.44
+  },
+  {
+   "index": 7,
+   "tau": 524,
+   "C_full": 9132.69,
+   "C_param": 9132.69,
+   "C_pub_snap": 9132.69,
+   "habitual": 9307.19,
+   "oracle": 9132.69
+  },
+  {
+   "index": 7,
+   "tau": 540,
+   "C_full": 7544.31,
+   "C_param": 7544.31,
+   "C_pub_snap": 7544.31,
+   "habitual": 7709.31,
+   "oracle": 7537.31
+  },
+  {
+   "index": 7,
+   "tau": 556,
+   "C_full": 6589.44,
+   "C_param": 6704.5,
+   "C_pub_snap": 6704.5,
+   "habitual": 6839.5,
+   "oracle": 6589.44
+  },
+  {
+   "index": 8,
+   "tau": 508,
+   "C_full": 2101.25,
+   "C_param": 2121.75,
+   "C_pub_snap": 2121.75,
+   "habitual": 2121.75,
+   "oracle": 2091.0
+  },
+  {
+   "index": 8,
+   "tau": 524,
+   "C_full": 1969.0,
+   "C_param": 1972.0,
+   "C_pub_snap": 1986.75,
+   "habitual": 1986.75,
+   "oracle": 1957.0
+  },
+  {
+   "index": 8,
+   "tau": 540,
+   "C_full": 1873.75,
+   "C_param": 1912.25,
+   "C_pub_snap": 1912.25,
+   "habitual": 1912.25,
+   "oracle": 1873.75
+  },
+  {
+   "index": 8,
+   "tau": 556,
+   "C_full": 1549.44,
+   "C_param": 1548.44,
+   "C_pub_snap": 1563.94,
+   "habitual": 1563.94,
+   "oracle": 1534.69
+  },
+  {
+   "index": 9,
+   "tau": 508,
+   "C_full": 3621.62,
+   "C_param": 3621.62,
+   "C_pub_snap": 3621.62,
+   "habitual": 3644.88,
+   "oracle": 3614.38
+  },
+  {
+   "index": 9,
+   "tau": 524,
+   "C_full": 3619.94,
+   "C_param": 3708.38,
+   "C_pub_snap": 3708.38,
+   "habitual": 3715.12,
+   "oracle": 3576.19
+  },
+  {
+   "index": 9,
+   "tau": 540,
+   "C_full": 4634.44,
+   "C_param": 4634.44,
+   "C_pub_snap": 4634.44,
+   "habitual": 4635.19,
+   "oracle": 4575.19
+  },
+  {
+   "index": 9,
+   "tau": 556,
+   "C_full": 4447.19,
+   "C_param": 4448.69,
+   "C_pub_snap": 4448.69,
+   "habitual": 4448.69,
+   "oracle": 4430.44
+  },
+  {
+   "index": 10,
+   "tau": 508,
+   "C_full": 1413.31,
+   "C_param": 1457.81,
+   "C_pub_snap": 1413.31,
+   "habitual": 1555.56,
+   "oracle": 1413.31
+  },
+  {
+   "index": 10,
+   "tau": 524,
+   "C_full": 2712.12,
+   "C_param": 2777.38,
+   "C_pub_snap": 2777.38,
+   "habitual": 2814.62,
+   "oracle": 2712.12
+  },
+  {
+   "index": 10,
+   "tau": 540,
+   "C_full": 2288.81,
+   "C_param": 2604.31,
+   "C_pub_snap": 2604.31,
+   "habitual": 2604.31,
+   "oracle": 2276.31
+  },
+  {
+   "index": 10,
+   "tau": 556,
+   "C_full": 1759.75,
+   "C_param": 1759.75,
+   "C_pub_snap": 1759.75,
+   "habitual": 1792.0,
+   "oracle": 1753.75
+  },
+  {
+   "index": 11,
+   "tau": 508,
+   "C_full": 6883.0,
+   "C_param": 6969.81,
+   "C_pub_snap": 6963.81,
+   "habitual": 6969.81,
+   "oracle": 6855.0
+  },
+  {
+   "index": 11,
+   "tau": 524,
+   "C_full": 6536.75,
+   "C_param": 6521.75,
+   "C_pub_snap": 6516.5,
+   "habitual": 6710.44,
+   "oracle": 6501.5
+  },
+  {
+   "index": 11,
+   "tau": 540,
+   "C_full": 8439.5,
+   "C_param": 8439.5,
+   "C_pub_snap": 8430.5,
+   "habitual": 8452.5,
+   "oracle": 8417.5
+  },
+  {
+   "index": 11,
+   "tau": 556,
+   "C_full": 8195.0,
+   "C_param": 8195.0,
+   "C_pub_snap": 8195.0,
+   "habitual": 8439.44,
+   "oracle": 8195.0
+  }
+ ],
+ "note": "C_full is an evaluated privileged controller, not a certified optimum; the generator is NOT modified whatever the outcome"
+}
