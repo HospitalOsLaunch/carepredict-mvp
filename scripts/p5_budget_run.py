@@ -54,6 +54,47 @@ DEFAULT_VENV = Path(
     )
 )
 D3_FREEZE_SHA256 = "bf54098158fbda95e3ce8e9db9ec68097f73b5390d4639fa39c240538880b6da"
+# Non-Python tools allowed under the counter (static checks only).
+ALLOWED_TOOLS = {"/root/.local/bin/ruff"}
+
+
+def authorised_interpreters(venv: Path = DEFAULT_VENV) -> set[str]:
+    """Exact paths only: the venv semantics depend on the invoked path (its realpath is the
+    system interpreter without the approved packages)."""
+    return {str(venv / "bin" / name) for name in ("python", "python3", "python3.11")}
+
+
+def approved_freezes(records: list[dict[str, object]]) -> set[str]:
+    """D3 freeze + any post-install freeze explicitly approved and recorded in the ledger."""
+    out = {D3_FREEZE_SHA256}
+    for r in records:
+        if r.get("kind") == "environment_approved":
+            payload = r.get("payload") or {}
+            out.add(str(payload.get("freeze_sha256")))  # type: ignore[union-attr]
+    return out
+
+
+def program_of(command: list[str]) -> str:
+    """The program really launched: skips a leading `env` and its NAME=value assignments."""
+    i = 0
+    if command and Path(command[0]).name == "env":
+        i = 1
+        while i < len(command) and "=" in command[i] and not command[i].startswith("-"):
+            i += 1
+    return command[i] if i < len(command) else ""
+
+
+def launch_refusal(command: list[str], records: list[dict[str, object]], venv: Path = DEFAULT_VENV) -> tuple[str | None, dict[str, object]]:
+    """Checks made BEFORE any process is started (review P5L-02)."""
+    program = program_of(command)
+    env_info = environment(venv)
+    if program in ALLOWED_TOOLS:
+        return None, env_info
+    if program not in authorised_interpreters(venv):
+        return f"interpreter_not_authorised:{program}", env_info
+    if env_info["freeze_sha256"] not in approved_freezes(records):
+        return f"environment_not_approved:{env_info['freeze_sha256']}", env_info
+    return None, env_info
 
 
 def environment(venv: Path = DEFAULT_VENV) -> dict[str, object]:
@@ -165,7 +206,23 @@ def run(command: list[str], lot: str, label: str) -> int:
         )
         print(json.dumps(status()), file=sys.stderr)
         return 3
-    env_info = environment()
+    refusal, env_info = launch_refusal(command, records)
+    if refusal is not None:
+        base.append(
+            LEDGER,
+            {
+                "kind": "refused",
+                "at_utc": datetime.now(UTC).isoformat(),
+                "lot": lot,
+                "label": label,
+                "refused_command": command,
+                "reason": refusal,
+                "environment": env_info,
+                "wall_seconds": 0.0,
+            },
+        )
+        print(f"[p5-budget] refused before launch: {refusal}", file=sys.stderr)
+        return 5
     timeout = min(PER_COMMAND_S, remaining, lot_remaining)
     LOGS.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")

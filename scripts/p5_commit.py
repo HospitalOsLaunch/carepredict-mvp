@@ -40,14 +40,19 @@ CODE = [
     "src/hospitalos/p5/eval_adapter.py",
     "src/hospitalos/p5/features.py",
     "src/hospitalos/p5/analysis.py",
+    "src/hospitalos/p5/integrity.py",
+    "src/hospitalos/p5/pilot.py",
     "scripts/p5_budget_run.py",
     "scripts/p5_commit.py",
+    "scripts/p5_pilot.py",
 ]
 DOCS = [
     "docs/decision_support/P5_PROTOCOL_v2.md",
     "docs/decision_support/P5_PROTOCOL_PARAMS_v2.json",
     "docs/decision_support/P5_CHANGES_v1_to_v2.md",
     "docs/decision_support/P5_DECISIONS_v2.json",
+    "docs/decision_support/P5_PROTOCOL_v3.md",
+    "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json",
 ]
 
 
@@ -108,6 +113,9 @@ def main() -> int:
     ap.add_argument("--reason", default="")
     args = ap.parse_args()
     P5.mkdir(parents=True, exist_ok=True)
+    if (P5 / f"COMMITMENT_{args.stage}.json").exists():
+        print(f"COMMITMENT_{args.stage}.json exists: commitments are never rewritten", file=sys.stderr)
+        return 2
     if args.stage == "E0":
         if SEEDS.exists():
             print("SEEDS_SEALED.json already exists: E0 seeds are never redrawn", file=sys.stderr)
@@ -129,7 +137,8 @@ def main() -> int:
         "code_sha256": {c: sha_file(c) for c in CODE},
         "feature_schema_sha256": schema_fingerprint(),
         "feature_counts": {"M_agg": len(static_names("M_agg")), "M_ent": len(static_names("M_ent"))},
-        "documents_sha256": {d: sha_file(d) for d in DOCS},
+        "documents_sha256": {d: sha_file(d) for d in DOCS if (ROOT / d).exists()},
+        "previous_commitments": sorted(p.name for p in P5.glob("COMMITMENT_E*.json") if p.stem != f"COMMITMENT_{args.stage}"),
         "v6": v6,
     }
     out = P5 / f"COMMITMENT_{args.stage}.json"

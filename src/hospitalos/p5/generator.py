@@ -502,7 +502,17 @@ def observations(spec: EpisodeSpec) -> list[dict[str, Any]]:
     return o
 
 
+def check_offer_keys_unique(spec: EpisodeSpec) -> None:
+    """Public uniqueness constraint (review P5L-01): offer_key = source|lender|skill|start|end
+    identifies an offer in the sidecar and in the presence draws; two offers sharing it would
+    collide. The fixed templates have distinct keys; any duplicate is a generator defect (stop)."""
+    keys = [of.offer_key for of in spec.offers]
+    if len(keys) != len(set(keys)):
+        raise GeneratorError(f"duplicate offer_key in generated episode: {sorted(keys)}")
+
+
 def sidecar(spec: EpisodeSpec) -> dict[str, dict[str, Any]]:
+    check_offer_keys_unique(spec)
     return {
         of.offer_key: {
             "schema": SIDECAR_SCHEMA,

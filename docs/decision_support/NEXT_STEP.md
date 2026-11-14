@@ -39,6 +39,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **P5.0–P5.2 exécutés** (`P5_LOT_REPORT_P5_0-2.md`) : registre P5 8,383 s / 1200 s ; 24/24 tests ;
    pilote partiel (ajustements non chronométrés, scikit-learn absent). Prochaine décision : D4
    (installation), puis fin du pilote (chronométrage de 2 ajustements) avant (ii)/(iii).
+   **Reprise après revue** (`P5_LOT_REPORT_P5_0-2_REPRISE.md`) : contrôles P5L-01..03 corrigés,
+   42/42 tests sous E1, registre P5 13,769 s / 1200 s ; P5-PROTO-3 proposé (non approuvé).
+   Décisions attendues : D13 (v3), D14 (= D4), D15 (banc de 6 ajustements), D16 (option).
 
 ## Hors de ce projet
 
