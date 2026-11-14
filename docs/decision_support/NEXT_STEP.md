@@ -54,6 +54,8 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **Contrôle d'isolation 50 épisodes (adopté, postérieur au gel)** (`P5_P5a_ISOLATION50_REPORT.md`) :
    47/50 réussis, arrêt au 48ᵉ sur précondition (`no_distinguishable_truth_pair`, pas une fuite) ;
    P5A-D02 non clos ; amendement de procédure = décision distincte.
+   **Reprise adoptée (méthode v2, rangs 48–50)** (`P5_P5a_ISOLATION50_RESUME_REPORT.md`) : 50/50 couverts,
+   0 vrai échec ; T04-a non informatif au rang 48 ⇒ clôture de P5A-D02 = décision explicite.
 
 ## Hors de ce projet
 

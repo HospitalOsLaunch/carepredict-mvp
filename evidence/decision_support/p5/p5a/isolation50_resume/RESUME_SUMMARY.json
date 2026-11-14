@@ -1,0 +1,35 @@
+{
+ "selection": 50,
+ "selection_sha256": "d4522515dc9b3e1565b1a33bdf893590318651f139193b930fd85a3a269be993",
+ "method_v1_historical": {
+  "episodes_with_receipt": 47,
+  "T03_passed": 47,
+  "T04a_detected": 47,
+  "T04bcd_passed": 47,
+  "note": "pair chosen on HABITUAL-1; T03-b against one B; stop at index 47 (precondition)"
+ },
+ "method_v2_resume": {
+  "episodes_with_receipt": 3,
+  "T03_passed": 3,
+  "T04a_detected": 2,
+  "T04a_non_informatif": 1,
+  "T04bcd_passed": 3,
+  "identical_truths_flags": {
+   "7f0869e7430c81ce/5": [],
+   "a1e973184bf456ee/1": [],
+   "e9b01fb227dd3d3a/8": []
+  }
+ },
+ "coverage": 50,
+ "true_failures": 0,
+ "historical_stop_kept": {
+  "kind": "no_distinguishable_truth_pair",
+  "detail": {
+   "structure_id": "7f0869e7430c81ce",
+   "parent_index": 5
+  },
+  "procedure_sha256": "94e57c801b3404dc802db4088fd099cadc8c6c52b1f34e5b2ffdce615bbd83a3"
+ },
+ "closure_criterion_P5A_D02": "unchanged; any acceptance of NON_INFORMATIF T04-a episodes requires an explicit decision",
+ "all_50_covered_without_true_failure": true
+}

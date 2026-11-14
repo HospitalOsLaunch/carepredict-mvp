@@ -1,0 +1,1 @@
+{"coverage": 50, "true_failures": 0, "all_50_covered_without_true_failure": true, "v2": {"episodes_with_receipt": 3, "T03_passed": 3, "T04a_detected": 2, "T04a_non_informatif": 1, "T04bcd_passed": 3, "identical_truths_flags": {"7f0869e7430c81ce/5": [], "a1e973184bf456ee/1": [], "e9b01fb227dd3d3a/8": []}}}

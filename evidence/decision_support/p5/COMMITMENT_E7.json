@@ -1,0 +1,83 @@
+{
+ "at_utc": "2026-11-14T15:29:12.997781+00:00",
+ "code_sha256": {
+  "scripts/p5_a5_benchmark.py": "64b7b65aa4a4eff061713e0f86b7fd0cdcc90adc09be665ca250d36576165948",
+  "scripts/p5_budget_run.py": "4e0fd4a418aed354447166305f2216cd06bfdde25efc1f77ae2e8afd7df75465",
+  "scripts/p5_commit.py": "8c6b3d1d930cba3056319b89b82539c1457d987d862ba56cf97d5477b4720c53",
+  "scripts/p5_complement_check.py": "5b1d352fda3297acd04da27fe32b89ff677a5fcd64408726d9ba1be9b7cf3aae",
+  "scripts/p5_isolation50.py": "b88f7ebd26e948bef08fea994e8ef14ccf6939ab6e81d0a83b8428d335f12db9",
+  "scripts/p5_isolation50_diag.py": "cc86f2cff7a8edc610c9f52a8fbafead4fcf631fbc74f4a7185b531a25bf65e3",
+  "scripts/p5_isolation50_resume.py": "4b30ffe0174b0dffb49d52bda846b3cd5fad9d41f1e575c0b68a727307605e63",
+  "scripts/p5_p5a.py": "422093f937c425b8029a6ce6987c39d40a43d421463a1cd6dcf61db2265fa7b5",
+  "scripts/p5_pilot.py": "24b15609176a35bec7dd6b07c3c623dcb6b952bc33efa65176549f89dd1b7b86",
+  "src/hospitalos/p5/__init__.py": "72759da136176528c245edeb3e5635cddddd7d28508f9c46d63c2e0104601b69",
+  "src/hospitalos/p5/a5.py": "8ddcac6cd3094bc3825eed284f444c9ca3f2365f71b3109c84dfb664f01f8535",
+  "src/hospitalos/p5/analysis.py": "79f94373889811dec90bde480bfa072b4a5a801f9395edcb5247ca070bb19897",
+  "src/hospitalos/p5/eval_adapter.py": "47874f0c71f7a4f37cc760ff02a3f2a38432fcb3f1a1c94719716297011e1504",
+  "src/hospitalos/p5/features.py": "649138e766f544a8b4c83e2fd59697b2dea5156e1737edf1a342debd37cee592",
+  "src/hospitalos/p5/generator.py": "f300879c97cd1a243b11dbb8f0d6c2145c0e7952e296214f6ddba1648f06a7d8",
+  "src/hospitalos/p5/integrity.py": "c00c91845120d8fa97f82914db38781d2db205eeb104140f2b3e051376ed97b6",
+  "src/hospitalos/p5/isolation50.py": "0c9e46a7f05caf95e143c108798f209bc887a8e3299e1b79200f8fb4d935ae21",
+  "src/hospitalos/p5/isolation50_v2.py": "ba2d8493e24abd8a38bc3742fd52089d4a9f0add84ed0037358b3581f785c727",
+  "src/hospitalos/p5/p5a.py": "49a0b41caaaa857ebdbbd2e06235d62bd3be0de2406aea1edefb5c2577432267",
+  "src/hospitalos/p5/p5a_analysis.py": "3095466c45c1e61c64669996389158f9cc242d4032eeb3b1d9f00252ef5f0b93",
+  "src/hospitalos/p5/pilot.py": "b633a77ddad15bd3ecbdea4cf4b9caa33b9facc5ecf5f0cc17ca342762dc0c89",
+  "src/hospitalos/p5/truth.py": "e82a37c4568d18bb12a43611028503ffb766a53d332885bfae1be37e51a686bf"
+ },
+ "documents_sha256": {
+  "docs/decision_support/P5_CHANGES_v1_to_v2.md": "c9309083e1a09818c9f6a1f55015384f41da3ba60e1faa5601949736f36a10d4",
+  "docs/decision_support/P5_DECISIONS_v2.json": "3d6d700ff5d954aeb3b17c866b6c98e8985ca07da15ff6f18e30bc4f8e2bf6dc",
+  "docs/decision_support/P5_DECISIONS_v3.json": "95a76158ca4aaab67548ee3bd58b265191faf82155cde640c6c7203617a3534e",
+  "docs/decision_support/P5_DECISIONS_v4_P5a.json": "f1be03b2a3931707aece49e6f0dc89db6d3b3009cf89ef008bca07aeada0c775",
+  "docs/decision_support/P5_DECISIONS_v5_isolation50.json": "c0cdc1f4b1d8cc40441392ed11913e89203e5566eca7507af7b4db874124658b",
+  "docs/decision_support/P5_DECISIONS_v6_reprise_isolation50.json": "20cd84841fb618d68d8f00667a1aa6ef48ddc0102cb2fc3d287e4262f57a3d25",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v2.json": "1d284b0e9ebe2f0f8eb9b9dc052eb67ae73c5bcc5faca7514552213a51f8d0f7",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json": "653a426a343713a17a55102787b73f6b1f2080c6206837d67d156fbededc18ac",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json": "c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4",
+  "docs/decision_support/P5_PROTOCOL_v2.md": "ad0fdaa592d84461f61f3c68f3470f94b941bde006d0fe57af69a4005797881c",
+  "docs/decision_support/P5_PROTOCOL_v3.md": "dbf517ca2a639505d4db728266f60b2c56a33fb665945bce6f67383907804ab6",
+  "docs/decision_support/P5_PROTOCOL_v3_1.md": "e0cbe6dea64c5579176064864a8cc5fc67c2f887381581b37ee9810dfe00ec62"
+ },
+ "feature_counts": {
+  "M_agg": 290,
+  "M_ent": 718
+ },
+ "feature_schema_sha256": "59fcd2482f4d58075897696a6c59b2a0cf60255f502864a59c352df85688de95",
+ "generator_version": "v_g0",
+ "p5_package": "p5-0.1.0",
+ "previous_commitments": [
+  "COMMITMENT_E0.json",
+  "COMMITMENT_E1.json",
+  "COMMITMENT_E2.json",
+  "COMMITMENT_E3.json",
+  "COMMITMENT_E4.json",
+  "COMMITMENT_E5.json",
+  "COMMITMENT_E6.json"
+ ],
+ "reason": "adopted resume of P5A-D02: method v2 code committed before any resumed check",
+ "seeds": {
+  "bootstrap_seed_sha256": "d33b6593e65d1a5ffa71c13eaebebac372d7abd346bd7c5270c56f56002d813c",
+  "commitment_id": "276d965da8a31a5d8ccf536df2841506a004adb8cc461ce3e8c7faf2857df45c",
+  "seed_list_sha256": {
+   "P5a_dev": "a767385ef3275d5c27bf6c82f3d29d7bea8e254cee807781505e80cb1ccc0500",
+   "P5a_eval": "040e6a1fe77137c9211d66eeb6da8b18198b3e1476b1f5ea076c7df3e8bf3481",
+   "P5b_eval": "1ee6de6efb4a728049940e3c4f447ff9675de9f02514cff5de0df755c35e9e5f",
+   "P5b_train": "58f5d88d03589aed3664d655dd83275fb4b76e8dad87e5bcb53895c3736a62a3",
+   "P5b_val": "d6e89dceebec8e5dcdbae7b6afcbefc3d085848e8d5b1d1ade8adeb48e25402f"
+  },
+  "sizes": {
+   "P5a_dev": 10,
+   "P5a_eval": 30,
+   "P5b_eval": 30,
+   "P5b_train": 24,
+   "P5b_val": 8
+  }
+ },
+ "seeds_file_sha256": "dcfbca742051d5e8b5ac23f075326fb58a8a6dac745cb291b88d5ebbe0801d45",
+ "stage": "E7",
+ "v6": {
+  "decision_support_tree_at_v6": "b8c1f38483a415ad60278929b3023497bc91ff3a",
+  "v6_commit": "856a57c65fb0d55190addf6c39a45c57913eac07",
+  "working_tree_identical_to_v6": true
+ }
+}

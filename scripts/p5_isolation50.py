@@ -89,6 +89,9 @@ def main() -> int:
         proc_path.write_text(json.dumps(body, indent=1) + "\n")
         print(json.dumps({"selected": len(selection), "structures": body["structures_covered"], "selection_sha256": body["selection_sha256"]}))
         return 0
+    if not proc_path.exists():  # clean refusal before any reconstruction or test (review fix)
+        print("refused: procedure_missing", file=sys.stderr)
+        return 4
     proc = json.loads(proc_path.read_text())
     notes = [r for r in ledger if r.get("kind") == "isolation_procedure"]
     if not notes or notes[-1]["payload"] != proc or proc["module_sha256"] != module_sha():

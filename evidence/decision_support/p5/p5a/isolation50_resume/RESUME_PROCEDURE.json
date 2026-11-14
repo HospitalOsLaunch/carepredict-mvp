@@ -1,0 +1,41 @@
+{
+ "schema": "HOSPITALOS_P5_ISOLATION50_RESUME_1",
+ "method": "v2",
+ "qualification": "POST-FREEZE resume; method v2 differs from the 47 historical v1 receipts (v1 conditioned the pair on HABITUAL-1); does not raise the exploratory verdict",
+ "procedure": "P5A-D02 RESUME \u2014 isolation check v2 for selection indices 47-49 (adopted; POST-FREEZE).\n\nMethod v2 (differs from the 47 historical receipts of v1, which stay unchanged):\nthe product checks are NOT conditioned on any effect on HABITUAL-1.\n\nTruths: A = (R1, k=1); B in the fixed order (R2,3), (R2,2), (R2,1), (R1,3), (R1,2); no new draw.\nA B whose private truth (values and presences) equals A's is flagged \"identical_truth\".\n\nAssertions per resumed episode:\n  T03-a  v6 public recommendation computed twice: identical JSON, and equal to the plan\n         recorded by P5a for this parent (abstention only if recorded as habitual).\n  T03-b  check_isolation(ReferenceForecaster) passes for EVERY plan of the reconstructed public\n         universe against EVERY B (A vs B), whatever the existence of a sensitive witness.\n  T04-a  witness search over the EXISTING public universe: B in the fixed order, plans in the\n         universe order; signature = exactly the projection compared by check_isolation for an\n         outcome backend: repr((departures, admissions, uncovered_unit, uncovered_waiting)) of\n         PrivateOracle(truth).outcome(snapshot, plan, config). First (B, plan) whose signatures\n         differ = witness: check_isolation(PrivateOracle) MUST raise LeakageError on it (else\n         stop: false negative). No differing signature anywhere -> T04-a = NON_INFORMATIF for\n         these truths and this projection (episode kept, no fictitious success, no replacement).\n  T04-b  assert_product_backend(PrivateOracle) raises LeakageError; product_allowed is False.\n  T04-c  recommend(snapshot, settings with PrivateOracle backend) raises LeakageError.\n  T04-d  ReferenceForecaster.forecast on a non-PublicSnapshot input raises LeakageError.\nStops (receipt, no correction): universe/plan mismatch at reconstruction, T03-a mismatch,\nT03-b dependence on truth, T04-a false negative, T04-b/c/d not blocked. The absence of a\nsensitive witness is NOT a leak.",
+ "module": "src/hospitalos/p5/isolation50_v2.py",
+ "module_sha256": "ba2d8493e24abd8a38bc3742fd52089d4a9f0add84ed0037358b3581f785c727",
+ "script_sha256": "4b30ffe0174b0dffb49d52bda846b3cd5fad9d41f1e575c0b68a727307605e63",
+ "commitment": {
+  "stage": "E7",
+  "commitment_id": "276d965da8a31a5d8ccf536df2841506a004adb8cc461ce3e8c7faf2857df45c"
+ },
+ "historical": {
+  "procedure_sha256": "94e57c801b3404dc802db4088fd099cadc8c6c52b1f34e5b2ffdce615bbd83a3",
+  "selection_sha256": "d4522515dc9b3e1565b1a33bdf893590318651f139193b930fd85a3a269be993",
+  "receipts_sha256": "25f84cbbc491aaef015a4f1806c759950f5c96bf302df3df845df9f1078fef4f",
+  "failure_sha256": "4e8b3ea4ec8face68ebae3db95aefd7bde07fb9501b16cb76427f9e1d70ba89c"
+ },
+ "resume_indices": [
+  47,
+  48,
+  49
+ ],
+ "episodes": [
+  [
+   "7f0869e7430c81ce",
+   5
+  ],
+  [
+   "a1e973184bf456ee",
+   1
+  ],
+  [
+   "e9b01fb227dd3d3a",
+   8
+  ]
+ ],
+ "population": {
+  "records_sha256": "445cf7de829c0ab69fd7c92c84247b0191ee417291687507d95d587423c64347"
+ }
+}
