@@ -1,0 +1,23 @@
+{
+ "test": "T30",
+ "restored_tree_of_head": "56ad3cfeda775a20396cb80dfa4554f6a8899321",
+ "method": "source_head.tar",
+ "ledger_lineage": "sealed_terminal",
+ "ledger_source": "ledger/BUDGET_LEDGER.jsonl",
+ "source_records": 133,
+ "source_used_wall_seconds": 310.808,
+ "target_status_after_replay": {
+  "ledger": "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/restore_v5_final/evidence/decision_support/BUDGET_LEDGER.jsonl",
+  "commands": 126,
+  "used_wall_seconds": 315.209,
+  "limit_wall_seconds": 600.0,
+  "remaining_wall_seconds": 284.791,
+  "stopped": false
+ },
+ "package_ledger_is_exact_prefix_of_target": true,
+ "tests": "pass",
+ "pytest": "87 passed, 1 skipped in 3.23s",
+ "results_compared": 11,
+ "results_differing": [],
+ "status": "PASS"
+}
