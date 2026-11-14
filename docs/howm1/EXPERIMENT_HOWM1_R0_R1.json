@@ -1,0 +1,121 @@
+{
+ "schema": "HOWM1_EXPERIMENT_1",
+ "status": "PROPOSED_NOT_APPROVED",
+ "date": "2026-11-14",
+ "scope": "R0+R1 (one tranche), stop point = delivery of trained weights and development results",
+ "authorises_nothing": "No spending, install, corpus generation, training or reserve read before explicit approval of the tranche.",
+ "history_kept": {
+  "P5b": {"verdict": "insufficient", "delta_rep_R1": 2.2708333333333335, "ci95": [-2.5350694444444444, 6.944791666666666], "threshold": 15.0, "source": "evidence/decision_support/p5/p5b/RESULTS_P5b.json"},
+  "P5a": {"reading": "exploratory"},
+  "v6": {"role": "experimental reference and constraint base, not ceiling", "commit": "856a57c65fb0d55190addf6c39a45c57913eac07"},
+  "statuses": ["PARTIAL_WITH_CHECKPOINT", "PROTOTYPE_UNVALIDATED", "clinical_validation=false", "G2=NO-GO"]
+ },
+ "hypotheses": [
+  {"id": "HP1", "statement": "H1 (entity memory + typed graph) yields lower event NLL and trajectory CRPS than B2 (aggregate memory) and B0-local (recalibrated mechanisms) at H6 and H24 on unseen REF establishments.", "type": "development, not confirmatory"},
+  {"id": "HP2", "statement": "The gain of HP1 is concentrated where hidden mechanisms m2/m3 are active; where only m0/m1 act, B0-local is not worse than H1 beyond a declared margin.", "type": "development, diagnostic"},
+  {"id": "HP3", "statement": "Paired action/control effect errors are smaller for H1 than B2 and B0-local, including correct recognition of null effects.", "type": "development"},
+  {"id": "HP4", "statement": "Per-instant decision regret against C_full is smaller for H1 than for B0-local, only if the R0 precheck margin is informative.", "type": "development, conditional on precheck"},
+  {"id": "HS", "statement": "Simple-model sufficiency is a valid outcome: if B0-local matches H1, this is reported as such.", "type": "explicit null"}
+ ],
+ "world": {
+  "units": 2, "units_supported_for_tests": 3,
+  "beds_per_unit": {"proposal": [8, 24], "status": "TO_FIX_BEFORE_G0"},
+  "shared_resources": ["transport_team", "cleaning_team", "reinforcement_pool", "lending_between_units"],
+  "node_types": ["stay", "bed", "unit", "task", "team", "offer", "shared_resource"],
+  "relation_types": ["occupies", "needs", "waits_for", "precedes", "reserves", "depends_on", "belongs_to", "lends_to"],
+  "event_schema": "HOWM1_EVENTS_1 (to implement)",
+  "action_lifecycle": ["requested", "accepted", "refused", "executed", "completed", "cancelled"],
+  "action_catalogue": {"a0": "keep current plan", "a1": "discharge logistics for publicly authorised stays", "a2": "task priority order (cleaning/transport)", "a3": "reinforcement request (skill x unit x slot x source)"},
+  "excluded_actions": ["medical authorisation or prolongation", "information-request actions (innovation C, later)"],
+  "simulated_days_per_establishment": {"proposal": 8, "warmup_days_discarded": 1, "status": "TO_FIX_BEFORE_G0"},
+  "context_window_W_hours": 24, "forecast_horizon_hours": 24,
+  "decision_instants_local_hours": {"proposal": [7, 11, 15, 19], "status": "TO_FIX_BEFORE_G0"},
+  "time_grid": {"world": "integer minutes", "model_hazard_bin_minutes": 15, "reporting": "hourly"},
+  "mechanisms": {
+   "m0": "independent delays, fixed laws per establishment", "m1": "establishment parameters theta_h", "m2": "hidden 2-state team slowdown regime",
+   "m3": "nursing workload delays ready discharges", "m4": "establishment-specific observation lags", "m5": "correlated transport/cleaning delays, capacity change, order-dependent tasks (DIAG only)"
+  },
+  "mechanism_status": "engineering hypotheses; none validated on real data or by interviews",
+  "independent_generator": {"name": "G_alt", "family": "transport+cleaning queue, m0+m1", "implementation": "fixed time step, written separately from event-driven G_main", "use": "development out-of-generator check only"}
+ },
+ "populations": {
+  "REF": {"purpose": "motivated reference population, includes cases where simple models suffice", "share_m2_off_and_m3_off": {"proposal": 0.3, "status": "TO_FIX_BEFORE_G0"}, "share_m2_on": {"proposal": 0.5, "status": "TO_FIX_BEFORE_G0"}, "m3_strength": {"proposal": "weak", "status": "TO_FIX_BEFORE_G0"}},
+  "DIAG": {"purpose": "difficulty diagnostic (resource conflicts, correlated delays, changing capacity, delayed observations, order-dependent decisions)", "frequency_claim": "none: no real frequency is inferred from this stress test", "training_use": {"proposal": "evaluation only in R1", "status": "TO_CONFIRM"}},
+  "rule": "Population laws and mixture weights are fixed in G0 before any generation; they are never tuned on any model's gain; no simple-case removal from any partition."
+ },
+ "partitions": {
+  "unit": "establishment (all its days, windows, branches and decision instants stay together)",
+  "seed_namespace": "HOWM1 (no P5 seed reused)",
+  "TRAIN": {"population": "REF", "establishments": {"proposal": 48, "status": "TO_FIX_BEFORE_G0"}},
+  "VAL": {"population": "REF", "establishments": {"proposal": 12, "status": "TO_FIX_BEFORE_G0"}, "use": "early stopping, lr choice, overshooting weights, R0 precheck"},
+  "DEVTEST": {"population": "REF", "establishments": {"proposal": 24, "status": "TO_FIX_BEFORE_G0"}, "use": "read once after F1; development results"},
+  "DIAG_DEV": {"population": "DIAG", "establishments": {"proposal": 12, "status": "TO_FIX_BEFORE_G0"}, "use": "read once after F1; diagnostic"},
+  "RESERVE": {"population": "REF 48 + DIAG 16 (proposal)", "state": "seeds sealed by hash in G0; generator refuses without token; NOT generated in R1", "status": "TO_FIX_BEFORE_G0"},
+  "P5_reserves": "known historical regression data only (test V0), not a blind evaluation"
+ },
+ "information_sets": {
+  "I_public_W": "public observations with available_at <= t and event_time <= t over the last W hours (all compared systems)",
+  "I_snapshot": "public state at t only (C_pub-snap, B0-pool snapshot mode)",
+  "I_param": "true theta_h + public state (C_param, evaluation only)",
+  "I_full": "true theta_h + true current latent state, no future innovations (C_full, evaluation only)",
+  "I_clairvoyant": "realised future (oracle ceiling, never a target)"
+ },
+ "comparators": {
+  "primary_model_comparison": "same planner, same candidate set (identical hash), same public history, same resources, same sample budget M",
+  "V0": "v6 historical on its own domain: non-regression (tests/decision_support, v6 tree diff empty, P5b EVAL_CHOICES regression sample)",
+  "B0_pool": "explicit m0+m1 laws, censored MLE on TRAIN, common parameters",
+  "B0_local": "B0_pool + empirical-Bayes shrinkage on the same public window W (mandatory calibrated-simulator reference)",
+  "B2": "aggregate hourly vector -> GRU(64) -> distributional heads; no entity memory, no message passing",
+  "H1": "typed-graph encoder (shared weights per type), 2 message-passing rounds per hour, shared node GRU(48) with type embedding, same heads",
+  "habitual": "habitual practice rule",
+  "strengthened_rule": "strengthened business rule (best simple heuristic)",
+  "C_param": "privileged non-anticipative controller (theta_h)",
+  "C_full": "privileged non-anticipative controller (theta_h + current latent)",
+  "oracle": "clairvoyant ceiling",
+  "parameter_counts": "exact counts measured after construction; expected B2 ~0.08 M, H1 ~0.15-0.25 M"
+ },
+ "interfaces_disabled_in_R1": {"context_c_h": "off", "contrast_loss_weight": 0, "jepa_predictor": "off", "stochastic_latent": "off", "rule": "one variation at a time, in R2"},
+ "training": {
+  "framework": {"proposal": "PyTorch CPU-only, pinned, isolated new venv", "status": "REQUIRES_INSTALL_APPROVAL"},
+  "losses": ["censored discrete-hazard NLL per event type", "negative-binomial NLL arrivals", "log-normal NLL care minutes", "Bernoulli NLL no-show", "latent overshooting marginal NLL at k in {1,6,24} h"],
+  "loss_normalisation": "each term divided by its initial TRAIN value; frozen after pilot",
+  "overshooting_weights": {"status": "TO_FIX_ON_VAL_THEN_FROZEN_IN_F1"},
+  "lr_grid": [0.0003, 0.001],
+  "early_stopping_patience": {"status": "TO_FIX_AFTER_PILOT"},
+  "seeds_per_selected_config": 3,
+  "ensemble": "the 3 seeds form the ensemble",
+  "privileged_supervision": "post-freeze linear probes only (m2 regime, theta_h, true readiness); reads_private=True; refused as planner backend",
+  "no_imitation_of_v6_choices": true,
+  "no_decision_loss_in_R1": true
+ },
+ "metrics": {
+  "forecast": ["event NLL by type at H1/H6/H24", "CRPS of levels (occupancy, compatible free beds, transport queue, cleaning queue, care minutes by skill)", "MAE/RMSE in business units", "50%/90% interval coverage", "PIT histograms", "peak error and hours-above-threshold error on full trajectories", "teacher-forced vs free-rollout gap", "rejected-event rate", "ensemble dispersion reported separately from coverage"],
+  "interventions": ["paired delta error", "delta sign accuracy", "null-effect recognition", "indirect effect on other unit", "requested vs present reinforcement"],
+  "decisions_dev_diagnostic": ["regret vs C_full", "gap to oracle", "gain vs habitual", "wrong (worse than habitual)", "does-not-know (top-2 gap below own dispersion)", "keep-plan-was-better rate", "planned reinforcement hours"],
+  "cost": ["exact parameter count", "training wall time", "rollout latency", "planner latency per instant"],
+  "breakdowns": ["unit", "skill", "mechanism stratum (m2/m3 on/off)", "population (REF/DIAG)"]
+ },
+ "decision_diagnostic": {"candidates_max": 16, "rollouts_M": {"proposal": 16, "status": "TO_FIX_AFTER_PILOT"}, "eval_realisations_K_eval": 4, "choice_and_eval_realisations_disjoint": true, "after_instant_policy": "habitual rule (single-decision effect isolated); closed loop is R3"},
+ "precheck_R0": {
+  "partition": "VAL", "controllers": ["C_pub-snap", "C_param", "C_full", "oracle"],
+  "quantities": {"V_param": "U(C_pub-snap) - U(C_param)", "V_latent": "U(C_param) - U(C_full)", "ceiling": "U(C_full) - U(oracle)"},
+  "rule": "if V_param + V_latent < delta_dec, the R1 decision comparison on REF is declared non-informative before any model is read; forecasting comparison continues; generator is not changed",
+  "delta_dec": {"status": "TO_FIX_BEFORE_PRECHECK"}
+ },
+ "objective_U": {"form": "scalar caregiver-minute equivalents: uncovered care minutes + w_wait * admission waiting + w_res * reinforcement hours + w_bed * bed-unavailable hours", "weights": {"status": "TO_FIX_BEFORE_G0", "proposal": "reuse P5 weights where definable; others hypothetical"}},
+ "analysis": {"reading": "development (no confirmatory claim in R1)", "intervals": "cluster bootstrap over establishments, seed committed in G0", "training_seeds_are_not_patients": true, "multiplicity": "all metrics reported; none promoted after reading"},
+ "progress_targets": {"status": "TO_FIX_BEFORE_DEVTEST_READ (in F1)", "programme_example": "10-20% probabilistic/temporal error reduction vs competent reference, then decision gain at comparable resources", "default_if_not_fixed": "descriptive report without verdict"},
+ "stop_rules": [
+  "invariant violation in the explicit operator on the true generator -> failure receipt, stop",
+  "information-boundary test failure -> stop before training",
+  "pilot projection above envelope after the declared scale ladder -> stop and report",
+  "any attempt to generate RESERVE -> refused and logged",
+  "NaN/divergence in a training seed -> logged; restart from last checkpoint once; else seed reported failed (not silently dropped)"
+ ],
+ "checkpoints": {"content": ["model state", "optimizer state", "scheduler state", "torch/numpy/python RNG states", "data-loader position", "config + code hashes"], "frequency": {"proposal": "every <= 400 s of training wall time and at end of every command", "status": "TO_FIX_AFTER_PILOT"}, "restore_receipt": "fresh checkout, restore, 1 resumed step equals uninterrupted step; metric subset recomputed equal"},
+ "unfixed_values": [
+  "beds_per_unit law", "simulated days per establishment", "decision instants", "REF mixture shares (m2/m3)", "DIAG training use",
+  "partition sizes", "objective U weights", "delta_dec", "overshooting weights w_k", "early-stopping patience", "rollouts M", "checkpoint frequency", "progress targets",
+  "torch install path (CPU index host vs PyPI full wheel vs numpy fallback)", "push policy at stop points"
+ ]
+}

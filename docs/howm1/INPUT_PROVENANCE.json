@@ -1,0 +1,231 @@
+{
+ "schema": "HOWM1_INPUT_PROVENANCE_1",
+ "generated_by": "scratchpad script provenance.py (file hashing only; no model loaded, no test, no training)",
+ "repository": {
+  "branch": "claude/hospitalos-auto-first-p0-p4-s2dywn",
+  "head": "68320a8313bf2a4f08ab44cd877fa4ce82467b79",
+  "remote_head_same_branch": "68320a8313bf2a4f08ab44cd877fa4ce82467b79",
+  "untouched_refs": {
+   "main": "bfa1fa7e0a8bbdd8817157a162d65f507568a251",
+   "origin/mvp/computer-use": "9cddedd69d23f101eeb4d0192313ac26d6e3b1a8"
+  },
+  "base_of_branch": "97c23a0e73ad6b3a332deb1ea14508f5f720b5b8",
+  "v6_reference_commit": "856a57c65fb0d55190addf6c39a45c57913eac07"
+ },
+ "inputs_from_user": [
+  {
+   "path": "docs/howm1/inputs/PROGRAMME_HOWM1.md",
+   "sha256": "61d4d9ec1352d19064087117c7680635ef848614e9518aa834ff6a81307cc17f",
+   "bytes": 27623,
+   "role": "programme HOWM-1 (cible, non autorisation)",
+   "status": "COPIED_VERBATIM_FROM_UPLOAD"
+  },
+  {
+   "path": "docs/howm1/inputs/PROMPT_CODEX_CLAUDE_HOWM1.txt",
+   "sha256": "56f9005eec6f1d9485ac4e3bf97f62148d728af109a3481858cd98e89c25beb7",
+   "bytes": 6681,
+   "role": "mission de préparation R0+R1",
+   "status": "COPIED_VERBATIM_FROM_UPLOAD"
+  }
+ ],
+ "v6_reference": [
+  {
+   "path": "src/hospitalos/decision_support",
+   "files": 12,
+   "tree_sha256": "a295f729f7696362be36208b6f0a0ff89ad1c932526aeca3450ca6af8f926a1c",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "moteur v6 : contrats, éligibilité, ressources, simulateur de référence, planificateur",
+   "status": "REUSED_READ_ONLY_NOT_MODIFIED"
+  },
+  {
+   "path": "configs/decision_support/UNIT_PROFILE.json",
+   "sha256": "1ae26eb8cc87a21c787c655b5833c0ce4cd5cebe8d83e5f141d83c4dd6154bba",
+   "bytes": 1810,
+   "role": "profil d'unité synthétique v6",
+   "status": "REUSABLE_HYPOTHETICAL_PARAMETERS"
+  },
+  {
+   "path": "src/hospitalos/hybrid/innovations.py",
+   "sha256": "673348e758fe5b4dd126318a31b57106d82562783fa014c3b9f15acf226a3fd6",
+   "bytes": 597,
+   "role": "innovations indexées par clé (appariement des branches)",
+   "status": "REUSABLE"
+  }
+ ],
+ "p5_results_kept_as_history": [
+  {
+   "path": "docs/decision_support/P5_P5b_REPORT.md",
+   "sha256": "e0f10ffd5ad3ef669d5622cb1cfc26abe21490510f575da9bf4294d9c97ccc87",
+   "bytes": 8155,
+   "role": "rapport P5b",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "docs/decision_support/P5_P5b_REPORT_ERRATUM.md",
+   "sha256": "8f9e3f4c0f255bb650a8465feed84aafb5bcccdb5f0f583eb66c16b8b21849c6",
+   "bytes": 2566,
+   "role": "errata P5b",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "evidence/decision_support/p5/p5b/RESULTS_P5b.json",
+   "sha256": "e0a044d391c9cf6771e0900e7e52d7869e5ca8365ee45aafb303038787ac97f8",
+   "bytes": 5377,
+   "role": "Δ_rep R1 +2,2708 ; verdict insufficient",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "evidence/decision_support/p5/p5b/PRECHECK.json",
+   "sha256": "521e159abc04d4902a4f68255b73f7d5ce1c75f50a971580e394ead68261d9ea",
+   "bytes": 368,
+   "role": "précontrôle jumeaux (meilleur plan change 10 %)",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "evidence/decision_support/p5/p5b/F_b.json",
+   "sha256": "ef1be9c0a4b59e74fe87b4b13eda5927b860539cb7e146dbd14ace0d308dba2b",
+   "bytes": 3916,
+   "role": "gel F_b",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "evidence/decision_support/p5/p5a/RESULTS_P5a.json",
+   "sha256": "1a7974176def47c24c6ee929e357de56824a43cf77ffa78148bbd2cc15d85c89",
+   "bytes": 7932,
+   "role": "P5a exploratoire",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json",
+   "sha256": "c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4",
+   "bytes": 31098,
+   "role": "paramètres P5-PROTO-3.1",
+   "status": "HISTORICAL_RESULT_UNCHANGED"
+  },
+  {
+   "path": "evidence/decision_support/p5/BUDGET_LEDGER_P5.anchor.json",
+   "sha256": "fd64938c7839b13cb4b21b0ce4e60b791750568e424cab42219e5ba362c5e0e2",
+   "bytes": 233,
+   "role": "registre P5 clos à 369,301 s (134 enr.)",
+   "status": "CLOSED_NOT_REUSED_FOR_HOWM"
+  },
+  {
+   "path": "evidence/decision_support/p5/SEEDS_SEALED.json",
+   "sha256": "dcfbca742051d5e8b5ac23f075326fb58a8a6dac745cb291b88d5ebbe0801d45",
+   "bytes": 2726,
+   "role": "graines P5 scellées",
+   "status": "NOT_REUSED_HOWM_USES_NEW_SEEDS"
+  }
+ ],
+ "p5_code_reusable_patterns": [
+  {
+   "path": "src/hospitalos/p5",
+   "files": 16,
+   "tree_sha256": "3ddcd341911c1d6d635197e7640a060afbc7b707d1c20b36654ca036f887f373",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "générateur à tirages par clé, vérité privée R1/R2, adaptateur, isolation, intégrité, registre",
+   "status": "PATTERNS_REUSED_CODE_NOT_EXTENDED"
+  },
+  {
+   "path": "scripts/p5_budget_run.py",
+   "sha256": "4708e5f5d452314876d369e4a4aee47ada3c1a41403d2a4eabe5e2dae646b497",
+   "bytes": 12725,
+   "role": "exécuteur à registre chaîné",
+   "status": "PATTERN_TO_FORK_AS_HOWM_RUNNER"
+  }
+ ],
+ "prior_learned_code_in_repo": [
+  {
+   "path": "src/hospitalos/operational",
+   "files": 6,
+   "tree_sha256": "18732e95864e5eb05cc738a604d4b426307c150a63bafa96dacdda083e30bfaf",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "contrat opérationnel v2 + petit prévisionniste à poids partagés (torch), lots 15/16",
+   "status": "READ_FOR_DESIGN_ONLY_NOT_EXECUTED"
+  },
+  {
+   "path": "src/hospitalos/dynamics",
+   "files": 2,
+   "tree_sha256": "0781395cd98fa7653b9293374e9fbf015e8bc6cc6648f9f17a9de01e177e91b9",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "RSSM style DreamerV3 sur plongements TS-JEPA (torch/lightning)",
+   "status": "READ_FOR_DESIGN_ONLY_NOT_EXECUTED"
+  },
+  {
+   "path": "src/hospitalos/synthetic",
+   "files": 41,
+   "tree_sha256": "54f236b1a9d081e74498c62650282bdb0e4339f9c6aadc6bdc0a2abc5b4b02c2",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "fondations hospitalières synthétiques antérieures",
+   "status": "NOT_USED_IN_R0_R1"
+  },
+  {
+   "path": "src/hospitalos/training",
+   "files": 6,
+   "tree_sha256": "053fd8f3afe06ea2993f0ac5de15432a3dd04bd910eef660c26ce68e1f449737",
+   "rule": "sha256 of '<path>\\0<sha256>\\n' over sorted *.py",
+   "role": "entraînements JEPA/RSSM antérieurs",
+   "status": "NOT_USED_IN_R0_R1"
+  }
+ ],
+ "weights_present_not_loaded": [
+  {
+   "path": "artifacts/v1_full/rssm_checkpoint.pt",
+   "sha256": "9149493f49e2284ebf6409d9210635a9e0cfdcc3011ddb5c572b85739d84a55c",
+   "bytes": 453614,
+   "role": "poids antérieurs",
+   "status": "HASHED_AS_BYTES_ONLY_NEVER_LOADED"
+  },
+  {
+   "path": "docs/operational/evidence/lot15/model.pt",
+   "sha256": "696878547cdc5c54eec1c14f5dc66856ee5dfc8bb814d0cd5b337053447bc129",
+   "bytes": 29864,
+   "role": "poids antérieurs",
+   "status": "HASHED_AS_BYTES_ONLY_NEVER_LOADED"
+  },
+  {
+   "path": "docs/operational/evidence/lot16/finite_v1/model.pt",
+   "sha256": "e9013960350df0e3a9f8f4aa57a659b68fe3102f6d60d362cc5515471d67758d",
+   "bytes": 29864,
+   "role": "poids antérieurs",
+   "status": "HASHED_AS_BYTES_ONLY_NEVER_LOADED"
+  },
+  {
+   "path": "docs/operational/evidence/lot16/legacy_delay/model.pt",
+   "sha256": "11f3cfde1f101b64fccecd932eab9a6ad6d86aeed17a23c42f90d4ce8eea79c2",
+   "bytes": 29864,
+   "role": "poids antérieurs",
+   "status": "HASHED_AS_BYTES_ONLY_NEVER_LOADED"
+  }
+ ],
+ "out_of_scope_archives": {
+  "A_detached": "authentifié à 2000 pour les graines 11/23/37 ; final 6000 non attesté — pas un échec scientifique ; non repris",
+  "lots_B_C": "non relancés",
+  "AJ-H_weights": "non chargés"
+ },
+ "environment_observed": {
+  "container_python_system": "3.13.18",
+  "p5_venv_python": "3.11.18",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "scikit_learn": "1.8.0",
+  "pydantic": "2.14.3",
+  "p5_venv_freeze_sha256": "bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22",
+  "deep_learning_libs_absent_in_p5_venv": [
+   "torch",
+   "jax",
+   "lightning",
+   "torch_geometric"
+  ],
+  "pyproject_declares": "torch>=2.3.1,<2.5.0 et lightning>=2.3,<3 (non installés dans cet environnement)",
+  "cpu_logical": 4,
+  "mem_total_kib": 16473776,
+  "gpu": "aucun (nvidia-smi introuvable)",
+  "caveat": "conteneur cloud éphémère ; ces valeurs décrivent l'instant de préparation, pas une garantie pour la tranche"
+ },
+ "not_found": [
+  "aucune donnée hospitalière réelle",
+  "aucun jeu HOWM existant",
+  "aucune référence externe [R1]-[R9] téléchargée : citées par le programme, non vérifiées ici"
+ ]
+}

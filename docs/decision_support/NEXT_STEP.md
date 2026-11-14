@@ -62,6 +62,11 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    (L2, graines identiques) ; précision confirmatoire déclarée avant F_b ; isolation 50/50 sans échec ;
    Δ_rep R1 = +2,27 [−2,54 ; +6,94] ⇒ `insufficient`. Arrêt après P5b. D16/P6/AJ-H fermés.
 
+   **HOWM-1 (préparation R0+R1, 14 novembre 2026)** : `docs/howm1/` — conception, expérience,
+   matrice de tests, plan de calcul, provenance, résumé, **proposition de tranche NON APPROUVÉE**
+   (`PROPOSITION_TRANCHE_R0_R1.md`). Rien n'a été installé, généré, entraîné ni poussé ; aucun
+   registre consommé. Accord attendu : tranche + option d'installation (A/B/C) + persistance (P0/P1).
+
 ## Hors de ce projet
 
 Reprise de A_detached (authentifié à 2000, final 6000 non attesté — pas un échec scientifique),
