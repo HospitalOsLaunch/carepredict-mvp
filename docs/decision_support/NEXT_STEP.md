@@ -56,6 +56,8 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    P5A-D02 non clos ; amendement de procédure = décision distincte.
    **Reprise adoptée (méthode v2, rangs 48–50)** (`P5_P5a_ISOLATION50_RESUME_REPORT.md`) : 50/50 couverts,
    0 vrai échec ; T04-a non informatif au rang 48 ⇒ clôture de P5A-D02 = décision explicite.
+   **P5A-D02 clos avec réserve nommée** (décision adoptée ; `P5A_D02_CLOSURE_RECEIPT.md`) :
+   T04-a NON_INFORMATIF au rang 48 conservé ; P5.1 exact = 43,770 s ; registre 88 enr., 134,580 s.
 
 ## Hors de ce projet
 
