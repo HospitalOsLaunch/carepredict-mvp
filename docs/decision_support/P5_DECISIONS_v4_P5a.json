@@ -1,0 +1,65 @@
+{
+ "schema": "HOSPITALOS_P5_DECISIONS_3",
+ "date": "2026-11-14",
+ "adoption": "user answered 'Oui, j'adopte (ii) P5a' to the explicit question whether PROPOSITION_ACCORD_P5a_ii.txt (review HospitalOS_Revue_A5_20261114.zip) is adopted as an order",
+ "review_zip_sha256": "1c6a6e225f83072e0439adab7176908cc1e2ed172988b8e40d799ec3160d9708",
+ "adopted_text_file": "evidence/decision_support/p5/ACCORD_ii_P5a_TEXT_ADOPTED.txt",
+ "adopted_text_sha256": "1a07f73a55a0ba33d1c89fb8cef1c8b1ba81b477dac45858a290feeb8d854f88",
+ "ii": {
+  "scope": "P5a only, under P5-PROTO-3 + P5-PROTO-3.1 (approved D13)",
+  "steps": [
+   "executor, resume control, tests, analysis (committed before corresponding generation)",
+   "development P5a_dev 10 structures x 10 parents, sealed seeds",
+   "precision projection from development; F_a before any reserved generation (delta 15; projected half-width > 7.5 -> exploratory declared before freeze)",
+   "reserved P5a_eval 30 x 10, R1 and R2 separate, K_eval=3, complete public universe <=16",
+   "v6 public planner vs HABITUAL-1, U* exact minimum, O_lex diagnostic",
+   "metrics, intervals, guardrails, exclusions, abstentions, capture, resource decomposition, planned/realised costs"
+  ],
+  "lots": {
+   "P5.3": {
+    "cap_s": 330,
+    "use": "P5a work"
+   },
+   "P5.5": {
+    "cap_s": 90,
+    "use": "strictly needed part for final P5a analysis, report, delivery check; shared with later work"
+   },
+   "P5.0/P5.1": "commitments and tests within their remainders"
+  },
+  "per_command_s": 30,
+  "spend_eur": 0,
+  "not_authorised": [
+   "P5b (labels, fits, selection, reserved reading)",
+   "D16",
+   "P6",
+   "new installation",
+   "re-running A5",
+   "AJ-H training",
+   "mvp/computer-use",
+   "remote writes, push/merge/rebase",
+   "paid services",
+   "real hospital operations"
+  ],
+  "stop": "after P5a delivery"
+ },
+ "received_state": {
+  "package_sha256": "5eeab602bddc20c76ae3af4bb5e7742695a69d4a905b4cb40821b9bf3c5fefcf",
+  "E3_sha256": "fddac76415b37fd49db9f4ac052926770d77d0be72556c8a040468e072d196ed",
+  "ledger_records": 35,
+  "ledger_used_s": 53.917,
+  "terminal": "9d87c26ece28272a2bd61ab6f11061f0e36e617be6b9587d3437abcf7dcf7dea",
+  "ledger_file_sha256": "b74a878884edf94c6bcc5d1ac0fe4b01ca8de849e89aa2842370090f5510629b",
+  "env_pair": [
+   "3.11.18",
+   "bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22"
+  ],
+  "verified_identical_locally": true
+ },
+ "statuses_unchanged": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "P6": "CLOSED"
+ }
+}

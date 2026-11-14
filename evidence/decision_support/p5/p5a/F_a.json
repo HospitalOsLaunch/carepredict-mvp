@@ -1,0 +1,54 @@
+{
+ "P5b_frozen": false,
+ "bootstrap_resamples": 2000,
+ "bootstrap_seed_sha256_committed_E0": "d33b6593e65d1a5ffa71c13eaebebac372d7abd346bd7c5270c56f56002d813c",
+ "declared_reading": "exploratory",
+ "delta": 15.0,
+ "dev_run_id": "0108da5768b4c2023181",
+ "effective_commitment": {
+  "ledger_record": "513e15013b8930bcdba03ca1c8257a862307a574c2254c39a86ae728034f8d75",
+  "stage": "E4"
+ },
+ "exclusion_max": 0.05,
+ "files_sha256": {
+  "configs/decision_support/OBJECTIVE_CONFIG.json": "267b2f8c1d565760c589533fdbde841e861152486985aeaf8ca63c369ec80e0b",
+  "configs/decision_support/PRESSURE_SCORE_CONFIG.json": "b4e319609ab87b8c0a6648a4c7be4d0686370ea88269effd62f5b9dbf0451c81",
+  "configs/decision_support/UNIT_PROFILE.json": "1ae26eb8cc87a21c787c655b5833c0ce4cd5cebe8d83e5f141d83c4dd6154bba",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v2.json": "1d284b0e9ebe2f0f8eb9b9dc052eb67ae73c5bcc5faca7514552213a51f8d0f7",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json": "653a426a343713a17a55102787b73f6b1f2080c6206837d67d156fbededc18ac",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json": "c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4",
+  "docs/decision_support/P5_PROTOCOL_v2.md": "ad0fdaa592d84461f61f3c68f3470f94b941bde006d0fe57af69a4005797881c",
+  "docs/decision_support/P5_PROTOCOL_v3.md": "dbf517ca2a639505d4db728266f60b2c56a33fb665945bce6f67383907804ab6",
+  "docs/decision_support/P5_PROTOCOL_v3_1.md": "e0cbe6dea64c5579176064864a8cc5fc67c2f887381581b37ee9810dfe00ec62",
+  "scripts/p5_p5a.py": "422093f937c425b8029a6ce6987c39d40a43d421463a1cd6dcf61db2265fa7b5",
+  "src/hospitalos/p5/analysis.py": "79f94373889811dec90bde480bfa072b4a5a801f9395edcb5247ca070bb19897",
+  "src/hospitalos/p5/eval_adapter.py": "47874f0c71f7a4f37cc760ff02a3f2a38432fcb3f1a1c94719716297011e1504",
+  "src/hospitalos/p5/generator.py": "f300879c97cd1a243b11dbb8f0d6c2145c0e7952e296214f6ddba1648f06a7d8",
+  "src/hospitalos/p5/p5a.py": "49a0b41caaaa857ebdbbd2e06235d62bd3be0de2406aea1edefb5c2577432267",
+  "src/hospitalos/p5/p5a_analysis.py": "3095466c45c1e61c64669996389158f9cc242d4032eeb3b1d9f00252ef5f0b93",
+  "src/hospitalos/p5/pilot.py": "b633a77ddad15bd3ecbdea4cf4b9caa33b9facc5ecf5f0cc17ca342762dc0c89",
+  "src/hospitalos/p5/truth.py": "e82a37c4568d18bb12a43611028503ffb766a53d332885bfae1be37e51a686bf"
+ },
+ "half_width_max": 7.5,
+ "harm_max": 0.1,
+ "precision_projection": {
+  "declared_reading": "exploratory",
+  "dev_structures": 10,
+  "precision_sufficient": false,
+  "projected_half_width": 33.92547154827249,
+  "sd_between_structure_means": 94.80656883268774,
+  "threshold": 7.5
+ },
+ "reserved": {
+  "K_eval": 3,
+  "parents": 10,
+  "partition": "P5a_eval",
+  "regimes": [
+   "R1",
+   "R2"
+  ],
+  "structures": 30
+ },
+ "stage": "F_a",
+ "tolerance": 15.0
+}

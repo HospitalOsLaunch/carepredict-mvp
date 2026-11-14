@@ -48,6 +48,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **D13–D15 adoptés et exécutés** (`P5_A5_REPORT.md`) : scikit-learn 1.8.0 installé isolément
    (P5.I 8,557 s), banc A5 6/6 (M_agg ~1,8 s, M_ent ~4,6 s par ajustement), condition L2 satisfaite
    sur ce banc ; registre P5 53,917 s / 1200 s. Arrêt après A5. Suite : (ii), (iii) sur accords distincts.
+   **(ii) P5a adopté et exécuté** (`P5_P5a_REPORT.md`) : dev 10×10, F_a, réservé 30×10 R1/R2 K=3 ;
+   gain R1 217,1 [187,3 ; 248,0] min-soignant/épisode, part capturée 96,6 %, 0/30 structure dégradée ;
+   verdict `exploratory` (précision projetée 33,9 > 7,5 déclarée avant F_a). Arrêt après P5a. (iii) fermé.
 
 ## Hors de ce projet
 

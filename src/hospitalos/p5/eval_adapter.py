@@ -19,6 +19,7 @@ from hospitalos.decision_support.reference_forecaster import (
     TruthProvider,
     check_invariants,
     decisions_from_plan,
+    pressure_scores,
     simulate,
 )
 
@@ -42,6 +43,8 @@ class Outcome:
     beds_returned: int
     lent_hours_realised: int
     violations: tuple[str, ...]
+    peak_pressure: int | None = None  # PS-EXP-1 (descriptive), when a score config is given
+    hours_above_threshold: int | None = None
 
 
 def evaluation_decisions(
@@ -53,12 +56,17 @@ def evaluation_decisions(
 
 
 def outcome(
-    snapshot: PublicSnapshot, plan: Plan, real: Realisation, profile: Mapping[str, Any]
+    snapshot: PublicSnapshot,
+    plan: Plan,
+    real: Realisation,
+    profile: Mapping[str, Any],
+    score: Mapping[str, Any] | None = None,
 ) -> Outcome:
     decisions, kept = evaluation_decisions(snapshot, plan, real.presence)
     start = snapshot.as_of
     run = simulate(snapshot, profile, start, HORIZON_HOURS, decisions, TruthProvider(real.truth))
     violations = tuple(sorted(set(run.violations) | set(check_invariants(snapshot, start, run, False))))
+    scores = pressure_scores(run, score) if score else None
     return Outcome(
         U=int(sum(run.uncovered_unit) + sum(run.uncovered_waiting)),
         planned_reinforcement_hours=plan.reinforcement_hours,
@@ -68,4 +76,6 @@ def outcome(
         beds_returned=int(run.beds_returned),
         lent_hours_realised=sum(o.hours for o in kept if o.source == "shared_unit"),
         violations=violations,
+        peak_pressure=max(scores) if scores else None,
+        hours_above_threshold=sum(v >= score["threshold"] for v in scores) if scores and score else None,
     )

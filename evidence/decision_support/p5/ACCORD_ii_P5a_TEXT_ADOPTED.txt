@@ -1,0 +1,79 @@
+PROPOSITION D’ACCORD (ii) P5a — NON APPROUVÉE, NON ENVOYÉE
+HospitalOS — 14 novembre 2026
+
+Ce texte est préparé pour adoption explicite par l’utilisateur. Le dépôt de ce texte ou du dossier
+de revue ne vaut pas autorisation. La revue A5 n’ouvre aucune nouvelle exécution.
+
+=== MESSAGE À ADOPTER EXPLICITEMENT ===
+
+J’autorise (ii), P5a uniquement, dans le protocole P5-PROTO-3 complété par les révisions R1–R5
+P5-PROTO-3.1 déjà approuvées sous D13. Je n’autorise ni P5b, ni D16, ni P6, ni une nouvelle
+installation par ce message.
+
+1. Reprendre la bonne base
+Paquet : HospitalOS_P5_A5_20261114.zip
+SHA-256 : 5eeab602bddc20c76ae3af4bb5e7742695a69d4a905b4cb40821b9bf3c5fefcf
+E3 : fddac76415b37fd49db9f4ac052926770d77d0be72556c8a040468e072d196ed
+Registre P5 : 35 enregistrements, 53,917 s sur 1 200 s.
+Terminal : 9d87c26ece28272a2bd61ab6f11061f0e36e617be6b9587d3437abcf7dcf7dea
+Empreinte du registre : b74a878884edf94c6bcc5d1ac0fe4b01ca8de849e89aa2842370090f5510629b
+Python 3.11.18 ; gel post-D14 :
+bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22.
+
+Vérifier ces éléments et conserver toute lignée plus récente valide, sans double comptage ni retour
+en arrière. Le paquet dépend de quatre patchs sur 97c23a0e73ad6b3a332deb1ea14508f5f720b5b8.
+Ne pas appliquer aveuglément les patchs à un arbre déjà avancé. Le venv n’est pas livré : s’il faut
+le recréer, déclarer le besoin d’installation distincte, sans utiliser un autre environnement.
+Le moteur v6 reste inchangé. Les anciennes graines et le pilote E0 sont conservés.
+
+2. Préparer et qualifier P5a
+Écrire ou compléter seulement l’exécuteur, le contrôle de reprise, les tests et l’analyse nécessaires
+à P5a, dans les plafonds déjà définis. Engager le code requis avant sa génération correspondante.
+Le développement reste les 10 structures × 10 parents prévues ; les graines sont celles scellées.
+Conserver la provenance des éventuels relevés réutilisés du pilote ; ne pas réattribuer E0 à E3 ni
+recompter fictivement des mesures historiques. Toute nouvelle exécution réelle est comptabilisée.
+Ne pas relancer A5 : ses six ajustements sont terminés.
+
+3. Gel et évaluation
+Avant toute génération réservée, produire F_a : protocole/paramètres, générateur, vérité, adaptateur,
+analyse P5a, delta, seuils et précision projetée depuis le développement. Respecter la règle de
+précision prévue (delta = 15 minutes-soignant ; demi-largeur projetée > 7,5 : lecture exploratoire
+annoncée avant gel). Ne pas élargir automatiquement les populations pour améliorer la précision.
+
+Après F_a seulement, exécuter le réservé P5a : 30 structures × 10 parents, R1 et R2 séparés,
+K_eval=3 par régime, univers public complet ≤16. Ne générer ni lire aucun réservé P5b.
+Évaluer le planificateur public v6 face à HABITUAL-1, avec U* comme minimum exact sur cet univers
+et O_lex comme diagnostic distinct. Préserver l’appariement des aléas, les groupes par structure
+et parent, le traitement prescrit des abstentions et l’arrêt sur violations. Aucun futur privé
+n’est transmis au planificateur.
+
+Calculer les métriques, intervalles et garde-fous fixés, les exclusions et abstentions, la part
+capturée lorsqu’elle est définie, la décomposition coordination/renforts et les coûts prévus/réalisés.
+Nommer le garde-fou de dégradation selon son événement effectivement observé sur K_eval=3 ; ne pas
+le transformer en garantie clinique. R2 ne relève pas un verdict défavorable sous R1.
+Aucun réglage, changement de seuil ou remplacement de population après la lecture réservée.
+
+4. Budgets inchangés
+Ouvrir P5.3 uniquement pour ce travail : plafond 330 s, 30 s par commande, 0 euro.
+Les commandes de tests et engagements nécessaires restent dans P5.1 et P5.0, avec leurs reliquats.
+Autoriser la part strictement nécessaire de P5.5 pour l’analyse finale, le rapport et la vérification
+de livraison P5a, dans son plafond existant de 90 s partagé avec la suite éventuelle, pas un nouveau
+budget. Aucun transfert automatique entre lots ; plafond global 1 200 s maintenu.
+Découper en segments reprenables sous 30 s ; ne pas contourner la limite avec un processus continu
+hors compteur. À un arrêt, préserver les résultats et le registre, sans inventer de conclusion.
+
+5. Livraison et arrêt
+Livrer résultats par structure/parent/régime/plan, manifeste du corpus, preuves de gel F_a,
+code/patchs, tests réellement exécutés, analyse, registre complet et ancre, procédure de reprise
+et archive téléchargeable avec SHA-256. Distinguer les preuves d’auteur de tout rejeu indépendant.
+Rapporter tous les résultats, y compris insuffisants, négatifs et non concluants.
+S’arrêter après la livraison P5a.
+
+P5b (étiquettes, ajustements, sélection, lecture réservée), D16, P6, anciens entraînements AJ-H,
+modification de mvp/computer-use, écriture distante, push/merge/rebase, service payant et opérations
+dans un hôpital réel restent hors périmètre. L2 satisfait sur A5 n’autorise pas P5b et ne s’applique
+pas automatiquement. Le devis P5b et ses limites de 470 s/lot et 30 s/commande seront décidés avant
+l’accord (iii). Statuts inchangés : PARTIAL_WITH_CHECKPOINT, PROTOTYPE_UNVALIDATED,
+clinical_validation=false, G2=NO-GO.
+
+=== FIN DE LA PROPOSITION ===
