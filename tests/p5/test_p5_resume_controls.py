@@ -71,14 +71,56 @@ def test_modified_dependency_freeze_refused(tmp_ledger, monkeypatch):
     assert base.read_ledger(tmp_ledger)[-1]["reason"].startswith("environment_not_approved")
 
 
-def test_post_install_freeze_accepted_only_when_recorded(tmp_ledger, monkeypatch):
+def test_post_install_pair_accepted_only_when_recorded_with_python(tmp_ledger, monkeypatch):
     fake = {"freeze_sha256": "a" * 64, "python": "3.11.18"}
     monkeypatch.setattr(runner, "environment", lambda venv=None: fake)
-    records = base.read_ledger(tmp_ledger)
-    assert runner.launch_refusal([VENV_PY], records)[0] is not None
+    assert runner.launch_refusal([VENV_PY], base.read_ledger(tmp_ledger))[0] is not None
+    # a note without a Python version never changes Python implicitly: ignored
     base.append(tmp_ledger, {"kind": "environment_approved", "lot": "P5.I", "payload": {"freeze_sha256": "a" * 64}, "wall_seconds": 0.0})
+    assert runner.launch_refusal([VENV_PY], base.read_ledger(tmp_ledger))[0] is not None
+    base.append(tmp_ledger, {"kind": "environment_approved", "lot": "P5.I", "payload": {"python": "3.11.18", "freeze_sha256": "a" * 64}, "wall_seconds": 0.0})
     assert runner.launch_refusal([VENV_PY], base.read_ledger(tmp_ledger))[0] is None
-    assert runner.D3_FREEZE_SHA256 in runner.approved_freezes(base.read_ledger(tmp_ledger))
+    assert (runner.D3_PYTHON, runner.D3_FREEZE_SHA256) in runner.approved_environments(base.read_ledger(tmp_ledger))
+
+
+def test_same_freeze_wrong_python_refused_and_conforming_pair_passes(tmp_ledger, monkeypatch):
+    wrong = {"freeze_sha256": runner.D3_FREEZE_SHA256, "python": "3.11.9"}
+    monkeypatch.setattr(runner, "environment", lambda venv=None: wrong)
+    assert runner.run([VENV_PY, "-c", "1"], "P5.1", "t") == 5
+    last = base.read_ledger(tmp_ledger)[-1]
+    assert last["kind"] == "refused" and "python=3.11.9" in last["reason"]
+    good = {"freeze_sha256": runner.D3_FREEZE_SHA256, "python": "3.11.18"}
+    monkeypatch.setattr(runner, "environment", lambda venv=None: good)
+    assert runner.launch_refusal([VENV_PY], base.read_ledger(tmp_ledger))[0] is None
+
+
+def test_in_process_runtime_check():
+    approved = {(runner.D3_PYTHON, runner.D3_FREEZE_SHA256)}
+    with pytest.raises(P.RuntimeRefused):
+        P.check_runtime({"python": "3.11.9", "freeze_sha256": runner.D3_FREEZE_SHA256}, approved)
+    with pytest.raises(P.RuntimeRefused):
+        P.check_runtime({"python": "3.11.18", "freeze_sha256": "b" * 64}, approved)
+    P.check_runtime({"python": "3.11.18", "freeze_sha256": runner.D3_FREEZE_SHA256}, approved)
+
+
+def test_unauthorised_lot_refusal_is_logged_at_zero_seconds(tmp_ledger):
+    assert runner.run([VENV_PY, "-c", "1"], "P5.4", "t") == 4
+    last = base.read_ledger(tmp_ledger)[-1]
+    assert last["kind"] == "refused" and last["reason"] == "lot_not_authorised:P5.4"
+    assert last["wall_seconds"] == 0.0 and last["lot"] == "P5.4"
+
+
+def test_missing_or_corrupt_ledger_blocks_and_never_restarts_genesis(tmp_path, monkeypatch):
+    ledger = tmp_path / "absent.jsonl"
+    monkeypatch.setattr(runner, "LEDGER", ledger)
+    with pytest.raises(base.LedgerError):
+        runner.run([VENV_PY, "-c", "1"], "P5.1", "t")
+    assert not ledger.exists()
+    base.append(ledger, {"kind": "genesis", "lot": "P5.0", "wall_seconds": 0.0})
+    lines = ledger.read_text().splitlines()
+    ledger.write_text(lines[0].replace('"P5.0"', '"P5.X"') + "\n")
+    with pytest.raises(base.LedgerError):
+        runner.run([VENV_PY, "-c", "1"], "P5.4", "t")
 
 
 def test_unauthorised_lot_refused_without_launch(tmp_ledger):
@@ -211,6 +253,14 @@ def test_plan_outside_universe_stops_not_silent_habitual(tmp_path, profile, sett
         _run(tmp_path, profile, settings, recommend_fn=fake_recommend)
 
 
+def test_habitual_invariant_failure_is_a_stop_not_an_abstention(tmp_path, profile, settings):
+    def infeasible(snapshot, settings):
+        return SimpleNamespace(status="INFEASIBLE", primary_plan_id=None, reasons=("habitual_practice_invariant_failure",))
+
+    with pytest.raises(P.PilotStop, match="habitual_practice_invariant_failure"):
+        _run(tmp_path, profile, settings, recommend_fn=infeasible)
+
+
 def test_genuine_abstention_evaluated_as_habitual(tmp_path, profile, settings):
     def abstain(snapshot, settings):
         return SimpleNamespace(status="INSUFFICIENT_DATA", primary_plan_id=None)
@@ -250,6 +300,7 @@ def test_duplicate_offer_key_is_a_generator_stop(profile):
 
 
 def test_real_effective_commitment_verifies_against_disk():
-    out = integrity.verify(integrity.effective_commitment())
-    assert out["stage"] == "E1"
+    eff = integrity.effective_commitment()
+    out = integrity.verify(eff)
+    assert out["stage"] == eff["stage"] and out["stage"] in {"E1", "E2"}
     assert out["commitment_id"].startswith("276d965d")

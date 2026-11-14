@@ -64,14 +64,25 @@ def authorised_interpreters(venv: Path = DEFAULT_VENV) -> set[str]:
     return {str(venv / "bin" / name) for name in ("python", "python3", "python3.11")}
 
 
-def approved_freezes(records: list[dict[str, object]]) -> set[str]:
-    """D3 freeze + any post-install freeze explicitly approved and recorded in the ledger."""
-    out = {D3_FREEZE_SHA256}
+D3_PYTHON = "3.11.18"
+
+
+def approved_environments(records: list[dict[str, object]]) -> set[tuple[str, str]]:
+    """Approved (Python version, dependency freeze) PAIRS: the D3 pair, plus any post-install pair
+    explicitly approved and recorded (note ``environment_approved`` with BOTH fields). A note
+    without a Python version is ignored: approving dependencies never changes Python implicitly."""
+    out = {(D3_PYTHON, D3_FREEZE_SHA256)}
     for r in records:
         if r.get("kind") == "environment_approved":
             payload = r.get("payload") or {}
-            out.add(str(payload.get("freeze_sha256")))  # type: ignore[union-attr]
+            py, fz = payload.get("python"), payload.get("freeze_sha256")  # type: ignore[union-attr]
+            if py and fz:
+                out.add((str(py), str(fz)))
     return out
+
+
+def approved_freezes(records: list[dict[str, object]]) -> set[str]:
+    return {fz for _, fz in approved_environments(records)}
 
 
 def program_of(command: list[str]) -> str:
@@ -92,8 +103,9 @@ def launch_refusal(command: list[str], records: list[dict[str, object]], venv: P
         return None, env_info
     if program not in authorised_interpreters(venv):
         return f"interpreter_not_authorised:{program}", env_info
-    if env_info["freeze_sha256"] not in approved_freezes(records):
-        return f"environment_not_approved:{env_info['freeze_sha256']}", env_info
+    pair = (str(env_info.get("python")), str(env_info["freeze_sha256"]))
+    if pair not in approved_environments(records):
+        return f"environment_not_approved:python={pair[0]}:freeze={pair[1]}", env_info
     return None, env_info
 
 
@@ -182,12 +194,25 @@ def note(kind: str, label: str, lot: str, payload: dict[str, object]) -> dict[st
 
 
 def run(command: list[str], lot: str, label: str) -> int:
-    if lot not in AUTHORISED_LOTS:
-        print(f"[p5-budget] lot {lot} is not authorised: refused", file=sys.stderr)
-        return 4
+    # A missing or corrupt ledger is a hard stop (LedgerError), never a new genesis.
     records = base.read_ledger(LEDGER)
     if not records or records[0].get("kind") != "genesis":
         raise base.LedgerError("P5 ledger has no genesis record")
+    if lot not in AUTHORISED_LOTS:
+        base.append(
+            LEDGER,
+            {
+                "kind": "refused",
+                "at_utc": datetime.now(UTC).isoformat(),
+                "lot": lot,
+                "label": label,
+                "refused_command": command,
+                "reason": f"lot_not_authorised:{lot}",
+                "wall_seconds": 0.0,
+            },
+        )
+        print(f"[p5-budget] lot {lot} is not authorised: refused", file=sys.stderr)
+        return 4
     used = base.used_seconds(records)
     remaining = CEILING_S - used
     lot_remaining = LOT_CAPS[lot] - lot_used(records, lot)

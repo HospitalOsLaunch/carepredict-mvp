@@ -1,0 +1,12 @@
+...................................................F                     [100%]
+=================================== FAILURES ===================================
+_____________ test_real_effective_commitment_verifies_against_disk _____________
+tests/p5/test_p5_resume_controls.py:304: in test_real_effective_commitment_verifies_against_disk
+    out = integrity.verify(eff)
+          ^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/p5/integrity.py:67: in verify
+    raise IntegrityError("; ".join(problems))
+E   hospitalos.p5.integrity.IntegrityError: code_differs_from_commitment:scripts/p5_budget_run.py; code_differs_from_commitment:scripts/p5_commit.py; code_differs_from_commitment:scripts/p5_pilot.py; code_differs_from_commitment:src/hospitalos/p5/pilot.py
+=========================== short test summary info ============================
+FAILED tests/p5/test_p5_resume_controls.py::test_real_effective_commitment_verifies_against_disk
+1 failed, 51 passed in 2.43s

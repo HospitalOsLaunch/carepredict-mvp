@@ -5,10 +5,10 @@
   ``runs/<run_id>/``. A record is reused on resume only if it carries the same run identity;
   a directory whose identity differs is refused, never overwritten. Older runs (including the
   initial pilot ``pilot_parents.jsonl`` of E0) are kept untouched.
-* Stop rules: an invariant/admissibility violation, a universe that changes across
-  realisations, or a recommended plan absent from the public universe stops the run and writes
-  FAILURE_RECEIPT.json. Genuine abstentions (no recommendation / insufficient data /
-  infeasible) are evaluated as HABITUAL-1 and counted, as the protocol requires.
+* Stop rules: an invariant/admissibility violation (including the habitual-practice invariant
+  failure reported by v6), a universe that changes across realisations, or a recommended plan
+  absent from the public universe stops the run and writes FAILURE_RECEIPT.json. Genuine
+  abstentions are evaluated as HABITUAL-1 and counted (P5-PROTO-3.1).
 """
 
 from __future__ import annotations
@@ -36,6 +36,17 @@ SELECTED = {"RECOMMENDATION_READY", "NO_ACTION_PREFERRED"}
 
 class PilotStop(RuntimeError):
     """A stop rule fired; FAILURE_RECEIPT.json has been written."""
+
+
+class RuntimeRefused(RuntimeError):
+    """The running interpreter is not an approved (Python version, freeze) pair."""
+
+
+def check_runtime(env: Mapping[str, Any], approved: set[tuple[str, str]]) -> None:
+    """In-process control, before any scientific operation (review R-P5-01)."""
+    pair = (str(env.get("python")), str(env.get("freeze_sha256")))
+    if pair not in approved:
+        raise RuntimeRefused(f"runtime not approved: python={pair[0]} freeze={pair[1]}")
 
 
 class ResumeRefused(RuntimeError):
@@ -152,13 +163,17 @@ def run_pilot(
             rec["recommend_s"] = time.perf_counter() - t
             rec["recommend_status"] = reco.status
             ids = [p.plan_id for p in ep.plans]
+            if reco.status == "INFEASIBLE" and "habitual_practice_invariant_failure" in tuple(getattr(reco, "reasons", ())):
+                _stop(run_dir, identity, "habitual_practice_invariant_failure", where)
             if reco.status in SELECTED:
                 if reco.primary_plan_id not in ids:
                     _stop(run_dir, identity, "recommended_plan_outside_public_universe",
                           {**where, "primary_plan_id": reco.primary_plan_id})
                 chosen, abstention = ids.index(reco.primary_plan_id), False
             else:
-                chosen, abstention = 0, True  # genuine abstention -> HABITUAL-1, counted
+                # genuine abstention (insufficient data, hypothetical only, invalidated, other
+                # infeasibility) -> evaluated as HABITUAL-1 and counted; never an invariant failure
+                chosen, abstention = 0, True
             rec["chosen_index"] = chosen
             rec["abstention_as_habitual"] = abstention
             universe_fp = ep.universe_fingerprint

@@ -53,6 +53,8 @@ DOCS = [
     "docs/decision_support/P5_DECISIONS_v2.json",
     "docs/decision_support/P5_PROTOCOL_v3.md",
     "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json",
+    "docs/decision_support/P5_PROTOCOL_v3_1.md",
+    "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json",
 ]
 
 

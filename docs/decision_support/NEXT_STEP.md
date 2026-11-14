@@ -42,6 +42,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **Reprise après revue** (`P5_LOT_REPORT_P5_0-2_REPRISE.md`) : contrôles P5L-01..03 corrigés,
    42/42 tests sous E1, registre P5 13,769 s / 1200 s ; P5-PROTO-3 proposé (non approuvé).
    Décisions attendues : D13 (v3), D14 (= D4), D15 (banc de 6 ajustements), D16 (option).
+   **Finalisation** (`P5_FINALISATION_REPORT.md`) : P5-PROTO-3.1 proposé, couple (Python, gel)
+   contrôlé, refus journalisés, 52/52 tests sous E2, registre P5 18,645 s / 1200 s (23 enr.).
+   Accords demandés : D13 (v3 + v3.1 par empreintes), D14 (= D4), D15 (banc A5).
 
 ## Hors de ce projet
 

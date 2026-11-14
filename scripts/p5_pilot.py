@@ -27,7 +27,15 @@ import p5_budget_run as runner  # noqa: E402
 from hospitalos.decision_support.planner import Settings  # noqa: E402
 from hospitalos.decision_support.snapshot import load_profile  # noqa: E402
 from hospitalos.p5 import integrity  # noqa: E402
-from hospitalos.p5.pilot import PilotStop, ResumeRefused, run_identity, run_pilot, running_environment  # noqa: E402
+from hospitalos.p5.pilot import (  # noqa: E402
+    PilotStop,
+    ResumeRefused,
+    RuntimeRefused,
+    check_runtime,
+    run_identity,
+    run_pilot,
+    running_environment,
+)
 
 P5 = ROOT / "evidence" / "decision_support" / "p5"
 DEV_PARTITIONS = {"P5a_dev", "P5b_train", "P5b_val"}
@@ -50,8 +58,10 @@ def main() -> int:
         return 3
     env = running_environment()
     records = runner.base.read_ledger(runner.LEDGER)
-    if env["freeze_sha256"] not in runner.approved_freezes(records):
-        print(f"refused: environment not approved ({env['freeze_sha256']})", file=sys.stderr)
+    try:
+        check_runtime(env, runner.approved_environments(records))  # in-process (python, freeze)
+    except RuntimeRefused as error:
+        print(f"refused: {error}", file=sys.stderr)
         return 4
     seeds = json.loads((P5 / "SEEDS_SEALED.json").read_text())["partitions"][args.partition][: args.structures]
     pilot_sha = hashlib.sha256((ROOT / "src/hospitalos/p5/pilot.py").read_bytes()
