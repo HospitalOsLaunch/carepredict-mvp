@@ -65,10 +65,8 @@ Dans un environnement neuf, relancer les tests du cockpit exige toujours `npm ci
 
 ## 6. Portes ouvertes et limites
 
-1. **Python 3.11** — partiellement fermée (voir § 8) : exécuté sous **3.11.18** après accord de
-   l'utilisateur pour pydantic, numpy et pytest. Restent ouverts : le niveau exact **3.11.9**
-   (télécharger cet interpréteur n'est pas couvert par l'accord) et les 10 tests de
-   `test_p1_contracts.py`, non collectables sans `jsonschema` (paquet non autorisé).
+1. **Python 3.11** — exécution complète sous **3.11.18** (voir § 8) : 163/163. Reste ouvert le
+   seul niveau exact **3.11.9** (télécharger cet interpréteur n'est pas couvert par les accords).
 2. **Ré-audit indépendant** des correctifs.
 3. `test_decision_guard.py` non lancé : `fit_benchmark()` sélectionne et ajuste des modèles
    (dont un gradient boosting), ce qui est un apprentissage hors périmètre.
@@ -95,8 +93,9 @@ Environnement virtuel isolé (dossier de travail de la session, Python système 
 | Contrôle sous 3.11.18 | Résultat |
 |---|---|
 | Suite DS + 86 hybrides, hors `test_p1_contracts.py` | **153 réussis**, 0 échec (`pytest_py311.xml`) |
-| `test_p1_contracts.py` (10 tests) | non collecté : `ModuleNotFoundError: jsonschema` (non autorisé) |
+| `test_p1_contracts.py` (10 tests), 1er passage | non collecté : `ModuleNotFoundError: jsonschema` |
+| Après accord pour `jsonschema` (4.26.0, même version que sous 3.13 ; 1,943 s imputées) : suite **complète** DS + 86 hybrides | **163 réussis**, 0 échec, 0 ignoré (`pytest_py311.xml`) |
 | 11 résultats régénérés vs index livré | **identiques octet pour octet** |
 
-Les 10 tests de `test_p1` passent sous 3.13. Ces exécutions sont postérieures au scellement du
+Ces exécutions sont postérieures au scellement du
 paquet v3 : elles figurent dans le registre du dépôt, pas dans le terminal de v3.
