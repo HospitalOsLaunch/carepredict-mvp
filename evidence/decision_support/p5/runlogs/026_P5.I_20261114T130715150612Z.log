@@ -1,0 +1,9 @@
+Looking in links: /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14
+Processing /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14/scikit_learn-1.8.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+Requirement already satisfied: numpy>=1.24.1 in /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages (from scikit-learn<1.9,>=1.5) (2.4.6)
+Processing /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14/scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (from scikit-learn<1.9,>=1.5)
+Processing /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14/joblib-1.6.0-py3-none-any.whl (from scikit-learn<1.9,>=1.5)
+Processing /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14/threadpoolctl-3.8.0-py3-none-any.whl (from scikit-learn<1.9,>=1.5)
+Processing /tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/wheelhouse_d14/cloudpickle-3.1.2-py3-none-any.whl (from joblib>=1.3.0->scikit-learn<1.9,>=1.5)
+Installing collected packages: threadpoolctl, scipy, cloudpickle, joblib, scikit-learn
+Successfully installed cloudpickle-3.1.2 joblib-1.6.0 scikit-learn-1.8.0 scipy-1.17.1 threadpoolctl-3.8.0

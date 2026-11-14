@@ -302,5 +302,5 @@ def test_duplicate_offer_key_is_a_generator_stop(profile):
 def test_real_effective_commitment_verifies_against_disk():
     eff = integrity.effective_commitment()
     out = integrity.verify(eff)
-    assert out["stage"] == eff["stage"] and out["stage"] in {"E1", "E2"}
+    assert out["stage"] == eff["stage"] and out["stage"].startswith("E") and out["stage"][1:].isdigit()
     assert out["commitment_id"].startswith("276d965d")

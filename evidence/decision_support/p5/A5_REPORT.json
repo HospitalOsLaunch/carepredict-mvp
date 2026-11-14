@@ -1,0 +1,128 @@
+{
+ "schema": "HOSPITALOS_P5_A5_REPORT_1",
+ "authorisation": "D15",
+ "ledger_records": {
+  "M_agg": 33,
+  "M_ent": 34
+ },
+ "status": "A5_COMPLETE_6_OF_6",
+ "measured": {
+  "M_agg": {
+   "fit_s": [
+    2.0242677049999998,
+    1.625576695999996,
+    1.6553686589999757
+   ],
+   "fit_mean_s": 1.7684043533333238,
+   "n_iter": [
+    400,
+    400,
+    400
+   ],
+   "max_abs_diff": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "per_tree_ms_1440": 4.4210108833333095,
+   "ns_per_row_feature_tree": 10.5867118853767,
+   "matrix": {
+    "distinct_rows": 148,
+    "distinct_sha256": "6986ce0aa1b78b67af2596f9b58ffd11018f55f27fa441c51ce44186e6d470e5",
+    "feature_names_sha256": "cc542c7eb6cdf272ecb5b4caaf90988c29ddbee109ab05e410ed185c71b91f0e",
+    "features": 290,
+    "limitation": "tiled repeated rows; not the cost of a diverse corpus",
+    "parents": 20,
+    "source": "historical E0 pilot parents (P5a_dev structures 0-1), public snapshots regenerated, labels = recorded R1 mean U",
+    "tiled_rows": 1440,
+    "tiled_sha256": "d0ef2e5528422e64cb9548ee759e0691b56a77771dc3e0a569fc356149b9bb57"
+   },
+   "command_wall_s": 6.45
+  },
+  "M_ent": {
+   "fit_s": [
+    4.2034242639999775,
+    4.806835241999977,
+    4.847020908000047
+   ],
+   "fit_mean_s": 4.619093471333334,
+   "n_iter": [
+    400,
+    400,
+    400
+   ],
+   "max_abs_diff": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "per_tree_ms_1440": 11.547733678333334,
+   "ns_per_row_feature_tree": 11.16888509588105,
+   "matrix": {
+    "distinct_rows": 148,
+    "distinct_sha256": "1c322d00d9a7af367d1c11c032cc9fa060460446b72907db7e965e5e8aa93ce3",
+    "feature_names_sha256": "71fd2eb8c30537db495223c7941ec50928adb9e8bbbc58ace9ed87d0f78ffd65",
+    "features": 718,
+    "limitation": "tiled repeated rows; not the cost of a diverse corpus",
+    "parents": 20,
+    "source": "historical E0 pilot parents (P5a_dev structures 0-1), public snapshots regenerated, labels = recorded R1 mean U",
+    "tiled_rows": 1440,
+    "tiled_sha256": "6b3bd3be24e3e4f1ff018f73319769785dbe848a1650e29af9651b4d9658c603"
+   },
+   "command_wall_s": 15.04
+  }
+ },
+ "L2_condition_on_this_bench": {
+  "satisfied": true,
+  "scope": "config max_depth 5, learning_rate 0.1, max_iter 400; these tiled development data; this machine; not a proof for all configurations; not an authorisation to train P5b"
+ },
+ "extrapolation": {
+  "assumptions": [
+   "cost linear in rows",
+   "all 12 configurations costed at the depth-5 per-tree cost (upper side: depth-3 trees are smaller)",
+   "tiled bench, not a diverse corpus",
+   "no measured fixed overhead beyond the per-tree cost",
+   "x1.5 prudence margin applied where stated"
+  ],
+  "mean_universe_5328_rows": {
+   "raw": {
+    "rows": 5328,
+    "single_fit_400_s": {
+     "M_agg": 6.543096107333297,
+     "M_ent": 17.090645843933334
+    },
+    "fits_with_L2_28_s": 212.70367756139967,
+    "fits_without_L2_72_s": 496.3085809765992
+   },
+   "margin_1_5": {
+    "rows": 5328,
+    "single_fit_400_s": {
+     "M_agg": 6.543096107333297,
+     "M_ent": 17.090645843933334
+    },
+    "fits_with_L2_28_s": 319.0555163420995,
+    "fits_without_L2_72_s": 744.4628714648989
+   }
+  },
+  "max_universe_11520_rows": {
+   "raw": {
+    "rows": 11520,
+    "single_fit_400_s": {
+     "M_agg": 14.14723482666659,
+     "M_ent": 36.95274777066667
+    },
+    "fits_with_L2_28_s": 459.89984337599935,
+    "fits_without_L2_72_s": 1073.0996345439985
+   },
+   "margin_1_5": {
+    "rows": 11520,
+    "single_fit_400_s": {
+     "M_agg": 14.14723482666659,
+     "M_ent": 36.95274777066667
+    },
+    "fits_with_L2_28_s": 689.849765063999,
+    "fits_without_L2_72_s": 1609.6494518159977
+   }
+  }
+ }
+}

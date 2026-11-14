@@ -45,6 +45,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **Finalisation** (`P5_FINALISATION_REPORT.md`) : P5-PROTO-3.1 proposé, couple (Python, gel)
    contrôlé, refus journalisés, 52/52 tests sous E2, registre P5 18,645 s / 1200 s (23 enr.).
    Accords demandés : D13 (v3 + v3.1 par empreintes), D14 (= D4), D15 (banc A5).
+   **D13–D15 adoptés et exécutés** (`P5_A5_REPORT.md`) : scikit-learn 1.8.0 installé isolément
+   (P5.I 8,557 s), banc A5 6/6 (M_agg ~1,8 s, M_ent ~4,6 s par ajustement), condition L2 satisfaite
+   sur ce banc ; registre P5 53,917 s / 1200 s. Arrêt après A5. Suite : (ii), (iii) sur accords distincts.
 
 ## Hors de ce projet
 

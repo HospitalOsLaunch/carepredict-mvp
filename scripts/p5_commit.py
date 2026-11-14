@@ -42,9 +42,11 @@ CODE = [
     "src/hospitalos/p5/analysis.py",
     "src/hospitalos/p5/integrity.py",
     "src/hospitalos/p5/pilot.py",
+    "src/hospitalos/p5/a5.py",
     "scripts/p5_budget_run.py",
     "scripts/p5_commit.py",
     "scripts/p5_pilot.py",
+    "scripts/p5_a5_benchmark.py",
 ]
 DOCS = [
     "docs/decision_support/P5_PROTOCOL_v2.md",
@@ -55,6 +57,7 @@ DOCS = [
     "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json",
     "docs/decision_support/P5_PROTOCOL_v3_1.md",
     "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json",
+    "docs/decision_support/P5_DECISIONS_v3.json",
 ]
 
 

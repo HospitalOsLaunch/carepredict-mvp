@@ -1,0 +1,79 @@
+PROPOSITION D’ACCORD D13–D15 — NON APPROUVÉE, NON ENVOYÉE
+HospitalOS — 14 novembre 2026
+
+Ce document est une proposition préparée après revue statique. Il n’accorde aucune autorisation.
+Le bloc ci-dessous ne devient un ordre que si l’utilisateur le reprend explicitement à son compte
+et le transmet comme autorisation. Le seul dépôt de ce fichier ou de l’archive ne vaut pas accord.
+
+=== MESSAGE PROPOSÉ À ADOPTER EXPLICITEMENT ===
+
+J’approuve D13 et j’autorise D14 et D15 dans le périmètre suivant, sans ouverture de P5a réservé,
+de P5b ni de P6.
+
+1. D13 — Protocole
+J’approuve P5-PROTO-3 avec les révisions R1–R5 de P5-PROTO-3.1, sur ces quatre empreintes :
+- P5_PROTOCOL_v3.md :
+  dbf517ca2a639505d4db728266f60b2c56a33fb665945bce6f67383907804ab6
+- P5_PROTOCOL_PARAMS_v3.json :
+  653a426a343713a17a55102787b73f6b1f2080c6206837d67d156fbededc18ac
+- P5_PROTOCOL_v3_1.md :
+  e0cbe6dea64c5579176064864a8cc5fc67c2f887381581b37ee9810dfe00ec62
+- P5_PROTOCOL_PARAMS_v3_1.json :
+  c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4
+
+Les textes v3 et v3.1 sont des amendements cumulés au protocole v2, conservé intact.
+Ne pas modifier les hypothèses, populations, seuils, graines, métriques ou plafonds.
+
+2. D14 (= D4) — Installation limitée
+J’autorise l’installation réseau de scikit-learn et de ses seules dépendances nécessaires
+dans l’environnement isolé Python 3.11.18 prévu par le protocole. Respecter ses contraintes
+de version, consigner les versions exactes et le gel obtenu.
+Plafond P5.I : 60 secondes, 30 secondes par commande, 0 euro.
+Le couple (Python 3.11.18, empreinte du gel post-installation) est consigné dans la note
+environment_approved. Cette permission n’autorise ni un changement de Python, ni P5b.
+Si l’interpréteur requis n’est pas disponible, arrêter et rapporter le blocage : ne pas utiliser
+une autre version silencieusement. Ne pas modifier l’environnement système.
+
+3. D15 — Banc A5 uniquement
+J’autorise la préparation technique et les six ajustements de chronométrage A5 :
+M_agg et M_ent, chacun aux graines 0, 1, 2 ; 1440 lignes de développement tuilées ;
+max_depth=5, learning_rate=0.1, max_iter=400 ; paramètres fixes du protocole, notamment
+early_stopping=False et OMP_NUM_THREADS=1 ; mêmes données et même matrice de comparaison
+entre graines au sein de chaque famille ; modèles jetés après mesures.
+Aucun ajustement supplémentaire, aucune évaluation réservée et aucun changement de recette.
+
+Respecter le reliquat P5.2 de 37,476 secondes, avec 30 secondes au maximum par commande.
+L’extraction et la préparation nécessaires sont tracées, sans double comptage du pilote
+historique. Ne pas relancer le pilote complet de 20 parents par défaut.
+Les modifications du script de chronométrage doivent être testées et engagées avant ajustement,
+dans les lots déjà autorisés et leurs plafonds. Contrôler l’environnement réel dans le processus.
+
+4. Reprise et preuves
+Point de départ : HospitalOS_P5_Finalisation_20261114.zip
+SHA-256 : 929eefcc008fc4a377af4ad8857897b58954090e06a6b8718f3847c611db4635
+Engagement E2 : 72d657570fc5db152ce8d09d9ff5de2b2f52700b3619046b0b64b48be59b9552
+Registre reçu : 23 enregistrements, 18,645 secondes / 1200.
+Terminal : db1f5e3971fbb879962a9e00af2d12443d05e169eab40039579ce4c1d8c9dc96
+
+Vérifier les octets avant reprise. Conserver toute lignée plus récente valide et la réconcilier
+sans double comptage ; ne pas remplacer un registre récent par cette copie.
+Consigner les présents accords, puis ouvrir seulement le lot P5.I nécessaire à D14.
+Ne jamais remettre le compteur à zéro, transférer le reliquat P0–P4, dépasser le plafond global
+de 1200 secondes ou augmenter un plafond par lot sans accord distinct.
+
+Livrer les versions et empreintes de l’environnement, le code de chronométrage engagé,
+les dimensions et empreintes des matrices de développement, les durées par famille et graine,
+les écarts maximaux de prédiction entre graines et les reçus d’arrêt éventuels.
+Indiquer si la condition L2 est satisfaite sur ce banc, sans la confondre avec une preuve sur
+toutes les configurations ou avec une autorisation d’entraîner P5b.
+Publier un devis actualisé : postes mesurés, extrapolations et limites distincts.
+Le tuilage ne garantit pas le coût d’un corpus divers.
+
+5. Arrêt après A5
+S’arrêter et relivrer le paquet avec manifeste, registre complet et rapport.
+D16, les autorisations (ii) et (iii), P6, les écritures distantes, push, merge, rebase,
+les services payants et les opérations dans un système hospitalier restent interdits sans
+accord distinct. Aucun nouvel entraînement AJ-H.
+Statuts inchangés : PARTIAL_WITH_CHECKPOINT, PROTOTYPE_UNVALIDATED,
+clinical_validation=false, G2=NO-GO.
+=== FIN DU MESSAGE PROPOSÉ ===

@@ -1,0 +1,76 @@
+{
+ "schema": "HOSPITALOS_P5_DECISIONS_2",
+ "date": "2026-11-14",
+ "adoption": "user answered 'Oui, j'adopte D13–D15' to the explicit question whether the proposed message HospitalOS_Proposition_Accord_D13_D15_20261114.txt is adopted as an order",
+ "adopted_text_file": "evidence/decision_support/p5/ACCORD_D13_D15_TEXT_ADOPTED.txt",
+ "adopted_text_sha256": "eec64061fa9c7a5150e7b44dc4326744cca7dba6de4dffefdc580a0524c96a7e",
+ "D13": {
+  "decision": "P5-PROTO-3 with revisions R1-R5 of P5-PROTO-3.1 approved, cumulative amendments to v2 (kept intact)",
+  "approved_sha256": {
+   "docs/decision_support/P5_PROTOCOL_v3.md": "dbf517ca2a639505d4db728266f60b2c56a33fb665945bce6f67383907804ab6",
+   "docs/decision_support/P5_PROTOCOL_PARAMS_v3.json": "653a426a343713a17a55102787b73f6b1f2080c6206837d67d156fbededc18ac",
+   "docs/decision_support/P5_PROTOCOL_v3_1.md": "e0cbe6dea64c5579176064864a8cc5fc67c2f887381581b37ee9810dfe00ec62",
+   "docs/decision_support/P5_PROTOCOL_PARAMS_v3_1.json": "c01eae5e852e5558a633ef0861de9123d5be9e9a7fdf709a6f64653e901458f4"
+  }
+ },
+ "D14": {
+  "decision": "network install of scikit-learn and only its necessary dependencies in the isolated Python 3.11.18 venv; protocol bound >=1.5,<1.9; exact versions and resulting freeze recorded; pair recorded as environment_approved",
+  "lot": "P5.I",
+  "cap_s": 60,
+  "per_command_s": 30,
+  "spend_eur": 0,
+  "not_authorised": [
+   "Python change",
+   "P5b",
+   "system environment change"
+  ]
+ },
+ "D15": {
+  "decision": "technical preparation and the 6 A5 timing fits only",
+  "spec": {
+   "families": [
+    "M_agg",
+    "M_ent"
+   ],
+   "random_state": [
+    0,
+    1,
+    2
+   ],
+   "rows": 1440,
+   "construction": "tiled development rows",
+   "max_depth": 5,
+   "learning_rate": 0.1,
+   "max_iter": 400,
+   "fixed_params": "protocol (early_stopping=False ...)",
+   "OMP_NUM_THREADS": 1,
+   "comparison": "same data and same comparison matrix across seeds within a family",
+   "models": "discarded after measurement"
+  },
+  "lot": "P5.2",
+  "remainder_s": 37.476,
+  "per_command_s": 30,
+  "not_authorised": [
+   "additional fits",
+   "reserved evaluation",
+   "recipe change",
+   "full 20-parent pilot rerun by default"
+  ]
+ },
+ "after_A5": "stop and redeliver; D16, (ii), (iii), P6, remote writes, push/merge/rebase, paid services, hospital systems, AJ-H training remain forbidden without distinct approval",
+ "received_state": {
+  "package_sha256": "929eefcc008fc4a377af4ad8857897b58954090e06a6b8718f3847c611db4635",
+  "E2_sha256": "72d657570fc5db152ce8d09d9ff5de2b2f52700b3619046b0b64b48be59b9552",
+  "ledger_records": 23,
+  "ledger_used_s": 18.645,
+  "terminal": "db1f5e3971fbb879962a9e00af2d12443d05e169eab40039579ce4c1d8c9dc96",
+  "verified_identical_locally": true
+ },
+ "statuses_unchanged": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "P6": "CLOSED"
+ }
+}
