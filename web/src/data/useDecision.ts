@@ -45,7 +45,7 @@ const fixtureUnits = FIXTURE.units.map(({ id, name }) => ({ id, name }));
 /** Offline: the decision proposed by the engine is still a computed one (bundled outputs). */
 function fixtureReview(doc: DsDoc, decision: "approve" | "reject"): DsReview {
   if (decision === "reject") {
-    return { outcome: "REJECTED", reasons: [], recompute_required: false, external_command_sent: false };
+    return { outcome: "REJECTED", reasons: [], recompute_required: false, external_command_sent: false, replayed: false };
   }
   return doc.reco.approvable
     ? { outcome: "APPROVED_IN_DEMO", reasons: [], recompute_required: false, external_command_sent: false }
@@ -54,6 +54,7 @@ function fixtureReview(doc: DsDoc, decision: "approve" | "reject"): DsReview {
         reasons: [`not_approvable:${doc.reco.status}`],
         recompute_required: false,
         external_command_sent: false,
+        replayed: false,
       };
 }
 

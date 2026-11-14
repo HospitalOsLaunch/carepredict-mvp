@@ -1,6 +1,8 @@
 # Point de reprise
 
-État : P0–P4 livrés (`P0_P4_TECHNICAL_PASS`), P5 et P6 **fermés** (mandat et budget distincts requis).
+État : P0–P4 livrés puis corrigés après audit (P2/P3bis, P4bis) : **`PARTIAL_WITH_CHECKPOINT`**.
+P5 et P6 **fermés** (mandat et budget distincts requis). Portes ouvertes : test d'exécution sous
+Python 3.11.9 (installation réseau à autoriser) et ré-audit indépendant des correctifs.
 Branche locale : `claude/hospitalos-auto-first-p0-p4-s2dywn`, base `a5e737e` (`claude/cockpit-web`).
 Rien n'a été poussé.
 
@@ -8,6 +10,7 @@ Rien n'a été poussé.
 
 ```bash
 # depuis le paquet : vérifie les SHA-256, restaure la branche dans un dossier neuf, rejoue tests + export
+sh restore.sh --verify-only                   # deux manifestes + registre terminal
 sh restore.sh /chemin/vers/dossier_neuf
 # depuis un clone existant à a5e737e : appliquer les patchs
 git checkout -b claude/hospitalos-auto-first-p0-p4-s2dywn a5e737eec2cfdf0f52a68f41b523f928181c03e6

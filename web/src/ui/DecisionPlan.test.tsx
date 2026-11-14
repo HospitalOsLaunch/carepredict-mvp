@@ -119,4 +119,25 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     expect(sent.locks.locks[0]).toMatchObject({ kind: "discharge_at", stay_id: "S01", at: "2026-11-17T09:00:00+00:00" });
     expect(sent.locks.locks[1]).toMatchObject({ kind: "extend_presence", stay_id: "S02", extension_hours: 4 });
   });
+
+  it("shows an idempotency conflict from the engine instead of a borrowed success", async () => {
+    const unit = FX.units[0]!;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (!String(url).startsWith("/api/decision")) throw new TypeError("offline");
+        const json = (body: unknown, ok = true) => ({ ok, statusText: "Conflict", json: async () => body });
+        if (url.endsWith("/units")) return json({ units: FX.units.map(({ id, name }) => ({ id, name })), events: [] });
+        if (url.includes("/auto"))
+          return json({ doc_id: unit.recommendation.recommendation_id, snapshot: unit.snapshot, recommendation: unit.recommendation });
+        if (url.endsWith("/review")) return json({ error: "idempotency key already used for another request" }, false);
+        throw new Error(`unexpected ${url}`);
+      }),
+    );
+    render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    fireEvent.click(screen.getByTestId("ds-approve"));
+    expect((await screen.findByTestId("ds-conflict")).textContent).toMatch(/idempotency key already used/);
+    expect(screen.queryByTestId("ds-feedback")).toBeNull();
+  });
 });

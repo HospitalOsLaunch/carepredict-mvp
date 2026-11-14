@@ -1,0 +1,93 @@
+{
+  "audit_date": "2026-11-14",
+  "input_archive": "HospitalOS_DS_P0-P4_20261114.zip",
+  "input_bytes": 12733073,
+  "input_sha256": "431e2e446def7f244603d4541eb68dc42a4adbd7fbc39055f931c9c1704cda4e",
+  "source_commit_in_package": "d7844ea760505b57cbf31d1a3f8ae179eac30d85",
+  "reported_final_commit_not_in_package": "282ee85",
+  "independent_delivery_recommendation": "PARTIAL_WITH_CHECKPOINT",
+  "independent_audit_verdict": "RESTORABLE_WITH_REPRODUCED_CONSTRAINT_AND_WORKFLOW_DEFECTS",
+  "scientific_status": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "checks": {
+    "zip_crc": "PASS",
+    "main_manifest": {
+      "passed": 88,
+      "count": 88
+    },
+    "post_manifest": {
+      "passed": 4,
+      "count": 4
+    },
+    "reference_manifest": {
+      "passed": 8,
+      "count": 8
+    },
+    "delivered_decision_tests": {
+      "passed": 44,
+      "failed": 0
+    },
+    "preexisting_hybrid_tests": {
+      "passed": 86,
+      "failed": 0
+    },
+    "restore_T30": {
+      "passed": true,
+      "results_identical_byte_for_byte": 11
+    },
+    "altered_package_T01": {
+      "exit_code": 2,
+      "target_created": false
+    },
+    "typescript_no_emit": "PASS",
+    "independent_additional_tests": {
+      "passed": 1,
+      "failed": 9,
+      "count": 10
+    },
+    "source_files_modified": [],
+    "e2e_independent": {
+      "status": "BLOCKED_BY_ENVIRONMENT",
+      "error": "page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR on loopback",
+      "delivered_19_checks_not_revalidated": true
+    }
+  },
+  "audit_execution_seconds": 21.101579373999982,
+  "conservative_historical_reservation_seconds": 43.6,
+  "historical_plus_audit_reserved_seconds": 64.70157937399998,
+  "max_audit_command_seconds": 6.516383863000016,
+  "historical_ledger": {
+    "valid_hash_chain": true,
+    "records": 32,
+    "commands": 30,
+    "seconds_in_restored_ledger": 37.016,
+    "post_receipt_seconds": 43.001,
+    "reported_final_seconds_approx": 43.6,
+    "final_tail_not_supplied": true
+  },
+  "not_executed": [
+    "training",
+    "model_weight_loading",
+    "AJ-H_inference",
+    "P5",
+    "P6",
+    "network_install",
+    "push",
+    "merge",
+    "real_hospital_action"
+  ],
+  "limitations": [
+    "Python 3.13.5, not pinned 3.11.9",
+    "mypy/ruff unavailable; no installation",
+    "React/Vitest integration not delivered and not executed",
+    "test_decision_guard.py not executed: its fixture calls fit_benchmark; no new learning authorised",
+    "No remote Git verification; restoration verifies delivered tree rather than signed provenance",
+    "Audit is targeted, not exhaustive"
+  ],
+  "evidence": {
+    "counterexamples": "evidence/independent_probes.json",
+    "acceptance_tests": "tests/test_independent_acceptance.py",
+    "execution_ledger": "evidence/audit_execution_ledger.jsonl"
+  }
+}

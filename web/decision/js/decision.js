@@ -160,10 +160,18 @@ function reviewButtons(docId, reco, target, onModify) {
     const box = el("div", { class: "ds-buttons" });
     const feedback = el("p", { class: "ds-feedback", "data-testid": "review-feedback", role: "status" });
     const send = async (decision) => {
-        const r = await api("/api/review", {
-            unit: state.unit, recommendation_id: reco.recommendation_id, decision,
-            idempotency_key: `${reco.recommendation_id}:${decision}`,
-        });
+        let r;
+        try {
+            r = await api("/api/review", {
+                unit: state.unit, recommendation_id: reco.recommendation_id, decision,
+                idempotency_key: `${reco.recommendation_id}:${decision}`,
+            });
+        }
+        catch (error) {
+            feedback.dataset.outcome = "ERROR";
+            feedback.textContent = `Demande non traitée : ${String(error)}`;
+            return;
+        }
         const outcome = r.review.outcome;
         feedback.dataset.outcome = outcome;
         const texts = {
@@ -174,6 +182,8 @@ function reviewButtons(docId, reco, target, onModify) {
             REFUSED: `Validation impossible : ${r.review.reasons.join(", ")}.`,
         };
         feedback.textContent = texts[outcome] ?? outcome;
+        if (r.review.replayed)
+            feedback.append(` Reçu déjà enregistré ; validité actuelle : ${r.review.current_validity}.`);
         if (r.review.recompute_required) {
             const again = el("button", { class: "btn", type: "button", "data-testid": "recompute" }, "Recalculer maintenant");
             again.addEventListener("click", () => void loadAuto());
@@ -221,7 +231,7 @@ function renderAuto() {
         top.append(el("p", { class: "ds-warn", "data-testid": "conditional" }, `Résultat conditionnel : ${primary.conditional_on.join(", ")} demandé(s) mais non confirmé(s). Sans ce renfort : `, fig(id, reco, `/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`), " minutes non couvertes."));
     }
     const det = el("div", {});
-    [list("Raisons", reco.reasons), list("Conditions", reco.conditions), list("Incertitudes", reco.uncertainties)].forEach((n) => n && det.append(n));
+    [list("Raisons", reco.reasons), list("Conditions", reco.conditions), list("Incertitudes", reco.uncertainties), list("Hypothèses de remplacement et diagnostics", reco.diagnostics)].forEach((n) => n && det.append(n));
     top.append(det);
     reviewButtons(id, reco, top, () => openManual(primary));
     if (reco.alternative_plan_id) {

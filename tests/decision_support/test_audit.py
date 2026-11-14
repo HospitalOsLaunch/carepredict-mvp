@@ -114,3 +114,22 @@ def test_t32_no_hard_coded_product_figures_in_engine_or_cockpit():
 def test_json_pointer_resolution():
     doc = {"a": [{"b/c": 3}]}
     assert resolve_pointer(doc, "/a/0/b~1c") == 3
+
+
+def test_t29_truncation_or_loss_of_ledger_detected_by_anchor(tmp_path):
+    b = _budget()
+    ledger, logs = tmp_path / "ledger.jsonl", tmp_path / "logs"
+    quick = [sys.executable, "-c", "pass"]
+    for label in ("1", "2"):
+        assert b.run(quick, lot="T", label=label, ledger=ledger, logs=logs) == 0
+    anchor = b.anchor_path(ledger)
+    assert json.loads(anchor.read_text())["records"] == 2
+    full = ledger.read_text()
+    ledger.write_text(full.splitlines(keepends=True)[0])  # truncated to one record
+    with pytest.raises(b.LedgerError):
+        b.read_ledger(ledger)
+    ledger.unlink()  # lost entirely while the anchor remains
+    with pytest.raises(b.LedgerError):
+        b.read_ledger(ledger)
+    ledger.write_text(full)
+    assert len(b.read_ledger(ledger)) == 2

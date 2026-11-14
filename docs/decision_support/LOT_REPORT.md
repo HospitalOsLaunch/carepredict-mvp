@@ -1,6 +1,10 @@
 # Rapport par lot — reprise HospitalOS auto-first P0–P4
 
-Statut de livraison : `P0_P4_TECHNICAL_PASS` (voir `STATUS.json` du paquet).
+Statut de livraison : **`PARTIAL_WITH_CHECKPOINT`** depuis l'audit indépendant du 14 novembre
+2026 (constats F01–F08, corrigés en P2/P3bis ; portes restantes : Python 3.11.9 non testable hors
+ligne, ré-audit indépendant). Voir `CORRECTIONS_REPORT.md` et `STATUS.json` du paquet.
+L'annonce initiale `P0_P4_TECHNICAL_PASS` est conservée ci-dessous à titre historique : elle était
+prématurée, les tests livrés ne couvrant pas les contre-exemples A01–A09.
 Statut scientifique : `PROTOTYPE_UNVALIDATED` · `clinical_validation=false` · `G2=NO-GO`.
 Toutes les exécutions sont dans `evidence/decision_support/BUDGET_LEDGER.jsonl` (registre chaîné,
 journaux et SHA-256 dans `runlogs/`). Aucun push, merge, rebase, entraînement, chargement de

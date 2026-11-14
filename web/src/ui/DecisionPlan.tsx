@@ -176,7 +176,17 @@ function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: num
 function ReviewButtons(props: { store: DecisionStore; doc: DsDoc; onModify?: () => void }) {
   const { store, doc } = props;
   const [result, setResult] = useState<DsReview | null>(null);
-  const send = async (decision: "approve" | "reject") => setResult(await store.review(doc, decision));
+  const [conflict, setConflict] = useState<string | null>(null);
+  const send = async (decision: "approve" | "reject") => {
+    setConflict(null);
+    try {
+      setResult(await store.review(doc, decision));
+    } catch (error) {
+      // e.g. 409: the same idempotency key was already used for another request
+      setResult(null);
+      setConflict(String(error));
+    }
+  };
   const text: Record<DsReview["outcome"], string> = {
     APPROVED_IN_DEMO: "Validée dans la démonstration. Aucune commande n'a été envoyée ; agissez dans vos outils habituels.",
     REJECTED: "Refusée. Merci, c'est noté.",
@@ -210,6 +220,12 @@ function ReviewButtons(props: { store: DecisionStore; doc: DsDoc; onModify?: () 
         <p className="ds-feedback" role="status" data-testid="ds-feedback" data-outcome={result.outcome}>
           {text[result.outcome]}
           {result.reasons.length ? ` (${result.reasons.join(", ")})` : null}
+          {result.replayed ? (
+            <span className="mute" data-testid="ds-replayed">
+              {" "}
+              Reçu déjà enregistré pour cette même demande ; validité actuelle : {result.current_validity}.
+            </span>
+          ) : null}
           {result.recompute_required ? (
             <>
               {" "}
@@ -218,6 +234,11 @@ function ReviewButtons(props: { store: DecisionStore; doc: DsDoc; onModify?: () 
               </button>
             </>
           ) : null}
+        </p>
+      ) : null}
+      {conflict ? (
+        <p className="ds-err" role="alert" data-testid="ds-conflict">
+          Demande non traitée : {conflict}
         </p>
       ) : null}
     </>
@@ -275,6 +296,7 @@ function AutoPlan({ store, onModify }: { store: DecisionStore; onModify: () => v
           <Details title="Raisons" items={reco.reasons} />
           <Details title="Conditions" items={reco.conditions} />
           <Details title="Incertitudes" items={reco.uncertainties} />
+          <Details title="Hypothèses de remplacement et diagnostics" items={reco.diagnostics} />
           <ReviewButtons store={store} doc={doc} onModify={onModify} />
         </div>
       </section>

@@ -107,6 +107,9 @@ export interface DsReview {
   reasons: string[];
   recompute_required: boolean;
   external_command_sent: false;
+  /** Same key + same content: historical receipt, with validity re-evaluated now. */
+  replayed?: boolean;
+  current_validity?: string | null;
 }
 
 export interface DsCompacted {

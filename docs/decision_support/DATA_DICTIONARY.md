@@ -97,6 +97,15 @@ Unités natives des métriques :
 | `reinforcement_hours` | heures-soignant de renfort du plan |
 | `pressure_score` | 0–10, `PS-EXP-1` `EXPERIMENTAL_SYNTHETIC`, ou absent si `UNCONFIGURED` |
 
+Règles ajoutées après l'audit (P2/P3bis) : heures de verrou et d'échéance **entières** obligatoires
+(`unsupported_time_precision` sinon) ; heures « pas avant » observées arrondies à l'heure suivante ;
+un verrou validé doit satisfaire les mêmes préconditions qu'une action automatique, sinon il reste
+une hypothèse (heure conservée) ; un lit pouvant être libéré sans durée de nettoyage connue entraîne
+l'abstention, sauf hypothèse configurée et signalée (`unknown_cleaning_assumption`) ; le planning de
+chaque compétence requise doit être déclaré ; prêts de personnel contrôlés en cumul ; identifiants
+adressés par le contenu ; revue : clé d'idempotence liée à `request_fingerprint`, rejeu avec
+`replayed`/`current_validity`, conflit explicite sinon.
+
 Statuts fonctionnels : `RECOMMENDATION_READY`, `NO_ACTION_PREFERRED`, `INSUFFICIENT_DATA`,
 `INFEASIBLE`, `HYPOTHETICAL_ONLY`, `INVALIDATED` (ce dernier porté par la revue).
 Statut scientifique figé : `PROTOTYPE_UNVALIDATED`, `clinical_validation=false`, `G2=NO-GO`.

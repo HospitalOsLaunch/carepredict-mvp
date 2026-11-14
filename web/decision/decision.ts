@@ -166,10 +166,17 @@ function reviewButtons(docId: string, reco: Json, target: HTMLElement, onModify?
   const box = el("div", { class: "ds-buttons" });
   const feedback = el("p", { class: "ds-feedback", "data-testid": "review-feedback", role: "status" });
   const send = async (decision: string) => {
-    const r = await api("/api/review", {
+    let r: Json;
+    try {
+      r = await api("/api/review", {
       unit: state.unit, recommendation_id: reco.recommendation_id, decision,
       idempotency_key: `${reco.recommendation_id}:${decision}`,
     });
+    } catch (error) {
+      feedback.dataset.outcome = "ERROR";
+      feedback.textContent = `Demande non traitée : ${String(error)}`;
+      return;
+    }
     const outcome = r.review.outcome;
     feedback.dataset.outcome = outcome;
     const texts: Record<string, string> = {
@@ -180,6 +187,7 @@ function reviewButtons(docId: string, reco: Json, target: HTMLElement, onModify?
       REFUSED: `Validation impossible : ${r.review.reasons.join(", ")}.`,
     };
     feedback.textContent = texts[outcome] ?? outcome;
+    if (r.review.replayed) feedback.append(` Reçu déjà enregistré ; validité actuelle : ${r.review.current_validity}.`);
     if (r.review.recompute_required) {
       const again = el("button", { class: "btn", type: "button", "data-testid": "recompute" }, "Recalculer maintenant");
       again.addEventListener("click", () => void loadAuto());
@@ -227,7 +235,7 @@ function renderAuto(): void {
       fig(id, reco, `/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`), " minutes non couvertes."));
   }
   const det = el("div", {});
-  [list("Raisons", reco.reasons), list("Conditions", reco.conditions), list("Incertitudes", reco.uncertainties)].forEach((n) => n && det.append(n));
+  [list("Raisons", reco.reasons), list("Conditions", reco.conditions), list("Incertitudes", reco.uncertainties), list("Hypothèses de remplacement et diagnostics", reco.diagnostics)].forEach((n) => n && det.append(n));
   top.append(det);
   reviewButtons(id, reco, top, () => openManual(primary));
   if (reco.alternative_plan_id) {

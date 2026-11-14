@@ -41,9 +41,23 @@ def _digest(record: dict[str, object]) -> str:
     return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
 
 
+def anchor_path(path: Path) -> Path:
+    return path.with_name(path.stem + ".anchor.json")
+
+
 def read_ledger(path: Path) -> list[dict[str, object]]:
-    """Read and verify the hash chain. A broken chain is a hard stop, never a reset."""
+    """Read and verify the hash chain. A broken chain is a hard stop, never a reset.
+
+    The anchor file next to the ledger records its length and last record hash; a missing or
+    truncated ledger is then detected. Limit: if both the ledger AND its anchor disappear,
+    only an external copy of the terminal (delivery package, LEDGER_TERMINAL.json listed in
+    SHA256SUMS.post) can prove that a counter existed.
+    """
+    anchor = anchor_path(path)
+    expected = json.loads(anchor.read_text()) if anchor.exists() else None
     if not path.exists():
+        if expected and expected.get("records", 0) > 0:
+            raise LedgerError("Ledger missing while its anchor exists: refusing to run")
         return []
     records: list[dict[str, object]] = []
     previous = GENESIS
@@ -57,7 +71,28 @@ def read_ledger(path: Path) -> list[dict[str, object]]:
             raise LedgerError(f"Ledger chain broken at line {number}: refusing to run")
         previous = str(record["record_sha256"])
         records.append(record)
+    if expected is not None:
+        n = int(expected["records"])
+        last = expected["last_record_sha256"]
+        if len(records) < n or (n and records[n - 1]["record_sha256"] != last):
+            raise LedgerError(
+                f"Ledger shorter than or diverging from its anchor ({len(records)} < {n}): "
+                "refusing to run"
+            )
     return records
+
+
+def write_anchor(path: Path, records: list[dict[str, object]]) -> dict[str, object]:
+    anchor = {
+        "records": len(records),
+        "last_record_sha256": str(records[-1]["record_sha256"]) if records else GENESIS,
+        "used_wall_seconds": round(used_seconds(records), 3),
+        "ledger_file_sha256": (
+            hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
+        ),
+    }
+    anchor_path(path).write_text(json.dumps(anchor, indent=1, sort_keys=True) + "\n")
+    return anchor
 
 
 def used_seconds(records: list[dict[str, object]]) -> float:
@@ -72,6 +107,7 @@ def append(path: Path, record: dict[str, object]) -> dict[str, object]:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a") as handle:
         handle.write(json.dumps(record, sort_keys=True) + "\n")
+    write_anchor(path, [*records, record])
     return record
 
 
