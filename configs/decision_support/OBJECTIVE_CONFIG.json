@@ -1,0 +1,17 @@
+{
+  "schema": "DS_OBJECTIVE_1",
+  "objective_id": "OBJ-LEX-1",
+  "version": "1",
+  "fixed_at": "P1, before any planner result was computed",
+  "status": "demonstration_convention_not_a_validated_clinical_policy",
+  "tiers": [
+    {"rank": 0, "metric": "admissibility", "rule": "hard: no safety, eligibility, resource, ordering or lock violation"},
+    {"rank": 1, "metric": "uncovered_care_minutes", "unit": "staff_minutes_over_horizon", "sense": "min", "aggregation": "mean_over_selection_scenarios", "equivalence_tolerance": 15,
+     "definition": "in-unit minutes not covered by present staff of the required skill (including tasks needing more simultaneous staff than present) + care minutes of patients assigned to the unit but still waiting for a bed"},
+    {"rank": 2, "metric": "reinforcement_hours", "unit": "staff_hours", "sense": "min"},
+    {"rank": 3, "metric": "interventions", "unit": "actions", "sense": "min"}
+  ],
+  "reported_not_optimised": ["waiting_patient_hours", "beds_returned", "admissions_by_end", "pressure_trajectory"],
+  "ties": "habitual practice (no action) wins; then fewer reinforcement hours, fewer interventions, lower tier-1 value, plan order",
+  "admissions_are_not_a_lever": true
+}

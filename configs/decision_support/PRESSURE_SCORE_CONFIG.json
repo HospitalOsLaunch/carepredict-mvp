@@ -1,0 +1,13 @@
+{
+  "schema": "DS_PRESSURE_SCORE_1",
+  "score_id": "PS-EXP-1",
+  "version": "1",
+  "status": "EXPERIMENTAL_SYNTHETIC",
+  "fixed_at": "P1, before any planner result was computed",
+  "scale": [0, 10],
+  "formula": "min(10, floor(uncovered_minutes_in_hour/15 + 2*waiting_patients + 1*logistic_blockers + (2 if clean_free_beds == 0 else 0) + 0.5))",
+  "coefficients": {"uncovered_minutes_divisor": 15, "waiting_patient": 2, "logistic_blocker": 1, "no_clean_free_bed": 2},
+  "monotone": "non-decreasing in uncovered minutes, waiting patients and blockers; non-increasing in clean free beds",
+  "threshold": 7,
+  "claims": "summary of components for a synthetic fixture; no real-world calibration; not an objective"
+}

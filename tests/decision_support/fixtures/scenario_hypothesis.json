@@ -1,0 +1,20 @@
+{
+ "description": "Hypothetical discharge of S04 (no authorisation) at 13:00 (T06).",
+ "fixture": "nominal_auto.json",
+ "locks": {
+  "deadline": {
+   "day_offset": 1,
+   "local_time": "20:00:00"
+  },
+  "locks": [
+   {
+    "at": "2026-11-17T12:00:00+00:00",
+    "basis": "hypothesis_only",
+    "kind": "discharge_at",
+    "stay_id": "S04"
+   }
+  ]
+ },
+ "scenario_id": "SC-HYPOTHESIS",
+ "synthetic": true
+}

@@ -1,0 +1,87 @@
+{
+ "additionalProperties": false,
+ "properties": {
+  "at": {
+   "format": "date-time",
+   "title": "At",
+   "type": "string"
+  },
+  "decision": {
+   "enum": [
+    "approve",
+    "reject",
+    "modify"
+   ],
+   "title": "Decision",
+   "type": "string"
+  },
+  "external_command_sent": {
+   "const": false,
+   "default": false,
+   "title": "External Command Sent",
+   "type": "boolean"
+  },
+  "idempotency_key": {
+   "title": "Idempotency Key",
+   "type": "string"
+  },
+  "lifecycle": {
+   "additionalProperties": {
+    "type": "string"
+   },
+   "title": "Lifecycle",
+   "type": "object"
+  },
+  "outcome": {
+   "enum": [
+    "APPROVED_IN_DEMO",
+    "REJECTED",
+    "MODIFY_REQUESTED",
+    "INVALIDATED",
+    "REFUSED"
+   ],
+   "title": "Outcome",
+   "type": "string"
+  },
+  "reasons": {
+   "items": {
+    "type": "string"
+   },
+   "title": "Reasons",
+   "type": "array"
+  },
+  "recommendation_id": {
+   "title": "Recommendation Id",
+   "type": "string"
+  },
+  "recompute_required": {
+   "title": "Recompute Required",
+   "type": "boolean"
+  },
+  "reservations": {
+   "items": {
+    "type": "string"
+   },
+   "title": "Reservations",
+   "type": "array"
+  },
+  "review_id": {
+   "title": "Review Id",
+   "type": "string"
+  }
+ },
+ "required": [
+  "review_id",
+  "recommendation_id",
+  "decision",
+  "outcome",
+  "reasons",
+  "recompute_required",
+  "lifecycle",
+  "reservations",
+  "idempotency_key",
+  "at"
+ ],
+ "title": "ReviewResult",
+ "type": "object"
+}

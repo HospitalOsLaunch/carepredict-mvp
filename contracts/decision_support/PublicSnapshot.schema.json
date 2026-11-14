@@ -1,0 +1,776 @@
+{
+ "$defs": {
+  "AdmissionRequest": {
+   "additionalProperties": false,
+   "properties": {
+    "admission_task_minutes": {
+     "minimum": 0,
+     "title": "Admission Task Minutes",
+     "type": "integer"
+    },
+    "arrival_delay": {
+     "$ref": "#/$defs/Distribution"
+    },
+    "care": {
+     "items": {
+      "$ref": "#/$defs/CareProfile"
+     },
+     "title": "Care",
+     "type": "array"
+    },
+    "expected_arrival": {
+     "format": "date-time",
+     "title": "Expected Arrival",
+     "type": "string"
+    },
+    "provenance": {
+     "$ref": "#/$defs/Provenance"
+    },
+    "request_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Request Id",
+     "type": "string"
+    },
+    "requirements": {
+     "default": [],
+     "items": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "type": "string"
+     },
+     "title": "Requirements",
+     "type": "array"
+    }
+   },
+   "required": [
+    "request_id",
+    "expected_arrival",
+    "arrival_delay",
+    "care",
+    "admission_task_minutes",
+    "provenance"
+   ],
+   "title": "AdmissionRequest",
+   "type": "object"
+  },
+  "BedState": {
+   "additionalProperties": false,
+   "properties": {
+    "bed_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Bed Id",
+     "type": "string"
+    },
+    "capabilities": {
+     "default": [],
+     "items": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "type": "string"
+     },
+     "title": "Capabilities",
+     "type": "array"
+    },
+    "cleaning": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Distribution"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "provenance": {
+     "$ref": "#/$defs/Provenance"
+    },
+    "status": {
+     "enum": [
+      "occupied",
+      "clean",
+      "dirty",
+      "cleaning",
+      "closed",
+      "unknown"
+     ],
+     "title": "Status",
+     "type": "string"
+    }
+   },
+   "required": [
+    "bed_id",
+    "status",
+    "provenance"
+   ],
+   "title": "BedState",
+   "type": "object"
+  },
+  "CareProfile": {
+   "additionalProperties": false,
+   "description": "Estimated recurring care in staff-minutes per hour, by skill (synthetic).",
+   "properties": {
+    "day_minutes_per_hour": {
+     "minimum": 0,
+     "title": "Day Minutes Per Hour",
+     "type": "integer"
+    },
+    "night_minutes_per_hour": {
+     "minimum": 0,
+     "title": "Night Minutes Per Hour",
+     "type": "integer"
+    },
+    "skill": {
+     "enum": [
+      "IDE",
+      "AS"
+     ],
+     "title": "Skill",
+     "type": "string"
+    },
+    "status": {
+     "default": "estimated",
+     "enum": [
+      "known",
+      "estimated"
+     ],
+     "title": "Status",
+     "type": "string"
+    }
+   },
+   "required": [
+    "skill",
+    "day_minutes_per_hour",
+    "night_minutes_per_hour"
+   ],
+   "title": "CareProfile",
+   "type": "object"
+  },
+  "CareTask": {
+   "additionalProperties": false,
+   "properties": {
+    "minutes": {
+     "exclusiveMinimum": 0,
+     "maximum": 60,
+     "title": "Minutes",
+     "type": "integer"
+    },
+    "skill": {
+     "enum": [
+      "IDE",
+      "AS"
+     ],
+     "title": "Skill",
+     "type": "string"
+    },
+    "staff_required": {
+     "default": 1,
+     "maximum": 4,
+     "minimum": 1,
+     "title": "Staff Required",
+     "type": "integer"
+    },
+    "start": {
+     "format": "date-time",
+     "title": "Start",
+     "type": "string"
+    },
+    "status": {
+     "enum": [
+      "known",
+      "estimated"
+     ],
+     "title": "Status",
+     "type": "string"
+    },
+    "task_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Task Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "task_id",
+    "skill",
+    "start",
+    "minutes",
+    "status"
+   ],
+   "title": "CareTask",
+   "type": "object"
+  },
+  "Distribution": {
+   "additionalProperties": false,
+   "description": "Finite synthetic distribution over whole hours (integer weights, exact arithmetic).\n\nIt is a declared hypothesis on synthetic data, not a calibration on real data.",
+   "properties": {
+    "support": {
+     "items": {
+      "type": "integer"
+     },
+     "maxItems": 12,
+     "minItems": 1,
+     "title": "Support",
+     "type": "array"
+    },
+    "weights": {
+     "items": {
+      "exclusiveMinimum": 0,
+      "type": "integer"
+     },
+     "minItems": 1,
+     "title": "Weights",
+     "type": "array"
+    }
+   },
+   "required": [
+    "support",
+    "weights"
+   ],
+   "title": "Distribution",
+   "type": "object"
+  },
+  "Provenance": {
+   "additionalProperties": false,
+   "properties": {
+    "available_at": {
+     "format": "date-time",
+     "title": "Available At",
+     "type": "string"
+    },
+    "event_time": {
+     "format": "date-time",
+     "title": "Event Time",
+     "type": "string"
+    },
+    "obs_id": {
+     "title": "Obs Id",
+     "type": "string"
+    },
+    "source": {
+     "title": "Source",
+     "type": "string"
+    }
+   },
+   "required": [
+    "obs_id",
+    "source",
+    "event_time",
+    "available_at"
+   ],
+   "title": "Provenance",
+   "type": "object"
+  },
+  "ReinforcementOption": {
+   "additionalProperties": false,
+   "properties": {
+    "confirmation": {
+     "enum": [
+      "confirmed",
+      "requested",
+      "not_requested",
+      "unknown"
+     ],
+     "title": "Confirmation",
+     "type": "string"
+    },
+    "end": {
+     "format": "date-time",
+     "title": "End",
+     "type": "string"
+    },
+    "lending_unit": {
+     "anyOf": [
+      {
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Lending Unit"
+    },
+    "lending_unit_minimum": {
+     "anyOf": [
+      {
+       "minimum": 0,
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Lending Unit Minimum"
+    },
+    "lending_unit_scheduled": {
+     "anyOf": [
+      {
+       "minimum": 0,
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Lending Unit Scheduled"
+    },
+    "option_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Option Id",
+     "type": "string"
+    },
+    "skill": {
+     "enum": [
+      "IDE",
+      "AS"
+     ],
+     "title": "Skill",
+     "type": "string"
+    },
+    "source": {
+     "enum": [
+      "internal_pool",
+      "interim",
+      "shared_unit"
+     ],
+     "title": "Source",
+     "type": "string"
+    },
+    "start": {
+     "format": "date-time",
+     "title": "Start",
+     "type": "string"
+    }
+   },
+   "required": [
+    "option_id",
+    "skill",
+    "start",
+    "end",
+    "source",
+    "confirmation"
+   ],
+   "title": "ReinforcementOption",
+   "type": "object"
+  },
+  "RosterCoverage": {
+   "additionalProperties": false,
+   "description": "Declares the roster of a skill complete over a window. Absent => roster unknown.",
+   "properties": {
+    "end": {
+     "format": "date-time",
+     "title": "End",
+     "type": "string"
+    },
+    "skill": {
+     "enum": [
+      "IDE",
+      "AS"
+     ],
+     "title": "Skill",
+     "type": "string"
+    },
+    "start": {
+     "format": "date-time",
+     "title": "Start",
+     "type": "string"
+    }
+   },
+   "required": [
+    "skill",
+    "start",
+    "end"
+   ],
+   "title": "RosterCoverage",
+   "type": "object"
+  },
+  "StaffShift": {
+   "additionalProperties": false,
+   "properties": {
+    "end": {
+     "format": "date-time",
+     "title": "End",
+     "type": "string"
+    },
+    "skill": {
+     "enum": [
+      "IDE",
+      "AS"
+     ],
+     "title": "Skill",
+     "type": "string"
+    },
+    "staff_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Staff Id",
+     "type": "string"
+    },
+    "start": {
+     "format": "date-time",
+     "title": "Start",
+     "type": "string"
+    },
+    "status": {
+     "enum": [
+      "scheduled",
+      "confirmed"
+     ],
+     "title": "Status",
+     "type": "string"
+    }
+   },
+   "required": [
+    "staff_id",
+    "skill",
+    "start",
+    "end",
+    "status"
+   ],
+   "title": "StaffShift",
+   "type": "object"
+  },
+  "StayState": {
+   "additionalProperties": false,
+   "properties": {
+    "bed_id": {
+     "anyOf": [
+      {
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Bed Id"
+    },
+    "care": {
+     "default": [],
+     "items": {
+      "$ref": "#/$defs/CareProfile"
+     },
+     "title": "Care",
+     "type": "array"
+    },
+    "destination": {
+     "enum": [
+      "home",
+      "facility",
+      "unknown"
+     ],
+     "title": "Destination",
+     "type": "string"
+    },
+    "medical_authorization": {
+     "enum": [
+      "authorized",
+      "not_authorized",
+      "revoked",
+      "unknown"
+     ],
+     "title": "Medical Authorization",
+     "type": "string"
+    },
+    "obstacles": {
+     "default": [],
+     "items": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "type": "string"
+     },
+     "title": "Obstacles",
+     "type": "array"
+    },
+    "planned_departure": {
+     "anyOf": [
+      {
+       "format": "date-time",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Planned Departure"
+    },
+    "provenance": {
+     "additionalProperties": {
+      "$ref": "#/$defs/Provenance"
+     },
+     "title": "Provenance",
+     "type": "object"
+    },
+    "ready_delay": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Distribution"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "ready_earliest": {
+     "anyOf": [
+      {
+       "format": "date-time",
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Ready Earliest"
+    },
+    "stay_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Stay Id",
+     "type": "string"
+    },
+    "tasks": {
+     "default": [],
+     "items": {
+      "$ref": "#/$defs/CareTask"
+     },
+     "title": "Tasks",
+     "type": "array"
+    },
+    "transport_lead": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/Distribution"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "transport_need": {
+     "enum": [
+      "none",
+      "seated",
+      "stretcher",
+      "unknown"
+     ],
+     "title": "Transport Need",
+     "type": "string"
+    }
+   },
+   "required": [
+    "stay_id",
+    "bed_id",
+    "medical_authorization",
+    "destination",
+    "transport_need",
+    "provenance"
+   ],
+   "title": "StayState",
+   "type": "object"
+  },
+  "TeamCapacity": {
+   "additionalProperties": false,
+   "properties": {
+    "capacity": {
+     "anyOf": [
+      {
+       "minimum": 0,
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Capacity"
+    },
+    "end": {
+     "format": "date-time",
+     "title": "End",
+     "type": "string"
+    },
+    "external_commitments": {
+     "anyOf": [
+      {
+       "minimum": 0,
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "External Commitments"
+    },
+    "start": {
+     "format": "date-time",
+     "title": "Start",
+     "type": "string"
+    },
+    "team": {
+     "enum": [
+      "transport",
+      "cleaning"
+     ],
+     "title": "Team",
+     "type": "string"
+    }
+   },
+   "required": [
+    "team",
+    "start",
+    "end",
+    "capacity",
+    "external_commitments"
+   ],
+   "title": "TeamCapacity",
+   "type": "object"
+  },
+  "UnitInfo": {
+   "additionalProperties": false,
+   "properties": {
+    "profile_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Profile Id",
+     "type": "string"
+    },
+    "profile_version": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Profile Version",
+     "type": "string"
+    },
+    "timezone": {
+     "const": "Europe/Paris",
+     "default": "Europe/Paris",
+     "title": "Timezone",
+     "type": "string"
+    },
+    "unit_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Unit Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "unit_id",
+    "profile_id",
+    "profile_version"
+   ],
+   "title": "UnitInfo",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "description": "What the unit knows at ``as_of``. Contains no private realisation.",
+ "properties": {
+  "admissions": {
+   "items": {
+    "$ref": "#/$defs/AdmissionRequest"
+   },
+   "title": "Admissions",
+   "type": "array"
+  },
+  "as_of": {
+   "format": "date-time",
+   "title": "As Of",
+   "type": "string"
+  },
+  "beds": {
+   "items": {
+    "$ref": "#/$defs/BedState"
+   },
+   "title": "Beds",
+   "type": "array"
+  },
+  "excluded_observations": {
+   "additionalProperties": {
+    "type": "integer"
+   },
+   "default": {},
+   "title": "Excluded Observations",
+   "type": "object"
+  },
+  "fingerprint": {
+   "title": "Fingerprint",
+   "type": "string"
+  },
+  "issues": {
+   "default": [],
+   "items": {
+    "type": "string"
+   },
+   "title": "Issues",
+   "type": "array"
+  },
+  "reinforcements": {
+   "items": {
+    "$ref": "#/$defs/ReinforcementOption"
+   },
+   "title": "Reinforcements",
+   "type": "array"
+  },
+  "roster_coverage": {
+   "items": {
+    "$ref": "#/$defs/RosterCoverage"
+   },
+   "title": "Roster Coverage",
+   "type": "array"
+  },
+  "schema_version": {
+   "const": "DS_PUBLIC_SNAPSHOT_1",
+   "default": "DS_PUBLIC_SNAPSHOT_1",
+   "title": "Schema Version",
+   "type": "string"
+  },
+  "shifts": {
+   "items": {
+    "$ref": "#/$defs/StaffShift"
+   },
+   "title": "Shifts",
+   "type": "array"
+  },
+  "snapshot_id": {
+   "title": "Snapshot Id",
+   "type": "string"
+  },
+  "stays": {
+   "items": {
+    "$ref": "#/$defs/StayState"
+   },
+   "title": "Stays",
+   "type": "array"
+  },
+  "synthetic": {
+   "const": true,
+   "default": true,
+   "title": "Synthetic",
+   "type": "boolean"
+  },
+  "teams": {
+   "items": {
+    "$ref": "#/$defs/TeamCapacity"
+   },
+   "title": "Teams",
+   "type": "array"
+  },
+  "unit": {
+   "$ref": "#/$defs/UnitInfo"
+  }
+ },
+ "required": [
+  "snapshot_id",
+  "fingerprint",
+  "as_of",
+  "unit",
+  "stays",
+  "beds",
+  "admissions",
+  "shifts",
+  "roster_coverage",
+  "reinforcements",
+  "teams"
+ ],
+ "title": "PublicSnapshot",
+ "type": "object"
+}
