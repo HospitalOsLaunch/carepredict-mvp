@@ -3,7 +3,7 @@
 
     python3 scripts/ds_package.py --reference <dir of the user's reprise package> --out delivery
 
-Contents: full git bundle of the work branch, format-patch series from the base, the user's
+Contents: exact HEAD source tree (git archive), format-patch series from the base, the user's
 reference plan package (unchanged), evidence, docs, STATUS.json, restore.sh and SHA256SUMS.
 """
 
@@ -26,6 +26,10 @@ NAME = "HospitalOS_DS_P0-P4_20261114"
 RESTORE = r"""#!/bin/sh
 # Restore the HospitalOS decision-support P0-P4 work into a NEW directory and replay it.
 # Usage: sh restore.sh <new_empty_dir>   (optional env PYTEST_PATH = site-packages holding pytest)
+# Path A (default): exact source tree of HEAD from source_head.tar (the session clone is shallow,
+#   so a self-contained git bundle of the whole history cannot be produced).
+# Path B (with history): in a clone containing __BASE__, run
+#   git checkout -b __BRANCH__ __BASE__ && git am patches/*.patch
 set -eu
 PKG=$(cd "$(dirname "$0")" && pwd)
 TARGET=${1:?usage: sh restore.sh <new_empty_dir>}
@@ -37,11 +41,10 @@ fi
 if [ -e "$TARGET" ] && [ -n "$(ls -A "$TARGET" 2>/dev/null)" ]; then
   echo "ABORT: target directory is not empty" >&2; exit 3
 fi
-git clone -q -b __BRANCH__ "$PKG/repo.bundle" "$TARGET"
+mkdir -p "$TARGET"
+tar -xf "$PKG/source_head.tar" -C "$TARGET"
 cd "$TARGET"
-HEAD=$(git rev-parse HEAD)
-[ "$HEAD" = "$(cat "$PKG/HEAD.txt")" ] || { echo "ABORT: head mismatch" >&2; exit 4; }
-git merge-base --is-ancestor __BASE__ HEAD || { echo "ABORT: base not in history" >&2; exit 5; }
+HEAD=$(cat "$PKG/HEAD.txt")
 export PYTHONPATH="${PYTEST_PATH:+$PYTEST_PATH:}src:."
 python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 && T=pass || T=fail
 python3 -m hospitalos.decision_support export --out restore_results > /dev/null
@@ -52,8 +55,8 @@ pkg, target, head, tests = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3], sy
 index = json.loads((pkg / "evidence/results/index.json").read_text())
 diff = [f["file"] for f in index["files"]
         if hashlib.sha256((target / "restore_results" / f["file"]).read_bytes()).hexdigest() != f["sha256"]]
-receipt = {"test": "T30", "restored_head": head, "tests": tests,
-           "results_compared": len(index["files"]), "results_differing": diff,
+receipt = {"test": "T30", "restored_tree_of_head": head, "method": "source_head.tar",
+           "tests": tests, "results_compared": len(index["files"]), "results_differing": diff,
            "status": "PASS" if tests == "pass" and not diff else "FAIL"}
 (target / "RESTORE_RECEIPT.json").write_text(json.dumps(receipt, indent=1) + "\n")
 print(json.dumps(receipt))
@@ -84,12 +87,15 @@ def main() -> int:
         shutil.rmtree(pkg)
     pkg.mkdir(parents=True)
     head = git("rev-parse", "HEAD")
-    git("bundle", "create", str(pkg / "repo.bundle"), BRANCH)
-    git("format-patch", "-q", f"{BASE}..HEAD", "-o", str(pkg / "patches"))
+    # The session clone is shallow: a full-history bundle is not self-contained. Ship the exact
+    # HEAD tree (git archive) plus the patch series from the base instead.
+    git("archive", "--format=tar", "-o", str(pkg / "source_head.tar"), "HEAD")
+    git("format-patch", "-q", "--binary", f"{BASE}..HEAD", "-o", str(pkg / "patches"))
     (pkg / "HEAD.txt").write_text(head + "\n")
     (pkg / "BASE.txt").write_text(
         f"base {BASE} (origin/claude/cockpit-web, linear descendant of main bfa1fa7)\n"
-        f"branch {BRANCH}\nhead {head}\nnot pushed\n")
+        f"branch {BRANCH}\nhead {head}\nnot pushed\n"
+        "session clone is shallow: no self-contained history bundle; source_head.tar + patches\n")
     shutil.copytree(args.reference, pkg / "reference")
     shutil.copytree(ROOT / "evidence/decision_support", pkg / "evidence")
     shutil.copytree(ROOT / "docs/decision_support", pkg / "docs")
