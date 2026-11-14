@@ -36,6 +36,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    **D1–D12 approuvées** selon les recommandations (`P5_DECISIONS_v2.md`) : protocole approuvé,
    exécution **non autorisée** ; restent à accorder : (i) mise en œuvre + pilote P5.0–P5.2,
    installation de scikit-learn, (ii) évaluation P5a, (iii) ajustements et évaluation P5b.
+   **P5.0–P5.2 exécutés** (`P5_LOT_REPORT_P5_0-2.md`) : registre P5 8,383 s / 1200 s ; 24/24 tests ;
+   pilote partiel (ajustements non chronométrés, scikit-learn absent). Prochaine décision : D4
+   (installation), puis fin du pilote (chronométrage de 2 ajustements) avant (ii)/(iii).
 
 ## Hors de ce projet
 

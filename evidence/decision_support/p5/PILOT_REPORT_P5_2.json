@@ -1,0 +1,98 @@
+{
+ "schema": "HOSPITALOS_P5_PILOT_REPORT_1",
+ "lot": "P5.2",
+ "protocol": "P5-PROTO-2",
+ "partition": "P5a_dev (first 2 committed structures x 10 parents)",
+ "status": "PILOT_PARTIAL_FITS_NOT_TIMED",
+ "reason_partial": "scikit-learn absent; its installation (D4) is not authorised; the 2 costliest fits of the pilot could not be timed",
+ "measured": {
+  "parents": 20,
+  "candidates_generated": 20,
+  "exclusions": 0,
+  "plans_per_parent": {
+   "mean": 7.4,
+   "min": 1,
+   "max": 14
+  },
+  "truth_simulations": 888,
+  "truth_simulation_ms": 0.7663919470725399,
+  "recommend_s": {
+   "mean": 0.04382326850000027,
+   "max": 0.10586052999997264
+  },
+  "extraction_ms_per_row_per_family": 0.0896747972967967,
+  "generation_s_per_parent": 0.002822996550003154,
+  "twin_s_per_parent": 0.0016654098499941483,
+  "bootstrap_2000_resamples_s_20_parents": 0.05406590099994446,
+  "pilot_command_wall_s": 2.024,
+  "guardrails_dev": {
+   "violations": 0,
+   "chosen_plan_in_universe": true,
+   "universe_invariant_over_replicates_and_regimes": true,
+   "abstentions_evaluated_as_habitual": 0,
+   "twin_degenerate": 0
+  }
+ },
+ "projection_s": {
+  "P5.3_P5a": {
+   "mean_universe": 32.3,
+   "universe_16": 48.1,
+   "cap": 330
+  },
+  "P5.4_P5b_without_fits": {
+   "mean_universe": 39.3,
+   "universe_16": 69.6,
+   "cap": 470
+  },
+  "P5.4_fits_72_UNMEASURED": {
+   "assumption": "order of magnitude 3-20 ns per (training row x feature) per tree, single thread; NOT measured",
+   "mean_universe": [
+    135,
+    902
+   ],
+   "universe_16": [
+    293,
+    1951
+   ]
+  },
+  "P5.4_fits_24_if_seed_identical_UNMEASURED": {
+   "mean_universe": [
+    45,
+    301
+   ],
+   "universe_16": [
+    98,
+    650
+   ]
+  },
+  "P5.5": {
+   "protocol_estimate": [
+    25,
+    70
+   ],
+   "bootstrap_measured_cost": "~2.7 ms per parent per 2000 resamples"
+  },
+  "P5.I_install": {
+   "protocol_estimate": [
+    15,
+    60
+   ]
+  },
+  "already_used": 8.383,
+  "total_without_fits": [
+   150,
+   290
+  ],
+  "total_with_72_fits": [
+   285,
+   2240
+  ]
+ },
+ "ladder_decision": "UNDETERMINED: the projection is dominated by unmeasured fit cost. L1 and L3 save < 20 s (simulations are cheap); L2 requires a pilot seed-identity check that needs scikit-learn. No ladder step is applied; nothing beyond P5.2 is run.",
+ "next_required": [
+  "authorise D4 (scikit-learn install, lot P5.I, cap 60 s)",
+  "then complete P5.2 within its remaining cap: time the 2 costliest fits and the seed identity check",
+  "then decide per protocol: projection <= 1000 s -> continue when (ii)/(iii) are authorised; else ladder; else stop and ask (1800 s or P5a only)"
+ ],
+ "development_values": "recorded in pilot_parents.jsonl as U_dev_only; never read as a result"
+}

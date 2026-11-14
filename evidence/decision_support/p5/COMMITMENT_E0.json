@@ -1,0 +1,52 @@
+{
+ "at_utc": "2026-11-14T10:37:00.893901+00:00",
+ "code_sha256": {
+  "scripts/p5_budget_run.py": "23a27e910247bc724106fa67e2b647af21eed79457442832e52d54ff5c858b47",
+  "scripts/p5_commit.py": "f2f3ccd5122133116db7a3135da7efe130774dd5ea294fb12ba7b9d96098b519",
+  "src/hospitalos/p5/__init__.py": "72759da136176528c245edeb3e5635cddddd7d28508f9c46d63c2e0104601b69",
+  "src/hospitalos/p5/analysis.py": "79f94373889811dec90bde480bfa072b4a5a801f9395edcb5247ca070bb19897",
+  "src/hospitalos/p5/eval_adapter.py": "0f498fc981cf1d5f282dfc8a09ed3153f9e8fb0bfce15cf5f87b66547cde0977",
+  "src/hospitalos/p5/features.py": "649138e766f544a8b4c83e2fd59697b2dea5156e1737edf1a342debd37cee592",
+  "src/hospitalos/p5/generator.py": "0f6f626c5b4d7516bd6d2de5d4260a943a74e931ad14b16a59a9c574478e735f",
+  "src/hospitalos/p5/truth.py": "e82a37c4568d18bb12a43611028503ffb766a53d332885bfae1be37e51a686bf"
+ },
+ "documents_sha256": {
+  "docs/decision_support/P5_CHANGES_v1_to_v2.md": "c9309083e1a09818c9f6a1f55015384f41da3ba60e1faa5601949736f36a10d4",
+  "docs/decision_support/P5_DECISIONS_v2.json": "3d6d700ff5d954aeb3b17c866b6c98e8985ca07da15ff6f18e30bc4f8e2bf6dc",
+  "docs/decision_support/P5_PROTOCOL_PARAMS_v2.json": "1d284b0e9ebe2f0f8eb9b9dc052eb67ae73c5bcc5faca7514552213a51f8d0f7",
+  "docs/decision_support/P5_PROTOCOL_v2.md": "ad0fdaa592d84461f61f3c68f3470f94b941bde006d0fe57af69a4005797881c"
+ },
+ "feature_counts": {
+  "M_agg": 290,
+  "M_ent": 718
+ },
+ "feature_schema_sha256": "59fcd2482f4d58075897696a6c59b2a0cf60255f502864a59c352df85688de95",
+ "generator_version": "v_g0",
+ "p5_package": "p5-0.1.0",
+ "reason": "initial commitment before any generation",
+ "seeds": {
+  "bootstrap_seed_sha256": "d33b6593e65d1a5ffa71c13eaebebac372d7abd346bd7c5270c56f56002d813c",
+  "commitment_id": "276d965da8a31a5d8ccf536df2841506a004adb8cc461ce3e8c7faf2857df45c",
+  "seed_list_sha256": {
+   "P5a_dev": "a767385ef3275d5c27bf6c82f3d29d7bea8e254cee807781505e80cb1ccc0500",
+   "P5a_eval": "040e6a1fe77137c9211d66eeb6da8b18198b3e1476b1f5ea076c7df3e8bf3481",
+   "P5b_eval": "1ee6de6efb4a728049940e3c4f447ff9675de9f02514cff5de0df755c35e9e5f",
+   "P5b_train": "58f5d88d03589aed3664d655dd83275fb4b76e8dad87e5bcb53895c3736a62a3",
+   "P5b_val": "d6e89dceebec8e5dcdbae7b6afcbefc3d085848e8d5b1d1ade8adeb48e25402f"
+  },
+  "sizes": {
+   "P5a_dev": 10,
+   "P5a_eval": 30,
+   "P5b_eval": 30,
+   "P5b_train": 24,
+   "P5b_val": 8
+  }
+ },
+ "seeds_file_sha256": "dcfbca742051d5e8b5ac23f075326fb58a8a6dac745cb291b88d5ebbe0801d45",
+ "stage": "E0",
+ "v6": {
+  "decision_support_tree_at_v6": "b8c1f38483a415ad60278929b3023497bc91ff3a",
+  "v6_commit": "856a57c65fb0d55190addf6c39a45c57913eac07",
+  "working_tree_identical_to_v6": true
+ }
+}
