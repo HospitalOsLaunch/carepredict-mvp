@@ -27,8 +27,10 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    bundle (données de démonstration en import dynamique) pour lever l'avertissement de taille.
 2. Exécuter `mypy --strict` sur `hospitalos.decision_support` et corriger.
 3. Revue métier des paramètres synthétiques (`UNIT_PROFILE.json`) — aucun entretien n'a eu lieu.
-4. P5 (qualification expérimentale bornée) : soumettre protocole, budget, graines, règle d'arrêt.
-   Aucun budget AJ-H antérieur n'est réutilisable.
+4. P5 (qualification expérimentale bornée) : protocole proposé `P5_PROTOCOL.md` (P5-PROTO-1) et
+   `P5_PROTOCOL_PARAMS.json`, **non exécuté, non autorisé**. Budget distinct proposé : 1200 s,
+   30 s par commande, 0 €. scikit-learn requis pour P5b (installation à autoriser).
+   Aucun budget P0–P4 ni AJ-H antérieur n'est réutilisable.
 
 ## Hors de ce projet
 
