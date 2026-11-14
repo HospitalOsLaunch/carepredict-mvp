@@ -66,6 +66,9 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    matrice de tests, plan de calcul, provenance, résumé, **proposition de tranche NON APPROUVÉE**
    (`PROPOSITION_TRANCHE_R0_R1.md`). Rien n'a été installé, généré, entraîné ni poussé ; aucun
    registre consommé. Accord attendu : tranche + option d'installation (A/B/C) + persistance (P0/P1).
+   **Complément v1.1 après revue** : `AMENDEMENT_HOWM1_R0_R1_v1_1.md`, JSON v1.1, relevé des changements,
+   manifeste de complétude, `PROPOSITION_TRANCHE_R0_R1_v1_1.md` (NON APPROUVÉE ; originaux v1 conservés).
+   torch 2.15.0 ; index CPU bloqué par le proxy ; dépôt public. Accord attendu : installation (A/B/A puis B) + persistance (P0/P1/P2).
 
 ## Hors de ce projet
 

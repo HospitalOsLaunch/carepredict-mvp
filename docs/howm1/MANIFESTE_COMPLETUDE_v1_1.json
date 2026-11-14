@@ -1,0 +1,103 @@
+{
+ "schema": "HOWM1_COMPLETENESS_1_1",
+ "date": "2026-11-14",
+ "status": "preparation package, NOT approved",
+ "complete": true,
+ "missing": [],
+ "files": [
+  {
+   "file": "inputs/PROGRAMME_HOWM1.md",
+   "role": "entrée utilisateur",
+   "bytes": 27623,
+   "sha256": "61d4d9ec1352d19064087117c7680635ef848614e9518aa834ff6a81307cc17f"
+  },
+  {
+   "file": "inputs/PROMPT_CODEX_CLAUDE_HOWM1.txt",
+   "role": "entrée utilisateur",
+   "bytes": 6681,
+   "sha256": "56f9005eec6f1d9485ac4e3bf97f62148d728af109a3481858cd98e89c25beb7"
+  },
+  {
+   "file": "DESIGN_HOWM1_R0_R1.md",
+   "role": "v1",
+   "bytes": 22776,
+   "sha256": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+   "announced_sha256": "8cfa7b43c01d7f4adf1f299d58fb051794e220367b76c49e93d4a0a2d28bb57c",
+   "matches_announced": true
+  },
+  {
+   "file": "EXPERIMENT_HOWM1_R0_R1.json",
+   "role": "v1 (remplacé par v1.1, conservé)",
+   "bytes": 12328,
+   "sha256": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+   "announced_sha256": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+   "matches_announced": true
+  },
+  {
+   "file": "TEST_MATRIX_HOWM1.md",
+   "role": "v1",
+   "bytes": 13588,
+   "sha256": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+   "announced_sha256": "ef8605f0767b6e2d18246e17a6567ad403552ee473522b463e072ac25a5b3d76",
+   "matches_announced": true
+  },
+  {
+   "file": "COMPUTE_PLAN_HOWM1.md",
+   "role": "v1",
+   "bytes": 9124,
+   "sha256": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+   "announced_sha256": "87aa5d65546d48d17356aa44e4c155d24ca3d55887ebeceef63c1fb97252c4ea",
+   "matches_announced": true
+  },
+  {
+   "file": "INPUT_PROVENANCE.json",
+   "role": "v1",
+   "bytes": 8583,
+   "sha256": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+   "announced_sha256": "376aab1a92767e220872ebb4d1b2234b1c8e7da996e334e6172bfc9a722bdebe",
+   "matches_announced": true
+  },
+  {
+   "file": "PROPOSITION_TRANCHE_R0_R1.md",
+   "role": "v1 (remplacée par v1.1, conservée)",
+   "bytes": 5119,
+   "sha256": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+   "announced_sha256": "1201a172090a41fb9e011288547238857bf8d035d54003f00f61df2c6724ffa6",
+   "matches_announced": true
+  },
+  {
+   "file": "RESUME_HOWM1_PREP.md",
+   "role": "v1",
+   "bytes": 5624,
+   "sha256": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+   "announced_sha256": "e33595f3b0d81df0244c14acd6cfdbdf34bf173f53013ac9cdc43c4da32418f2",
+   "matches_announced": true
+  },
+  {
+   "file": "AMENDEMENT_HOWM1_R0_R1_v1_1.md",
+   "role": "v1.1",
+   "bytes": 15711,
+   "sha256": "d41f44a0cb3a94fd86788fafd9a738c691825b275c7b1e28fb9026b7a8f82063"
+  },
+  {
+   "file": "EXPERIMENT_HOWM1_R0_R1_v1_1.json",
+   "role": "v1.1",
+   "bytes": 19320,
+   "sha256": "5cbd41421fb997ade256f93e7eef29cb47413e53bc366f12ca060aaa94a3b442"
+  },
+  {
+   "file": "CHANGEMENTS_v1_v1_1.md",
+   "role": "v1.1",
+   "bytes": 2488,
+   "sha256": "32b593cc2be46c1ba243c41c1e7b12af10d56181b80b32aafa503b3f60295093"
+  },
+  {
+   "file": "PROPOSITION_TRANCHE_R0_R1_v1_1.md",
+   "role": "v1.1 (proposition finale unique)",
+   "bytes": 4265,
+   "sha256": "b01244ff6bf8a0ac84d1675c3ba4b1f084bb8015226604cfeeeb315f8526d9d8"
+  }
+ ],
+ "repository_commit_of_v1": "35b563d (local, not pushed)",
+ "note": "v1 files are the exact committed bytes; nothing reconstructed from summaries. Proposal v1 sha256 1201a172... is the value computed by the reviewer and matches."
+}
