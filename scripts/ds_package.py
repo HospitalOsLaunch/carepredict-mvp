@@ -55,8 +55,7 @@ fi
 if [ "$SEALED" = yes ]; then
   mkdir -p "$PKG/.verify"
   tar -xf "$PKG/source_head.tar" -C "$PKG/.verify" scripts/ds_budget_run.py
-  python3 - "$PKG" <<'PY' || {
-    rm -rf "$PKG/.verify"; echo "ABORT: ledger terminal mismatch" >&2; exit 6; }
+  if ! python3 - "$PKG" <<'PY'
 import importlib.util, json, sys
 from pathlib import Path
 pkg = Path(sys.argv[1])
@@ -74,6 +73,9 @@ print(json.dumps({"ledger_records": len(records), "restored_used_wall_seconds": 
                   "remaining_wall_seconds": round(600 - used, 3), "match": ok}))
 sys.exit(0 if ok else 1)
 PY
+  then
+    rm -rf "$PKG/.verify"; echo "ABORT: ledger terminal mismatch" >&2; exit 6
+  fi
   rm -rf "$PKG/.verify"
 else
   echo "UNSEALED: ledger terminal not yet written (pre-seal restore test)"
