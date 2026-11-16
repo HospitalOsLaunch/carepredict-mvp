@@ -1,11 +1,11 @@
 {
  "package": "HOWM2_P2_A2_FINAL.zip",
- "package_sha256": "737b26086cd0a830d03562690fef840d375b7f891429d5ede8b1fba819f2c794",
+ "package_sha256": "68f9f38f392dfbfc69e37e043e5f5d3fefea407f839dea744cb6068da5f95833",
  "sha256sums_bad": [],
  "tests_howm2": {
   "exit": 0,
   "tail": [
-   "14 passed in 15.55s"
+   "14 passed in 17.01s"
   ]
  },
  "regenerated_identical": {
@@ -16,10 +16,10 @@
  "analyses_identical": {
   "DECISION_A2.json": true,
   "L2C_A2.json": true,
-  "VALIDATION_L4N.json": false,
+  "VALIDATION_L4N.json": true,
   "COVERAGE_A2.json": true
  },
  "verdict_restored": "NOWCAST_MARGE_LT_15",
- "seconds": 109.9,
- "ok": false
+ "seconds": 112.1,
+ "ok": true
 }

@@ -233,4 +233,21 @@ verdict `HOWM1_DISCRIMINANT` de A est inchangé.
 | A2.DEC | 230,0 | 900 |
 | A2.COV | 11,7 | 300 |
 | A2.L2C | 34,8 | 600 |
-| A2.REST | voir le reçu | 400 |
+| A2.REST | 254,5 | 400 |
+| **Total A2** | **580,2** | 3 600 |
+
+**Paquets et restauration**
+- Paquet de blocage : `HOWM2_P2_A2_BLOCKED_VALIDATION.zip` (sha 461eab38…), avant la décision
+  n° 4.
+- Paquet final : `HOWM2_P2_A2_FINAL.zip`, sha256
+  `68f9f38f392dfbfc69e37e043e5f5d3fefea407f839dea744cb6068da5f95833`, commit a27c263f.
+- Reçu de restauration (`evidence/howm2/RESTORE_RECEIPT_A2.json`), obtenu dans un répertoire neuf :
+  - SHA256SUMS intègres ;
+  - `tests/howm2` : 14 réussis ;
+  - A2.DEC de VAL 0 et de HOWM2_REF 0, et score L2c de HOWM2_REF 0, régénérés à l'identique ;
+  - les quatre analyses de A′ refaites à l'identique ;
+  - même verdict.
+- Une première tentative de reçu (registre n° 49) a échoué à tort. Ma fonction de comparaison
+  jugeait +∞ ≠ +∞, sur la valeur dégénérée de (N-o). Elle est conservée dans le registre et dans
+  `RESTORE_RECEIPT_A2_attempt1_false_negative.json`. La comparaison a été corrigée, puis le paquet
+  refait.
