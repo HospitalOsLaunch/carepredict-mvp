@@ -443,9 +443,248 @@
     "b_fail": true,
     "c_fail": false
    }
+  ],
+  "amended": {
+   "a_prime": {
+    "ready": {
+     "L4": {
+      "n": 5513,
+      "KS_D": 0.00794740055776677,
+      "threshold": 0.02195298639055317,
+      "pass": true,
+      "hist10": [
+       519,
+       558,
+       552,
+       550,
+       561,
+       551,
+       565,
+       536,
+       567,
+       554
+      ]
+     },
+     "L5": {
+      "n": 5513,
+      "KS_D": 0.008548067026109218,
+      "threshold": 0.02195298639055317,
+      "pass": true,
+      "hist10": [
+       532,
+       561,
+       571,
+       559,
+       543,
+       585,
+       539,
+       537,
+       543,
+       543
+      ]
+     },
+     "pass": true
+    },
+    "transport": {
+     "L4": {
+      "n": 2546,
+      "KS_D": 0.0362693352105154,
+      "threshold": 0.03230415643804378,
+      "pass": false,
+      "hist10": [
+       199,
+       236,
+       243,
+       277,
+       264,
+       269,
+       264,
+       253,
+       276,
+       265
+      ]
+     },
+     "L5": {
+      "n": 2546,
+      "KS_D": 0.031613231100506095,
+      "threshold": 0.03230415643804378,
+      "pass": true,
+      "hist10": [
+       216,
+       220,
+       258,
+       259,
+       275,
+       252,
+       285,
+       281,
+       231,
+       269
+      ]
+     },
+     "pass": false
+    },
+    "cleaning": {
+     "L4": {
+      "n": 3082,
+      "KS_D": 0.03062540640992617,
+      "threshold": 0.029361030028948316,
+      "pass": false,
+      "hist10": [
+       248,
+       309,
+       299,
+       291,
+       340,
+       332,
+       308,
+       303,
+       326,
+       326
+      ]
+     },
+     "L5": {
+      "n": 3082,
+      "KS_D": 0.03754945752256833,
+      "threshold": 0.029361030028948316,
+      "pass": false,
+      "hist10": [
+       252,
+       283,
+       294,
+       299,
+       335,
+       321,
+       330,
+       314,
+       315,
+       339
+      ]
+     },
+     "pass": false
+    },
+    "confirmation": {
+     "L4": {
+      "n": 4472,
+      "KS_D": 0.010709180932492068,
+      "threshold": 0.0243745556355991,
+      "pass": true,
+      "hist10": [
+       444,
+       468,
+       459,
+       454,
+       426,
+       457,
+       431,
+       424,
+       425,
+       484
+      ]
+     },
+     "L5": {
+      "n": 4472,
+      "KS_D": 0.016348715744805675,
+      "threshold": 0.0243745556355991,
+      "pass": true,
+      "hist10": [
+       458,
+       460,
+       474,
+       445,
+       466,
+       425,
+       452,
+       421,
+       429,
+       442
+      ]
+     },
+     "pass": true
+    },
+    "presence": {
+     "L4": {
+      "n": 0,
+      "status": "no items"
+     },
+     "L5": {
+      "n": 0,
+      "status": "no items"
+     },
+     "pass": null
+    },
+    "arrivals": {
+     "L4": {
+      "n": 1152000,
+      "KS_D": 0.00222066563273704,
+      "threshold": 0.02,
+      "pass": true,
+      "hist10": [
+       115335,
+       115764,
+       115444,
+       114907,
+       115800,
+       115564,
+       115359,
+       115451,
+       115317,
+       113059
+      ]
+     },
+     "pass": true,
+     "note": "one value per (unit,hour) / (stay,hour,skill): unchanged from (a)"
+    },
+    "care": {
+     "L4": {
+      "n": 0,
+      "status": "no items"
+     },
+     "pass": null,
+     "note": "one value per (unit,hour) / (stay,hour,skill): unchanged from (a)"
+    }
+   },
+   "b_prime": {
+    "ready": {
+     "pass": true
+    },
+    "transport": {
+     "pass": true
+    },
+    "cleaning": {
+     "pass": true
+    },
+    "confirmation": {
+     "pass": true
+    },
+    "presence": {
+     "pass": true
+    },
+    "arrivals": {
+     "pass": true
+    },
+    "care": {
+     "pass": true
+    }
+   },
+   "n_establishments": 200
+  },
+  "failing_families_amended": [
+   {
+    "family": "transport",
+    "a_prime_fail": true,
+    "b_prime_fail": false,
+    "c_fail": false
+   },
+   {
+    "family": "cleaning",
+    "a_prime_fail": true,
+    "b_prime_fail": false,
+    "c_fail": false
+   }
   ]
  },
- "criterion_literal": {
+ "criterion_literal_original_rules": {
   "by_horizon": {
    "1": {
     "M_pub": NaN,
@@ -505,7 +744,75 @@
   "verdict": "HOWM1_INDETERMINE",
   "families": [
    "presence"
-  ]
+  ],
+  "note": "rules (a)(b) as first written: every family with data excluded; superseded by addendum 2"
+ },
+ "criterion": {
+  "by_horizon": {
+   "1": {
+    "M_pub": 0.044320608664582206,
+    "ci95": [
+     0.03813857954568398,
+     0.05099015458482427
+    ],
+    "best_reference": "L2",
+    "between_establishment_sd": 0.04641305713866634,
+    "n_needed_80pct_for_half_margin": 34.430328613811064,
+    "levels_mean": {
+     "L0": 1.0018948654632631,
+     "L1": 0.9960525998893062,
+     "L2": 0.9908586278492095,
+     "L3": 0.9375899031171376,
+     "L4": 0.9465380191846273,
+     "L5": 0.9375868891552624
+    }
+   },
+   "6": {
+    "M_pub": 0.0985906505048173,
+    "ci95": [
+     0.08730105226517161,
+     0.10973924955042422
+    ],
+    "best_reference": "L2",
+    "between_establishment_sd": 0.08178806320799319,
+    "n_needed_80pct_for_half_margin": 21.60631147103253,
+    "levels_mean": {
+     "L0": 1.921844510671836,
+     "L1": 1.9105964514411005,
+     "L2": 1.8998066310289698,
+     "L3": 1.7850960731955934,
+     "L4": 1.8012159805241525,
+     "L5": 1.7850970681368454
+    }
+   },
+   "24": {
+    "M_pub": 0.14075862592073007,
+    "ci95": [
+     0.12128819883612815,
+     0.16185207424931064
+    ],
+    "best_reference": "L2",
+    "between_establishment_sd": 0.14635006990337132,
+    "n_needed_80pct_for_half_margin": 33.93970631455116,
+    "levels_mean": {
+     "L0": 2.1108192160274917,
+     "L1": 2.0989787740142973,
+     "L2": 2.0873969014371636,
+     "L3": 1.930469897806692,
+     "L4": 1.9466382755164335,
+     "L5": 1.9304720233173207
+    }
+   }
+  },
+  "verdict": "HOWM1_DISCRIMINANT",
+  "families": [
+   "ready",
+   "confirmation",
+   "presence",
+   "arrivals",
+   "care"
+  ],
+  "rules": "NORME_HOWM2_A + addendum 1 + addendum 2"
  },
  "criterion_all_families_descriptive": {
   "by_horizon": {

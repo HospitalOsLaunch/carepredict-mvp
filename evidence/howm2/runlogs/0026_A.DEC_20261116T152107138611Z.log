@@ -1,0 +1,27 @@
+{
+ "n_instants": 48,
+ "margin_rule_minus_L4": -28.712239583333332,
+ "ci95": [
+  -51.808203125,
+  -6.582421875000019
+ ],
+ "verdict": "MARGE_DECISIONNELLE_LT_15",
+ "means": {
+  "U_L4": 5002.846354166667,
+  "U_rule": 4974.134114583333,
+  "U_C_full": 4945.220052083333,
+  "U_habitual": 5097.838541666667,
+  "U_oracle": 4931.91796875
+ },
+ "gain_vs_habitual": {
+  "U_L4": 94.9921875,
+  "U_rule": 123.70442708333333,
+  "U_C_full": 152.61848958333334,
+  "U_oracle": 165.92057291666666
+ },
+ "does_not_know": {
+  "old_definition_rate": 1.0,
+  "proposed_paired_definition_rate": 0.020833333333333332,
+  "note": "proposed: top-2 gap < 1.96 x SE of the PAIRED difference (CRN); not applied to delivered R1 results"
+ }
+}
