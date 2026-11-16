@@ -147,19 +147,30 @@ def pilot() -> int:
     return 0
 
 
-def _train_job(arg):
+def _train_job(run, budget, q):
     from hospitalos.howm2 import c1
 
-    run, budget = arg
     system, N, seed = run.split(":")
-    cval = c1.load_shard("HOWM2_CVAL", 0)
-    return c1.train(system, int(N), int(seed), budget, cval)
+    r = c1.train(system, int(N), int(seed), budget, lambda: c1.load_shard("HOWM2_CVAL", 0))
+    q.put(r)
 
 
 def train(runs: list[str], budget: float) -> int:
-    with get_context("fork").Pool(min(4, len(runs))) as pool:
-        for r in pool.imap_unordered(_train_job, [(r, budget) for r in runs]):
-            print(json.dumps(r), flush=True)
+    """One independent process per run (a killed process cannot block the others)."""
+    ctx = get_context("fork")
+    q = ctx.Queue()
+    procs = {r: ctx.Process(target=_train_job, args=(r, budget, q)) for r in runs}
+    for p in procs.values():
+        p.start()
+    deadline = time.time() + budget + 180
+    for r, p in procs.items():
+        p.join(max(1.0, deadline - time.time()))
+        if p.is_alive():
+            p.terminate()
+            p.join()
+    while not q.empty():
+        print(json.dumps(q.get()), flush=True)
+    print(json.dumps({r: p.exitcode for r, p in procs.items()}), flush=True)
     return 0
 
 

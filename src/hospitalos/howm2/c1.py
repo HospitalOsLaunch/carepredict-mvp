@@ -331,7 +331,9 @@ def train(system: str, N: int, seed: int, budget_s: float, cval: list[dict], max
         meta_p.write_text(json.dumps(meta, indent=1) + "\n")
 
     def evaluate() -> None:
-        ev = eval_loss(model, system, cval, sc)
+        recs_cval = cval() if callable(cval) else cval  # loaded only when needed (memory)
+        ev = eval_loss(model, system, recs_cval, sc)
+        del recs_cval
         tr = {f: st["train_sums"][f] / max(st["train_counts"][f], 1) for f in st["train_sums"]}
         improved = st["best_total"] is None or ev["total"] < st["best_total"]
         if improved:
