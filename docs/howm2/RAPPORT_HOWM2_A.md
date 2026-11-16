@@ -196,7 +196,8 @@ Passe avant seule sur 1 536 origines TRAIN 0–31 et 1 440 origines VAL. Perte t
   d'entraînement : TRAIN passe de 2,21 à 1,88 quand VAL passe de 2,27 à 2,48.
 - L'écart VAL − TRAIN est déjà présent au meilleur point, et dès l'époque 1 pour H1 lr 1e-3. Il
   porte sur auth (+0,43) et ready (+0,48) : c'est une différence de population d'origines entre
-  TRAIN et VAL, non un effet d'apprentissage.
+  TRAIN et VAL, non un effet d'apprentissage. Les origines TRAIN sont `range(24, 166, 3)` et
+  atteignent les jours 6 et 7, alors que les origines VAL sont `range(24, 144)` (`corpus.ORIGINS`).
 
 ### 7.2 Couverture à 90 % à H1 (`evidence/howm2/DIAG_COVERAGE.json`)
 
