@@ -1,0 +1,18 @@
+{
+ "c1_partitions": {
+  "HOWM2_CTRAIN": 10000,
+  "HOWM2_CVAL": 48,
+  "HOWM2_CEVAL": 200
+ },
+ "c1_keys_pairwise_disjoint": true,
+ "disjoint_from": {
+  "G0": true,
+  "HOWM2_REF+DIAG": true
+ },
+ "distinct_theta_vectors_checked": 1548,
+ "duplicate_theta_vectors": 0,
+ "generation_depends_only_on_ekey": true,
+ "linked_worlds": "none in HOWM-1 (each establishment is generated from its own ekey; no shared state)",
+ "outcomes_read": false,
+ "pass": true
+}

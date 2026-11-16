@@ -42,8 +42,8 @@ LOT_CAPS = {  # C1 palier 1 (decision n.5), caps fixed before any C1 measurement
     "C.SETUP": 700.0,
     "C.GEN": 700.0,
     "C.PILOT": 300.0,
-    "C.TRAIN.100": 1100.0,
-    "C.TRAIN.1000": 9900.0,
+    "C.TRAIN.100": 3000.0,  # reallocated after the pilot (ledger note c1_lot_reallocation)
+    "C.TRAIN.1000": 6000.0,  # reallocated after the pilot (ledger note c1_lot_reallocation)
     "C.EVAL": 3000.0,
     "C.REST": 600.0,
 }

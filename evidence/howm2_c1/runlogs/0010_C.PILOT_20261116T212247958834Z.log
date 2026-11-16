@@ -1,0 +1,46 @@
+<c1-derived encode_stats>:25: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+           ^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/howm2_c1.py", line 112, in _pilot_job
+    loss = total_loss(forward_losses(model, c1.make_batch(system, pairs[s * 32 : (s + 1) * 32])), sc)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py", line 228, in make_batch
+    batch = nets.make_batch(pairs, "H1", with_labels)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm/nets.py", line 379, in make_batch
+    batch["graph"] = graph_batch(pairs)
+                     ^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py", line 217, in <lambda>
+    nets.graph_batch = lambda pairs: graph_batch_window(pairs, cap=cap)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<c1-derived graph_batch_window>", line 35, in graph_batch
+IndexError: index 8 is out of bounds for dimension 0 with size 8
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/howm2_c1.py", line 186, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/howm2_c1.py", line 179, in main
+    return pilot()
+           ^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/howm2_c1.py", line 131, in pilot
+    res = pool.map(_pilot_job, list(c1.SYSTEMS))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 774, in get
+    raise self._value
+IndexError: index 8 is out of bounds for dimension 0 with size 8

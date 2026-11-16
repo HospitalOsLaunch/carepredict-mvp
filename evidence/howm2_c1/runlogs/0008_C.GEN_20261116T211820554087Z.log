@@ -1,0 +1,4 @@
+{"part": "HOWM2_CTRAIN", "shard": 3, "n": 100, "bytes": 26257310, "seconds": 86.3}
+{"part": "HOWM2_CTRAIN", "shard": 2, "n": 100, "bytes": 27247145, "seconds": 87.3}
+{"part": "HOWM2_CTRAIN", "shard": 0, "n": 100, "bytes": 27359888, "seconds": 88.8}
+{"part": "HOWM2_CTRAIN", "shard": 1, "n": 100, "bytes": 25213971, "seconds": 89.6}
