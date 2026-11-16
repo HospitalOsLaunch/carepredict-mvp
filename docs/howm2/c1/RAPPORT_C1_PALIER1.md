@@ -175,9 +175,26 @@ Il n'y a ni verdict ni sélection sur DIAG.
 | C.TRAIN.100 | 4 600 | 3 649,0 |
 | C.TRAIN.1000 | 6 000 | 3 167,0 |
 | C.EVAL | 3 000 | 1 307,7 (avec la commande interrompue, 240) |
-| C.REST | 600 | voir le reçu |
+| C.REST | 600 | 97,8 |
 
-- **Total avant paquet :** environ 8 680 s sur 17 400.
+- **Total final :** **8 776,0 s** sur 17 400.
+
+**Paquet et reçu**
+- Paquet : `HOWM2_P2_C1_P1_FINAL.zip`, sha256
+  `bd8a75994fe076cf24eafcb1af4e44eaddeb09e3d195ada69e7f643f5e1c7a35`, 67 Mo, commit 4ca78309.
+  Il ne contient pas les tessons de données (281 Mo) : ils sont régénérables, avec leurs empreintes
+  dans le manifeste.
+- Reçu `RESTORE_RECEIPT_C1_P1.json` (n° 43), obtenu dans un répertoire neuf, en quatre sections
+  distinctes :
+  1. **Intégrité** : 397 fichiers vérifiés, 0 erreur.
+  2. **Chargement des checkpoints** : les 15 `best.pt` de F-C1, avec contrôle d'empreinte,
+     chargement et passe avant finie.
+  3. **Reproduction de l'analyse** : `RESULTS_C1_P1.json` identique.
+  4. **Régénérations effectivement faites** :
+     - scores finaux de CEVAL 0 et 1, identiques ;
+     - un enregistrement d'entraînement (CTRAIN 0), régénérable.
+- Tests C1 : 11 réussis.
+- **L'entraînement n'a pas été rejoué**, et le reçu ne le prétend pas (`training_reproduced = false`).
 - **Le CPU** est enregistré séparément dans chaque ligne du registre. Les commandes tuées n'ont
   pas d'enregistrement CPU complet.
 - **Échecs conservés :** n° 10 (pilote), n° 17 et 18 (plafond), n° 36 (interrompue).
