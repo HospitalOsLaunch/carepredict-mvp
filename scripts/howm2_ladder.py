@@ -6,6 +6,11 @@
 
 from __future__ import annotations
 
+import os
+
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+    os.environ[_v] = "1"  # one BLAS thread per worker process (4 workers on 4 cores)
+
 import argparse
 import json
 import sys
