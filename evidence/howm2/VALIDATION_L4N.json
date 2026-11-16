@@ -1,0 +1,6399 @@
+{
+ "n_instants": 96,
+ "S": 64,
+ "N_o_L4N": {
+  "mean": Infinity,
+  "ci95": [
+   NaN,
+   NaN
+  ],
+  "pass": false,
+  "instants_with_pending": 20,
+  "note": "literal rule: point mass on S_pub has infinite NLL whenever a pending event exists (degenerate, addendum A2-1 s.3)"
+ },
+ "N_o_prime_L4N": {
+  "mean": 0.003201427645674243,
+  "ci95": [
+   -0.04941806812816487,
+   0.05075076357014978
+  ],
+  "pass": false
+ },
+ "N_o_L5N": {
+  "mean": Infinity,
+  "ci95": [
+   NaN,
+   NaN
+  ],
+  "pass": false,
+  "instants_with_pending": 20,
+  "note": "literal rule: point mass on S_pub has infinite NLL whenever a pending event exists (degenerate, addendum A2-1 s.3)"
+ },
+ "N_o_prime_L5N": {
+  "mean": 0.018742446629133706,
+  "ci95": [
+   -0.019102438078061796,
+   0.05933240918926727
+  ],
+  "pass": false
+ },
+ "N_a": {
+  "auth": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 22,
+   "mean_pred_L4N": 7.890625,
+   "mean_pred_L5N": 6.796875,
+   "L4N": {
+    "KS_D": 0.06381941010621905,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0870412554386093,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "ready": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 17,
+   "mean_pred_L4N": 10.84375,
+   "mean_pred_L5N": 10.3125,
+   "L4N": {
+    "KS_D": 0.07675943582453071,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.1525598392125579,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "conf_transport": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 3,
+   "mean_pred_L4N": 2.25,
+   "mean_pred_L5N": 2.171875,
+   "L4N": {
+    "KS_D": 0.04983637447100009,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0928924201013851,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "conf_offer": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 0,
+   "mean_pred_L4N": 0.78125,
+   "mean_pred_L5N": 0.71875,
+   "L4N": {
+    "KS_D": 0.0742302677393778,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0710610305004456,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "transport": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 10,
+   "mean_pred_L4N": 1.328125,
+   "mean_pred_L5N": 0.625,
+   "L4N": {
+    "KS_D": 0.07631401990280784,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.10411359618338045,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "cleaning": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 17,
+   "mean_pred_L4N": 4.390625,
+   "mean_pred_L5N": 4.25,
+   "L4N": {
+    "KS_D": 0.16110971714300698,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.13287845955766164,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "arrival": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 5,
+   "mean_pred_L4N": 6.484375,
+   "mean_pred_L5N": 6.359375,
+   "L4N": {
+    "KS_D": 0.06384951718669679,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.10091702610852948,
+    "pass": true
+   },
+   "status": "pass"
+  }
+ },
+ "fallbacks_L4N": 56,
+ "rejected_L4N": 0,
+ "stop": true,
+ "rows": [
+  {
+   "part": "VAL",
+   "index": 0,
+   "tau": 508,
+   "n_elements": 14,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.13145600931173507,
+    "nll_pub": 0.0,
+    "brier": 0.001893491124260357,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.13145600931173507,
+    "nll_pub": 0.0,
+    "brier": 0.001893491124260357,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.9304864174362603,
+    "ready": 0.5049657983035799,
+    "conf_transport": 0.0685998089340405,
+    "conf_offer": 0.8572104354920624,
+    "transport": 0.2117539370483198,
+    "cleaning": 0.45524681383171295,
+    "arrival": 0.5665294626950318
+   },
+   "pit_L5N": {
+    "auth": 0.6364219906326122,
+    "ready": 0.08588087039879355,
+    "conf_transport": 0.06276545109497667,
+    "conf_offer": 0.2959703898131478,
+    "transport": 0.15909180385846422,
+    "cleaning": 0.8217794635799699,
+    "arrival": 0.8729522479716596
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 0,
+   "tau": 524,
+   "n_elements": 15,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2651807251635137,
+    "nll_pub": 0.0,
+    "brier": 0.007633136094674557,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.20192735827117814,
+    "nll_pub": 0.0,
+    "brier": 0.004319526627218935,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.008145607398326309,
+    "ready": 0.7540880715573308,
+    "conf_transport": 0.714206875248311,
+    "conf_offer": 0.009687049672004622,
+    "transport": 0.8510988681486984,
+    "cleaning": 0.7389250328066985,
+    "arrival": 0.060545556020298825
+   },
+   "pit_L5N": {
+    "auth": 0.2578423725133579,
+    "ready": 0.809533292535717,
+    "conf_transport": 0.7308588296567575,
+    "conf_offer": 0.6739915261340199,
+    "transport": 0.5434106779696287,
+    "cleaning": 0.3454132278706876,
+    "arrival": 0.0010401306054732395
+   },
+   "mean_totals_L4N": {
+    "auth": 0.046875,
+    "ready": 0.078125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.046875,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 0,
+   "tau": 540,
+   "n_elements": 17,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.9519072011822205,
+    "nll_pub": Infinity,
+    "brier": 0.6859763313609466,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 2.8571159775142627,
+    "nll_pub": Infinity,
+    "brier": 0.8705917159763313,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.2489013738408923,
+    "ready": 0.8635260166574379,
+    "conf_transport": 0.6182431651045297,
+    "conf_offer": 0.3988103945245527,
+    "transport": 0.29960880729674577,
+    "cleaning": 0.3450302739380501,
+    "arrival": 0.772037663421735
+   },
+   "pit_L5N": {
+    "auth": 0.3680250545998243,
+    "ready": 0.9269968572673184,
+    "conf_transport": 0.5401472895396674,
+    "conf_offer": 0.5004564080830202,
+    "transport": 0.969083381604226,
+    "cleaning": 0.8425268745665719,
+    "arrival": 0.32712618803391935
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.25,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.109375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 0,
+   "tau": 556,
+   "n_elements": 12,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.140292602116178,
+    "nll_pub": 0.0,
+    "brier": 0.0035502958579881655,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.10828987103000423,
+    "nll_pub": 0.0,
+    "brier": 0.0011834319526627221,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8227344840184062,
+    "ready": 0.25875969416545647,
+    "conf_transport": 0.21169575840015908,
+    "conf_offer": 0.36685995737810506,
+    "transport": 0.4985854746166054,
+    "cleaning": 0.7131827888904801,
+    "arrival": 0.08005698404123929
+   },
+   "pit_L5N": {
+    "auth": 0.21027328290822156,
+    "ready": 0.19507457644610626,
+    "conf_transport": 0.9556868975327393,
+    "conf_offer": 0.8684082483230083,
+    "transport": 0.1786483848790007,
+    "cleaning": 0.22640979161962804,
+    "arrival": 0.5053886717157439
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.046875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 1,
+   "tau": 508,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2251603020908578,
+    "nll_pub": 0.0,
+    "brier": 0.0070414201183431925,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2251603020908578,
+    "nll_pub": 0.0,
+    "brier": 0.0070414201183431925,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.1406254108120748,
+    "ready": 0.7989784168745973,
+    "conf_transport": 0.8624045881247194,
+    "conf_offer": 0.18878644797330713,
+    "transport": 0.531464045032111,
+    "cleaning": 0.29009161153127005,
+    "arrival": 0.7080428138971007
+   },
+   "pit_L5N": {
+    "auth": 0.8609106858023349,
+    "ready": 0.5036392739976377,
+    "conf_transport": 0.40903893974462513,
+    "conf_offer": 0.6787526107787867,
+    "transport": 0.6829906137293288,
+    "cleaning": 0.5614202334677493,
+    "arrival": 0.045723790437854746
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 1,
+   "tau": 524,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.0003560859634972,
+    "nll_pub": 0.0,
+    "brier": 0.08458231458491441,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.9683430997816532,
+    "nll_pub": 0.0,
+    "brier": 0.08221545067958896,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.918853291603852,
+    "ready": 0.5644162652646847,
+    "conf_transport": 0.7013132750319235,
+    "conf_offer": 0.9462606628681332,
+    "transport": 0.5027750901441085,
+    "cleaning": 0.6124857883451156,
+    "arrival": 0.7162515050327141
+   },
+   "pit_L5N": {
+    "auth": 0.8046835641364158,
+    "ready": 0.500195583632387,
+    "conf_transport": 0.4837550948862437,
+    "conf_offer": 0.3828230112821409,
+    "transport": 0.6804232479089641,
+    "cleaning": 0.7982730663673969,
+    "arrival": 0.5382123036796862
+   },
+   "mean_totals_L4N": {
+    "auth": 0.3125,
+    "ready": 0.34375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.28125,
+    "ready": 0.34375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 1,
+   "tau": 540,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.0308159150420657,
+    "nll_pub": 0.0,
+    "brier": 0.19195266272189349,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.9072496137702919,
+    "nll_pub": 0.0,
+    "brier": 0.14603550295857984,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.25636462025749995,
+    "ready": 0.10469465715829952,
+    "conf_transport": 0.09827980324208418,
+    "conf_offer": 0.695169185580109,
+    "transport": 0.10023090381713617,
+    "cleaning": 1.0,
+    "arrival": 0.4843446819685509
+   },
+   "pit_L5N": {
+    "auth": 0.74961420590253,
+    "ready": 0.20525378118766002,
+    "conf_transport": 0.7511084280258282,
+    "conf_offer": 0.6150509032097086,
+    "transport": 0.0010271071808471977,
+    "cleaning": 1.0,
+    "arrival": 0.735635936910149
+   },
+   "mean_totals_L4N": {
+    "auth": 0.09375,
+    "ready": 0.53125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.4375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 1,
+   "tau": 556,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 1,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.6578749780028369,
+    "nll_pub": 0.0,
+    "brier": 0.09289940828402365,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.6918648640650762,
+    "nll_pub": 0.0,
+    "brier": 0.11893491124260354,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8441776690570425,
+    "ready": 0.1983560078770149,
+    "conf_transport": 0.3450801833233036,
+    "conf_offer": 0.661244224442034,
+    "transport": 1.0,
+    "cleaning": 0.9279089648110925,
+    "arrival": 0.018814682253354333
+   },
+   "pit_L5N": {
+    "auth": 0.5205432148449904,
+    "ready": 0.6269280842053476,
+    "conf_transport": 0.10475162724913611,
+    "conf_offer": 0.7492468214358408,
+    "transport": 1.0,
+    "cleaning": 0.32560166422787284,
+    "arrival": 0.21465821143644312
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.265625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.15625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.3125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.15625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 2,
+   "tau": 508,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.17006623978128643,
+    "nll_pub": 0.0,
+    "brier": 0.0021893491124260374,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.1934136037782776,
+    "nll_pub": 0.0,
+    "brier": 0.0032544378698224886,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.09788889627336239,
+    "ready": 0.684103607107302,
+    "conf_transport": 0.1620279731451324,
+    "conf_offer": 0.7440998602150675,
+    "transport": 0.19369742567731663,
+    "cleaning": 0.9765458273004165,
+    "arrival": 0.9075547561186162
+   },
+   "pit_L5N": {
+    "auth": 0.12183222452402853,
+    "ready": 0.07921425528123949,
+    "conf_transport": 0.6383188488372752,
+    "conf_offer": 0.7133786303551142,
+    "transport": 0.10612683267807976,
+    "cleaning": 0.4037435779868773,
+    "arrival": 0.0053373276830339655
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 2,
+   "tau": 524,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 3,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 3.2929343604302694,
+    "nll_pub": Infinity,
+    "brier": 0.9014306934431274,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 3.3033549744889985,
+    "nll_pub": Infinity,
+    "brier": 0.89234301734806,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 1.0,
+    "ready": 0.6748380398810894,
+    "conf_transport": 0.11993324816698359,
+    "conf_offer": 0.15258315819150658,
+    "transport": 0.28160902646734887,
+    "cleaning": 0.2228359476774654,
+    "arrival": 0.4070717614007352
+   },
+   "pit_L5N": {
+    "auth": 1.0,
+    "ready": 0.5846660647185227,
+    "conf_transport": 0.3434331135876605,
+    "conf_offer": 0.5504744016024297,
+    "transport": 0.8616056335437109,
+    "cleaning": 0.3098315127870578,
+    "arrival": 0.1633141722409008
+   },
+   "mean_totals_L4N": {
+    "auth": 0.375,
+    "ready": 0.171875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.15625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.546875,
+    "ready": 0.15625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.1875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 2,
+   "tau": 540,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 2,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 5.367714769721101,
+    "nll_pub": Infinity,
+    "brier": 1.4803550295857986,
+    "brier_pub": 2.0
+   },
+   "L5N": {
+    "nll": 6.897305205406863,
+    "nll_pub": Infinity,
+    "brier": 1.6531360946745564,
+    "brier_pub": 2.0
+   },
+   "pit_L4N": {
+    "auth": 0.9429906845564344,
+    "ready": 1.0,
+    "conf_transport": 0.8730365967614336,
+    "conf_offer": 0.6574817033020771,
+    "transport": 0.8208588220383749,
+    "cleaning": 0.754050469010476,
+    "arrival": 0.33140866637520444
+   },
+   "pit_L5N": {
+    "auth": 0.9893950857476612,
+    "ready": 1.0,
+    "conf_transport": 0.3543001364391165,
+    "conf_offer": 0.8168788330765641,
+    "transport": 0.5278720863403675,
+    "cleaning": 0.7453700435151486,
+    "arrival": 0.6202482024535099
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0625,
+    "ready": 0.296875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.1875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.203125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 2,
+   "tau": 556,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 1,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2104014996451004,
+    "nll_pub": 0.0,
+    "brier": 0.008165680473372783,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2022501965827206,
+    "nll_pub": 0.0,
+    "brier": 0.00781065088757397,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8132888704642997,
+    "ready": 1.0,
+    "conf_transport": 0.2699926560243755,
+    "conf_offer": 0.9240346755820709,
+    "transport": 1.0,
+    "cleaning": 0.6757000522835829,
+    "arrival": 0.4998709703210099
+   },
+   "pit_L5N": {
+    "auth": 0.49242334443815605,
+    "ready": 1.0,
+    "conf_transport": 0.9194085785618242,
+    "conf_offer": 0.867298709494873,
+    "transport": 1.0,
+    "cleaning": 0.81174310700042,
+    "arrival": 0.791450114532303
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 3,
+   "tau": 508,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.1777882858751967,
+    "nll_pub": 0.0,
+    "brier": 0.0022485207100591733,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.1777882858751967,
+    "nll_pub": 0.0,
+    "brier": 0.0022485207100591733,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5466850699567863,
+    "ready": 0.39265428454605655,
+    "conf_transport": 0.30371935079190504,
+    "conf_offer": 0.7476952694728167,
+    "transport": 0.8415198093166999,
+    "cleaning": 0.924623584863588,
+    "arrival": 0.09984818082698942
+   },
+   "pit_L5N": {
+    "auth": 0.3394832618652147,
+    "ready": 0.9024390219898735,
+    "conf_transport": 0.1623418147325233,
+    "conf_offer": 0.5710405009020202,
+    "transport": 0.6416515994135319,
+    "cleaning": 0.9870451262243283,
+    "arrival": 0.7294543679904993
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 3,
+   "tau": 524,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.24825963483463978,
+    "nll_pub": 0.0,
+    "brier": 0.005207100591715976,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2807828265401998,
+    "nll_pub": 0.0,
+    "brier": 0.008520710059171599,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.9938921819392382,
+    "ready": 0.20366866937744527,
+    "conf_transport": 0.2594489638358136,
+    "conf_offer": 0.4772252320054021,
+    "transport": 0.7938370405124667,
+    "cleaning": 0.08355603162458847,
+    "arrival": 0.7555048123588797
+   },
+   "pit_L5N": {
+    "auth": 0.9912892441090929,
+    "ready": 0.7908478042625987,
+    "conf_transport": 0.39695171934680795,
+    "conf_offer": 0.48160455115228784,
+    "transport": 0.450090690950366,
+    "cleaning": 0.13204178304424807,
+    "arrival": 0.49742108494998344
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 3,
+   "tau": 540,
+   "n_elements": 22,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2167609677752688,
+    "nll_pub": 0.0,
+    "brier": 0.0027218934911242606,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2011356498721879,
+    "nll_pub": 0.0,
+    "brier": 0.0022485207100591716,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.3827970842321237,
+    "ready": 0.8240120973413488,
+    "conf_transport": 0.6484781446442806,
+    "conf_offer": 0.7213935719868095,
+    "transport": 0.24333918361547158,
+    "cleaning": 0.593286217419113,
+    "arrival": 0.7002419543209867
+   },
+   "pit_L5N": {
+    "auth": 0.07031736276121629,
+    "ready": 0.7605807253596948,
+    "conf_transport": 0.4637183168259541,
+    "conf_offer": 0.45201081976092305,
+    "transport": 0.7079645465710551,
+    "cleaning": 0.10713150468869992,
+    "arrival": 0.728536115233795
+   },
+   "mean_totals_L4N": {
+    "auth": 0.046875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 3,
+   "tau": 556,
+   "n_elements": 22,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 1,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.7099482054740522,
+    "nll_pub": 0.0,
+    "brier": 0.10757396449704139,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.765518056628863,
+    "nll_pub": 0.0,
+    "brier": 0.12319526627218932,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.03225469265615222,
+    "ready": 0.6603031153178957,
+    "conf_transport": 0.049726430735572744,
+    "conf_offer": 0.7665840855610024,
+    "transport": 1.0,
+    "cleaning": 1.0,
+    "arrival": 0.6629447721781552
+   },
+   "pit_L5N": {
+    "auth": 0.3124537898099874,
+    "ready": 0.16447257958438943,
+    "conf_transport": 0.6275410346673908,
+    "conf_offer": 0.2863839422306834,
+    "transport": 1.0,
+    "cleaning": 1.0,
+    "arrival": 0.6808730617982646
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.28125,
+    "conf_offer": 0.140625,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.28125,
+    "conf_offer": 0.1875,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.046875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 4,
+   "tau": 508,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.22393933672339805,
+    "nll_pub": 0.0,
+    "brier": 0.0017159763313609475,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.22393933672339805,
+    "nll_pub": 0.0,
+    "brier": 0.0017159763313609475,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.48549056457059225,
+    "ready": 0.09115482925576868,
+    "conf_transport": 0.44322002448288145,
+    "conf_offer": 0.7865052079585532,
+    "transport": 0.9012560010137182,
+    "cleaning": 0.38388954173234835,
+    "arrival": 0.10249421272617298
+   },
+   "pit_L5N": {
+    "auth": 0.9217010572521696,
+    "ready": 0.9125084683324155,
+    "conf_transport": 0.6733400990550173,
+    "conf_offer": 0.049585996443508584,
+    "transport": 0.6270952978009808,
+    "cleaning": 0.6820923826260293,
+    "arrival": 0.4276272222878441
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 4,
+   "tau": 524,
+   "n_elements": 28,
+   "truth_totals": {
+    "auth": 2,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 4.262533203701682,
+    "nll_pub": Infinity,
+    "brier": 0.977041420118343,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 4.231324175944429,
+    "nll_pub": Infinity,
+    "brier": 0.9760946745562129,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 1.0,
+    "ready": 0.5611641943354764,
+    "conf_transport": 0.2537078185073567,
+    "conf_offer": 0.5662470852902161,
+    "transport": 0.6689762524005121,
+    "cleaning": 0.19678066032289787,
+    "arrival": 0.0013671136176449366
+   },
+   "pit_L5N": {
+    "auth": 1.0,
+    "ready": 0.8893220591809066,
+    "conf_transport": 0.2523173742900634,
+    "conf_offer": 0.7410954578782069,
+    "transport": 0.5620859403761006,
+    "cleaning": 0.385033929238347,
+    "arrival": 0.5224428789887219
+   },
+   "mean_totals_L4N": {
+    "auth": 0.078125,
+    "ready": 0.125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.078125,
+    "ready": 0.09375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 4,
+   "tau": 540,
+   "n_elements": 28,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.30231395749201173,
+    "nll_pub": 0.0,
+    "brier": 0.0060355029585798785,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.36608778500373335,
+    "nll_pub": 0.0,
+    "brier": 0.009349112426035502,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.47182623529453527,
+    "ready": 0.09412870835958942,
+    "conf_transport": 0.7161262177993835,
+    "conf_offer": 0.4388617097131702,
+    "transport": 0.7260951128083984,
+    "cleaning": 0.38918420074608184,
+    "arrival": 0.9440557665334248
+   },
+   "pit_L5N": {
+    "auth": 0.5573599789055814,
+    "ready": 0.22065173851944497,
+    "conf_transport": 0.283660072378922,
+    "conf_offer": 0.34058235966378114,
+    "transport": 0.9357757550000196,
+    "cleaning": 0.7280147294999416,
+    "arrival": 0.09129056026469144
+   },
+   "mean_totals_L4N": {
+    "auth": 0.046875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0625,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 4,
+   "tau": 556,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.5210580590695184,
+    "nll_pub": 0.0,
+    "brier": 0.04319526627218935,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.488790900137552,
+    "nll_pub": 0.0,
+    "brier": 0.04035502958579881,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6096943287552743,
+    "ready": 0.24305026697908694,
+    "conf_transport": 0.39478267511927223,
+    "conf_offer": 0.8861707048486882,
+    "transport": 0.4832446220668535,
+    "cleaning": 0.7319798245988818,
+    "arrival": 0.5339924348399525
+   },
+   "pit_L5N": {
+    "auth": 0.3102986940034659,
+    "ready": 0.07859882382842562,
+    "conf_transport": 0.017935458734575027,
+    "conf_offer": 0.2087588705291692,
+    "transport": 0.0781594680777572,
+    "cleaning": 0.2566754059344365,
+    "arrival": 0.14971789707951655
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.09375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.15625,
+    "arrival": 0.0625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.15625,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 5,
+   "tau": 508,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.12355273750256444,
+    "nll_pub": 0.0,
+    "brier": 0.0009467455621301779,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.12355273750256444,
+    "nll_pub": 0.0,
+    "brier": 0.0009467455621301779,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7126960822977444,
+    "ready": 0.09698297430631242,
+    "conf_transport": 0.10711801942518828,
+    "conf_offer": 0.3915155416683287,
+    "transport": 0.35680309375286157,
+    "cleaning": 0.39234423180171496,
+    "arrival": 0.16096578110379034
+   },
+   "pit_L5N": {
+    "auth": 0.37413736023951516,
+    "ready": 0.9609168515511926,
+    "conf_transport": 0.466445610513621,
+    "conf_offer": 0.6104615856622648,
+    "transport": 0.8289874229813544,
+    "cleaning": 0.3941968592987376,
+    "arrival": 0.5868939748567115
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 5,
+   "tau": 524,
+   "n_elements": 17,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 5.385049385671851,
+    "nll_pub": Infinity,
+    "brier": 1.0179289940828404,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 5.239188115781545,
+    "nll_pub": Infinity,
+    "brier": 1.0042011834319529,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.8513452640565745,
+    "ready": 0.1804310137919746,
+    "conf_transport": 0.7117225293428083,
+    "conf_offer": 0.7093351216890685,
+    "transport": 0.6269537669464638,
+    "cleaning": 0.6684454859089651,
+    "arrival": 0.23789617744496921
+   },
+   "pit_L5N": {
+    "auth": 0.9404598534503923,
+    "ready": 0.3592548145943454,
+    "conf_transport": 0.013516899566054619,
+    "conf_offer": 0.0860541962923147,
+    "transport": 0.6327238341941409,
+    "cleaning": 0.2028888185905836,
+    "arrival": 0.7033558559466158
+   },
+   "mean_totals_L4N": {
+    "auth": 0.15625,
+    "ready": 0.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 5,
+   "tau": 540,
+   "n_elements": 15,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2409000401712502,
+    "nll_pub": 0.0,
+    "brier": 0.005857988165680478,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.22527472226816928,
+    "nll_pub": 0.0,
+    "brier": 0.005384615384615389,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8869121772030404,
+    "ready": 1.0,
+    "conf_transport": 0.2832269949866243,
+    "conf_offer": 0.9432225172865616,
+    "transport": 0.1156045140808748,
+    "cleaning": 0.9119860001114185,
+    "arrival": 0.018037944707995957
+   },
+   "pit_L5N": {
+    "auth": 0.15231716759181668,
+    "ready": 1.0,
+    "conf_transport": 0.4860987870868628,
+    "conf_offer": 0.5532472196858614,
+    "transport": 0.3621251093995781,
+    "cleaning": 0.45292760355823924,
+    "arrival": 0.6553747266920201
+   },
+   "mean_totals_L4N": {
+    "auth": 0.078125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 5,
+   "tau": 556,
+   "n_elements": 15,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 2,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.20989743561829757,
+    "nll_pub": Infinity,
+    "brier": 0.00633136094674556,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 0.27740569540105864,
+    "nll_pub": Infinity,
+    "brier": 0.016272189349112436,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.24565935179687193,
+    "ready": 0.6955899634250284,
+    "conf_transport": 0.25073549486940583,
+    "conf_offer": 0.4629397626809352,
+    "transport": 0.4409092425214234,
+    "cleaning": 1.0,
+    "arrival": 0.2959031906716754
+   },
+   "pit_L5N": {
+    "auth": 0.10418591690877199,
+    "ready": 0.7770373898982947,
+    "conf_transport": 0.41167302517275395,
+    "conf_offer": 0.5502276971671123,
+    "transport": 0.9440423633493397,
+    "cleaning": 1.0,
+    "arrival": 0.35000327306664536
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.96875,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.890625,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 1,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 6,
+   "tau": 508,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.18532910625384666,
+    "nll_pub": 0.0,
+    "brier": 0.0014201183431952669,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.18532910625384666,
+    "nll_pub": 0.0,
+    "brier": 0.0014201183431952669,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.25470603249661283,
+    "ready": 0.76498394300091,
+    "conf_transport": 0.5532864455797711,
+    "conf_offer": 0.08753657396317616,
+    "transport": 0.46802959489929286,
+    "cleaning": 0.21953303842402272,
+    "arrival": 0.22363007357522813
+   },
+   "pit_L5N": {
+    "auth": 0.8240639701363107,
+    "ready": 0.22742729141115425,
+    "conf_transport": 0.28684241107850184,
+    "conf_offer": 0.3205146998580076,
+    "transport": 0.2390181299457722,
+    "cleaning": 0.5246032859912435,
+    "arrival": 0.015893637453992526
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 6,
+   "tau": 524,
+   "n_elements": 25,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2478971834041191,
+    "nll_pub": 0.0,
+    "brier": 0.003964497041420118,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2640265653340028,
+    "nll_pub": 0.0,
+    "brier": 0.005384615384615385,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8238683038944979,
+    "ready": 0.6325347895138315,
+    "conf_transport": 0.4746283207262043,
+    "conf_offer": 0.7526637157716253,
+    "transport": 0.7970656571655124,
+    "cleaning": 0.32783224619320195,
+    "arrival": 0.17411970468673332
+   },
+   "pit_L5N": {
+    "auth": 0.3534991809764447,
+    "ready": 0.4146851107998846,
+    "conf_transport": 0.45358819426785446,
+    "conf_offer": 0.4120498163051528,
+    "transport": 0.2208689254688474,
+    "cleaning": 0.11074558817421587,
+    "arrival": 0.6791994416737636
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.046875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 6,
+   "tau": 540,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.29708742759489076,
+    "nll_pub": 0.0,
+    "brier": 0.009112426035502956,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.38775676834143274,
+    "nll_pub": 0.0,
+    "brier": 0.03278106508875736,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6127017267541078,
+    "ready": 0.22403379399227413,
+    "conf_transport": 0.5082998764744857,
+    "conf_offer": 0.062324030900039795,
+    "transport": 0.13426356172485177,
+    "cleaning": 0.042153358155405884,
+    "arrival": 0.49481067032220705
+   },
+   "pit_L5N": {
+    "auth": 0.39307516346310123,
+    "ready": 0.6320672809774981,
+    "conf_transport": 0.9398624338272115,
+    "conf_offer": 0.5829697158297188,
+    "transport": 0.9790332087580724,
+    "cleaning": 0.3058055788325843,
+    "arrival": 0.594829572272937
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.078125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.171875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 6,
+   "tau": 556,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.20077319844166722,
+    "nll_pub": 0.0,
+    "brier": 0.0015384615384615391,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.20077319844166722,
+    "nll_pub": 0.0,
+    "brier": 0.0015384615384615391,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.21448381004830874,
+    "ready": 0.0899138110786345,
+    "conf_transport": 0.033001493602874965,
+    "conf_offer": 0.5843292553521582,
+    "transport": 0.2884590848832682,
+    "cleaning": 0.09715510028374508,
+    "arrival": 0.9534601138884176
+   },
+   "pit_L5N": {
+    "auth": 0.1602649361507571,
+    "ready": 0.33897065212059085,
+    "conf_transport": 0.9701262591672094,
+    "conf_offer": 0.1875288061968099,
+    "transport": 0.909676580753369,
+    "cleaning": 0.1657824926440632,
+    "arrival": 0.9844718429369125
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 7,
+   "tau": 508,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.22393933672339805,
+    "nll_pub": 0.0,
+    "brier": 0.0017159763313609475,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.22393933672339805,
+    "nll_pub": 0.0,
+    "brier": 0.0017159763313609475,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.9336015008204416,
+    "ready": 0.11999281832559827,
+    "conf_transport": 0.41608206715320595,
+    "conf_offer": 0.15431186012637776,
+    "transport": 0.9434499828405727,
+    "cleaning": 0.6623923033125377,
+    "arrival": 0.8171886438685021
+   },
+   "pit_L5N": {
+    "auth": 0.42733117025082956,
+    "ready": 0.03534983282840898,
+    "conf_transport": 0.0820894651901487,
+    "conf_offer": 0.21458069913114575,
+    "transport": 0.48671137865814496,
+    "cleaning": 0.7129102636512786,
+    "arrival": 0.17479509093497758
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 7,
+   "tau": 524,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.45783787588512515,
+    "nll_pub": 0.0,
+    "brier": 0.022189349112426038,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.38761455817889134,
+    "nll_pub": 0.0,
+    "brier": 0.019704142011834326,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.08101145636217062,
+    "ready": 0.004838824883999435,
+    "conf_transport": 0.6864153714921183,
+    "conf_offer": 0.9061062515687467,
+    "transport": 0.19434784466354604,
+    "cleaning": 0.5202304046612615,
+    "arrival": 0.8092913624201199
+   },
+   "pit_L5N": {
+    "auth": 0.4350040201784873,
+    "ready": 0.8259767180222621,
+    "conf_transport": 0.5024456799822573,
+    "conf_offer": 0.6368405885223133,
+    "transport": 0.35045370877538007,
+    "cleaning": 0.13423281313437885,
+    "arrival": 0.020335580003718268
+   },
+   "mean_totals_L4N": {
+    "auth": 0.078125,
+    "ready": 0.125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.03125,
+    "ready": 0.125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 7,
+   "tau": 540,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2556192294980294,
+    "nll_pub": 0.0,
+    "brier": 0.00497041420118343,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.27124454740111026,
+    "nll_pub": 0.0,
+    "brier": 0.0054437869822485194,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.2683886209559166,
+    "ready": 0.22675721368465718,
+    "conf_transport": 0.2838036137022423,
+    "conf_offer": 0.4954525255438099,
+    "transport": 0.7454937409831607,
+    "cleaning": 0.4234577244731845,
+    "arrival": 0.4209297837105421
+   },
+   "pit_L5N": {
+    "auth": 0.8597712593053686,
+    "ready": 0.17865687538079544,
+    "conf_transport": 0.3369175924118696,
+    "conf_offer": 0.8191009032499325,
+    "transport": 0.6210245781718288,
+    "cleaning": 0.3271805166206897,
+    "arrival": 0.7545471459742807
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.03125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 7,
+   "tau": 556,
+   "n_elements": 25,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2163985163447481,
+    "nll_pub": 0.0,
+    "brier": 0.002544378698224854,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.232023834247829,
+    "nll_pub": 0.0,
+    "brier": 0.0030177514792899427,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.4890018016822506,
+    "ready": 0.4130303688137419,
+    "conf_transport": 0.5918717185942268,
+    "conf_offer": 0.027590115379477087,
+    "transport": 0.8537458933161493,
+    "cleaning": 0.846621625047787,
+    "arrival": 0.8475653675431307
+   },
+   "pit_L5N": {
+    "auth": 0.48340287464662524,
+    "ready": 0.6654354554482117,
+    "conf_transport": 0.17944525417752966,
+    "conf_offer": 0.32042724835689074,
+    "transport": 0.613235092345638,
+    "cleaning": 0.12082357089505402,
+    "arrival": 0.6815062764668149
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 8,
+   "tau": 508,
+   "n_elements": 12,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.2664463738296379,
+    "ready": 0.5253852729088622,
+    "conf_transport": 0.3080409549233174,
+    "conf_offer": 0.6474099819660363,
+    "transport": 0.11379267046951946,
+    "cleaning": 0.40739234492051823,
+    "arrival": 0.7061472262168413
+   },
+   "pit_L5N": {
+    "auth": 0.7259663332474146,
+    "ready": 0.954150340061223,
+    "conf_transport": 0.3988609798969439,
+    "conf_offer": 0.9231462938371239,
+    "transport": 0.6815807247128333,
+    "cleaning": 0.2043562574279001,
+    "arrival": 0.298600068650845
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 8,
+   "tau": 524,
+   "n_elements": 11,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.10056782493609395,
+    "nll_pub": 0.0,
+    "brier": 0.001124260355029586,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.08494250703301305,
+    "nll_pub": 0.0,
+    "brier": 0.0006508875739644973,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6518202132101677,
+    "ready": 0.0006506587878167824,
+    "conf_transport": 0.8757650578471431,
+    "conf_offer": 0.19995585890262724,
+    "transport": 0.46327849250087905,
+    "cleaning": 0.2877769410782117,
+    "arrival": 0.7066086329290528
+   },
+   "pit_L5N": {
+    "auth": 0.7853777251051192,
+    "ready": 0.4505566746932813,
+    "conf_transport": 0.33473257254730704,
+    "conf_offer": 0.8651021219436937,
+    "transport": 0.27924382230301037,
+    "cleaning": 0.6220483447399773,
+    "arrival": 0.12338015427035065
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 8,
+   "tau": 540,
+   "n_elements": 12,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.14889946321758274,
+    "ready": 0.41730833522199884,
+    "conf_transport": 0.6180312494978837,
+    "conf_offer": 0.5246816814734869,
+    "transport": 0.15891701513523793,
+    "cleaning": 0.8509687365890191,
+    "arrival": 0.25483886636206643
+   },
+   "pit_L5N": {
+    "auth": 0.9367334041790819,
+    "ready": 0.4696683102136001,
+    "conf_transport": 0.915293189838581,
+    "conf_offer": 0.33892569141433204,
+    "transport": 0.3297906329187428,
+    "cleaning": 0.6180747040908472,
+    "arrival": 0.35825692224922123
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 8,
+   "tau": 556,
+   "n_elements": 12,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.09266455312692333,
+    "nll_pub": 0.0,
+    "brier": 0.0007100591715976334,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6437898904371477,
+    "ready": 0.6658774122198341,
+    "conf_transport": 0.6663656416662079,
+    "conf_offer": 0.3094095620546772,
+    "transport": 0.077461902890264,
+    "cleaning": 0.6851801171552575,
+    "arrival": 0.3048999622144778
+   },
+   "pit_L5N": {
+    "auth": 0.40926103108459166,
+    "ready": 0.2817352407040489,
+    "conf_transport": 0.9042521863523572,
+    "conf_offer": 0.14852158493007028,
+    "transport": 0.47890500300506855,
+    "cleaning": 0.0028876156109607365,
+    "arrival": 0.4070829398682959
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 9,
+   "tau": 508,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2809716844450678,
+    "nll_pub": 0.0,
+    "brier": 0.01486264610584961,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2809716844450678,
+    "nll_pub": 0.0,
+    "brier": 0.01486264610584961,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6803032139980761,
+    "ready": 0.24368123298526767,
+    "conf_transport": 0.7260797803405225,
+    "conf_offer": 0.48027886369964634,
+    "transport": 0.10046089565479499,
+    "cleaning": 0.3514007734266569,
+    "arrival": 0.35740275629069757
+   },
+   "pit_L5N": {
+    "auth": 0.6671923181892997,
+    "ready": 0.7591798759727907,
+    "conf_transport": 0.2549695825542283,
+    "conf_offer": 0.20116543254375485,
+    "transport": 0.8669075937781725,
+    "cleaning": 0.830644805811833,
+    "arrival": 0.5316896309585818
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 9,
+   "tau": 524,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 1
+   },
+   "L4N": {
+    "nll": 8.703300269472328,
+    "nll_pub": Infinity,
+    "brier": 2.9252071005917166,
+    "brier_pub": 3.0
+   },
+   "L5N": {
+    "nll": 8.58956689255388,
+    "nll_pub": Infinity,
+    "brier": 2.9181065088757405,
+    "brier_pub": 3.0
+   },
+   "pit_L4N": {
+    "auth": 0.614996165156222,
+    "ready": 0.6330134079042271,
+    "conf_transport": 0.8235794768557886,
+    "conf_offer": 0.01216432337737905,
+    "transport": 0.6974808764918947,
+    "cleaning": 0.19240272729770802,
+    "arrival": 0.9474555671944159
+   },
+   "pit_L5N": {
+    "auth": 0.6740466051664795,
+    "ready": 0.7256552198593231,
+    "conf_transport": 0.7724268767610293,
+    "conf_offer": 0.1729376268194841,
+    "transport": 0.6567104915002581,
+    "cleaning": 0.4188278081733734,
+    "arrival": 0.937045130961722
+   },
+   "mean_totals_L4N": {
+    "auth": 0.6875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.09375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.546875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 9,
+   "tau": 540,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 3
+   },
+   "L4N": {
+    "nll": 9.34120026661695,
+    "nll_pub": Infinity,
+    "brier": 3.7208503938854056,
+    "brier_pub": 4.0
+   },
+   "L5N": {
+    "nll": 9.220734644610385,
+    "nll_pub": Infinity,
+    "brier": 3.676691728078907,
+    "brier_pub": 4.0
+   },
+   "pit_L4N": {
+    "auth": 0.7096668718369481,
+    "ready": 0.5471939963182266,
+    "conf_transport": 0.6502302118925984,
+    "conf_offer": 0.6987949193255568,
+    "transport": 0.9825640199028078,
+    "cleaning": 0.9415806198565561,
+    "arrival": 1.0
+   },
+   "pit_L5N": {
+    "auth": 0.5889649192027233,
+    "ready": 0.8005663774989532,
+    "conf_transport": 0.40329041177380187,
+    "conf_offer": 0.9832915884897244,
+    "transport": 0.8067801764394278,
+    "cleaning": 0.9001992118716159,
+    "arrival": 1.0
+   },
+   "mean_totals_L4N": {
+    "auth": 0.1875,
+    "ready": 0.21875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.234375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.140625,
+    "ready": 0.171875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.234375
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 9,
+   "tau": 556,
+   "n_elements": 17,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.4875581223620806,
+    "nll_pub": 0.0,
+    "brier": 0.03684005876817843,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.4094315328466761,
+    "nll_pub": 0.0,
+    "brier": 0.03447319486285299,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7420613292956929,
+    "ready": 0.9434124926282709,
+    "conf_transport": 0.2392751464478119,
+    "conf_offer": 0.12345642565742077,
+    "transport": 0.43704652705956126,
+    "cleaning": 1.0,
+    "arrival": 0.688981663703568
+   },
+   "pit_L5N": {
+    "auth": 0.3033035981179837,
+    "ready": 0.987806921196155,
+    "conf_transport": 0.0728970206141496,
+    "conf_offer": 0.6705578953436336,
+    "transport": 0.729787714312083,
+    "cleaning": 1.0,
+    "arrival": 0.7648015404708208
+   },
+   "mean_totals_L4N": {
+    "auth": 0.078125,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.234375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.234375
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 10,
+   "tau": 508,
+   "n_elements": 28,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.21621729062948777,
+    "nll_pub": 0.0,
+    "brier": 0.0016568047337278114,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.21621729062948777,
+    "nll_pub": 0.0,
+    "brier": 0.0016568047337278114,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.255457015308048,
+    "ready": 0.2778578355929793,
+    "conf_transport": 0.22795746120119043,
+    "conf_offer": 0.8907197558021034,
+    "transport": 0.9080519609393315,
+    "cleaning": 0.4259463377509136,
+    "arrival": 0.4252412675676712
+   },
+   "pit_L5N": {
+    "auth": 0.5969353118021227,
+    "ready": 0.9209370067958046,
+    "conf_transport": 0.6770764626402436,
+    "conf_offer": 0.8048849271566724,
+    "transport": 0.562139506132048,
+    "cleaning": 0.6816956669160262,
+    "arrival": 0.030318670812702786
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 10,
+   "tau": 524,
+   "n_elements": 35,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 7.282256490743386,
+    "nll_pub": Infinity,
+    "brier": 1.7481065088757415,
+    "brier_pub": 2.0
+   },
+   "L5N": {
+    "nll": 5.8808592661755394,
+    "nll_pub": Infinity,
+    "brier": 1.6387573964497057,
+    "brier_pub": 2.0
+   },
+   "pit_L4N": {
+    "auth": 0.9804860767728857,
+    "ready": 0.9392863267625826,
+    "conf_transport": 0.32554099606514975,
+    "conf_offer": 0.26103544614807306,
+    "transport": 0.9322382630526782,
+    "cleaning": 0.7283949678897671,
+    "arrival": 0.9488231498363708
+   },
+   "pit_L5N": {
+    "auth": 0.9759792569130468,
+    "ready": 0.9491638604539024,
+    "conf_transport": 0.5873199280313823,
+    "conf_offer": 0.27177972214553836,
+    "transport": 0.6378212921209238,
+    "cleaning": 0.4941457698976771,
+    "arrival": 0.145349940450451
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.171875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0625,
+    "ready": 0.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 10,
+   "tau": 540,
+   "n_elements": 31,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 3,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.5713608084787499,
+    "nll_pub": 0.0,
+    "brier": 0.06763313609467449,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.5921948953815918,
+    "nll_pub": 0.0,
+    "brier": 0.075680473372781,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7297939371175735,
+    "ready": 0.9437910269654325,
+    "conf_transport": 0.4316574434140946,
+    "conf_offer": 0.370598355074255,
+    "transport": 1.0,
+    "cleaning": 0.7512024824378415,
+    "arrival": 0.5152121320542074
+   },
+   "pit_L5N": {
+    "auth": 0.7390413813239023,
+    "ready": 0.8461598401323771,
+    "conf_transport": 0.8949757534347185,
+    "conf_offer": 0.2733347428765529,
+    "transport": 1.0,
+    "cleaning": 0.5261839730433742,
+    "arrival": 0.9807099196244956
+   },
+   "mean_totals_L4N": {
+    "auth": 0.046875,
+    "ready": 0.25,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.046875,
+    "ready": 0.265625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 10,
+   "tau": 556,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.345898989388499,
+    "nll_pub": Infinity,
+    "brier": 0.45059171597633146,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 0.9639643786905288,
+    "nll_pub": Infinity,
+    "brier": 0.26834319526627215,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.22269781996399918,
+    "ready": 0.7099939619148056,
+    "conf_transport": 0.8778375335605568,
+    "conf_offer": 0.18816947113260873,
+    "transport": 0.957213251232593,
+    "cleaning": 0.9504921400656714,
+    "arrival": 0.7480162964135378
+   },
+   "pit_L5N": {
+    "auth": 0.1980151523716671,
+    "ready": 0.5796858971846494,
+    "conf_transport": 0.5554498043382138,
+    "conf_offer": 0.818039423609015,
+    "transport": 0.037586008132800997,
+    "cleaning": 0.7217233433853728,
+    "arrival": 0.2270025449683667
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.328125,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.484375,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 11,
+   "tau": 508,
+   "n_elements": 30,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.23166138281730833,
+    "nll_pub": 0.0,
+    "brier": 0.0017751479289940836,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.23166138281730833,
+    "nll_pub": 0.0,
+    "brier": 0.0017751479289940836,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5995977505864302,
+    "ready": 0.4237008137974543,
+    "conf_transport": 0.4794453300568635,
+    "conf_offer": 0.581693387527523,
+    "transport": 0.5810931137622578,
+    "cleaning": 0.36865375233902886,
+    "arrival": 0.7226461877858144
+   },
+   "pit_L5N": {
+    "auth": 0.41673480226240467,
+    "ready": 0.9117298822363854,
+    "conf_transport": 0.9186010197151334,
+    "conf_offer": 0.39488929966074315,
+    "transport": 0.1918517017266228,
+    "cleaning": 0.10224371482757733,
+    "arrival": 0.2720310533649284
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 11,
+   "tau": 524,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.4736722094886967,
+    "nll_pub": 0.0,
+    "brier": 0.03532544378698225,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.4034879073351815,
+    "nll_pub": 0.0,
+    "brier": 0.0206508875739645,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7097452344638722,
+    "ready": 0.7710805116981888,
+    "conf_transport": 0.08038644864118494,
+    "conf_offer": 0.442534312808209,
+    "transport": 0.4119745468710727,
+    "cleaning": 0.33847665606629485,
+    "arrival": 0.4055305880647436
+   },
+   "pit_L5N": {
+    "auth": 0.4326625979574832,
+    "ready": 0.7567265058792245,
+    "conf_transport": 0.5088449985731718,
+    "conf_offer": 0.9880861607577017,
+    "transport": 0.913461765166462,
+    "cleaning": 0.021293185085200284,
+    "arrival": 0.3927646780338879
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.171875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 11,
+   "tau": 540,
+   "n_elements": 27,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2084952445355775,
+    "nll_pub": 0.0,
+    "brier": 0.0015976331360946752,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2084952445355775,
+    "nll_pub": 0.0,
+    "brier": 0.0015976331360946752,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.48198839892992296,
+    "ready": 0.3509750083458969,
+    "conf_transport": 0.9729007552011825,
+    "conf_offer": 0.44923750745554114,
+    "transport": 0.8095680058264484,
+    "cleaning": 0.061169960623578934,
+    "arrival": 0.26757698043323186
+   },
+   "pit_L5N": {
+    "auth": 0.26304781061115257,
+    "ready": 0.35190510489046367,
+    "conf_transport": 0.5300969909229102,
+    "conf_offer": 0.33042934976592564,
+    "transport": 0.8754837043641421,
+    "cleaning": 0.42033321503314547,
+    "arrival": 0.05918868758216855
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "VAL",
+   "index": 11,
+   "tau": 556,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2647950572065982,
+    "nll_pub": 0.0,
+    "brier": 0.006272189349112426,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2647950572065982,
+    "nll_pub": 0.0,
+    "brier": 0.006272189349112426,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.4364961091888626,
+    "ready": 0.46554279361213996,
+    "conf_transport": 0.07919700528152207,
+    "conf_offer": 0.2513549029302975,
+    "transport": 0.521465479635947,
+    "cleaning": 0.8835691671210628,
+    "arrival": 0.6336329825006063
+   },
+   "pit_L5N": {
+    "auth": 0.627007472065144,
+    "ready": 0.3409271603896358,
+    "conf_transport": 0.510782814714857,
+    "conf_offer": 0.9802684702136072,
+    "transport": 0.5060827831083016,
+    "cleaning": 0.33426267231945406,
+    "arrival": 0.6721444658072676
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 0,
+   "tau": 508,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.31253151978271143,
+    "nll_pub": 0.0,
+    "brier": 0.016923076923076933,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2725171033005085,
+    "nll_pub": 0.0,
+    "brier": 0.011124260355029584,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.27503576767667637,
+    "ready": 0.784985321716898,
+    "conf_transport": 0.7059375405572538,
+    "conf_offer": 0.9803963734541906,
+    "transport": 0.17745295097963076,
+    "cleaning": 0.8278877097270783,
+    "arrival": 0.22793810051858376
+   },
+   "pit_L5N": {
+    "auth": 0.4802858123730628,
+    "ready": 0.4704873946702177,
+    "conf_transport": 0.06628797180655499,
+    "conf_offer": 0.48526646090310277,
+    "transport": 0.6967261846259012,
+    "cleaning": 0.15384528569956857,
+    "arrival": 0.46798859136197185
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.09375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 0,
+   "tau": 524,
+   "n_elements": 29,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 2.0782012274212494,
+    "nll_pub": 0.0,
+    "brier": 0.24556460930919113,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 1.8127935681426657,
+    "nll_pub": 0.0,
+    "brier": 0.1901799939245758,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.08910947417757431,
+    "ready": 0.2615482272629098,
+    "conf_transport": 0.18845759322412947,
+    "conf_offer": 0.6553498364495184,
+    "transport": 0.3809110107351953,
+    "cleaning": 0.5245899141416359,
+    "arrival": 0.8002227055680081
+   },
+   "pit_L5N": {
+    "auth": 0.01125283994422347,
+    "ready": 0.3085511567978227,
+    "conf_transport": 0.0563508591055103,
+    "conf_offer": 0.03449124646398616,
+    "transport": 0.7807143917547118,
+    "cleaning": 0.8293561749950129,
+    "arrival": 0.7599865951359355
+   },
+   "mean_totals_L4N": {
+    "auth": 0.6875,
+    "ready": 0.828125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.21875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.53125,
+    "ready": 0.734375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.21875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 0,
+   "tau": 540,
+   "n_elements": 26,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 1,
+    "conf_offer": 0,
+    "transport": 1,
+    "cleaning": 3,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.1830880168851718,
+    "nll_pub": Infinity,
+    "brier": 0.19562130177514794,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 0.8418558434184968,
+    "nll_pub": Infinity,
+    "brier": 0.12840236686390533,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.4550052150982905,
+    "ready": 1.0,
+    "conf_transport": 1.0,
+    "conf_offer": 0.6368573861900786,
+    "transport": 1.0,
+    "cleaning": 1.0,
+    "arrival": 0.6585768246464891
+   },
+   "pit_L5N": {
+    "auth": 0.2987985279135811,
+    "ready": 1.0,
+    "conf_transport": 1.0,
+    "conf_offer": 0.6997066787449274,
+    "transport": 1.0,
+    "cleaning": 1.0,
+    "arrival": 0.5664817381295526
+   },
+   "mean_totals_L4N": {
+    "auth": 0.3125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.609375,
+    "arrival": 0.140625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.6875,
+    "arrival": 0.140625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 0,
+   "tau": 556,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.7087196160200421,
+    "nll_pub": 0.0,
+    "brier": 0.08660337237764584,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.6757840925228666,
+    "nll_pub": 0.0,
+    "brier": 0.0711004137977642,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.06053853278498221,
+    "ready": 0.14099730519290216,
+    "conf_transport": 0.6134565333872349,
+    "conf_offer": 0.9053945017723977,
+    "transport": 0.7147794159181186,
+    "cleaning": 1.0,
+    "arrival": 0.407418197994613
+   },
+   "pit_L5N": {
+    "auth": 0.3709442252250976,
+    "ready": 0.3945945612426444,
+    "conf_transport": 0.8775647812585549,
+    "conf_offer": 0.03636434646098352,
+    "transport": 0.7276768462689093,
+    "cleaning": 1.0,
+    "arrival": 0.7867403769259047
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.328125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.296875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 1,
+   "tau": 508,
+   "n_elements": 35,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.27027161328685967,
+    "nll_pub": 0.0,
+    "brier": 0.002071005917159764,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.27027161328685967,
+    "nll_pub": 0.0,
+    "brier": 0.002071005917159764,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6504018671247167,
+    "ready": 0.6263788955880554,
+    "conf_transport": 0.4458889453916477,
+    "conf_offer": 0.4800904676475889,
+    "transport": 0.7843366985567213,
+    "cleaning": 0.4447398259485177,
+    "arrival": 0.09858278917694008
+   },
+   "pit_L5N": {
+    "auth": 0.282844302009966,
+    "ready": 0.6696223295667282,
+    "conf_transport": 0.7747365236126716,
+    "conf_offer": 0.41823758046533155,
+    "transport": 0.5937854963480949,
+    "cleaning": 0.3257682812251246,
+    "arrival": 0.9900613583980103
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 1,
+   "tau": 524,
+   "n_elements": 40,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.3401324795625727,
+    "nll_pub": 0.0,
+    "brier": 0.0033136094674556197,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.3245071616594918,
+    "nll_pub": 0.0,
+    "brier": 0.0028402366863905315,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8792122418581514,
+    "ready": 0.8304604047108284,
+    "conf_transport": 0.7453884634801384,
+    "conf_offer": 0.7270139958718337,
+    "transport": 0.1849231386242387,
+    "cleaning": 0.22536862844825423,
+    "arrival": 0.1694251243758803
+   },
+   "pit_L5N": {
+    "auth": 0.4387830004609284,
+    "ready": 0.9022610945345976,
+    "conf_transport": 0.687467901447796,
+    "conf_offer": 0.44136796900880604,
+    "transport": 0.5140007597186413,
+    "cleaning": 0.7257334141522054,
+    "arrival": 0.7774111869112024
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 1,
+   "tau": 540,
+   "n_elements": 33,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.28607815690520083,
+    "nll_pub": 0.0,
+    "brier": 0.0028994082840236683,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.28607815690520083,
+    "nll_pub": 0.0,
+    "brier": 0.0028994082840236683,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.09363906538389917,
+    "ready": 0.83626023775155,
+    "conf_transport": 0.5709147352793633,
+    "conf_offer": 0.1150157792658194,
+    "transport": 0.4373417407210161,
+    "cleaning": 0.5416013316558126,
+    "arrival": 0.49933177190984657
+   },
+   "pit_L5N": {
+    "auth": 0.26872274432181775,
+    "ready": 0.6626431325483271,
+    "conf_transport": 0.540445285336738,
+    "conf_offer": 0.15664395170507417,
+    "transport": 0.06710945170777526,
+    "cleaning": 0.35902183144650224,
+    "arrival": 0.9086476859348561
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.015625,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.015625,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 1,
+   "tau": 556,
+   "n_elements": 32,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.29422945996758076,
+    "nll_pub": 0.0,
+    "brier": 0.00378698224852071,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2783561108112907,
+    "nll_pub": 0.0,
+    "brier": 0.0028402366863905324,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.018185695585772654,
+    "ready": 0.6716290834830515,
+    "conf_transport": 0.224462318797905,
+    "conf_offer": 0.4673969097095628,
+    "transport": 0.18600854950473888,
+    "cleaning": 0.009585683714130117,
+    "arrival": 0.39501074177252304
+   },
+   "pit_L5N": {
+    "auth": 0.05598533989613885,
+    "ready": 0.8432811018455857,
+    "conf_transport": 0.9180391034436163,
+    "conf_offer": 0.7812561556755594,
+    "transport": 0.12917900291627427,
+    "cleaning": 0.028372931823240674,
+    "arrival": 0.47371369796667184
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.03125,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.015625,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 2,
+   "tau": 508,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.16234419368737615,
+    "nll_pub": 0.0,
+    "brier": 0.0021301775147929015,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.138996829690385,
+    "nll_pub": 0.0,
+    "brier": 0.00106508875739645,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6444040595402403,
+    "ready": 0.45666568117631623,
+    "conf_transport": 0.15483116207842385,
+    "conf_offer": 0.3981893393510455,
+    "transport": 0.6055810694448358,
+    "cleaning": 0.24581879748904756,
+    "arrival": 0.46102398679766393
+   },
+   "pit_L5N": {
+    "auth": 0.5846856127301452,
+    "ready": 0.49661603881697314,
+    "conf_transport": 0.9801602825404873,
+    "conf_offer": 0.8122448146024046,
+    "transport": 0.7317951478953109,
+    "cleaning": 0.16355070486775702,
+    "arrival": 0.08495631719235475
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 2,
+   "tau": 524,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 4.670191440026799,
+    "nll_pub": Infinity,
+    "brier": 1.0382248520710056,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 4.48320874257627,
+    "nll_pub": Infinity,
+    "brier": 1.0149112426035498,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.7406247225374326,
+    "ready": 0.08435545276025373,
+    "conf_transport": 0.8991350324593637,
+    "conf_offer": 0.6706609980606253,
+    "transport": 0.22943535954361838,
+    "cleaning": 0.012730711362744063,
+    "arrival": 0.05230004260391638
+   },
+   "pit_L5N": {
+    "auth": 0.8574267586237843,
+    "ready": 0.6311313149662425,
+    "conf_transport": 0.10822031210737759,
+    "conf_offer": 0.8403388722105085,
+    "transport": 0.8720883671447286,
+    "cleaning": 0.8186937062246703,
+    "arrival": 0.6268543545082655
+   },
+   "mean_totals_L4N": {
+    "auth": 0.53125,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.203125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.390625,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 2,
+   "tau": 540,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.37420313124416693,
+    "nll_pub": 0.0,
+    "brier": 0.013107072628214037,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.34270446418479594,
+    "nll_pub": 0.0,
+    "brier": 0.011686954285018772,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.14148031007919443,
+    "ready": 0.5489781155076475,
+    "conf_transport": 0.40455633324832374,
+    "conf_offer": 0.4187465080205537,
+    "transport": 0.08723407662402627,
+    "cleaning": 0.12102610595460217,
+    "arrival": 0.731417161719373
+   },
+   "pit_L5N": {
+    "auth": 0.25073864655155015,
+    "ready": 0.31233249210631575,
+    "conf_transport": 0.6777207786508243,
+    "conf_offer": 0.1882378010540967,
+    "transport": 0.0980960031452971,
+    "cleaning": 0.2264584157827143,
+    "arrival": 0.35723127057175
+   },
+   "mean_totals_L4N": {
+    "auth": 0.140625,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.109375,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 2,
+   "tau": 556,
+   "n_elements": 17,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 2.7945107553652493,
+    "nll_pub": Infinity,
+    "brier": 0.986568047337278,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 2.822585265585659,
+    "nll_pub": Infinity,
+    "brier": 1.0446745562130175,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.07180119537366816,
+    "ready": 0.7381301201153623,
+    "conf_transport": 0.9823577474120514,
+    "conf_offer": 0.36477971509070806,
+    "transport": 0.6705971832502576,
+    "cleaning": 0.16074397439007432,
+    "arrival": 0.63177474197184
+   },
+   "pit_L5N": {
+    "auth": 0.5335115569803189,
+    "ready": 0.9113458736158861,
+    "conf_transport": 0.5192951491591475,
+    "conf_offer": 0.29347192122569965,
+    "transport": 0.8041392380597979,
+    "cleaning": 0.11126508781789213,
+    "arrival": 0.2324558638733551
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.46875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.828125,
+    "arrival": 0.09375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.359375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.796875,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 3,
+   "tau": 508,
+   "n_elements": 23,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2243017881539187,
+    "nll_pub": 0.0,
+    "brier": 0.003491124260355033,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.20095442415692755,
+    "nll_pub": 0.0,
+    "brier": 0.002426035502958582,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.2853707881041645,
+    "ready": 0.1308028916119297,
+    "conf_transport": 0.7651363181058479,
+    "conf_offer": 0.49513399584387185,
+    "transport": 0.04955269435416865,
+    "cleaning": 0.5938211580796356,
+    "arrival": 0.959898132507396
+   },
+   "pit_L5N": {
+    "auth": 0.3046393670492854,
+    "ready": 0.26270349513409597,
+    "conf_transport": 0.0238535837391044,
+    "conf_offer": 0.10869797609835308,
+    "transport": 0.3989461556751075,
+    "cleaning": 0.36247351020668517,
+    "arrival": 0.7831569162085463
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 3,
+   "tau": 524,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.7774156429141019,
+    "nll_pub": 0.0,
+    "brier": 0.16011834319526627,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.6088599529368727,
+    "nll_pub": 0.0,
+    "brier": 0.07964497041420115,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5999876269322019,
+    "ready": 0.7884598975193213,
+    "conf_transport": 0.45937703440898947,
+    "conf_offer": 0.48620066008390117,
+    "transport": 0.35177116182626533,
+    "cleaning": 0.5170134594387962,
+    "arrival": 0.6208668826218801
+   },
+   "pit_L5N": {
+    "auth": 0.5921641832096793,
+    "ready": 0.4281573111903244,
+    "conf_transport": 0.9107688925850866,
+    "conf_offer": 0.7943285835552882,
+    "transport": 0.1360013239980815,
+    "cleaning": 0.8478173876659384,
+    "arrival": 0.12705865920957612
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.390625,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.078125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.265625,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 3,
+   "tau": 540,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.5660423254244007,
+    "nll_pub": 0.0,
+    "brier": 0.02674556213017752,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.37365182190877816,
+    "nll_pub": 0.0,
+    "brier": 0.009704142011834324,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.12952890535932596,
+    "ready": 0.7786281920718808,
+    "conf_transport": 0.6199609457057826,
+    "conf_offer": 0.2856660562506823,
+    "transport": 0.2140426884056611,
+    "cleaning": 0.47378044109485945,
+    "arrival": 0.8379480129813063
+   },
+   "pit_L5N": {
+    "auth": 0.14160867961335938,
+    "ready": 0.4995258575021266,
+    "conf_transport": 0.7244703073172895,
+    "conf_offer": 0.41363992061847243,
+    "transport": 0.2400745097410223,
+    "cleaning": 0.5967287534856486,
+    "arrival": 0.1944630372296667
+   },
+   "mean_totals_L4N": {
+    "auth": 0.125,
+    "ready": 0.078125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.09375,
+    "arrival": 0.0625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.046875,
+    "ready": 0.078125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.015625,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 3,
+   "tau": 556,
+   "n_elements": 25,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.4181275544857062,
+    "nll_pub": 0.0,
+    "brier": 0.021597633136094672,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.5411184603701901,
+    "nll_pub": 0.0,
+    "brier": 0.04763313609467456,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.9449687947731407,
+    "ready": 0.1008272399839851,
+    "conf_transport": 0.039389947404969594,
+    "conf_offer": 0.5005255571256503,
+    "transport": 0.02733812768840327,
+    "cleaning": 0.5781923056111327,
+    "arrival": 0.9541804150313326
+   },
+   "pit_L5N": {
+    "auth": 0.43202880983860525,
+    "ready": 0.1856196465688597,
+    "conf_transport": 0.4029535271661727,
+    "conf_offer": 0.0975270066959667,
+    "transport": 0.5552023854399808,
+    "cleaning": 0.29864724795102277,
+    "arrival": 0.19064622260650915
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.046875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.109375,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.1875,
+    "arrival": 0.046875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 4,
+   "tau": 508,
+   "n_elements": 21,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.185510331969107,
+    "nll_pub": 0.0,
+    "brier": 0.0023076923076923096,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.185510331969107,
+    "nll_pub": 0.0,
+    "brier": 0.0023076923076923096,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.34344402046554834,
+    "ready": 0.0008067300191036963,
+    "conf_transport": 0.9714078200625401,
+    "conf_offer": 0.3288196164037188,
+    "transport": 0.880177710107273,
+    "cleaning": 0.8138034244122438,
+    "arrival": 0.1041031892010564
+   },
+   "pit_L5N": {
+    "auth": 0.6117276849282945,
+    "ready": 0.7065146617057474,
+    "conf_transport": 0.258332854171455,
+    "conf_offer": 0.968655747420169,
+    "transport": 0.24794246069610948,
+    "cleaning": 0.04100074310539026,
+    "arrival": 0.2004136306289322
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 4,
+   "tau": 524,
+   "n_elements": 23,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.29495436282862214,
+    "nll_pub": 0.0,
+    "brier": 0.005739644970414201,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2947063315754129,
+    "nll_pub": 0.0,
+    "brier": 0.0052662721893491134,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5585682031361464,
+    "ready": 0.3635829940968771,
+    "conf_transport": 0.8200799453810751,
+    "conf_offer": 0.5386087612593738,
+    "transport": 0.1345103552426884,
+    "cleaning": 0.04760172897157222,
+    "arrival": 0.6491846937759055
+   },
+   "pit_L5N": {
+    "auth": 0.2004599054407622,
+    "ready": 0.76554639569857,
+    "conf_transport": 0.7631940652093858,
+    "conf_offer": 0.6613320780869659,
+    "transport": 0.1407347850441656,
+    "cleaning": 0.21670329590783155,
+    "arrival": 0.8224648574884937
+   },
+   "mean_totals_L4N": {
+    "auth": 0.09375,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 4,
+   "tau": 540,
+   "n_elements": 23,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 5.162736844537413,
+    "nll_pub": Infinity,
+    "brier": 0.9914201183431952,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 5.1468634953811225,
+    "nll_pub": Infinity,
+    "brier": 0.9904733727810651,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.9940698784907268,
+    "ready": 0.7711917322684895,
+    "conf_transport": 0.6954007882312268,
+    "conf_offer": 0.8259251171727394,
+    "transport": 0.7830745479901147,
+    "cleaning": 0.3315333399604695,
+    "arrival": 0.6735846992297418
+   },
+   "pit_L5N": {
+    "auth": 0.9724579221052759,
+    "ready": 0.14688911883165084,
+    "conf_transport": 0.05460314565502278,
+    "conf_offer": 0.7307195999204821,
+    "transport": 0.3959540005116702,
+    "cleaning": 0.8465395408793474,
+    "arrival": 0.3406648256208172
+   },
+   "mean_totals_L4N": {
+    "auth": 0.046875,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.03125,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 4,
+   "tau": 556,
+   "n_elements": 21,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.7743411354975285,
+    "nll_pub": Infinity,
+    "brier": 0.6134319526627218,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 2.0422531060509606,
+    "nll_pub": Infinity,
+    "brier": 0.6967455621301774,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.49288509109896456,
+    "ready": 0.8196182254121177,
+    "conf_transport": 0.08887855331109673,
+    "conf_offer": 0.32406321763771684,
+    "transport": 0.3636880221500528,
+    "cleaning": 0.5554063936563671,
+    "arrival": 0.03070126322414702
+   },
+   "pit_L5N": {
+    "auth": 0.4211237995386482,
+    "ready": 0.8007478006033505,
+    "conf_transport": 0.19891923425421343,
+    "conf_offer": 0.6510563512991808,
+    "transport": 0.36583364609956703,
+    "cleaning": 0.40268770941202214,
+    "arrival": 0.5014931705603924
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.296875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.296875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.015625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 5,
+   "tau": 508,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.15444092187820554,
+    "nll_pub": 0.0,
+    "brier": 0.0011834319526627223,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.15444092187820554,
+    "nll_pub": 0.0,
+    "brier": 0.0011834319526627223,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.38797519890704824,
+    "ready": 0.9812670097718382,
+    "conf_transport": 0.2117222493565274,
+    "conf_offer": 0.3919142491102394,
+    "transport": 0.9114436897405348,
+    "cleaning": 0.99538411897928,
+    "arrival": 0.43192262422999206
+   },
+   "pit_L5N": {
+    "auth": 0.278492890570611,
+    "ready": 0.8608631908845433,
+    "conf_transport": 0.776434947229788,
+    "conf_offer": 0.6601084657430338,
+    "transport": 0.35513992388122895,
+    "cleaning": 0.5442692340774574,
+    "arrival": 0.7949163072248039
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 5,
+   "tau": 524,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.15444092187820554,
+    "nll_pub": 0.0,
+    "brier": 0.0011834319526627223,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.15444092187820554,
+    "nll_pub": 0.0,
+    "brier": 0.0011834319526627223,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.4830127734215598,
+    "ready": 0.7893045746521814,
+    "conf_transport": 0.9241478855114998,
+    "conf_offer": 0.5034776313149487,
+    "transport": 0.1674299513280617,
+    "cleaning": 0.6687735448923505,
+    "arrival": 0.4121842195369346
+   },
+   "pit_L5N": {
+    "auth": 0.16230872475246083,
+    "ready": 0.2840204997195789,
+    "conf_transport": 0.9186531999780246,
+    "conf_offer": 0.09450626580751131,
+    "transport": 0.46913022764499146,
+    "cleaning": 0.3676695537464746,
+    "arrival": 0.06486424787373357
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 5,
+   "tau": 540,
+   "n_elements": 21,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.16216296797211582,
+    "nll_pub": 0.0,
+    "brier": 0.0012426035502958585,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.16216296797211582,
+    "nll_pub": 0.0,
+    "brier": 0.0012426035502958585,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.29499946951851397,
+    "ready": 0.5293423747392904,
+    "conf_transport": 0.8254485220086083,
+    "conf_offer": 0.4896414704028532,
+    "transport": 0.34662787141571527,
+    "cleaning": 0.7858751585703738,
+    "arrival": 0.552134076462194
+   },
+   "pit_L5N": {
+    "auth": 0.955500219754426,
+    "ready": 0.7643776880537564,
+    "conf_transport": 0.5866457833691011,
+    "conf_offer": 0.0003991296995680127,
+    "transport": 0.5197454215209872,
+    "cleaning": 0.3745384859335458,
+    "arrival": 0.36757651144862535
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 5,
+   "tau": 556,
+   "n_elements": 23,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.17760706015993638,
+    "nll_pub": 0.0,
+    "brier": 0.0013609467455621307,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.17760706015993638,
+    "nll_pub": 0.0,
+    "brier": 0.0013609467455621307,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.08743615944207417,
+    "ready": 0.2888266238524767,
+    "conf_transport": 0.3491857649960387,
+    "conf_offer": 0.4364851395616617,
+    "transport": 0.21735421416349265,
+    "cleaning": 0.9691632914349652,
+    "arrival": 0.5850979524640532
+   },
+   "pit_L5N": {
+    "auth": 0.8910300042632964,
+    "ready": 0.11751959725896666,
+    "conf_transport": 0.5326458021605841,
+    "conf_offer": 0.6502028643823945,
+    "transport": 0.9334074466236267,
+    "cleaning": 0.9907647434779866,
+    "arrival": 0.6974216908439764
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 6,
+   "tau": 508,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.24850766608784897,
+    "nll_pub": 0.0,
+    "brier": 0.008106508875739642,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.24850766608784897,
+    "nll_pub": 0.0,
+    "brier": 0.008106508875739642,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.18263916798017932,
+    "ready": 0.06081178124951758,
+    "conf_transport": 0.6123363744710001,
+    "conf_offer": 0.9517128837506788,
+    "transport": 0.743269115099228,
+    "cleaning": 0.7998852107972467,
+    "arrival": 0.6323136856853033
+   },
+   "pit_L5N": {
+    "auth": 0.2103440282679615,
+    "ready": 0.8434259029768436,
+    "conf_transport": 0.43132231778769503,
+    "conf_offer": 0.49127611860579323,
+    "transport": 0.1812126760680105,
+    "cleaning": 0.2854768493248784,
+    "arrival": 0.5186915795381312
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 6,
+   "tau": 524,
+   "n_elements": 21,
+   "truth_totals": {
+    "auth": 3,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 6.388442956889336,
+    "nll_pub": Infinity,
+    "brier": 1.829943307534043,
+    "brier_pub": 2.0
+   },
+   "L5N": {
+    "nll": 6.377153565875784,
+    "nll_pub": Infinity,
+    "brier": 1.847514792899408,
+    "brier_pub": 2.0
+   },
+   "pit_L4N": {
+    "auth": 0.984375,
+    "ready": 0.8126509342205185,
+    "conf_transport": 0.9630258663837007,
+    "conf_offer": 0.06355657683967642,
+    "transport": 0.3846818897615959,
+    "cleaning": 0.001208201417067789,
+    "arrival": 0.708632687596905
+   },
+   "pit_L5N": {
+    "auth": 0.9793776514252609,
+    "ready": 0.5767058685802339,
+    "conf_transport": 0.24698911139441748,
+    "conf_offer": 0.4355543291587406,
+    "transport": 0.7302899535623225,
+    "cleaning": 0.42600546988023025,
+    "arrival": 0.7735099529327528
+   },
+   "mean_totals_L4N": {
+    "auth": 0.71875,
+    "ready": 0.1875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.265625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.75,
+    "ready": 0.34375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.25
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 6,
+   "tau": 540,
+   "n_elements": 22,
+   "truth_totals": {
+    "auth": 2,
+    "ready": 2,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 1
+   },
+   "L4N": {
+    "nll": 13.038325276493877,
+    "nll_pub": Infinity,
+    "brier": 4.709474213754941,
+    "brier_pub": 5.0
+   },
+   "L5N": {
+    "nll": 11.93679433081226,
+    "nll_pub": Infinity,
+    "brier": 4.6326339308649835,
+    "brier_pub": 5.0
+   },
+   "pit_L4N": {
+    "auth": 0.984375,
+    "ready": 0.926577755288986,
+    "conf_transport": 0.00036226776800395676,
+    "conf_offer": 0.9754746672344862,
+    "transport": 0.9192909229664648,
+    "cleaning": 0.7032715613252841,
+    "arrival": 0.7699715701039394
+   },
+   "pit_L5N": {
+    "auth": 0.9789351447198094,
+    "ready": 0.973889985507071,
+    "conf_transport": 0.08724105355982524,
+    "conf_offer": 0.1342839187783742,
+    "transport": 0.47297990528422473,
+    "cleaning": 0.20811439843077562,
+    "arrival": 0.8898777036581662
+   },
+   "mean_totals_L4N": {
+    "auth": 0.1875,
+    "ready": 0.59375,
+    "conf_transport": 0.640625,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.40625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.234375,
+    "ready": 0.734375,
+    "conf_transport": 0.65625,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.34375
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 6,
+   "tau": 556,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 1,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.7953690630644838,
+    "nll_pub": 0.0,
+    "brier": 0.1035129606176658,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.7609686646205718,
+    "nll_pub": 0.0,
+    "brier": 0.09158954406389329,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6239051725080417,
+    "ready": 0.9934261024911973,
+    "conf_transport": 0.3028011786802662,
+    "conf_offer": 0.1581809603388663,
+    "transport": 1.0,
+    "cleaning": 0.9574793204276815,
+    "arrival": 0.08152585954201008
+   },
+   "pit_L5N": {
+    "auth": 0.009994696629392053,
+    "ready": 1.0,
+    "conf_transport": 0.5067882037558699,
+    "conf_offer": 0.7996544233977098,
+    "transport": 1.0,
+    "cleaning": 0.9893677099843661,
+    "arrival": 0.602819567784651
+   },
+   "mean_totals_L4N": {
+    "auth": 0.09375,
+    "ready": 0.015625,
+    "conf_transport": 0.171875,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.046875,
+    "arrival": 0.296875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.09375,
+    "ready": 0.0,
+    "conf_transport": 0.171875,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.046875,
+    "arrival": 0.265625
+   },
+   "fallbacks_L4N": 48,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 7,
+   "tau": 508,
+   "n_elements": 15,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.1945281504888103,
+    "nll_pub": 0.0,
+    "brier": 0.007751479289940833,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.1945281504888103,
+    "nll_pub": 0.0,
+    "brier": 0.007751479289940833,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5106681629594892,
+    "ready": 0.996124148522574,
+    "conf_transport": 0.9244865051394229,
+    "conf_offer": 0.9436708277947958,
+    "transport": 0.3112210131358192,
+    "cleaning": 0.641316622391221,
+    "arrival": 0.3890567135157459
+   },
+   "pit_L5N": {
+    "auth": 0.1198989588361612,
+    "ready": 0.632905892790375,
+    "conf_transport": 0.5595595943349317,
+    "conf_offer": 0.9351984358133052,
+    "transport": 0.6484231033428632,
+    "cleaning": 0.5145459727916759,
+    "arrival": 0.17363130894690598
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 7,
+   "tau": 524,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.5191379037302588,
+    "nll_pub": 0.0,
+    "brier": 0.034082840236686396,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.5985290476246772,
+    "nll_pub": 0.0,
+    "brier": 0.03881656804733729,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.4030967472475698,
+    "ready": 0.31445818878907,
+    "conf_transport": 0.6200812504648417,
+    "conf_offer": 0.30742311161292657,
+    "transport": 0.5556086115332961,
+    "cleaning": 0.6992613626308153,
+    "arrival": 0.5216790465554711
+   },
+   "pit_L5N": {
+    "auth": 0.20536456466417538,
+    "ready": 0.5155985448098851,
+    "conf_transport": 0.33240506229826683,
+    "conf_offer": 0.90175315206042,
+    "transport": 0.6361220988978196,
+    "cleaning": 0.7951211359449393,
+    "arrival": 0.6074422029224306
+   },
+   "mean_totals_L4N": {
+    "auth": 0.171875,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.25,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 7,
+   "tau": 540,
+   "n_elements": 16,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 1,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 2.60431281765189,
+    "nll_pub": 0.0,
+    "brier": 0.7756213017751477,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 1.8931447806016133,
+    "nll_pub": 0.0,
+    "brier": 0.4650887573964496,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6261353966385694,
+    "ready": 0.1743846897751016,
+    "conf_transport": 0.5499787350211628,
+    "conf_offer": 0.6209946409828637,
+    "transport": 0.5874421371432947,
+    "cleaning": 1.0,
+    "arrival": 0.15373047717707608
+   },
+   "pit_L5N": {
+    "auth": 0.7736370381019146,
+    "ready": 0.41544274735080905,
+    "conf_transport": 0.7638839980534229,
+    "conf_offer": 0.5552306106192192,
+    "transport": 0.16348124057605584,
+    "cleaning": 1.0,
+    "arrival": 0.7442897738091374
+   },
+   "mean_totals_L4N": {
+    "auth": 0.09375,
+    "ready": 0.984375,
+    "conf_transport": 0.640625,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.171875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.078125,
+    "ready": 0.703125,
+    "conf_transport": 0.5,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.1875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 7,
+   "tau": 556,
+   "n_elements": 17,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.0456771066639745,
+    "nll_pub": 0.0,
+    "brier": 0.18218934911242599,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.9649818207711771,
+    "nll_pub": 0.0,
+    "brier": 0.15378698224852067,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5300358200166042,
+    "ready": 0.43752136524716506,
+    "conf_transport": 0.9341594468339245,
+    "conf_offer": 0.7030083320269712,
+    "transport": 0.3045430697756777,
+    "cleaning": 1.0,
+    "arrival": 0.41902642161788345
+   },
+   "pit_L5N": {
+    "auth": 0.18262824963693491,
+    "ready": 0.39097168325197956,
+    "conf_transport": 0.9768045481780189,
+    "conf_offer": 0.8133357991826821,
+    "transport": 0.37477062717251286,
+    "cleaning": 1.0,
+    "arrival": 0.7414993131830784
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.5,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.21875,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.46875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.1875,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 5,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 8,
+   "tau": 508,
+   "n_elements": 39,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.3798572567426568,
+    "nll_pub": 0.0,
+    "brier": 0.0091715976331361,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.3798572567426568,
+    "nll_pub": 0.0,
+    "brier": 0.0091715976331361,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7218388881899022,
+    "ready": 0.28940897990759074,
+    "conf_transport": 0.21508407474568547,
+    "conf_offer": 0.2704934652356282,
+    "transport": 0.38845533048363556,
+    "cleaning": 0.7648541252591444,
+    "arrival": 0.5041513387561043
+   },
+   "pit_L5N": {
+    "auth": 0.9842852853856556,
+    "ready": 0.4331467163625299,
+    "conf_transport": 0.40978636266486923,
+    "conf_offer": 0.939702001984536,
+    "transport": 0.015253686595282034,
+    "cleaning": 0.23110573250119304,
+    "arrival": 0.48676397097080115
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 8,
+   "tau": 524,
+   "n_elements": 41,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 2.257488527657663,
+    "nll_pub": 0.0,
+    "brier": 0.3432305913125571,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 2.0975741581472147,
+    "nll_pub": 0.0,
+    "brier": 0.32323059131255705,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.16706668295754667,
+    "ready": 0.1907797079080896,
+    "conf_transport": 0.9338005223854371,
+    "conf_offer": 0.0811604662009262,
+    "transport": 0.04680528675665718,
+    "cleaning": 0.00039147774462200413,
+    "arrival": 0.27556281885577727
+   },
+   "pit_L5N": {
+    "auth": 0.07287631817301317,
+    "ready": 0.1718402491618929,
+    "conf_transport": 0.21277022675347246,
+    "conf_offer": 0.8718652660895209,
+    "transport": 0.9061969295167138,
+    "cleaning": 0.6160622451130354,
+    "arrival": 0.05418598208919741
+   },
+   "mean_totals_L4N": {
+    "auth": 0.390625,
+    "ready": 1.234375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.140625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.296875,
+    "ready": 1.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 8,
+   "tau": 540,
+   "n_elements": 36,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 1,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 2.1595538594982515,
+    "nll_pub": Infinity,
+    "brier": 0.643905325443787,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 1.7687920421769667,
+    "nll_pub": Infinity,
+    "brier": 0.5250887573964497,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 0.6699192449036787,
+    "ready": 1.0,
+    "conf_transport": 0.8231587721037184,
+    "conf_offer": 0.11633271490127317,
+    "transport": 0.6431902531184039,
+    "cleaning": 0.9846791475241281,
+    "arrival": 0.5261477853454878
+   },
+   "pit_L5N": {
+    "auth": 0.7216991416809199,
+    "ready": 1.0,
+    "conf_transport": 0.9825334543293858,
+    "conf_offer": 0.6373158802431336,
+    "transport": 0.4229304367084279,
+    "cleaning": 0.8852890651423737,
+    "arrival": 0.5186461723994191
+   },
+   "mean_totals_L4N": {
+    "auth": 0.203125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.21875,
+    "arrival": 0.15625
+   },
+   "mean_totals_L5N": {
+    "auth": 0.125,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.296875,
+    "arrival": 0.140625
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 8,
+   "tau": 556,
+   "n_elements": 36,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 1.1520826521038046,
+    "nll_pub": 0.0,
+    "brier": 0.2809467455621302,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 1.235772300885111,
+    "nll_pub": 0.0,
+    "brier": 0.3268639053254438,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.07670803716284472,
+    "ready": 0.5325525053755165,
+    "conf_transport": 0.40130573415483084,
+    "conf_offer": 0.3936106982201293,
+    "transport": 0.22805719168119176,
+    "cleaning": 1.0,
+    "arrival": 0.6118439193256864
+   },
+   "pit_L5N": {
+    "auth": 0.5457645130125215,
+    "ready": 0.09334700205082158,
+    "conf_transport": 0.14545404991236888,
+    "conf_offer": 0.01481404155797894,
+    "transport": 0.14433211452429184,
+    "cleaning": 1.0,
+    "arrival": 0.4450250186925884
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.515625,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.109375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.5625,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.09375
+   },
+   "fallbacks_L4N": 2,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 9,
+   "tau": 508,
+   "n_elements": 13,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.10038659922083361,
+    "nll_pub": 0.0,
+    "brier": 0.0007692307692307696,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.10038659922083361,
+    "nll_pub": 0.0,
+    "brier": 0.0007692307692307696,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.08086003712147383,
+    "ready": 0.6108289578245331,
+    "conf_transport": 0.09345681815554319,
+    "conf_offer": 0.4469568293579457,
+    "transport": 0.010876124699300882,
+    "cleaning": 0.7830320388785106,
+    "arrival": 0.41277076959335557
+   },
+   "pit_L5N": {
+    "auth": 0.665311515146077,
+    "ready": 0.5494926937729258,
+    "conf_transport": 0.6259923812826571,
+    "conf_offer": 0.8759339688151415,
+    "transport": 0.5739419288339167,
+    "cleaning": 0.550978773380164,
+    "arrival": 0.18892169814351323
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 9,
+   "tau": 524,
+   "n_elements": 12,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.15566188724566532,
+    "nll_pub": 0.0,
+    "brier": 0.0035502958579881655,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.12416322018629433,
+    "nll_pub": 0.0,
+    "brier": 0.0021301775147928993,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.5367111941031832,
+    "ready": 0.6532419848707312,
+    "conf_transport": 0.6735942258905722,
+    "conf_offer": 0.12312453505877996,
+    "transport": 0.6419912148147799,
+    "cleaning": 0.20047471118336146,
+    "arrival": 0.3867661838533635
+   },
+   "pit_L5N": {
+    "auth": 0.14741177402753203,
+    "ready": 0.26010454685458917,
+    "conf_transport": 0.35384568581462095,
+    "conf_offer": 0.5687279470914077,
+    "transport": 0.44594659585402263,
+    "cleaning": 0.25413633717559214,
+    "arrival": 0.20543888871819238
+   },
+   "mean_totals_L4N": {
+    "auth": 0.03125,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.03125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 9,
+   "tau": 540,
+   "n_elements": 11,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.10056782493609395,
+    "nll_pub": 0.0,
+    "brier": 0.001124260355029586,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.08494250703301305,
+    "nll_pub": 0.0,
+    "brier": 0.0006508875739644973,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.6292650085393718,
+    "ready": 0.6911367870953362,
+    "conf_transport": 0.7587715995361758,
+    "conf_offer": 0.27380098842654,
+    "transport": 0.4491258713506838,
+    "cleaning": 0.9011896537265951,
+    "arrival": 0.017015294953946603
+   },
+   "pit_L5N": {
+    "auth": 0.8260043576689314,
+    "ready": 0.41999533202316197,
+    "conf_transport": 0.19899069739939634,
+    "conf_offer": 0.31414899484885095,
+    "transport": 0.04746493046819267,
+    "cleaning": 0.95839384822144,
+    "arrival": 0.9164317555679351
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 9,
+   "tau": 556,
+   "n_elements": 13,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.10038659922083361,
+    "nll_pub": 0.0,
+    "brier": 0.0007692307692307696,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.11601191712391451,
+    "nll_pub": 0.0,
+    "brier": 0.0012426035502958583,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.4649730765752368,
+    "ready": 0.48342342534268146,
+    "conf_transport": 0.1818186294998294,
+    "conf_offer": 0.9011905597468847,
+    "transport": 0.6084983644248418,
+    "cleaning": 0.31572028807036345,
+    "arrival": 0.14117987141058863
+   },
+   "pit_L5N": {
+    "auth": 0.9820329612931487,
+    "ready": 0.9520502102557858,
+    "conf_transport": 0.9311126802337054,
+    "conf_offer": 0.7434373654831439,
+    "transport": 0.9505850589776383,
+    "cleaning": 0.6594867257302527,
+    "arrival": 0.583954704356763
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.015625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.0
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 10,
+   "tau": 508,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.18593958893757653,
+    "nll_pub": 0.0,
+    "brier": 0.004082840236686389,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.18593958893757653,
+    "nll_pub": 0.0,
+    "brier": 0.004082840236686389,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.07711682341537918,
+    "ready": 0.4165592228895164,
+    "conf_transport": 0.5446350268425171,
+    "conf_offer": 0.6504769484173314,
+    "transport": 0.03130261426751402,
+    "cleaning": 0.6402763838096737,
+    "arrival": 0.919070832131159
+   },
+   "pit_L5N": {
+    "auth": 0.06600596245707357,
+    "ready": 0.6390793287784897,
+    "conf_transport": 0.45099633635779723,
+    "conf_offer": 0.5297142139922851,
+    "transport": 0.14394731585866605,
+    "cleaning": 0.9259548673359203,
+    "arrival": 0.46527801784776274
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.03125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 10,
+   "tau": 524,
+   "n_elements": 21,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.7256712287939552,
+    "nll_pub": 0.0,
+    "brier": 0.06408284023668638,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.6700162673901072,
+    "nll_pub": 0.0,
+    "brier": 0.07071005917159763,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.8076261307983111,
+    "ready": 0.5460294880436614,
+    "conf_transport": 0.10552103478615382,
+    "conf_offer": 0.7528952440426513,
+    "transport": 0.9883232535123629,
+    "cleaning": 1.0,
+    "arrival": 0.9013069100178861
+   },
+   "pit_L5N": {
+    "auth": 0.8264948702598015,
+    "ready": 0.46604464144365837,
+    "conf_transport": 0.08583702148900452,
+    "conf_offer": 0.06557852932550767,
+    "transport": 0.9944876449252474,
+    "cleaning": 1.0,
+    "arrival": 0.43663094589722345
+   },
+   "mean_totals_L4N": {
+    "auth": 0.21875,
+    "ready": 0.203125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.09375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.140625,
+    "ready": 0.234375,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.078125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 10,
+   "tau": 540,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 2,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.4136642434610497,
+    "nll_pub": 0.0,
+    "brier": 0.013668639053254437,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.27178822454689133,
+    "nll_pub": 0.0,
+    "brier": 0.007041420118343194,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.38333501240420736,
+    "ready": 0.17315363195537314,
+    "conf_transport": 0.2898089728500599,
+    "conf_offer": 0.968653302219335,
+    "transport": 1.0,
+    "cleaning": 0.7578238365335711,
+    "arrival": 0.41490665290146206
+   },
+   "pit_L5N": {
+    "auth": 0.5589541946608353,
+    "ready": 0.48997293643759376,
+    "conf_transport": 0.5863896364879211,
+    "conf_offer": 0.8835227414087744,
+    "transport": 1.0,
+    "cleaning": 0.4018142864037276,
+    "arrival": 0.1419824388948614
+   },
+   "mean_totals_L4N": {
+    "auth": 0.171875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.03125,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.046875,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.015625,
+    "arrival": 0.046875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 10,
+   "tau": 556,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 1,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.2326343169315589,
+    "nll_pub": 0.0,
+    "brier": 0.005680473372781065,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.2326343169315589,
+    "nll_pub": 0.0,
+    "brier": 0.005680473372781065,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.2916885513006129,
+    "ready": 0.3328866199705891,
+    "conf_transport": 0.6710407516793722,
+    "conf_offer": 0.501330004789838,
+    "transport": 0.8018074188336796,
+    "cleaning": 1.0,
+    "arrival": 0.7261929834505433
+   },
+   "pit_L5N": {
+    "auth": 0.06663721658827801,
+    "ready": 0.9194337860791452,
+    "conf_transport": 0.8960588194806175,
+    "conf_offer": 0.4230002912151274,
+    "transport": 0.9994520744021352,
+    "cleaning": 1.0,
+    "arrival": 0.2735839497436497
+   },
+   "mean_totals_L4N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.046875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.015625,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.046875
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 11,
+   "tau": 508,
+   "n_elements": 19,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 0.29266856187361884,
+    "nll_pub": 0.0,
+    "brier": 0.02881656804733729,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 0.29266856187361884,
+    "nll_pub": 0.0,
+    "brier": 0.02881656804733729,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.1689703259766291,
+    "ready": 0.11327533709232929,
+    "conf_transport": 0.4068044262824171,
+    "conf_offer": 0.3554802677393778,
+    "transport": 0.8917545502655569,
+    "cleaning": 0.6483265978279936,
+    "arrival": 0.8292670974927485
+   },
+   "pit_L5N": {
+    "auth": 0.44992562851380813,
+    "ready": 0.8965394358910088,
+    "conf_transport": 0.410690227852872,
+    "conf_offer": 0.8151263884417789,
+    "transport": 0.4447752488506631,
+    "cleaning": 0.22418479080599107,
+    "arrival": 0.2619099963160771
+   },
+   "mean_totals_L4N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "mean_totals_L5N": {
+    "auth": 0.0,
+    "ready": 0.0,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.125
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 11,
+   "tau": 524,
+   "n_elements": 20,
+   "truth_totals": {
+    "auth": 3,
+    "ready": 0,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 3.9601441980591217,
+    "nll_pub": Infinity,
+    "brier": 1.0479051475255745,
+    "brier_pub": 1.0
+   },
+   "L5N": {
+    "nll": 4.145986406340582,
+    "nll_pub": Infinity,
+    "brier": 1.0583193487090066,
+    "brier_pub": 1.0
+   },
+   "pit_L4N": {
+    "auth": 1.0,
+    "ready": 0.5240497793926364,
+    "conf_transport": 0.013920458779734246,
+    "conf_offer": 0.07681366473897498,
+    "transport": 0.00026184506669835184,
+    "cleaning": 0.7548772155446918,
+    "arrival": 0.2502359452855437
+   },
+   "pit_L5N": {
+    "auth": 1.0,
+    "ready": 0.13733205073662802,
+    "conf_transport": 0.2606825762053263,
+    "conf_offer": 0.28282585601819593,
+    "transport": 0.13674071769443552,
+    "cleaning": 0.2961587626735187,
+    "arrival": 0.16233940203731703
+   },
+   "mean_totals_L4N": {
+    "auth": 0.578125,
+    "ready": 0.140625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.359375,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.21875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.765625,
+    "ready": 0.140625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.34375,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.25
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 11,
+   "tau": 540,
+   "n_elements": 24,
+   "truth_totals": {
+    "auth": 1,
+    "ready": 3,
+    "conf_transport": 0,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 12.902200397769485,
+    "nll_pub": Infinity,
+    "brier": 2.9043413629845314,
+    "brier_pub": 3.0
+   },
+   "L5N": {
+    "nll": 12.991049227296138,
+    "nll_pub": Infinity,
+    "brier": 2.8973154693334187,
+    "brier_pub": 3.0
+   },
+   "pit_L4N": {
+    "auth": 0.8789690924937923,
+    "ready": 0.9997026337471455,
+    "conf_transport": 0.7820961202848181,
+    "conf_offer": 0.4622133013620142,
+    "transport": 0.17383365054952626,
+    "cleaning": 0.6632898496212601,
+    "arrival": 0.05415729555192418
+   },
+   "pit_L5N": {
+    "auth": 0.8206431940732783,
+    "ready": 1.0,
+    "conf_transport": 0.9447312392716652,
+    "conf_offer": 0.5803831165619724,
+    "transport": 0.9688487358625502,
+    "cleaning": 0.8626675053661345,
+    "arrival": 0.06710590715811736
+   },
+   "mean_totals_L4N": {
+    "auth": 0.15625,
+    "ready": 0.765625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.28125,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.34375
+   },
+   "mean_totals_L5N": {
+    "auth": 0.234375,
+    "ready": 0.71875,
+    "conf_transport": 0.0,
+    "conf_offer": 0.1875,
+    "transport": 0.0,
+    "cleaning": 0.0,
+    "arrival": 0.375
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  },
+  {
+   "part": "HOWM2_REF",
+   "index": 11,
+   "tau": 556,
+   "n_elements": 18,
+   "truth_totals": {
+    "auth": 0,
+    "ready": 0,
+    "conf_transport": 1,
+    "conf_offer": 0,
+    "transport": 0,
+    "cleaning": 0,
+    "arrival": 0
+   },
+   "L4N": {
+    "nll": 5.43425674357743,
+    "nll_pub": 0.0,
+    "brier": 1.5573964497041421,
+    "brier_pub": 0.0
+   },
+   "L5N": {
+    "nll": 2.293099776826979,
+    "nll_pub": 0.0,
+    "brier": 0.6594082840236687,
+    "brier_pub": 0.0
+   },
+   "pit_L4N": {
+    "auth": 0.7247529325408885,
+    "ready": 0.3741178226550614,
+    "conf_transport": 1.0,
+    "conf_offer": 0.7731994925305088,
+    "transport": 0.12776170803662193,
+    "cleaning": 0.000262389392749144,
+    "arrival": 0.21292991009744833
+   },
+   "pit_L5N": {
+    "auth": 0.386813951385435,
+    "ready": 0.4224207779796012,
+    "conf_transport": 1.0,
+    "conf_offer": 0.2514375700746442,
+    "transport": 0.44915155967586246,
+    "cleaning": 0.06692960840804124,
+    "arrival": 0.6777560327499612
+   },
+   "mean_totals_L4N": {
+    "auth": 0.140625,
+    "ready": 0.453125,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.703125,
+    "cleaning": 0.96875,
+    "arrival": 0.1875
+   },
+   "mean_totals_L5N": {
+    "auth": 0.03125,
+    "ready": 0.5625,
+    "conf_transport": 0.0,
+    "conf_offer": 0.0,
+    "transport": 0.15625,
+    "cleaning": 0.65625,
+    "arrival": 0.234375
+   },
+   "fallbacks_L4N": 0,
+   "rejected_L4N": 0
+  }
+ ]
+}

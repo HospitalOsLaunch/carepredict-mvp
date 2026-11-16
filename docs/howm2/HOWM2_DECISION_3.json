@@ -1,0 +1,33 @@
+{
+ "schema": "HOWM2_DECISION_3",
+ "date": "2026-11-16",
+ "decision": "AUTHORISED: tranche A-prime only, to its stop point; ACCORD_HOWM2_C1_A_ADOPTER.md NOT adopted (pending until the A-prime stop point); B deferral confirmed",
+ "message": {
+  "path": "docs/howm2/inputs/MESSAGE_HOWM2_DECISION_3.txt",
+  "sha256": "c6d9c90d92e6027914fc3f7f16ef054000156d34d10ac306d2a787c0c1b0fa40",
+  "note": "verbatim copy of the user's message text"
+ },
+ "programme": {
+  "path": "docs/howm2/inputs/PROGRAMME_HOWM2_A2.md",
+  "sha256": "b16000d984439336edb45a63df7033357e34212696b68d94074e2c0328475092",
+  "matches_hash_stated_in_message": true
+ },
+ "authorised": [
+  "tranche A-prime (no training, no gradient descent)",
+  "3600 s wall CPU, 0 EUR, in BUDGET_LEDGER_HOWM2 under lots A2.* with ceilings fixed before the first measurement",
+  "P2 persistence without push",
+  "validation (s.3) and verdict (s.4) rules applied as written, recorded before any measurement"
+ ],
+ "not_authorised": [
+  "C1, B, HOWM2-N, any training",
+  "HOWM-1 reserve, DEVTEST, DIAG-DEV",
+  "modifying G0/F1-frozen files, v6, P5, mvp/computer-use, delivered R1 and A results",
+  "push, merge, rebase",
+  "JEPA, closed loop, P6, AJ-H"
+ ],
+ "statuses_unchanged": [
+  "PROTOTYPE_UNVALIDATED",
+  "clinical_validation=false",
+  "G2=NO-GO"
+ ]
+}

@@ -47,7 +47,28 @@ LOT_CAPS = {
     "A.DEC": 300.0,
     "A.DIAG": 240.0,
     "A.REST": 400.0,
+    # tranche A' (decision n.3), caps fixed before the first A' measurement
+    "A2.FACTS": 60.0,
+    "A2.TEST": 400.0,
+    "A2.VALID": 600.0,
+    "A2.DEC": 900.0,
+    "A2.COV": 300.0,
+    "A2.L2C": 600.0,
+    "A2.REST": 400.0,
 }
+TRANCHE_CEILING_S = {"A": 3600.0, "A2": 3600.0}  # separate envelopes in the same ledger
+
+
+def tranche(lot: str) -> str:
+    return lot.split(".", 1)[0]
+
+
+def tranche_used(records: list[dict[str, object]], tr: str) -> float:
+    return sum(
+        float(r.get("wall_seconds", 0.0))  # type: ignore[arg-type]
+        for r in records
+        if tranche(str(r.get("lot", ""))) == tr
+    )
 AUTHORISED_LOTS = set(LOT_CAPS) - {
     "RESERVE"
 }  # RESERVE only after a logged 'reserve_allocation' note
@@ -156,6 +177,10 @@ def status() -> dict[str, object]:
         "lots": {
             k: {"used": round(lot_used(records, k), 3), "cap": v} for k, v in LOT_CAPS.items()
         },
+        "tranches": {
+            tr: {"used": round(tranche_used(records, tr), 3), "ceiling": c}
+            for tr, c in TRANCHE_CEILING_S.items()
+        },
     }
 
 
@@ -227,8 +252,11 @@ def run(command: list[str], lot: str, label: str, test: bool) -> int:
         _refuse("refused", lot, label, command, f"lot_not_authorised:{lot}")
         print(f"[howm2-budget] lot {lot} not authorised: refused", file=sys.stderr)
         return 4
-    used = base.used_seconds(records)
-    remaining = CEILING_S - used
+    if tranche(lot) == "A2" and not any(r.get("kind") == "decision_3" for r in records):
+        _refuse("refused", lot, label, command, "tranche_A2_not_recorded")
+        return 4
+    used = tranche_used(records, tranche(lot))
+    remaining = TRANCHE_CEILING_S[tranche(lot)] - used
     lot_remaining = LOT_CAPS[lot] - lot_used(records, lot)
     if remaining <= 0 or lot_remaining <= 0:
         _refuse(
@@ -302,7 +330,7 @@ def run(command: list[str], lot: str, label: str, test: bool) -> int:
     print(
         f"\n[howm2-budget] #{record['sequence']} {lot} '{label}': {wall:.2f}s wall, {cpu:.1f}s cpu, exit={code}"
         f"{' TIMEOUT' if timed_out else ''}{' ORPHANS-KILLED' if orphans else ''} | lot {st['lots'][lot]['used']}/{LOT_CAPS[lot]}s"  # type: ignore[index]
-        f" | total {st['used_wall_seconds']}/{CEILING_S}s"
+        f" | tranche {tranche(lot)} {st['tranches'][tranche(lot)]['used']}/{TRANCHE_CEILING_S[tranche(lot)]}s"  # type: ignore[index]
     )
     return 124 if timed_out else code
 
