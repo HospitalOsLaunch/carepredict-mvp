@@ -1,0 +1,44 @@
+{
+ "package": "HOWM1_P2_R1_END.zip",
+ "package_sha256": "cb46082dd7a7d6bc5b068c5e5951880fecb8635aa54d353216a763d3b90d5b4d",
+ "fresh_dir": "/tmp/howm1_restore_xayrh9vy",
+ "hash_check_bad": [],
+ "tests_in_fresh_tree": "1 failed, 37 passed in 5.05s",
+ "tests_failed": [
+  "FAILED tests/howm/test_howm_r0.py::test_T_V0_01_v6_unchanged - assert (1 == 0)"
+ ],
+ "tests_note": "T-V0-01 runs 'git diff 856a57c' and needs a git repository; a package tree is not one (checked in the workspace instead)",
+ "g0_package": {
+  "name": "HOWM1_P2_G0.zip",
+  "sha256": "add6c504068e55aaa04a7026af8267b60cb9caa8fb96c7a467797a27d734f86f",
+  "corpus_files": 96
+ },
+ "corpus_regeneration": [
+  {
+   "file": "DEVTEST/000",
+   "content_sha256_regenerated": "9dda4fe1ba6b01e1f451801b5082d0022280089cac9f15f98894eb4946ad71f7",
+   "content_sha256_delivered": "9dda4fe1ba6b01e1f451801b5082d0022280089cac9f15f98894eb4946ad71f7",
+   "identical": true
+  },
+  {
+   "file": "DEVTEST/001",
+   "content_sha256_regenerated": "53c2cc8d569b9eea49f66291d14e3a3876d6ce32e1213573f9cddccc3f706342",
+   "content_sha256_delivered": "53c2cc8d569b9eea49f66291d14e3a3876d6ce32e1213573f9cddccc3f706342",
+   "identical": true
+  }
+ ],
+ "eval_rerun_returncode": 0,
+ "metric_recompute": [
+  {
+   "establishment": 0,
+   "identical_excluding_timings": true
+  },
+  {
+   "establishment": 1,
+   "identical_excluding_timings": true
+  }
+ ],
+ "used_workspace": false,
+ "seconds": 213.9,
+ "ok": true
+}

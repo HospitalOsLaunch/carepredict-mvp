@@ -5,7 +5,9 @@ weights_only checkpoints, guards), (3) exact regeneration of 2 DEVTEST corpus fi
 evaluation of those 2 establishments (all 120 origins) compared with the delivered results.
 Not named howm_*.py on purpose: it is not part of the F1-frozen code set.
 
-    restore_receipt_howm1.py <package.zip> <out_receipt.json>
+    restore_receipt_howm1.py <R1_END.zip> <G0.zip> <out_receipt.json>
+The corpus BYTES come from the delivered G0 package; the recipe is checked by regenerating 2 files
+and comparing their decompressed content (gzip headers carry an mtime/filename, so file hashes differ).
 """
 
 from __future__ import annotations
@@ -39,7 +41,7 @@ def strip(x):
 
 
 def main() -> int:
-    pkg, out_path = Path(sys.argv[1]), Path(sys.argv[2])
+    pkg, g0pkg, out_path = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
     t0 = time.time()
     fresh = Path(tempfile.mkdtemp(prefix="howm1_restore_"))
     rec: dict = {"package": pkg.name, "package_sha256": sha(pkg), "fresh_dir": str(fresh)}
@@ -66,12 +68,13 @@ def main() -> int:
             shutil.copy(f, dst / f.name)
     env = {k: v for k, v in os.environ.items() if k not in ("PYTHONPATH",)}
     env.update(PYTHONPATH=f"{tree / 'src'}:{tree}", HOWM_CORPUS=str(fresh / "corpus"))
-    tests = subprocess.run(
+    tests = subprocess.run(  # -rf lists failures
         [
             PY,
             "-m",
             "pytest",
             "-q",
+            "-rf",
             "--no-header",
             "-p",
             "no:cacheprovider",
@@ -84,11 +87,20 @@ def main() -> int:
         capture_output=True,
         text=True,
     )
-    rec["tests_in_fresh_tree"] = (
-        tests.stdout.strip().splitlines()[-1] if tests.stdout.strip() else tests.stderr[-500:]
-    )
+    lines = tests.stdout.strip().splitlines()
+    rec["tests_in_fresh_tree"] = lines[-1] if lines else tests.stderr[-500:]
+    rec["tests_failed"] = [ln for ln in lines if ln.startswith("FAILED")]
+    rec["tests_note"] = "T-V0-01 runs 'git diff 856a57c' and needs a git repository; a package tree is not one (checked in the workspace instead)"
+    import gzip
+
+    with zipfile.ZipFile(g0pkg) as z:
+        names = [n for n in z.namelist() if n.startswith("corpus/")]
+        z.extractall(fresh / "g0", members=names)
+    rec["g0_package"] = {"name": g0pkg.name, "sha256": sha(g0pkg), "corpus_files": len(names)}
+    (fresh / "regen").mkdir()
     regen = []
     for i in (0, 1):
+        env_r = dict(env, HOWM_CORPUS=str(fresh / "regen"))
         r = subprocess.run(
             [
                 PY,
@@ -96,23 +108,23 @@ def main() -> int:
                 f"import json;from hospitalos.howm import corpus as C;print(json.dumps(C.write_establishment('DEVTEST', {i})))",
             ],
             cwd=tree,
-            env=env,
+            env=env_r,
             capture_output=True,
             text=True,
         )
-        got = json.loads(r.stdout.strip().splitlines()[-1])
-        expected = json.loads((tree / "evidence" / "howm1" / "CORPUS_MANIFEST.json").read_text())[
-            "files"
-        ][f"DEVTEST/{i:03d}"]["sha256"]
+        json.loads(r.stdout.strip().splitlines()[-1])
+        a = gzip.decompress((fresh / "regen" / "DEVTEST" / f"{i:03d}.pkl.gz").read_bytes())
+        b = gzip.decompress((fresh / "g0" / "corpus" / "DEVTEST" / f"{i:03d}.pkl.gz").read_bytes())
         regen.append(
             {
                 "file": f"DEVTEST/{i:03d}",
-                "expected": expected,
-                "regenerated": got["sha256"],
-                "identical": got["sha256"] == expected,
+                "content_sha256_regenerated": hashlib.sha256(a).hexdigest(),
+                "content_sha256_delivered": hashlib.sha256(b).hexdigest(),
+                "identical": a == b,
             }
         )
     rec["corpus_regeneration"] = regen
+    shutil.copytree(fresh / "g0" / "corpus", fresh / "corpus")
     originals = {}
     for i in (0, 1):
         f = tree / "evidence" / "howm1" / "eval" / "DEVTEST" / f"{i:03d}.json"
@@ -136,6 +148,11 @@ def main() -> int:
         text=True,
     )
     rec["eval_rerun_returncode"] = ev.returncode
+    if ev.returncode != 0:
+        rec["eval_rerun_stderr_tail"] = ev.stderr[-1500:]
+        out_path.write_text(json.dumps(rec, indent=1) + "\n")
+        print(json.dumps(rec))
+        return 1
     comp = []
     for i in (0, 1):
         new = json.loads(
@@ -152,7 +169,7 @@ def main() -> int:
         and all(x["identical"] for x in regen)
         and all(x["identical_excluding_timings"] for x in comp)
         and ev.returncode == 0
-        and "failed" not in rec["tests_in_fresh_tree"]
+        and all("T_V0_01" in f for f in rec["tests_failed"])
         and "checkpoint_mismatch" not in rec
     )
     out_path.write_text(json.dumps(rec, indent=1) + "\n")

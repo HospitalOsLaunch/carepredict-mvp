@@ -70,6 +70,11 @@ d'un enregistrement bloque le compteur (aucun contournement par remise à zéro)
    manifeste de complétude, `PROPOSITION_TRANCHE_R0_R1_v1_1.md` (NON APPROUVÉE ; originaux v1 conservés).
    torch 2.15.0 ; index CPU bloqué par le proxy ; dépôt public. Accord attendu : installation (A/B/A puis B) + persistance (P0/P1/P2).
 
+   **HOWM-1 R0+R1 exécuté (accord adopté, A puis B, P2 sans push)** : `docs/howm1/RAPPORT_HOWM1_R0_R1.md`.
+   Critère principal **non atteint** : B0-local prévoit mieux que H1 (Δ_LS H24 = −0,022 [−0,041 ; −0,002]) ;
+   CRPS et décision : ambitions non atteintes ; règle métier simple meilleure que les planificateurs à modèle.
+   Registre HOWM 6 895 s / 21 600 s ; reçu de restauration OK ; réserve scellée non lue. Arrêt au point prévu.
+
 ## Hors de ce projet
 
 Reprise de A_detached (authentifié à 2000, final 6000 non attesté — pas un échec scientifique),
