@@ -12,11 +12,12 @@ from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
+from scipy.special import ndtri
 from scipy.stats import nbinom
 
 from .generator import refresh_private
 from .heads import BIN_MIN, NB, hazard_logits, hazard_sample
-from .keys import key, u
+from .keys import key, u, u_vec
 from .predict import Prediction, profile_index
 from .world import SKILLS, TPH, Engine, Offer, Plan, Stay, objective_u
 
@@ -65,14 +66,20 @@ class ModelProvider:
             it["ref"]: float(pp) for it, pp in zip(od.items.get("presence", []), pred.presence_p)
         }
         self.care_row = {sid: i for i, sid in enumerate(od.care_ref)}
-        cdf = []
-        for ui in range(2):
-            row = []
-            for k in range(24):
-                mu, r = pred.arr_mu[ui, k], pred.arr_r
-                row.append(nbinom.cdf(np.arange(60), r, r / (r + mu)))
-            cdf.append(row)
+        cdf = pred.meta.get("_arr_cdf")
+        if cdf is None:  # computed once per Prediction, shared by its providers
+            cdf = [
+                [
+                    nbinom.cdf(
+                        np.arange(60), pred.arr_r, pred.arr_r / (pred.arr_r + pred.arr_mu[ui, k])
+                    )
+                    for k in range(24)
+                ]
+                for ui in range(2)
+            ]
+            pred.meta["_arr_cdf"] = cdf
         self.arr_cdf = cdf
+        self._care_z: dict[str, np.ndarray] = {}
 
     def _u(self, *parts: object) -> float:
         return u(self.bk, self.m, *parts)
@@ -152,24 +159,19 @@ class ModelProvider:
 
     def care(self, eng: Engine, st: Stay, hour: int) -> tuple[float, float]:
         k = min(max(hour - self.H, 0), 23)
+        z = self._care_z.get(st.sid)
+        if (
+            z is None
+        ):  # one keyed hash per stay, then 48 vectorised uniforms (CRN: keyed by sample + stay)
+            z = ndtri(u_vec(key(self.bk, self.m, "care", st.sid), np.arange(48))).reshape(24, 2)
+            self._care_z[st.sid] = z
         row = self.care_row.get(st.sid)
-        out = []
-        for s, _sk in enumerate(SKILLS):
-            mu = (
-                self.p.care_mu[row, k, s]
-                if row is not None
-                else self.p.care_mu_new["AB".index(st.unit), st.acuity - 1, k, s]
-            )
-            out.append(
-                float(
-                    round(
-                        math.exp(
-                            mu + self.p.care_sigma[s] * _norm_inv(self._u("care", st.sid, hour, s))
-                        )
-                    )
-                )
-            )
-        return out[0], out[1]
+        if row is not None:
+            mu = self.p.care_mu[row, k]
+        else:
+            mu = self.p.care_mu_new["AB".index(st.unit), st.acuity - 1, k]
+        v = np.round(np.exp(mu + self.p.care_sigma * z[k]))
+        return float(v[0]), float(v[1])
 
     def cleaning_capacity_drop(self, eng: Engine, tick: int) -> int:
         return 0  # unannounced drops are private (m5); models only know the published capacity

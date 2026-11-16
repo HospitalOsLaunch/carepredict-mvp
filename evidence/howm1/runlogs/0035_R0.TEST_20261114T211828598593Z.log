@@ -1,0 +1,31 @@
+16 rollouts 0.138
+         924105 function calls (884009 primitive calls) in 0.403 seconds
+
+   Ordered by: cumulative time
+   List reduced from 114 to 22 due to restriction <22>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.403    0.403 /home/user/carepredict-mvp/scripts/dev/howm_profile.py:13(<listcomp>)
+       16    0.002    0.000    0.403    0.025 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:181(rollout)
+     1536    0.023    0.000    0.324    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/world.py:291(step)
+      384    0.020    0.000    0.251    0.001 /home/user/carepredict-mvp/src/hospitalos/howm/world.py:402(_hour_start)
+     8134    0.037    0.000    0.212    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:153(care)
+    18108    0.009    0.000    0.146    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:77(_u)
+    18108    0.009    0.000    0.137    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/keys.py:38(u)
+    18108    0.063    0.000    0.128    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/keys.py:30(key)
+       16    0.000    0.000    0.056    0.003 /home/user/carepredict-mvp/src/hospitalos/howm/world.py:172(clone)
+ 38272/16    0.029    0.000    0.056    0.003 /usr/lib/python3.11/copy.py:128(deepcopy)
+   832/16    0.002    0.000    0.055    0.003 /usr/lib/python3.11/copy.py:259(_reconstruct)
+  1040/16    0.005    0.000    0.055    0.003 /usr/lib/python3.11/copy.py:227(_deepcopy_dict)
+   107030    0.047    0.000    0.047    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/keys.py:23(_mix)
+      601    0.003    0.000    0.044    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:94(_sample)
+    16268    0.022    0.000    0.034    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:26(_norm_inv)
+      364    0.000    0.000    0.024    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:107(auth_tick)
+      601    0.013    0.000    0.024    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/heads.py:61(hazard_sample)
+      176    0.004    0.000    0.021    0.000 /usr/lib/python3.11/copy.py:201(_deepcopy_list)
+       16    0.000    0.000    0.018    0.001 /home/user/carepredict-mvp/src/hospitalos/howm/generator.py:553(refresh_private)
+     4566    0.009    0.000    0.016    0.000 {built-in method builtins.sorted}
+   179860    0.014    0.000    0.014    0.000 {built-in method builtins.isinstance}
+      768    0.002    0.000    0.013    0.000 /home/user/carepredict-mvp/src/hospitalos/howm/rollout.py:133(arrivals)
+
+

@@ -57,7 +57,11 @@ def evaluate_loss(
                 sums[f] = sums.get(f, 0.0) + float(s)
                 counts[f] = counts.get(f, 0) + n
     means = {f: sums[f] / max(counts[f], 1) for f in sums}
-    return {"total": sum(means[f] / scales[f] for f in means), "means": means, "counts": counts}
+    return {
+        "total": sum(means[f] / scales[f] for f in means if f in scales),
+        "means": means,
+        "counts": counts,
+    }
 
 
 def _save(

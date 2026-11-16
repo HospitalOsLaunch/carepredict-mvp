@@ -1,0 +1,8 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:206: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+/home/user/carepredict-mvp/scripts/dev/howm_h1bench.py:18: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  print(json.dumps({"threads": th, "step_s": sorted(ts)[3], "batch_build_s": sorted(tb)[3], "loss": float(loss)}))
+{"threads": 4, "step_s": 0.8296778202056885, "batch_build_s": 0.037581443786621094, "loss": 7.075250148773193}
+{"threads": 2, "step_s": 0.8595285415649414, "batch_build_s": 0.03885030746459961, "loss": 7.075250148773193}
+{"threads": 1, "step_s": 1.2868289947509766, "batch_build_s": 0.041416168212890625, "loss": 7.075250148773193}

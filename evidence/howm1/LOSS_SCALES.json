@@ -1,0 +1,25 @@
+{
+ "rule": "s_f = mean TRAIN NLL of B0-pool per family on the training items (NORM N1.2)",
+ "s_f": {
+  "auth": 2.562627456695723,
+  "ready": 3.102473377093498,
+  "transport": 2.247443454693525,
+  "cleaning": 2.158264128293859,
+  "confirmation": 2.7996843571846304,
+  "arrivals": 0.42330867590175736,
+  "care": 1.548539828193125
+ },
+ "counts": {
+  "auth": 34810,
+  "ready": 1534,
+  "transport": 195,
+  "cleaning": 217,
+  "confirmation": 832,
+  "arrivals": 73728,
+  "care": 1608714
+ },
+ "train_establishments": 32,
+ "excluded_no_train_items": [
+  "presence"
+ ]
+}

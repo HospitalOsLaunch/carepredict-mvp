@@ -1,0 +1,121 @@
+....................................F                                    [100%]
+=================================== FAILURES ===================================
+_____________________ test_predict_many_equals_one_by_one ______________________
+
+val_est = EstablishmentData(partition='VAL', index=1, population='REF', n_beds={'A': 15, 'B': 11}, b2=array([[1.4, 0.1, 0. , ......, 'BB02': 'B', 'BB03': 'B', 'BB04': 'B', 'BB05': 'B', 'BB06': 'B', 'BB07': 'B', 'BB08': 'B', 'BB09': 'B', 'BB10': 'B'})
+b0p = B0Params(base={'auth': array([ -9.95396964,  -9.76878894,  -9.6272635 ,  -9.40068893,
+        -9.22163386,  -9.0236160...[2.4887622 , 3.21644098]]]), care_sigma=array([0.48553328, 0.4907501 ]), presence_p=0.875, tau={}, new_profile_freq={})
+
+    def test_predict_many_equals_one_by_one(val_est, b0p):
+        from hospitalos.howm.nets import predict_many
+    
+        torch.manual_seed(1)
+        for M in (B2, H1):
+            m = M(b0p)
+            many = predict_many(m, val_est, [40, 60, 100, 120])
+            for H, pm in zip([40, 60, 100, 120], many, strict=True):
+                p1 = predict(m, val_est, H)
+                assert np.allclose(p1.arr_mu, pm.arr_mu, atol=1e-6)
+                assert np.allclose(p1.care_mu, pm.care_mu, atol=1e-6)
+                for f in p1.delta_items:
+                    assert np.allclose(p1.delta_items[f], pm.delta_items[f], atol=1e-6)
+>               assert p1.delta_entity == pytest.approx(pm.delta_entity, abs=1e-6) or all(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    abs(p1.delta_entity[f][k] - pm.delta_entity[f][k]) < 1e-5 for f in p1.delta_entity for k in p1.delta_entity[f]
+                )
+E               TypeError: pytest.approx() does not support nested dictionaries: key='auth' value={}
+E                 full mapping={'auth': {},
+E                'cleaning': {'BA00': 0.0,
+E                             'BA01': 0.0,
+E                             'BA02': 0.0,
+E                             'BA03': 0.0,
+E                             'BA04': 0.0,
+E                             'BA05': 0.0,
+E                             'BA06': 0.0,
+E                             'BA07': 0.0,
+E                             'BA08': 0.0,
+E                             'BA09': 0.0,
+E                             'BA10': 0.0,
+E                             'BA11': 0.0,
+E                             'BA12': 0.0,
+E                             'BA13': 0.0,
+E                             'BA14': 0.0,
+E                             'BB00': 0.0,
+E                             'BB01': 0.0,
+E                             'BB02': 0.0,
+E                             'BB03': 0.0,
+E                             'BB04': 0.0,
+E                             'BB05': 0.0,
+E                             'BB06': 0.0,
+E                             'BB07': 0.0,
+E                             'BB08': 0.0,
+E                             'BB09': 0.0,
+E                             'BB10': 0.0},
+E                'confirmation': {'SA0004_0': 0.0,
+E                                 'SA0007_0': 0.0,
+E                                 'SA0014_0': 0.0,
+E                                 'SAinit_BA01': 0.0,
+E                                 'SAinit_BA02': 0.0,
+E                                 'SAinit_BA03': 0.0,
+E                                 'SAinit_BA06': 0.0,
+E                                 'SAinit_BA07': 0.0,
+E                                 'SAinit_BA08': 0.0,
+E                                 'SAinit_BA09': 0.0,
+E                                 'SAinit_BA11': 0.0,
+E                                 'SAinit_BA12': 0.0,
+E                                 'SAinit_BA13': 0.0,
+E                                 'SAinit_BA14': 0.0,
+E                                 'SBinit_BB00': 0.0,
+E                                 'SBinit_BB02': 0.0,
+E                                 'SBinit_BB05': 0.0,
+E                                 'SBinit_BB07': 0.0,
+E                                 'SBinit_BB08': 0.0,
+E                                 'SBinit_BB09': 0.0,
+E                                 'SBinit_BB10': 0.0},
+E                'ready': {'SA0004_0': 0.0,
+E                          'SA0007_0': 0.0,
+E                          'SA0014_0': 0.0,
+E                          'SAinit_BA01': 0.0,
+E                          'SAinit_BA02': 0.0,
+E                          'SAinit_BA03': 0.0,
+E                          'SAinit_BA06': 0.0,
+E                          'SAinit_BA07': 0.0,
+E                          'SAinit_BA08': 0.0,
+E                          'SAinit_BA09': 0.0,
+E                          'SAinit_BA11': 0.0,
+E                          'SAinit_BA12': 0.0,
+E                          'SAinit_BA13': 0.0,
+E                          'SAinit_BA14': 0.0,
+E                          'SBinit_BB00': 0.0,
+E                          'SBinit_BB02': 0.0,
+E                          'SBinit_BB05': 0.0,
+E                          'SBinit_BB07': 0.0,
+E                          'SBinit_BB08': 0.0,
+E                          'SBinit_BB09': 0.0,
+E                          'SBinit_BB10': 0.0},
+E                'transport': {'SA0004_0': 0.0,
+E                              'SA0007_0': 0.0,
+E                              'SA0014_0': 0.0,
+E                              'SAinit_BA01': 0.0,
+E                              'SAinit_BA02': 0.0,
+E                              'SAinit_BA03': 0.0,
+E                              'SAinit_BA06': 0.0,
+E                              'SAinit_BA07': 0.0,
+E                              'SAinit_BA08': 0.0,
+E                              'SAinit_BA09': 0.0,
+E                              'SAinit_BA11': 0.0,
+E                              'SAinit_BA12': 0.0,
+E                              'SAinit_BA13': 0.0,
+E                              'SAinit_BA14': 0.0,
+E                              'SBinit_BB00': 0.0,
+E                              'SBinit_BB02': 0.0,
+E                              'SBinit_BB05': 0.0,
+E                              'SBinit_BB07': 0.0,
+E                              'SBinit_BB08': 0.0,
+E                              'SBinit_BB09': 0.0,
+E                              'SBinit_BB10': 0.0}}
+
+tests/howm/test_howm_r0.py:605: TypeError
+=========================== short test summary info ============================
+FAILED tests/howm/test_howm_r0.py::test_predict_many_equals_one_by_one - Type...
+1 failed, 36 passed in 5.24s

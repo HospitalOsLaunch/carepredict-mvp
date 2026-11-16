@@ -166,16 +166,36 @@ class H1(nn.Module):
         self.prop = Prop()
         self.heads = Heads(HN, b0)
 
-    def _mp(
-        self, h: torch.Tensor, e: tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
-    ) -> torch.Tensor:
-        src, dst, rel, deg = e
+    def _w(self) -> tuple[torch.Tensor, ...]:
+        """Per-relation weights [R, HN, HN] views of the grouped parameters (same function)."""
+        R = len(TYPED_RELATIONS)
+        return tuple(
+            x.view(HN, R, HN).permute(1, 0, 2) for x in (self.wf_s, self.wf_d, self.wr_s, self.wr_d)
+        )
+
+    def _mp(self, h: torch.Tensor, e: tuple, w: tuple[torch.Tensor, ...]) -> torch.Tensor:
+        src, dst, rel, deg, psrc, pdst, _pvalid = e
         if src.numel() == 0:
             return torch.zeros_like(h)
+        R, E = psrc.shape
+        n = h.shape[0]
+        hp = torch.cat([h, torch.zeros(1, HN)])  # padding row n (padded edges point to it)
+        hs = hp.index_select(0, psrc.reshape(-1)).view(R, E, HN)
+        hd = hp.index_select(0, pdst.reshape(-1)).view(R, E, HN)
+        mf = torch.relu(torch.bmm(hs, w[0]) + torch.bmm(hd, w[1]) + self.bf[:, None, :])
+        mr = torch.relu(torch.bmm(hd, w[2]) + torch.bmm(hs, w[3]) + self.br[:, None, :])
+        m = torch.zeros(n + 1, HN)
+        m.index_add_(0, pdst.reshape(-1), mf.reshape(-1, HN))
+        m.index_add_(0, psrc.reshape(-1), mr.reshape(-1, HN))
+        return m[:n] / deg
+
+    def _mp_reference(self, h: torch.Tensor, e: tuple) -> torch.Tensor:
+        """Former formulation (kept for the equality test)."""
+        src, dst, rel, deg = e[:4]
         R = len(TYPED_RELATIONS)
         n = h.shape[0]
-        af, bf_ = (h @ self.wf_s).view(n, R, HN), (h @ self.wf_d).view(n, R, HN)
-        ar, br_ = (h @ self.wr_s).view(n, R, HN), (h @ self.wr_d).view(n, R, HN)
+        allp = (h @ torch.cat([self.wf_s, self.wf_d, self.wr_s, self.wr_d], 1)).view(n, 4, R, HN)
+        af, bf_, ar, br_ = allp[:, 0], allp[:, 1], allp[:, 2], allp[:, 3]
         m = torch.zeros_like(h)
         m.index_add_(0, dst, torch.relu(af[src, rel] + bf_[dst, rel] + self.bf[rel]))
         m.index_add_(0, src, torch.relu(ar[dst, rel] + br_[src, rel] + self.br[rel]))
@@ -186,16 +206,20 @@ class H1(nn.Module):
         n = g["n"]
         h = torch.zeros(n, HN)
         temb = self.type_emb(g["type_id"])
+        xs = torch.zeros(
+            W, n, HN
+        )  # all hours encoded at once per node type (same per-type encoders)
+        for t in NODE_TYPES:
+            idx = g["type_idx"][t]
+            if idx.numel():
+                xs[:, idx] = self.enc[t](torch.stack([g["feats"][k][t] for k in range(W)]))
+        xs = xs + temb[None]
+        w = self._w()
         for k in range(W):
-            x = torch.zeros(n, HN)
-            for t in NODE_TYPES:
-                idx = g["type_idx"][t]
-                if idx.numel():
-                    x[idx] = self.enc[t](g["feats"][k][t])
-            x = x + temb
+            x = xs[k]
             pres = g["present"][k]
-            m1 = self._mp(h, g["edges"][k])
-            m2 = self._mp(h + m1, g["edges"][k])
+            m1 = self._mp(h, g["edges"][k], w)
+            m2 = self._mp(h + m1, g["edges"][k], w)
             hn = self.cell(torch.cat([x, m2], 1), h)
             h = torch.where(pres[:, None], hn, h)
         a = self.att(h).squeeze(1)
@@ -290,7 +314,23 @@ def graph_batch(pairs: list[tuple[EstablishmentData, int]]) -> dict[str, Any]:
                 torch.bincount(dst, minlength=n).float() + torch.bincount(src, minlength=n).float(),
                 min=1.0,
             )[:, None]
-        edges.append((src, dst, relt, deg))
+        R = len(TYPED_RELATIONS)
+        counts = (
+            torch.bincount(relt, minlength=R) if relt.numel() else torch.zeros(R, dtype=torch.long)
+        )
+        emax = max(1, int(counts.max()))
+        psrc = torch.full((R, emax), n, dtype=torch.long)
+        pdst = torch.full((R, emax), n, dtype=torch.long)
+        pvalid = torch.zeros((R, emax), dtype=torch.bool)
+        if relt.numel():
+            order = torch.argsort(relt, stable=True)
+            r_sorted = relt[order]
+            starts = torch.cumsum(counts, 0) - counts
+            pos = torch.arange(len(order)) - starts[r_sorted]
+            psrc[r_sorted, pos] = src[order]
+            pdst[r_sorted, pos] = dst[order]
+            pvalid[r_sorted, pos] = True
+        edges.append((src, dst, relt, deg, psrc, pdst, pvalid))
     unit_a = [offsets[oi]["unit"][pairs[oi][0].refs["unit"].index("A")] for oi in range(len(pairs))]
     unit_b = [offsets[oi]["unit"][pairs[oi][0].refs["unit"].index("B")] for oi in range(len(pairs))]
     return {
@@ -473,41 +513,91 @@ def forward_losses(model: nn.Module, batch: dict[str, Any]) -> dict[str, tuple[t
     return out
 
 
+EXCLUDED_NO_TRAIN_ITEMS = {
+    "presence"
+}  # no TRAIN item -> s_f undefined -> excluded (NORM N1, ledger #42)
+
+
 def total_loss(
     parts: dict[str, tuple[torch.Tensor, int]], scales: dict[str, float]
 ) -> torch.Tensor:
     from .heads import check_scales
 
     check_scales(scales)
-    return sum((s / max(n, 1)) / scales[f] for f, (s, n) in parts.items())  # type: ignore[return-value]
+    out = 0.0
+    for f, (s_, n) in parts.items():
+        if f not in scales:
+            if f not in EXCLUDED_NO_TRAIN_ITEMS:
+                raise KeyError(f"family {f} has no loss scale and is not a declared exclusion")
+            continue
+        out = out + (s_ / max(n, 1)) / scales[f]
+    return out  # type: ignore[return-value]
 
 
 # ------------------------------------------------------------------------------ predictions
 @torch.no_grad()
 def predict(model: nn.Module, est: EstablishmentData, H: int) -> Prediction:
-    """Prediction (numpy) for one origin: cohort items, existing entities, new-entity tables."""
+    return predict_many(model, est, [H])[0]
+
+
+@torch.no_grad()
+def predict_many(
+    model: nn.Module, est: EstablishmentData, hs: list[int], chunk: int = 16
+) -> list[Prediction]:
+    """Batched predictions for several origins of one establishment (same results as one by one)."""
     kind = "B2" if isinstance(model, B2) else "H1"
-    batch = make_batch([(est, H)], kind, with_labels=False)
+    out: list[Prediction] = []
+    for i in range(0, len(hs), chunk):
+        part = hs[i : i + chunk]
+        batch = make_batch([(est, H) for H in part], kind, with_labels=False)
+        z_all, enc = model.encode(batch)
+        zk_all = model.prop(z_all, batch["hours"])
+        for oi, H in enumerate(part):
+            out.append(_assemble(model, kind, est, H, oi, batch, z_all, enc, zk_all))
+    return out
+
+
+def _sel(it: dict[str, Any], oi: int) -> dict[str, Any]:
+    m = it["o"] == oi
+    return {
+        k: (v[m] if isinstance(v, torch.Tensor) and v.shape[:1] == m.shape else v)
+        for k, v in it.items()
+    }
+
+
+def _assemble(
+    model: nn.Module,
+    kind: str,
+    est: EstablishmentData,
+    H: int,
+    oi: int,
+    batch: dict[str, Any],
+    z_all: torch.Tensor,
+    enc: dict[str, torch.Tensor],
+    zk_all: torch.Tensor,
+) -> Prediction:
     hd: Heads = model.heads  # type: ignore[assignment]
-    z, enc = model.encode(batch)
-    zk = model.prop(z, batch["hours"])
+    z = z_all[oi : oi + 1]
+    zk = zk_all[oi : oi + 1]
     od = est.origins[H]
     t = H * 60
     delta_items = {}
     for fam in HAZARD_FAMILIES:
-        it = batch["items"][fam]
+        it = _sel(batch["items"][fam], oi)
         if it["x"].shape[0] == 0:
             delta_items[fam] = np.zeros(0)
             continue
         delta_items[fam] = (
-            hd.haz(torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1))
+            hd.haz(
+                torch.cat([z[torch.zeros_like(it["o"])], _ent(model, enc, it["ent"]), it["x"]], 1)
+            )
             .squeeze(1)
             .numpy()
             .astype(float)
         )
     # existing entities: future items (ready/transport/confirmation for stays, cleaning for beds)
     delta_entity: dict[str, dict[str, float]] = {f: {} for f in HAZARD_FAMILIES}
-    offsets = batch["graph"]["offsets"] if kind == "H1" else None
+    offsets = [batch["graph"]["offsets"][oi]] if kind == "H1" else None
     stays = {}
     for i, sid in enumerate(od.care_ref):
         stays[sid] = od.care_x[i]
@@ -574,16 +664,22 @@ def predict(model: nn.Module, est: EstablishmentData, H: int) -> Prediction:
     for ui in range(2):
         d = hd.arr(torch.cat([zk[0], torch.full((24, 1), float(ui))], -1)).squeeze(-1)
         mu.append(
-            torch.exp(hd.arr_a + batch["lognb"][0, ui] + hd.arr_tod[torch.remainder(hours, 24)] + d)
+            torch.exp(
+                hd.arr_a + batch["lognb"][oi, ui] + hd.arr_tod[torch.remainder(hours, 24)] + d
+            )
         )
     arr_mu = torch.stack(mu).numpy().astype(float)
     # care
     sig = torch.exp(hd.care_logsig).numpy().astype(float)
     per = torch.tensor([day_period(H + k) for k in range(24)])
-    c = batch["care"]
+    c = _sel(batch["care"], oi)
     if c["x"].shape[0]:
         ent = _ent(model, enc, c["ent"])[:, None, :].expand(-1, 24, -1)
-        d = hd.care(torch.cat([zk[c["o"]], ent, c["x"][:, None, :].expand(-1, 24, -1)], -1))
+        d = hd.care(
+            torch.cat(
+                [zk[torch.zeros_like(c["o"])], ent, c["x"][:, None, :].expand(-1, 24, -1)], -1
+            )
+        )
         base = hd.care_base.permute(1, 2, 0)[
             c["a"][:, None].expand(-1, 24), per[None, :].expand(c["x"].shape[0], -1)
         ]
@@ -603,10 +699,10 @@ def predict(model: nn.Module, est: EstablishmentData, H: int) -> Prediction:
             )
             base = hd.care_base.permute(1, 2, 0)[torch.full((24,), a - 1), per]
             care_new[ui, a - 1] = (base + d).numpy()
-    it = batch["items"]["presence"]
+    it = _sel(batch["items"]["presence"], oi)
     if it["x"].shape[0]:
         pl = hd.pres0 + hd.pres(
-            torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1)
+            torch.cat([z[torch.zeros_like(it["o"])], _ent(model, enc, it["ent"]), it["x"]], 1)
         ).squeeze(1)
         pres = torch.sigmoid(pl).numpy().astype(float)
     else:

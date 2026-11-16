@@ -587,3 +587,39 @@ def test_T_V0_03_p5b_regression_one_parent(tmp_path):
     )
     assert out["planner"] == rec["twins"]["A"]["planner"]
     assert out["outcomes"]["R1"]["U"] == rec["twins"]["A"]["outcomes"]["R1"]["U"]
+
+
+def test_predict_many_equals_one_by_one(val_est, b0p):
+    from hospitalos.howm.nets import predict_many
+
+    torch.manual_seed(1)
+    for M in (B2, H1):
+        m = M(b0p)
+        many = predict_many(m, val_est, [40, 60, 100, 120])
+        for H, pm in zip([40, 60, 100, 120], many, strict=True):
+            p1 = predict(m, val_est, H)
+            assert np.allclose(p1.arr_mu, pm.arr_mu, atol=1e-6)
+            assert np.allclose(p1.care_mu, pm.care_mu, atol=1e-6)
+            for f in p1.delta_items:
+                assert np.allclose(p1.delta_items[f], pm.delta_items[f], atol=1e-6)
+            for f in p1.delta_entity:
+                assert p1.delta_entity[f].keys() == pm.delta_entity[f].keys()
+                assert all(
+                    abs(p1.delta_entity[f][k] - pm.delta_entity[f][k]) < 1e-5
+                    for k in p1.delta_entity[f]
+                )
+
+
+def test_h1_grouped_message_passing_equals_reference(val_est, b0p):
+    torch.manual_seed(2)
+    m = H1(b0p)
+    with torch.no_grad():
+        for p_ in (m.bf, m.br):
+            p_.normal_()
+    g = make_batch([(val_est, 100), (val_est, 60)], "H1")["graph"]
+    h = torch.randn(g["n"], 48)
+    w = m._w()
+    for k in (0, 12, 23):
+        assert torch.allclose(
+            m._mp(h, g["edges"][k], w), m._mp_reference(h, g["edges"][k]), atol=1e-5
+        )

@@ -1,0 +1,59 @@
+{
+ "timings": {
+  "load_12_files_s": 1.0622639656066895,
+  "B2_train_step_s": 0.050113677978515625,
+  "B2_val_batch_s": 0.01753908395767212,
+  "B2_predict_origin_s": 0.002275340259075165,
+  "H1_train_step_s": 0.5817966461181641,
+  "H1_val_batch_s": 0.14667677879333496,
+  "H1_predict_origin_s": 0.008596248924732208,
+  "origin_16_rollouts_plus_scores_s": 0.10825091600418091,
+  "instant_truth_s": 3.537843942642212,
+  "instant_one_system_s": 1.4459927082061768,
+  "peak_rss_mb": 994.49609375
+ },
+ "param_counts": {
+  "B2": {
+   "inp": 3584,
+   "gru": 24960,
+   "prop": 13440,
+   "heads": 11918,
+   "total": 53902
+  },
+  "H1": {
+   "enc": 3072,
+   "type_emb": 240,
+   "cell": 21024,
+   "att": 49,
+   "read": 9280,
+   "prop": 13440,
+   "heads": 16526,
+   "total": 138127
+  }
+ },
+ "projections_x1_25": {
+  "R1.B2": 778.5632953047752,
+  "R1.H1": 7828.258511424065,
+  "R1.EVAL": 3100.991152524948
+ },
+ "caps": {
+  "R1.B2": 3000.0,
+  "R1.H1": 7200.0,
+  "R1.EVAL": 3600.0
+ },
+ "ladder_applied": [
+  "1: decision diagnostic 4->2 instants, M 16->8 (decision only)",
+  "2: TRAIN 48->32 establishments (all models, B0 included)",
+  "3: seeds 3->2 for B2 and H1"
+ ],
+ "state": {
+  "instants": 2,
+  "m_dec": 8,
+  "train_n": 32,
+  "runs": 3
+ },
+ "feasible": false,
+ "n_train_origins": 2304,
+ "n_val_origins": 1440,
+ "rule": "projection = measured unit cost x planned volume x 1.25; max 60 epochs assumed for every run; only declared ladder steps; predictive origins never reduced; otherwise stop"
+}
