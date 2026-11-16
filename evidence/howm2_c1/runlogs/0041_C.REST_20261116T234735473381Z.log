@@ -1,0 +1,176 @@
+{
+ "N9": {
+  "C.1": {
+   "cval_100_mean": 8.007951743241533,
+   "cval_1000_mean": 7.952589876760964,
+   "difference": 0.05536186648056862,
+   "seed_sd_at_1000": 0.010157408329139915,
+   "threshold_2sd": 0.02031481665827983,
+   "condition_met": true
+  },
+  "C.2b": {
+   "cval_100_mean": 8.00643534680619,
+   "cval_1000_mean": 7.882924968234875,
+   "difference": 0.1235103785713152,
+   "seed_sd_at_1000": 0.0012628844646384277,
+   "threshold_2sd": 0.0025257689292768554,
+   "condition_met": true
+  },
+  "C.2a": {
+   "evaluable": false
+  }
+ },
+ "data": {
+  "shards": 11,
+  "bytes": 281370848,
+  "CTRAIN_establishments_generated": 1000,
+  "CVAL_establishments": 48,
+  "episodes": "one episode per establishment"
+ },
+ "runs": {
+  "C.1:100:0": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.00226145485469,
+   "train_seconds_logged_in_state": 166.7
+  },
+  "C.1:100:1": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.014108225677601,
+   "train_seconds_logged_in_state": 169.4
+  },
+  "C.1:100:2": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.007485549192307,
+   "train_seconds_logged_in_state": 170.8
+  },
+  "C.1:1000:0": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.945218301404703,
+   "train_seconds_logged_in_state": 1670.3
+  },
+  "C.1:1000:1": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.964176161356384,
+   "train_seconds_logged_in_state": 1667.0
+  },
+  "C.1:1000:2": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.948375167521806,
+   "train_seconds_logged_in_state": 1465.2
+  },
+  "C.2a:100:0": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.003090907401363,
+   "train_seconds_logged_in_state": 2270.9
+  },
+  "C.2a:100:1": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.014100803665816,
+   "train_seconds_logged_in_state": 2201.0
+  },
+  "C.2a:100:2": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.007123038548547,
+   "train_seconds_logged_in_state": 2278.0
+  },
+  "C.2a:1000:0": {
+   "updates": null,
+   "exact_one_pass_no_replay": null,
+   "establishments_consumed": null,
+   "best_step": null,
+   "best_cval_total": null,
+   "train_seconds_logged_in_state": null
+  },
+  "C.2a:1000:1": {
+   "updates": null,
+   "exact_one_pass_no_replay": null,
+   "establishments_consumed": null,
+   "best_step": null,
+   "best_cval_total": null,
+   "train_seconds_logged_in_state": null
+  },
+  "C.2a:1000:2": {
+   "updates": null,
+   "exact_one_pass_no_replay": null,
+   "establishments_consumed": null,
+   "best_step": null,
+   "best_cval_total": null,
+   "train_seconds_logged_in_state": null
+  },
+  "C.2b:100:0": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.00089929516458,
+   "train_seconds_logged_in_state": 167.8
+  },
+  "C.2b:100:1": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.011374326426903,
+   "train_seconds_logged_in_state": 163.9
+  },
+  "C.2b:100:2": {
+   "updates": 150,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 100,
+   "best_step": 150,
+   "best_cval_total": 8.00703241882709,
+   "train_seconds_logged_in_state": 163.0
+  },
+  "C.2b:1000:0": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.881558831483438,
+   "train_seconds_logged_in_state": 1670.6
+  },
+  "C.2b:1000:1": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.884049771772545,
+   "train_seconds_logged_in_state": 1530.7
+  },
+  "C.2b:1000:2": {
+   "updates": 1500,
+   "exact_one_pass_no_replay": true,
+   "establishments_consumed": 1000,
+   "best_step": 1500,
+   "best_cval_total": 7.883166301448645,
+   "train_seconds_logged_in_state": 1616.3
+  }
+ }
+}

@@ -1,0 +1,155 @@
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:245: RuntimeWarning: Mean of empty slice
+  tab = {h: {f: {lv: float(np.nanmean([fam_mean(r, lv, h, f) for r in rs])) for lv in lv_all} for f in R1_FAMS} for h in HS}
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:273: RuntimeWarning: Mean of empty slice
+  nb = np.array([np.nanmean(pf(i)[i]) - np.nanmean(am[i]) for i in idx])
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:274: RuntimeWarning: Mean of empty slice
+  db = np.array([np.nanmean(pf(i)[i]) - np.nanmean(a4[i]) for i in idx])
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:275: RuntimeWarning: Mean of empty slice
+  nn_, dd_ = float(np.nanmean(pf(allidx)) - np.nanmean(am)), float(np.nanmean(pf(allidx)) - np.nanmean(a4))
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/numpy/lib/_nanfunctions_impl.py:1573: RuntimeWarning: All-NaN slice encountered
+  return _nanquantile_unchecked(
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:277: RuntimeWarning: Mean of empty slice
+  fam_rho[f] = {"L_model": float(np.nanmean(am)), "L2": float(np.nanmean(a2)), "L2c": float(np.nanmean(a2c)),
+/home/user/carepredict-mvp/scripts/howm2_c1_final.py:278: RuntimeWarning: Mean of empty slice
+  "L4": float(np.nanmean(a4)), "gain": nn_, "gain_ci95": ci(nb), "denominator": dd_,
+{
+ "tranche_verdict": "C1_INDETERMINE",
+ "verdicts": {
+  "C.1": "C1_NE_BAT_PAS_REF",
+  "C.2b": "C1_INDETERMINE",
+  "C.2a": "NO_VERDICT (N=1000 not executed: budget; signalled before training)"
+ },
+ "leading": "C.2b",
+ "summary": {
+  "C.1@100": {
+   "1": [
+    -0.0353,
+    [
+     -0.0433,
+     -0.028
+    ],
+    "L2c"
+   ],
+   "6": [
+    -0.0407,
+    [
+     -0.0495,
+     -0.0336
+    ],
+    "L2"
+   ],
+   "24": [
+    -0.0402,
+    [
+     -0.0483,
+     -0.0326
+    ],
+    "L2"
+   ]
+  },
+  "C.1@1000": {
+   "1": [
+    -0.0286,
+    [
+     -0.0361,
+     -0.0219
+    ],
+    "L2c"
+   ],
+   "6": [
+    -0.0273,
+    [
+     -0.0355,
+     -0.0203
+    ],
+    "L2"
+   ],
+   "24": [
+    -0.0239,
+    [
+     -0.0317,
+     -0.0164
+    ],
+    "L2"
+   ]
+  },
+  "C.2b@100": {
+   "1": [
+    -0.0351,
+    [
+     -0.043,
+     -0.0278
+    ],
+    "L2c"
+   ],
+   "6": [
+    -0.0403,
+    [
+     -0.0491,
+     -0.0333
+    ],
+    "L2"
+   ],
+   "24": [
+    -0.0398,
+    [
+     -0.0478,
+     -0.0324
+    ],
+    "L2"
+   ]
+  },
+  "C.2b@1000": {
+   "1": [
+    -0.014,
+    [
+     -0.0197,
+     -0.0088
+    ],
+    "L2c"
+   ],
+   "6": [
+    -0.0065,
+    [
+     -0.013,
+     -0.0011
+    ],
+    "L2"
+   ],
+   "24": [
+    -0.0027,
+    [
+     -0.0089,
+     0.0033
+    ],
+    "L2"
+   ]
+  },
+  "C.2a@100": {
+   "1": [
+    -0.0353,
+    [
+     -0.0433,
+     -0.028
+    ],
+    "L2c"
+   ],
+   "6": [
+    -0.0407,
+    [
+     -0.0495,
+     -0.0336
+    ],
+    "L2"
+   ],
+   "24": [
+    -0.0402,
+    [
+     -0.0483,
+     -0.0327
+    ],
+    "L2"
+   ]
+  }
+ }
+}
