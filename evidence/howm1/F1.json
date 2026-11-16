@@ -1,0 +1,102 @@
+{
+ "schema": "HOWM1_F1_1",
+ "at": "2026-11-16T07:40:04Z",
+ "code": {
+  "src/hospitalos/howm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/hospitalos/howm/b0.py": "e7fdbe58db8de67d086916d2ec36b81b2465472d2ac2ac77f9101390ad7e058a",
+  "src/hospitalos/howm/ckpt.py": "f1145d15f4ab1cb1055c2823821b99be756c488a6cf647cf527a7cd88ca5849a",
+  "src/hospitalos/howm/controllers.py": "976e49fdbc782f8cdfd9c3128bebd60c7140f8d70c885e23217b14249062134e",
+  "src/hospitalos/howm/corpus.py": "f08597aaae29489c92469adff18a2fff7cac61b567e57451e75d80023e654fce",
+  "src/hospitalos/howm/dataset.py": "6e2f7f60fb00bf75eee23d0c132dbc905edded4b2b33c4af828b8d7b00fcfeea",
+  "src/hospitalos/howm/g0check.py": "2037d2231955d6f594ab79061cef97470d3bd99995ee1eb0323542b4d61e3612",
+  "src/hospitalos/howm/galt.py": "3d36cdab2785c63d83c1a59dc123e7a25d1a6162011ec6fe871cd572c6a69623",
+  "src/hospitalos/howm/generator.py": "6f46d500a6c732a5fd18ff019974e89afaf384e737c1c3d8ae00ed782ea9271c",
+  "src/hospitalos/howm/heads.py": "d922ea3a7fbd12a2494359b7d5f265ddc72b83e0946453f44fe2b4bebd18bf63",
+  "src/hospitalos/howm/history.py": "06f2b9f05a315a939515ee488429a18b89c26c1d1ac2d369a9eec5c54e5f64a0",
+  "src/hospitalos/howm/keys.py": "b547c3ff0c5d313cc075a3f48cd3d254e8bbae700db9af7fb16875f947a79018",
+  "src/hospitalos/howm/ledger.py": "52cbf05d0ec6e870de433c9d2895ff6c4e301c6447c5a18abe753def08a9b3fb",
+  "src/hospitalos/howm/manual.py": "5681b5295cb31b31ec92e1903e0ccf48e89edb591cf3e59f4b71037ae011f78d",
+  "src/hospitalos/howm/nets.py": "1265afcde07625e80f4463dda78fa63ca7034225a6ac7b5977885765efc8f80e",
+  "src/hospitalos/howm/predict.py": "cc1f48b4e979ebc4d9d6e9e4ca6f336d9399a5667391a86959b44b41246a70a2",
+  "src/hospitalos/howm/rollout.py": "75485cead99dddccc515667c368ed4601bb6ab1f5905a35f311e64eb7a12fbf2",
+  "src/hospitalos/howm/train.py": "267f8fd12bdc9c6556a781757d64b00b8f90bb81e292014989f5361851d22bdf",
+  "src/hospitalos/howm/verify.py": "5540a9e62bfaa75deedc1204306db77a12d2a31ae7fc0989ca75391aae3fcad7",
+  "src/hospitalos/howm/world.py": "6869fc4aa891e1d0b4c42fe74296a5d739d625e64fbda8732ae5e4993bd4df4a",
+  "scripts/howm_budget_run.py": "da17e8b56bf6fa0b5ca50c2c043a561fda6557ad2c54eafcd1c58caa21354698",
+  "scripts/howm_env_check.py": "1970c85d1ec193192060d65456168d5dd92a2b05a69192a117446c7f71507cf9",
+  "scripts/howm_eval.py": "9f90b232746ad290c80b89ac5116bb1c87f3f793e2ce249f9abe371d99ceb73c",
+  "scripts/howm_package.py": "8e22f7755d5b63d8de0eff57d329fe79031ed3a2cd38a920bcc781d81f050925",
+  "scripts/howm_r0.py": "5ab4072d4d2d22c1c52175336f5ef79e840feae18585ae0d231c0ec39d972cc5",
+  "scripts/howm_r1.py": "a435ecdf62304dab3c63165926d7ffe73c30e1fb656de789ed3d593ee3232c4b",
+  "scripts/howm_restore.py": "b1122d85de6d92db5eda6c316cc7cd42be26f6e8a4a305adbc46ebdc089a4b04"
+ },
+ "g0_sha256": "8740e59828e33f3694048c82c8fc6e2aa04833040a6996ac3ceefe28ab72252b",
+ "b0_params_sha256": "e2d0cd0abb1fe58107b18bfb63be78f75db5ddfd47200de62d44bf0e4cbecdb2",
+ "loss_scales_sha256": "ffcbb4090690c3cb60e6bf639e6243dfbb0ba91d9b339fbe440b39189b16af85",
+ "crps_scales_sha256": "688b2c950661ed9de5db6290152dbdb21d54da2373e245c64474a0299f90a5b7",
+ "selection": {
+  "B2": {
+   "val_best_by_lr": {
+    "0.0003": 7.214259985831274,
+    "0.001": 7.210222281442746
+   },
+   "chosen_lr": 0.001
+  },
+  "H1": {
+   "val_best_by_lr": {
+    "0.0003": 7.210589350260995,
+    "0.001": 7.2153600670599785
+   },
+   "chosen_lr": 0.0003
+  }
+ },
+ "members": {
+  "B2": [
+   {
+    "run": "B2_lr0.001_s0",
+    "best_sha256": "c9c8f02a898b4d60479435b119dce1e94146f8120a0369f3714fbe5d41c10054",
+    "best_epoch": 6
+   },
+   {
+    "run": "B2_lr0.001_s1",
+    "best_sha256": "a8d06b0a7de4e7454d7df11bc13ff789afca839ae2b37060f7b16483bd3771ac",
+    "best_epoch": 6
+   }
+  ],
+  "H1": [
+   {
+    "run": "H1_lr0.0003_s0",
+    "best_sha256": "f8b2e753fb84ec3ebf3bfddb8ab4b90972a4a6bca413f2f0ef94f183d25370f8",
+    "best_epoch": 6
+   },
+   {
+    "run": "H1_lr0.0003_s1",
+    "best_sha256": "aa969855cbab19224a395eb50ee4dcbb2634b9097706df37e1f652f856c940a3",
+    "best_epoch": 20
+   }
+  ]
+ },
+ "pilot_state": {
+  "instants": 2,
+  "m_dec": 8,
+  "train_n": 32,
+  "runs": 3
+ },
+ "decision_instants_local": [
+  7,
+  11
+ ],
+ "M_prediction": 16,
+ "M_decision": 8,
+ "targets": {
+  "primary": "Delta_LS(h)=mean_e[L(B0-local)-L(H1)] nats; 95% cluster-bootstrap lower bound > 0 at h=6 AND h=24",
+  "secondary": "R(h)=1-sum_e Cbar(H1)/sum_e Cbar(B0-local) on normalised CRPS; ambition R(6)>=0.10 and R(24)>=0.10 (point); lower bound > 0",
+  "decision": "D_dec=mean[U(B0-local choice)-U(H1 choice)] (precheck informative: margin 54.2 >= 15); ambition >= 5 (point); lower bound > 0"
+ },
+ "bootstrap": {
+  "B": 2000,
+  "seed": 1684492122,
+  "unit": "establishment"
+ },
+ "rule": "no selection, tuning or generator change after reading DEVTEST/DIAG_DEV; DIAG_DEV never used to choose a model"
+}
