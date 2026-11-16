@@ -236,9 +236,29 @@ La redéfinition n'est pas appliquée aux résultats R1 livrés.
 
 ## 8. Coûts (registre `evidence/howm2/BUDGET_LEDGER_HOWM2.jsonl`)
 
-Plafond total : 3 600 s de temps mural, CPU, 0 €. Le total consommé et le détail par lot figurent
-dans le reçu de restauration et dans le registre. Les échecs sont comptés : une passe de diagnostic
-sans `keep_instants` a coûté 2,8 s.
+Plafond total : 3 600 s de temps mural, CPU, 0 €. Consommé : **1 433,0 s** sur 31 commandes
+(registre n° 1 à 31, chaîné et ancré). Les échecs sont comptés.
+
+| Lot | Commandes | Échecs | Mural (s) | Plafond (s) |
+|---|---:|---:|---:|---:|
+| A.TEST | 3 | 0 | 45,2 | 400 |
+| A.FACTS | 1 | 0 | 0,2 | 60 |
+| A.LADDER | 6 | 0 | 1 093,8 | 1 600 |
+| A.VALID | 7 | 1 | 81,9 | 300 |
+| A.DEC | 1 | 0 | 30,7 | 300 |
+| A.INSTR | 1 | 0 | 124,6 | 300 |
+| A.DIAG | 2 | 1 (sans `keep_instants`, 2,8 s) | 11,2 | 240 |
+| A.REST | 3 | 0 | 45,4 | 400 |
+
+**Paquets et restauration**
+- Paquet de blocage : `HOWM2_P2_A_BLOCKED_VALIDATION.zip` (sha 7339252b…), avant l'addendum 2.
+- Paquet final : `HOWM2_P2_A_FINAL.zip`, sha256 `6826601c4a46143a679637e3df1b1ce282a6aa0022bd96628378e0f777d02b87`,
+  55,5 Mo, commit c9969725.
+- Reçu de restauration (`evidence/howm2/RESTORE_RECEIPT_A.json`), obtenu dans un répertoire neuf :
+  - SHA256SUMS intègres ;
+  - `tests/howm2` : 8 réussis ;
+  - HOWM2_REF 0 et HOWM2_DIAG 0 régénérés à l'identique ;
+  - analyse refaite, `LADDER_A.json` identique, même verdict.
 
 ## 9. Ce que la tranche A permet de conclure, et ce qu'elle ne permet pas
 
