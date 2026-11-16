@@ -17,7 +17,18 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from howm2_restore import close  # noqa: E402
+import howm2_restore as _r  # noqa: E402
+
+
+def close(a, b, tol=1e-9) -> bool:
+    """howm2_restore.close, with exact equality first (+inf == +inf, the degenerate N-o value)."""
+    if isinstance(a, float) and isinstance(b, float) and a == b:
+        return True
+    if isinstance(a, dict):
+        return isinstance(b, dict) and a.keys() == b.keys() and all(close(a[k], b[k], tol) for k in a)
+    if isinstance(a, list):
+        return isinstance(b, list) and len(a) == len(b) and all(close(x, y, tol) for x, y in zip(a, b))
+    return _r.close(a, b, tol)
 
 ROOT = Path(__file__).resolve().parents[1]
 
