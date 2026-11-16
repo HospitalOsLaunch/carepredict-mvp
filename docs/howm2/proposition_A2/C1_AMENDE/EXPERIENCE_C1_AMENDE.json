@@ -1,0 +1,85 @@
+{
+ "experiment": "HOWM2-C1a",
+ "status": "PROPOSED_NOT_EXECUTED",
+ "replaces": "docs/howm2/proposition_BCD/EXPERIENCE_HOWM2_C1.json (not adopted)",
+ "basis": {
+  "A": "HOWM1_DISCRIMINANT; M_pub H6 0.099 [0.087;0.110], H24 0.141 [0.121;0.162]",
+  "A2_L2C": "best of {L2,L2c} = L2 at H6/H24; M_pub unchanged; no flag",
+  "A2_DEC": "NOWCAST_MARGE_LT_15; kappa 0.07"
+ },
+ "systems": {
+  "C.1": "H1 frozen, W=24h",
+  "C.2a": "H1 encoder over the whole public hourly sequence (no other change)",
+  "C.2b": "H1 W=24h + 8 L2 local intercepts as read-out inputs"
+ },
+ "partitions": {
+  "HOWM2_CTRAIN": 10000,
+  "HOWM2_CVAL": 48,
+  "HOWM2_CEVAL": 200,
+  "HOWM2_DIAG": "100 (transfer, descriptive)"
+ },
+ "origins": "range(24,166,3)",
+ "training": {
+  "optimizer": "Adam",
+  "lr": 0.0003,
+  "batch_origins": 32,
+  "loss_scales": "R1",
+  "train_loss_logged": true,
+  "one_pass": true
+ },
+ "criterion": {
+  "stat": "L(R) - L(model), R = best of {L2, L2c} per replicate",
+  "horizons": [
+   6,
+   24
+  ],
+  "labels": [
+   "C1_BAT_REF",
+   "C1_NE_BAT_PAS_REF",
+   "C1_INDETERMINE"
+  ],
+  "bootstrap": {
+   "B": 2000,
+   "cluster": "establishment"
+  }
+ },
+ "principal_reading": {
+  "rho_f": "(L_R - L_model)/(L_R - L4) per A-validated family",
+  "ambition": 0.5
+ },
+ "tiers": {
+  "tier1": {
+   "N": [
+    100,
+    1000
+   ],
+   "seeds": 3,
+   "ceiling_s": 17400
+  },
+  "tier2": {
+   "N": [
+    10000
+   ],
+   "rule": "launch iff CVAL(100)-CVAL(1000) > 2 x seed SD at 1000 for >=1 system",
+   "ceiling_s": 45000
+  }
+ },
+ "not": [
+  "B",
+  "HOWM2-N",
+  "decision diagnostic on HOWM-1",
+  "100000",
+  "GPU",
+  "reserve",
+  "JEPA",
+  "closed loop",
+  "P6",
+  "AJ-H",
+  "push/merge/rebase"
+ ],
+ "statuses": {
+  "prototype": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO"
+ }
+}
