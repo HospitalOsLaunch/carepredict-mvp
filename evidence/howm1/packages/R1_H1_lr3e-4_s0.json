@@ -1,0 +1,81 @@
+{
+ "package": "HOWM1_P2_R1_H1_lr3e-4_s0.zip",
+ "sha256": "ef9460b6791c1b6ba914843df04b0470858147b277673ca688450c68eb7e5f74",
+ "bytes": 16053052,
+ "bad": [],
+ "tree_files": 1589,
+ "checkpoints_loaded_weights_only": [
+  {
+   "ckpt": "checkpoints/B2_lr0.0003_s0/last.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  },
+  {
+   "ckpt": "checkpoints/B2_lr0.0003_s0/best.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  },
+  {
+   "ckpt": "checkpoints/B2_lr0.001_s0/last.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  },
+  {
+   "ckpt": "checkpoints/B2_lr0.001_s0/best.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  },
+  {
+   "ckpt": "checkpoints/H1_lr0.0003_s0/last.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  },
+  {
+   "ckpt": "checkpoints/H1_lr0.0003_s0/best.pt",
+   "keys": [
+    "config_json",
+    "model",
+    "optimizer",
+    "position",
+    "rng",
+    "scheduler",
+    "state_json"
+   ]
+  }
+ ]
+}

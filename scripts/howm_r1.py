@@ -28,7 +28,7 @@ from hospitalos.howm import corpus as C  # noqa: E402
 from hospitalos.howm import g0check  # noqa: E402
 from hospitalos.howm.b0 import TAU_GRID, B0Params, fit_pool  # noqa: E402
 from hospitalos.howm.dataset import HAZARD_FAMILIES  # noqa: E402
-from hospitalos.howm.generator import EVAL_DAY, INSTANT_HOURS, PARTITION_SIZES  # noqa: E402
+from hospitalos.howm.generator import EVAL_DAY, PARTITION_SIZES  # noqa: E402
 from hospitalos.howm.predict import b0_predict, member_logscores  # noqa: E402
 
 EVID = C.EVID

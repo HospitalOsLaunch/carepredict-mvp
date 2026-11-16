@@ -1,0 +1,417 @@
+{
+ "config": {
+  "kind": "H1",
+  "lr": 0.0003,
+  "seed": 0,
+  "batch": 32,
+  "max_epochs": 60,
+  "patience": 20,
+  "scales": {
+   "auth": 2.562627456695723,
+   "ready": 3.102473377093498,
+   "transport": 2.247443454693525,
+   "cleaning": 2.158264128293859,
+   "confirmation": 2.7996843571846304,
+   "arrivals": 0.42330867590175736,
+   "care": 1.548539828193125
+  },
+  "code": {
+   "src/hospitalos/howm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "src/hospitalos/howm/b0.py": "e7fdbe58db8de67d086916d2ec36b81b2465472d2ac2ac77f9101390ad7e058a",
+   "src/hospitalos/howm/ckpt.py": "f1145d15f4ab1cb1055c2823821b99be756c488a6cf647cf527a7cd88ca5849a",
+   "src/hospitalos/howm/controllers.py": "976e49fdbc782f8cdfd9c3128bebd60c7140f8d70c885e23217b14249062134e",
+   "src/hospitalos/howm/corpus.py": "f08597aaae29489c92469adff18a2fff7cac61b567e57451e75d80023e654fce",
+   "src/hospitalos/howm/dataset.py": "6e2f7f60fb00bf75eee23d0c132dbc905edded4b2b33c4af828b8d7b00fcfeea",
+   "src/hospitalos/howm/g0check.py": "2037d2231955d6f594ab79061cef97470d3bd99995ee1eb0323542b4d61e3612",
+   "src/hospitalos/howm/galt.py": "3d36cdab2785c63d83c1a59dc123e7a25d1a6162011ec6fe871cd572c6a69623",
+   "src/hospitalos/howm/generator.py": "6f46d500a6c732a5fd18ff019974e89afaf384e737c1c3d8ae00ed782ea9271c",
+   "src/hospitalos/howm/heads.py": "d922ea3a7fbd12a2494359b7d5f265ddc72b83e0946453f44fe2b4bebd18bf63",
+   "src/hospitalos/howm/history.py": "06f2b9f05a315a939515ee488429a18b89c26c1d1ac2d369a9eec5c54e5f64a0",
+   "src/hospitalos/howm/keys.py": "b547c3ff0c5d313cc075a3f48cd3d254e8bbae700db9af7fb16875f947a79018",
+   "src/hospitalos/howm/ledger.py": "52cbf05d0ec6e870de433c9d2895ff6c4e301c6447c5a18abe753def08a9b3fb",
+   "src/hospitalos/howm/manual.py": "5681b5295cb31b31ec92e1903e0ccf48e89edb591cf3e59f4b71037ae011f78d",
+   "src/hospitalos/howm/nets.py": "1265afcde07625e80f4463dda78fa63ca7034225a6ac7b5977885765efc8f80e",
+   "src/hospitalos/howm/predict.py": "cc1f48b4e979ebc4d9d6e9e4ca6f336d9399a5667391a86959b44b41246a70a2",
+   "src/hospitalos/howm/rollout.py": "c15b69acc569562f5ab4fb09d468e36cb56954de8069f8c62cdb69bdcf83e87c",
+   "src/hospitalos/howm/train.py": "267f8fd12bdc9c6556a781757d64b00b8f90bb81e292014989f5361851d22bdf",
+   "src/hospitalos/howm/verify.py": "5540a9e62bfaa75deedc1204306db77a12d2a31ae7fc0989ca75391aae3fcad7",
+   "src/hospitalos/howm/world.py": "6869fc4aa891e1d0b4c42fe74296a5d739d625e64fbda8732ae5e4993bd4df4a",
+   "scripts/howm_budget_run.py": "da17e8b56bf6fa0b5ca50c2c043a561fda6557ad2c54eafcd1c58caa21354698",
+   "scripts/howm_env_check.py": "1970c85d1ec193192060d65456168d5dd92a2b05a69192a117446c7f71507cf9",
+   "scripts/howm_package.py": "8e22f7755d5b63d8de0eff57d329fe79031ed3a2cd38a920bcc781d81f050925",
+   "scripts/howm_r0.py": "5ab4072d4d2d22c1c52175336f5ef79e840feae18585ae0d231c0ec39d972cc5",
+   "scripts/howm_r1.py": "2e395ed0795f0dcec579a293b2dbdb1466b173ed2edede37cdee12498cf7f95c",
+   "scripts/howm_restore.py": "b1122d85de6d92db5eda6c316cc7cd42be26f6e8a4a305adbc46ebdc089a4b04"
+  },
+  "n_train": 1536,
+  "n_val": 1440
+ },
+ "log": [
+  {
+   "epoch": 1,
+   "val_total": 7.2149805430505864,
+   "val_means": {
+    "auth": 2.9793703042074253,
+    "ready": 3.5785256987416894,
+    "cleaning": 2.038658565741319,
+    "confirmation": 2.8760078064749175,
+    "arrivals": 0.3968506596706532,
+    "care": 1.5140658310642519,
+    "transport": 2.2740433498432764
+   },
+   "improved": true
+  },
+  {
+   "epoch": 2,
+   "val_total": 7.216420630188233,
+   "val_means": {
+    "auth": 2.9793757074167555,
+    "ready": 3.579532064801238,
+    "cleaning": 2.039552597510509,
+    "confirmation": 2.878027743045415,
+    "arrivals": 0.3968411648714984,
+    "care": 1.5139539161002757,
+    "transport": 2.274206471024898
+   },
+   "improved": false
+  },
+  {
+   "epoch": 3,
+   "val_total": 7.220409545689255,
+   "val_means": {
+    "auth": 2.9794945595051927,
+    "ready": 3.5806433456398277,
+    "cleaning": 2.0465165132131333,
+    "confirmation": 2.8778457124656605,
+    "arrivals": 0.3968745174231353,
+    "care": 1.5148809881741057,
+    "transport": 2.273633978868786
+   },
+   "improved": false
+  },
+  {
+   "epoch": 4,
+   "val_total": 7.217303558979319,
+   "val_means": {
+    "auth": 2.9808746998941253,
+    "ready": 3.5812018990428296,
+    "cleaning": 2.0386314612168532,
+    "confirmation": 2.878158956599013,
+    "arrivals": 0.39695549496897947,
+    "care": 1.5140862165434237,
+    "transport": 2.27372139117174
+   },
+   "improved": false
+  },
+  {
+   "epoch": 5,
+   "val_total": 7.213695915705855,
+   "val_means": {
+    "auth": 2.9807481114764967,
+    "ready": 3.582265145518852,
+    "cleaning": 2.035549353330563,
+    "confirmation": 2.8749040505596413,
+    "arrivals": 0.39692409656665945,
+    "care": 1.5135906935715007,
+    "transport": 2.2716624177338782
+   },
+   "improved": true
+  },
+  {
+   "epoch": 6,
+   "val_total": 7.210589350260995,
+   "val_means": {
+    "auth": 2.98329547284681,
+    "ready": 3.5831621578660515,
+    "cleaning": 2.0335528447077826,
+    "confirmation": 2.8654715961384998,
+    "arrivals": 0.39700331423017715,
+    "care": 1.5141139396190364,
+    "transport": 2.2702676418580507
+   },
+   "improved": true
+  },
+  {
+   "epoch": 7,
+   "val_total": 7.218487542587383,
+   "val_means": {
+    "auth": 2.979872336051149,
+    "ready": 3.5841680396654767,
+    "cleaning": 2.0371444494296345,
+    "confirmation": 2.879899381922784,
+    "arrivals": 0.39698026224418925,
+    "care": 1.5145048443169635,
+    "transport": 2.274524992495252
+   },
+   "improved": false
+  },
+  {
+   "epoch": 8,
+   "val_total": 7.218524121682293,
+   "val_means": {
+    "auth": 2.9809808901781074,
+    "ready": 3.5851839601419164,
+    "cleaning": 2.034415225493602,
+    "confirmation": 2.8800111748347774,
+    "arrivals": 0.3970266584996824,
+    "care": 1.514748099700581,
+    "transport": 2.2750519362458013
+   },
+   "improved": false
+  },
+  {
+   "epoch": 9,
+   "val_total": 7.2169918879043085,
+   "val_means": {
+    "auth": 2.9809494189835313,
+    "ready": 3.586072575347878,
+    "cleaning": 2.0370601458427235,
+    "confirmation": 2.874226709169762,
+    "arrivals": 0.3971308959854974,
+    "care": 1.5139445178408621,
+    "transport": 2.273494318911904
+   },
+   "improved": false
+  },
+  {
+   "epoch": 10,
+   "val_total": 7.217381763398533,
+   "val_means": {
+    "auth": 2.9809593199294833,
+    "ready": 3.587180234486302,
+    "cleaning": 2.0387519701933248,
+    "confirmation": 2.872894101276576,
+    "arrivals": 0.39719283801537975,
+    "care": 1.5143193335163487,
+    "transport": 2.2719946393841193
+   },
+   "improved": false
+  },
+  {
+   "epoch": 11,
+   "val_total": 7.215494918299486,
+   "val_means": {
+    "auth": 2.981307908405299,
+    "ready": 3.5890558163619555,
+    "cleaning": 2.033361022288983,
+    "confirmation": 2.872730272952641,
+    "arrivals": 0.39714087424454864,
+    "care": 1.5142484055479632,
+    "transport": 2.2722137105046656
+   },
+   "improved": false
+  },
+  {
+   "epoch": 12,
+   "val_total": 7.215352633843321,
+   "val_means": {
+    "auth": 2.9835530696480275,
+    "ready": 3.5902443264394974,
+    "cleaning": 2.0342994176424467,
+    "confirmation": 2.8684566065529795,
+    "arrivals": 0.397160068264714,
+    "care": 1.5141489478796872,
+    "transport": 2.271559901404799
+   },
+   "improved": false
+  },
+  {
+   "epoch": 13,
+   "val_total": 7.2249932005663595,
+   "val_means": {
+    "auth": 2.9805259095849244,
+    "ready": 3.5943193188236764,
+    "cleaning": 2.0453977590952164,
+    "confirmation": 2.877322187601963,
+    "arrivals": 0.39718744975549203,
+    "care": 1.5140833454211926,
+    "transport": 2.2742055089850175
+   },
+   "improved": false
+  },
+  {
+   "epoch": 14,
+   "val_total": 7.213862524623495,
+   "val_means": {
+    "auth": 2.9836978749174,
+    "ready": 3.594750751469911,
+    "cleaning": 2.0293855563188212,
+    "confirmation": 2.865422261763956,
+    "arrivals": 0.3973457486541183,
+    "care": 1.5145348351445078,
+    "transport": 2.2708263470415484
+   },
+   "improved": false
+  },
+  {
+   "epoch": 15,
+   "val_total": 7.228852027662906,
+   "val_means": {
+    "auth": 2.9892998827248043,
+    "ready": 3.5992375155393064,
+    "cleaning": 2.0421752373377484,
+    "confirmation": 2.871885392821838,
+    "arrivals": 0.3972533243673819,
+    "care": 1.5149784516524083,
+    "transport": 2.2776916225751243
+   },
+   "improved": false
+  },
+  {
+   "epoch": 16,
+   "val_total": 7.252884863171083,
+   "val_means": {
+    "auth": 2.995747777951457,
+    "ready": 3.621751072673642,
+    "cleaning": 2.0339372139710648,
+    "confirmation": 2.9002973405000207,
+    "arrivals": 0.39744704299502903,
+    "care": 1.5154778275016265,
+    "transport": 2.2937578056987964
+   },
+   "improved": false
+  },
+  {
+   "epoch": 17,
+   "val_total": 7.226568226602598,
+   "val_means": {
+    "auth": 2.985808696599849,
+    "ready": 3.596199223692988,
+    "cleaning": 2.0210663123008534,
+    "confirmation": 2.8807882687755835,
+    "arrivals": 0.3975104994244046,
+    "care": 1.5152372233680123,
+    "transport": 2.290915060984461
+   },
+   "improved": false
+  },
+  {
+   "epoch": 18,
+   "val_total": 7.214582684576937,
+   "val_means": {
+    "auth": 2.990702928425393,
+    "ready": 3.589730983137466,
+    "cleaning": 2.0291933475396573,
+    "confirmation": 2.8564168266046828,
+    "arrivals": 0.39767697011982955,
+    "care": 1.5140450876535465,
+    "transport": 2.2763192287662575
+   },
+   "improved": false
+  },
+  {
+   "epoch": 19,
+   "val_total": 7.214510992924016,
+   "val_means": {
+    "auth": 2.991986833175086,
+    "ready": 3.5941464909807324,
+    "cleaning": 2.0215195087286144,
+    "confirmation": 2.853012293967131,
+    "arrivals": 0.3986842292326468,
+    "care": 1.514787720164709,
+    "transport": 2.276131830717388
+   },
+   "improved": false
+  },
+  {
+   "epoch": 20,
+   "val_total": 7.233302388311136,
+   "val_means": {
+    "auth": 2.9911275692019648,
+    "ready": 3.5991728346466223,
+    "cleaning": 2.0467879662146937,
+    "confirmation": 2.858409853516338,
+    "arrivals": 0.3993255275267142,
+    "care": 1.515723449068347,
+    "transport": 2.2800686218236623
+   },
+   "improved": false
+  },
+  {
+   "epoch": 21,
+   "val_total": 7.23495094350813,
+   "val_means": {
+    "auth": 2.988574943498503,
+    "ready": 3.597596430796177,
+    "cleaning": 2.0570209454267454,
+    "confirmation": 2.8579719053250607,
+    "arrivals": 0.39925202042968183,
+    "care": 1.5155936963307233,
+    "transport": 2.277428618648596
+   },
+   "improved": false
+  },
+  {
+   "epoch": 22,
+   "val_total": 7.224160252010296,
+   "val_means": {
+    "auth": 2.9915450902595935,
+    "ready": 3.601312771649428,
+    "cleaning": 2.03553163088285,
+    "confirmation": 2.853976904788864,
+    "arrivals": 0.39951728449927437,
+    "care": 1.514819484031672,
+    "transport": 2.2731797010229347
+   },
+   "improved": false
+  },
+  {
+   "epoch": 23,
+   "val_total": 7.2234865461708955,
+   "val_means": {
+    "auth": 2.991011940892638,
+    "ready": 3.6010551912153623,
+    "cleaning": 2.0274611039039416,
+    "confirmation": 2.856845760791101,
+    "arrivals": 0.39960140784581505,
+    "care": 1.5155333912589275,
+    "transport": 2.2769380373912944
+   },
+   "improved": false
+  },
+  {
+   "epoch": 24,
+   "val_total": 7.237791275217675,
+   "val_means": {
+    "auth": 2.9890322368430406,
+    "ready": 3.6125809179578914,
+    "cleaning": 2.026289868966127,
+    "confirmation": 2.8785753192188586,
+    "arrivals": 0.3992140191572684,
+    "care": 1.514771098079949,
+    "transport": 2.289413369538491
+   },
+   "improved": false
+  },
+  {
+   "epoch": 25,
+   "val_total": 7.2408842914599765,
+   "val_means": {
+    "auth": 3.009444452534239,
+    "ready": 3.6158899175758448,
+    "cleaning": 2.0300374935834835,
+    "confirmation": 2.8536721149337625,
+    "arrivals": 0.40125605000389947,
+    "care": 1.514674687943017,
+    "transport": 2.28145288375386
+   },
+   "improved": false
+  },
+  {
+   "epoch": 26,
+   "val_total": 7.2106433053317165,
+   "val_means": {
+    "auth": 2.9923740977418127,
+    "ready": 3.6001165006848246,
+    "cleaning": 2.0178026028168508,
+    "confirmation": 2.841390192620108,
+    "arrivals": 0.4005042853178801,
+    "care": 1.51452863653734,
+    "transport": 2.2666881251753423
+   },
+   "improved": false
+  }
+ ],
+ "best_sha256": "f8b2e753fb84ec3ebf3bfddb8ab4b90972a4a6bca413f2f0ef94f183d25370f8",
+ "last_sha256": "6cc9e6f7eebc9ec512a092c1f1799846448b94f5db5c3812ba8685a8881c49d2"
+}

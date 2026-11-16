@@ -1,0 +1,8 @@
+{
+ "test": "T-INF-08 permuted inputs/labels",
+ "val_loss_B0_pool": 7.411122485553323,
+ "val_loss_after_60_steps": 7.402309800624527,
+ "improvement": 0.008812684928795278,
+ "status": "incomplete",
+ "note": "diagnostic only; a large improvement would suggest leakage"
+}

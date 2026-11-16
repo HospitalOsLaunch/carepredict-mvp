@@ -1,0 +1,123 @@
+{
+ "config": {
+  "kind": "B2",
+  "lr": 0.001,
+  "seed": 0,
+  "batch": 32,
+  "max_epochs": 60,
+  "patience": 20,
+  "scales": {
+   "auth": 2.562627456695723,
+   "ready": 3.102473377093498,
+   "transport": 2.247443454693525,
+   "cleaning": 2.158264128293859,
+   "confirmation": 2.7996843571846304,
+   "arrivals": 0.42330867590175736,
+   "care": 1.548539828193125
+  },
+  "code": {
+   "src/hospitalos/howm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "src/hospitalos/howm/b0.py": "e7fdbe58db8de67d086916d2ec36b81b2465472d2ac2ac77f9101390ad7e058a",
+   "src/hospitalos/howm/ckpt.py": "f1145d15f4ab1cb1055c2823821b99be756c488a6cf647cf527a7cd88ca5849a",
+   "src/hospitalos/howm/controllers.py": "976e49fdbc782f8cdfd9c3128bebd60c7140f8d70c885e23217b14249062134e",
+   "src/hospitalos/howm/corpus.py": "f08597aaae29489c92469adff18a2fff7cac61b567e57451e75d80023e654fce",
+   "src/hospitalos/howm/dataset.py": "6e2f7f60fb00bf75eee23d0c132dbc905edded4b2b33c4af828b8d7b00fcfeea",
+   "src/hospitalos/howm/g0check.py": "2037d2231955d6f594ab79061cef97470d3bd99995ee1eb0323542b4d61e3612",
+   "src/hospitalos/howm/galt.py": "3d36cdab2785c63d83c1a59dc123e7a25d1a6162011ec6fe871cd572c6a69623",
+   "src/hospitalos/howm/generator.py": "6f46d500a6c732a5fd18ff019974e89afaf384e737c1c3d8ae00ed782ea9271c",
+   "src/hospitalos/howm/heads.py": "d922ea3a7fbd12a2494359b7d5f265ddc72b83e0946453f44fe2b4bebd18bf63",
+   "src/hospitalos/howm/history.py": "06f2b9f05a315a939515ee488429a18b89c26c1d1ac2d369a9eec5c54e5f64a0",
+   "src/hospitalos/howm/keys.py": "b547c3ff0c5d313cc075a3f48cd3d254e8bbae700db9af7fb16875f947a79018",
+   "src/hospitalos/howm/ledger.py": "52cbf05d0ec6e870de433c9d2895ff6c4e301c6447c5a18abe753def08a9b3fb",
+   "src/hospitalos/howm/manual.py": "5681b5295cb31b31ec92e1903e0ccf48e89edb591cf3e59f4b71037ae011f78d",
+   "src/hospitalos/howm/nets.py": "1265afcde07625e80f4463dda78fa63ca7034225a6ac7b5977885765efc8f80e",
+   "src/hospitalos/howm/predict.py": "cc1f48b4e979ebc4d9d6e9e4ca6f336d9399a5667391a86959b44b41246a70a2",
+   "src/hospitalos/howm/rollout.py": "c15b69acc569562f5ab4fb09d468e36cb56954de8069f8c62cdb69bdcf83e87c",
+   "src/hospitalos/howm/train.py": "267f8fd12bdc9c6556a781757d64b00b8f90bb81e292014989f5361851d22bdf",
+   "src/hospitalos/howm/verify.py": "5540a9e62bfaa75deedc1204306db77a12d2a31ae7fc0989ca75391aae3fcad7",
+   "src/hospitalos/howm/world.py": "6869fc4aa891e1d0b4c42fe74296a5d739d625e64fbda8732ae5e4993bd4df4a",
+   "scripts/howm_budget_run.py": "da17e8b56bf6fa0b5ca50c2c043a561fda6557ad2c54eafcd1c58caa21354698",
+   "scripts/howm_env_check.py": "1970c85d1ec193192060d65456168d5dd92a2b05a69192a117446c7f71507cf9",
+   "scripts/howm_package.py": "8e22f7755d5b63d8de0eff57d329fe79031ed3a2cd38a920bcc781d81f050925",
+   "scripts/howm_r0.py": "5ab4072d4d2d22c1c52175336f5ef79e840feae18585ae0d231c0ec39d972cc5",
+   "scripts/howm_r1.py": "2e395ed0795f0dcec579a293b2dbdb1466b173ed2edede37cdee12498cf7f95c",
+   "scripts/howm_restore.py": "b1122d85de6d92db5eda6c316cc7cd42be26f6e8a4a305adbc46ebdc089a4b04"
+  },
+  "n_train": 384,
+  "n_val": 90
+ },
+ "log": [
+  {
+   "epoch": 1,
+   "val_total": 7.406096023228643,
+   "val_means": {
+    "auth": 3.1558738739929737,
+    "ready": 3.978842440518466,
+    "transport": 2.44449405670166,
+    "confirmation": 2.7985189982822964,
+    "arrivals": 0.38364488813612196,
+    "care": 1.563154992103029,
+    "cleaning": 1.9189610083897908
+   },
+   "improved": true
+  },
+  {
+   "epoch": 2,
+   "val_total": 7.403579957432018,
+   "val_means": {
+    "auth": 3.15722677804499,
+    "ready": 3.9745928677645597,
+    "transport": 2.434953498840332,
+    "confirmation": 2.798377127874465,
+    "arrivals": 0.3838843098393193,
+    "care": 1.5636165591367643,
+    "cleaning": 1.9227548440297444
+   },
+   "improved": true
+  },
+  {
+   "epoch": 3,
+   "val_total": 7.402074788203606,
+   "val_means": {
+    "auth": 3.160774289333799,
+    "ready": 3.9699242331764917,
+    "transport": 2.425009250640869,
+    "confirmation": 2.7989339374360585,
+    "arrivals": 0.3841038597954644,
+    "care": 1.5631567966233426,
+    "cleaning": 1.928408145904541
+   },
+   "improved": true
+  },
+  {
+   "epoch": 4,
+   "val_total": 7.400706230275183,
+   "val_means": {
+    "auth": 3.1588970361701736,
+    "ready": 3.9728392167524857,
+    "transport": 2.421774411201477,
+    "confirmation": 2.7986342566353932,
+    "arrivals": 0.38407165386058667,
+    "care": 1.5650606143250432,
+    "cleaning": 1.9258559147516887
+   },
+   "improved": true
+  },
+  {
+   "epoch": 5,
+   "val_total": 7.402309800624527,
+   "val_means": {
+    "auth": 3.1613953462974544,
+    "ready": 3.9701738530939275,
+    "transport": 2.4147793292999267,
+    "confirmation": 2.799158368791853,
+    "arrivals": 0.38445794847276477,
+    "care": 1.5641276773228956,
+    "cleaning": 1.9347111384073894
+   },
+   "improved": false
+  }
+ ],
+ "best_sha256": "bab40f4b8836b9bde4366164ae679cab7df2b8fee67ef570703e8f349b3e7c04",
+ "last_sha256": "820d9c0a981677afabe29356421d72205b181230c1156d514d683405c2a0507e"
+}
