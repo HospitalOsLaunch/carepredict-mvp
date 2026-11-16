@@ -1,0 +1,3 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+{"B2": {"auc_leave_one_establishment_out": 0.47029928686450423, "folds": 5, "positives": 44, "n": 180}, "H1": {"auc_leave_one_establishment_out": 0.43292063492063493, "folds": 5, "positives": 44, "n": 180}, "note": "privileged label (true regime) used only for this post-freeze diagnostic; never an input"}
