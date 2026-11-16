@@ -1,0 +1,107 @@
+{
+ "descriptive_only": true,
+ "flag": "L4-N validation: N-o' not passed (test limitation; addendum A2-2)",
+ "M": 16,
+ "summary": {
+  "public": {
+   "1": {
+    "n": 576,
+    "coverage90": 0.5729166666666666,
+    "coverage50": 0.4583333333333333,
+    "degenerate90_share": 0.3385416666666667,
+    "coverage90_non_degenerate": 0.3989501312335958,
+    "pit_KS_D": 0.25707514379849683
+   },
+   "6": {
+    "n": 576,
+    "coverage90": 0.7170138888888888,
+    "coverage50": 0.5520833333333334,
+    "degenerate90_share": 0.19791666666666666,
+    "coverage90_non_degenerate": 0.6493506493506493,
+    "pit_KS_D": 0.16108636156782574
+   },
+   "24": {
+    "n": 576,
+    "coverage90": 0.7986111111111112,
+    "coverage50": 0.6371527777777778,
+    "degenerate90_share": 0.2013888888888889,
+    "coverage90_non_degenerate": 0.758695652173913,
+    "pit_KS_D": 0.13194444444444442
+   }
+  },
+  "L4N": {
+   "1": {
+    "n": 576,
+    "coverage90": 0.5798611111111112,
+    "coverage50": 0.4618055555555556,
+    "degenerate90_share": 0.3194444444444444,
+    "coverage90_non_degenerate": 0.41581632653061223,
+    "pit_KS_D": 0.2733477281444199
+   },
+   "6": {
+    "n": 576,
+    "coverage90": 0.7152777777777778,
+    "coverage50": 0.5538194444444444,
+    "degenerate90_share": 0.1996527777777778,
+    "coverage90_non_degenerate": 0.6464208242950108,
+    "pit_KS_D": 0.16776310428113528
+   },
+   "24": {
+    "n": 576,
+    "coverage90": 0.7951388888888888,
+    "coverage50": 0.6302083333333334,
+    "degenerate90_share": 0.203125,
+    "coverage90_non_degenerate": 0.7538126361655774,
+    "pit_KS_D": 0.1371527777777778
+   }
+  },
+  "true": {
+   "1": {
+    "n": 576,
+    "coverage90": 0.8767361111111112,
+    "coverage50": 0.7222222222222222,
+    "degenerate90_share": 0.4149305555555556,
+    "coverage90_non_degenerate": 0.8100890207715133,
+    "pit_KS_D": 0.11198808077431388
+   },
+   "6": {
+    "n": 576,
+    "coverage90": 0.8819444444444444,
+    "coverage50": 0.7152777777777778,
+    "degenerate90_share": 0.2534722222222222,
+    "coverage90_non_degenerate": 0.8418604651162791,
+    "pit_KS_D": 0.06757153579252106
+   },
+   "24": {
+    "n": 576,
+    "coverage90": 0.8836805555555556,
+    "coverage50": 0.7361111111111112,
+    "degenerate90_share": 0.22395833333333334,
+    "coverage90_non_degenerate": 0.8590604026845637,
+    "pit_KS_D": 0.06279138479059387
+   }
+  }
+ },
+ "share_of_public_to_true_gap_recovered_by_L4N": {
+  "1": {
+   "coverage90": 0.022857142857143135,
+   "coverage50": 0.01315789473684227,
+   "coverage90_non_degenerate": 0.04102310855577904,
+   "pit_KS_D": -0.11215737645203247
+  },
+  "6": {
+   "coverage90": -0.01052631578947331,
+   "coverage50": 0.010638297872340049,
+   "coverage90_non_degenerate": -0.015219094382207757,
+   "pit_KS_D": -0.0713976918414227
+  },
+  "24": {
+   "coverage90": -0.040816326530613414,
+   "coverage50": -0.07017543859649095,
+   "coverage90_non_degenerate": -0.04865269911488935,
+   "pit_KS_D": -0.07531602158174881
+  }
+ },
+ "public_and_true_reproduce_DIAG_COVERAGE": true,
+ "pending_events_applied_mean_per_draw": 0.22005208333333334
+}

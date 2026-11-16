@@ -1,0 +1,142 @@
+{
+ "verdict": "NOWCAST_MARGE_LT_15",
+ "flag": "L4-N validation: N-o' not passed (test limitation, L5-N fails too; addendum A2-2)",
+ "margin_N_rule_minus_L4N": {
+  "estimate": -47.201171875,
+  "ci95": [
+   -81.63683268229167,
+   -19.220426432291674
+  ],
+  "n_instants": 96,
+  "n_clusters": 24
+ },
+ "margin_N_VAL": {
+  "estimate": -22.768229166666668,
+  "ci95": [
+   -46.644108072916666,
+   -1.5051106770833693
+  ],
+  "n_instants": 48,
+  "n_clusters": 12
+ },
+ "margin_N_new_REF": {
+  "estimate": -71.63411458333333,
+  "ci95": [
+   -127.90589192708333,
+   -20.96953125000003
+  ],
+  "n_instants": 48,
+  "n_clusters": 12
+ },
+ "margin_A_rule_minus_L4_all96": {
+  "estimate": -52.279947916666664,
+  "ci95": [
+   -85.69099934895833,
+   -25.182747395833353
+  ],
+  "n_instants": 96,
+  "n_clusters": 24
+ },
+ "L4_minus_L4N_paired": {
+  "estimate": 5.078776041666667,
+  "ci95": [
+   0.09114583333333333,
+   11.126009114583331
+  ],
+  "n_instants": 96,
+  "n_clusters": 24
+ },
+ "L4_minus_C_full": {
+  "estimate": 72.27473958333333,
+  "ci95": [
+   45.06494140625,
+   103.81471354166663
+  ],
+  "n_instants": 96,
+  "n_clusters": 24
+ },
+ "kappa": {
+  "estimate": 0.07027041634388456,
+  "ci95": [
+   0.001402827149877632,
+   0.18037407174683912
+  ],
+  "n_instants": 96,
+  "n_clusters": 24
+ },
+ "means": {
+  "U_habitual": 6147.081380208333,
+  "U_rule": 5960.076171875,
+  "U_L4": 6012.356119791667,
+  "U_L4N": 6007.27734375,
+  "U_C_param": 6016.285807291667,
+  "U_C_pub_snap": 6014.324869791667,
+  "U_C_full": 5940.081380208333,
+  "U_oracle": 5924.1171875
+ },
+ "means_by_part": {
+  "VAL": {
+   "U_habitual": 5097.838541666667,
+   "U_rule": 4974.134114583333,
+   "U_L4": 5002.846354166667,
+   "U_L4N": 4996.90234375,
+   "U_C_param": 5007.018229166667,
+   "U_C_pub_snap": 4999.455729166667,
+   "U_C_full": 4945.220052083333,
+   "U_oracle": 4931.91796875
+  },
+  "HOWM2_REF": {
+   "U_habitual": 7196.32421875,
+   "U_rule": 6946.018229166667,
+   "U_L4": 7021.865885416667,
+   "U_L4N": 7017.65234375,
+   "U_C_param": 7025.553385416667,
+   "U_C_pub_snap": 7029.194010416667,
+   "U_C_full": 6934.942708333333,
+   "U_oracle": 6916.31640625
+  }
+ },
+ "secondary_pure_min": {
+  "means": {
+   "L4": 6007.031901041667,
+   "L4N": 5992.287760416667,
+   "C_full": 5937.549479166667
+  },
+  "rule_minus_L4_pure": {
+   "estimate": -46.955729166666664,
+   "ci95": [
+    -81.12233072916666,
+    -19.040380859375002
+   ],
+   "n_instants": 96,
+   "n_clusters": 24
+  },
+  "rule_minus_L4N_pure": {
+   "estimate": -32.211588541666664,
+   "ci95": [
+    -56.910546875,
+    -10.685302734375002
+   ],
+   "n_instants": 96,
+   "n_clusters": 24
+  },
+  "C_full_objlex_minus_pure": {
+   "estimate": 2.5319010416666665,
+   "ci95": [
+    0.04812825520833334,
+    5.785188802083333
+   ],
+   "n_instants": 96,
+   "n_clusters": 24
+  },
+  "note": "pre-declared diagnostic, no effect on the verdict; rule unchanged"
+ },
+ "choices_differ_L4_vs_L4N": 8,
+ "pending_events_applied_mean_per_draw": 0.4010416666666667,
+ "nowcast_fallbacks": 10,
+ "nowcast_rejected": 0,
+ "VAL_L4_reproduces_A": {
+  "checked": 48,
+  "identical": 48
+ }
+}

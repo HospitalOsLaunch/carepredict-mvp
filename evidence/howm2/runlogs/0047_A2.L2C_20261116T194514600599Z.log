@@ -1,0 +1,153 @@
+/home/user/carepredict-mvp/scripts/howm2_a2_l2c.py:235: RuntimeWarning: Mean of empty slice
+  vals = {lv: float(np.nanmean([A.fam_mean(r, lv, h, f) for r in rs])) for lv in (*A.LEVELS, "L2c")}
+{
+ "recomputed_L2_confirmation_matches_ladder": {
+  "checked": 600,
+  "identical": 600
+ },
+ "params": {
+  "T": {
+   "n_items": 903,
+   "tau": 0.75,
+   "tau_scores": {
+    "0.05": -2.5101570998881497,
+    "0.1": -2.503285793292225,
+    "0.2": -2.4853058155327106,
+    "0.35": -2.4647001877945476,
+    "0.5": -2.4550329659877845,
+    "0.75": -2.451247065470256,
+    "1.0": -2.4526079082897416,
+    "1.5": -2.4571110773058296
+   },
+   "n_scored": 226
+  },
+  "O": {
+   "n_items": 253,
+   "tau": 0.75,
+   "tau_scores": {
+    "0.05": -2.986654097102264,
+    "0.1": -2.983970431861307,
+    "0.2": -2.974910473867526,
+    "0.35": -2.9590414809824668,
+    "0.5": -2.9481898985869948,
+    "0.75": -2.944376637951761,
+    "1.0": -2.950270241618005,
+    "1.5": -2.967660997876294
+   },
+   "n_scored": 65
+  }
+ },
+ "M_pub_best_of_L2_L2c": {
+  "1": {
+   "M_pub": 0.03460333106988156,
+   "ci95": [
+    0.0308981936554801,
+    0.038267947709952295
+   ],
+   "best_reference": "L2c",
+   "L2": 0.9908586278492095,
+   "L2c": 0.9811413502545089,
+   "L4": 0.9465380191846273
+  },
+  "6": {
+   "M_pub": 0.0985906505048173,
+   "ci95": [
+    0.0872342949152849,
+    0.10924700566986763
+   ],
+   "best_reference": "L2",
+   "L2": 1.8998066310289698,
+   "L2c": 1.9040433161753179,
+   "L4": 1.8012159805241525
+  },
+  "24": {
+   "M_pub": 0.14075862592073007,
+   "ci95": [
+    0.12128819883612815,
+    0.16030000229017163
+   ],
+   "best_reference": "L2",
+   "L2": 2.0873969014371636,
+   "L2c": 2.0928881139882463,
+   "L4": 1.9466382755164335
+  }
+ },
+ "families": [
+  "ready",
+  "confirmation",
+  "presence",
+  "arrivals",
+  "care"
+ ],
+ "flag_lower_bound_below_delta_id": [],
+ "C1_rule": "reference of C1's criterion = best of {L2, L2c}",
+ "verdict_A_unchanged": "HOWM1_DISCRIMINANT (A2.L2C is an additional measurement)",
+ "rho_f": {
+  "1": {
+   "ready": {
+    "gap_A_L2_minus_L4": 0.03710023735298029,
+    "gap_best_minus_L4": 0.03710023735298029,
+    "rho_remaining_share": 1.0
+   },
+   "confirmation": {
+    "gap_A_L2_minus_L4": 0.1180536779469259,
+    "gap_best_minus_L4": 0.07918456756812375,
+    "rho_remaining_share": 0.6707505343774485
+   },
+   "arrivals": {
+    "gap_A_L2_minus_L4": 0.0010848020185329488,
+    "gap_best_minus_L4": 0.0010848020185329488,
+    "rho_remaining_share": 1.0
+   },
+   "care": {
+    "gap_A_L2_minus_L4": 0.021043717339889634,
+    "gap_best_minus_L4": 0.021043717339889634,
+    "rho_remaining_share": 1.0
+   }
+  },
+  "6": {
+   "ready": {
+    "gap_A_L2_minus_L4": 0.12171915668942823,
+    "gap_best_minus_L4": 0.12171915668942823,
+    "rho_remaining_share": 1.0
+   },
+   "confirmation": {
+    "gap_A_L2_minus_L4": 0.2505018861127226,
+    "gap_best_minus_L4": 0.2505018861127226,
+    "rho_remaining_share": 1.0
+   },
+   "arrivals": {
+    "gap_A_L2_minus_L4": 0.0011043934128677768,
+    "gap_best_minus_L4": 0.0011043934128677768,
+    "rho_remaining_share": 1.0
+   },
+   "care": {
+    "gap_A_L2_minus_L4": 0.021037165804249858,
+    "gap_best_minus_L4": 0.021037165804249858,
+    "rho_remaining_share": 1.0
+   }
+  },
+  "24": {
+   "ready": {
+    "gap_A_L2_minus_L4": 0.24232867900235888,
+    "gap_best_minus_L4": 0.24232867900235888,
+    "rho_remaining_share": 1.0
+   },
+   "confirmation": {
+    "gap_A_L2_minus_L4": 0.2988957445873699,
+    "gap_best_minus_L4": 0.2988957445873699,
+    "rho_remaining_share": 1.0
+   },
+   "arrivals": {
+    "gap_A_L2_minus_L4": 0.001115982250134706,
+    "gap_best_minus_L4": 0.001115982250134706,
+    "rho_remaining_share": 1.0
+   },
+   "care": {
+    "gap_A_L2_minus_L4": 0.020694097843056314,
+    "gap_best_minus_L4": 0.020694097843056314,
+    "rho_remaining_share": 1.0
+   }
+  }
+ }
+}
