@@ -72,8 +72,14 @@ def sample_world(lad, ctx, rng):
     w, L, A = ctx["arr_post"]
     k = pick(w.reshape(-1))
     th["los_days"], th["arr_mult"] = float(L.reshape(-1)[k]), float(A.reshape(-1)[k])
-    mech = {"m2": bool(m2), "m2_common": lad.pop == "DIAG", "slow": 1.8 if lad.pop == "REF" else 2.5, "m3_kappa": float(kap),
-            "m5_drop": lad.pop == "DIAG", "simple": name == "simple"}
+    mech = {
+        "m2": bool(m2),
+        "m2_common": lad.pop == "DIAG",
+        "slow": 1.8 if lad.pop == "REF" else 2.5,
+        "m3_kappa": float(kap),
+        "m5_drop": lad.pop == "DIAG",
+        "simple": name == "simple",
+    }
     _ = mech_types
     return th, mech, anchor
 
@@ -120,12 +126,23 @@ def job(i):
         a, b = order[0], order[1]
         diff = us[:, b] - us[:, a]
         se_pair = diff.std(ddof=1) / np.sqrt(M)
-        rows.append({"index": i, "tau": tau, "L4_choice": int(choice), "rule_choice": int(rule),
-                     "U_L4": float(ev[:, choice].mean()), "U_rule": float(ev[:, rule].mean()),
-                     "U_C_full": ins["value"]["C_full"], "U_habitual": ins["value"]["habitual"], "U_oracle": ins["oracle_U_star"],
-                     "top2_gap": float(mean_u[b] - mean_u[a]), "paired_se": float(se_pair),
-                     "dnk_old": bool(mean_u[b] - mean_u[a] < us[:, a].std() / np.sqrt(M)),
-                     "dnk_new": bool(mean_u[b] - mean_u[a] < 1.96 * se_pair)})
+        rows.append(
+            {
+                "index": i,
+                "tau": tau,
+                "L4_choice": int(choice),
+                "rule_choice": int(rule),
+                "U_L4": float(ev[:, choice].mean()),
+                "U_rule": float(ev[:, rule].mean()),
+                "U_C_full": ins["value"]["C_full"],
+                "U_habitual": ins["value"]["habitual"],
+                "U_oracle": ins["oracle_U_star"],
+                "top2_gap": float(mean_u[b] - mean_u[a]),
+                "paired_se": float(se_pair),
+                "dnk_old": bool(mean_u[b] - mean_u[a] < us[:, a].std() / np.sqrt(M)),
+                "dnk_new": bool(mean_u[b] - mean_u[a] < 1.96 * se_pair),
+            }
+        )
     return rows
 
 
@@ -142,14 +159,26 @@ def main() -> int:
     est = np.array([np.mean(v) for v in by.values()])
     bs = [est[rng.integers(0, len(est), len(est))].mean() for _ in range(2000)]
     margin = float(np.mean([r["U_rule"] - r["U_L4"] for r in rows]))
-    out = {"n_instants": len(rows), "margin_rule_minus_L4": margin, "ci95": [float(np.quantile(bs, 0.025)), float(np.quantile(bs, 0.975))],
-           "verdict": "MARGE_DECISIONNELLE_GE_15" if margin >= 15 else "MARGE_DECISIONNELLE_LT_15",
-           "means": {k: float(np.mean([r[k] for r in rows])) for k in ("U_L4", "U_rule", "U_C_full", "U_habitual", "U_oracle")},
-           "gain_vs_habitual": {k: float(np.mean([r["U_habitual"] - r[k] for r in rows])) for k in ("U_L4", "U_rule", "U_C_full", "U_oracle")},
-           "does_not_know": {"old_definition_rate": float(np.mean([r["dnk_old"] for r in rows])),
-                             "proposed_paired_definition_rate": float(np.mean([r["dnk_new"] for r in rows])),
-                             "note": "proposed: top-2 gap < 1.96 x SE of the PAIRED difference (CRN); not applied to delivered R1 results"},
-           "rows": rows}
+    out = {
+        "n_instants": len(rows),
+        "margin_rule_minus_L4": margin,
+        "ci95": [float(np.quantile(bs, 0.025)), float(np.quantile(bs, 0.975))],
+        "verdict": "MARGE_DECISIONNELLE_GE_15" if margin >= 15 else "MARGE_DECISIONNELLE_LT_15",
+        "means": {
+            k: float(np.mean([r[k] for r in rows]))
+            for k in ("U_L4", "U_rule", "U_C_full", "U_habitual", "U_oracle")
+        },
+        "gain_vs_habitual": {
+            k: float(np.mean([r["U_habitual"] - r[k] for r in rows]))
+            for k in ("U_L4", "U_rule", "U_C_full", "U_oracle")
+        },
+        "does_not_know": {
+            "old_definition_rate": float(np.mean([r["dnk_old"] for r in rows])),
+            "proposed_paired_definition_rate": float(np.mean([r["dnk_new"] for r in rows])),
+            "note": "proposed: top-2 gap < 1.96 x SE of the PAIRED difference (CRN); not applied to delivered R1 results",
+        },
+        "rows": rows,
+    }
     (ROOT / "evidence/howm2/DECISION_A.json").write_text(json.dumps(out, indent=1) + "\n")
     print(json.dumps({k: v for k, v in out.items() if k != "rows"}, indent=1))
     return 0

@@ -66,7 +66,7 @@ def validation(rs: list[dict]) -> dict:
             "n": int(len(u)),
             "KS_D": D,
             "threshold": thr,
-            "pass": bool(D <= thr),
+            "pass": bool(thr >= D),
             "hist10": np.histogram(u, bins=10, range=(0, 1))[0].tolist(),
         }
         if f in ("care",):
@@ -98,7 +98,10 @@ def validation(rs: list[dict]) -> dict:
 
 def validation_amended(rs: list[dict], val: dict) -> dict:
     """Addendum 2: (a') one PIT per item (first appearance) for L4, L5 as control; (b') only L4 < L5."""
-    pf = [json.loads(f.read_text()) for f in sorted((ROOT / "evidence/howm2/pit_first/HOWM2_REF").glob("*.json"))]
+    pf = [
+        json.loads(f.read_text())
+        for f in sorted((ROOT / "evidence/howm2/pit_first/HOWM2_REF").glob("*.json"))
+    ]
     out = {"a_prime": {}, "b_prime": {}, "n_establishments": len(pf)}
     for f in ("ready", "transport", "cleaning", "confirmation", "presence"):
         row = {}
@@ -109,14 +112,22 @@ def validation_amended(rs: list[dict], val: dict) -> dict:
                 continue
             D = ks_uniform(u)
             thr = max(0.02, 1.63 / math.sqrt(len(u)))
-            row[lv] = {"n": int(len(u)), "KS_D": D, "threshold": thr, "pass": bool(D <= thr),
-                       "hist10": np.histogram(u, bins=10, range=(0, 1))[0].tolist()}
+            row[lv] = {
+                "n": int(len(u)),
+                "KS_D": D,
+                "threshold": thr,
+                "pass": bool(thr >= D),
+                "hist10": np.histogram(u, bins=10, range=(0, 1))[0].tolist(),
+            }
         row["pass"] = row["L4"].get("pass", True) if row["L4"].get("n", 0) else None
         out["a_prime"][f] = row
     a_all = val["a_calibration"]
     for f in ("arrivals", "care"):
-        out["a_prime"][f] = {"L4": a_all.get(f), "pass": a_all.get(f, {}).get("pass") if a_all.get(f, {}).get("n") else None,
-                             "note": "one value per (unit,hour) / (stay,hour,skill): unchanged from (a)"}
+        out["a_prime"][f] = {
+            "L4": a_all.get(f),
+            "pass": a_all.get(f, {}).get("pass") if a_all.get(f, {}).get("n") else None,
+            "note": "one value per (unit,hour) / (stay,hour,skill): unchanged from (a)",
+        }
     for f, b in val["b_ordering"].items():
         viol = any(r.get("violation_L4_below_L5") for r in b["horizons"].values())
         out["b_prime"][f] = {"pass": not viol}
@@ -236,7 +247,9 @@ def main() -> int:
     out["validation"]["failing_families"] = failing
     kept = tuple(f for f in FAMS if f not in {x["family"] for x in failing})
     out["criterion_literal_original_rules"] = margins(ref, kept)
-    out["criterion_literal_original_rules"]["note"] = "rules (a)(b) as first written: every family with data excluded; superseded by addendum 2"
+    out["criterion_literal_original_rules"]["note"] = (
+        "rules (a)(b) as first written: every family with data excluded; superseded by addendum 2"
+    )
     vam = validation_amended(ref, val)
     out["validation"]["amended"] = vam
     failing2 = []
@@ -262,11 +275,36 @@ def main() -> int:
                 "family_table": family_table(rs),
             }
     (ROOT / "evidence/howm2/LADDER_A.json").write_text(json.dumps(out, indent=1) + "\n")
-    print(json.dumps({"failing_amended": failing2, "kept": kept, "verdict": out["criterion"]["verdict"],
-                      "criterion": {h: [out["criterion"]["by_horizon"][h]["M_pub"], out["criterion"]["by_horizon"][h]["ci95"],
-                                        out["criterion"]["by_horizon"][h]["best_reference"]] for h in HS},
-                      "a_prime": {f: {lv: (r.get(lv, {}).get("KS_D"), r.get(lv, {}).get("threshold"), r.get(lv, {}).get("n")) for lv in ("L4", "L5")}
-                                  for f, r in vam["a_prime"].items() if f not in ("arrivals", "care")}}, indent=1))
+    print(
+        json.dumps(
+            {
+                "failing_amended": failing2,
+                "kept": kept,
+                "verdict": out["criterion"]["verdict"],
+                "criterion": {
+                    h: [
+                        out["criterion"]["by_horizon"][h]["M_pub"],
+                        out["criterion"]["by_horizon"][h]["ci95"],
+                        out["criterion"]["by_horizon"][h]["best_reference"],
+                    ]
+                    for h in HS
+                },
+                "a_prime": {
+                    f: {
+                        lv: (
+                            r.get(lv, {}).get("KS_D"),
+                            r.get(lv, {}).get("threshold"),
+                            r.get(lv, {}).get("n"),
+                        )
+                        for lv in ("L4", "L5")
+                    }
+                    for f, r in vam["a_prime"].items()
+                    if f not in ("arrivals", "care")
+                },
+            },
+            indent=1,
+        )
+    )
     return 0
 
 
