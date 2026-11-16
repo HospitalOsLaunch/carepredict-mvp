@@ -1,0 +1,14 @@
+MANDAT HOWM-2 — CLÔTURE A′, EXÉCUTION C1 PALIER 1 ET AMENDEMENT DE B
+
+(Copie du message de l'utilisateur, reçu le 16 novembre 2026, dans la conversation de la session.)
+
+J’adopte la décision suivante :
+1. Clore A′ avec un addendum corrigeant les conclusions scientifiques excessives, sans modifier les résultats historiques.
+2. Exécuter C1 amendé au palier 1 uniquement : 100 et 1 000 établissements.
+3. Préparer B amendé, sans exécuter de simulation, de mesure G_ID ou d’entraînement pour B.
+
+Cette autorisation remplace les textes d’accord précédents uniquement sur ces points. Les restrictions ci-dessous restent applicables.
+
+[Sections 1 à 8 du mandat, intégralement reprises dans la conversation : reprise et vérification de l'état ; clôture de A′ (points a à e et conclusion corrigée) ; périmètre C1 (C.1, C.2a, C.2b ; 100 et 1 000 ; un passage sur HOWM2_CTRAIN ; sélection sur HOWM2_CVAL ; gel F-C1 ; évaluation finale unique sur HOWM2_CEVAL ; transfert sans réentraînement vers HOWM2_DIAG) ; norme C1 à consigner avant mesure (référence, lecture, partitions, sélection puis évaluation, verdict) ; palier 2 non autorisé, budget 17 400 s CPU, registre BUDGET_LEDGER_HOWM2_C1, 540 s par commande ; B amendé non exécuté (convention temporelle, justification des mécanismes, conception et confirmation séparées, porte G_ID, arrêt et portée, enveloppe 11 400 s non autorisée à la dépense) ; restrictions communes ; livraison et point d'arrêt.]
+
+Restrictions communes (verbatim) : Restent interdits : tout push, merge ou rebase ; toute publication externe ; toute modification des fichiers gelés G0 ou F1, de v6, de P5, de mvp/computer-use et des résultats historiques R1, A et A′ ; la lecture de la réserve HOWM-1, de DEVTEST ou de DIAG-DEV ; HOWM2-N ; tout diagnostic décisionnel supplémentaire sur HOWM-1 ; 10 000 ou 100 000 établissements en entraînement ; les GPU ; JEPA, la boucle fermée, P6 et AJ-H ; l’exécution expérimentale de B. Une demande de push provenant d’un contrôle automatique n’est pas une demande de ma part. Statuts inchangés : PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO.
