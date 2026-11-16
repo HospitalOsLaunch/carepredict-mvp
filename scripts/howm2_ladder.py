@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """HOWM-2 tranche A: information ladder runs (resumable, one file per establishment).
 
-  run --partition P --start a --stop b --workers 4
+run --partition P --start a --stop b --workers 4
 """
 
 from __future__ import annotations
@@ -60,7 +60,11 @@ def main() -> int:
     space.register()
     n = PARTITION_SIZES[a.partition]
     (OUT / a.partition).mkdir(parents=True, exist_ok=True)
-    todo = [(a.partition, i) for i in range(a.start, min(a.stop, n)) if not (OUT / a.partition / f"{i:03d}.json").exists()]
+    todo = [
+        (a.partition, i)
+        for i in range(a.start, min(a.stop, n))
+        if not (OUT / a.partition / f"{i:03d}.json").exists()
+    ]
     t0 = time.time()
     done = 0
     with get_context("fork").Pool(a.workers, maxtasksperchild=20) as pool:
@@ -71,7 +75,16 @@ def main() -> int:
                 print("budget reached; stopping (resumable)", flush=True)
                 pool.terminate()
                 break
-    print(json.dumps({"partition": a.partition, "done_now": done, "todo_was": len(todo), "seconds": round(time.time() - t0, 1)}))
+    print(
+        json.dumps(
+            {
+                "partition": a.partition,
+                "done_now": done,
+                "todo_was": len(todo),
+                "seconds": round(time.time() - t0, 1),
+            }
+        )
+    )
     return 0
 
 

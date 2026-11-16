@@ -71,7 +71,9 @@ def snap_matrix(a_mod: int, kind: str) -> np.ndarray:
     return M
 
 
-def snap(p: np.ndarray, tail: np.ndarray, a: int, kind: str = "ready") -> tuple[np.ndarray, np.ndarray]:
+def snap(
+    p: np.ndarray, tail: np.ndarray, a: int, kind: str = "ready"
+) -> tuple[np.ndarray, np.ndarray]:
     full = np.concatenate([p, np.asarray(tail)[..., None]], axis=-1)
     out = full @ snap_matrix(a % 96, kind)
     return out[..., :KM], out[..., KM]
@@ -91,19 +93,32 @@ def care_bin_probs(med: np.ndarray, sigma: float = 0.5) -> np.ndarray:
     hi = np.where(j < 120, 5.0 * j + 4.5, np.inf)
     lm = np.log(np.asarray(med, float))[..., None]
     with np.errstate(divide="ignore"):
-        Fhi = np.where(np.isinf(hi), 1.0, ndtr((np.log(np.where(np.isinf(hi), 1.0, hi)) - lm) / sigma))
+        Fhi = np.where(
+            np.isinf(hi), 1.0, ndtr((np.log(np.where(np.isinf(hi), 1.0, hi)) - lm) / sigma)
+        )
         Flo = np.where(lo > 0, ndtr((np.log(np.maximum(lo, 1e-300)) - lm) / sigma), 0.0)
     return np.maximum(Fhi - Flo, 0.0)
 
 
 def care_median(skill: str, acuity: int, hour: int, care_mult: np.ndarray) -> np.ndarray:
     day = 7 <= hour % 24 < 21
-    return G.CARE_MEAN[skill][acuity] * (1.25 if day else 0.6) * np.asarray(care_mult) / math.exp(0.125)
+    return (
+        G.CARE_MEAN[skill][acuity]
+        * (1.25 if day else 0.6)
+        * np.asarray(care_mult)
+        / math.exp(0.125)
+    )
 
 
 def nb_logpmf(n: np.ndarray, mu: np.ndarray, r: float = 3.0) -> np.ndarray:
     n = np.asarray(n, float)
-    return gammaln(n + r) - gammaln(r) - gammaln(n + 1) + r * np.log(r / (r + mu)) + n * np.log(mu / (r + mu))
+    return (
+        gammaln(n + r)
+        - gammaln(r)
+        - gammaln(n + 1)
+        + r * np.log(r / (r + mu))
+        + n * np.log(mu / (r + mu))
+    )
 
 
 def arrivals_mean(n_beds: int, hour: int, los: np.ndarray, arr: np.ndarray) -> np.ndarray:

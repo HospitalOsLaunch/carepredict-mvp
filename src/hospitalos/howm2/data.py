@@ -62,12 +62,30 @@ def origins(ep: Any, hs: list[int]) -> Iterator[tuple[int, OriginData, PublicStr
         cx = np.zeros((n, ITEM_DIM), np.float32)
         for i, sid in enumerate(care_ref):
             st = stays[sid]
-            cx[i] = item_features("care", {"unit": st["unit"], "acuity": st["acuity"], "iso": st["iso"],
-                                           "transport": st["transport"], "start": st["placed"]}, t)
+            cx[i] = item_features(
+                "care",
+                {
+                    "unit": st["unit"],
+                    "acuity": st["acuity"],
+                    "iso": st["iso"],
+                    "transport": st["transport"],
+                    "start": st["placed"],
+                },
+                t,
+            )
             for k in range(24):
                 val = care_true.get(sid, {}).get(H + k)
                 if val is not None:
                     care[i, k] = val
                     mask[i, k] = True
-        od = OriginData(H, items, arr, care_ref, cx, care, mask, _window(ps, t, arrivals_obs=_arrivals_known(ps, t)))
+        od = OriginData(
+            H,
+            items,
+            arr,
+            care_ref,
+            cx,
+            care,
+            mask,
+            _window(ps, t, arrivals_obs=_arrivals_known(ps, t)),
+        )
         yield H, od, ps

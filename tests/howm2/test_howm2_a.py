@@ -36,7 +36,9 @@ def test_light_origins_equal_dataset_build(val_ep):
         assert od.care_ref == ref.care_ref
         assert np.array_equal(od.care, ref.care) and np.array_equal(od.care_mask, ref.care_mask)
         assert np.array_equal(od.care_x, ref.care_x)
-        assert json.dumps(od.window, default=str, sort_keys=True) == json.dumps(ref.window, default=str, sort_keys=True)
+        assert json.dumps(od.window, default=str, sort_keys=True) == json.dumps(
+            ref.window, default=str, sort_keys=True
+        )
 
 
 def test_key_space_disjoint_and_registration_runtime_only():
@@ -84,6 +86,7 @@ def test_service_law_matches_generator_draws():
         tick = 0
 
     from hospitalos.howm.world import Stay
+
     ks = []
     for i in range(20000):
         st = Stay(f"s{i}", "A", "b", 1, False, True, 0)
@@ -110,7 +113,12 @@ def test_public_state_reads_public_only(val_ep):
     pub = PublicState("REF", dict(val_ep.spec.beds))
     pub.ingest([o for o in val_ep.observations if o[1] <= 3000])
     assert all(a >= 0 for _, a in pub.lags)
-    lad = Ladder("REF", next(o[5] for o in val_ep.observations if o[2] == "static"), dict(val_ep.spec.beds), None)
+    lad = Ladder(
+        "REF",
+        next(o[5] for o in val_ep.observations if o[2] == "static"),
+        dict(val_ep.spec.beds),
+        None,
+    )
     w = lad.lag_post(pub, 3000)
     assert abs(w.sum() - 1) < 1e-9
     assert truth_info(val_ep)["theta"] == val_ep.spec.theta

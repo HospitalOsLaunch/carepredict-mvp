@@ -39,19 +39,37 @@ def window_long(ps: Any, t: int) -> dict[str, Any]:
     for ev, av, kind, subj, _u, _v in known:
         first.setdefault((kind, subj), ev)
         avail_end.setdefault((kind, subj), av)
-    starts = {"auth": "placed", "ready": "authorised", "transport": "transport_start", "confirmation": "transport_requested"}
-    ends = {"auth": "authorised", "ready": "ready", "transport": "transport_done", "confirmation": "transport_accepted"}
+    starts = {
+        "auth": "placed",
+        "ready": "authorised",
+        "transport": "transport_start",
+        "confirmation": "transport_requested",
+    }
+    ends = {
+        "auth": "authorised",
+        "ready": "ready",
+        "transport": "transport_done",
+        "confirmation": "transport_accepted",
+    }
     for fam in ("auth", "ready", "transport", "confirmation"):
         for (kind, subj), ev in first.items():
             if kind == starts[fam]:
                 w[fam].append((ev, avail_end.get((ends[fam], subj)), {}))
-    cl_start = {f"{subj}@{ev}": ev for ev, av, kind, subj, _u, _v in known if kind == "cleaning_start"}
+    cl_start = {
+        f"{subj}@{ev}": ev for ev, av, kind, subj, _u, _v in known if kind == "cleaning_start"
+    }
     done = sorted((ev, av, subj) for ev, av, kind, subj, _u, _v in known if kind == "cleaning_done")
     for keyv, s in cl_start.items():
         bed = keyv.split("@")[0]
-        w["cleaning"].append((s, next((av for ev, av, b in done if b == bed and ev >= s), None), {}))
+        w["cleaning"].append(
+            (s, next((av for ev, av, b in done if b == bed and ev >= s), None), {})
+        )
     care = [(v["ide"], v["as_"]) for ev, av, kind, subj, _u, v in known if kind == "care_due"]
-    pres = [kind == "offer_present" for ev, av, kind, subj, _u, v in known if kind in ("offer_present", "offer_absent")]
+    pres = [
+        kind == "offer_present"
+        for ev, av, kind, subj, _u, v in known
+        if kind in ("offer_present", "offer_absent")
+    ]
     return {"t": t, "hazard": w, "arrivals": None, "care": care, "presence": pres}
 
 
@@ -61,12 +79,19 @@ def long_arrivals_delta(p: B0Params, ps: Any, n_beds: dict[str, int], t: int) ->
     for o in ps.obs[: ps.i]:
         if o[2] == "request_arrival" and o[0] < t:
             cnt["AB".index(o[4]), o[0] // 60] += 1
-    mu0 = np.array([[math.exp(p.arr_a + math.log(n_beds[un]) + p.arr_tod[j % 24]) for j in range(H)] for un in "AB"])
+    mu0 = np.array(
+        [
+            [math.exp(p.arr_a + math.log(n_beds[un]) + p.arr_tod[j % 24]) for j in range(H)]
+            for un in "AB"
+        ]
+    )
     r = p.arr_r
 
     def gh(d: float) -> tuple[float, float]:
         mu = mu0 * math.exp(d)
-        return float(np.sum(cnt - (cnt + r) * mu / (r + mu))), float(-np.sum((cnt + r) * mu * r / (r + mu) ** 2))
+        return float(np.sum(cnt - (cnt + r) * mu / (r + mu))), float(
+            -np.sum((cnt + r) * mu * r / (r + mu) ** 2)
+        )
 
     return _newton_1d(gh, p.tau.get("arrivals", 0.35))
 
@@ -76,7 +101,15 @@ def l2_predict(p: B0Params, od: Any, est: Any, ps: Any) -> Any:
     od_long = replace(od, window={**window_long(ps, t), "arrivals": od.window["arrivals"]})
     pr = b0_predict(p, od_long, est, True)
     d_arr = long_arrivals_delta(p, ps, est.n_beds, t)
-    pr.arr_mu = np.array([[math.exp(p.arr_a + math.log(est.n_beds[un]) + p.arr_tod[(od.H + k) % 24] + d_arr) for k in range(24)] for un in "AB"])
+    pr.arr_mu = np.array(
+        [
+            [
+                math.exp(p.arr_a + math.log(est.n_beds[un]) + p.arr_tod[(od.H + k) % 24] + d_arr)
+                for k in range(24)
+            ]
+            for un in "AB"
+        ]
+    )
     pr.meta["system"] = "B0-local-long"
     return pr
 
@@ -87,7 +120,13 @@ def _acc(acc: dict, lvl: str, h: int, fam: str, vals: np.ndarray | list) -> None
     a[1] += len(vals)
 
 
-def run_establishment(partition: str, idx: int, p: B0Params, pit_levels: tuple[str, ...] = ("L4",), keep_items: bool = False) -> dict[str, Any]:
+def run_establishment(
+    partition: str,
+    idx: int,
+    p: B0Params,
+    pit_levels: tuple[str, ...] = ("L4",),
+    keep_items: bool = False,
+) -> dict[str, Any]:
     t0 = time.time()
     spec = G.establishment(partition, idx)
     ep = G.generate(spec)
@@ -103,10 +142,14 @@ def run_establishment(partition: str, idx: int, p: B0Params, pit_levels: tuple[s
     timing = {"r1_levels": 0.0, "filter": 0.0}
     for H, od, ps in D.origins(ep, ORIGINS):
         t = H * 60
-        pub.ingest(ps.obs[prev: ps.i])
+        pub.ingest(ps.obs[prev : ps.i])
         prev = ps.i
         t1 = time.time()
-        for lvl, pr in (("L0", b0_predict(p, od, est, False)), ("L1", b0_predict(p, od, est, True)), ("L2", l2_predict(p, od, est, ps))):
+        for lvl, pr in (
+            ("L0", b0_predict(p, od, est, False)),
+            ("L1", b0_predict(p, od, est, True)),
+            ("L2", l2_predict(p, od, est, ps)),
+        ):
             for h in HORIZONS:
                 for fam, v in member_logscores(pr, od, h).items():
                     _acc(acc, lvl, h, fam, v)
@@ -118,21 +161,50 @@ def run_establishment(partition: str, idx: int, p: B0Params, pit_levels: tuple[s
                 for lvl in ("L3", "L4", "L5"):
                     pm, tail = lad.hazard_pred(lvl, fam, it, t, pub, ps, ctx)
                     for h in HORIZONS:
-                        _q, e, ev, b = to_bins(it["start"], t, it.get("end_avail"), min(t + 60 * h, DATA_END_MIN), 15)
+                        _q, e, ev, b = to_bins(
+                            it["start"], t, it.get("end_avail"), min(t + 60 * h, DATA_END_MIN), 15
+                        )
                         _acc(acc, lvl, h, fam, [Lw.hazard_score(pm, tail, e, b, ev)])
                     if lvl in pit_levels:
-                        _q, e, ev, b = to_bins(it["start"], t, it.get("end_avail"), min(t + 60 * 24, DATA_END_MIN), 15)
-                        pits[lvl].setdefault(fam, []).append(Lw.randomized_pit(pm, tail, e, b, ev, ku("HOWM2-pit", partition, idx, H, fam, it["ref"])))
+                        _q, e, ev, b = to_bins(
+                            it["start"], t, it.get("end_avail"), min(t + 60 * 24, DATA_END_MIN), 15
+                        )
+                        val = Lw.randomized_pit(
+                            pm, tail, e, b, ev, ku("HOWM2-pit", partition, idx, H, fam, it["ref"])
+                        )
+                        pits[lvl].setdefault(fam, []).append(
+                            [it["ref"], it["start"], H, val] if keep_items else val
+                        )
                     if keep_items and lvl == "L4" and fam in ("transport", "cleaning"):
-                        items_dump.append({"H": H, "fam": fam, "start": it["start"], "pz_ctx": None})
+                        items_dump.append(
+                            {"H": H, "fam": fam, "start": it["start"], "pz_ctx": None}
+                        )
         _levels_counts(lad, ctx, od, H, est, acc, pits, pit_levels, partition, idx)
         timing["filter"] += time.time() - t1
-    return {"partition": partition, "index": idx, "population": spec.population, "mech": spec.mech, "acc": acc,
-            "pits": pits, "seconds": round(time.time() - t0, 2), "timing": timing}
+    return {
+        "partition": partition,
+        "index": idx,
+        "population": spec.population,
+        "mech": spec.mech,
+        "acc": acc,
+        "pits": pits,
+        "seconds": round(time.time() - t0, 2),
+        "timing": timing,
+    }
 
 
-def _levels_counts(lad: Ladder, ctx: dict[str, Any], od: Any, H: int, est: Any, acc: dict, pits: dict,
-                   pit_levels: tuple[str, ...], partition: str, idx: int) -> None:
+def _levels_counts(
+    lad: Ladder,
+    ctx: dict[str, Any],
+    od: Any,
+    H: int,
+    est: Any,
+    acc: dict,
+    pits: dict,
+    pit_levels: tuple[str, ...],
+    partition: str,
+    idx: int,
+) -> None:
     th = lad.truth["theta"]
     t = H * 60
     # arrivals: log-probabilities per (unit, k) once, partial sums per horizon
@@ -149,15 +221,21 @@ def _levels_counts(lad: Ladder, ctx: dict[str, Any], od: Any, H: int, est: Any, 
             lp["L3"][ui, k] = lp["L5"][ui, k] = float(Lw.nb_logpmf(np.array(c), mu3))
             if "L4" in pit_levels:
                 r = 3.0
-                cdf_lo = float(np.sum(wpost * nbinom.cdf(c - 1, r, r / (r + mu4)))) if c > 0 else 0.0
+                cdf_lo = (
+                    float(np.sum(wpost * nbinom.cdf(c - 1, r, r / (r + mu4)))) if c > 0 else 0.0
+                )
                 pmf = float(np.sum(wpost * np.exp(Lw.nb_logpmf(np.array(c), mu4))))
-                pits["L4"].setdefault("arrivals", []).append(cdf_lo + ku("HOWM2-pit", partition, idx, H, "arr", ui, k) * pmf)
+                pits["L4"].setdefault("arrivals", []).append(
+                    cdf_lo + ku("HOWM2-pit", partition, idx, H, "arr", ui, k) * pmf
+                )
     for h in HORIZONS:
         for lv in ("L3", "L4", "L5"):
             v = lp[lv][:, :h]
             _acc(acc, lv, h, "arrivals", v[~np.isnan(v)])
     # care: tables (skill x acuity x day x bin) for L4 (posterior mixture) and L3/L5 (true multiplier)
-    tab4 = np.log(np.maximum(np.einsum("g,gsadb->sadb", ctx["care_post"], np.exp(lad.care_logtab)), 1e-300))
+    tab4 = np.log(
+        np.maximum(np.einsum("g,gsadb->sadb", ctx["care_post"], np.exp(lad.care_logtab)), 1e-300)
+    )
     tab3 = lad.true_care_logtab
     n = len(od.care_ref)
     if n:
@@ -183,7 +261,11 @@ def _levels_counts(lad: Ladder, ctx: dict[str, Any], od: Any, H: int, est: Any, 
             for it in pres:
                 if it["label"] is None or it["slot_start"] > t + 60 * h:
                     continue
-                pp = float(ctx["pres_post"] @ (1 - lad.g["noshow"])) if lvl == "L4" else 1 - th["noshow"]
+                pp = (
+                    float(ctx["pres_post"] @ (1 - lad.g["noshow"]))
+                    if lvl == "L4"
+                    else 1 - th["noshow"]
+                )
                 vals.append(math.log(pp if it["label"] else 1 - pp))
             _acc(acc, lvl, h, "presence", vals)
 
@@ -194,5 +276,13 @@ def level_L(res: dict[str, Any], lvl: str, h: str, families: tuple[str, ...]) ->
     return float(np.mean(vals)) if vals else float("nan")
 
 
-CRITERION_FAMILIES = ("ready", "transport", "cleaning", "confirmation", "presence", "arrivals", "care")
+CRITERION_FAMILIES = (
+    "ready",
+    "transport",
+    "cleaning",
+    "confirmation",
+    "presence",
+    "arrivals",
+    "care",
+)
 _ = (day_period, nbinom)

@@ -25,9 +25,18 @@ HFAM = ("ready", "transport", "cleaning", "confirmation")
 
 
 def ranges(pop: str) -> dict[str, tuple[float, float]]:
-    return {"los_days": (2.5, 5.0), "ready_h": (1.0, 5.0), "tr_min": (30, 90), "cl_min": (30, 75), "conf_tr_min": (15, 120),
-            "conf_off_min": (30, 240), "noshow": (0.0, 0.25), "arr_mult": (0.85, 1.15), "care_mult": (0.85, 1.15),
-            "lag_min": (0.0, 60.0 if pop == "REF" else 120.0)}
+    return {
+        "los_days": (2.5, 5.0),
+        "ready_h": (1.0, 5.0),
+        "tr_min": (30, 90),
+        "cl_min": (30, 75),
+        "conf_tr_min": (15, 120),
+        "conf_off_min": (30, 240),
+        "noshow": (0.0, 0.25),
+        "arr_mult": (0.85, 1.15),
+        "care_mult": (0.85, 1.15),
+        "lag_min": (0.0, 60.0 if pop == "REF" else 120.0),
+    }
 
 
 def grid(lo: float, hi: float, n: int = NG) -> np.ndarray:
@@ -82,8 +91,13 @@ def truth_info(ep: Any) -> dict[str, Any]:
             stays[subj] = [v["unit"], v["acuity"], placed, None]
         elif kind == "departure" and subj in stays:
             stays[subj][3] = tick
-    return {"stays": {k: tuple(v) for k, v in stays.items()}, "roster": {u: d["roster"]["IDE"] for u, d in ep.static["units"].items()},
-            "regimes": ep.regimes, "theta": ep.spec.theta, "mech": ep.spec.mech}
+    return {
+        "stays": {k: tuple(v) for k, v in stays.items()},
+        "roster": {u: d["roster"]["IDE"] for u, d in ep.static["units"].items()},
+        "regimes": ep.regimes,
+        "theta": ep.spec.theta,
+        "mech": ep.spec.mech,
+    }
 
 
 @dataclass
@@ -93,12 +107,22 @@ class PublicState:
     pop: str
     n_beds: dict[str, int]
     lags: list[tuple[int, int]] = field(default_factory=list)  # (event_min, lag_min)
-    starts: dict[str, dict[str, int]] = field(default_factory=lambda: {f: {} for f in ("transport", "cleaning", "conf_tr", "conf_off")})
-    done: dict[str, list[tuple[int, int]]] = field(default_factory=lambda: {f: [] for f in ("transport", "cleaning", "conf_tr", "conf_off")})
+    starts: dict[str, dict[str, int]] = field(
+        default_factory=lambda: {f: {} for f in ("transport", "cleaning", "conf_tr", "conf_off")}
+    )
+    done: dict[str, list[tuple[int, int]]] = field(
+        default_factory=lambda: {f: [] for f in ("transport", "cleaning", "conf_tr", "conf_off")}
+    )
     auth: dict[str, int] = field(default_factory=dict)
-    ready_done: list[tuple[int, int, str, int]] = field(default_factory=list)  # (a, delta, unit, avail_min)
-    arrivals: dict[tuple[int, int], int] = field(default_factory=dict)  # (unit_idx, hour) -> count available
-    care_counts: np.ndarray = field(default_factory=lambda: np.zeros((2, 3, 2, 121)))  # skill x acuity x day x bin
+    ready_done: list[tuple[int, int, str, int]] = field(
+        default_factory=list
+    )  # (a, delta, unit, avail_min)
+    arrivals: dict[tuple[int, int], int] = field(
+        default_factory=dict
+    )  # (unit_idx, hour) -> count available
+    care_counts: np.ndarray = field(
+        default_factory=lambda: np.zeros((2, 3, 2, 121))
+    )  # skill x acuity x day x bin
     presence: list[bool] = field(default_factory=list)
     acuity: dict[str, int] = field(default_factory=dict)
     clean_open: dict[str, int] = field(default_factory=dict)
@@ -148,17 +172,31 @@ class PublicState:
 class Ladder:
     """Per establishment: K-tables on grids, incremental likelihoods, predictions for L3/L4/L5."""
 
-    def __init__(self, pop: str, static: dict[str, Any], n_beds: dict[str, int], truth: dict[str, Any] | None):
+    def __init__(
+        self, pop: str, static: dict[str, Any], n_beds: dict[str, int], truth: dict[str, Any] | None
+    ):
         self.pop, self.static, self.n_beds, self.truth = pop, static, n_beds, truth
         R = ranges(pop)
         self.R = R
         ng2 = 21 if pop == "DIAG" else NG
-        self.g = {"tr": grid(*R["tr_min"], ng2), "cl": grid(*R["cl_min"], ng2), "ready": grid(*R["ready_h"]),
-                  "conf_tr": grid(*R["conf_tr_min"]), "conf_off": grid(*R["conf_off_min"]), "lag": grid(*R["lag_min"], 61),
-                  "care": grid(*R["care_mult"]), "noshow": grid(*R["noshow"]), "los": grid(*R["los_days"], 21), "arr": grid(*R["arr_mult"], 21)}
+        self.g = {
+            "tr": grid(*R["tr_min"], ng2),
+            "cl": grid(*R["cl_min"], ng2),
+            "ready": grid(*R["ready_h"]),
+            "conf_tr": grid(*R["conf_tr_min"]),
+            "conf_off": grid(*R["conf_off_min"]),
+            "lag": grid(*R["lag_min"], 61),
+            "care": grid(*R["care_mult"]),
+            "noshow": grid(*R["noshow"]),
+            "los": grid(*R["los_days"], 21),
+            "arr": grid(*R["arr_mult"], 21),
+        }
         sl = slow_of(pop)
         self.tab = {}
-        for f, key, sig in (("transport", "tr", Lw.SIGMA["transport"]), ("cleaning", "cl", Lw.SIGMA["cleaning"])):
+        for f, key, sig in (
+            ("transport", "tr", Lw.SIGMA["transport"]),
+            ("cleaning", "cl", Lw.SIGMA["cleaning"]),
+        ):
             meds = np.stack([self.g[key], self.g[key] * sl], 1)  # [G, 2]
             p, tail = Lw.k_pmf(meds, sig)
             self.tab[f] = (p, tail)
@@ -180,14 +218,28 @@ class Ladder:
         for si, sk in enumerate(SKILLS):
             for a in range(3):
                 for d, hour in ((0, 2), (1, 12)):
-                    tab[:, si, a, d] = np.log(np.maximum(Lw.care_bin_probs(Lw.care_median(sk, a + 1, hour, self.g["care"])), 1e-300))
+                    tab[:, si, a, d] = np.log(
+                        np.maximum(
+                            Lw.care_bin_probs(Lw.care_median(sk, a + 1, hour, self.g["care"])),
+                            1e-300,
+                        )
+                    )
         self.care_logtab = tab
         if truth is not None:
             tt = np.zeros((2, 3, 2, 121))
             for si, sk in enumerate(SKILLS):
                 for a in range(3):
                     for d, hour in ((0, 2), (1, 12)):
-                        tt[si, a, d] = np.log(np.maximum(Lw.care_bin_probs(Lw.care_median(sk, a + 1, hour, np.array(truth["theta"]["care_mult"]))), 1e-300))
+                        tt[si, a, d] = np.log(
+                            np.maximum(
+                                Lw.care_bin_probs(
+                                    Lw.care_median(
+                                        sk, a + 1, hour, np.array(truth["theta"]["care_mult"])
+                                    )
+                                ),
+                                1e-300,
+                            )
+                        )
             self.true_care_logtab = tt
 
     # ------------------------------------------------------------------ posteriors
@@ -200,7 +252,11 @@ class Ladder:
             for i, theta in enumerate(th):
                 lp = np.log(np.maximum(np.exp(-lags / theta) - np.exp(-(lags + 1) / theta), 1e-300))
                 rec = (t - evs) < 20 * th.max()
-                trunc = np.log(np.maximum(1 - np.exp(-((t - evs[rec]) + 1) / theta), 1e-300)) if rec.any() else 0.0
+                trunc = (
+                    np.log(np.maximum(1 - np.exp(-((t - evs[rec]) + 1) / theta), 1e-300))
+                    if rec.any()
+                    else 0.0
+                )
                 ll[i] = lp.sum() - np.sum(trunc)
         w = np.exp(ll - ll.max())
         return w / w.sum()
@@ -235,7 +291,9 @@ class Ladder:
                 b = b / b.sum(1, keepdims=True)
         return logZ, post
 
-    def _emissions(self, ps: PublicState, f: str, H: int, tab: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def _emissions(
+        self, ps: PublicState, f: str, H: int, tab: tuple[np.ndarray, np.ndarray]
+    ) -> np.ndarray:
         p, tail = tab
         E = np.zeros((H, p.shape[0], 2))
         for s, k in ps.done[f]:
@@ -293,8 +351,16 @@ class Ladder:
         return types, w / w.sum()
 
     # ------------------------------------------------------------------ hazard predictions
-    def hazard_pred(self, level: str, fam: str, it: dict[str, Any], t: int, ps: PublicState, psx: Any,
-                    ctx: dict[str, Any]) -> tuple[np.ndarray, float]:
+    def hazard_pred(
+        self,
+        level: str,
+        fam: str,
+        it: dict[str, Any],
+        t: int,
+        ps: PublicState,
+        psx: Any,
+        ctx: dict[str, Any],
+    ) -> tuple[np.ndarray, float]:
         """pmf over public-duration bins (incl. lag) for one cohort item at origin t."""
         lw = ctx["lag_w"] if level == "L4" else None
         if level == "L4":
@@ -343,7 +409,9 @@ class Ladder:
                     tail += wt * float(post @ st_)
             else:
                 kap = self.truth["mech"]["m3_kappa"]
-                med = np.array([self.truth["theta"]["ready_h"] * 60 * (1 + kap * max(0.0, load - 0.9))])
+                med = np.array(
+                    [self.truth["theta"]["ready_h"] * 60 * (1 + kap * max(0.0, load - 0.9))]
+                )
                 pk, tk = Lw.k_pmf(med, Lw.SIGMA["ready"])
                 sp, st_ = Lw.snap(pk, tk, s)
                 p, tail = sp[0], float(st_[0])
@@ -383,7 +451,11 @@ class Ladder:
         ctx: dict[str, Any] = {"lag_w": self.lag_post(ps, t)}
         ctx["reg"] = self.regime_posteriors(ps, t)
         self.ready_ll_update(ps, psx)
-        ctx["types"], ctx["type_w"] = self.type_posterior(ctx["reg"]) if self.pop == "REF" else (mech_types("DIAG"), np.array([1.0]))
+        ctx["types"], ctx["type_w"] = (
+            self.type_posterior(ctx["reg"])
+            if self.pop == "REF"
+            else (mech_types("DIAG"), np.array([1.0]))
+        )
         rl = np.sum(self.ready_ll, 0) if self.ready_ll else np.zeros((len(self.kappas), NG))
         ctx["ready_post"] = [np.exp(r - r.max()) / np.exp(r - r.max()).sum() for r in rl]
         cp = {}
@@ -401,7 +473,11 @@ class Ladder:
         ctx["care_post"] = w / w.sum()
         # presence
         ns = self.g["noshow"]
-        ll = sum(np.log(1 - ns) if y else np.log(np.maximum(ns, 1e-300)) for y in ps.presence) if ps.presence else np.zeros(NG)
+        ll = (
+            sum(np.log(1 - ns) if y else np.log(np.maximum(ns, 1e-300)) for y in ps.presence)
+            if ps.presence
+            else np.zeros(NG)
+        )
         w = np.exp(ll - ll.max())
         ctx["pres_post"] = w / w.sum()
         # arrivals (los x arr), binomial thinning of recent hours with the posterior-mean lag
