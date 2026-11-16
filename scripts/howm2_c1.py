@@ -155,22 +155,37 @@ def _train_job(run, budget, q):
     q.put(r)
 
 
-def train(runs: list[str], budget: float) -> int:
-    """One independent process per run (a killed process cannot block the others)."""
+def train(runs: list[str], budget: float, max_par: int = 4) -> int:
+    """Queue of runs, at most ``max_par`` independent processes (memory limit); a run started
+    later gets the remaining command time. A killed process cannot block the others."""
     ctx = get_context("fork")
     q = ctx.Queue()
-    procs = {r: ctx.Process(target=_train_job, args=(r, budget, q)) for r in runs}
-    for p in procs.values():
-        p.start()
-    deadline = time.time() + budget + 180
-    for r, p in procs.items():
-        p.join(max(1.0, deadline - time.time()))
-        if p.is_alive():
-            p.terminate()
-            p.join()
+    t0 = time.time()
+    pending = list(runs)
+    alive: dict = {}
+    codes: dict = {}
+    while pending or alive:
+        while pending and len(alive) < max_par:
+            rem = budget - (time.time() - t0)
+            if rem < 60:
+                pending.clear()
+                break
+            r = pending.pop(0)
+            alive[r] = ctx.Process(target=_train_job, args=(r, rem, q))
+            alive[r].start()
+        for r, p in list(alive.items()):
+            p.join(timeout=0.5)
+            if not p.is_alive():
+                codes[r] = p.exitcode
+                del alive[r]
+            elif time.time() - t0 > budget + 180:
+                p.terminate()
+                p.join()
+                codes[r] = "terminated"
+                del alive[r]
     while not q.empty():
         print(json.dumps(q.get()), flush=True)
-    print(json.dumps({r: p.exitcode for r, p in procs.items()}), flush=True)
+    print(json.dumps(codes), flush=True)
     return 0
 
 
@@ -181,6 +196,7 @@ def main() -> int:
     ap.add_argument("--shards", type=int, nargs="*")
     ap.add_argument("--runs", nargs="*")
     ap.add_argument("--budget", type=float, default=480.0)
+    ap.add_argument("--par", type=int, default=4)
     a = ap.parse_args()
     if a.cmd == "partitions":
         return partitions()
@@ -189,7 +205,7 @@ def main() -> int:
     if a.cmd == "pilot":
         return pilot()
     if a.cmd == "train":
-        return train(a.runs, a.budget)
+        return train(a.runs, a.budget, a.par)
     raise SystemExit(a.cmd)
 
 
