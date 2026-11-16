@@ -1,0 +1,10 @@
+{
+ "schema": "HOWM2_DECISION_1",
+ "date": "2026-11-16",
+ "decision": "AUTHORISED: tranche A only, to its stop point",
+ "message": {"path": "docs/howm2/inputs/MESSAGE_HOWM2_DECISION_1.txt", "sha256": "398db6de15f99d298091293e58a955e05139a8f067133c8706bb2f158ea33e4d", "note": "verbatim copy of the user's message text"},
+ "programme": {"path": "docs/howm2/inputs/PROGRAMME_HOWM2.md", "sha256": "05fc9aae90acc07ad29a8d2b6406d5a7a7383091a2afbaee2aaf7c4b24fdecd3", "matches_hash_stated_in_message": true},
+ "authorised": ["tranche A (no training, no gradient descent)", "3600 s wall CPU, 0 EUR, ledger BUDGET_LEDGER_HOWM2", "P2 persistence without push", "verdict rules of programme section 5 applied as written, recorded before any measurement"],
+ "not_authorised": ["tranches B, C, D (proposal only, after the A verdict)", "HOWM-1 reserve", "re-reading DEVTEST or DIAG-DEV", "modifying G0/F1-frozen files, v6, P5, mvp/computer-use, delivered R1 results", "push, merge, rebase", "JEPA, closed loop, P6, AJ-H"],
+ "statuses_unchanged": ["PROTOTYPE_UNVALIDATED", "clinical_validation=false", "G2=NO-GO"]
+}

@@ -1,0 +1,123 @@
+{
+ "F1_training_item_counts": {
+  "file": "evidence/howm1/LOSS_SCALES.json",
+  "found": {
+   "auth": 34810,
+   "ready": 1534,
+   "transport": 195,
+   "cleaning": 217,
+   "confirmation": 832,
+   "arrivals": 73728,
+   "care": 1608714
+  },
+  "claimed": {
+   "care": 1608714,
+   "arrivals": 73728,
+   "auth": 34810,
+   "ready": 1534,
+   "confirmation": 832,
+   "cleaning": 217,
+   "transport": 195
+  },
+  "match": true,
+  "train_establishments": 32
+ },
+ "F2_family_advantage_h24": {
+  "B0-local_minus_B0-pool": {
+   "ready": -0.057,
+   "transport": -0.084,
+   "cleaning": -0.051
+  },
+  "B0-local_minus_H1": {
+   "ready": -0.055,
+   "transport": -0.092,
+   "cleaning": -0.047
+  },
+  "claimed": {
+   "ready": -0.057,
+   "transport": -0.084,
+   "cleaning": -0.051
+  },
+  "note": "claimed figures are B0-local minus B0-pool"
+ },
+ "F3_val_curves": {
+  "runs": {
+   "B2_lr0.0003_s0": {
+    "first": 7.2147,
+    "best": 7.2143,
+    "gain_vs_first": 0.0004,
+    "max_after_best": 7.2636,
+    "epochs": 26
+   },
+   "B2_lr0.001_s0": {
+    "first": 7.2193,
+    "best": 7.2102,
+    "gain_vs_first": 0.0091,
+    "max_after_best": 7.4513,
+    "epochs": 26
+   },
+   "B2_lr0.001_s1": {
+    "first": 7.2218,
+    "best": 7.208,
+    "gain_vs_first": 0.0137,
+    "max_after_best": 7.489,
+    "epochs": 26
+   },
+   "H1_lr0.0003_s0": {
+    "first": 7.215,
+    "best": 7.2106,
+    "gain_vs_first": 0.0044,
+    "max_after_best": 7.2529,
+    "epochs": 26
+   },
+   "H1_lr0.0003_s1": {
+    "first": 7.2148,
+    "best": 7.2054,
+    "gain_vs_first": 0.0094,
+    "max_after_best": 7.2859,
+    "epochs": 40
+   },
+   "H1_lr0.001_s0": {
+    "first": 7.2154,
+    "best": 7.2154,
+    "gain_vs_first": 0.0,
+    "max_after_best": 7.2854,
+    "epochs": 21
+   }
+  },
+  "claimed": "best gain 0.004-0.009 on 7.215; VAL loss rises after (up to 7.45 for B2 at 1e-3)"
+ },
+ "F4_train_loss_logged": {
+  "meta_log_fields": [
+   "\n                \"epoch\": st[\"epoch\"],\n                \"val_total\": v[\"total\"],\n                \"val_means\": v[\"means\"],\n                \"improved\": improved,\n            "
+  ],
+  "train_loss_in_log": false
+ },
+ "F5_T_INF_08": {
+  "improvement": 0.008812684928795278,
+  "train_establishments_used": 8,
+  "val_establishments_used": 3,
+  "steps": 60,
+  "loss_scales_at_that_time": "TRAIN 0-31 (ledger #52-#53 precede #54)",
+  "claimed": "0.0088 in 60 steps; scales differ (48 vs 32 establishments)"
+ },
+ "F6_train_establishments": {
+  "pilot_state": {
+   "instants": 2,
+   "m_dec": 8,
+   "train_n": 32,
+   "runs": 3
+  }
+ },
+ "F7_confirmation_h24": {
+  "B0-pool": 3.167,
+  "B0-local": 3.166,
+  "B2": 3.165,
+  "H1": 3.152
+ },
+ "F8_decision": {
+  "gain_C_full": 214.3,
+  "gain_rule": 200.2,
+  "gain_oracle": 235.9
+ }
+}
