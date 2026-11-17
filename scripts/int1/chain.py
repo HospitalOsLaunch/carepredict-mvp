@@ -20,7 +20,9 @@ def main() -> int:
     i = sys.argv.index("--")
     opts = dict(zip(sys.argv[2:i:2], sys.argv[3:i:2]))
     rest = sys.argv[i + 1:]
-    t0 = time.time()
+    import os
+
+    t0 = float(os.environ.get("CHAIN_T0", time.time()))  # start of the background slot (set by the launcher)
     deadline = float(opts.get("--deadline", "6600"))  # never start a command that could outlive the background slot
     for k in range(400):
         if time.time() - t0 > deadline:
