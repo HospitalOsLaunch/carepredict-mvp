@@ -1,0 +1,126 @@
+{
+ "2": {
+  "family": "SC5_drop_with_margin",
+  "beds": 43,
+  "c_cl": 3,
+  "c_tr": 1,
+  "aval_slots": 0,
+  "prefix_s": 0.04,
+  "closed_loop_s": 0.25,
+  "public_view_s": 0.002,
+  "branch_s": 0.03,
+  "n_actions": 14,
+  "n_admissible": 14,
+  "n_sequences": 27,
+  "wait": 10980.0,
+  "rupture_min": 0,
+  "choices": [
+   "coord",
+   "coord",
+   "none",
+   "coord",
+   "coord",
+   "none",
+   "coord"
+  ],
+  "aval_blocked_end": 0,
+  "transfer_pending_end": 0,
+  "rejections": {},
+  "branch_states_shape": [
+   24,
+   2,
+   9
+  ]
+ },
+ "4": {
+  "family": "N4_tense_transfer",
+  "beds": 75,
+  "c_cl": 3,
+  "c_tr": 4,
+  "aval_slots": 2,
+  "prefix_s": 0.06,
+  "closed_loop_s": 0.05,
+  "public_view_s": 0.004,
+  "branch_s": 0.029,
+  "n_actions": 18,
+  "n_admissible": 18,
+  "n_sequences": 35,
+  "wait": 9630.0,
+  "rupture_min": 0,
+  "choices": [
+   "coord",
+   "none",
+   "coord",
+   "coord"
+  ],
+  "aval_blocked_end": 0,
+  "transfer_pending_end": 1,
+  "rejections": {},
+  "branch_states_shape": [
+   12,
+   4,
+   9
+  ]
+ },
+ "8": {
+  "family": "N8_tense_transfer",
+  "beds": 138,
+  "c_cl": 5,
+  "c_tr": 8,
+  "aval_slots": 3,
+  "prefix_s": 0.11,
+  "closed_loop_s": 0.1,
+  "public_view_s": 0.01,
+  "branch_s": 0.08,
+  "n_actions": 26,
+  "n_admissible": 26,
+  "n_sequences": 51,
+  "wait": 16320.0,
+  "rupture_min": 0,
+  "choices": [
+   "coord",
+   "none",
+   "coord",
+   "coord"
+  ],
+  "aval_blocked_end": 1,
+  "transfer_pending_end": 4,
+  "rejections": {},
+  "branch_states_shape": [
+   12,
+   8,
+   9
+  ]
+ },
+ "12": {
+  "family": "N12_tense_transfer",
+  "beds": 247,
+  "c_cl": 10,
+  "c_tr": 13,
+  "aval_slots": 5,
+  "prefix_s": 0.2,
+  "closed_loop_s": 0.17,
+  "public_view_s": 0.015,
+  "branch_s": 0.087,
+  "n_actions": 34,
+  "n_admissible": 34,
+  "n_sequences": 67,
+  "wait": 11145.0,
+  "rupture_min": 0,
+  "choices": [
+   "coord",
+   "none",
+   "coord",
+   "coord"
+  ],
+  "aval_blocked_end": 2,
+  "transfer_pending_end": 1,
+  "rejections": {},
+  "branch_states_shape": [
+   12,
+   12,
+   9
+  ]
+ },
+ "maxrss_mb": 290.890625
+}

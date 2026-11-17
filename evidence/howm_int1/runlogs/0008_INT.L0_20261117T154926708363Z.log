@@ -1,0 +1,27 @@
+...........F
+=================================== FAILURES ===================================
+______________ test_i8_public_engine_matches_truth_without_lag[4] ______________
+
+ep = (IntSpec(part='INT_TESTS', idx=3, n=4, units=['U0', 'U1', 'U2', 'U3'], ekey=4836893435431233326, start_utc='2027-01-11...aced', 'SU0init_BU002', 'U0', {'acuity': 3, 'bed': 'BU002', 'iso': False, 'placed_min': -3360, ...}), ...], 't0': 192})
+
+    def test_i8_public_engine_matches_truth_without_lag(ep):
+        sp, pre = ep
+        from dataclasses import replace
+        sp0 = replace(sp, theta=dict(sp.theta, lag_min=0.0))
+        pre0 = L.prefix(sp0, 48)
+        eng, prov, rec = L.start_future(pre0, sp0, 1)
+        for _ in range(20 * TPH):
+            eng.step(prov)
+        ps, peng = L.public_view(pre0, rec, eng.tick)
+        for un in sp.units:
+>           assert [eng.beds[b].state for b in eng.units[un].beds] == [peng.beds[b].state for b in peng.units[un].beds]
+E           AssertionError: assert ['occ', 'occ'...', 'occ', ...] == ['occ', 'occ'...', 'occ', ...]
+E             
+E             At index 6 diff: 'cleaning' != 'dirty'
+E             Use -v to get more diff
+
+tests/howm_int1/test_world.py:140: AssertionError
+=========================== short test summary info ============================
+FAILED tests/howm_int1/test_world.py::test_i8_public_engine_matches_truth_without_lag[4]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 11 passed in 2.75s

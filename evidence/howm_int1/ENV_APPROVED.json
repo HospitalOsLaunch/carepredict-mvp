@@ -1,0 +1,6 @@
+{
+ "python": "3.11.18",
+ "freeze_sha256": "e93a3617e8f784786cafb1a0b3d4d20aab255f58db704d51b78f5675980e1218",
+ "packages": 29,
+ "note": "same venv as HOWM-1/HOWM-2 (torch 2.15.0+cpu, scikit-learn 1.8.0); approved in the B ledger; re-approved for INT-1"
+}

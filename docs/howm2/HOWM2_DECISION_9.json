@@ -1,0 +1,17 @@
+{
+ "schema": "HOWM2_DECISION_9",
+ "date": "2026-11-17",
+ "working_name": "HOWM-INT-1 (identifier free: no prior HOWM-INT in the repository)",
+ "previous": "HOWM2_DECISION_8 (commit 8a3e5c8 verified present, branch claude/hospitalos-auto-first-p0-p4-s2dywn, clean tree)",
+ "decision": "Integrated campaign: build, train and evaluate a structured learned hospital world model; main task 2-unit 168 h with daily replanning; extension multi-service 24 h with 6-h replanning and an unseen 12-unit size",
+ "mandate": {"path": "docs/howm2/inputs/MANDAT_HOWM2_DECISION_9_HOWM_INT_1.md", "note": "verbatim copy"},
+ "envelope": {"wall_s": 259200, "cpu_s": 1036800, "per_command_s": 540, "eur": 0, "gpu": false,
+              "ledger": "evidence/howm_int1/LEDGER_INT1.jsonl (new)", "runner": "scripts/howm_int1_run.py (derived from the frozen B runner, not modified)",
+              "b_ledger": "unchanged; remainder 751.359 s neither consumed nor reset"},
+ "initial_lots_h": {"INT.L0": 3, "INT.DATA": 18, "INT.LEARN": 30, "INT.EVAL": 12, "INT.REST": 2, "INT.RESERVE": 7},
+ "acquired_kept": ["B-FRAG 2 F-R1 decision gain 253.984375 pm (scope per addendum)", "pilot W: 200 TRAIN structures, 26 144-parameter recurrent model, W-D INDETERMINE, estimate unfavourable to W",
+                   "W-D deficit concentrated in SF1 (descriptive)", "no benefit of a general latent model, no real/clinical validation established"],
+ "not_authorised": ["C1 palier 2", "C.2a", "AJ-H", "other independent programme", "purchases, GPU, paid service", "real clinical data", "reserved partitions (HOWM-1 reserve, DEVTEST, DIAG-DEV)",
+                    "old CONF/CEVAL for learning or selection", "push, merge, rebase, external publication", "changes to v6, P5, mvp/computer-use or historical results"],
+ "statuses_unchanged": ["PROTOTYPE_UNVALIDATED", "clinical_validation=false", "G2=NO-GO"]
+}
