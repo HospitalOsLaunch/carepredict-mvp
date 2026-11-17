@@ -27,9 +27,11 @@ def sha(p):
 
 
 def strip(d):
+    """Remove run-time measurements only (timings, memory), including per-origin scoring time."""
     d = dict(d)
     d.pop("timing_s", None)
     d.pop("maxrss_mb", None)
+    d["origins"] = [{k: v for k, v in o.items() if k != "score_seconds"} for o in d["origins"]]
     return d
 
 
@@ -61,10 +63,11 @@ def main() -> int:
     refs, procs = {}, []
     for tag, part, s, e, mode in regen_items:
         f = ev / "runs" / tag / part / f"s{s:03d}_e{e}.json"
-        refs[(tag, part, s, e)] = strip(json.loads(f.read_text()))
+        raw = json.loads(f.read_text())
+        refs[(tag, part, s, e)] = strip(raw)
         f.unlink()
         procs.append(start("scripts/bfrag2.py", "run", "--part", part, "--tag", tag, "--mode", mode, "--s0", str(s), "--s1", str(s + 1),
-                           "--Mr", "32", "--Md", "32", "--E", "8", "--par", "1", "--budget", "1000"))
+                           "--Mr", str(raw["Mr"]), "--Md", str(raw["Md"]), "--E", str(raw["E"]), "--par", "1", "--budget", "1000"))
     pf = ev / "runs/PAIRED/BF2_CONF/s011.json"
     pref = json.loads(pf.read_text())
     pf.unlink()
