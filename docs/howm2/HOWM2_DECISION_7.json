@@ -1,0 +1,39 @@
+{
+ "schema": "HOWM2_DECISION_7",
+ "date": "2026-11-17",
+ "previous": "HOWM2_DECISION_1..6 (decision_2 in ledger)",
+ "decision": "B-FRAG 2: dynamic fragility and deferred interventions (isolated implementation, DEV/TRAIN/VAL/CONF, S0/S1/S2 statistical references, F audit and Monte-Carlo stability, intervention catalogue, single CONF)",
+ "mandate": {
+  "path": "docs/howm2/inputs/MANDAT_HOWM2_DECISION_7_BFRAG2.md",
+  "sha256": "cb64d3a56bcc1cc9dab7d8b9a11f66d00da8a90a667eaa4b28c8acbef92c5473",
+  "note": "faithful condensed copy; full text in the session transcript"
+ },
+ "budget_check": {
+  "ledger": "evidence/howm2_bfrag/BUDGET_LEDGER_HOWM2_B.jsonl",
+  "used_wall_s": 2044.346,
+  "remaining_wall_s": 9355.654,
+  "ceiling_s": 11400,
+  "not_reset": true
+ },
+ "exception": "light statistical learning (regularised logistic regression, bounded gradient boosting) only per s.6; no neural network, no RL, no C1",
+ "not_authorised": [
+  "neural networks",
+  "C1 palier 2",
+  "C.2a at 1000",
+  "JEPA",
+  "HOWM2-N",
+  "P6",
+  "AJ-H",
+  "new closed loop",
+  "GPU",
+  "purchases",
+  "push, merge, rebase, external publication",
+  "HOWM-1 reserve, DEVTEST, DIAG-DEV",
+  "modifying G0/F1/F-C1/B-FRAG 1 frozen files, v6, P5, mvp/computer-use, R1, A, A-prime, C1"
+ ],
+ "statuses_unchanged": [
+  "PROTOTYPE_UNVALIDATED",
+  "clinical_validation=false",
+  "G2=NO-GO"
+ ]
+}

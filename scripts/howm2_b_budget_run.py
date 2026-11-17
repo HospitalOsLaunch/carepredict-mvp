@@ -47,8 +47,16 @@ LOT_CAPS = {  # decision n.6, fixed before any B-FRAG measurement (pilot include
     "BF.CONF": 3000.0,
     "BF.ANAL": 400.0,
     "BF.REST": 700.0,
+    # B-FRAG 2 (decision n.7), caps fixed before any B-FRAG 2 measurement
+    "BF2.PREP": 500.0,
+    "BF2.DEV": 900.0,
+    "BF2.TRAIN": 700.0,
+    "BF2.VAL": 1600.0,
+    "BF2.CONF": 2600.0,
+    "BF2.ANAL": 500.0,
+    "BF2.REST": 700.0,
 }
-TRANCHE_CEILING_S = {"CLOSE": 11400.0, "BF": 11400.0}  # one common envelope, see COMMON_CEILING_S
+TRANCHE_CEILING_S = {"CLOSE": 11400.0, "BF": 11400.0, "BF2": 11400.0}  # one common envelope, see COMMON_CEILING_S
 COMMON_CEILING_S = 11400.0
 
 
@@ -245,8 +253,10 @@ def run(command: list[str], lot: str, label: str, test: bool) -> int:
         _refuse("refused", lot, label, command, f"lot_not_authorised:{lot}")
         print(f"[howm2-budget] lot {lot} not authorised: refused", file=sys.stderr)
         return 4
-    if not any(r.get("kind") == "decision_6" for r in records):
-        _refuse("refused", lot, label, command, "decision_6_not_recorded")
+    if not any(r.get("kind") == "decision_6" for r in records) or (
+        lot.startswith("BF2.") and not any(r.get("kind") == "decision_7" for r in records)
+    ):
+        _refuse("refused", lot, label, command, "decision_not_recorded")
         return 4
     used = sum(float(r.get("wall_seconds", 0.0)) for r in records)  # common envelope (C1 closure + B-FRAG)
     remaining = COMMON_CEILING_S - used
