@@ -93,11 +93,15 @@ def main() -> int:
     val = M.load_val()
     d_same = all(np.allclose(old_d[k].predict(M.xvec(v), np.array([M.adesc(a) for a in v["actions"]])),
                              M.load_d(k).predict(M.xvec(v), np.array([M.adesc(a) for a in v["actions"]])), atol=1e-9) for k in old_d for v in val[:10])
+    packaged = {f: (ev / f).read_bytes() for f in ("LEARN_W.json", "LEARN_D.json")}
+    packaged |= {f"models/{q.name}": q.read_bytes() for q in (ev / "models").glob("*")}
     run("scripts/bf2w_models.py", "train_w", "--seeds", "1")
     new_w1 = M.load_w(1)
     w_same = bool(np.allclose(M.w_predict_costs(*keep_w1, val), M.w_predict_costs(*new_w1, val), rtol=1e-5, atol=1e-3))
     out["4_refits_executed"] = {"D_4_configs_predictions_identical": bool(d_same), "D_selection_identical": new_d["selected"] == keep_d["selected"],
                                 "W_seed1_retrained_predictions_identical": w_same, "ok": bool(d_same and new_d["selected"] == keep_d["selected"] and w_same)}
+    for f, b_ in packaged.items():  # restore the packaged learning outputs (refits are compared, not substituted)
+        (ev / f).write_bytes(b_)
     for p in procs:
         p.wait()
     # (5) analysis reproduction (with regenerated files in place)
@@ -106,11 +110,12 @@ def main() -> int:
     run("scripts/bf2w_analyse.py")
     rr = json.loads((ev / "RESULTS_PILOT_W.json").read_text())
     kr = keep["RESULTS_PILOT_W.json"]
-    for d_ in (rr, kr):
-        d_.get("costs", {}).get("response_seconds_per_decision", {}).pop("W_ensemble_state_rollout_reanalysis", None)
+    for d_ in (rr, kr):  # run-time measurements excluded (documented rule): response times and training durations
+        d_.get("costs", {}).pop("response_seconds_per_decision", None)
+        d_.get("costs", {}).pop("W_training_seconds_per_seed", None)
     same = {"DECOMPOSITION_F_R1.json": bool(close(keep["DECOMPOSITION_F_R1.json"], json.loads((ev / "DECOMPOSITION_F_R1.json").read_text()))),
             "RESULTS_PILOT_W.json": bool(close(kr, rr))}
-    out["5_analysis_reproduction"] = {"identical": same, "note": "re-timed W re-analysis duration excluded (run-time measurement)", "ok": all(same.values())}
+    out["5_analysis_reproduction"] = {"identical": same, "note": "run-time measurements excluded: costs.response_seconds_per_decision, costs.W_training_seconds_per_seed", "ok": all(same.values())}
     regen = {f"eval/{ef.name}": bool(ef.exists() and close(strip(eref), strip(json.loads(ef.read_text())))),
              f"train/{tf_.name}": bool(tf_.exists() and close(strip(tref), strip(json.loads(tf_.read_text())))),
              f"train/{tf_.with_suffix('.npz').name}": bool(tf_.with_suffix(".npz").exists() and tf_.with_suffix(".npz").read_bytes() == tnpz)}
