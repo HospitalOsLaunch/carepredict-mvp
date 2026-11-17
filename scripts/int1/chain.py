@@ -36,10 +36,9 @@ def main() -> int:
             cp = S / "int1_runs" / f"D_t{opts['--tier']}_dset" / "last.pt"
             script, label = "scripts/int1/train_d.py", f"train D dset tier {opts['--tier']} (cmd {k + 1})"
             args = ["--tier", opts["--tier"], "--which", "dset", *rest]
-            if k > 0:
-                import torch  # noqa: F401
-            if k > 0 and cp.exists():
-                st = __import__("torch").load(cp, weights_only=False)["state"]
+            rp = cp.with_name("result.json")  # progress written by train_d.py (no torch needed here)
+            if rp.exists() and "dset" in json.loads(rp.read_text()):
+                st = json.loads(rp.read_text())["dset"]
                 if st.get("stopped") or st["upd"] >= int(opts.get("--max", "30000")):
                     break
         else:
