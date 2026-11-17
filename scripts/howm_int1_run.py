@@ -85,6 +85,24 @@ def genesis() -> dict:
 
 R.genesis = genesis
 
+_append_unlocked = R.base.append
+
+
+def _append_locked(path, record):
+    """Concurrent commands are allowed (each counted): every ledger append is serialised by an fcntl lock
+    (incident of line 38, see LEDGER_INT1.broken_at_line38.jsonl)."""
+    import fcntl
+
+    with open(path.with_name(".ledger.lock"), "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        try:
+            return _append_unlocked(path, record)
+        finally:
+            fcntl.flock(lk, fcntl.LOCK_UN)
+
+
+R.base.append = _append_locked
+
 if __name__ == "__main__":
     if R.LEDGER.exists():
         _caps_from_ledger()

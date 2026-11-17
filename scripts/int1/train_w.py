@@ -47,25 +47,25 @@ def batch_loss(model, sits: list[dict], st: dict, upd: int) -> tuple[torch.Tenso
     T = horizon_of(n, upd)
     L = min(T, DA.LOOKAHEAD_STEPS[n])
     tens = [DA.tensors(s, st) for s in sits]
-    cat = {k: torch.cat([t[k] for t in tens]) for k in tens[0]}
+    cat = {k: torch.cat([t[k] for t in tens]) for k in ("unit", "res", "glob", "ur_mask", "uu", "U", "R", "C", "beds", "desc")}
     sh, ch, rh = model(cat["unit"], cat["res"], cat["glob"], cat["ur_mask"], cat["uu"], cat["U"][:, :T], cat["R"][:, :T], cat["C"][:, :T],
                        cat["beds"], steps=T)
-    y_st = cat["states"][:, :, :T]  # [B,K,T,n,9]
-    l_st = (((sh[:, None] - y_st) / torch.tensor(st["st_s"])) ** 2).mean()
-    y_c = cat["costs"][:, :, :T] / st["cost_s"]
-    l_co = ((ch[:, None] - y_c) ** 2).mean()
+    sts = torch.tensor(st["st_s"])
     cum_h = ch[:, :L].sum((1, 2)) * st["cost_s"]  # [B]
-    cum_y = cat["costs"][:, :, :L].sum((2, 3))  # [B,K]
-    l_cum = (((cum_h[:, None] - cum_y) / st["cum_s"]) ** 2).mean()
-    eff_l, off = [], 0
-    for t in tens:
+    ls, lc, lcum, leff, lrup, off = [], [], [], [], [], 0
+    for t in tens:  # targets per situation (K futures may differ between situations)
         m = len(t["desc"])
-        e_h = cum_h[off:off + m] - cum_h[off]
-        e_y = cum_y[off:off + m] - cum_y[off:off + 1]
-        eff_l.append((((e_h[:, None] - e_y) / st["eff_s"]) ** 2)[1:].mean())
+        sl = slice(off, off + m)
+        ls.append((((sh[sl, None] - t["states"][:, :, :T]) / sts) ** 2).mean())
+        lc.append(((ch[sl, None] - t["costs"][:, :, :T] / st["cost_s"]) ** 2).mean())
+        cy = t["costs"][:, :, :L].sum((2, 3))  # [m,K]
+        lcum.append((((cum_h[sl, None] - cy) / st["cum_s"]) ** 2).mean())
+        e_h = cum_h[sl] - cum_h[off]
+        e_y = cy - cy[:1]
+        leff.append((((e_h[:, None] - e_y) / st["eff_s"]) ** 2)[1:].mean())
+        lrup.append(torch.nn.functional.binary_cross_entropy_with_logits(rh[sl, None].expand_as(t["n24"][:, :, :T]), t["n24"][:, :, :T]))
         off += m
-    l_eff = torch.stack(eff_l).mean()
-    l_rup = torch.nn.functional.binary_cross_entropy_with_logits(rh[:, None].expand_as(cat["n24"][:, :, :T]), cat["n24"][:, :, :T])
+    l_st, l_co, l_cum, l_eff, l_rup = (torch.stack(x).mean() for x in (ls, lc, lcum, leff, lrup))
     loss = W_ST * l_st + W_CO * l_co + W_CUM * l_cum + W_EFF * l_eff + W_RUP * l_rup
     return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
 

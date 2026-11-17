@@ -82,7 +82,8 @@ class Tracker:
                 "terminal_queue": sum(len(q) for q in eng.queue.values()),
                 "terminal_max_wait_min": max([(eng.tick - r.arrival) * 15 for q in eng.queue.values() for r in q], default=0),
                 "aval_blocked_end": len(eng.aval_blocked), "transfer_pending_end": len(eng.transfer_pending),
-                "staff_hours": tot, "commitments": len(eng.commitments)}
+                "staff_hours": tot, "commitments": len(eng.commitments),
+                "rupture_runs": {un: [[int(a_), int(b_)] for a_, b_, _s in v] for un, v in runs.items()}}  # ticks from the origin
 
 
 def closed_loop(spec_e: W.IntSpec, pre: dict, r: int, policy: Callable, n_dec: int, interval_h: int, horizon_h: int,
