@@ -1,0 +1,50 @@
+{
+ "envelope": "HOWM2_C1_CLOSURE_ENVELOPE.zip",
+ "sha256": "5960f4b9c854932684f32e3a86c31554a7713595c12ad146984a5657de57abb2",
+ "bytes": 67443305,
+ "bad": [],
+ "manifest": {
+  "envelope": "HOWM2_C1_CLOSURE_ENVELOPE",
+  "decision": "n.6",
+  "scientific_package_intact": {
+   "file": "scientific_package/HOWM2_P2_C1_P1_FINAL.zip",
+   "sha256": "bd8a75994fe076cf24eafcb1af4e44eaddeb09e3d195ada69e7f643f5e1c7a35",
+   "recorded_in": "evidence/howm2_c1/packages/C1_P1_FINAL.json"
+  },
+  "note": "the scientific package does not contain its own receipt; the envelope joins them. Training is not reproduced.",
+  "files": {
+   "scientific_package/HOWM2_P2_C1_P1_FINAL.zip": {
+    "sha256": "bd8a75994fe076cf24eafcb1af4e44eaddeb09e3d195ada69e7f643f5e1c7a35",
+    "bytes": 67336747
+   },
+   "docs/RAPPORT_C1_PALIER1.md": {
+    "sha256": "3426dc5634f44fd3b676855971bae5229c9a63920c123373b5a856605adde0bc",
+    "bytes": 12478
+   },
+   "docs/NORME_C1_PALIER1.md": {
+    "sha256": "410c5fb2ff5a5fd4265d2c380f57ca79b544821170062a55dfd25b6b2be49b28",
+    "bytes": 10750
+   },
+   "docs/CORRECTIF_C1_CLOTURE.md": {
+    "sha256": "26499c8e3dd10bec39d0ad59fa162889631646d4cb4b2ec55850914569a0a377",
+    "bytes": 4986
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_C1.jsonl": {
+    "sha256": "d891fdde1dc728a966161732c026ad1cca2ff2a1817f3b3c83540fdc0064e936",
+    "bytes": 48120
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_C1.anchor.json": {
+    "sha256": "7a71eab6dd80dc2d7ca301a26aec2ea376393f9b9786a251a609da5ab780e382",
+    "bytes": 233
+   },
+   "receipt/RESTORE_RECEIPT_C1_P1.json": {
+    "sha256": "c9daa53f98db69ba0b19459d4fd5abf5822e9e823a0b9e305dc5c264a50ad085",
+    "bytes": 2282
+   },
+   "exploratory/C1_LOGS_EXPLORATORY.json": {
+    "sha256": "60801ba582863708740001c6709923ee6318ed16b13079e7590875bfc4751891",
+    "bytes": 24843
+   }
+  }
+ }
+}

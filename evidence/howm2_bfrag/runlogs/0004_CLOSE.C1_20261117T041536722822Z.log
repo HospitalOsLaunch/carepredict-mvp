@@ -1,0 +1,80 @@
+{
+ "cost": {
+  "pilot_step_s_C2a": 13.02629086971283,
+  "pilot_conditions": "12 steps, 3 pilot processes concurrently (one per system), 1 thread each",
+  "measured_s_per_update_C2a_N100": [
+   15.139518364539994,
+   14.673428978046667,
+   15.186763273806664
+  ],
+  "measured_conditions": "full runs, 3 C.2a processes concurrently (2 after OOM kills), 1 thread each; includes the final CVAL evaluation",
+  "one_seed_N1000_single_thread_s": {
+   "from_pilot_13.03x1500": 19539,
+   "from_measured_mean": 22500,
+   "plus_3_CVAL_evals_estimate": 430
+  },
+  "three_seeds_cumulative_cpu_s": {
+   "from_pilot": 58618,
+   "from_measured_mean": 67500
+  },
+  "wall_time_realisable": {
+   "memory_constraint": "C.2a pilot max RSS 4.4 GB; 3 concurrent processes on 15 GB without swap were OOM-killed (C1 ledger #17, #18, #31)",
+   "two_concurrent_two_waves_s": 45000,
+   "three_concurrent_one_wave_s_if_no_OOM": 22500,
+   "note": "dividing the cumulative CPU by 4 cores (as in the C1 report, ~4 h 30) is NOT a measured speed-up and is withdrawn; 4 concurrent C.2a processes do not fit in memory"
+  }
+ },
+ "end": {
+  "C1_N1000_s0": {
+   "cval_total_change_last_interval": -0.058835062523867165,
+   "cval_total_change_from_first_eval": -0.01940619607008376
+  },
+  "C1_N1000_s1": {
+   "cval_total_change_last_interval": -0.032470675844308516,
+   "cval_total_change_from_first_eval": -0.01498401686995443
+  },
+  "C1_N1000_s2": {
+   "cval_total_change_last_interval": -0.019529051945553988,
+   "cval_total_change_from_first_eval": -0.03941368797889222
+  },
+  "C1_N100_s0": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C1_N100_s1": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C1_N100_s2": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2a_N100_s0": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2a_N100_s1": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2a_N100_s2": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2b_N1000_s0": {
+   "cval_total_change_last_interval": -0.02401240394779869,
+   "cval_total_change_from_first_eval": -0.06484234062536665
+  },
+  "C2b_N1000_s1": {
+   "cval_total_change_last_interval": -0.046824208642969545,
+   "cval_total_change_from_first_eval": -0.04980146063435065
+  },
+  "C2b_N1000_s2": {
+   "cval_total_change_last_interval": -0.010594511175376908,
+   "cval_total_change_from_first_eval": -0.08126842949145008
+  },
+  "C2b_N100_s0": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2b_N100_s1": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  },
+  "C2b_N100_s2": {
+   "note": "a single CVAL evaluation (N=100: 150 updates, evaluated at the end only)"
+  }
+ }
+}
