@@ -1,0 +1,13 @@
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+{"run": "W_t1_M_s0", "upd": 10365, "stopped": null, "best": 10000, "params": 1899540, "last": {"upd": 10350, "loss": 1.1388508081436157, "st": 0.32422906160354614, "co": 0.3110876977443695, "cum": 0.08751928806304932, "eff": 0.07027281075716019, "rup": 0.129301518201828, "T": 36}}
+{"run": "W_t1_M_s2", "upd": 10359, "stopped": null, "best": 9000, "params": 1899540, "last": {"upd": 10350, "loss": 0.4863159656524658, "st": 0.34451228380203247, "co": 0.1102256327867508, "cum": 0.02366125024855137, "eff": 0.000721325573977083, "rup": 0.008620360866189003, "T": 12}}
+{"run": "W_t1_M_s1", "upd": 10368, "stopped": null, "best": 5000, "params": 1899540, "last": {"upd": 10350, "loss": 2.350963830947876, "st": 0.47805219888687134, "co": 0.4299377202987671, "cum": 0.10517880320549011, "eff": 0.25293517112731934, "rup": 0.14623871445655823, "T": 36}}
+{'runs': ['W_t1_M_s0', 'W_t1_M_s1', 'W_t1_M_s2'], 'exit_codes': [0, 0, 0]}
