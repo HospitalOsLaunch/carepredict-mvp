@@ -1,0 +1,7 @@
+{"declared_before_the_stability_check": true,
+ "risk": {"metric_1": "mean |p_rep1 - p_rep2| over non-active DEV origins (two independent repetitions, nested keys)", "max": 0.10,
+          "metric_2": "Spearman rank correlation between repetitions", "min": 0.80},
+ "decision": {"metric": "mean regret between repetitions: |eval_loss(choice_rep1) - eval_loss(choice_rep2)| / eval_loss(none)", "max": 0.005,
+              "also_reported": "choice agreement rate"},
+ "rule": "choose the smallest M in {8, 32, 128} meeting the tolerance for F and O; budget cap: M_risk <= 32 and M_dec <= 32 (cost per CONF episode); if the tolerance is not met within the cap, keep the cap and report the limit",
+ "methods": ["F", "O", "R1"]}
