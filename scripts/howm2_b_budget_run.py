@@ -50,9 +50,9 @@ LOT_CAPS = {  # decision n.6, fixed before any B-FRAG measurement (pilot include
     # B-FRAG 2 (decision n.7), caps fixed before any B-FRAG 2 measurement
     "BF2.PREP": 500.0,
     "BF2.DEV": 900.0,
-    "BF2.TRAIN": 700.0,
-    "BF2.VAL": 1600.0,
-    "BF2.CONF": 2600.0,
+    "BF2.TRAIN": 300.0,
+    "BF2.VAL": 1800.0,
+    "BF2.CONF": 3800.0,
     "BF2.ANAL": 500.0,
     "BF2.REST": 700.0,
 }

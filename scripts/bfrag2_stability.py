@@ -27,7 +27,7 @@ def setup(s, e):
 
     w = C.structure("BF2_DEV", s, json.loads((ROOT / "docs/howm2/bfrag/DESIGN_D2.json").read_text()))
     spec_e = C.episode_spec(w, e)
-    ep, trace = C.generate2(spec_e, [h * TPH for h in C.ORIGIN_HOURS])
+    ep, trace = C.generate2(spec_e, [h * TPH for h in C.ORIGIN_HOURS], w.drop)  # post-fix signature (study ran before the calendar fix)
     return C, w, spec_e, ep, trace
 
 

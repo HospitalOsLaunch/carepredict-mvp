@@ -1,0 +1,4 @@
+{"reallocation_before_freeze": {"BF2.TRAIN": [700, 300], "BF2.VAL": [1600, 1800], "BF2.CONF": [2600, 3800]},
+ "unchanged": {"BF2.PREP": 500, "BF2.DEV": 900, "BF2.ANAL": 500, "BF2.REST": 700},
+ "sum_lots_s": 8500, "remaining_at_decision_7_s": 9355.654, "common_ceiling_s": 11400, "ledger_not_reset": true,
+ "reason": "measured DEV costs: features 0.5 s CPU/episode (TRAIN cheap); full 170 s, val ~100 s CPU/episode; CONF-S 24 structures x 3 episodes in full mode"}

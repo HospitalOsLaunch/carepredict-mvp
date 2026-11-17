@@ -1,0 +1,40 @@
+{
+ "tag": "DEVF2",
+ "part": "BF2_DEV",
+ "origins": 270,
+ "active": 16,
+ "censored": 0,
+ "eligible": 254,
+ "y72_rate": 0.08661417322834646,
+ "y24_rate": 0.031496062992125984,
+ "manifest_rate": 0.13385826771653545,
+ "y72_rate_non_manifest": 0.04090909090909091,
+ "structures_with_pairs": 4,
+ "structures": 6,
+ "by_family": {
+  "SC4_high_load_absorbable": {
+   "n": 38,
+   "y72_rate": 0.21052631578947367
+  },
+  "SC5_drop_with_margin": {
+   "n": 45,
+   "y72_rate": 0.0
+  },
+  "SC6_low_load": {
+   "n": 45,
+   "y72_rate": 0.13333333333333333
+  },
+  "SF1_cleaning_window": {
+   "n": 36,
+   "y72_rate": 0.16666666666666666
+  },
+  "SF2_transport_window": {
+   "n": 45,
+   "y72_rate": 0.0
+  },
+  "SF3_planned_drop": {
+   "n": 45,
+   "y72_rate": 0.044444444444444446
+  }
+ }
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """B-FRAG 2 driver (decision n.7, PROTOCOLE_BFRAG2).
 
-    run --part P --tag T --mode features|full --s0 a --s1 b [--Mr 32 --Md 8 --E 8] [--par 4] [--budget s]
+    run --part P --tag T --mode features|val|full --s0 a --s1 b [--Mr 32 --Md 8 --E 8] [--par 4] [--budget s]
         one JSON per episode: evidence/howm2_bfrag2/runs/<T>/<P>/s<sss>_e<e>.json (atomic, resumable)
 """
 
@@ -42,7 +42,7 @@ def job(arg):
     spec_e = C.episode_spec(w, e)
     t = time.time()
     origin_ticks = [h * TPH for h in C.ORIGIN_HOURS]
-    ep, trace = C.generate2(spec_e, origin_ticks)
+    ep, trace = C.generate2(spec_e, origin_ticks, w.drop)
     runs = C.rupture_runs(trace)
     tm["generate"] = time.time() - t
     t = time.time()
@@ -58,7 +58,7 @@ def job(arg):
         f1 = snaps[h]
         rec = {"hour": h, "labels": C.labels_at(runs, t0, len(trace)), "manifest": C.manifest_pressure(f1),
                "S0": C.s0_features(w, t0), "S1": f1, "S2": C.s2_history(pub, t0, snaps)}
-        if mode == "full":
+        if mode in ("full", "val"):
             ts = time.time()
             rec["score"] = {"R0": C.score_R0(w, pe, t0),
                             "R1": C.risk72(C.r1_pairs(w, pub, ps, pe, t0, p, Mr), w.drop),
@@ -68,22 +68,23 @@ def job(arg):
         origins.append(rec)
     tm["origins"] = time.time() - t
     dec = None
-    if mode == "full":
+    if mode in ("full", "val"):
         t = time.time()
         hd = C.DECISION_HOURS[e % 3]
         t0 = hd * TPH
         pub, ps, pe = C.public_state(ep, t0)
         acts = C.catalogue(t0)
         plans = {}
-        ts = time.time()
+        ts = time.time()  # R1 planner (public statistical planner) in "val" and "full" modes
         plans["R1_planner"] = C.planner(C.r1_pairs(w, pub, ps, pe, t0, p, Md), w.drop, acts)
         tm["plan_R1"] = time.time() - ts
-        ts = time.time()
-        plans["F_planner"] = C.planner(C.f_pairs(w, pub, ps, pe, t0, Md), w.drop, acts)
-        tm["plan_F"] = time.time() - ts
-        ts = time.time()
-        plans["O_planner"] = C.planner(C.o_pairs(w, spec_e, ep, t0, Md), w.drop, acts)
-        tm["plan_O"] = time.time() - ts
+        if mode == "full":  # F and O planners only in the single CONF campaign (and DEV cost checks)
+            ts = time.time()
+            plans["F_planner"] = C.planner(C.f_pairs(w, pub, ps, pe, t0, Md), w.drop, acts)
+            tm["plan_F"] = time.time() - ts
+            ts = time.time()
+            plans["O_planner"] = C.planner(C.o_pairs(w, spec_e, ep, t0, Md), w.drop, acts)
+            tm["plan_O"] = time.time() - ts
         ts = time.time()
         ev = C.evaluate_actions(w, spec_e, ep, t0, acts, E)
         tm["evaluate"] = time.time() - ts

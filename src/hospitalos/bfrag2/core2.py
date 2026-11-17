@@ -65,6 +65,28 @@ def episode_spec(w: K.World, e: int):
     return spec
 
 
+PAIRED_DEPS = ("cl", "tr", "compat", "drop", "cl+tr")
+
+
+def paired_spec(w: K.World, e: int, dep: str) -> tuple[Any, dict]:
+    """Propagation control (protocol s.9): the SAME episode (same keys, same arrivals) with ONE
+    dependency relaxed: 'cl' = +1 cleaning agent, 'tr' = +1 transport agent, 'compat' = every bed
+    isolation-compatible at the same total bed count, 'drop' = no planned drop (families with a public
+    calendar only); 'cl+tr' = interaction control. Returns (spec, calendar)."""
+    sp = episode_spec(w, e)
+    if dep == "cl":
+        return replace(sp, c_cl=sp.c_cl + 1), w.drop
+    if dep == "tr":
+        return replace(sp, c_tr=sp.c_tr + 1), w.drop
+    if dep == "compat":
+        return replace(sp, iso_beds=dict(sp.beds)), w.drop
+    if dep == "drop":
+        return sp, {}
+    if dep == "cl+tr":
+        return replace(sp, c_cl=sp.c_cl + 1, c_tr=sp.c_tr + 1), w.drop
+    raise ValueError(dep)
+
+
 # ------------------------------------------------------------------------------ derived generator
 _GEN = None
 TRACE: list = []
@@ -89,14 +111,15 @@ def _trace(eng: Engine) -> None:
     TRACE.append(row)
 
 
-def generate2(spec: Any, origin_ticks: list[int]) -> tuple[Any, list]:
-    """Frozen generator, derived: B-FRAG arrival law (nominal capacity), NO background plans (common
-    background policy = the frozen operator's built-in habitual operations), clones at every origin,
-    and a per-tick dependency trace."""
+def generate2(spec: Any, origin_ticks: list[int], drop: dict) -> tuple[Any, list]:
+    """Frozen generator, derived: B-FRAG arrival law (nominal capacity), the PUBLIC planned calendar
+    (``drop``, the same ``WithCalendar`` proxy as every rollout), NO background plans (common background
+    policy = the frozen operator's built-in habitual operations), clones at every origin, and a per-tick
+    dependency trace."""
     global _GEN
     if _GEN is None:
         src = inspect.getsource(G.generate)
-        subs = [("    prov = TruthProvider(spec, 0)\n", "    prov = BFTruthProvider(spec, 0)\n"),
+        subs = [("    prov = TruthProvider(spec, 0)\n", "    prov = BF2_CAL(BFTruthProvider(spec, 0))\n"),
                 ("    eval_ticks = {EVAL_DAY * TPD + h * TPH for h in INSTANT_HOURS}\n", "    eval_ticks = set(BF2_TICKS)\n"),
                 ("        if t % TPH == 0 and local_hour(t) in INSTANT_HOURS:\n            if keep_instants and t in eval_ticks:\n"
                  "                instants[t] = eng.clone()\n            plan = behaviour_plan(spec, t)\n",
@@ -108,10 +131,11 @@ def generate2(spec: Any, origin_ticks: list[int]) -> tuple[Any, list]:
                 raise RuntimeError(f"generate2 derivation: pattern not found exactly once: {a[:60]!r}")
             src = src.replace(a, b)
         ns = dict(G.__dict__)
-        ns.update({"BFTruthProvider": K.BFTruthProvider, "BF2_TRACE": _trace, "BF2_TICKS": []})
+        ns.update({"BFTruthProvider": K.BFTruthProvider, "BF2_TRACE": _trace, "BF2_TICKS": [], "BF2_CAL": None})
         exec(compile(src, "<bfrag2-derived generate>", "exec"), ns)  # noqa: S102
         _GEN = ns
     _GEN["BF2_TICKS"] = list(origin_ticks)
+    _GEN["BF2_CAL"] = lambda prov: K.WithCalendar(prov, drop)
     TRACE.clear()
     ep = _GEN["generate"](spec, keep_instants=True)
     return ep, list(TRACE)
@@ -250,9 +274,10 @@ def rollout_sched(eng0: Engine, prov: Any, plan: Plan | None, drop: dict, hours:
             n24[un].append(sum(1 for r in eng.queue.get(un, []) if (tt - r.arrival) * 15 >= K.WAIT_LIMIT_MIN))
     eng.c_cl, eng.c_tr = base_cl, base_tr
     runs = {un: K.episodes(s) for un, s in n24.items()}
+    wait_by_unit = {un: 15.0 * (eng.waiting_ticks.get(un, 0) - w0.get(un, 0)) for un in eng.units}
     first = min([a for v in runs.values() for a, _b, _s in v], default=None)
     h0 = t0 // TPH
-    return {"wait_patient_min": 15.0 * sum(eng.waiting_ticks.get(un, 0) - w0.get(un, 0) for un in eng.units),
+    return {"wait_patient_min": sum(wait_by_unit.values()), "wait_by_unit": wait_by_unit,
             "uncovered_care_min": uncovered(eng, range(h0, h0 + hours)), "rejected_at_plan": rej_plan,
             "rejected_total": eng.rejected - rej0, "first_onset": first,
             "rupture": first is not None, "rupture_minutes": 15 * sum(b - a for v in runs.values() for a, b, _s in v),

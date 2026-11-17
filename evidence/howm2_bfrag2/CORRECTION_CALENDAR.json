@@ -1,0 +1,9 @@
+{"kind": "implementation defect, corrected BEFORE the protocol freeze and before any comparison",
+ "found_on": "DEV, while writing the F specification audit (reading code, no measurement)",
+ "defect": "generate2 (continuous reference trajectory) used BFTruthProvider without the WithCalendar proxy: the PUBLIC planned cleaning drop (families SF3, SC5: day 3, 06-22 h, -1 agent) was absent from the reference history and labels, but present in every rollout (R1, F, O, true evaluation) and in S0 features",
+ "fix": "generate2(spec, origin_ticks, drop) wraps the generator provider with K.WithCalendar(prov, drop) (one more source substitution); B-FRAG 1 code untouched",
+ "test": "T2-10: the calendar changes the reference history and nothing before the drop",
+ "affected_dev_outputs": {"SMOKE, DEVM (cost checks)": "costs remain valid (same computations); not used otherwise",
+                          "MC_STABILITY_DEV": "risk/decision stability concerns rollouts, which always applied the calendar; structures 1 (SF2) and 2 (SF3) e0: the SF3 history before hour 78 is unchanged, origins >= 78 differ; stability study NOT rerun (declared limit)",
+                          "DEVF (base rates)": "superseded by DEVF2 (rerun after the fix)"},
+ "counts_as_design_revision": false}
