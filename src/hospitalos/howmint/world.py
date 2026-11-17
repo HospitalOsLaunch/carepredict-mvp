@@ -217,6 +217,7 @@ class EngineN(Engine):
         self.transfer_pending: dict[str, str] = {}  # transfer request id -> origin stay id
         self.commitments: list[dict] = []
         self.coord_ticks: list[int] = []
+        self.hold_bed = True  # propagation control: False releases the origin bed at the transfer request
         return self
 
     # ---- M5 / M6
@@ -228,7 +229,8 @@ class EngineN(Engine):
         st = self.stays[f"S{req.rid[1:]}"]
         if req.rid in self.transfer_pending:
             origin = self.stays[self.transfer_pending.pop(req.rid)]
-            Engine.depart(self, origin)  # the origin bed is released only now (bed-blocking)
+            if origin.departed is None:
+                Engine.depart(self, origin)  # the origin bed is released only now (bed-blocking)
         dest, aval = prov.route(st) if hasattr(prov, "route") else (None, False)
         st.dest, st.aval, st.transfer_requested = dest, aval, False
         if dest is not None:
@@ -244,6 +246,8 @@ class EngineN(Engine):
                 st.transfer_requested = True
                 self.queue.setdefault(dest, []).append(Request(rid, dest, st.iso, st.acuity, False, self.tick))
                 self.emit("request_arrival", rid, unit=dest, iso=st.iso, acuity=st.acuity, transport=False, from_sid=st.sid)
+                if not getattr(self, "hold_bed", True):
+                    Engine.depart(self, st)  # control: bed released now, the patient waits for the destination elsewhere
             return
         if getattr(st, "aval", False) and st.departed is None:
             day = self.tick // TPD

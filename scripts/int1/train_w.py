@@ -126,7 +126,10 @@ def main() -> int:
     cfg = vars(a) | {"d": SIZES[a.size], "weights": [W_ST, W_CO, W_CUM, W_EFF, W_RUP]}
     if not cfg_p.exists():
         cfg_p.write_text(json.dumps(cfg, indent=1))
-    train = DA.situations(DA.load(CORPUS, "INT_TRAIN", list(range(TIER[a.tier]))))
+    if a.tier == 2:  # 10 000 structures: memory-mapped pack (built by pack.py; first 2 futures per row)
+        train = DA.packed_situations(S / "int1_pack_t2")
+    else:
+        train = DA.situations(DA.load(CORPUS, "INT_TRAIN", list(range(TIER[a.tier]))))
     val = DA.situations(DA.load(CORPUS, "INT_VAL", list(range(a.val_n))))
     st_p = rd / "norm.npz"
     if a.init and not st_p.exists():

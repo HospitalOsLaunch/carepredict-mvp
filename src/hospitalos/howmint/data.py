@@ -79,3 +79,52 @@ def tensors(s: dict, st: dict, rows: np.ndarray | None = None) -> dict:
     return {"unit": f(unit), "res": f(res), "glob": f(glob), "ur_mask": f(ur), "uu": f(s["uu"][idx]), "U": f(s["U"][idx]), "R": f(s["R"][idx]),
             "C": f(s["C"][idx]), "beds": f(beds), "desc": f(s["desc"][idx]), "states": f(s["states"][idx]), "costs": f(s["costs"][idx]),
             "n24": f(s["n24"][idx] >= RUPT_K)}
+
+
+# ------------------------------------------------------------------------------ packed (memory-mapped) corpus
+PACK_KEYS = ("unit", "res", "glob", "uu", "U", "R", "C", "desc", "states", "costs", "n24")
+PACK_K = 2  # training uses the first 2 futures of every row (the K = 8 subset keeps its 8 futures in the npz files)
+
+
+def pack(root: str | Path, part: str, s_list: list[int], out: str | Path) -> dict:
+    """Concatenate the situations of the given structures per size into .npy files (memory-mapped at training)."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    buf: dict[int, dict[str, list]] = {}
+    index: dict[int, list] = {}
+    for f in sorted(glob.glob(str(Path(root) / part / "s*.npz"))):
+        s = int(Path(f).stem[1:])
+        if s not in s_list:
+            continue
+        z = np.load(f)
+        rec = {"meta": json.loads(Path(f).with_suffix(".json").read_text()), **{k: z[k] for k in KEYS}}
+        for g in situations([rec]):
+            n = g["n"]
+            b = buf.setdefault(n, {k: [] for k in PACK_KEYS})
+            start = sum(len(x) for x in b["desc"])
+            for k in PACK_KEYS:
+                v = g[k]
+                if k in ("states", "costs", "n24"):
+                    v = v[:, :PACK_K]
+                b[k].append(v.astype(np.float16 if k == "states" else (np.int8 if k == "n24" else np.float32)))
+            index.setdefault(n, []).append([start, len(g["desc"]), g["structure"], g["family"], g["regime"], g["provenance"]])
+    meta = {}
+    for n, b in buf.items():
+        for k in PACK_KEYS:
+            np.save(out / f"n{n}_{k}.npy", np.concatenate(b[k]))
+        meta[str(n)] = {"rows": int(sum(len(x) for x in b["desc"])), "situations": len(index[n]), "index": index[n]}
+    (out / "meta.json").write_text(json.dumps(meta))
+    return {n: {k: v for k, v in m.items() if k != "index"} for n, m in meta.items()}
+
+
+def packed_situations(out: str | Path) -> list[dict]:
+    """Situation dicts backed by read-only memory maps (shared page cache across processes)."""
+    out = Path(out)
+    meta = json.loads((out / "meta.json").read_text())
+    sits = []
+    for n, m in meta.items():
+        arr = {k: np.load(out / f"n{n}_{k}.npy", mmap_mode="r") for k in PACK_KEYS}
+        for start, length, s, fam, reg, prov in m["index"]:
+            sl = slice(start, start + length)
+            sits.append({**{k: arr[k][sl] for k in PACK_KEYS}, "n": int(n), "structure": s, "family": fam, "regime": reg, "provenance": prov})
+    return sits

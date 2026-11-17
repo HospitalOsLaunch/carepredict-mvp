@@ -1,0 +1,21 @@
+..............................F                                          [100%]
+=================================== FAILURES ===================================
+_________ test_i10_propagation_control_releases_bed_without_rejection __________
+
+    def test_i10_propagation_control_releases_bed_without_rejection():
+        sp = W.episode(W.n_unit_structure("INT_TESTS", 7, 4, regime="fragile", bottlenecks=("transfer",)), 0)
+        pre = L.prefix(sp, 48)
+        eng, prov, _ = L.start_future(pre, sp, 1)
+        eng.hold_bed = False
+        for _ in range(72 * TPH):
+            eng.step(prov)
+            for rid, sid in eng.transfer_pending.items():
+>               assert eng.stays[sid].departed is not None  # origin bed already released
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               AssertionError: assert None is not None
+E                +  where None = Stay(sid='SU1init_BU105', unit='U1', bed='BU105', acuity=3, iso=True, transport=False, placed_tick=-313, auth_tick=64,...ue, ready_tick=79, ready=True, tr_req=None, tr_conf=None, tr_accepted=False, tr_start=None, tr_end=None, departed=None).departed
+
+tests/howm_int1/test_world.py:162: AssertionError
+=========================== short test summary info ============================
+FAILED tests/howm_int1/test_world.py::test_i10_propagation_control_releases_bed_without_rejection
+1 failed, 30 passed in 4.70s

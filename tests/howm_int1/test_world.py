@@ -149,3 +149,18 @@ def test_i9_two_unit_mode_is_bfrag2_structure():
     w = K.make_world("INT_TESTS", 11, W.D2, family=sp.family)
     assert sp.beds == w.spec.beds and sp.c_cl == w.spec.c_cl and sp.c_tr == w.spec.c_tr and sp.drop == w.drop and sp.theta == w.spec.theta
     assert sp.transfer == {} and sp.p_aval == {}
+
+
+def test_i10_propagation_control_releases_bed_without_rejection():
+    sp = W.episode(W.n_unit_structure("INT_TESTS", 7, 4, regime="fragile", bottlenecks=("transfer",)), 0)
+    pre = L.prefix(sp, 48)
+    eng, prov, _ = L.start_future(pre, sp, 1)
+    eng.hold_bed = False
+    before = set(eng.transfer_pending)  # requested under bed holding (prefix): released when placed
+    for _ in range(72 * TPH):
+        eng.step(prov)
+        for rid, sid in eng.transfer_pending.items():
+            if rid not in before:
+                assert eng.stays[sid].departed is not None  # origin bed already released
+    assert eng.rejections.get("departure_precondition", 0) == 0
+    assert any(s.sid.startswith("SS") for s in eng.stays.values())
