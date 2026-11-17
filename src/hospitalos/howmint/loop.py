@@ -99,7 +99,8 @@ def closed_loop(spec_e: W.IntSpec, pre: dict, r: int, policy: Callable, n_dec: i
             ps, peng = public_view(pre, rec, eng.tick)
             cat = A.catalogue(peng, spec_e.units)
             adm = [A.admissible(peng, a, spec_e.n, t_start) for a in cat]
-            a = policy(ps=ps, peng=peng, cat=cat, adm=adm, t=eng.tick, t_start=t_start, spec=spec_e)
+            a = policy(ps=ps, peng=peng, cat=cat, adm=adm, t=eng.tick, t_start=t_start, spec=spec_e,
+                       view=lambda tt, rec=rec: public_view(pre, rec, tt))
             if a["kind"] in ("cl", "tr", "staff") and not A.admissible(eng, a, spec_e.n, t_start):
                 a = cat[0]  # cannot happen: commitments are public (zero-lag plan events); kept as a guard
             A.apply(eng, a, W._Cal(prov, spec_e.drop))

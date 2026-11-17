@@ -1,0 +1,2 @@
+R1 wall 3.3 decision cpu [1.7, 1.5] ['none', 'none'] 2490.0
+F wall 6.1 decision cpu [3.1, 3.3] ['coord', 'none'] 2490.0

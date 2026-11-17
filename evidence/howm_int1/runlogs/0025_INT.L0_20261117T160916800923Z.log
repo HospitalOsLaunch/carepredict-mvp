@@ -1,0 +1,4 @@
+params d=128 317460
+params d=320 1899540
+2 wall 18.18 decision cpu s [5.658, 5.49, 4.38, 0.09, 5.686, 5.625, 5.58] ['tr_w1', 'tr_w1', 'cl_w1', 'cl_w1', 'cl_w1', 'cl_w1', 'cl_w1'] 26505.0
+8 wall 7.94 decision cpu s [7.293, 7.149, 0.217, 0.219] ['av', 'staff_U6_w1', 'cl_w2', 'none'] 24840.0
