@@ -88,7 +88,7 @@ def test_i5_capacity_override_scheduled_and_restored(ep):
     a = next(x for x in A.catalogue(eng, sp.units) if x["id"] == "tr_w1")
     A.apply(eng, a, prov)
     base = eng.c_tr
-    assert eng.active_extra("tr", a["start"]) == 1 and eng.active_extra("tr", a["end"]) == 0
+    assert eng.active_extra("tr", a["start"]) == a["k"] == A.intensity(sp.n) and eng.active_extra("tr", a["end"]) == 0
     while eng.tick < a["start"] + 2:
         eng.step(prov)
     assert eng.c_tr == base  # override applied inside step only

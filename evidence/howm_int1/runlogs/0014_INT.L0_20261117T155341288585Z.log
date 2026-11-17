@@ -1,0 +1,38 @@
+........F.....F......                                                    [100%]
+=================================== FAILURES ===================================
+_____________ test_i5_capacity_override_scheduled_and_restored[4] ______________
+
+ep = (IntSpec(part='INT_TESTS', idx=3, n=4, units=['U0', 'U1', 'U2', 'U3'], ekey=4836893435431233326, start_utc='2027-01-11...aced', 'SU0init_BU002', 'U0', {'acuity': 3, 'bed': 'BU002', 'iso': False, 'placed_min': -3360, ...}), ...], 't0': 192})
+
+    def test_i5_capacity_override_scheduled_and_restored(ep):
+        sp, pre = ep
+        eng, prov, _ = L.start_future(pre, sp, 1)
+        a = next(x for x in A.catalogue(eng, sp.units) if x["id"] == "tr_w1")
+        A.apply(eng, a, prov)
+        base = eng.c_tr
+>       assert eng.active_extra("tr", a["start"]) == 1 and eng.active_extra("tr", a["end"]) == 0
+E       AssertionError: assert (2 == 1)
+E        +  where 2 = active_extra('tr', 216)
+E        +    where active_extra = EngineN(units={'U0': Unit(name='U0', beds=['BU000', 'BU001', 'BU002', 'BU003', 'BU004', 'BU005', 'BU006', 'BU007', 'BU...'U2': 0, 'U3': 0, 'U0': 196}, hourly=[], on_event=<hospitalos.howmint.world.Recorder object at 0x7f5bcff045d0>, _seq=0).active_extra
+
+tests/howm_int1/test_world.py:91: AssertionError
+_____________ test_i5_capacity_override_scheduled_and_restored[8] ______________
+
+ep = (IntSpec(part='INT_TESTS', idx=3, n=8, units=['U0', 'U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7'], ekey=483689343543123332...aced', 'SU0init_BU002', 'U0', {'acuity': 3, 'bed': 'BU002', 'iso': False, 'placed_min': -3360, ...}), ...], 't0': 192})
+
+    def test_i5_capacity_override_scheduled_and_restored(ep):
+        sp, pre = ep
+        eng, prov, _ = L.start_future(pre, sp, 1)
+        a = next(x for x in A.catalogue(eng, sp.units) if x["id"] == "tr_w1")
+        A.apply(eng, a, prov)
+        base = eng.c_tr
+>       assert eng.active_extra("tr", a["start"]) == 1 and eng.active_extra("tr", a["end"]) == 0
+E       AssertionError: assert (4 == 1)
+E        +  where 4 = active_extra('tr', 216)
+E        +    where active_extra = EngineN(units={'U0': Unit(name='U0', beds=['BU000', 'BU001', 'BU002', 'BU003', 'BU004', 'BU005', 'BU006', 'BU007', 'BU...'U5': 0, 'U6': 0, 'U0': 196}, hourly=[], on_event=<hospitalos.howmint.world.Recorder object at 0x7f5bd00c7a10>, _seq=0).active_extra
+
+tests/howm_int1/test_world.py:91: AssertionError
+=========================== short test summary info ============================
+FAILED tests/howm_int1/test_world.py::test_i5_capacity_override_scheduled_and_restored[4]
+FAILED tests/howm_int1/test_world.py::test_i5_capacity_override_scheduled_and_restored[8]
+2 failed, 19 passed in 4.04s

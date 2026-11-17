@@ -165,8 +165,8 @@ def branch(pre_like: dict, spec_e: W.IntSpec, eng0: Any, seq: list[dict | None],
 
 
 def _shift(eng: Any, a: dict, t: int, spec_e: W.IntSpec) -> dict | None:
-    if a["kind"] in ("none", "coord"):
-        return dict(a, start=t, end=t + (24 * TPH if a["kind"] == "coord" else 0))
+    if a["kind"] in ("none", "coord", "av"):
+        return dict(a, start=t, end=t + (24 * TPH if a["kind"] in ("coord", "av") else 0))
     sl = A.slots(t, 4)
     i = a["slot"] - 1
     if i >= len(sl):
@@ -183,7 +183,7 @@ def sequences(cat: list[dict], adm: list[bool], rng: np.random.Generator | None 
         if ok:
             out.append([a, None])
     for a, ok in zip(cat, adm):
-        if ok and a["kind"] in ("cl", "tr", "staff"):
+        if ok and a["kind"] in ("cl", "tr", "staff", "av"):
             out.append([a, a])
     out.append([cat[0], cat[1]])
     return out

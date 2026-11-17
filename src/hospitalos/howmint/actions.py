@@ -5,8 +5,11 @@ Intervention = (kind, resource/unit, start, end, staff_hours) with admissibility
   coord       historical action: transports requested now for authorised stays + cleaning 'compat' 24 h.
               Admissible only if it does something: an eligible stay exists or compat is not active
               (no free repetition of an executed coordination).
-  cl / tr     +1 shared cleaning / transport agent on an 8-h slot [06,14) or [14,22) among the first 4 slots
-              starting >= 2 h after the decision (deferred plan allowed)
+  cl / tr     +k shared cleaning / transport agents (k = max(1, n/2), scaled with size, decided at the qualification
+              before any comparison) on an 8-h slot [06,14) or [14,22) among the first 4 slots starting >= 2 h after
+              the decision (deferred plan allowed); costs 8 k staff-hours
+  av          external downstream: +max(1, n/4) purchased external slots for the next 24 h (structures with M6);
+              costs 8 staff-hours-equivalent (coordination with the external facility)
   staff       +1 pool nurse (IDE) for unit u on one of the first 2 slots (offer confirmation and no-show are
               exogenous, provider law)
 Budgets (staff-hours): daily = 8 x n/2 (counted on the day of the slot start), weekly = 7 x daily over the
@@ -57,18 +60,27 @@ def eligible_coord(eng: Any) -> bool:
     return eng.cleaning_mode_until < eng.tick
 
 
+def intensity(n_units: int) -> int:
+    return max(1, n_units // 2)
+
+
 def catalogue(eng: Any, units: list[str]) -> list[dict]:
     """All interventions of the current decision with their admissibility flag (same list for every policy)."""
     t0 = eng.tick
+    n = len(units)
+    k = intensity(n)
     sl = slots(t0, 4)
     acts = [{"kind": "none", "res": "", "unit": "", "slot": 0, "start": t0, "end": t0, "staff_hours": 0.0},
             {"kind": "coord", "res": "", "unit": "", "slot": 0, "start": t0, "end": t0 + 24 * TPH, "staff_hours": 0.0}]
     for res in ("cl", "tr"):
         for i, (a, b) in enumerate(sl):
-            acts.append({"kind": res, "res": res, "unit": "", "slot": i + 1, "start": a, "end": b, "staff_hours": float(STAFF_H)})
+            acts.append({"kind": res, "res": res, "unit": "", "slot": i + 1, "start": a, "end": b, "staff_hours": float(STAFF_H * k), "k": k})
     for un in units:
         for i, (a, b) in enumerate(sl[:2]):
-            acts.append({"kind": "staff", "res": "staff", "unit": un, "slot": i + 1, "start": a, "end": b, "staff_hours": float(STAFF_H)})
+            acts.append({"kind": "staff", "res": "staff", "unit": un, "slot": i + 1, "start": a, "end": b, "staff_hours": float(STAFF_H), "k": 1})
+    if eng.spec_meta.get("aval_slots", 0) > 0:
+        acts.append({"kind": "av", "res": "av", "unit": "", "slot": 0, "start": t0, "end": t0 + 24 * TPH, "staff_hours": float(STAFF_H),
+                     "k": max(1, n // 4)})
     for a in acts:
         a["id"] = f"{a['kind']}{'_' + a['unit'] if a['unit'] else ''}{'_w' + str(a['slot']) if a['slot'] else ''}"
     return acts
@@ -99,7 +111,7 @@ def apply(eng: Any, a: dict, prov: Any) -> None:
         eng.emit("plan", "coord", coordinate=True, cleaning="compat", reinforcement="none")
         eng.apply_plan(Plan(True, "compat", "none"), prov)
         return
-    c = {"res": a["res"], "unit": a["unit"], "start": a["start"], "end": a["end"], "k": 1, "staff_hours": a["staff_hours"], "issued": eng.tick}
+    c = {"res": a["res"], "unit": a["unit"], "start": a["start"], "end": a["end"], "k": a.get("k", 1), "staff_hours": a["staff_hours"], "issued": eng.tick}
     eng.commitments.append(c)
     eng.emit("plan", f"commit_{a['id']}@{eng.tick}", commit=c)
     if a["kind"] == "staff":
@@ -110,8 +122,8 @@ def descriptor(a: dict, t0: int) -> list[float]:
     """Explicit action descriptor (nature, resource, intensity, start, duration, staff-hours); the unit is
     given separately as a node index for the structured models."""
     return [float(a["kind"] == "none"), float(a["kind"] == "coord"), float(a["kind"] == "cl"), float(a["kind"] == "tr"),
-            float(a["kind"] == "staff"), 1.0 if a["kind"] in ("cl", "tr", "staff") else 0.0,
+            float(a["kind"] == "staff"), float(a["kind"] == "av"), float(a.get("k", 0)) if a["kind"] in ("cl", "tr", "staff", "av") else 0.0,
             (a["start"] - t0) / TPH, (a["end"] - a["start"]) / TPH, a["staff_hours"]]
 
 
-DESC_NAMES = ("a_none", "a_coord", "a_cl", "a_tr", "a_staff", "a_intensity", "a_start_h", "a_dur_h", "a_staff_h")
+DESC_NAMES = ("a_none", "a_coord", "a_cl", "a_tr", "a_staff", "a_av", "a_intensity", "a_start_h", "a_dur_h", "a_staff_h")

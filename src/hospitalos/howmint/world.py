@@ -247,7 +247,7 @@ class EngineN(Engine):
             return
         if getattr(st, "aval", False) and st.departed is None:
             day = self.tick // TPD
-            if self.aval_used.get(day, 0) < self.spec_meta["aval_slots"] and (not self.aval_blocked or self.aval_blocked[0] == st.sid):
+            if self.aval_used.get(day, 0) < self.aval_cap(self.tick) and (not self.aval_blocked or self.aval_blocked[0] == st.sid):
                 self.aval_used[day] = self.aval_used.get(day, 0) + 1
                 if st.sid in self.aval_blocked:
                     self.aval_blocked.remove(st.sid)
@@ -258,6 +258,10 @@ class EngineN(Engine):
         Engine.depart(self, st)
 
     # ---- commitments (scheduled capacity) and calendar
+    def aval_cap(self, t: int) -> int:
+        """External downstream slots of the day: structural slots + purchased slots active at t (commitment 'av')."""
+        return self.spec_meta["aval_slots"] + self.active_extra("av", t)
+
     def active_extra(self, res: str, t: int) -> int:
         return sum(c["k"] for c in self.commitments if c["res"] == res and c["start"] <= t < c["end"])
 
@@ -266,7 +270,7 @@ class EngineN(Engine):
         if t % TPH == 0 and self.aval_blocked:
             for sid in list(self.aval_blocked):
                 st = self.stays[sid]
-                if self.aval_used.get(t // TPD, 0) >= self.spec_meta["aval_slots"]:
+                if self.aval_used.get(t // TPD, 0) >= self.aval_cap(t):
                     break
                 self.aval_blocked.remove(sid)
                 self.aval_used[t // TPD] = self.aval_used.get(t // TPD, 0) + 1
