@@ -1,0 +1,44 @@
+{
+ "envelope": "HOWM2_BFRAG_CLOSURE_ENVELOPE.zip",
+ "sha256": "f08ceda9f151e9900bf38fc518895e14e4207e6cbbd2885b60782730c64bb1dc",
+ "bytes": 36073048,
+ "bad": [],
+ "manifest": {
+  "envelope": "HOWM2_BFRAG_CLOSURE_ENVELOPE",
+  "decision": "n.6",
+  "scientific_package": {
+   "file": "scientific_package/HOWM2_P2_BFRAG_FINAL.zip",
+   "sha256": "47e07ef7523f926a73b63a3c3df0c24e25b979a07146d8507f2185ae11f39511",
+   "intact": true
+  },
+  "receipt_is_external": true,
+  "c1_closure_envelope": "HOWM2_C1_CLOSURE_ENVELOPE.zip (separate, see evidence/howm2_c1_closure/CLOSURE_ENVELOPE.json)",
+  "note": "the ledger copy here may contain records written after the scientific package was built (package, receipt)",
+  "files": {
+   "scientific_package/HOWM2_P2_BFRAG_FINAL.zip": {
+    "sha256": "47e07ef7523f926a73b63a3c3df0c24e25b979a07146d8507f2185ae11f39511",
+    "bytes": 35991161
+   },
+   "receipt/RESTORE_RECEIPT_BFRAG.json": {
+    "sha256": "d8153018653d5a831c8459e4b10c9a488d511f0c56a2bbb90a5160c164ab7179",
+    "bytes": 836
+   },
+   "docs/RAPPORT_BFRAG.md": {
+    "sha256": "5747cd1376eb5132afa070b46feef37a7dafbd64b05f4c3ef907718d324d1f14",
+    "bytes": 14042
+   },
+   "docs/PROTOCOLE_BFRAG.md": {
+    "sha256": "d5b56cfc396a95f9c58e94a4f0e8ba4d93913487bba9a7ebe82e82eca2a0537c",
+    "bytes": 19534
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.jsonl": {
+    "sha256": "503c0352fad2571d93065870cd5013f1187afa91354577cadd46f18c4f23d9ed",
+    "bytes": 44871
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.anchor.json": {
+    "sha256": "960842675f3bbf51bc200a6d7e630d151ab3f391a59f207fa038d8ffae928b8e",
+    "bytes": 232
+   }
+  }
+ }
+}

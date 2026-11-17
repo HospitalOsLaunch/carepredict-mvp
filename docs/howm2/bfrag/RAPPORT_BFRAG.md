@@ -226,9 +226,24 @@ transport.
 | BF.TUNE | 549 |
 | BF.CONF | 1 094 |
 | BF.ANAL | 8,5 |
-| BF.REST | voir le reçu |
+| BF.REST (paquet, reçu, enveloppe) | 138,2 |
 
-- **Total avant paquet :** environ 1 906 s.
+- **Total :** **2 044,3 s** sur 11 400 (CPU cumulé déclaré : 6 855 s). Coûts de la clôture C1 : 2,5 s.
+
+**Paquet et reçu**
+- Paquet scientifique `HOWM2_P2_BFRAG_FINAL.zip`, sha256 `47e07ef7…f39511`, commit 90a326ef. Il
+  ne contient pas son reçu.
+- Reçu indépendant `evidence/howm2_bfrag_receipt/RESTORE_RECEIPT_BFRAG.json`, obtenu dans un
+  répertoire neuf ; ses sections sont distinctes :
+  - **Intégrité** : 180 fichiers, 0 erreur.
+  - **Tests** : 11 réussis.
+  - **Reproduction des analyses** : TUNE, CONF et compléments descriptifs identiques.
+  - **Régénérations réellement exécutées** : 2 mondes CONF et 1 monde TUNE avec son contrôle
+    apparié, identiques hors temps de calcul.
+  - **Non reproduit** : les 141 autres fichiers de mondes (empreintes vérifiées), les balayages DEV,
+    le pilote, l'entraînement C1.
+- Enveloppe de clôture `HOWM2_BFRAG_CLOSURE_ENVELOPE.zip` : paquet intact, reçu externe, rapport,
+  protocole, registre, manifeste.
 - **CPU :** il est enregistré par commande ; environ 1 690 s de CPU par tranche de 420 s, avec 4
   processus.
 - **Mémoire :** maxima des processus enfants journalisés, environ 0,3 Go par monde.
