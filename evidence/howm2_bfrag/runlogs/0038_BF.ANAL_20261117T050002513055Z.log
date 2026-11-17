@@ -1,0 +1,83 @@
+{
+ "verdicts": {
+  "technical_validity": "VALIDE",
+  "anticipation": "AVANTAGE_ANTICIPATION",
+  "decision": "INDETERMINE",
+  "learned_network": "NON TEST\u00c9"
+ },
+ "decision": {
+  "competitor": "R0",
+  "gain_competitor_minus_F_patient_min": 30.625,
+  "ci95": [
+   -52.490234375,
+   122.75537109374989
+  ],
+  "constraints_respected": true
+ },
+ "anticipation_primary": {
+  "competitor": "R1",
+  "delta_auc72_F_minus_comp": 0.11674074074074081,
+  "ci95": [
+   0.047438554998351125,
+   0.2024592549058042
+  ]
+ },
+ "auc72": {
+  "R0": {
+   "auc": 0.7071604938271605,
+   "ci95": [
+    0.6250037013628663,
+    0.7807537206252009
+   ]
+  },
+  "R1": {
+   "auc": 0.6786172839506173,
+   "ci95": [
+    0.5715726952725653,
+    0.7757068698091487
+   ]
+  },
+  "F": {
+   "auc": 0.7953580246913581,
+   "ci95": [
+    0.6980659606547667,
+    0.873213184532826
+   ]
+  },
+  "O": {
+   "auc": 0.8986666666666666,
+   "ci95": [
+    0.8413611862892907,
+    0.9397166155717596
+   ]
+  }
+ },
+ "losses": {
+  "ref": 40509,
+  "R0": 40311,
+  "R2": 40393,
+  "F": 40280,
+  "O": 40320
+ },
+ "validity": {
+  "V2_prevalence_168": 0.2799479166666667,
+  "V2_pass": true,
+  "V3_active_at_t0": 0.0,
+  "V3_pass": true,
+  "V4_worlds_without_rupture": 0.3125,
+  "V4_SC6_vs_SF": [
+   0.0703125,
+   0.4192708333333333
+  ],
+  "V4_pass": true,
+  "family_prevalence_168": {
+   "SC4_high_load_absorbable": 0.1953125,
+   "SC5_drop_with_margin": 0.15625,
+   "SC6_low_load": 0.0703125,
+   "SF1_cleaning_window": 0.5390625,
+   "SF2_transport_window": 0.3984375,
+   "SF3_planned_drop": 0.3203125
+  },
+  "V2_V4_pass": true
+ }
+}

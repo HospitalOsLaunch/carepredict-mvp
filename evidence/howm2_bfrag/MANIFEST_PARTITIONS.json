@@ -1,0 +1,23 @@
+{
+ "partitions": {
+  "BFRAG_DEV": {
+   "size": 8,
+   "keys": "key('HOWM1','BFRAG_DEV',i)",
+   "ekeys_sha256": "c1d2f2e3666a547e5bef49c054cad77bcbb8d73c6879f8d9c2f916bf1b693d20",
+   "use": "operating-range scans (reference policy only) and cost pilot; no comparison"
+  },
+  "BFRAG_TUNE": {
+   "size": 48,
+   "keys": "key('HOWM1','BFRAG_TUNE',i)",
+   "ekeys_sha256": "7ac785122d6660310d6733291270bd646ae286e69d9cb2cc1b73c236366a164f",
+   "use": "design iteration 1 (D2), thresholds and competitor choice"
+  },
+  "BFRAG_CONF": {
+   "size": 96,
+   "keys": "key('HOWM1','BFRAG_CONF',i)",
+   "ekeys_sha256": "bcf9201424349e13a765c0c671c0a310eeebc9298cfd6289c177d33ea1259303",
+   "use": "single confirmation campaign after FREEZE_BFRAG"
+  }
+ },
+ "disjoint_from": "G0, HOWM2_REF/DIAG, C1 partitions (distinct partition names in the key)"
+}

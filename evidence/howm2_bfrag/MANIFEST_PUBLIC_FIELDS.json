@@ -1,0 +1,29 @@
+{
+ "public_inputs_R0_R1_R2_F": [
+  "observations with avail_min < 15*t0 (strict)",
+  "static description (units, beds incl. buffer beds, rosters, c_tr, c_cl)",
+  "nominal planned capacity per unit",
+  "public calendar of planned cleaning-capacity reduction",
+  "B0 parameters fitted on HOWM-1 TRAIN 0-31 (R1)",
+  "REF priors (F)"
+ ],
+ "simulation_keys_public_methods": "derived from a hash of the public history (core.public_key)",
+ "never_in_public_inputs": [
+  "world seed / ekey",
+  "partition and index",
+  "scenario family",
+  "true theta, mechanism, regime",
+  "rupture markers / labels",
+  "evaluation realisations"
+ ],
+ "privileged_O": [
+  "true engine state at t0",
+  "true theta and mechanism",
+  "true regime at t0"
+ ],
+ "tests": [
+  "T-B1",
+  "T-B2",
+  "T-B2b"
+ ]
+}

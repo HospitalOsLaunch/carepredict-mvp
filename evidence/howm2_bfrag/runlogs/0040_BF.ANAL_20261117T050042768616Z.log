@@ -1,0 +1,108 @@
+{
+ "delta_auc72_F_minus_R0": {
+  "estimate": 0.08819753086419757,
+  "ci95": [
+   0.002002416423571904,
+   0.17258576143468898
+  ]
+ },
+ "delta_auc72_O_minus_F": {
+  "estimate": 0.10330864197530853
+ },
+ "plans_chosen": {
+  "R0": {
+   "1|compat|pool_IDE_A": 53,
+   "1|compat|pool_IDE_B": 43
+  },
+  "R2": {
+   "0|fifo|none": 62,
+   "0|compat|none": 10,
+   "1|fifo|none": 17,
+   "1|compat|none": 7
+  },
+  "F": {
+   "0|fifo|none": 52,
+   "0|compat|none": 5,
+   "1|fifo|none": 35,
+   "1|compat|none": 4
+  },
+  "O": {
+   "0|fifo|none": 49,
+   "0|compat|none": 4,
+   "1|fifo|none": 36,
+   "1|compat|none": 7
+  }
+ },
+ "onset_hours_after_t0_ref": {
+  "n": 215,
+  "quantiles": [
+   22.150000000000002,
+   29.75,
+   55.75,
+   101.75,
+   129.35
+  ]
+ }
+}
+{
+ "SC4_high_load_absorbable": {
+  "rupt72": 0.07,
+  "auc72": {
+   "R0": 0.8,
+   "R1": 0.5,
+   "F": 0.58,
+   "O": 0.85
+  },
+  "gain_R0_minus_F": -25
+ },
+ "SC5_drop_with_margin": {
+  "rupt72": 0.08,
+  "auc72": {
+   "R0": 0.98,
+   "R1": 0.75,
+   "F": 0.9,
+   "O": 0.98
+  },
+  "gain_R0_minus_F": 0
+ },
+ "SC6_low_load": {
+  "rupt72": 0.03,
+  "auc72": {
+   "R0": 0.63,
+   "R1": 0.43,
+   "F": 0.47,
+   "O": 0.47
+  },
+  "gain_R0_minus_F": -1
+ },
+ "SF1_cleaning_window": {
+  "rupt72": 0.34,
+  "auc72": {
+   "R0": 0.75,
+   "R1": 0.72,
+   "F": 0.78,
+   "O": 0.87
+  },
+  "gain_R0_minus_F": 375
+ },
+ "SF2_transport_window": {
+  "rupt72": 0.3,
+  "auc72": {
+   "R0": 0.92,
+   "R1": 0.77,
+   "F": 0.88,
+   "O": 0.9
+  },
+  "gain_R0_minus_F": -166
+ },
+ "SF3_planned_drop": {
+  "rupt72": 0.18,
+  "auc72": {
+   "R0": 0.69,
+   "R1": 0.55,
+   "F": 0.69,
+   "O": 0.85
+  },
+  "gain_R0_minus_F": 0
+ }
+}
