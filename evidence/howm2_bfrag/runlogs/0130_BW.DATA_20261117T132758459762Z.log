@@ -1,0 +1,32 @@
+F................                                                        [100%]
+=================================== FAILURES ===================================
+_____________________ test_w1_partitions_new_and_disjoint ______________________
+
+    def test_w1_partitions_new_and_disjoint():
+        K.register()
+        W.register()
+        new = {G.establishment("BF2W_CONF", s).ekey for s in range(60)}
+        for p in list(C.PARTS) + ["BFRAG_DEV", "BFRAG_TUNE", "BFRAG_CONF"]:
+>           assert not new & {G.establishment(p, s).ekey for s in range(60)}, p
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/bfrag2w/test_pilot.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/bfrag2w/test_pilot.py:44: in <setcomp>
+    assert not new & {G.establishment(p, s).ekey for s in range(60)}, p
+                      ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+partition = 'BF2_DEV', index = 6, token = None
+
+    def establishment(partition: str, index: int, token: str | None = None) -> EstablishmentSpec:
+        if partition in SEALED and token != "RESERVE-UNSEALED-BY-PROTOCOL":
+            raise SealedPartitionError(f"partition {partition} is sealed (G0): generation refused")
+        if partition not in PARTITION_SIZES or not 0 <= index < PARTITION_SIZES[partition]:
+>           raise ValueError(f"unknown establishment {partition}/{index}")
+E           ValueError: unknown establishment BF2_DEV/6
+
+src/hospitalos/howm/generator.py:128: ValueError
+=========================== short test summary info ============================
+FAILED tests/bfrag2w/test_pilot.py::test_w1_partitions_new_and_disjoint - Val...
+1 failed, 16 passed in 6.64s

@@ -1,0 +1,3 @@
+{"reallocation": "150 s of the unallocated margin (206.728 s) added to BW.EVAL: 1100 -> 1250 s", "when": "after the cost pilot, before any data generation for learning and before any comparison",
+ "reason": "final evaluation projected at ~1000 s wall (48 decisions x ~75 s CPU / 4 cores) plus analysis; keeps margin for a 540-s command granularity",
+ "remaining_unallocated_margin_s": 56.728, "no_transfer_from_another_lot": true}

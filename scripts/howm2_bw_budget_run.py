@@ -18,7 +18,7 @@ BW_CAPS = {  # decision n.8 allocation of the verified balance 2636.728 s (see H
     "BW.STAB": 200.0,
     "BW.DATA": 330.0,
     "BW.LEARN": 400.0,
-    "BW.EVAL": 1100.0,
+    "BW.EVAL": 1250.0,  # 1100 + 150 s from the unallocated margin (note eval_margin, before any comparison)
     "BW.REST": 360.0,
 }
 R.LOT_CAPS.update(BW_CAPS)
