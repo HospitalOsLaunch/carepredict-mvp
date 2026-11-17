@@ -23,6 +23,8 @@ def main():
         raise SystemExit("scientific package hash mismatch")
     items = {"scientific_package/" + z0.name: z0,
              "receipt/RESTORE_RECEIPT_BW.json": ROOT / "evidence/howm2_bfrag2w_receipt/RESTORE_RECEIPT_BW.json",
+             "receipt/RECEIPT_ATTEMPT1_DEFECT.json": ROOT / "evidence/howm2_bfrag2w_receipt/RECEIPT_ATTEMPT1_DEFECT.json",
+             "receipt/RECEIPT_ATTEMPT2_DEFECT.json": ROOT / "evidence/howm2_bfrag2w_receipt/RECEIPT_ATTEMPT2_DEFECT.json",
              "docs/RAPPORT_PILOTE_W.md": ROOT / "docs/howm2/bfrag/RAPPORT_PILOTE_W.md",
              "docs/PROTOCOLE_PILOTE_W.md": ROOT / "docs/howm2/bfrag/PROTOCOLE_PILOTE_W.md",
              "docs/ADDENDUM_BFRAG2_CLOTURE.md": ROOT / "docs/howm2/bfrag/ADDENDUM_BFRAG2_CLOTURE.md",
@@ -33,7 +35,7 @@ def main():
     man = {"envelope": "HOWM2_BW_CLOSURE_ENVELOPE", "decision": "n.8",
            "scientific_package": {"file": "scientific_package/" + z0.name, "sha256": pk["sha256"], "intact": True},
            "receipt_is_external": True, "previous_envelope": "HOWM2_BFRAG2_CLOSURE_ENVELOPE.zip (B-FRAG 2, decision n.7, unchanged)",
-           "note": "the ledger copy and the report here are later than the scientific package (package, receipt, delivery section)",
+           "note": "the ledger copy and the report here are later than the scientific package (package, receipts, delivery section); receipt attempts 1 and 2 failed on receipt-script defects, attempt 3 passed on the same package",
            "files": {k: {"sha256": sha(v), "bytes": Path(v).stat().st_size} for k, v in items.items()}}
     st = Path(tempfile.mkdtemp(prefix="envbw_", dir=OUT))
     for k, v in items.items():

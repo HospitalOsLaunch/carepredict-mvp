@@ -212,7 +212,36 @@ moyenne de décision mesurable sur ces 16 structures.
   de livraison.
 - Aucun dépassement, aucune expiration ; CPU local seulement, 0 €.
 
-## 8. Suites possibles (propositions, non lancées)
+## 8. Paquet, reçu indépendant, enveloppe
+
+- **Paquet scientifique** `HOWM2_P2_BW_FINAL.zip` : sha256 `40590505…a80592d`, 2 163 fichiers, commit 67ce03b. Il
+  contient le code, les preuves B-FRAG 2 et celles du pilote (données, modèles D et W, checkpoints, courbes),
+  ainsi que le registre.
+- **Reçu indépendant** (répertoire neuf, **tentative 3**, registre #172) :
+
+| Contrôle | Résultat |
+|---|---|
+| Intégrité | 2 163 fichiers, 0 écart |
+| Tests | 17 passés |
+| Rechargement | empreintes des modèles vérifiées ; prédictions enregistrées reproduites sur 6 décisions |
+| Réajustements exécutés | D (4 configurations, sélection identique) et W graine 1 : prédictions identiques |
+| Reproduction | `DECOMPOSITION_F_R1.json` et `RESULTS_PILOT_W.json` identiques, mesures de temps exclues |
+| Régénérations exécutées | 1 décision d'évaluation finale (avec ses propres E = 12 et Md = 32) et 1 origine TRAIN (K = 2) : identiques |
+
+- **Règle d'exclusion documentée :** `timing_s`, `seconds`, `maxrss_mb` ; dans les résultats, les temps de
+  réponse et les durées d'apprentissage.
+- **Non reproduits :** les 47 autres décisions et les 199 autres origines (empaquetées, vérifiées par empreinte,
+  utilisées par l'analyse reproduite) ; les graines 0 et 2 de W ; la vérification DEV.
+- **Tentatives 1 (#163) et 2 (#166) : échec du script de reçu**, pas des résultats.
+  - Écrasement de `LEARN_W.json` par le réajustement.
+  - Copie de référence prise après le réajustement de D.
+  - Champs de durée comparés.
+
+  Ces défauts sont consignés (`RECEIPT_ATTEMPT1_DEFECT.json`, `RECEIPT_ATTEMPT2_DEFECT.json`, diagnostic #169).
+- **Enveloppe** `HOWM2_BW_CLOSURE_ENVELOPE.zip`. Le rapport et le registre qu'elle contient sont postérieurs au
+  paquet.
+
+## 9. Suites possibles (propositions, non lancées)
 
 1. **Évaluation plus large**, à plus de structures et à E plus grand, avant toute conclusion sur W contre D.
 2. **Données d'apprentissage plus riches** : plusieurs origines par épisode, plus de futurs.
