@@ -23,6 +23,7 @@ def main():
         raise SystemExit("scientific package hash mismatch")
     items = {"scientific_package/" + z0.name: z0,
              "receipt/RESTORE_RECEIPT_BFRAG2.json": ROOT / "evidence/howm2_bfrag2_receipt/RESTORE_RECEIPT_BFRAG2.json",
+             "receipt/RECEIPT_ATTEMPT1_DEFECT.json": ROOT / "evidence/howm2_bfrag2_receipt/RECEIPT_ATTEMPT1_DEFECT.json",
              "docs/RAPPORT_BFRAG2.md": ROOT / "docs/howm2/bfrag/RAPPORT_BFRAG2.md",
              "docs/PROTOCOLE_BFRAG2.md": ROOT / "docs/howm2/bfrag/PROTOCOLE_BFRAG2.md",
              "docs/AUDIT_F_BFRAG2.md": ROOT / "docs/howm2/bfrag/AUDIT_F_BFRAG2.md",
@@ -31,7 +32,7 @@ def main():
     man = {"envelope": "HOWM2_BFRAG2_CLOSURE_ENVELOPE", "decision": "n.7",
            "scientific_package": {"file": "scientific_package/" + z0.name, "sha256": pk["sha256"], "intact": True},
            "receipt_is_external": True, "previous_envelope": "HOWM2_BFRAG_CLOSURE_ENVELOPE.zip (B-FRAG 1, decision n.6, unchanged)",
-           "note": "the ledger copy here may contain records written after the scientific package was built (package, receipt)",
+           "note": "the ledger copy and the report here are later than the scientific package (package, receipts, delivery section); receipt attempt 1 failed on a receipt-script defect, attempt 2 passed on the same package",
            "files": {k: {"sha256": sha(v), "bytes": Path(v).stat().st_size} for k, v in items.items()}}
     st = Path(tempfile.mkdtemp(prefix="envbf2_", dir=OUT))
     for k, v in items.items():

@@ -164,6 +164,25 @@ Effet sur les minutes de rupture (base − relâché, IC 95 %) :
 - Reste avant paquet et reçu : 3 064,4 s sur les 9 355,654 s disponibles. Les chiffres définitifs, avec le paquet et le reçu, sont dans le message de livraison et dans le registre.
 - Aucun dépassement, aucun délai d'expiration. Concurrence 4, mémoire ≈ 305 Mo par processus.
 
+## Paquet et reçu indépendant
+
+- **Paquet scientifique** `HOWM2_P2_BFRAG2_FINAL.zip` : sha256 `04cbc021…f4dea2`, 1 694 fichiers, commit 23ab97d. Vérifié dans un répertoire neuf.
+- **Reçu indépendant** (répertoire neuf, tentative 2, registre #117) :
+
+| Contrôle | Résultat |
+|---|---|
+| Intégrité | 1 694 fichiers, 0 écart |
+| Tests | 21 passés |
+| Références apprises | 24 modèles rechargés (hashes), ré-ajustés depuis TRAIN, prédictions identiques |
+| Reproduction | `SELECTION_VAL.json` et `RESULTS_BFRAG2_CONF.json` identiques |
+| Régénérations exécutées (identiques hors temps) | 1 épisode CONF-S complet, 1 épisode VAL-S, 1 épisode CONF de vues, 1 structure de contrôles appariés |
+
+- **Tentative 1 (#114) : échec du script de reçu**, pas de la science.
+  - Paramètre `Md` passé différemment du fichier d'origine.
+  - Temps `score_seconds` non retiré.
+  - Défaut consigné dans `RECEIPT_ATTEMPT1_DEFECT.json`, corrigé, puis reçu relancé sur le même paquet.
+- **Enveloppe de clôture** : `HOWM2_BFRAG2_CLOSURE_ENVELOPE.zip`. Le rapport et le registre qu'elle contient sont postérieurs au paquet.
+
 ## Suite (proposition, non exécutée)
 
 1. Agrandir CONF-S, ou concentrer les structures sur les familles avec ruptures, pour trancher la question B (environ 8 structures avec paires aujourd'hui).

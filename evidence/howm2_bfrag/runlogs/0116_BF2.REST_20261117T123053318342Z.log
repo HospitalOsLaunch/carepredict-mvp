@@ -1,0 +1,44 @@
+{
+ "package": "HOWM2_P2_BFRAG2_FINAL.zip",
+ "package_sha256": "04cbc02160531e87df4cb29e04559695360a968d93080f9a68e4882337f4dea2",
+ "1_integrity": {
+  "files": 1694,
+  "bad": [],
+  "ok": true
+ },
+ "2_tests": {
+  "exit": 0,
+  "tail": [
+   "21 passed in 19.86s"
+  ]
+ },
+ "3_learned_references": {
+  "reload_hash_ok": true,
+  "refit_predictions_identical": true,
+  "learn_json_identical": true,
+  "models": 24,
+  "ok": true
+ },
+ "4_analysis_reproduction": {
+  "identical": {
+   "SELECTION_VAL.json": true,
+   "RESULTS_BFRAG2_CONF.json": true
+  },
+  "ok": true
+ },
+ "5_regenerations_executed": {
+  "items": {
+   "S/BF2_CONF/s005_e1": true,
+   "S/BF2_VAL/s007_e2": true,
+   "F/BF2_CONF/s150_e0": true,
+   "PAIRED/BF2_CONF/s011": true
+  },
+  "ok": true
+ },
+ "6_not_reproduced": [
+  "the other CONF/VAL/TRAIN episode files (packaged, hash-checked, used by the reproduced analyses)",
+  "DEV cost checks and Monte-Carlo stability study (packaged outputs only)"
+ ],
+ "seconds": 208.4,
+ "ok": true
+}
