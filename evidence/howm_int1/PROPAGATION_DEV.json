@@ -1,0 +1,923 @@
+{
+ "rows": [
+  {
+   "n": 4,
+   "s": 100,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 4837.5,
+    "downstream": 22.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 101,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 727.5,
+    "downstream": -7.5
+   },
+   "aval_unlimited": {
+    "upstream": 4770.0,
+    "downstream": 5857.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 102,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1537.5,
+    "downstream": -37.5
+   },
+   "aval_unlimited": {
+    "upstream": 900.0,
+    "downstream": 952.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 103,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 82.5,
+    "downstream": -37.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 104,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 5130.0,
+    "downstream": -22.5
+   },
+   "aval_unlimited": {
+    "upstream": 75.0,
+    "downstream": 1777.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 105,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 382.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 106,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 3270.0,
+    "downstream": 7.5
+   },
+   "aval_unlimited": {
+    "upstream": -60.0,
+    "downstream": 82.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 107,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 607.5,
+    "downstream": -502.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": -45.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 108,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 2130.0,
+    "downstream": 7.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 109,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1050.0,
+    "downstream": -7.5
+   },
+   "aval_unlimited": {
+    "upstream": 2280.0,
+    "downstream": 2280.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 110,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 11767.5,
+    "downstream": 52.5
+   },
+   "aval_unlimited": {
+    "upstream": 2595.0,
+    "downstream": 4732.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 111,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 22.5,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 112,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 8430.0,
+    "downstream": -30.0
+   },
+   "aval_unlimited": {
+    "upstream": 420.0,
+    "downstream": 420.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 113,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 6405.0,
+    "downstream": -7.5
+   },
+   "aval_unlimited": {
+    "upstream": 270.0,
+    "downstream": 2520.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 114,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 4725.0,
+    "downstream": -22.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 115,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 1207.5,
+    "downstream": -217.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 116,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 30.0,
+    "downstream": -67.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 117,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 30.0,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 1335.0,
+    "downstream": 4020.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 118,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1897.5,
+    "downstream": -30.0
+   },
+   "aval_unlimited": {
+    "upstream": 360.0,
+    "downstream": 1177.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 119,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": -15.0,
+    "downstream": -285.0
+   },
+   "aval_unlimited": {
+    "upstream": 45.0,
+    "downstream": -67.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 120,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 3877.5,
+    "downstream": -67.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 121,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 292.5,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 3217.5,
+    "downstream": 10222.5
+   }
+  },
+  {
+   "n": 4,
+   "s": 122,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 3247.5,
+    "downstream": -22.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 465.0
+   }
+  },
+  {
+   "n": 4,
+   "s": 123,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 120.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 100,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 14655.0,
+    "downstream": -52.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 101,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 652.5,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 802.5,
+    "downstream": 1440.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 102,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 3030.0,
+    "downstream": -105.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 103,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 292.5,
+    "downstream": 30.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 104,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 16582.5,
+    "downstream": -105.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 105,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 855.0,
+    "downstream": 2842.5
+   }
+  },
+  {
+   "n": 8,
+   "s": 106,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 3495.0,
+    "downstream": -15.0
+   },
+   "aval_unlimited": {
+    "upstream": 1095.0,
+    "downstream": 2122.5
+   }
+  },
+  {
+   "n": 8,
+   "s": 107,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 3022.5,
+    "downstream": 37.5
+   },
+   "aval_unlimited": {
+    "upstream": -37.5,
+    "downstream": 330.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 108,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 3217.5,
+    "downstream": 0.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 109,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1365.0,
+    "downstream": -7.5
+   },
+   "aval_unlimited": {
+    "upstream": 330.0,
+    "downstream": 255.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 110,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 11175.0,
+    "downstream": -322.5
+   },
+   "aval_unlimited": {
+    "upstream": 5017.5,
+    "downstream": 8827.5
+   }
+  },
+  {
+   "n": 8,
+   "s": 111,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 2842.5,
+    "downstream": 22.5
+   },
+   "aval_unlimited": {
+    "upstream": 397.5,
+    "downstream": 382.5
+   }
+  },
+  {
+   "n": 8,
+   "s": 112,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 7620.0,
+    "downstream": -52.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 113,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 9847.5,
+    "downstream": 322.5
+   },
+   "aval_unlimited": {
+    "upstream": 247.5,
+    "downstream": 1485.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 114,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 5640.0,
+    "downstream": 7.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 990.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 115,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 4747.5,
+    "downstream": -180.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 116,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 1515.0,
+    "downstream": -15.0
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 117,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1507.5,
+    "downstream": 22.5
+   },
+   "aval_unlimited": {
+    "upstream": 817.5,
+    "downstream": 2437.5
+   }
+  },
+  {
+   "n": 8,
+   "s": 118,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1327.5,
+    "downstream": -37.5
+   },
+   "aval_unlimited": {
+    "upstream": 1732.5,
+    "downstream": 3315.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 119,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 4852.5,
+    "downstream": -405.0
+   },
+   "aval_unlimited": {
+    "upstream": 15.0,
+    "downstream": -30.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 120,
+   "bottlenecks": [
+    "transfer"
+   ],
+   "no_bed_hold": {
+    "upstream": 6142.5,
+    "downstream": -22.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 0.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 121,
+   "bottlenecks": [
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 1372.5,
+    "downstream": 15.0
+   },
+   "aval_unlimited": {
+    "upstream": 1207.5,
+    "downstream": 4035.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 122,
+   "bottlenecks": [
+    "transfer",
+    "aval"
+   ],
+   "no_bed_hold": {
+    "upstream": 6382.5,
+    "downstream": -172.5
+   },
+   "aval_unlimited": {
+    "upstream": 120.0,
+    "downstream": 150.0
+   }
+  },
+  {
+   "n": 8,
+   "s": 123,
+   "bottlenecks": [
+    "cleaning"
+   ],
+   "no_bed_hold": {
+    "upstream": 240.0,
+    "downstream": -22.5
+   },
+   "aval_unlimited": {
+    "upstream": 0.0,
+    "downstream": 172.5
+   }
+  }
+ ],
+ "summary": {
+  "n4|aval": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 1417.5,
+     "se": 923.2551110067034
+    },
+    "downstream": {
+     "mean": -3.75,
+     "se": 1.5309310892394865
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 1978.75,
+     "se": 680.4006555576893
+    },
+    "downstream": {
+     "mean": 4213.75,
+     "se": 1292.4049973144386
+    }
+   },
+   "structures": 6
+  },
+  "n4|cleaning": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 317.5,
+     "se": 184.82818598182837
+    },
+    "downstream": {
+     "mean": -173.75,
+     "se": 74.7791888384284
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 7.5,
+     "se": 6.846531968814577
+    },
+    "downstream": {
+     "mean": 1.25,
+     "se": 24.136115746601263
+    }
+   },
+   "structures": 6
+  },
+  "n4|transfer": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 4072.5,
+     "se": 1065.161372750627
+    },
+    "downstream": {
+     "mean": -26.25,
+     "se": 13.891319231808044
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 82.5,
+     "se": 62.62487524937675
+    },
+    "downstream": {
+     "mean": 366.25,
+     "se": 265.15571289967215
+    }
+   },
+   "structures": 6
+  },
+  "n4|transfer+aval": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 4407.5,
+     "se": 1408.771258343005
+    },
+    "downstream": {
+     "mean": -8.75,
+     "se": 12.551975276160057
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 632.5,
+     "se": 382.85794798245126
+    },
+    "downstream": {
+     "mean": 1235.0,
+     "se": 661.6897561042739
+    }
+   },
+   "structures": 6
+  },
+  "n8|aval": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 2457.5,
+     "se": 1366.084352568806
+    },
+    "downstream": {
+     "mean": 58.75,
+     "se": 48.32884318223781
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 710.0,
+     "se": 134.05533683271747
+    },
+    "downstream": {
+     "mean": 2082.5,
+     "se": 489.485273867696
+    }
+   },
+   "structures": 6
+  },
+  "n8|cleaning": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 2666.25,
+     "se": 759.9460301560895
+    },
+    "downstream": {
+     "mean": -86.25,
+     "se": 65.63987926558063
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 62.5,
+     "se": 61.508806957486456
+    },
+    "downstream": {
+     "mean": 142.5,
+     "se": 67.5
+    }
+   },
+   "structures": 6
+  },
+  "n8|transfer": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 8288.75,
+     "se": 2272.8488570697646
+    },
+    "downstream": {
+     "mean": -41.25,
+     "se": 14.00334781400505
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 0.0,
+     "se": 0.0
+    },
+    "downstream": {
+     "mean": 0.0,
+     "se": 0.0
+    }
+   },
+   "structures": 6
+  },
+  "n8|transfer+aval": {
+   "no_bed_hold": {
+    "upstream": {
+     "mean": 5175.0,
+     "se": 1289.928534842144
+    },
+    "downstream": {
+     "mean": -107.5,
+     "se": 46.28939763415953
+    }
+   },
+   "aval_unlimited": {
+    "upstream": {
+     "mean": 1327.5,
+     "se": 722.9712995686621
+    },
+    "downstream": {
+     "mean": 2567.5,
+     "se": 1234.563013107607
+    }
+   },
+   "structures": 6
+  }
+ },
+ "note": "single-channel paired controls; positive = channel adds wait (base - control) over 72 h"
+}
