@@ -1,0 +1,60 @@
+{
+ "A": {
+  "primary_S2_minus_S1": {
+   "auc_a": 0.8621307375109849,
+   "auc_b": 0.8657473129182721,
+   "diff": -0.0036165754072872303,
+   "ci": [
+    -0.012472151451416625,
+    0.004501413831832849
+   ],
+   "level": 0.9833333333333333,
+   "n_structures": 200,
+   "n_structures_with_pairs": 96,
+   "pairs": 29586.0,
+   "B": 2000
+  },
+  "verdict": "EQUIVALENT"
+ },
+ "B": {
+  "competitor_Cstar": "LR/HGB-S2",
+  "primary_F_minus_Cstar": {
+   "auc_a": 0.798284045271997,
+   "auc_b": 0.9014238773274917,
+   "diff": -0.1031398320554947,
+   "ci": [
+    -0.22218771685401548,
+    0.019573021347318045
+   ],
+   "level": 0.9833333333333333,
+   "n_structures": 24,
+   "n_structures_with_pairs": 8,
+   "pairs": 2739.0,
+   "B": 2000
+  },
+  "verdict": "INDETERMINE"
+ },
+ "C": {
+  "Dstar": "R1_planner",
+  "primary_Dstar_minus_F": {
+   "mean": 253.984375,
+   "ci": [
+    79.24348958333333,
+    461.0961371527778
+   ],
+   "level": 0.9833333333333333,
+   "n_structures": 24
+  },
+  "verdict": "GAIN_F",
+  "mean_loss": {
+   "none": 33586.953125,
+   "historical": 32661.666666666668,
+   "structural": 33114.21875,
+   "gated_S2": 33115.182291666664,
+   "R1_planner": 32480.963541666668,
+   "F_planner": 32226.979166666668,
+   "O_planner": 32248.307291666668,
+   "expost_best": 32073.619791666668
+  }
+ }
+}
