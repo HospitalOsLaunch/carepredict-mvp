@@ -81,9 +81,9 @@ def build_policies(fr: dict, panel: str, n: int, interval_h: int, timing: dict, 
             st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(S / "int1_runs" / spec["norm_run"] / "norm.npz").items()}
             sc = PL.dset_scorer(net, st)
         else:
-            import train_d  # noqa: F401  (class definitions for unpickling)
+            import train_d
 
-            sc = PL.d_scorer(pickle.loads((S / "int1_runs" / spec["run"] / f"{spec['name']}.pkl").read_bytes()))
+            sc = PL.d_scorer(train_d.load_d_model(S / "int1_runs" / spec["run"] / f"{spec['name']}.pkl"))
         pols[name] = PL.model_policy(sc, interval_h, timing.setdefault(name, []))
     return pols
 

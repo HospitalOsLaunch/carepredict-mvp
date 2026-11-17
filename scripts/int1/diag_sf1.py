@@ -22,7 +22,7 @@ import torch  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts/int1"))
-import train_d  # noqa: E402,F401
+import train_d  # noqa: E402
 import train_w as TW  # noqa: E402
 from hospitalos.howmint import data as DA  # noqa: E402
 from hospitalos.howmint import models as MO  # noqa: E402
@@ -76,7 +76,7 @@ def main() -> int:
     va = DA.situations(DA.load(S / "int1_corpus", "INT_VAL", list(range(300))))
     ms = [load_w(r) for r in a.w]
     models, st = [m for m, _ in ms], ms[0][1]
-    dm = pickle.loads((S / "int1_runs" / a.d.split("/")[0] / f"{a.d.split('/')[1]}.pkl").read_bytes())
+    dm = train_d.load_d_model(S / "int1_runs" / a.d.split("/")[0] / f"{a.d.split('/')[1]}.pkl")
     out = {"W": a.w, "D": a.d}
     # (b)(c) by family, TRAIN (first 600 2-unit situations) vs VAL
     for name, sits in (("train", [s for s in tr if s["n"] == 2][:600]), ("val", [s for s in va if s["n"] == 2])):
@@ -117,7 +117,7 @@ def main() -> int:
     curve = []
     for u in range(a.fit_updates):
         pick = np.random.choice(len(sf1), 4, replace=False)
-        loss, parts = TW.batch_loss(m, [sf1[i] for i in pick], st, 0)
+        loss, parts = TW.batch_loss(m, [sf1[i] for i in pick], st, 20000)  # full 36-step horizon (slots w3/w4 lie beyond 24 h)
         opt.zero_grad()
         loss.backward()
         torch.nn.utils.clip_grad_norm_(m.parameters(), 1.0)
@@ -127,7 +127,7 @@ def main() -> int:
             e = summarise([errs(w_pred([m], st, s)[0], s) for s in sf1])
             m.train()
             curve.append({"upd": u + 1, "loss": float(loss), "eff": parts["eff"], **e})
-    out["small_set_fit_SF1"] = {"situations": len(sf1), "curve": curve, "note": "fit of 16 TRAIN SF1 situations (12-step horizon curriculum stage)"}
+    out["small_set_fit_SF1"] = {"situations": len(sf1), "curve": curve, "note": "fit of 16 TRAIN SF1 situations, full 36-step horizon (first run used the 12-step stage: diagnostic defect, superseded)"}
     (ROOT / "evidence/howm_int1/DIAG_SF1.json").write_text(json.dumps(out, indent=1, default=float))
     print(json.dumps({"val_ALL": out["by_family_val"].get("ALL"), "val_SF1": out["by_family_val"].get("SF1_cleaning_window"),
                       "train_SF1": out["by_family_train"].get("SF1_cleaning_window"), "fit": curve[-1] if curve else None,

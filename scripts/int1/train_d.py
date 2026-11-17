@@ -208,3 +208,17 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def load_d_model(path):
+    """D models were pickled while this file ran as __main__: map those class names to this module."""
+    import io
+
+    mod = sys.modules[__name__]
+
+    class _U(pickle.Unpickler):
+        def find_class(self, module, name):
+            if module == "__main__" and name in ("BaseEffect", "RI"):
+                return getattr(mod, name)
+            return super().find_class(module, name)
+    return _U(io.BytesIO(Path(path).read_bytes())).load()

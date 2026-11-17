@@ -36,6 +36,25 @@
 | Campagne finale et analyse | code prêt (à geler) | `eval_campaign.py`, `analyse.py` |
 | Incident : course d'écriture sur le registre | réparé, archivé, verrou ajouté | `LEDGER_INT1.broken_at_line38.jsonl`, note `incident` |
 
+## Résultats intermédiaires (sélection, pas de test)
+
+**Palier 1, VAL complet (300 structures), à deux unités :**
+
+| Système | Regret relatif de décision | RMSE des effets | Spearman |
+|---|---|---|---|
+| W-S, graine 0 | 2,1 % | 355 | — |
+| W-S, graine 1 | 1,7 % | 367 | — |
+| W-S, graine 2 | 2,1 % | 376 | — |
+| D-HGB8 | 3,6 % | 313 | 0,52 |
+| D-Ridge | 4,1 % | 414 | 0,40 |
+
+**Diagnostic SF1** (`DIAG_SF1.json`) :
+
+- W choisit mieux que D dans la plupart des familles, mais estime moins bien l'ampleur des effets en SF1 (RMSE TRAIN 797 contre 477 ; VAL 671 contre 540). C'est un défaut d'ajustement, pas de généralisation.
+- L'ajustement d'un petit lot de 16 situations SF1 à horizon complet réussit (RMSE 770 → 98, regret ≈ 0) : implémentation et optimisation ne sont pas en cause ; la capacité, la durée ou les données restent ouvertes.
+- La première exécution du diagnostic était limitée à un horizon de 12 pas : c'était un défaut du diagnostic, conservé dans `DIAG_SF1_run1_horizon12.json`.
+- Dérive avec l'horizon : MSE des états de 0,16 à 2 h, 0,26 à 72 h.
+
 ## Prochaines étapes
 
 1. Palier 2 : empaquetage memmap ; continuation S et M ; D au palier 2.
