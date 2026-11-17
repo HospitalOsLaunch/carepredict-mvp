@@ -1,0 +1,4 @@
+{"observation": "with 6-8 concurrent ledgered commands (corpus 4 processes, 3 single-seed trainers, D), each command's wall is counted separately while CPU is time-sliced: the corpus fell from ~230 to ~37 structures per command and the wall envelope was consumed ~6x faster than elapsed time",
+ "decision": "several seeds now run inside ONE command (train_multi.py: process group counted once, CPU of all descendants summed, as the mandate allows); at most 2 concurrent commands (corpus + one training group); no thread oversubscription (D single-threaded)",
+ "unchanged": "protocol, models, selection rules, sizes; the 3 W-S tier-1 runs finish in their current form",
+ "budget_at_note": "about 25 000 s wall used of 259 200 s"}
