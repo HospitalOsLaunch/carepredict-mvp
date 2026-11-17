@@ -1,0 +1,3 @@
+{"receipt_attempt": 2, "ledger_record": 166, "result": "ok=false: section 5 (RESULTS_PILOT_W.json) still not identical; all other sections ok",
+ "diagnosis": "ledger #169: a local rerun of the frozen analysis differs from the recorded RESULTS only by a run-time field (W_ensemble_state_rollout_reanalysis); in the receipt, the packaged-outputs snapshot was taken AFTER the D refit, so LEARN_D.json carried a new fit duration (costs.D_fit_seconds_selected)",
+ "fix": "snapshot of packaged learning outputs taken before any refit; costs.D_fit_seconds_selected added to the excluded run-time fields; rerun on the same package (attempt 3)"}

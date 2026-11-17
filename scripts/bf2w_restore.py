@@ -83,6 +83,8 @@ def main() -> int:
     out["3_reload_and_reproduce_predictions"] = {"model_hashes_ok": hashes_ok, "recorded_predictions_reproduced": bool(rep), "decisions_checked": len(recs),
                                                  "ok": bool(hashes_ok and rep)}
     # (4) refits
+    packaged = {f: (ev / f).read_bytes() for f in ("LEARN_W.json", "LEARN_D.json")}  # captured BEFORE any refit
+    packaged |= {f"models/{q.name}": q.read_bytes() for q in (ev / "models").glob("*")}
     keep_d = json.loads((ev / "LEARN_D.json").read_text())
     old_d = {k: M.load_d(k) for k in keep_d["configs"]}
     keep_w1 = M.load_w(1)
@@ -93,8 +95,6 @@ def main() -> int:
     val = M.load_val()
     d_same = all(np.allclose(old_d[k].predict(M.xvec(v), np.array([M.adesc(a) for a in v["actions"]])),
                              M.load_d(k).predict(M.xvec(v), np.array([M.adesc(a) for a in v["actions"]])), atol=1e-9) for k in old_d for v in val[:10])
-    packaged = {f: (ev / f).read_bytes() for f in ("LEARN_W.json", "LEARN_D.json")}
-    packaged |= {f"models/{q.name}": q.read_bytes() for q in (ev / "models").glob("*")}
     run("scripts/bf2w_models.py", "train_w", "--seeds", "1")
     new_w1 = M.load_w(1)
     w_same = bool(np.allclose(M.w_predict_costs(*keep_w1, val), M.w_predict_costs(*new_w1, val), rtol=1e-5, atol=1e-3))
@@ -113,9 +113,10 @@ def main() -> int:
     for d_ in (rr, kr):  # run-time measurements excluded (documented rule): response times and training durations
         d_.get("costs", {}).pop("response_seconds_per_decision", None)
         d_.get("costs", {}).pop("W_training_seconds_per_seed", None)
+        d_.get("costs", {}).pop("D_fit_seconds_selected", None)
     same = {"DECOMPOSITION_F_R1.json": bool(close(keep["DECOMPOSITION_F_R1.json"], json.loads((ev / "DECOMPOSITION_F_R1.json").read_text()))),
             "RESULTS_PILOT_W.json": bool(close(kr, rr))}
-    out["5_analysis_reproduction"] = {"identical": same, "note": "run-time measurements excluded: costs.response_seconds_per_decision, costs.W_training_seconds_per_seed", "ok": all(same.values())}
+    out["5_analysis_reproduction"] = {"identical": same, "note": "run-time measurements excluded: costs.response_seconds_per_decision, costs.W_training_seconds_per_seed, costs.D_fit_seconds_selected", "ok": all(same.values())}
     regen = {f"eval/{ef.name}": bool(ef.exists() and close(strip(eref), strip(json.loads(ef.read_text())))),
              f"train/{tf_.name}": bool(tf_.exists() and close(strip(tref), strip(json.loads(tf_.read_text())))),
              f"train/{tf_.with_suffix('.npz').name}": bool(tf_.with_suffix(".npz").exists() and tf_.with_suffix(".npz").read_bytes() == tnpz)}

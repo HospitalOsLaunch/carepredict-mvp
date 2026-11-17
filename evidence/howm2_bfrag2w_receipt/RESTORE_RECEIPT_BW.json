@@ -10,7 +10,7 @@
  "2_tests": {
   "exit": 0,
   "tail": [
-   "17 passed in 8.12s"
+   "17 passed in 7.26s"
   ]
  },
  "3_reload_and_reproduce_predictions": {
@@ -30,7 +30,7 @@
    "DECOMPOSITION_F_R1.json": true,
    "RESULTS_PILOT_W.json": false
   },
-  "note": "re-timed W re-analysis duration excluded (run-time measurement)",
+  "note": "run-time measurements excluded: costs.response_seconds_per_decision, costs.W_training_seconds_per_seed",
   "ok": false
  },
  "6_regenerations_executed": {
@@ -56,6 +56,6 @@
   "DEV numerical check (packaged output only)",
   "B-FRAG 2 runs (see the B-FRAG 2 receipt)"
  ],
- "seconds": 109.4,
+ "seconds": 110.1,
  "ok": false
 }
