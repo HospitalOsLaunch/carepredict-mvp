@@ -96,12 +96,34 @@ def _append_locked(path, record):
     with open(path.with_name(".ledger.lock"), "w") as lk:
         fcntl.flock(lk, fcntl.LOCK_EX)
         try:
-            return _append_unlocked(path, record)
+            R.base.read_ledger = _read_unlocked  # base.append re-reads the ledger: already under the exclusive lock
+            try:
+                return _append_unlocked(path, record)
+            finally:
+                R.base.read_ledger = _read_locked
         finally:
             fcntl.flock(lk, fcntl.LOCK_UN)
 
 
 R.base.append = _append_locked
+_read_unlocked = R.base.read_ledger
+
+
+def _read_locked(path):
+    """Readers take a shared lock so that they never see a half-written line (incident: JSONDecodeError)."""
+    import fcntl
+
+    if not Path(path).exists():
+        return _read_unlocked(path)
+    with open(Path(path).with_name(".ledger.lock"), "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_SH)
+        try:
+            return _read_unlocked(path)
+        finally:
+            fcntl.flock(lk, fcntl.LOCK_UN)
+
+
+R.base.read_ledger = _read_locked
 
 if __name__ == "__main__":
     if R.LEDGER.exists():

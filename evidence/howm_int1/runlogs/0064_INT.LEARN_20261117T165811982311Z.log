@@ -1,0 +1,10 @@
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/sklearn/linear_model/_ridge.py:228: LinAlgWarning: An ill-conditioned matrix detected: slice 0 has rcond = 3.683505767071438e-08.
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/int1/train_d.py", line 197, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/train_d.py", line 125, in main
+    blob = pickle.dumps(m)
+           ^^^^^^^^^^^^^^^
+AttributeError: Can't pickle local object 'main.<locals>.RI'

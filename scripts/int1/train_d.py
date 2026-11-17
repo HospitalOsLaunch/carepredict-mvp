@@ -14,7 +14,7 @@ effect = C(seq) - C(none,none). TRAIN-only normalisation. Selection among config
 import os
 import sys
 
-os.environ.setdefault("OMP_NUM_THREADS", "4")
+os.environ["OMP_NUM_THREADS"] = "1"  # no oversubscription next to the other running commands
 import argparse  # noqa: E402
 import json  # noqa: E402
 import pickle  # noqa: E402
@@ -46,6 +46,24 @@ def rows(sits):
             eff.append(cum[i] - cum[0])
             grp.append(gi)
     return np.array(X), np.array(base), np.array(eff), np.array(grp)
+
+
+DESC_SL = slice(54 * 3 + 30 + 8, 54 * 3 + 30 + 8 + 20)
+
+
+class RI:
+    """Ridge effect model with descriptor x pooled-unit interactions (module level: picklable)."""
+
+    def __init__(self, m):
+        self.m = m
+
+    @staticmethod
+    def phi(Zx):
+        d = Zx[:, DESC_SL]
+        return np.concatenate([Zx, (d[:, :, None] * Zx[:, None, :54]).reshape(len(Zx), -1)], 1)
+
+    def predict(self, Zx):
+        return self.m.predict(self.phi(Zx))
 
 
 class BaseEffect:
@@ -82,6 +100,7 @@ def main() -> int:
     ap.add_argument("--which", default="ridge")
     ap.add_argument("--budget", type=float, default=450.0)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--config", type=int, default=None, help="index of the single configuration to fit")
     a = ap.parse_args()
     t0 = time.time()
     tr = DA.situations(DA.load(CORPUS, "INT_TRAIN", list(range(TIER[a.tier]))))
@@ -96,23 +115,17 @@ def main() -> int:
         X, yb, ye, _g = rows(tr)
         mu, sd = X.mean(0), X.std(0) + 1e-6
         Z = (X - mu) / sd
-        for h in ((1.0, 100.0) if a.which == "ridge" else (4, 8)):
+        first = np.r_[True, _g[1:] != _g[:-1]]  # one row per situation for the base model (its target is situation-level)
+        hs = (1.0, 100.0) if a.which == "ridge" else (4, 8)
+        if a.config is not None:
+            hs = (hs[a.config],)
+        for h in hs:
             ts = time.time()
             if a.which == "ridge":
-                desc = Z[:, 54 * 3 + 30 + 8: 54 * 3 + 30 + 8 + 20]
-                inter = (desc[:, :, None] * Z[:, None, :54]).reshape(len(Z), -1)
-                base = Ridge(alpha=10.0).fit(Z, yb)
-
-                class RI:
-                    def __init__(self, m):
-                        self.m = m
-
-                    def predict(self, Zx):
-                        d = Zx[:, 54 * 3 + 30 + 8: 54 * 3 + 30 + 8 + 20]
-                        return self.m.predict(np.concatenate([Zx, (d[:, :, None] * Zx[:, None, :54]).reshape(len(Zx), -1)], 1))
-                eff = RI(Ridge(alpha=h).fit(np.concatenate([Z, inter], 1), ye))
+                base = Ridge(alpha=10.0).fit(Z[first], yb[first])
+                eff = RI(Ridge(alpha=h).fit(RI.phi(Z), ye))
             else:
-                base = HistGradientBoostingRegressor(max_depth=h, max_iter=300, min_samples_leaf=40, l2_regularization=1.0, random_state=0).fit(Z, yb)
+                base = HistGradientBoostingRegressor(max_depth=h, max_iter=300, min_samples_leaf=40, l2_regularization=1.0, random_state=0).fit(Z[first], yb[first])
                 eff = HistGradientBoostingRegressor(max_depth=h, max_iter=300, min_samples_leaf=40, l2_regularization=1.0, random_state=0).fit(Z, ye)
             m = BaseEffect(base, eff, mu, sd)
             sec = time.time() - ts

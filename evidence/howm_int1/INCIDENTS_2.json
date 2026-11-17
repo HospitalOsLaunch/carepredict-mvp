@@ -1,0 +1,6 @@
+{"incidents": [
+ {"what": "runner read the ledger while another command appended (JSONDecodeError on a half-written line); chain W_t1_S_s0 stopped after cmd 1", "ledger_integrity": "chain intact (84 records)", "fix": "shared fcntl lock on reads (exclusive on appends); chain resumed from checkpoint"},
+ {"what": "corpus tier-2 cmd 2 hit the 540-s limit (in-flight jobs slow under 8-process contention); killed by the runner, wall counted (#82)", "fix": "corpus launch budget lowered from 470 to 380 s"},
+ {"what": "D HGB fits hit the 540-s limit twice (OpenMP 4 threads oversubscribed next to 7 processes; base model fitted on repeated rows)", "fix": "one OpenMP thread for D; base model fitted on one row per situation; one configuration per command"},
+ {"what": "D Ridge first run failed: local class not picklable", "fix": "module-level class"}],
+ "unfavourable_trials_kept": "all timed-out and failed commands remain in the ledger with their wall time"}
