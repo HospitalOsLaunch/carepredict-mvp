@@ -1,0 +1,52 @@
+{
+ "envelope": "HOWM2_BFRAG2_CLOSURE_ENVELOPE.zip",
+ "sha256": "3436e3be276b2862677af998da8360f426604718d1177e379f4716d88ad1e6f6",
+ "bytes": 41840464,
+ "bad": [],
+ "manifest": {
+  "envelope": "HOWM2_BFRAG2_CLOSURE_ENVELOPE",
+  "decision": "n.7",
+  "scientific_package": {
+   "file": "scientific_package/HOWM2_P2_BFRAG2_FINAL.zip",
+   "sha256": "04cbc02160531e87df4cb29e04559695360a968d93080f9a68e4882337f4dea2",
+   "intact": true
+  },
+  "receipt_is_external": true,
+  "previous_envelope": "HOWM2_BFRAG_CLOSURE_ENVELOPE.zip (B-FRAG 1, decision n.6, unchanged)",
+  "note": "the ledger copy and the report here are later than the scientific package (package, receipts, delivery section); receipt attempt 1 failed on a receipt-script defect, attempt 2 passed on the same package",
+  "files": {
+   "scientific_package/HOWM2_P2_BFRAG2_FINAL.zip": {
+    "sha256": "04cbc02160531e87df4cb29e04559695360a968d93080f9a68e4882337f4dea2",
+    "bytes": 41675120
+   },
+   "receipt/RESTORE_RECEIPT_BFRAG2.json": {
+    "sha256": "8c6928d751b8c21fc54831890bdee9b3711a65ed7d025c8c4e7c3966a6d93a3d",
+    "bytes": 988
+   },
+   "receipt/RECEIPT_ATTEMPT1_DEFECT.json": {
+    "sha256": "6169533fc072b5d639773816e53234795ad22564a1995eaf37e68f5767521700",
+    "bytes": 757
+   },
+   "docs/RAPPORT_BFRAG2.md": {
+    "sha256": "bcc161adc5ceeb80c2e1ecdb1c8d8509a027d8848570c1637c8b352d7c0f212b",
+    "bytes": 13345
+   },
+   "docs/PROTOCOLE_BFRAG2.md": {
+    "sha256": "2f01e6e1f459109737b8b43b5c283082bf9b2188c97b8e4431ceee79e7c8aa58",
+    "bytes": 14798
+   },
+   "docs/AUDIT_F_BFRAG2.md": {
+    "sha256": "013a318e3cca20e9de5a7b23e58d96aed447cd86648be92194c3f1e2903f282f",
+    "bytes": 4323
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.jsonl": {
+    "sha256": "ee65f65a3c64449fe93ca65cd686f71b6dfef4f12d41e1da6ad4d68d84707ced",
+    "bytes": 127896
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.anchor.json": {
+    "sha256": "381153be32bc511b2b65ca61c204f84a478776801cae26a8dca2a338d37d46ff",
+    "bytes": 234
+   }
+  }
+ }
+}
