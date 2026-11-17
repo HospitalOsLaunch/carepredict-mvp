@@ -125,12 +125,24 @@ def main() -> int:
     todo = [(a.part, s, e, a.tag, a.mode, a.Mr, a.Md, a.E) for s in range(a.s0, a.s1) for e in range(a.episodes)
             if not (EV / "runs" / a.tag / a.part / f"s{s:03d}_e{e}.json").exists()]
     n = 0
+    # Slot scheduler: a new episode starts only while the elapsed time is below --budget; episodes in
+    # flight always finish (no work is killed). Command wall <= budget + one episode.
     with get_context("fork").Pool(a.par, maxtasksperchild=1) as pool:
-        for _ in pool.imap_unordered(job, todo):
-            n += 1
-            if time.time() - t0 > a.budget:
-                pool.terminate()
+        pending, it = [], iter(todo)
+        while True:
+            while len(pending) < a.par and time.time() - t0 < a.budget:
+                nxt = next(it, None)
+                if nxt is None:
+                    break
+                pending.append(pool.apply_async(job, (nxt,)))
+            if not pending:
                 break
+            time.sleep(0.5)
+            done = [r for r in pending if r.ready()]
+            for r in done:
+                r.get()
+                pending.remove(r)
+                n += 1
     d = EV / "runs" / a.tag / a.part
     print(json.dumps({"tag": a.tag, "part": a.part, "done_now": n, "files": len(list(d.glob("*.json"))) if d.exists() else 0,
                       "seconds": round(time.time() - t0, 1)}))
