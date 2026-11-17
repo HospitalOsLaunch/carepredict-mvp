@@ -1,0 +1,20 @@
+{
+ "schema": "HOWM2_DECISION_8",
+ "date": "2026-11-17",
+ "previous": "HOWM2_DECISION_7 (B-FRAG 2, delivered: commit 9d4490e, package HOWM2_P2_BFRAG2_FINAL.zip sha256 04cbc021...f4dea2, envelope sha256 3436e3be...e6f6)",
+ "decision": "B-FRAG 2 scientific closure (dated addendum, descriptive decomposition of the F-R1 gain, targeted numerical check on DEV/VAL of the calendar-corrected version) and an action-consequence learning pilot: direct cost reference D vs one small learned recurrent dynamics model W (3 seeds), with R1, the historical rule and F as comparators",
+ "mandate": {"path": "docs/howm2/inputs/MANDAT_HOWM2_DECISION_8_PILOTE_ACTIONS.md", "note": "verbatim copy of the uploaded mandate"},
+ "budget_check": {"ledger": "evidence/howm2_bfrag/BUDGET_LEDGER_HOWM2_B.jsonl", "records": 119, "used_wall_s": 8763.272, "remaining_wall_s": 2636.728,
+                  "ceiling_s": 11400, "not_reset": true, "no_transfer": true, "declared_balance_matches": true},
+ "allocation_s": {"BW.CLOSE (decision, addendum, decomposition)": 40, "BW.STAB (DEV/VAL numerical check)": 200,
+                  "BW.DATA (tests, cost pilot, TRAIN trajectories)": 330, "BW.LEARN (D, W x 3 seeds, VAL selection)": 400,
+                  "BW.EVAL (final evaluation campaign + analysis)": 1100, "BW.REST (package, receipt, envelope)": 360, "unallocated margin": 206.728},
+ "reserve_rule": "final evaluation + report + restoration = 1460 s = 55.4 % of the verified balance (>= 25 % required)",
+ "runner": "scripts/howm2_bw_budget_run.py (wrapper; the B-FRAG 2 runner hashed in FREEZE2 is not modified)",
+ "exception": "gradient descent authorised for ONE small recurrent transition model W only (latent 32 or 64, <= 1M parameters, 3 seeds); D = regularised regression / bounded gradient boosting (<= 4 configurations)",
+ "not_authorised": ["C1 palier 2", "C.2a", "AJ-H", "JEPA", "HOWM2-N", "P6", "Transformer / foundation model / downloaded weights", "architecture search", "new closed loop", "GPU", "purchases",
+                    "push, merge, rebase, external publication", "HOWM-1 reserve, DEVTEST, DIAG-DEV", "old CONF/CEVAL for learning, tuning or confirmation",
+                    "modifying G0/F1/F-C1, B-FRAG 1 or B-FRAG 2 frozen files, R1/A/A-prime/C1 results, v6, P5, mvp/computer-use"],
+ "statuses_unchanged": ["PROTOTYPE_UNVALIDATED", "clinical_validation=false", "G2=NO-GO"],
+ "prior_knowledge_declared": "the pilot is designed after seeing B-FRAG 2 results (F decision gain over R1 small; S1 carries the anticipation signal); it is not a hypothesis formulated before B-FRAG 2"
+}
