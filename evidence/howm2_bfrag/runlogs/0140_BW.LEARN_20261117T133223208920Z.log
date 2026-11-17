@@ -1,0 +1,56 @@
+/home/user/carepredict-mvp/scripts/bf2w_models.py:274: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  tl.append([float(loss), float(l_state), float(l_cost), float(l_cum), float(l_eff)])
+/home/user/carepredict-mvp/scripts/bf2w_models.py:274: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  tl.append([float(loss), float(l_state), float(l_cost), float(l_cum), float(l_eff)])
+/home/user/carepredict-mvp/scripts/bf2w_models.py:274: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  tl.append([float(loss), float(l_state), float(l_cost), float(l_cum), float(l_eff)])
+[
+ {
+  "seed": 0,
+  "n_params": 26144,
+  "selected_epoch": 24,
+  "selected_val": [
+   32385.972222,
+   2176.6679748893835
+  ],
+  "last_epoch": 44,
+  "stop": "patience",
+  "train_origins": 200,
+  "K": 2,
+  "seconds": 33.811927795410156,
+  "sha256_best": "e1c133328252f790a6cca549f78a4f56ad9abb62b3c9817d5642ae1ea58a4253"
+ },
+ {
+  "seed": 1,
+  "n_params": 26144,
+  "selected_epoch": 14,
+  "selected_val": [
+   32485.416667,
+   1745.586944510634
+  ],
+  "last_epoch": 34,
+  "stop": "patience",
+  "train_origins": 200,
+  "K": 2,
+  "seconds": 27.755606174468994,
+  "sha256_best": "137c051efd90a9bbe3325a4c17994894826ee327f51a95330bb475b2d061f0df"
+ },
+ {
+  "seed": 2,
+  "n_params": 26144,
+  "selected_epoch": 58,
+  "selected_val": [
+   32332.534722,
+   2234.345824625179
+  ],
+  "last_epoch": 78,
+  "stop": "patience",
+  "train_origins": 200,
+  "K": 2,
+  "seconds": 65.14575123786926,
+  "sha256_best": "d8a91d9a8bc7f6eb74aeda83fe6e109796a78f09886db47189df2bf885920248"
+ }
+]

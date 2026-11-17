@@ -1,0 +1,4 @@
+{"kind": "implementation defect found by the DEV smoke test (ledger #145), BEFORE any final-evaluation data",
+ "defect": "D models were pickled while scripts/bf2w_models.py ran as __main__; loading them from the evaluation job failed (AttributeError: DModel on __main__)",
+ "fix": "bf2w_models.load_d with an Unpickler mapping __main__.DModel to bf2w_models.DModel; model files unchanged (same bytes, same sha256)",
+ "consequence": "FREEZE_PILOT.json regenerated (only the bf2w_models.py hash changes; selections unchanged); smoke rerun"}

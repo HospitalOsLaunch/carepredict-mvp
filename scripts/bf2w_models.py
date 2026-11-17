@@ -310,11 +310,26 @@ def load_w(seed: int, which: str = "best"):
     return net, ck["norm"]
 
 
+class _DUnpickler(pickle.Unpickler):
+    """D models were pickled while this module ran as __main__ (train_d): map that class name back here."""
+
+    def find_class(self, module, name):
+        if module == "__main__" and name == "DModel":
+            return DModel
+        return super().find_class(module, name)
+
+
+def load_d(name: str) -> "DModel":
+    import io
+
+    return _DUnpickler(io.BytesIO((MD / f"{name}.pkl").read_bytes())).load()
+
+
 def predict_costs(rec: dict) -> dict:
     """Frozen systems (FREEZE_PILOT.json): D selected configuration, W ensemble of the 3 seeds' VAL-selected
     checkpoints (main) and each seed. Public inputs and descriptors only."""
     fr = json.loads((EV / "FREEZE_PILOT.json").read_text())
-    d = pickle.loads((MD / f"{fr['D_selected']}.pkl").read_bytes())
+    d = load_d(fr["D_selected"])
     out = {"D": d.predict(xvec(rec), np.array([adesc(a) for a in rec["actions"]]))}
     seeds = []
     for s in fr["W_seeds"]:

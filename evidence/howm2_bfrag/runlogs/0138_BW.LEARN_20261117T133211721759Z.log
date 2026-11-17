@@ -1,0 +1,52 @@
+{
+ "configs": {
+  "D_ridge_inter_10.0": {
+   "cfg": [
+    "ridge_inter",
+    10.0
+   ],
+   "fit_seconds": 0.716210126876831,
+   "bytes": 10653,
+   "sha256": "88dc16d681000ac62b7221621dca81b82a696089f8402b6d901d193b41d6f1de",
+   "val_decision_loss": 32785.48611111111,
+   "val_effect_rmse": 2466.9714386331384
+  },
+  "D_ridge_inter_1000.0": {
+   "cfg": [
+    "ridge_inter",
+    1000.0
+   ],
+   "fit_seconds": 0.21995019912719727,
+   "bytes": 10653,
+   "sha256": "fdbdc04159da5267bd458fa74be768eb6511da2fb0d3b82ea8b04430f3f5c760",
+   "val_decision_loss": 32871.458333333336,
+   "val_effect_rmse": 2199.847672590757
+  },
+  "D_hgb_3": {
+   "cfg": [
+    "hgb",
+    3
+   ],
+   "fit_seconds": 0.30051445960998535,
+   "bytes": 268062,
+   "sha256": "dd171bf77d11bd8724716ece73d2ab5d79fc9a3dad951250d3d45bc66321e9bd",
+   "val_decision_loss": 32564.0625,
+   "val_effect_rmse": 1719.1349362208052
+  },
+  "D_hgb_5": {
+   "cfg": [
+    "hgb",
+    5
+   ],
+   "fit_seconds": 0.4855201244354248,
+   "bytes": 474953,
+   "sha256": "1beb0dd4575c83a5e6f5d83e2b5cb5ab07977c1dbecab3d2a7a91fe23d0925b3",
+   "val_decision_loss": 32392.5,
+   "val_effect_rmse": 1785.8508118778636
+  }
+ },
+ "selected": "D_hgb_5",
+ "train_rows": 2000,
+ "train_origins": 200,
+ "val_decisions": 54
+}

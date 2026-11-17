@@ -1,0 +1,34 @@
+/home/user/carepredict-mvp/scripts/bf2w_analyse.py:108: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(p, t).statistic
+{
+ "status": "EVALUATION_FINALE_EXECUTEE",
+ "kept_structures": [
+  0,
+  1
+ ],
+ "primary_W_vs_D": {
+  "mean": -310.0,
+  "ci": [
+   -620.0,
+   0.0
+  ],
+  "level": 0.95,
+  "n_structures": 2,
+  "definition": "attente(choix D) - attente(choix W), moyenne par structure; > 0 = W meilleur"
+ },
+ "verdict": "INDETERMINE",
+ "mean_loss": {
+  "none": 60062.5,
+  "historical": 57185.0,
+  "R1": 57595.0,
+  "F": 58212.5,
+  "D": 56875.0,
+  "W": 57185.0,
+  "W_seed0": 57185.0,
+  "W_seed1": 56335.0,
+  "W_seed2": 57185.0,
+  "expost_min (retrospective diagnostic)": 55780.0
+ },
+ "choice_agreement_W_D": 0.6666666666666666
+}
+SMOKE_OK EVALUATION_FINALE_EXECUTEE ['E', 'Md', 'W_trajectories', 'action_effects', 'by_family_mean_loss', 'choice_agreement_W_D', 'choices', 'costs', 'decisions', 'guardrails_W_minus_D_95', 'kept_structures', 'mean_loss', 'planned_structures', 'primary_W_vs_D', 'secondary_differences_95', 'status', 'verdict'] {'D_W_predict': 0.048, 'plan_R1': 1.442, 'plan_F': 2.253, 'evaluate': 1.261, 'W_ensemble_state_rollout_reanalysis': 0.021}
