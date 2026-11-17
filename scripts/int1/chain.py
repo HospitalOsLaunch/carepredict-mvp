@@ -32,6 +32,16 @@ def main() -> int:
                 break
             script, label = "scripts/int1/train_w.py", f"train {opts['--run']} (cmd {k + 1})"
             args = ["--run", opts["--run"], *rest]
+        elif mode == "multi":  # several runs inside one command; stop when all have stopped
+            runs = opts["--runs"].split(",")
+            done = []
+            for r in runs:
+                cp = S / "int1_runs" / r / "curve.json"
+                done.append(cp.exists() and bool(json.loads(cp.read_text())["state"].get("stopped")))
+            if all(done):
+                break
+            script, label = "scripts/int1/train_multi.py", f"train {opts['--runs']} (cmd {k + 1})"
+            args = ["--runs", opts["--runs"], "--seeds", opts["--seeds"], "--", *rest]
         elif mode == "dset":
             cp = S / "int1_runs" / f"D_t{opts['--tier']}_dset" / "last.pt"
             script, label = "scripts/int1/train_d.py", f"train D dset tier {opts['--tier']} (cmd {k + 1})"

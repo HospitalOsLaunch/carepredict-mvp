@@ -143,7 +143,7 @@ def main() -> int:
 
         from hospitalos.howmint import models as MO
 
-        torch.set_num_threads(4)
+        torch.set_num_threads(1)
         torch.manual_seed(a.seed)
         np.random.seed(a.seed)
         st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / ("W_t1_S_s0" if a.tier == 1 else "W_t2_S_s0") / "norm.npz").items()}
@@ -162,7 +162,7 @@ def main() -> int:
         sizes = sorted(groups)
         w = np.array([len(groups[n]) for n in sizes], float)
         w /= w.sum()
-        while time.time() - t0 < a.budget - 30 and not state["stopped"]:
+        while time.time() - t0 < a.budget - 150 and not state["stopped"]:  # keep room for a VAL evaluation before the 540-s limit
             n = sizes[np.random.choice(len(sizes), p=w)]
             Ls = DA.LOOKAHEAD_STEPS[n]
             pick = np.random.choice(groups[n], size=4, replace=False)
