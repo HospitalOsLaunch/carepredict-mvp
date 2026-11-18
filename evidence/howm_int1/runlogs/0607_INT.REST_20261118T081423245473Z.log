@@ -1,0 +1,38 @@
+# Démonstration rejouable HOWM-INT-1 (illustrations)
+
+Les cas montrés sont des **illustrations**. Ils ne remplacent pas les résultats agrégés du rapport.
+Rejouer : `python scripts/int1/demo.py`. Mêmes clés de structure, d'épisode et de futur donnent les mêmes sorties.
+
+## 2 unités, 1 semaine — famille SC6_low_load, régime nominal
+
+Unités : A, B. Décisions toutes les 24 h sur 168 h.
+
+| Politique | Attente cumulée (patients-minutes) | Soins non couverts (min) | Minutes de rupture | Heures-agents | Choix successifs |
+|---|---|---|---|---|---|
+| W_M | 34035 | 7334 | 0 | 0 | coord, coord, coord, coord, coord, coord, coord |
+| historical | 34035 | 7334 | 0 | 0 | coord, coord, coord, coord, coord, coord, coord |
+
+États vrais sous W_M à la fin de chaque intervalle :
+
+- t = 24 h, action `coord` : A 30/30 lits occupés, file 2 (≥ 24 h : 0) ; B 18/18 lits occupés, file 3 (≥ 24 h : 0)
+- t = 48 h, action `coord` : A 27/30 lits occupés, file 1 (≥ 24 h : 0) ; B 18/18 lits occupés, file 4 (≥ 24 h : 0)
+- t = 72 h, action `coord` : A 30/30 lits occupés, file 3 (≥ 24 h : 0) ; B 18/18 lits occupés, file 1 (≥ 24 h : 1)
+- t = 96 h, action `coord` : A 30/30 lits occupés, file 2 (≥ 24 h : 0) ; B 18/18 lits occupés, file 2 (≥ 24 h : 0)
+- t = 120 h, action `coord` : A 29/30 lits occupés, file 0 (≥ 24 h : 0) ; B 17/18 lits occupés, file 1 (≥ 24 h : 1)
+- t = 144 h, action `coord` : A 27/30 lits occupés, file 0 (≥ 24 h : 0) ; B 17/18 lits occupés, file 0 (≥ 24 h : 0)
+- t = 168 h, action `coord` : A 28/30 lits occupés, file 0 (≥ 24 h : 0) ; B 10/18 lits occupés, file 1 (≥ 24 h : 0)
+
+## 8 unités, 24 h — famille N8_tense_calendar, régime tense
+
+Unités : U0, U1, U2, U3, U4, U5, U6, U7. Décisions toutes les 6 h sur 24 h.
+
+| Politique | Attente cumulée (patients-minutes) | Soins non couverts (min) | Minutes de rupture | Heures-agents | Choix successifs |
+|---|---|---|---|---|---|
+| W_M | 9435 | 5748 | 0 | 0 | coord, none, coord, coord |
+| historical | 9435 | 5748 | 0 | 0 | coord, none, coord, coord |
+
+États vrais sous W_M à la fin de chaque intervalle :
+
+- t = 6 h, action `coord` : U0 23/26 lits occupés, file 0 (≥ 24 h : 0) ; U1 13/18 lits occupés, file 0 (≥ 24 h : 0) ; U2 23/27 lits occupés, file 0 (≥ 24 h : 0) ; U3 19/29 lits occupés, file 0 (≥ 24 h : 0) ; U4 22/31 lits occupés, file 0 (≥ 24 h : 0) ; U5 19/21 lits occupés, file 0 (≥ 24 h : 0) ; U6 18/18 lits occupés, file 4 (≥ 24 h : 0) ; U7 18/24 lits occupés, file 1 (≥ 24 h : 0)
+- t = 12 h, action `none` : U0 23/26 lits occupés, file 0 (≥ 24 h : 0) ; U1 13/18 lits occupés, file 0 (≥ 24 h : 0) ; U2 23/27 lits occupés, file 0 (≥ 24 h : 0) ; U3 20/29 lits occupés, file 0 (≥ 24 h : 0) ; U4 27/31 lits occupés, file 0 (≥ 24 h : 0) ; U5 20/21 lits occupés, file 0 (≥ 24 h : 0) ; U6 17/18 lits occupés, file 4 (≥ 24 h : 2) ; U7 20/24 lits occupés, file 0 (≥ 24 h : 0)
+- t = 18 h, action `coord` : U0 24/26 lits occupés, file 0 (≥ 24 h : 0) ; U1 17/18 lits occupés, file 0 (≥ 24 h : 0) ; U2 22/27 lits occupés, file 0 (≥ 24 h : 0) ; U3 20/29 

@@ -1,0 +1,580 @@
+[
+ {
+  "case": {
+   "name": "2 unit\u00e9s, 1 semaine",
+   "n": 2,
+   "part": "INT_DEV",
+   "s": 901,
+   "e": 0,
+   "r": 1,
+   "h0": 48,
+   "nd": 7,
+   "iv": 24,
+   "hz": 168
+  },
+  "family": "SC6_low_load",
+  "regime": "nominal",
+  "bottlenecks": [],
+  "units": [
+   "A",
+   "B"
+  ],
+  "policies": {
+   "W_M": {
+    "choices": [
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord"
+    ],
+    "wait_patient_min": 34035.0,
+    "wait_by_unit": {
+     "A": 14340.0,
+     "B": 19695.0
+    },
+    "uncovered_care_min": 7334.0,
+    "rupture_minutes": 0,
+    "staff_hours": 0,
+    "decisions": [
+     {
+      "t": 192,
+      "action": "coord"
+     },
+     {
+      "t": 288,
+      "action": "coord"
+     },
+     {
+      "t": 384,
+      "action": "coord"
+     },
+     {
+      "t": 480,
+      "action": "coord"
+     },
+     {
+      "t": 576,
+      "action": "coord"
+     },
+     {
+      "t": 672,
+      "action": "coord"
+     },
+     {
+      "t": 768,
+      "action": "coord"
+     }
+    ]
+   },
+   "historical": {
+    "choices": [
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord",
+     "coord"
+    ],
+    "wait_patient_min": 34035.0,
+    "wait_by_unit": {
+     "A": 14340.0,
+     "B": 19695.0
+    },
+    "uncovered_care_min": 7334.0,
+    "rupture_minutes": 0,
+    "staff_hours": 0,
+    "decisions": [
+     {
+      "t": 192,
+      "action": "coord"
+     },
+     {
+      "t": 288,
+      "action": "coord"
+     },
+     {
+      "t": 384,
+      "action": "coord"
+     },
+     {
+      "t": 480,
+      "action": "coord"
+     },
+     {
+      "t": 576,
+      "action": "coord"
+     },
+     {
+      "t": 672,
+      "action": "coord"
+     },
+     {
+      "t": 768,
+      "action": "coord"
+     }
+    ]
+   }
+  },
+  "W_true_states": [
+   {
+    "t_h": 24.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 30,
+      "beds": 30,
+      "queue": 2,
+      "q24": 0
+     },
+     "B": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 3,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 48.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 27,
+      "beds": 30,
+      "queue": 1,
+      "q24": 0
+     },
+     "B": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 4,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 72.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 30,
+      "beds": 30,
+      "queue": 3,
+      "q24": 0
+     },
+     "B": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 1,
+      "q24": 1
+     }
+    }
+   },
+   {
+    "t_h": 96.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 30,
+      "beds": 30,
+      "queue": 2,
+      "q24": 0
+     },
+     "B": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 2,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 120.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 29,
+      "beds": 30,
+      "queue": 0,
+      "q24": 0
+     },
+     "B": {
+      "occ": 17,
+      "beds": 18,
+      "queue": 1,
+      "q24": 1
+     }
+    }
+   },
+   {
+    "t_h": 144.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 27,
+      "beds": 30,
+      "queue": 0,
+      "q24": 0
+     },
+     "B": {
+      "occ": 17,
+      "beds": 18,
+      "queue": 0,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 168.0,
+    "action": "coord",
+    "units": {
+     "A": {
+      "occ": 28,
+      "beds": 30,
+      "queue": 0,
+      "q24": 0
+     },
+     "B": {
+      "occ": 10,
+      "beds": 18,
+      "queue": 1,
+      "q24": 0
+     }
+    }
+   }
+  ]
+ },
+ {
+  "case": {
+   "name": "8 unit\u00e9s, 24 h",
+   "n": 8,
+   "part": "INT_DEV",
+   "s": 902,
+   "e": 0,
+   "r": 1,
+   "h0": 48,
+   "nd": 4,
+   "iv": 6,
+   "hz": 24
+  },
+  "family": "N8_tense_calendar",
+  "regime": "tense",
+  "bottlenecks": [
+   "calendar"
+  ],
+  "units": [
+   "U0",
+   "U1",
+   "U2",
+   "U3",
+   "U4",
+   "U5",
+   "U6",
+   "U7"
+  ],
+  "policies": {
+   "W_M": {
+    "choices": [
+     "coord",
+     "none",
+     "coord",
+     "coord"
+    ],
+    "wait_patient_min": 9435.0,
+    "wait_by_unit": {
+     "U0": 0.0,
+     "U1": 120.0,
+     "U2": 0.0,
+     "U3": 0.0,
+     "U4": 630.0,
+     "U5": 1935.0,
+     "U6": 5895.0,
+     "U7": 855.0
+    },
+    "uncovered_care_min": 5748.0,
+    "rupture_minutes": 0,
+    "staff_hours": 0,
+    "decisions": [
+     {
+      "t": 192,
+      "action": "coord"
+     },
+     {
+      "t": 216,
+      "action": "none"
+     },
+     {
+      "t": 240,
+      "action": "coord"
+     },
+     {
+      "t": 264,
+      "action": "coord"
+     }
+    ]
+   },
+   "historical": {
+    "choices": [
+     "coord",
+     "none",
+     "coord",
+     "coord"
+    ],
+    "wait_patient_min": 9435.0,
+    "wait_by_unit": {
+     "U0": 0.0,
+     "U1": 120.0,
+     "U2": 0.0,
+     "U3": 0.0,
+     "U4": 630.0,
+     "U5": 1935.0,
+     "U6": 5895.0,
+     "U7": 855.0
+    },
+    "uncovered_care_min": 5748.0,
+    "rupture_minutes": 0,
+    "staff_hours": 0,
+    "decisions": [
+     {
+      "t": 192,
+      "action": "coord"
+     },
+     {
+      "t": 216,
+      "action": "none"
+     },
+     {
+      "t": 240,
+      "action": "coord"
+     },
+     {
+      "t": 264,
+      "action": "coord"
+     }
+    ]
+   }
+  },
+  "W_true_states": [
+   {
+    "t_h": 6.0,
+    "action": "coord",
+    "units": {
+     "U0": {
+      "occ": 23,
+      "beds": 26,
+      "queue": 0,
+      "q24": 0
+     },
+     "U1": {
+      "occ": 13,
+      "beds": 18,
+      "queue": 0,
+      "q24": 0
+     },
+     "U2": {
+      "occ": 23,
+      "beds": 27,
+      "queue": 0,
+      "q24": 0
+     },
+     "U3": {
+      "occ": 19,
+      "beds": 29,
+      "queue": 0,
+      "q24": 0
+     },
+     "U4": {
+      "occ": 22,
+      "beds": 31,
+      "queue": 0,
+      "q24": 0
+     },
+     "U5": {
+      "occ": 19,
+      "beds": 21,
+      "queue": 0,
+      "q24": 0
+     },
+     "U6": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 4,
+      "q24": 0
+     },
+     "U7": {
+      "occ": 18,
+      "beds": 24,
+      "queue": 1,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 12.0,
+    "action": "none",
+    "units": {
+     "U0": {
+      "occ": 23,
+      "beds": 26,
+      "queue": 0,
+      "q24": 0
+     },
+     "U1": {
+      "occ": 13,
+      "beds": 18,
+      "queue": 0,
+      "q24": 0
+     },
+     "U2": {
+      "occ": 23,
+      "beds": 27,
+      "queue": 0,
+      "q24": 0
+     },
+     "U3": {
+      "occ": 20,
+      "beds": 29,
+      "queue": 0,
+      "q24": 0
+     },
+     "U4": {
+      "occ": 27,
+      "beds": 31,
+      "queue": 0,
+      "q24": 0
+     },
+     "U5": {
+      "occ": 20,
+      "beds": 21,
+      "queue": 0,
+      "q24": 0
+     },
+     "U6": {
+      "occ": 17,
+      "beds": 18,
+      "queue": 4,
+      "q24": 2
+     },
+     "U7": {
+      "occ": 20,
+      "beds": 24,
+      "queue": 0,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 18.0,
+    "action": "coord",
+    "units": {
+     "U0": {
+      "occ": 24,
+      "beds": 26,
+      "queue": 0,
+      "q24": 0
+     },
+     "U1": {
+      "occ": 17,
+      "beds": 18,
+      "queue": 0,
+      "q24": 0
+     },
+     "U2": {
+      "occ": 22,
+      "beds": 27,
+      "queue": 0,
+      "q24": 0
+     },
+     "U3": {
+      "occ": 20,
+      "beds": 29,
+      "queue": 0,
+      "q24": 0
+     },
+     "U4": {
+      "occ": 31,
+      "beds": 31,
+      "queue": 1,
+      "q24": 0
+     },
+     "U5": {
+      "occ": 21,
+      "beds": 21,
+      "queue": 4,
+      "q24": 0
+     },
+     "U6": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 4,
+      "q24": 2
+     },
+     "U7": {
+      "occ": 20,
+      "beds": 24,
+      "queue": 1,
+      "q24": 0
+     }
+    }
+   },
+   {
+    "t_h": 24.0,
+    "action": "coord",
+    "units": {
+     "U0": {
+      "occ": 22,
+      "beds": 26,
+      "queue": 0,
+      "q24": 0
+     },
+     "U1": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 1,
+      "q24": 0
+     },
+     "U2": {
+      "occ": 23,
+      "beds": 27,
+      "queue": 0,
+      "q24": 0
+     },
+     "U3": {
+      "occ": 19,
+      "beds": 29,
+      "queue": 0,
+      "q24": 0
+     },
+     "U4": {
+      "occ": 31,
+      "beds": 31,
+      "queue": 1,
+      "q24": 0
+     },
+     "U5": {
+      "occ": 20,
+      "beds": 21,
+      "queue": 4,
+      "q24": 0
+     },
+     "U6": {
+      "occ": 18,
+      "beds": 18,
+      "queue": 4,
+      "q24": 1
+     },
+     "U7": {
+      "occ": 22,
+      "beds": 24,
+      "queue": 2,
+      "q24": 0
+     }
+    }
+   }
+  ]
+ }
+]

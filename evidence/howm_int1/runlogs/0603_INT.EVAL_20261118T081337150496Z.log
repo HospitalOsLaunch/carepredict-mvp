@@ -1,0 +1,21 @@
+{
+ "status": "EVALUATION_FINALE_EXECUTEE",
+ "verdict": "GAIN_W_ETABLI",
+ "primary_Bstar_minus_W": {
+  "mean": 1243.9,
+  "ci95": [
+   404.89656249999996,
+   2226.319062499999
+  ],
+  "n_structures": 200
+ },
+ "relative_gain": {
+  "relative_gain": 0.03489567014488377,
+  "ci95": [
+   0.012157467750953756,
+   0.06009593981867425
+  ],
+  "target_5pct_estimate": false,
+  "target_5pct_supported_by_ci": false
+ }
+}
