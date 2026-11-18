@@ -1,0 +1,10 @@
+{"run": "W_t2_M_s1", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+{"run": "W_t2_M_s0", "upd": 13953, "stopped": null, "best": 6000, "params": 1899540, "last": {"upd": 13950, "loss": 3.0957679748535156, "st": 0.45701009035110474, "co": 0.4051504135131836, "cum": 0.18314006924629211, "eff": 0.40659675002098083, "rup": 0.034967564046382904, "T": 36}}
+{"run": "W_t2_M_s2", "upd": 13870, "stopped": null, "best": 8000, "params": 1899540, "last": {"upd": 13850, "loss": 1.2125722169876099, "st": 0.3704318404197693, "co": 0.1170186847448349, "cum": 0.022361012175679207, "eff": 0.1384597271680832, "rup": 0.020923852920532227, "T": 12}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}
