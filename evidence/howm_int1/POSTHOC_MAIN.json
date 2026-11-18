@@ -711,5 +711,40 @@
    "historical_minus_W_M": -93.23529411764706,
    "D_hgb_minus_W_M": 189.19117647058823
   }
+ },
+ "SUB32_descriptive": {
+  "structures": 32,
+  "F_minus_R1": {
+   "mean": 236.875,
+   "ci95": [
+    -464.748046875,
+    989.9345703124998
+   ],
+   "n_structures": 32
+  },
+  "historical_minus_W_M": {
+   "mean": -180.46875,
+   "ci95": [
+    -890.140625,
+    511.16699218749767
+   ],
+   "n_structures": 32
+  },
+  "D_hgb_minus_W_M": {
+   "mean": 220.8203125,
+   "ci95": [
+    -25.384765624999996,
+    464.5048828124997
+   ],
+   "n_structures": 32
+  },
+  "F_minus_historical": {
+   "mean": 1041.5625,
+   "ci95": [
+    196.3212890625,
+    1942.7841796874995
+   ],
+   "n_structures": 32
+  }
  }
 }

@@ -37,6 +37,15 @@ def main() -> int:
             v = [d[s] for s in d if fam[s] == f]
             byf.setdefault(f, {"structures": len(v)})[f"{ref}_minus_W_M"] = float(np.mean(v))
     out["by_family"] = byf
+    sub = AN.load("SUB32")  # F/R1 files of the 32 sub-panel structures; the other policies come from MAIN (same structures)
+    subs = {r["structure"] for r in sub}
+    pm = {p: {k: v for k, v in AN.per_struct(recs, p).items() if k in subs} for p in pols}
+    pm |= {p: AN.per_struct(sub, p) for p in ("F", "R1")}
+    out["SUB32_descriptive"] = {"structures": len(subs),
+                                "F_minus_R1": AN.boot({s_: pm["F"][s_] - pm["R1"][s_] for s_ in subs}),
+                                "historical_minus_W_M": AN.boot({s_: pm["historical"][s_] - pm["W_M"][s_] for s_ in subs}),
+                                "D_hgb_minus_W_M": AN.boot({s_: pm["D_hgb"][s_] - pm["W_M"][s_] for s_ in subs}),
+                                "F_minus_historical": AN.boot({s_: pm["F"][s_] - pm["historical"][s_] for s_ in subs})}
     (ROOT / "evidence/howm_int1/POSTHOC_MAIN.json").write_text(json.dumps(out, indent=1))
     print(json.dumps({"W_M_minus_D_hgb": out["W_M_minus_D_hgb"], "rel": out["relative_gain_W_M_over_D_hgb"], "by_family": byf}, indent=1))
     for m in ("uncovered_care_min", "staff_hours", "rupture_minutes"):

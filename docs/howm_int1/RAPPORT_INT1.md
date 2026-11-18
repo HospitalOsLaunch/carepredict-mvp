@@ -48,7 +48,11 @@ transfert vers un établissement réel.
      patience après 6 000–8 000 mises à jour de continuation.
    - La suppression des **messages** double le regret ; celle de l'**historique** ne change rien.
    - M n'est pas meilleur que S hors ligne, mais l'est en boucle fermée sur MAIN (+114 [2 ; 220]).
-7. **Sous-panel F/R1** (32 structures) : § 9.
+7. **Sous-panel F/R1** (32 structures × 3 × 4, comparateurs secondaires) :
+   - F − W = +861 [4 ; 1 757] et R1 − W = +624 [308 ; 1 014] : W fait mieux que la chaîne simulateur F et que
+     R1, pour un coût de décision 60 à 70 fois plus faible (0,25 s contre 17 et 10 s de CPU) ;
+   - sur ces 32 structures, la règle historique est la meilleure politique, et l'écart avec W n'est pas
+     significatif (−180 [−890 ; 511]) : le sous-panel ne reproduit pas l'avantage de W observé sur MAIN.
 
 **Ce que ces résultats ne disent pas.**
 
@@ -329,14 +333,56 @@ corrigé pour la multiplicité. Ce résultat est à confirmer.
 | W-M | 0,25 s | 0,30 s |
 | W-S | 0,10 s | 0,14 s |
 | D (les trois variantes) | 0,03 s | 0,05–0,06 s |
-| F (Md = 16) | ≈ 15 s | — |
-| R1 (Md = 16) | ≈ 9 s | — |
+| F (Md = 16) | 17,0 s | — |
+| R1 (Md = 16) | 10,4 s | — |
 
 Les valeurs de F et R1 viennent de SUB32 (§ 9).
 
 ## 9. Sous-panel F / R1 (SUB32)
 
-*Section complétée après la fin de SUB32 — voir § 9 bis en fin de document.*
+**Dispositif.** Structures MAIN 0–31 × 3 épisodes × 4 futurs, mêmes futurs que MAIN. F et R1 sont rejoués à
+chaque décision sur l'historique public propre de la politique, avec Md = 16 tirages. Les autres politiques sont
+celles de MAIN, sur les mêmes structures. Sources : `RESULTS_INT1.json` → `SUB32` (analyse gelée),
+`POSTHOC_MAIN.json` → `SUB32_descriptive` (post-hoc).
+
+**Attente moyenne sur 7 jours** (32 structures) :
+
+| Politique | Attente |
+|---|---|
+| Historique | 33 664 |
+| **W-M** | **33 845** |
+| W-S | 33 997 |
+| D-HGB | 34 066 |
+| D-Ridge | 34 207 |
+| D-DSet | 34 449 |
+| R1 | 34 469 |
+| Robuste | 34 516 |
+| F | 34 706 |
+
+**Différences appariées** (> 0 si la seconde politique est meilleure) :
+
+| Comparaison | Différence | IC 95 % | Source |
+|---|---|---|---|
+| F − W-M | +861 | [4 ; 1 757] | analyse gelée |
+| R1 − W-M | +624 | [308 ; 1 014] | analyse gelée |
+| F − R1 | +237 | [−465 ; 990] | post-hoc |
+| F − historique | +1 042 | [196 ; 1 943] | post-hoc |
+| Historique − W-M | −180 | [−890 ; 511] | post-hoc |
+| D-HGB − W-M | +221 | [−25 ; 465] | post-hoc |
+
+**Coût de décision** (CPU par décision, moyenne) : F 17,0 s ; R1 10,4 s ; W-M 0,25 s.
+
+**Lecture.**
+
+- **W bat F et R1.** F a accès aux lois structurelles du générateur, W non. W fait pourtant mieux que F (borne
+  basse proche de 0) et que R1, pour un coût de décision 60 à 70 fois plus faible.
+- **F ne fait pas mieux que R1.** C'est cohérent avec le gain faible de F sur R1 trouvé dans B-FRAG 2.
+- **La règle historique est la meilleure sur ce sous-panel.** L'écart avec W n'y est pas significatif, et F fait
+  nettement pire qu'elle. Sur 32 structures, la famille SF1 — où W gagne surtout face à la règle historique —
+  pèse moins que sur MAIN. Le sous-panel ne contredit pas MAIN, mais ne le reproduit pas.
+- **Lecture d'ensemble.** La simulation explicite rejouée à chaque décision (F, R1) n'apporte pas d'avantage face
+  aux références apprises ou à la règle simple dans ce monde ; W n'en a pas besoin pour faire au moins aussi
+  bien.
 
 ## 10. Extension et généralisation (descriptif)
 
@@ -432,14 +478,15 @@ correcte pour la coordination et le nettoyage à 4 unités. La propagation est p
 
 ## 12. Budget : temps calendaire et budget comptabilisé
 
-Situation au registre avant la fin de SUB32. Les chiffres finaux sont au § 12 bis.
+Situation au registre le 18 novembre à 14 h 05 UTC : fin de l'évaluation, analyse finale faite. L'archive, le
+reçu et l'enveloppe ajoutent ≈ 0,5–1 ks de mur, consignés au registre final (§ 17).
 
 | Grandeur | Valeur |
 |---|---|
-| Temps calendaire écoulé (genèse 17 nov. 15 h 43 → 18 nov. 08 h 20 UTC) | ≈ 16,6 h |
-| Mur comptabilisé (somme des commandes ; concurrentes comptées chacune) | 109 897 s = 30,5 h sur 259 200 (42 %) |
-| CPU | 214 978 s + correction de 560 s (#610) = 59,9 h sur 288 (21 %) |
-| Commandes | 301 (5 dépassements de 540 s, 21 codes de sortie non nuls ; tous conservés) |
+| Temps calendaire écoulé (genèse 17 nov. 15 h 43 → 18 nov. 14 h 05 UTC) | ≈ 22,4 h |
+| Mur comptabilisé (somme des commandes ; concurrentes comptées chacune) | 131 424 s = 36,5 h sur 259 200 (51 %) |
+| CPU | 288 171 s + corrections déclarées de 2 640 s (#610, #678) = 80,8 h sur 288 (28 %) |
+| Commandes | 372 (7 dépassements de 540 s, 26 codes de sortie non nuls ; tous conservés) |
 | Coût | 0 € ; aucun GPU ; aucun service payant |
 
 **Par lot** (mur / CPU, en s) :
@@ -449,8 +496,8 @@ Situation au registre avant la fin de SUB32. Les chiffres finaux sont au § 12 b
 | L0 | 907 | 1 939 |
 | DATA | 39 689 | 91 425 |
 | LEARN | 62 610 | 97 379 |
-| EVAL | 6 622 (avant SUB32) | 24 168 |
-| REST | 70 | 68 |
+| EVAL | 27 590 | 96 732 (dont SUB32 ≈ 72 500) |
+| REST | 629 | 696 |
 
 Aucune réallocation n'a été nécessaire ; la réserve de 7 h n'est pas utilisée.
 
@@ -475,6 +522,7 @@ Tous sont au registre ; aucun essai défavorable n'a été retiré.
 | — | Arrêt d'une commande par la limite de 2 h des tâches d'arrière-plan | échéance de chaîne alignée sur le créneau |
 | 599 | Défaut post-gel de R1 (horizon) | voir § 6 |
 | 610 | Groupe de processus SUB32 orphelin, après l'arrêt d'une chaîne (tâches recalculées en double, sans corruption) | arrêt ; comptabilité conservatrice : 49 s de mur comptés deux fois, +560 s de CPU déclarés |
+| 678 | Dépassement de 540 s d'une commande SUB32 (#677) : tâche lancée à 330 s, durée jusqu'à 276 s ; travail en vol perdu, recalculé | budget de lancement 200 s ; +2 080 s de CPU déclarés (processus tués non comptés par le runner) |
 
 **Défauts de code corrigés avant le gel :** ordre départ/nettoyage au même tick dans la relecture publique ;
 collision d'identifiants de séjour en transfert ; périmètre du test I10.
@@ -497,7 +545,7 @@ collision d'identifiants de séjour en transfert ; périmètre du test I10.
   - Le critère de sélection par checkpoint est bruité.
   - La continuation au palier 2 s'arrête tôt.
   - L'effet des données n'est pas séparé de celui de la recette.
-  - Le budget total n'a pas été épuisé : ≈ 42 % du mur et 21 % du CPU avant SUB32. D'autres recettes étaient
+  - Le budget total n'a pas été épuisé : ≈ 51 % du mur et 28 % du CPU en fin d'évaluation. D'autres recettes étaient
     possibles dans l'enveloppe ; elles n'ont pas été tentées après le gel, conformément au protocole.
 - **Anticipation non calibrée** dans le décile haut.
 - **Extension.** Le monde à 4–12 unités laisse peu de marge aux décisions : les règles simples suffisent. Il ne
@@ -512,7 +560,7 @@ collision d'identifiants de séjour en transfert ; périmètre du test I10.
 - En boucle fermée sur une semaine, il produit des décisions au moins aussi bonnes que :
   - la règle historique : +3,5 % sur l'attente, établi ;
   - des modèles directs de coût : +0,4 % sur le meilleur, descriptif.
-- Le coût est de 0,25 s de CPU par décision, contre 15 s pour la chaîne simulateur F.
+- Le coût est de 0,25 s de CPU par décision, contre 17 s pour la chaîne simulateur F, qu'il bat sur le sous-panel (+861 [4 ; 1 757]).
 - Il prédit aussi la rupture d'une unité à 24 h (AUC 0,92) et les effets d'une action sur les unités non
   ciblées.
 
