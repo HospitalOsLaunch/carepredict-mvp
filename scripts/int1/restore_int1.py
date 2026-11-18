@@ -92,7 +92,13 @@ import torch; torch.set_num_threads(1)
 def pyproc(py, fresh, code):
     pre = PRELUDE.format(tree=str(fresh / "tree"), data=str(fresh / "data"), repro=str(fresh / "repro"))
     return subprocess.Popen([py, "-c", pre + code], cwd=fresh / "tree", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                            env={**os.environ, "OMP_NUM_THREADS": "1"})
+                            env=tree_env(fresh))
+
+
+def tree_env(fresh):
+    """Explicit environment for every fresh-tree subprocess: the ledger runner exports PYTHONPATH=<repo>/src:<repo>
+    (rehearsal finding); it is REPLACED so that only the extracted tree is importable."""
+    return {**{k: v for k, v in os.environ.items() if k != "PYTHONPATH"}, "PYTHONPATH": f"{fresh / 'tree/src'}:{fresh / 'tree'}", "OMP_NUM_THREADS": "1"}
 
 
 def collect(p):
@@ -126,22 +132,45 @@ def sec_setup(z, py, fresh):
                 if sha(f) != row["sha256"]:
                     corpus_bad.append(f"{part}/{f.name}")
     freeze_pip = subprocess.run([py, "-m", "pip", "freeze"], capture_output=True, text=True).stdout
+    origin = subprocess.run([py, "-c", "import hospitalos.howmint.world as w, torch, sklearn; print(w.__file__); print(torch.__version__, sklearn.__version__)"],
+                            cwd=fresh / "tree", capture_output=True, text=True, env=tree_env(fresh)).stdout.split()
     env = {"python": subprocess.run([py, "-c", "import sys; print(sys.version.split()[0])"], capture_output=True, text=True).stdout.strip(),
            "pip_freeze_sha256": hashlib.sha256(freeze_pip.encode()).hexdigest(),
-           "matches_archived_requirements": freeze_pip == (fresh / "requirements_frozen.txt").read_text(),
-           "interpreter": py, "campaign_venv_not_used": "venv_howm" not in py}
+           # compared as a set of lines: pip orders case-sensitively, the archived file case-insensitively (rehearsal finding)
+           "matches_archived_requirements": sorted(freeze_pip.split()) == sorted((fresh / "requirements_frozen.txt").read_text().split()),
+           "interpreter": py, "campaign_venv_not_used": "venv_howm" not in py,
+           "hospitalos_imported_from": origin[0] if origin else None, "torch_sklearn": origin[1:] if origin else None}
+    env["imports_from_fresh_tree"] = bool(env["hospitalos_imported_from"] and env["hospitalos_imported_from"].startswith(str(fresh / "tree")))
     (fresh / "receipt").mkdir()
     (fresh / "repro").mkdir()
     # scripts changed after the freeze are listed (they must be exactly the declared ones)
     return {"archive_files": len(lines), "bad": bad, "frozen_models_hash_mismatch": models_bad,
             "frozen_scripts_changed_since_freeze": scripts_bad, "corpus_files_checked_against_manifest": corpus_n, "corpus_hash_mismatch": corpus_bad,
             "environment": env,
-            "ok": not bad and not models_bad and not corpus_bad and env["matches_archived_requirements"] and env["campaign_venv_not_used"]}
+            "ok": not bad and not models_bad and not corpus_bad and env["matches_archived_requirements"] and env["campaign_venv_not_used"]
+            and env["imports_from_fresh_tree"]}
+
+
+M7 = "tests/howm_int1/test_models.py::test_m7_historical_sources_and_results_unchanged"
 
 
 def sec_tests(z, py, fresh):
-    r = subprocess.run([py, "-m", "pytest", "-q", "-p", "no:cacheprovider", "tests/howm_int1"], cwd=fresh / "tree", capture_output=True, text=True)
-    return {"exit": r.returncode, "tail": r.stdout.strip().splitlines()[-1:], "ok": r.returncode == 0}
+    """All INT-1 tests under the fresh interpreter and tree. M7 (historical files unchanged) reads files that are not
+    in the git archive (historical model binaries, gitignored): it is deselected here and replaced by the same
+    check on the files present in the archive; absent files are listed, not counted as passed."""
+    r = subprocess.run([py, "-m", "pytest", "-q", "-p", "no:cacheprovider", "tests/howm_int1", "--deselect", M7], cwd=fresh / "tree",
+                       capture_output=True, text=True, env=tree_env(fresh))
+    latest = {}
+    for fr in ("evidence/howm2_bfrag/FREEZE_BFRAG.json", "evidence/howm2_bfrag2/FREEZE1_PROTOCOL.json", "evidence/howm2_bfrag2/FREEZE2_BFRAG2.json",
+               "evidence/howm2_bfrag2w/FREEZE_PILOT.json"):
+        latest.update(json.loads((fresh / "tree" / fr).read_text())["files_sha256"])
+    present = {p: h for p, h in latest.items() if (fresh / "tree" / p).exists()}
+    mism = [p for p, h in present.items() if sha(fresh / "tree" / p) != h]
+    absent = sorted(set(latest) - set(present))
+    m7 = {"historical_files": len(latest), "present_in_archive_and_identical": len(present) - len(mism), "mismatch": mism,
+          "absent_from_git_archive": absent}
+    return {"exit": r.returncode, "tail": r.stdout.strip().splitlines()[-1:], "deselected": [M7], "m7_on_archived_files": m7,
+            "ok": r.returncode == 0 and not mism}
 
 
 LOAD_POLICIES = """
@@ -222,7 +251,7 @@ PW.S, PW.ROOT = Path(D), rp
 PW.main()
 src = Path(T, 'scripts/int1/curves.py').read_text()
 src = re.sub(r'^S = Path\\(.*\\)$', 'S = Path(D)', src, flags=re.M).replace('ROOT / "evidence/howm_int1/CURVES.json"', 'rp / "evidence/howm_int1/CURVES.json"')
-exec(compile(src, 'curves.py (paths substituted)', 'exec'), {'__name__': 'curves', 'D': D, 'rp': rp, 'Path': Path})
+exec(compile(src, 'curves.py (paths substituted)', 'exec'), {'__name__': 'curves', '__file__': T + '/scripts/int1/curves.py', 'D': D, 'rp': rp, 'Path': Path})
 print(json.dumps({'written': sorted(p.name for p in (rp / 'evidence/howm_int1').glob('*.json'))}))
 """
 
@@ -278,7 +307,7 @@ def sec_regen(z, py, fresh):
         if part == "INT_VAL":
             cmd += ["--K", str(meta["K"])]
         plan.append(("corpus", orig, repro / "corpus" / part / orig.name, cmd[2:]))
-        procs.append(subprocess.Popen([py, *cmd], cwd=fresh / "tree", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True))
+        procs.append(subprocess.Popen([py, *cmd], cwd=fresh / "tree", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=tree_env(fresh)))
     plan.append(("demo", fresh / "tree/evidence/howm_int1/DEMO.json", repro / "demo/evidence/howm_int1/DEMO.json", "fixed DEV cases of demo.py"))
     procs.append(pyproc(py, fresh, REGEN_DEMO))
     rcs = [p.communicate() and p.returncode for p in procs]
