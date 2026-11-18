@@ -5,3 +5,6 @@ Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pyto
 /home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
 Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
   return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+{"run": "W_t2_M_s2", "upd": 10627, "stopped": null, "best": 8000, "params": 1899540, "last": {"upd": 10600, "loss": 1.2173899412155151, "st": 0.6524659991264343, "co": 0.16898702085018158, "cum": 0.058346692472696304, "eff": 0.06343988329172134, "rup": 0.04078172519803047, "T": 12}}
+{"run": "W_t2_M_s0", "upd": 10718, "stopped": null, "best": 6000, "params": 1899540, "last": {"upd": 10700, "loss": 1.0009198188781738, "st": 0.33078014850616455, "co": 0.1452096700668335, "cum": 0.1433318555355072, "eff": 0.07340527325868607, "rup": 0.029143553227186203, "T": 12}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}
