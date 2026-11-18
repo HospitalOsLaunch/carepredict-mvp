@@ -1,6 +1,6 @@
 {
- "last_record_sha256": "c661ac39908a446ac91f1179d1cbd6a86cb02c870a216acaf899ae025042c3c3",
- "ledger_file_sha256": "0fb97374c444312751162f43f9ae5ea89214c086f0566debf901019cdbbd45df",
- "records": 433,
- "used_wall_seconds": 81441.457
+ "last_record_sha256": "9211b58b0dfb4dfabef28e1b7576eded5030b2ff7e63332f6682f93411ba7b3c",
+ "ledger_file_sha256": "c56e88443a83d8d65e4d11293b98abacbb15f572c33ddce60875e0dfb3cfafd7",
+ "records": 470,
+ "used_wall_seconds": 87278.178
 }

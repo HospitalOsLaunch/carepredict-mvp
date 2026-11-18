@@ -86,15 +86,17 @@ PACK_KEYS = ("unit", "res", "glob", "uu", "U", "R", "C", "desc", "states", "cost
 PACK_K = 2  # training uses the first 2 futures of every row (the K = 8 subset keeps its 8 futures in the npz files)
 
 
-def pack(root: str | Path, part: str, s_list: list[int], out: str | Path) -> dict:
-    """Concatenate the situations of the given structures per size into .npy files (memory-mapped at training)."""
+def pack(root: str | Path, part: str, s_list: list[int], out: str | Path, n_only: int | None = None) -> dict:
+    """Concatenate the situations of the given structures per size into .npy files (memory-mapped at training).
+    With ``n_only`` (and s_list pre-filtered by size), one size is packed and its meta written to meta_n{n}.json."""
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     buf: dict[int, dict[str, list]] = {}
     index: dict[int, list] = {}
+    want = set(s_list)
     for f in sorted(glob.glob(str(Path(root) / part / "s*.npz"))):
         s = int(Path(f).stem[1:])
-        if s not in s_list:
+        if s not in want:
             continue
         z = np.load(f)
         rec = {"meta": json.loads(Path(f).with_suffix(".json").read_text()), **{k: z[k] for k in KEYS}}
@@ -113,14 +115,19 @@ def pack(root: str | Path, part: str, s_list: list[int], out: str | Path) -> dic
         for k in PACK_KEYS:
             np.save(out / f"n{n}_{k}.npy", np.concatenate(b[k]))
         meta[str(n)] = {"rows": int(sum(len(x) for x in b["desc"])), "situations": len(index[n]), "index": index[n]}
-    (out / "meta.json").write_text(json.dumps(meta))
+    if n_only is not None:
+        (out / f"meta_n{n_only}.json").write_text(json.dumps(meta))
+    else:
+        (out / "meta.json").write_text(json.dumps(meta))
     return {n: {k: v for k, v in m.items() if k != "index"} for n, m in meta.items()}
 
 
 def packed_situations(out: str | Path) -> list[dict]:
     """Situation dicts backed by read-only memory maps (shared page cache across processes)."""
     out = Path(out)
-    meta = json.loads((out / "meta.json").read_text())
+    meta = {}
+    for mf in sorted(out.glob("meta*.json")):
+        meta.update(json.loads(mf.read_text()))
     sits = []
     for n, m in meta.items():
         arr = {k: np.load(out / f"n{n}_{k}.npy", mmap_mode="r") for k in PACK_KEYS}

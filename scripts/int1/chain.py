@@ -43,7 +43,8 @@ def main() -> int:
             if all(done):
                 break
             script, label = "scripts/int1/train_multi.py", f"train {opts['--runs']} (cmd {k + 1})"
-            args = ["--runs", opts["--runs"], "--seeds", opts["--seeds"], *(["--ablates", opts["--ablates"]] if "--ablates" in opts else []), "--", *rest]
+            args = ["--runs", opts["--runs"], "--seeds", opts["--seeds"], *(["--ablates", opts["--ablates"]] if "--ablates" in opts else []),
+                    *(["--inits", opts["--inits"]] if "--inits" in opts else []), "--", *rest]
         elif mode == "dset":
             cp = S / "int1_runs" / f"D_t{opts['--tier']}_dset" / "last.pt"
             script, label = "scripts/int1/train_d.py", f"train D dset tier {opts['--tier']} (cmd {k + 1})"
