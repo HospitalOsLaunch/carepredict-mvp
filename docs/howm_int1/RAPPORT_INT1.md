@@ -593,3 +593,66 @@ ordonnées, comparaison d'actions candidates. Aucun usage décisionnel. `G2=NO-G
 | Analyse gelée | `python scripts/int1/analyse.py` (à partir de `int1_eval/`) |
 | Démonstration | `python scripts/int1/demo.py` → `docs/howm_int1/DEMO.md` (illustrations, pas des résultats agrégés) |
 | Archive et reçu en environnement neuf | § 17, `ARCHIVE_INT1` et `RECU_INT1` |
+
+## 17. Archive, reçu en environnement neuf, enveloppe
+
+### Archive scientifique
+
+| Élément | Valeur |
+|---|---|
+| Fichier | `HOWM_INT1_FINAL.zip` |
+| SHA-256 | `fb46fab31231172d3e879cbd07f89ca963289eb14a798369fc124001b38d0490` |
+| Commit archivé | 7af2e10 |
+| Taille | 121 Mo, 4 245 fichiers |
+| Description | `evidence/howm_int1_receipt/PACKAGE_FINAL.json` |
+
+**Contenu.**
+
+- Arbre source (git) avec registre, résultats, manifestes et rapport.
+- Tous les runs : checkpoints retenus, normalisations, courbes, résultats, pickles D. Les états d'optimiseur ne
+  sont pas archivés.
+- Les 1 560 fichiers de l'évaluation finale.
+- Le corpus VAL, le palier 1 et un échantillon du palier 2.
+- La liste figée des paquets.
+
+### Reçu
+
+Source : `evidence/howm_int1_receipt/RESTORE_RECEIPT_INT1.json`, **ok = true**, commandes #762–#774.
+
+**Environnement neuf.** Répertoire extrait de l'archive et venv reconstruit depuis la liste figée.
+
+- L'empreinte pip est identique à celle approuvée (`e93a3617…`).
+- Les modules sont importés depuis l'arbre extrait, pas depuis le dépôt.
+- Le venv de campagne n'est pas utilisé.
+
+| Section | Contenu | Résultat |
+|---|---|---|
+| Intégrité | 4 245 empreintes ; modèles gelés ; 1 301 fichiers de corpus contre le manifeste | identiques |
+| Tests | 30 tests ; M7 remplacé par son contrôle sur les 46 fichiers historiques présents dans l'archive (34 binaires absents de git, listés) | réussis |
+| Chargement | toutes les politiques de MAIN, EXT et SUB32 ; métriques VAL enregistrées de W-S, W-M (graine 0, palier 2), D-HGB, D-Ridge réévaluées | identiques (tolérance relative 1e-6) |
+| Analyse | `RESULTS_INT1`, `POSTHOC_MAIN`, `PROPAGATION_W_VAL`, `CURVES` reproduits dans un répertoire séparé | identiques |
+| Régénérations annoncées | MAIN (17, e1), SIZE12 (5, e2), SUB32 (0, e2, futur 2), corpus TRAIN 137 et 9001, VAL 5 (K = 4), démonstration ; paramètres lus dans chaque fichier ; sorties séparées | identiques |
+| Réajustements | D-Ridge et D-HGB du palier 1, dans un répertoire séparé | prédictions identiques bit à bit |
+
+**Règle des champs de temps.** Avant comparaison, on retire récursivement les clés `seconds`, `fit_seconds`,
+`train_seconds`, `wall_s`, et toute clé contenant `cpu_s`. Rien d'autre n'est exclu, à une exception près : la
+taille du pickle (`bytes`) des réajustements, qui dépend du nom de module.
+
+**Ce qui n'est pas refait.**
+
+- Les apprentissages W.
+- D au palier 2 et DSet.
+- Les autres fichiers d'évaluation et de corpus : ils sont archivés, vérifiés par empreinte et utilisés par
+  l'analyse reproduite.
+- Panel VAL, qualification, propagation DEV, diagnostic SF1.
+
+**Répétition préalable.** `REHEARSAL_SUMMARY.json` : six défauts du script de reçu ont été trouvés et corrigés avant
+le reçu final.
+
+### Enveloppe de clôture
+
+`HOWM_INT1_CLOSURE_ENVELOPE.zip` (voir `evidence/howm_int1_receipt/CLOSURE_ENVELOPE_INT1.json`). Elle contient
+l'archive intacte, le reçu externe, le rapport, le protocole, la démonstration, la décision, le mandat et le
+registre final.
+
+Aucun push, aucune publication externe.

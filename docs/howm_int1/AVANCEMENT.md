@@ -29,12 +29,12 @@
 | Diagnostic SF1, propagation DEV | faits | `DIAG_SF1.json`, `PROPAGATION_DEV.json` |
 | Panel VAL en boucle fermée, gel | faits (B\* = historique, W = W-M) | `VAL_PANEL.json`, `FREEZE_INT1.json` (#562) |
 | Évaluation finale MAIN, EXT, COMBO, SIZE12 | **évaluée** | `RESULTS_INT1.json` |
-| Sous-panel SUB32 (F, R1) | en cours (384 fichiers, un par futur) | `int1_eval/SUB32` |
+| Sous-panel SUB32 (F, R1) | **évalué** (384/384) : F − W +861 [4 ; 1 757], R1 − W +624 [308 ; 1 014] | `RESULTS_INT1.json` |
 | Propagation selon W (VAL), tables post-hoc MAIN | faites, descriptives | `PROPAGATION_W_VAL.json`, `POSTHOC_MAIN.json` |
 | Démonstration rejouable | faite | `DEMO.md`, `DEMO.json` |
-| Archive, reçu en environnement neuf, enveloppe | scripts prêts ; répétition du reçu faite (défauts corrigés) | `REHEARSAL_SUMMARY.json` |
+| Archive, reçu en environnement neuf, enveloppe | **faits** ; reçu ok sur toutes les sections | `PACKAGE_FINAL.json`, `RESTORE_RECEIPT_INT1.json`, `CLOSURE_ENVELOPE_INT1.json` |
 
-## Résultats (évaluation finale, avant SUB32)
+## Résultats (évaluation finale)
 
 | Mesure | Valeur |
 |---|---|
@@ -45,7 +45,6 @@
 | EXT / COMBO / 12 unités | −30 [−50 ; −11] / +6 [−35 ; 52] / −22 [−54 ; 26] |
 | Anticipation | AUC 0,92, Brier 0,031 (surconfiance dans le décile haut) |
 
-## Prochaines étapes
+## État
 
-1. Fin de SUB32 ; analyse gelée finale.
-2. Rapport (§ 9 et chiffres finaux) ; archive ; reçu en environnement neuf ; enveloppe.
+Campagne livrée. Rapport : `docs/howm_int1/RAPPORT_INT1.md`. Aucun push.
