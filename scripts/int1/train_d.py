@@ -153,7 +153,7 @@ def main() -> int:
         torch.set_num_threads(1)
         torch.manual_seed(a.seed)
         np.random.seed(a.seed)
-        st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / "W_t1_S_s0" / "norm.npz")  # tier-1 TRAIN normalisation for both tiers (as the W continuations).items()}
+        st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / "W_t1_S_s0" / "norm.npz").items()}  # tier-1 TRAIN normalisation for both tiers
         net = MO.DSet(160)
         opt = torch.optim.Adam(net.parameters(), lr=1e-3)
         ck = od / "last.pt"
