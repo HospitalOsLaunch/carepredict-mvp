@@ -45,6 +45,12 @@ def main() -> int:
             script, label = "scripts/int1/train_multi.py", f"train {opts['--runs']} (cmd {k + 1})"
             args = ["--runs", opts["--runs"], "--seeds", opts["--seeds"], *(["--ablates", opts["--ablates"]] if "--ablates" in opts else []),
                     *(["--inits", opts["--inits"]] if "--inits" in opts else []), "--", *rest]
+        elif mode == "eval":  # final campaign panel: until every (structure, episode) file exists
+            d = S / "int1_eval" / opts["--panel"]
+            if d.exists() and len(list(d.glob("*.json"))) >= 3 * int(opts["--n"]):
+                break
+            script, label = "scripts/int1/eval_campaign.py", f"FINAL eval {opts['--panel']} (cmd {k + 1})"
+            args = ["--panel", opts["--panel"], "--s0", "0", "--s1", opts["--n"], *rest]
         elif mode == "dset":
             cp = S / "int1_runs" / f"D_t{opts['--tier']}_dset" / "last.pt"
             script, label = "scripts/int1/train_d.py", f"train D dset tier {opts['--tier']} (cmd {k + 1})"

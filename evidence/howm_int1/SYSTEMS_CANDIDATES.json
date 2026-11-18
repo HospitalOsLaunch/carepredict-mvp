@@ -1,0 +1,131 @@
+{
+ "W": {
+  "W_S": [
+   "W_t2_S_s0",
+   "W_t2_S_s1",
+   "W_t2_S_s2"
+  ],
+  "W_M": [
+   "W_t2_M_s0",
+   "W_t2_M_s1",
+   "W_t2_M_s2"
+  ]
+ },
+ "D": {
+  "D_ridge": {
+   "kind": "ridge",
+   "run": "D_t2_ridge",
+   "name": "ridge_100.0"
+  },
+  "D_hgb": {
+   "kind": "hgb",
+   "run": "D_t2_hgb",
+   "name": "hgb_4"
+  },
+  "D_dset": {
+   "kind": "dset",
+   "run": "D_t1_dset",
+   "norm_run": "W_t1_S_s0"
+  }
+ },
+ "Md": 16,
+ "D_candidates_val": {
+  "ridge": [
+   {
+    "key": [
+     0.04049421101808548,
+     414.9951477050781
+    ],
+    "kind": "ridge",
+    "run": "D_t1_ridge",
+    "name": "ridge_1.0"
+   },
+   {
+    "key": [
+     0.04075794294476509,
+     414.28509521484375
+    ],
+    "kind": "ridge",
+    "run": "D_t1_ridge",
+    "name": "ridge_100.0"
+   },
+   {
+    "key": [
+     0.04109331592917442,
+     407.3958740234375
+    ],
+    "kind": "ridge",
+    "run": "D_t2_ridge",
+    "name": "ridge_1.0"
+   },
+   {
+    "key": [
+     0.04041244089603424,
+     407.1786804199219
+    ],
+    "kind": "ridge",
+    "run": "D_t2_ridge",
+    "name": "ridge_100.0"
+   }
+  ],
+  "hgb": [
+   {
+    "key": [
+     0.036913517862558365,
+     331.9088521974407
+    ],
+    "kind": "hgb",
+    "run": "D_t1_hgb",
+    "name": "hgb_4"
+   },
+   {
+    "key": [
+     0.03569755330681801,
+     313.2626261472599
+    ],
+    "kind": "hgb",
+    "run": "D_t1_hgb",
+    "name": "hgb_8"
+   },
+   {
+    "key": [
+     0.034054964780807495,
+     293.0671406708356
+    ],
+    "kind": "hgb",
+    "run": "D_t2_hgb",
+    "name": "hgb_8"
+   },
+   {
+    "key": [
+     0.03200029581785202,
+     318.0026967052302
+    ],
+    "kind": "hgb",
+    "run": "D_t2_hgb",
+    "name": "hgb_4"
+   }
+  ],
+  "dset": [
+   {
+    "key": [
+     0.03311417996883392,
+     406.4484558105469
+    ],
+    "kind": "dset",
+    "run": "D_t1_dset",
+    "norm_run": "W_t1_S_s0"
+   },
+   {
+    "key": [
+     0.03407670184969902,
+     398.9127502441406
+    ],
+    "kind": "dset",
+    "run": "D_t2_dset",
+    "norm_run": "W_t1_S_s0"
+   }
+  ]
+ },
+ "rule": "per D family: min VAL 2-unit relative regret over configurations and tiers, tie -> effect RMSE; W: tier-2 ensembles"
+}
