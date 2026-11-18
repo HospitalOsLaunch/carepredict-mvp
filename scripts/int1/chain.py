@@ -47,7 +47,7 @@ def main() -> int:
                     *(["--inits", opts["--inits"]] if "--inits" in opts else []), "--", *rest]
         elif mode == "eval":  # final campaign panel: until every (structure, episode) file exists
             d = S / "int1_eval" / opts["--panel"]
-            if d.exists() and len(list(d.glob("*.json"))) >= 3 * int(opts["--n"]):
+            if d.exists() and len(list(d.glob("*.json"))) >= 3 * int(opts["--n"]) * (4 if opts["--panel"] == "SUB32" else 1):
                 break
             script, label = "scripts/int1/eval_campaign.py", f"FINAL eval {opts['--panel']} (cmd {k + 1})"
             args = ["--panel", opts["--panel"], "--s0", "0", "--s1", opts["--n"], *rest]

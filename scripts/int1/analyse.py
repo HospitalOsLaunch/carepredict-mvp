@@ -22,7 +22,14 @@ GUARD = ("uncovered_care_min", "rejected", "rupture_minutes", "rupture_onsets", 
 
 
 def load(panel):
-    return [json.loads(Path(f).read_text()) for f in sorted(glob.glob(str(OUT / panel / "*.json")))]
+    recs = [json.loads(Path(f).read_text()) for f in sorted(glob.glob(str(OUT / panel / "*.json")))]
+    if panel != "SUB32":
+        return recs
+    merged = {}  # SUB32 files hold one future each (s, e, r): merge per (structure, episode)
+    for r in recs:
+        m = merged.setdefault((r["structure"], r["episode"]), {**r, "futures": {}})
+        m["futures"].update(r["futures"])
+    return list(merged.values())
 
 
 def per_struct(recs, pol, metric="wait_patient_min"):

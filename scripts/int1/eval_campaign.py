@@ -111,13 +111,14 @@ def _with_antic(score, ms, name, antic):
 
 
 def job(arg):
-    panel, s, e, fr = arg
+    panel, s, e, fr = arg[:4]
+    only_r = arg[4] if len(arg) > 4 else None  # SUB32: one future per job (F/R1 cost ~128 s CPU per future)
     import numpy as np
 
     from hospitalos.howmint import loop as L
     from hospitalos.howmint import world as W
 
-    p = OUT / panel / f"s{s:04d}_e{e}.json"
+    p = OUT / panel / (f"s{s:04d}_e{e}.json" if only_r is None else f"s{s:04d}_e{e}_r{only_r}.json")
     if p.exists():
         return 0
     t0 = time.time()
@@ -130,7 +131,7 @@ def job(arg):
     pre = L.prefix(sp, h0)
     rec = {"panel": panel, "structure": s, "episode": e, "n": sp.n, "family": sp.family, "regime": sp.regime, "bottlenecks": list(sp.bottlenecks),
            "h0": h0, "futures": {}}
-    for r in range(1, fr["futures"] + 1):
+    for r in (range(1, fr["futures"] + 1) if only_r is None else [only_r]):
         timing, antic = {}, []
         pols = build_policies(fr, panel, sp.n, iv, timing, antic)
         res = {}
@@ -160,7 +161,11 @@ def main() -> int:
     ap.add_argument("--budget", type=float, default=470.0)
     a = ap.parse_args()
     fr = json.loads((EV / "FREEZE_INT1.json").read_text())
-    todo = [(a.panel, s, e, fr) for s in range(a.s0, a.s1) for e in range(3) if not (OUT / a.panel / f"s{s:04d}_e{e}.json").exists()]
+    if a.panel == "SUB32":
+        todo = [(a.panel, s, e, fr, r) for s in range(a.s0, a.s1) for e in range(3) for r in range(1, fr["futures"] + 1)
+                if not (OUT / a.panel / f"s{s:04d}_e{e}_r{r}.json").exists()]
+    else:
+        todo = [(a.panel, s, e, fr) for s in range(a.s0, a.s1) for e in range(3) if not (OUT / a.panel / f"s{s:04d}_e{e}.json").exists()]
     t0, n = time.time(), 0
     with get_context("fork").Pool(a.par, maxtasksperchild=20) as pool:
         pending, it = [], iter(todo)
