@@ -89,10 +89,10 @@ import torch; torch.set_num_threads(1)
 """
 
 
-def pyproc(py, fresh, code):
+def pyproc(py, fresh, code, extra_env=None):
     pre = PRELUDE.format(tree=str(fresh / "tree"), data=str(fresh / "data"), repro=str(fresh / "repro"))
     return subprocess.Popen([py, "-c", pre + code], cwd=fresh / "tree", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
-                            env=tree_env(fresh))
+                            env={**tree_env(fresh), **(extra_env or {})})
 
 
 def tree_env(fresh):
@@ -354,17 +354,25 @@ print(json.dumps({{'rows': int(len(X)), 'max_abs_pred_diff': float(np.abs(pn - p
 """
 
 
+# Per-fit parameter: the archived tier-1 Ridge was fitted with 4 OpenBLAS threads (machine default; float32 normal
+# equations depend on the BLAS reduction order). Rehearsal probes #640/#642: 1 thread -> max |dpred| 0.55, 4 -> 0.
+REFIT_ENV = {"D_t1_ridge/ridge_100.0": {"OPENBLAS_NUM_THREADS": "4"}, "D_t1_hgb/hgb_4": {}}
+# 'bytes' (pickle size) is not compared: it depends on the module name under which the classes were pickled
+# (__main__ in the campaign, train_d here), 1 byte apart; predictions are compared exactly instead.
+REFIT_NOT_COMPARED = ("bytes",)
+
+
 def sec_refit(z, py, fresh):
     jobs = {"D_t1_ridge/ridge_100.0": REFIT.format(cfg=1, which="ridge", name="ridge_100.0"),
             "D_t1_hgb/hgb_4": REFIT.format(cfg=0, which="hgb", name="hgb_4")}
-    res = {k: collect(pyproc(py, fresh, c)) for k, c in jobs.items()}
+    res = {k: collect(pyproc(py, fresh, c, REFIT_ENV[k])) for k, c in jobs.items()}
     items = {}
     for k, (r, rc) in res.items():
         if "rows" not in r:
             items[k] = {"ok": False, "exit": rc, "error": r}
             continue
-        a, b = strip(r["result_new"]), strip(r["result_archived"])
-        items[k] = {"refit_dir": "repro/refit_runs (not the archived run dir)", "val_rows_compared": r["rows"],
+        a, b = ({kk: vv for kk, vv in strip(x).items() if kk not in REFIT_NOT_COMPARED} for x in (r["result_new"], r["result_archived"]))
+        items[k] = {"env": REFIT_ENV[k], "not_compared": REFIT_NOT_COMPARED, "refit_dir": "repro/refit_runs (not the archived run dir)", "val_rows_compared": r["rows"],
                     "predictions_identical": r["pred_identical"], "max_abs_pred_diff": r["max_abs_pred_diff"],
                     "recorded_result_identical_after_timing_rule": bool(close(a, b)), "diffs": diffs(a, b),
                     "ok": bool(r["pred_identical"] and close(a, b))}
