@@ -37,7 +37,7 @@ FRESH = S / "int1_receipt_fresh"
 REC = ROOT / "evidence/howm_int1_receipt"
 TIMING_EXACT = {"seconds", "fit_seconds", "train_seconds", "wall_s"}
 TIMING_RULE = "keys named seconds, fit_seconds, train_seconds, wall_s, or containing 'cpu_s' are removed recursively before comparison"
-REGEN = {"eval": [("MAIN", 17, 1, None), ("SIZE12", 5, 2, None), ("SUB32", 3, 0, 2)],
+REGEN = {"eval": [("MAIN", 17, 1, None), ("SIZE12", 5, 2, None), ("SUB32", 0, 2, 2)],
          "corpus": [("INT_TRAIN", 137), ("INT_TRAIN", 9001), ("INT_VAL", 5)]}
 
 
