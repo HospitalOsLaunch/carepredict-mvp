@@ -12,7 +12,9 @@ i = sys.argv.index("--")
 opts = dict(zip(sys.argv[1:i:2], sys.argv[2:i:2]))
 rest = sys.argv[i + 1:]
 runs, seeds = opts["--runs"].split(","), opts["--seeds"].split(",")
-procs = [subprocess.Popen([sys.executable, str(ROOT / "scripts/int1/train_w.py"), "--run", r, "--seed", s, *rest]) for r, s in zip(runs, seeds)]
+abl = opts.get("--ablates", ",".join([""] * len(runs))).split(",")
+procs = [subprocess.Popen([sys.executable, str(ROOT / "scripts/int1/train_w.py"), "--run", r, "--seed", s, *(["--ablate", ab] if ab else []), *rest])
+         for r, s, ab in zip(runs, seeds, abl)]
 codes = [p.wait() for p in procs]
 print({"runs": runs, "exit_codes": codes})
 sys.exit(max(codes))
