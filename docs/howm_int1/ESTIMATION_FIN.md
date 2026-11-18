@@ -88,3 +88,96 @@ fourchette. Les volumes de panel seront fixés avant toute ouverture du test et 
 106. Cela donne **4,5 à 7 h de calendrier** et 17 à 26 ks de budget comptabilisé.
 
 **Temps calendaire restant : 12 à 20 h.**
+
+---
+
+# Mise à jour du 18 novembre 2026, 11 h 02 UTC (débits mesurés au registre)
+
+**Définitions.** Le temps calendaire est le temps écoulé. Le budget comptabilisé est la somme des durées des
+commandes au registre : des commandes concurrentes comptent chacune.
+
+## Étapes terminées : réalisé mesuré
+
+| Étape | Mur comptabilisé | CPU | Débit mesuré |
+|---|---|---|---|
+| Corpus (10 000 structures + VAL), lot DATA | 39 689 s | 91 425 s | 2,1 s de mur par structure à 4 processus seuls, environ 4 fois moins en concurrence |
+| Apprentissage (W S/M × 3 graines × 2 paliers, D, ablations), lot LEARN | 62 610 s | 97 379 s | W-S 10,1 mises à jour/s, W-M 2,7/s (1 fil) |
+| Évaluation MAIN, EXT, COMBO, SIZE12 | inclus dans EVAL | inclus | — |
+
+**Palier 2, mises à jour réalisées par graine :**
+
+| Taille | Mises à jour (meilleure) |
+|---|---|
+| S | +15k (7k), +14k (6k), +14k (6k) |
+| M | +14k (6k), +9k (1k), +16k (8k) |
+
+Les deux tailles se sont arrêtées par patience.
+
+## Reste à faire
+
+**SUB32 (F et R1, 384 fichiers, un par futur) : 192 / 384 à 11 h 02.**
+
+| Mesure | Valeur |
+|---|---|
+| Durée d'une tâche | moyenne 202 s CPU ; p90 256 s ; maximum 276 s |
+| Débit sur la dernière heure | 68 fichiers/h (4 processus) |
+| Coût par fichier | ≈ 52 s de mur comptabilisé et ≈ 190 s de CPU |
+
+Le budget de lancement est de 200 s depuis le dépassement #677, d'où des commandes d'environ 320 s.
+
+**Livraison** (coûts mesurés pendant la répétition du reçu, #624–#648) :
+
+| Élément | Durée |
+|---|---|
+| Archive | 22 s |
+| Reçu : mise en place | 29 s |
+| Reçu : tests | 7 s |
+| Reçu : chargement | 62 s |
+| Reçu : analyse | 56 s |
+| Reçu : régénérations | 195 s |
+| Reçu : réajustements | 48 s |
+| Analyse gelée | 4 s |
+| Enveloppe | ≈ 10 s |
+
+S'y ajoutent la rédaction et les vérifications, hors registre.
+
+## Projection
+
+| Étape | Calendaire | Mur comptabilisé | CPU |
+|---|---|---|---|
+| SUB32 restant (192 fichiers) | **2,6–3,3 h** (58–75 fichiers/h) | 9–11,5 ks | 33–40 ks |
+| Analyse finale, rapport § 9 | 0,3–0,5 h | < 0,1 ks | — |
+| Archive, reçu neuf, enveloppe | 0,5–1 h | 0,5–0,9 ks | 0,6–1 ks |
+| **Total restant** | **3,4–4,8 h** → fin vers **14 h 30–16 h UTC** | **≈ 10–12,5 ks** | ≈ 34–41 ks |
+
+## Totaux projetés en fin de campagne
+
+| Grandeur | Projection | Plafond | Part |
+|---|---|---|---|
+| Mur comptabilisé | 130–133 ks | 259,2 ks | 50–51 % |
+| CPU | 286–293 ks (79–81 h) | 288 h | 28 % |
+
+Le CPU au 18 novembre à 11 h 02 était de 251,6 ks, dont 2,6 ks de corrections déclarées. La réserve de 7 h n'est
+pas utilisée ; le coût est de 0 €.
+
+**Calendaire total :** de la genèse (17 nov. 15 h 43) à la fin, environ 23–24,5 h.
+
+## Chemin critique
+
+**SUB32**, borné par le CPU :
+
+- 4 cœurs ;
+- décision F ≈ 15 s CPU à Md = 16, R1 ≈ 9 s ;
+- 7 décisions par futur.
+
+Ensuite : analyse gelée finale → § 9 du rapport → archive finale → reçu (il exige l'archive finale) → enveloppe.
+Rien d'autre ne peut avancer en parallèle, sauf la rédaction.
+
+## Risques et effet sur la fourchette
+
+| Risque | Effet |
+|---|---|
+| Relance de la chaîne à chaque créneau d'arrière-plan de 2 h (une relance prévue) | + 0–10 min |
+| Nouveau dépassement de 540 s | improbable avec 200 s + 276 s maximum ; + 5–10 min, travail en vol recalculé |
+| Redémarrage du conteneur | reprise sans perte, hors tâches en vol ; + 10–20 min |
+| Échec d'une section du reçu final | correction puis nouvelle section ; + 15–30 min |
