@@ -185,7 +185,14 @@ def sim_policy(kind: str, Md: int, interval_h: int, timing: list | None = None, 
         if kind == "F":
             pairs = C2.f_pairs(w, pub, ps, base_pe, t, Md, rep)
         else:
-            pairs = C2.r1_pairs(w, pub, ps, base_pe, t, pb, Md, rep)
+            from hospitalos.howm2 import data as D_
+
+            orig = D_.origins
+            D_.origins = _origins_ext()  # frozen origins() sizes arrays for 192-h HOWM-1 episodes; decisions here reach 216 h
+            try:
+                pairs = C2.r1_pairs(w, pub, ps, base_pe, t, pb, Md, rep)
+            finally:
+                D_.origins = orig
         cat, adm, seqs = candidates(pe, sp.units, sp.n, t_start)
         hours = DA.LOOKAHEAD_STEPS[sp.n] * 2
         costs = np.array([np.mean([sim_rollout(as_engine_n(e, pe), pv, sq, hours, interval_h, sp.n, t_start) for e, pv in pairs]) for sq in seqs])
@@ -195,3 +202,23 @@ def sim_policy(kind: str, Md: int, interval_h: int, timing: list | None = None, 
         return seqs[i][0]
 
     return pol
+
+
+_ORIGINS_EXT = None
+
+
+def _origins_ext():
+    """howm2.data.origins derived by source substitution with a 400-h horizon (frozen source untouched; the
+    arrays only hold arrival labels and features indexed by absolute hour)."""
+    global _ORIGINS_EXT
+    if _ORIGINS_EXT is None:
+        import inspect
+
+        from hospitalos.howm2 import data as D_
+
+        src = inspect.getsource(D_.origins)
+        ns = dict(D_.__dict__)
+        ns["N_HOURS"] = 400
+        exec(compile(src, "<int1 derived origins (400 h)>", "exec"), ns)  # noqa: S102
+        _ORIGINS_EXT = ns["origins"]
+    return _ORIGINS_EXT

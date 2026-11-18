@@ -1,0 +1,39 @@
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/eval_campaign.py", line 139, in job
+    out = L.closed_loop(sp, pre, r, pol, nd, iv, hz)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howmint/loop.py", line 103, in closed_loop
+    a = policy(ps=ps, peng=peng, cat=cat, adm=adm, t=eng.tick, t_start=t_start, spec=spec_e,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howmint/planners.py", line 188, in pol
+    pairs = C2.r1_pairs(w, pub, ps, base_pe, t, pb, Md, rep)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/bfrag2/core2.py", line 325, in r1_pairs
+    od = next(od for h, od, _ps in D.origins(SimpleNamespace(observations=pub), [H]) if h == H)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/bfrag2/core2.py", line 325, in <genexpr>
+    od = next(od for h, od, _ps in D.origins(SimpleNamespace(observations=pub), [H]) if h == H)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm2/data.py", line 32, in origins
+    arrivals_true["AB".index(un), ev // 60] += 1
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+IndexError: index 203 is out of bounds for axis 1 with size 192
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/int1/eval_campaign.py", line 185, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/eval_campaign.py", line 177, in main
+    n += r.get()
+         ^^^^^^^
+  File "/usr/lib/python3.11/multiprocessing/pool.py", line 774, in get
+    raise self._value
+IndexError: index 203 is out of bounds for axis 1 with size 192

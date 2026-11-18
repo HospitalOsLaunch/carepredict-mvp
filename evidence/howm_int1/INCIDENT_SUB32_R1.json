@@ -1,0 +1,5 @@
+{"kind": "post-freeze defect of a SECONDARY comparator, found before any SUB32 result existed (0 files written)",
+ "defect": "the adapted R1 planner calls the frozen howm2.data.origins(), whose arrays are sized for 192-h HOWM-1 episodes; INT-1 daily decisions reach H0 + 144 h (up to 216 h) -> IndexError (ledger #596); the DEV cost pilot used H0 = 48 h (last decision at 192 h) and did not reveal it",
+ "fix": "planners.sim_policy (R1 only) uses a derived origins() (source substitution, N_HOURS = 400) for the duration of the call; frozen source untouched; F unaffected; verified on DEV with H0 = 72 h (#598)",
+ "unchanged": "W, D, B*, rules, panels, futures, Md, analysis; MAIN/EXT/COMBO/SIZE12 results already complete and not re-run",
+ "files_changed_after_freeze": ["src/hospitalos/howmint/planners.py", "scripts/int1/smoke_r1_long.py"]}
