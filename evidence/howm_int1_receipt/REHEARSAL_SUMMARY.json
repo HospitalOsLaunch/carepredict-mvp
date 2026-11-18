@@ -1,0 +1,345 @@
+{
+ "what": "receipt REHEARSAL on a preliminary archive (SUB32 16/384 files), to find receipt-script defects BEFORE the final receipt; not the receipt",
+ "archive": "HOWM_INT1_REHEARSAL.zip (sha256 a61170adc66d24e3f59fe3cc343a766ede652368b6f2cfc02595790fb0330f2b; deleted after the rehearsal)",
+ "defects_found_and_fixed": [
+  "fresh-tree subprocesses inherited PYTHONPATH=<repo>/src from the ledger runner (repo modules could shadow the tree): environment replaced, import origin checked (setup.environment.imports_from_fresh_tree)",
+  "requirements comparison was order-sensitive (pip vs archived file ordering): compared as sets of lines; pip-freeze SHA-256 equals the approved e93a3617...",
+  "test M7 reads historical model binaries absent from the git archive: deselected in the fresh tree and replaced by the same hash check on the 46 archived files; the 34 absent ones are listed",
+  "Ridge refit used 1 OpenBLAS thread while the archived fit used the machine default (4): max |dpred| 0.55 -> 0 with 4 threads (probes #640/#642); per-fit parameter recorded",
+  "pickle size ('bytes') differs by 1 byte (module name __main__ vs train_d): not compared, predictions compared exactly",
+  "curves.py exec lacked __file__ (would have failed): fixed before the run"
+ ],
+ "results_after_fixes": {
+  "analysis": {
+   "ok": false
+  },
+  "load": {
+   "ok": true
+  },
+  "refit": {
+   "ok": true
+  },
+  "regen": {
+   "ok": true
+  },
+  "setup": {
+   "ok": true
+  },
+  "tests": {
+   "ok": true
+  }
+ },
+ "analysis_note": "RESULTS_INT1.json differed only by the SUB32 block (archived RESULTS predates any SUB32 file; the rehearsal archive held 16 files); POSTHOC, PROPAGATION_W_VAL, CURVES identical",
+ "sections": {
+  "analysis": {
+   "run": {
+    "written": [
+     "CURVES.json",
+     "FREEZE_INT1.json",
+     "POSTHOC_MAIN.json",
+     "PROPAGATION_W_VAL.json",
+     "RESULTS_INT1.json"
+    ]
+   },
+   "exit": 0,
+   "items": {
+    "RESULTS_INT1.json": {
+     "identical": false,
+     "diffs": [
+      "/SUB32: missing"
+     ]
+    },
+    "POSTHOC_MAIN.json": {
+     "identical": true,
+     "diffs": []
+    },
+    "PROPAGATION_W_VAL.json": {
+     "identical": true,
+     "diffs": []
+    },
+    "CURVES.json": {
+     "identical": true,
+     "diffs": []
+    }
+   },
+   "outputs": "repro/analysis (separate from the archived evidence)",
+   "ok": false,
+   "seconds": 56.1
+  },
+  "load": {
+   "policies_built": {
+    "MAIN": [
+     "D_dset",
+     "D_hgb",
+     "D_ridge",
+     "W_M",
+     "W_S",
+     "historical",
+     "robust"
+    ],
+    "EXT": [
+     "D_dset",
+     "D_hgb",
+     "D_ridge",
+     "W_M",
+     "W_S",
+     "historical",
+     "robust"
+    ],
+    "SUB32": [
+     "F",
+     "R1"
+    ]
+   },
+   "checks": {
+    "W_t2_S_s0": {
+     "recorded_VAL_metrics_reproduced": true,
+     "diffs": []
+    },
+    "W_t2_M_s0": {
+     "recorded_VAL_metrics_reproduced": true,
+     "diffs": []
+    },
+    "D_t2_hgb/hgb_4": {
+     "recorded_VAL_metrics_reproduced": true,
+     "diffs": []
+    },
+    "D_t2_ridge/ridge_100.0": {
+     "recorded_VAL_metrics_reproduced": true,
+     "diffs": []
+    }
+   },
+   "ok": true,
+   "seconds": 62.1
+  },
+  "refit": {
+   "items": {
+    "D_t1_ridge/ridge_100.0": {
+     "env": {
+      "OPENBLAS_NUM_THREADS": "4"
+     },
+     "not_compared": [
+      "bytes"
+     ],
+     "refit_dir": "repro/refit_runs (not the archived run dir)",
+     "val_rows_compared": 1954,
+     "predictions_identical": true,
+     "max_abs_pred_diff": 0.0,
+     "recorded_result_identical_after_timing_rule": true,
+     "diffs": [],
+     "ok": true
+    },
+    "D_t1_hgb/hgb_4": {
+     "env": {},
+     "not_compared": [
+      "bytes"
+     ],
+     "refit_dir": "repro/refit_runs (not the archived run dir)",
+     "val_rows_compared": 1954,
+     "predictions_identical": true,
+     "max_abs_pred_diff": 0.0,
+     "recorded_result_identical_after_timing_rule": true,
+     "diffs": [],
+     "ok": true
+    }
+   },
+   "ok": true,
+   "seconds": 47.6
+  },
+  "regen": {
+   "items": {
+    "eval:MAIN/s0017_e1.json": {
+     "params": [
+      "MAIN",
+      17,
+      1,
+      null
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "identical": true
+    },
+    "eval:SIZE12/s0005_e2.json": {
+     "params": [
+      "SIZE12",
+      5,
+      2,
+      null
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "identical": true
+    },
+    "eval:SUB32/s0000_e2_r2.json": {
+     "params": [
+      "SUB32",
+      0,
+      2,
+      2
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "identical": true
+    },
+    "corpus:INT_TRAIN/s00137.json": {
+     "params": [
+      "INT_TRAIN",
+      "--s0",
+      "137",
+      "--s1",
+      "138",
+      "--par",
+      "1",
+      "--budget",
+      "500",
+      "--out",
+      "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/int1_receipt_fresh/HOWM_INT1_REHEARSAL/repro/corpus"
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "arrays_identical": true,
+     "note": "npz bytes embed zip timestamps; arrays compared exactly (archived original hash-checked against the manifest in setup)",
+     "identical": true
+    },
+    "corpus:INT_TRAIN/s09001.json": {
+     "params": [
+      "INT_TRAIN",
+      "--s0",
+      "9001",
+      "--s1",
+      "9002",
+      "--par",
+      "1",
+      "--budget",
+      "500",
+      "--out",
+      "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/int1_receipt_fresh/HOWM_INT1_REHEARSAL/repro/corpus"
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "arrays_identical": true,
+     "note": "npz bytes embed zip timestamps; arrays compared exactly (archived original hash-checked against the manifest in setup)",
+     "identical": true
+    },
+    "corpus:INT_VAL/s00005.json": {
+     "params": [
+      "INT_VAL",
+      "--s0",
+      "5",
+      "--s1",
+      "6",
+      "--par",
+      "1",
+      "--budget",
+      "500",
+      "--out",
+      "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/int1_receipt_fresh/HOWM_INT1_REHEARSAL/repro/corpus",
+      "--K",
+      "4"
+     ],
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "arrays_identical": true,
+     "note": "npz bytes embed zip timestamps; arrays compared exactly (archived original hash-checked against the manifest in setup)",
+     "identical": true
+    },
+    "demo:howm_int1/DEMO.json": {
+     "params": "fixed DEV cases of demo.py",
+     "exit": 0,
+     "json_identical_after_timing_rule": true,
+     "diffs": [],
+     "identical": true
+    }
+   },
+   "outputs": "repro/ (separate from the archived originals, which are kept)",
+   "ok": true,
+   "seconds": 194.6
+  },
+  "setup": {
+   "archive_files": 3877,
+   "bad": [],
+   "frozen_models_hash_mismatch": [],
+   "frozen_scripts_changed_since_freeze": [
+    "scripts/int1/analyse.py",
+    "scripts/int1/chain.py",
+    "scripts/int1/eval_campaign.py",
+    "src/hospitalos/howmint/planners.py"
+   ],
+   "corpus_files_checked_against_manifest": 1301,
+   "corpus_hash_mismatch": [],
+   "environment": {
+    "python": "3.11.18",
+    "pip_freeze_sha256": "e93a3617e8f784786cafb1a0b3d4d20aab255f58db704d51b78f5675980e1218",
+    "matches_archived_requirements": true,
+    "interpreter": "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_int1_fresh/bin/python",
+    "campaign_venv_not_used": true,
+    "hospitalos_imported_from": "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/int1_receipt_fresh/HOWM_INT1_REHEARSAL/tree/src/hospitalos/howmint/world.py",
+    "torch_sklearn": [
+     "2.15.0+cpu",
+     "1.8.0"
+    ],
+    "imports_from_fresh_tree": true
+   },
+   "ok": true,
+   "seconds": 28.7
+  },
+  "tests": {
+   "exit": 0,
+   "tail": [
+    "30 passed, 1 deselected in 5.40s"
+   ],
+   "deselected": [
+    "tests/howm_int1/test_models.py::test_m7_historical_sources_and_results_unchanged"
+   ],
+   "m7_on_archived_files": {
+    "historical_files": 80,
+    "present_in_archive_and_identical": 46,
+    "mismatch": [],
+    "absent_from_git_archive": [
+     "evidence/howm2_bfrag2/models/S0_HGB_d2_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S0_HGB_d2_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S0_HGB_d3_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S0_HGB_d3_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S0_LR_C0.01.pkl",
+     "evidence/howm2_bfrag2/models/S0_LR_C0.1.pkl",
+     "evidence/howm2_bfrag2/models/S0_LR_C1.0.pkl",
+     "evidence/howm2_bfrag2/models/S0_LR_C10.0.pkl",
+     "evidence/howm2_bfrag2/models/S1_HGB_d2_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S1_HGB_d2_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S1_HGB_d3_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S1_HGB_d3_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S1_LR_C0.01.pkl",
+     "evidence/howm2_bfrag2/models/S1_LR_C0.1.pkl",
+     "evidence/howm2_bfrag2/models/S1_LR_C1.0.pkl",
+     "evidence/howm2_bfrag2/models/S1_LR_C10.0.pkl",
+     "evidence/howm2_bfrag2/models/S2_HGB_d2_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S2_HGB_d2_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S2_HGB_d3_lr0.05.pkl",
+     "evidence/howm2_bfrag2/models/S2_HGB_d3_lr0.1.pkl",
+     "evidence/howm2_bfrag2/models/S2_LR_C0.01.pkl",
+     "evidence/howm2_bfrag2/models/S2_LR_C0.1.pkl",
+     "evidence/howm2_bfrag2/models/S2_LR_C1.0.pkl",
+     "evidence/howm2_bfrag2/models/S2_LR_C10.0.pkl",
+     "evidence/howm2_bfrag2w/models/D_hgb_3.pkl",
+     "evidence/howm2_bfrag2w/models/D_hgb_5.pkl",
+     "evidence/howm2_bfrag2w/models/D_ridge_inter_10.0.pkl",
+     "evidence/howm2_bfrag2w/models/D_ridge_inter_1000.0.pkl",
+     "evidence/howm2_bfrag2w/models/W_seed0_best.pt",
+     "evidence/howm2_bfrag2w/models/W_seed0_last.pt",
+     "evidence/howm2_bfrag2w/models/W_seed1_best.pt",
+     "evidence/howm2_bfrag2w/models/W_seed1_last.pt",
+     "evidence/howm2_bfrag2w/models/W_seed2_best.pt",
+     "evidence/howm2_bfrag2w/models/W_seed2_last.pt"
+    ]
+   },
+   "ok": true,
+   "seconds": 6.5
+  }
+ }
+}
