@@ -103,7 +103,14 @@ def main() -> int:
     ap.add_argument("--config", type=int, default=None, help="index of the single configuration to fit")
     a = ap.parse_args()
     t0 = time.time()
-    tr = DA.situations(DA.load(CORPUS, "INT_TRAIN", list(range(TIER[a.tier]))))
+    if a.tier == 2:  # memory-mapped pack (first 2 futures per row, same as W at tier 2)
+        tr = DA.packed_situations(S / "int1_pack_t2")
+        if a.which == "ridge":  # interaction matrix does not fit in memory: fixed 10 % subsample of structures (declared; 30 % was killed by the memory limit, #479)
+            rng = np.random.default_rng(20261118)
+            keep = {s_ for s_ in sorted({x["structure"] for x in tr}) if rng.random() < 0.1}
+            tr = [x for x in tr if x["structure"] in keep]
+    else:
+        tr = DA.situations(DA.load(CORPUS, "INT_TRAIN", list(range(TIER[a.tier]))))
     va = DA.situations(DA.load(CORPUS, "INT_VAL", list(range(300))))
     od = OUT / f"D_t{a.tier}_{a.which}"
     od.mkdir(parents=True, exist_ok=True)
@@ -146,7 +153,7 @@ def main() -> int:
         torch.set_num_threads(1)
         torch.manual_seed(a.seed)
         np.random.seed(a.seed)
-        st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / ("W_t1_S_s0" if a.tier == 1 else "W_t2_S_s0") / "norm.npz").items()}
+        st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / "W_t1_S_s0" / "norm.npz")  # tier-1 TRAIN normalisation for both tiers (as the W continuations).items()}
         net = MO.DSet(160)
         opt = torch.optim.Adam(net.parameters(), lr=1e-3)
         ck = od / "last.pt"
