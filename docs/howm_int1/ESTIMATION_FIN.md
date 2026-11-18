@@ -69,3 +69,22 @@ fourchette. Les volumes de panel seront fixés avant toute ouverture du test et 
 - au plus 2 commandes concurrentes ;
 - 4 processus pour le corpus dès la fin de W-M ;
 - W-S et W-M du palier 2 lancés l'un après l'autre (ou ensemble si la mémoire le permet), en une commande chacun.
+
+## Mise à jour (18 novembre) — pilote de coût d'évaluation sur DEV (`EVAL_COSTPILOT_DEV.json`, registre #426)
+
+**Coûts mesurés avec les modèles entraînés du palier 1**, en CPU par boucle fermée (une politique, un
+épisode-futur) :
+
+| Politique | 2 unités, 7 jours | 4 à 12 unités, 24 h |
+|---|---|---|
+| Règles | 0,2 s | — |
+| D | 0,35–0,55 s | 0,1–0,5 s |
+| W-S | 0,8–1,0 s | 0,4–1,1 s |
+| W-M | 1,9 s | 0,9–2,7 s |
+| **F (Md = 16)** | **79 s** (11,2 s par décision) | — |
+| **R1 (Md = 16)** | **49 s** (7,0 s par décision) | — |
+
+**Évaluation projetée : ≈ 72 ks de CPU** (MAIN ≈ 15 ; SUB32 F/R1 ≈ 49 ; EXT, COMBO et SIZE12 ≈ 8), au lieu de
+106. Cela donne **4,5 à 7 h de calendrier** et 17 à 26 ks de budget comptabilisé.
+
+**Temps calendaire restant : 12 à 20 h.**
