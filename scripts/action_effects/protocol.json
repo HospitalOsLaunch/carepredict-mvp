@@ -1,0 +1,13 @@
+{
+  "partition_prefix": "ACTION_EFFECT_CARE_V1",
+  "train_structures": 24, "dev_structures": 8, "test_structures": 16,
+  "episodes_per_structure": 2, "prefix_hours": 48, "delay_minutes": 180,
+  "truth_draws": [1, 2, 3, 4], "horizons": [6, 12, 24],
+  "baseline": "Mean predictions of the three frozen physical GraphWM checkpoints. Lowest predicted wait, ties prefer abstention.",
+  "features": "Four-particle filtered public state and frozen physical model action-effect estimates. Only simulator outcomes in training labels.",
+  "targets": "Paired wait and uncovered care minutes for cleaning and transport relative to abstention.",
+  "regression": "Standardized ridge with alpha in [1,10,100], chosen by DEV mean absolute error scaled by TRAIN mean absolute effects. Independent equations for all outputs.",
+  "policy": "Minimize predicted waiting among actions with predicted uncovered care change <=0 relative to abstention. Ties prefer abstention. Equal budget cap 16 staff-hours.",
+  "primary": "24h paired outcome difference versus frozen physical ensemble. Require upper 95% structure-bootstrap limits below zero for wait and <=0 for uncovered care, and budget respected.",
+  "secondary": "6/12h, zero-effect reference, wait-only ablation, realized spending and comparison at fixed expenditure (cleaning vs transport)."
+}

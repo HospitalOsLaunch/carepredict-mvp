@@ -3,6 +3,7 @@ import pickle,json
 import pandas as pd
 from common import *
 from correction import choices
+from review_metrics import intervention_errors
 
 
 def project(initial,prov,action,refresh=True):
@@ -60,7 +61,7 @@ def run():
       **target[best][h]))
   print('Consequences',idx,flush=True)
  (ROOT/'consequences.json').write_text(json.dumps(dict(rows=rows,decisions=decisions))+'\n')
- f=pd.DataFrame(rows);f['mae']=(f.predicted-f.truth).abs();f['effect_mae']=(f.predicted_effect-f.true_effect).abs()
+ f=pd.DataFrame(rows);f['mae']=(f.predicted-f.truth).abs();f['effect_mae']=intervention_errors(f)
  summary=f.groupby(['delay','arm','horizon','metric'])[['mae','effect_mae']].mean().reset_index().to_dict('records')
  d=pd.DataFrame(decisions).groupby(['delay','arm','horizon'])[['regret','wait_patient_min','uncovered_care_min','staff_hours','rejected']].mean().reset_index().to_dict('records')
  (ROOT/'consequence_summary.json').write_text(json.dumps(dict(forecasts=summary,decisions=d),indent=2)+'\n')

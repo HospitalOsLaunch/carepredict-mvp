@@ -6,6 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from common import ROOT,PROTO
+from review_metrics import monthly_resource_plan
 from hospitalos.howmint.models import GraphWM
 
 
@@ -90,7 +91,7 @@ def evaluate(model,test,train,seed,variant,r):
      latent_mse=float(F.mse_loss(F.layer_norm(z[:,sel],(z.shape[-1],)),F.layer_norm(target[:,sel],(target.shape[-1],)))),
      target_variance=float(target[:,sel].flatten(0,-2).var(0,unbiased=False).mean())))
   forecasts.append(dict(structure=i,month=m,predicted=s.numpy().tolist(),truth=actual.numpy().tolist(),predicted_cost=c.numpy().tolist(),truth_cost=d['cost'][1:].numpy().tolist(),beds=beds.numpy().tolist()))
-  pb=batch([(d,0,4)]*3);pb['R']=d['probe_R'];pb['clock']=d['probe_clock'][None].repeat(3,1,1)
+  pb=batch([(d,0,4)]*3);pb['R']=tensor(monthly_resource_plan(d['probe_R'].numpy()));pb['clock']=d['probe_clock'][None].repeat(3,1,1)
   ss,cc,ca,_=model(pb)
   for hi,steps in enumerate((1,2,4)):
    pp=torch.stack([(ss[:,steps-1,:,1]*beds).mean(-1),(ss[:,steps-1,:,3]*beds).mean(-1),

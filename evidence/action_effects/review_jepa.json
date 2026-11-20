@@ -1,0 +1,428 @@
+{
+  "decisions": [
+    {
+      "variant": "physical",
+      "horizon": 6,
+      "regret": 0.0,
+      "actual_wait": 7495.25,
+      "actual_care": 844.8166666666667,
+      "staff": 0.17777777777777778
+    },
+    {
+      "variant": "physical",
+      "horizon": 12,
+      "regret": 24.833333333333332,
+      "actual_wait": 15503.083333333334,
+      "actual_care": 2771.8722222222223,
+      "staff": 9.955555555555556
+    },
+    {
+      "variant": "physical",
+      "horizon": 24,
+      "regret": 70.91666666666667,
+      "actual_wait": 33930.666666666664,
+      "actual_care": 6603.5888888888885,
+      "staff": 13.333333333333334
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 6,
+      "regret": 0.0,
+      "actual_wait": 7495.25,
+      "actual_care": 844.8166666666667,
+      "staff": 0.17777777777777778
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 12,
+      "regret": 25.0,
+      "actual_wait": 15503.25,
+      "actual_care": 2771.438888888889,
+      "staff": 9.955555555555556
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 24,
+      "regret": 94.0,
+      "actual_wait": 33953.75,
+      "actual_care": 6609.172222222222,
+      "staff": 10.488888888888889
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 6,
+      "regret": 0.0,
+      "actual_wait": 7495.25,
+      "actual_care": 844.8166666666667,
+      "staff": 0.17777777777777778
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 12,
+      "regret": 39.5,
+      "actual_wait": 15517.75,
+      "actual_care": 2764.9666666666667,
+      "staff": 5.688888888888889
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 24,
+      "regret": 96.83333333333333,
+      "actual_wait": 33956.583333333336,
+      "actual_care": 6610.227777777778,
+      "staff": 6.044444444444444
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 6,
+      "regret": 0.0,
+      "actual_wait": 7495.25,
+      "actual_care": 844.8166666666667,
+      "staff": 0.35555555555555557
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 12,
+      "regret": 42.0,
+      "actual_wait": 15520.25,
+      "actual_care": 2762.9,
+      "staff": 0.0
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 24,
+      "regret": 134.5,
+      "actual_wait": 33994.25,
+      "actual_care": 6602.533333333334,
+      "staff": 0.0
+    }
+  ],
+  "decision_paired": [
+    {
+      "horizon": 6,
+      "metric": "regret",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        0.0,
+        0.0
+      ],
+      "per_seed": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0
+      }
+    },
+    {
+      "horizon": 6,
+      "metric": "actual_wait",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        0.0,
+        0.0
+      ],
+      "per_seed": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0
+      }
+    },
+    {
+      "horizon": 6,
+      "metric": "actual_care",
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        0.0,
+        0.0
+      ],
+      "per_seed": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0
+      }
+    },
+    {
+      "horizon": 6,
+      "metric": "staff",
+      "mean": 0.0,
+      "ci95": [
+        -0.5333333333333333,
+        0.5333333333333333
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -0.7111111111111111,
+        0.7111111111111111
+      ],
+      "per_seed": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0
+      }
+    },
+    {
+      "horizon": 12,
+      "metric": "regret",
+      "mean": -14.666666666666666,
+      "ci95": [
+        -44.0,
+        0.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -44.0,
+        0.0
+      ],
+      "per_seed": {
+        "11": -24.0,
+        "23": -14.5,
+        "37": -5.5
+      }
+    },
+    {
+      "horizon": 12,
+      "metric": "actual_wait",
+      "mean": -14.666666666666666,
+      "ci95": [
+        -44.0,
+        0.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -44.0,
+        0.0
+      ],
+      "per_seed": {
+        "11": -24.0,
+        "23": -14.5,
+        "37": -5.5
+      }
+    },
+    {
+      "horizon": 12,
+      "metric": "actual_care",
+      "mean": 6.905555555555555,
+      "ci95": [
+        0.0,
+        20.716666666666665
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        0.0,
+        20.716666666666665
+      ],
+      "per_seed": {
+        "11": 10.616666666666667,
+        "23": 8.4,
+        "37": 1.7
+      }
+    },
+    {
+      "horizon": 12,
+      "metric": "staff",
+      "mean": 4.266666666666667,
+      "ci95": [
+        3.733333333333333,
+        5.333333333333333
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -6.933333333333334,
+        11.199999999999998
+      ],
+      "per_seed": {
+        "11": 11.2,
+        "23": 8.533333333333333,
+        "37": -6.933333333333334
+      }
+    },
+    {
+      "horizon": 24,
+      "metric": "regret",
+      "mean": -25.916666666666668,
+      "ci95": [
+        -54.25,
+        -5.75
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -90.75,
+        27.0
+      ],
+      "per_seed": {
+        "11": -67.0,
+        "23": -43.5,
+        "37": 32.75
+      }
+    },
+    {
+      "horizon": 24,
+      "metric": "actual_wait",
+      "mean": -25.916666666666668,
+      "ci95": [
+        -54.25,
+        -5.75
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -90.75,
+        27.0
+      ],
+      "per_seed": {
+        "11": -67.0,
+        "23": -43.5,
+        "37": 32.75
+      }
+    },
+    {
+      "horizon": 24,
+      "metric": "actual_care",
+      "mean": -6.638888888888889,
+      "ci95": [
+        -19.033333333333335,
+        1.8833333333333335
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        -38.40555555555555,
+        14.283333333333331
+      ],
+      "per_seed": {
+        "11": 14.233333333333333,
+        "23": -13.066666666666666,
+        "37": -21.083333333333332
+      }
+    },
+    {
+      "horizon": 24,
+      "metric": "staff",
+      "mean": 7.288888888888889,
+      "ci95": [
+        6.400000000000001,
+        8.0
+      ],
+      "clusters": 3,
+      "ci95_seed_structure": [
+        0.0,
+        12.8
+      ],
+      "per_seed": {
+        "11": 13.333333333333334,
+        "23": 9.066666666666666,
+        "37": -0.5333333333333333
+      }
+    }
+  ],
+  "equal_budget_diagnostic": [
+    {
+      "variant": "physical",
+      "horizon": 6,
+      "wait": 7495.25,
+      "care": 844.8166666666667,
+      "regret": 0.0,
+      "effect_mae": 2.7126736111111112e-06
+    },
+    {
+      "variant": "physical",
+      "horizon": 12,
+      "wait": 15492.75,
+      "care": 2777.438888888889,
+      "regret": 14.5,
+      "effect_mae": 25.82126736111111
+    },
+    {
+      "variant": "physical",
+      "horizon": 24,
+      "wait": 33913.0,
+      "care": 6610.216666666666,
+      "regret": 53.25,
+      "effect_mae": 93.24972873263889
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 6,
+      "wait": 7495.25,
+      "care": 844.8166666666667,
+      "regret": 0.0,
+      "effect_mae": 1.0850694444444445e-05
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 12,
+      "wait": 15500.166666666666,
+      "care": 2772.822222222222,
+      "regret": 21.916666666666668,
+      "effect_mae": 40.955143229166666
+    },
+    {
+      "variant": "physical_frozen_round1",
+      "horizon": 24,
+      "wait": 33927.333333333336,
+      "care": 6610.261111111111,
+      "regret": 67.58333333333333,
+      "effect_mae": 118.31644965277778
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 6,
+      "wait": 7495.25,
+      "care": 844.8166666666667,
+      "regret": 0.0,
+      "effect_mae": 5.4253472222222224e-06
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 12,
+      "wait": 15489.166666666666,
+      "care": 2779.027777777778,
+      "regret": 10.916666666666666,
+      "effect_mae": 33.31919216579861
+    },
+    {
+      "variant": "physical_jepa",
+      "horizon": 24,
+      "wait": 33899.916666666664,
+      "care": 6622.461111111111,
+      "regret": 40.166666666666664,
+      "effect_mae": 107.08175998263889
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 6,
+      "wait": 7495.25,
+      "care": 844.8166666666667,
+      "regret": 0.0,
+      "effect_mae": 2.170138888888889e-05
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 12,
+      "wait": 15506.083333333334,
+      "care": 2769.2055555555557,
+      "regret": 27.833333333333332,
+      "effect_mae": 81.39952256944444
+    },
+    {
+      "variant": "physical_jepa_frozen_round1",
+      "horizon": 24,
+      "wait": 33926.0,
+      "care": 6617.705555555555,
+      "regret": 66.25,
+      "effect_mae": 205.39440104166667
+    }
+  ]
+}

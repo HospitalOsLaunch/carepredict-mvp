@@ -29,9 +29,9 @@ Exemple à 180 minutes de retard, sur l'attente cumulée en patients-minutes :
 
 | Horizon | Erreur de trajectoire, prudent | Erreur de trajectoire, étendu | Erreur d'effet, prudent | Erreur d'effet, étendu |
 |---|---:|---:|---:|---:|
-| 6 h | 685,4 | 702,3 | 4,4 | 5,0 |
-| 12 h | 1 437,4 | 1 489,7 | 42,6 | 44,5 |
-| 24 h | 4 006,9 | 3 875,8 | 133,6 | 136,6 |
+| 6 h | 685,4 | 702,3 | 6,6 | 7,5 |
+| 12 h | 1 437,4 | 1 489,7 | 63,9 | 66,7 |
+| 24 h | 4 006,9 | 3 875,8 | 200,5 | 204,8 |
 
 Le filtre étendu améliore légèrement la trajectoire à 24 h dans cet exemple, mais dégrade d'autres métriques. Les décisions à 24 h restent équivalentes entre état public, filtre prudent et filtre étendu. Leur regret moyen est de 0,94 patient-minute face au meilleur coût moyen parmi les actions sur les deux futurs évalués. Le comparateur à état vrai atteint un regret nul sur ce petit panel, avec 14 heures-agents en moyenne contre 12 pour les autres. Ce panel offre donc très peu de marge décisionnelle ; il ne démontre pas un gain opérationnel du filtrage.
 
@@ -71,14 +71,14 @@ Avec abstention possible, même plafond de budget :
 
 | Résultat moyen | Physique seule | Physique + JEPA |
 |---|---:|---:|
-| Attente, patients-minutes | 33 939,3 | 33 956,6 |
-| Regret, patients-minutes | 79,6 | 96,8 |
-| Soins non couverts, minutes | 6 598,6 | 6 610,2 |
-| Heures-agents engagées | 12,27 | 5,87 |
+| Attente, patients-minutes | 33 930,7 | 33 956,6 |
+| Regret, patients-minutes | 70,9 | 96,8 |
+| Soins non couverts, minutes | 6 603,6 | 6 610,2 |
+| Heures-agents engagées | 13,33 | 6,04 |
 
-JEPA est plus économe en renforts mais augmente l'attente de 17,25 patients-minutes en moyenne. Deux graines dégradent ce résultat et une l'améliore. L'intervalle croisé du gain d'attente est [−72,25 ; 42,5] : aucun gain n'est établi.
+JEPA est plus économe en renforts mais augmente l'attente de 25,92 patients-minutes en moyenne. Deux graines dégradent ce résultat et une l'améliore. L'intervalle croisé du gain d'attente est [−90,75 ; 27,0] : aucun gain n'est établi.
 
-Un diagnostic complémentaire impose la même dépense de 16 heures-agents en comparant uniquement nettoyage et transport. JEPA réduit alors l'attente moyenne de 27,67 patients-minutes, mais augmente les soins non couverts de 19,03 minutes. Ce diagnostic ne satisfait pas non plus le critère commun d'amélioration sans dégradation des soins. Il n'est pas une nouvelle politique validée.
+Un diagnostic complémentaire impose la même dépense de 16 heures-agents en comparant uniquement nettoyage et transport. JEPA réduit alors l'attente moyenne de 13,08 patients-minutes, mais augmente les soins non couverts de 12,24 minutes. Ce diagnostic ne satisfait pas non plus le critère commun d'amélioration sans dégradation des soins. Il n'est pas une nouvelle politique validée.
 
 ## Vérifications et livraison
 
@@ -93,3 +93,5 @@ Les commandes et limites de reproduction sont dans [README.md](README.md). Les a
 ## Décision pour la suite
 
 Conserver les correctifs de causalité et l'extension du filtre pour les expériences. Conserver JEPA comme variante de recherche. La prochaine priorité est l'apprentissage apparié des **effets d'action**, avec un objectif et un planificateur qui prennent explicitement en compte les soins non couverts. Réduire uniquement l'erreur de lits libres ou la perte latente ne suffit pas à choisir de meilleures actions.
+
+Revue du commit 981c414. Les tableaux ci-dessus intègrent le recalcul sur les seules interventions et le rejeu complet avec les canaux de ressources vus à l’entraînement. Les anciennes archives conservent les résultats originaux. [Résultats corrigés du rejeu](../../evidence/action_effects/review_jepa.json).

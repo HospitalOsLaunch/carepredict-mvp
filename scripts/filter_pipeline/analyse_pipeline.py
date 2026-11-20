@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from common import ROOT,PROTO
+from review_metrics import intervention_errors
 
 
 def ci(frame,col,clusters=('structure',)):
@@ -27,11 +28,11 @@ def base():
  for (delay,kind),g in pd.DataFrame(r['rows']).groupby(['delay','kind']):
   g=g.copy();g['gain']=g.truth-(g.p-g.truth)**2
   tasks.append(dict(delay=int(delay),kind=kind,n=len(g),baseline_brier=float(g.truth.mean()),brier=float(((g.p-g.truth)**2).mean()),gain=ci(g,'gain')))
- cr=json.loads((ROOT/'consequences.json').read_text());f=pd.DataFrame(cr['rows']);f['error']=(f.predicted-f.truth).abs();f['effect_error']=(f.predicted_effect-f.true_effect).abs()
+ cr=json.loads((ROOT/'consequences.json').read_text());f=pd.DataFrame(cr['rows']);f['error']=(f.predicted-f.truth).abs();f['effect_error']=intervention_errors(f)
  forecasts=[]
  for (delay,horizon,metric),g in f.groupby(['delay','horizon','metric']):
   for col in ('error','effect_error'):
-   p=g.pivot(index=['structure','action'],columns='arm',values=col).reset_index();p['gain']=p.guarded-p.extended
+   p=g.dropna(subset=[col]).pivot(index=['structure','action'],columns='arm',values=col).reset_index();p['gain']=p.guarded-p.extended
    forecasts.append(dict(delay=int(delay),horizon=int(horizon),metric=metric,error=col,**ci(p,'gain')))
  (ROOT/'paired_summary.json').write_text(json.dumps(dict(filter=rows,probabilities=tasks,consequences=forecasts),indent=2)+'\n')
 

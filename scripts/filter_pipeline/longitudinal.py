@@ -6,6 +6,7 @@ are explicit and excluded from training transitions. No 5-year continuity claim.
 import calendar,datetime as dt,heapq,pickle,time
 from common import *
 from hospitalos.howm.world import SKILLS
+from review_metrics import monthly_resource_plan
 
 class ImmutableRoster(tuple):
  """Share immutable calendars between particles without copying 40 days each time."""
@@ -105,7 +106,7 @@ def generate_episode(part,index,month,models,enabled,probe_only=False):
     from hospitalos.howmint.features import schedule
     actions=choices(eng,sp.units,eng.tick,eng.tick+96)
     assert [a['kind'] for a in actions]==['none','cl','tr']
-    probe['probe_R']=np.array([schedule([a],sp.units,eng.tick,4,6,sp.drop,step_h=6)['R'] for a in actions])
+    probe['probe_R']=monthly_resource_plan(np.array([schedule([a],sp.units,eng.tick,4,6,sp.drop,step_h=6)['R'] for a in actions]))
     probe['probe_clock']=np.array([[np.sin(2*np.pi*((6*k)%24)/24),np.cos(2*np.pi*((6*k)%24)/24),(month%12)/12] for k in range(4)])
     probe['probe_staff']=np.array([a['staff_hours'] for a in actions])
     outcomes=[]
