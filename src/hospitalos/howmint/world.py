@@ -383,6 +383,20 @@ class PublicStreamN(PublicStream):
         self.routes: dict[str, dict] = {}
         self.transfer_from: dict[str, str] = {}
 
+    def _bed(self, bed: str, ev: int, state: str, **extra: Any) -> None:
+        """Resolve same-tick lifecycle events in physical, not delivery, order.
+
+        The simulator departs, starts/completes cleaning, then places patients.
+        A delayed cleaning_done must never erase a known same-tick placement.
+        Event time still takes precedence across distinct ticks.
+        """
+        phase = {"dirty": 0, "cleaning": 1, "free": 2, "occ": 3}
+        old = self.beds.get(bed)
+        if old is not None and old.last == ev:
+            if phase[state] < phase.get(old.data.get("state"), -1):
+                return
+        super()._bed(bed, ev, state, **extra)
+
     def _apply(self, o: tuple) -> None:
         ev, _avail, kind, subj, unit, v = o
         if kind == "route":
@@ -390,13 +404,6 @@ class PublicStreamN(PublicStream):
             return
         if kind == "request_arrival" and v.get("from_sid"):
             self.transfer_from[subj] = v["from_sid"]
-        if kind == "departure" and v.get("bed") in self.beds:
-            es = self.beds[v["bed"]]
-            keep = dict(es.data) if es.data.get("state") == "cleaning" and es.data.get("since") == ev else None
-            super()._apply(o)
-            if keep is not None:  # same-tick departure then cleaning start: the frozen replay sorts 'departure'
-                es.data = keep  # after 'cleaning_start'; physically the departure precedes the cleaning
-            return
         super()._apply(o)
 
     def to_engine_n(self, t_tick: int) -> EngineN:
@@ -415,8 +422,20 @@ class PublicStreamN(PublicStream):
             s.dest, s.aval = r["dest"], r["aval"]
             s.transfer_requested = any(v == sid for v in self.transfer_from.values())
             pub = self.stays.get(sid, {})
-            if "transport_done" in pub and sid in eng.tr_service:  # transport done but still present (external slot)
-                eng.tr_service.remove(sid)
+            # A later public stage implies its prerequisites, even if their
+            # individual notifications have not arrived yet.
+            transport_time = pub.get("transport_start", pub.get("transport_done"))
+            ready_time = pub.get("ready", transport_time)
+            if ready_time is not None:
+                s.authorised = True
+                s.auth_tick = s.auth_tick if s.auth_tick is not None else ready_time // 15
+            if transport_time is not None:
+                s.ready, s.tr_accepted = True, True
+                s.ready_tick = s.ready_tick if s.ready_tick is not None else transport_time // 15
+                s.tr_start = transport_time // 15
+            if "transport_done" in pub:  # completion may arrive before start
+                if sid in eng.tr_service:
+                    eng.tr_service.remove(sid)
                 s.tr_end = pub["transport_done"] // 15
             if s.ready and s.aval and s.departed is None and not s.dest and (not s.transport or "transport_done" in pub):
                 eng.aval_blocked.append(sid)  # ready and still present: waiting for an external downstream slot

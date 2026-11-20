@@ -1,5 +1,7 @@
 # Validation du filtrage et de la décision
 
+> Campagne V2 historique, conservée pour reproductibilité. Pour les nouvelles boucles, utiliser le profil prudent de `guarded_campaign.py` décrit dans [CORRECTIONS.md](CORRECTIONS.md). Les corrections du rejeu public, les évaluations indépendantes et leurs limites sont détaillées dans [CORRECTIONS_RESULTATS.md](CORRECTIONS_RESULTATS.md). L'inférence des fins de transport reste désactivée dans ce profil après échec de sa calibration.
+
 Expérience préclinique entièrement synthétique sur le moteur HospitalOS INT-1 existant. Le protocole est dans protocol.json. L'empreinte consignée avant lancement figure dans evidence/filter_validation/protocol.sha256.
 
 Le filtre estime la probabilité qu'un nettoyage ou un transport publiquement en cours soit encore inachevé. Il modélise séparément durée de service et retard de notification. Les durées de service suivent une loi lognormale arrondie au pas de quinze minutes. Les notifications suivent une loi exponentielle discrétisée. La vraisemblance comprend les fins déclarées et les tâches dont la notification n'est pas arrivée avant la coupure. L'estimation utilise uniquement les événements disponibles avant cette coupure. Les débuts encore invisibles restent exclus de la population d'apprentissage.

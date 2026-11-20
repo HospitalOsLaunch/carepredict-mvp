@@ -1,0 +1,1133 @@
+{
+  "states": [
+    {
+      "delay": 0,
+      "metric": "cleaning",
+      "mae": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "service_only": 0.0,
+        "lifecycle": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "free_beds",
+      "mae": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "service_only": 0.0,
+        "lifecycle": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "occupied",
+      "mae": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "service_only": 0.0,
+        "lifecycle": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "queue",
+      "mae": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "service_only": 0.0,
+        "lifecycle": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "transport",
+      "mae": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "service_only": 0.0,
+        "lifecycle": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "cleaning",
+      "mae": {
+        "legacy": 0.13802083333333334,
+        "public": 0.12434895833333333,
+        "service_only": 0.12329514345818819,
+        "lifecycle": 0.12459309895833333
+      },
+      "legacy_minus_public": {
+        "mean": 0.013671875,
+        "ci95": [
+          0.00390625,
+          0.024088541666666664
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": -0.000244140625,
+        "ci95": [
+          -0.015922037760416667,
+          0.01815083821614582
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": -0.001297955500145151,
+        "ci95": [
+          -0.002819348691441462,
+          0.0004485966256437103
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "free_beds",
+      "mae": {
+        "legacy": 2.0735677083333335,
+        "public": 0.10026041666666667,
+        "service_only": 0.1386834327565911,
+        "lifecycle": 0.024251302083333332
+      },
+      "legacy_minus_public": {
+        "mean": 1.9733072916666665,
+        "ci95": [
+          1.1529296875000001,
+          2.9330240885416665
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.07600911458333333,
+        "ci95": [
+          0.04646199544270833,
+          0.10506388346354166
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.11443213067325775,
+        "ci95": [
+          0.07085480152056453,
+          0.1651228731664698
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "occupied",
+      "mae": {
+        "legacy": 2.1067708333333335,
+        "public": 0.13216145833333334,
+        "service_only": 0.13216145833333334,
+        "lifecycle": 0.08528645833333333
+      },
+      "legacy_minus_public": {
+        "mean": 1.974609375,
+        "ci95": [
+          1.153564453125,
+          2.9420572916666665
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.046875,
+        "ci95": [
+          0.0250244140625,
+          0.07023315429687499
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.046875,
+        "ci95": [
+          0.0250244140625,
+          0.07023315429687499
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "queue",
+      "mae": {
+        "legacy": 0.15104166666666666,
+        "public": 0.15104166666666666,
+        "service_only": 0.15104166666666666,
+        "lifecycle": 0.10994466145833333
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.04109700520833334,
+        "ci95": [
+          0.018996175130208334,
+          0.06771443684895831
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.04109700520833334,
+        "ci95": [
+          0.018996175130208334,
+          0.06771443684895831
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "transport",
+      "mae": {
+        "legacy": 0.05859375,
+        "public": 0.057291666666666664,
+        "service_only": 0.07695397047825454,
+        "lifecycle": 0.07613118489583333
+      },
+      "legacy_minus_public": {
+        "mean": 0.0013020833333333333,
+        "ci95": [
+          0.0,
+          0.00390625
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": -0.018839518229166668,
+        "ci95": [
+          -0.029867553710937498,
+          -0.009968058268229172
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0008227855824212124,
+        "ci95": [
+          -0.0005727859946075981,
+          0.0024868258547125974
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "cleaning",
+      "mae": {
+        "legacy": 0.24153645833333334,
+        "public": 0.23763020833333334,
+        "service_only": 0.164244567367816,
+        "lifecycle": 0.16422526041666666
+      },
+      "legacy_minus_public": {
+        "mean": 0.00390625,
+        "ci95": [
+          -0.0026041666666666665,
+          0.01171875
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.07340494791666667,
+        "ci95": [
+          0.039915974934895834,
+          0.11462402343749999
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 1.93069511493242e-05,
+        "ci95": [
+          -0.000997635873379143,
+          0.001106200132094801
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "free_beds",
+      "mae": {
+        "legacy": 2.060546875,
+        "public": 0.2766927083333333,
+        "service_only": 0.34733006703200514,
+        "lifecycle": 0.09326171875
+      },
+      "legacy_minus_public": {
+        "mean": 1.7838541666666667,
+        "ci95": [
+          1.0142903645833332,
+          2.648502604166666
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.18343098958333331,
+        "ci95": [
+          0.0986328125,
+          0.27837320963541656
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.25406834828200514,
+        "ci95": [
+          0.1546582313306715,
+          0.364748075557929
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "occupied",
+      "mae": {
+        "legacy": 2.16796875,
+        "public": 0.3841145833333333,
+        "service_only": 0.3841145833333333,
+        "lifecycle": 0.173828125
+      },
+      "legacy_minus_public": {
+        "mean": 1.7838541666666665,
+        "ci95": [
+          1.0130208333333335,
+          2.654964192708333
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.21028645833333331,
+        "ci95": [
+          0.12996419270833331,
+          0.28906656901041666
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.21028645833333331,
+        "ci95": [
+          0.12996419270833331,
+          0.28906656901041666
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "queue",
+      "mae": {
+        "legacy": 0.41015625,
+        "public": 0.41015625,
+        "service_only": 0.41015625,
+        "lifecycle": 0.3033854166666667
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.10677083333333333,
+        "ci95": [
+          0.0655517578125,
+          0.16346638997395826
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.10677083333333333,
+        "ci95": [
+          0.0655517578125,
+          0.16346638997395826
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "transport",
+      "mae": {
+        "legacy": 0.103515625,
+        "public": 0.103515625,
+        "service_only": 0.10744355217826658,
+        "lifecycle": 0.106689453125
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": -0.003173828125,
+        "ci95": [
+          -0.012776692708333334,
+          0.005777994791666666
+        ],
+        "structures": 8
+      },
+      "service_only_minus_lifecycle": {
+        "mean": 0.0007540990532665856,
+        "ci95": [
+          -0.00034523929343796653,
+          0.002098025941257507
+        ],
+        "structures": 8
+      }
+    }
+  ],
+  "outcomes": [
+    {
+      "delay": 0,
+      "metric": "wait_patient_min",
+      "means": {
+        "legacy": 13063.125,
+        "public": 13063.125,
+        "lifecycle": 13063.125,
+        "true_state": 13063.125
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "uncovered_care_min",
+      "means": {
+        "legacy": 4976.375,
+        "public": 4976.375,
+        "lifecycle": 4976.375,
+        "true_state": 4976.375
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "staff_hours",
+      "means": {
+        "legacy": 16.0,
+        "public": 16.0,
+        "lifecycle": 16.0,
+        "true_state": 16.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "terminal_queue",
+      "means": {
+        "legacy": 9.75,
+        "public": 9.75,
+        "lifecycle": 9.75,
+        "true_state": 9.75
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "rejected",
+      "means": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "lifecycle": 0.0,
+        "true_state": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "wait_patient_min",
+      "means": {
+        "legacy": 13065.0,
+        "public": 13063.125,
+        "lifecycle": 13063.125,
+        "true_state": 13063.125
+      },
+      "legacy_minus_public": {
+        "mean": 1.875,
+        "ci95": [
+          -8.4375,
+          14.0625
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "uncovered_care_min",
+      "means": {
+        "legacy": 4942.1875,
+        "public": 4976.375,
+        "lifecycle": 4976.375,
+        "true_state": 4976.375
+      },
+      "legacy_minus_public": {
+        "mean": -34.1875,
+        "ci95": [
+          -91.8125,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "staff_hours",
+      "means": {
+        "legacy": 15.0,
+        "public": 16.0,
+        "lifecycle": 16.0,
+        "true_state": 16.0
+      },
+      "legacy_minus_public": {
+        "mean": -1.0,
+        "ci95": [
+          -3.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "terminal_queue",
+      "means": {
+        "legacy": 9.75,
+        "public": 9.75,
+        "lifecycle": 9.75,
+        "true_state": 9.75
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "rejected",
+      "means": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "lifecycle": 0.0,
+        "true_state": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "wait_patient_min",
+      "means": {
+        "legacy": 13071.5625,
+        "public": 13063.125,
+        "lifecycle": 13063.125,
+        "true_state": 13063.125
+      },
+      "legacy_minus_public": {
+        "mean": 8.4375,
+        "ci95": [
+          -8.4375,
+          33.75
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "uncovered_care_min",
+      "means": {
+        "legacy": 4941.375,
+        "public": 4976.375,
+        "lifecycle": 4976.375,
+        "true_state": 4976.375
+      },
+      "legacy_minus_public": {
+        "mean": -35.0,
+        "ci95": [
+          -92.625,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "staff_hours",
+      "means": {
+        "legacy": 14.0,
+        "public": 16.0,
+        "lifecycle": 16.0,
+        "true_state": 16.0
+      },
+      "legacy_minus_public": {
+        "mean": -2.0,
+        "ci95": [
+          -6.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "terminal_queue",
+      "means": {
+        "legacy": 9.75,
+        "public": 9.75,
+        "lifecycle": 9.75,
+        "true_state": 9.75
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "rejected",
+      "means": {
+        "legacy": 0.0,
+        "public": 0.0,
+        "lifecycle": 0.0,
+        "true_state": 0.0
+      },
+      "legacy_minus_public": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_lifecycle": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      },
+      "public_minus_true_state": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    }
+  ],
+  "decisions": [
+    {
+      "delay": 0,
+      "decisions_per_arm": 64,
+      "lifecycle_changed": 0,
+      "oracle_changed": 0,
+      "legacy_changed": 0,
+      "actions": {
+        "legacy": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "lifecycle": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "public": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "true_state": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        }
+      },
+      "positive_predicted_gain": {
+        "legacy": 16,
+        "lifecycle": 16,
+        "public": 16,
+        "true_state": 16
+      }
+    },
+    {
+      "delay": 60,
+      "decisions_per_arm": 64,
+      "lifecycle_changed": 0,
+      "oracle_changed": 0,
+      "legacy_changed": 5,
+      "actions": {
+        "legacy": {
+          "none": 49,
+          "cl_w1": 9,
+          "tr_w1": 6
+        },
+        "lifecycle": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "public": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "true_state": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        }
+      },
+      "positive_predicted_gain": {
+        "legacy": 15,
+        "lifecycle": 16,
+        "public": 16,
+        "true_state": 16
+      }
+    },
+    {
+      "delay": 180,
+      "decisions_per_arm": 64,
+      "lifecycle_changed": 0,
+      "oracle_changed": 0,
+      "legacy_changed": 4,
+      "actions": {
+        "legacy": {
+          "none": 50,
+          "cl_w1": 8,
+          "tr_w1": 6
+        },
+        "lifecycle": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "public": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        },
+        "true_state": {
+          "none": 48,
+          "cl_w1": 12,
+          "tr_w1": 4
+        }
+      },
+      "positive_predicted_gain": {
+        "legacy": 14,
+        "lifecycle": 16,
+        "public": 16,
+        "true_state": 16
+      }
+    }
+  ]
+}
