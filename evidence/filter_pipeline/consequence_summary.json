@@ -1,0 +1,1014 @@
+{
+  "forecasts": [
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.2864583333333333,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.49652777777777785,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 220.1597222222222,
+      "effect_mae": 4.152777777777781
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 468.3333333333333,
+      "effect_mae": 4.375
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.2795138888888889,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.685763888888889,
+      "effect_mae": 0.045138888888888916
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 310.45138888888897,
+      "effect_mae": 31.8472222222222
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1044.4791666666667,
+      "effect_mae": 39.479166666666664
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.2222222222222222,
+      "effect_mae": 0.0034722222222222225
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.717013888888889,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 434.61111111111114,
+      "effect_mae": 29.458333333333258
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 3035.4166666666665,
+      "effect_mae": 104.89583333333333
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.2864583333333333,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.4930555555555556,
+      "effect_mae": 0.01909722222222221
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 215.89583333333334,
+      "effect_mae": 4.388888888888886
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 458.75,
+      "effect_mae": 4.166666666666667
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.2829861111111111,
+      "effect_mae": 0.02604166666666668
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.6822916666666666,
+      "effect_mae": 0.041666666666666685
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 303.4791666666667,
+      "effect_mae": 30.680555555555532
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1024.8958333333333,
+      "effect_mae": 36.145833333333336
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.2222222222222222,
+      "effect_mae": 0.0034722222222222225
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.717013888888889,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 418.0833333333333,
+      "effect_mae": 36.125000000000036
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 3007.5,
+      "effect_mae": 115.3125
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.2864583333333333,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.4930555555555556,
+      "effect_mae": 0.01909722222222221
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 218.9375,
+      "effect_mae": 4.388888888888886
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 458.75,
+      "effect_mae": 4.166666666666667
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.2829861111111111,
+      "effect_mae": 0.02604166666666668
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.6822916666666666,
+      "effect_mae": 0.041666666666666685
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 306.52083333333337,
+      "effect_mae": 30.680555555555525
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1024.8958333333333,
+      "effect_mae": 36.145833333333336
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.2222222222222222,
+      "effect_mae": 0.0034722222222222225
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.717013888888889,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 421.125,
+      "effect_mae": 36.12500000000006
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 3007.5,
+      "effect_mae": 115.3125
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.21354166666666666,
+      "effect_mae": 0.008680555555555547
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.4618055555555556,
+      "effect_mae": 0.032986111111111105
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 184.3125,
+      "effect_mae": 5.34722222222221
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 341.6666666666667,
+      "effect_mae": 4.375
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.3732638888888889,
+      "effect_mae": 0.02604166666666667
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.546875,
+      "effect_mae": 0.06597222222222221
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 226.65972222222226,
+      "effect_mae": 24.90277777777777
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 900.3125,
+      "effect_mae": 56.354166666666664
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.28125000000000006,
+      "effect_mae": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.4392361111111111,
+      "effect_mae": 0.01909722222222217
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 305.44444444444446,
+      "effect_mae": 27.180555555555582
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 2159.1666666666665,
+      "effect_mae": 122.60416666666667
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.328125,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.6875,
+      "effect_mae": 0.022569444444444437
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 193.10416666666666,
+      "effect_mae": 5.569444444444438
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 702.2916666666666,
+      "effect_mae": 5.0
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.3350694444444445,
+      "effect_mae": 0.01909722222222222
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.7899305555555557,
+      "effect_mae": 0.048611111111111105
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 250.49305555555554,
+      "effect_mae": 29.05555555555556
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1489.6875,
+      "effect_mae": 44.479166666666664
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.28125,
+      "effect_mae": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.8003472222222222,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 362.9444444444445,
+      "effect_mae": 47.125
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 3875.8333333333335,
+      "effect_mae": 136.5625
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.3385416666666667,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.6631944444444445,
+      "effect_mae": 0.019097222222222227
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 210.36805555555554,
+      "effect_mae": 5.2361111111111045
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 685.4166666666666,
+      "effect_mae": 4.375
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.33159722222222227,
+      "effect_mae": 0.01909722222222222
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.8211805555555557,
+      "effect_mae": 0.048611111111111105
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 279.42361111111103,
+      "effect_mae": 26.638888888888903
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1437.3958333333333,
+      "effect_mae": 42.604166666666664
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.2743055555555555,
+      "effect_mae": 0.0034722222222222216
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.8315972222222222,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 389.86111111111114,
+      "effect_mae": 44.27777777777781
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 4006.875,
+      "effect_mae": 133.64583333333334
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.3385416666666667,
+      "effect_mae": 0.015625
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.6458333333333334,
+      "effect_mae": 0.022569444444444475
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 236.89583333333334,
+      "effect_mae": 5.291666666666676
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 657.0833333333334,
+      "effect_mae": 4.791666666666667
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.33159722222222227,
+      "effect_mae": 0.026041666666666668
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.8177083333333334,
+      "effect_mae": 0.05555555555555556
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 304.03472222222223,
+      "effect_mae": 27.31944444444444
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 1395.3125,
+      "effect_mae": 35.729166666666664
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.2743055555555555,
+      "effect_mae": 0.0034722222222222216
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.8315972222222222,
+      "effect_mae": 0.022569444444444458
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 405.8611111111111,
+      "effect_mae": 40.61111111111114
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 3964.7916666666665,
+      "effect_mae": 112.60416666666667
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "free_beds",
+      "mae": 0.21354166666666666,
+      "effect_mae": 0.008680555555555547
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "queue",
+      "mae": 0.4618055555555556,
+      "effect_mae": 0.032986111111111105
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "uncovered_care_min",
+      "mae": 184.3125,
+      "effect_mae": 5.34722222222221
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 6,
+      "metric": "wait_patient_min",
+      "mae": 341.6666666666667,
+      "effect_mae": 4.375
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "free_beds",
+      "mae": 0.3732638888888889,
+      "effect_mae": 0.02604166666666667
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "queue",
+      "mae": 0.546875,
+      "effect_mae": 0.06597222222222221
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "uncovered_care_min",
+      "mae": 226.65972222222226,
+      "effect_mae": 24.90277777777777
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 12,
+      "metric": "wait_patient_min",
+      "mae": 900.3125,
+      "effect_mae": 56.354166666666664
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "free_beds",
+      "mae": 0.28125000000000006,
+      "effect_mae": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "queue",
+      "mae": 0.4392361111111111,
+      "effect_mae": 0.01909722222222217
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "uncovered_care_min",
+      "mae": 305.44444444444446,
+      "effect_mae": 27.180555555555582
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 24,
+      "metric": "wait_patient_min",
+      "mae": 2159.1666666666665,
+      "effect_mae": 122.60416666666667
+    }
+  ],
+  "decisions": [
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 12,
+      "regret": 0.0,
+      "wait_patient_min": 8878.125,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "extended",
+      "horizon": 24,
+      "regret": 0.0,
+      "wait_patient_min": 17637.1875,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 12,
+      "regret": 0.0,
+      "wait_patient_min": 8878.125,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "guarded",
+      "horizon": 24,
+      "regret": 0.0,
+      "wait_patient_min": 17637.1875,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 12,
+      "regret": 0.0,
+      "wait_patient_min": 8878.125,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "public",
+      "horizon": 24,
+      "regret": 0.0,
+      "wait_patient_min": 17637.1875,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 6,
+      "regret": 5.625,
+      "wait_patient_min": 4558.125,
+      "uncovered_care_min": 1245.0,
+      "staff_hours": 8.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 12,
+      "regret": 0.0,
+      "wait_patient_min": 8878.125,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 60,
+      "arm": "true_state",
+      "horizon": 24,
+      "regret": 0.0,
+      "wait_patient_min": 17637.1875,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 12,
+      "regret": 0.9375,
+      "wait_patient_min": 8879.0625,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "extended",
+      "horizon": 24,
+      "regret": 0.9375,
+      "wait_patient_min": 17638.125,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 12,
+      "regret": 0.9375,
+      "wait_patient_min": 8879.0625,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "guarded",
+      "horizon": 24,
+      "regret": 0.9375,
+      "wait_patient_min": 17638.125,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 6,
+      "regret": 6.5625,
+      "wait_patient_min": 4559.0625,
+      "uncovered_care_min": 1241.875,
+      "staff_hours": 4.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 12,
+      "regret": 0.9375,
+      "wait_patient_min": 8879.0625,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "public",
+      "horizon": 24,
+      "regret": 0.9375,
+      "wait_patient_min": 17638.125,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 12.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 6,
+      "regret": 5.625,
+      "wait_patient_min": 4558.125,
+      "uncovered_care_min": 1245.0,
+      "staff_hours": 8.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 12,
+      "regret": 0.0,
+      "wait_patient_min": 8878.125,
+      "uncovered_care_min": 2376.5,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    },
+    {
+      "delay": 180,
+      "arm": "true_state",
+      "horizon": 24,
+      "regret": 0.0,
+      "wait_patient_min": 17637.1875,
+      "uncovered_care_min": 4117.9375,
+      "staff_hours": 14.0,
+      "rejected": 0.0
+    }
+  ]
+}

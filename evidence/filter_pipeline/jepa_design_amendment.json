@@ -1,0 +1,11 @@
+{
+  "reason": "Before any final model fit or TEST outcome inspection: align counterfactual probes with 06-14 intervention support instead of an unseen 14-22 timing.",
+  "probe_origin_local_hour": 0,
+  "action_slot": [
+    6,
+    14
+  ],
+  "observation_index": 0,
+  "first_six_hours": "No action effect before slot start; tie must prefer abstention",
+  "replacement": "Only the 30 held-out counterfactual probe arrays are regenerated. All monthly trajectories and filtered inputs remain unchanged."
+}

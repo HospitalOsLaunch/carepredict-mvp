@@ -1,0 +1,9 @@
+Filter PIPE_FILTER_DEV_20261120 0
+Filter PIPE_FILTER_DEV_20261120 1
+Filter PIPE_FILTER_DEV_20261120 2
+Filter PIPE_FILTER_DEV_20261120 3
+Filter PIPE_FILTER_DEV_20261120 0
+Filter PIPE_FILTER_DEV_20261120 1
+Filter PIPE_FILTER_DEV_20261120 2
+Filter PIPE_FILTER_DEV_20261120 3
+{'candidate_brier_gains': {'departure': 1.0, 'cleaning_start': 0.18481605843943594, 'transport_start': 0.07181515658593984}, 'proposed': ['departure', 'cleaning_start', 'transport_start'], 'combined_dev_count_gain': 0.00546875, 'enabled': ['departure', 'cleaning_start', 'transport_start']}

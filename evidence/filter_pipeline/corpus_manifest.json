@@ -1,0 +1,1806 @@
+{
+  "monthly_episodes": 360,
+  "six_hour_transitions": 43848,
+  "files": [
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/00.npz",
+      "sha256": "4ccd44d05a171378d1bc499db76bee79a8c5287f7dcbae2bac399764884ebf19",
+      "bytes": 14790
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/01.npz",
+      "sha256": "a2ed24afb4ed531df3d78e225e056b2ebe59d719f18fb5a7e07108a5401c344c",
+      "bytes": 14440
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/02.npz",
+      "sha256": "57ce2648cde937ea23a892f5f85c764f8dd11483daf64f65b12415d3338ee188",
+      "bytes": 15535
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/03.npz",
+      "sha256": "5fe265b7cb43325cf1d76ebf9f2ff5869f193e684b83512a4fab042f94499be3",
+      "bytes": 14952
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/04.npz",
+      "sha256": "50cd2432a94a9aeaca61268cb16993f96faf9371ecc21ab8828a33fef2303ffe",
+      "bytes": 14729
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/05.npz",
+      "sha256": "bee149ee414e8626f9a66b1af870101a22ba5784d6f6d12c2a876ea8ace04b28",
+      "bytes": 14066
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/06.npz",
+      "sha256": "3ae5759415c9c5afb650d5a746e548d68329459b281897c18c48ee2ee3b12064",
+      "bytes": 14643
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/07.npz",
+      "sha256": "f887c45229f78b40dcd4b3d9b490ecb6b07e084da6abf3838f03d9d10ac6ee1e",
+      "bytes": 14746
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/08.npz",
+      "sha256": "589bc24a6e8109734345c9dac4ee3443ae871a2dee35265829729dfd39f519bc",
+      "bytes": 13913
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/09.npz",
+      "sha256": "031e4d86f24f331549fe70d56dd35d6257aac3f2ac54c8eb0494ad7df73267bd",
+      "bytes": 12994
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/10.npz",
+      "sha256": "8ed786d3c4db9beec7cd11d486986ca5ab0be29609d65615b422e8a6a6c71d34",
+      "bytes": 13624
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/11.npz",
+      "sha256": "54f98456bfcfd9f87aa9f8451bf4f0cc3a590cd050f2b26f1cb0279c929a083d",
+      "bytes": 13507
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/12.npz",
+      "sha256": "49383e261830eeefedc1d5be91205bcb83f9c2bfa8ca1bc76f3940c91865c1e8",
+      "bytes": 14431
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/13.npz",
+      "sha256": "42614ede53332d9819c7c340b2ac87132bc23ccd5095f3adf43c0bfd9e024950",
+      "bytes": 14024
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/14.npz",
+      "sha256": "147f716a98dc44acea0c4ae94c7a09cdbbbbdb407b2b53ad556b7f496ec3236e",
+      "bytes": 15355
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/15.npz",
+      "sha256": "1cefe6867afab6b9a1f4006d247b61404824fab715ecff39862d64fa1eeda2f3",
+      "bytes": 15100
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/16.npz",
+      "sha256": "cb1a6c58d7647a0b1fcb2495596e3a0b74bce400c8ad46ee234beee2c10f7f2e",
+      "bytes": 15773
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/17.npz",
+      "sha256": "f7103853eef4816ad79d2cb323ac30046d1e7e3fa5ab6e43678267a7ff6bce1c",
+      "bytes": 14432
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/18.npz",
+      "sha256": "922e23530a59d574c0ac4d8abad4b74dacc30e815e346a82ed0588eb55463278",
+      "bytes": 15308
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/19.npz",
+      "sha256": "0667563169cbab170343b19a1bcdb100ee7cb3c9322e6ef21697c83a0846a89f",
+      "bytes": 14830
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/20.npz",
+      "sha256": "1a137dacae44e5de07eb473397535ec390c7005cf3cc686487c6ea9eb63ad073",
+      "bytes": 14486
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/21.npz",
+      "sha256": "e4396a9e09253a987bbc53162dc25989d14b461f7feb99872e02817de1fdc039",
+      "bytes": 14049
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/22.npz",
+      "sha256": "d70d17ea436e4bed951c96158fdf1bd2c35a463af58cc784444982c67e33c279",
+      "bytes": 13943
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/23.npz",
+      "sha256": "9a45154db5ead94ce2af8464851997b6fe5908bcd098ea1c31c6fd149daafff3",
+      "bytes": 15037
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/24.npz",
+      "sha256": "ce2d104576b5fce3b5093c269c2896605ca6f1326ed4fc6e7c2f9b1f8332fd77",
+      "bytes": 14875
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/25.npz",
+      "sha256": "a3c4215a26ea44b5ca18755f83398a66b4b18ced7dabf7047925337bfc924c7a",
+      "bytes": 13673
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/26.npz",
+      "sha256": "e77e121f370f15bea7cd10f33351290a6c80d27d1d29b2d15145b66e7abd17c1",
+      "bytes": 15538
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/27.npz",
+      "sha256": "a90d03d01e21854082d476d95d33471f4cbdb4aa52868881bea73fc4c82c253c",
+      "bytes": 14632
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/28.npz",
+      "sha256": "5878f693cb8bb47b9d08fa1fc2e8ac2f4422cc1da2cd64899db2709ad93524b8",
+      "bytes": 14973
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/29.npz",
+      "sha256": "e0fd8b65a66852dd717649c69c030e892330f9ba8df24a5fdefdfd6c2001419e",
+      "bytes": 14827
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/30.npz",
+      "sha256": "83f125d2fea93915e20f85df5f8a7a8b6e57227333c4d1c0702a960ff4019398",
+      "bytes": 14208
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/31.npz",
+      "sha256": "42f61a8fd340d1de57bbffe649e0c97cb426d4e1323194ced24b7362b69b5b3f",
+      "bytes": 14491
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/32.npz",
+      "sha256": "cec1b4b8ac5d0b1891c4134d9800e89562649cb30d0a1a7756efdd280d81e585",
+      "bytes": 14335
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/33.npz",
+      "sha256": "eb25584eddfc47de555c0102c4aef5f0f067b088d6795a183cc389b306d1ca7b",
+      "bytes": 13873
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/34.npz",
+      "sha256": "c2395f83aa104e88135291cb43c15221e12af0babaeff998299b4293b1c4cd7f",
+      "bytes": 13125
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/35.npz",
+      "sha256": "60c05329db1712960d31737ee1e9816497f6d19d941e4e8b22b5ddf65bcfded7",
+      "bytes": 14622
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/36.npz",
+      "sha256": "89a963e350ee06fbb8bb1bbb2c03d971835dd34006df6d26ee31d21ec128e771",
+      "bytes": 13815
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/37.npz",
+      "sha256": "8fab066a175db3a4001edd0ada5dad7f12c2c369634e7d397f4d73aa2bb32442",
+      "bytes": 14085
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/38.npz",
+      "sha256": "6c20b1eb5dc4df3934716d47a5dfecfe5fb178a4ef25ec21451dd957baef565c",
+      "bytes": 15296
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/39.npz",
+      "sha256": "d044a58357ad2ee086a68a44ebc728bd47d6dce9ec3678eeb383c81daa3ab543",
+      "bytes": 14889
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/40.npz",
+      "sha256": "cab4a8d2cb3fbbf034f1a4a2e1629eb678e945ba413205571a03c4e1de587e9c",
+      "bytes": 15216
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/41.npz",
+      "sha256": "0c16b898aa70345c27db62e3dba31ae87426cc54601e4156b5afe549d7d00dc1",
+      "bytes": 14671
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/42.npz",
+      "sha256": "bcc04684e532c10f54cf82a12f7c93ecf420a7ab123c3df14ef9890bc8284491",
+      "bytes": 14387
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/43.npz",
+      "sha256": "58a1a75e943be8691f468a37c5e077d73f256fdec511f91057bc4536c3047050",
+      "bytes": 15539
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/44.npz",
+      "sha256": "1108a9bdcba4fd026f9d524d3cba50aa9f79f17dde7d902ce14b29b286ee2bed",
+      "bytes": 14223
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/45.npz",
+      "sha256": "5921344b1ff40b193c26c09fef8fdc7d90c9209c9475a9e2d0dd1ab34e2db220",
+      "bytes": 14055
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/46.npz",
+      "sha256": "18f682f2e0348458cc4e35e7cabdd2c9b462029741aca350d97fd10483be0842",
+      "bytes": 12502
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/47.npz",
+      "sha256": "267d4997c1a0b20176f851c560f1360e262a03dcebc285d11b7b8a5cd8ae4db4",
+      "bytes": 14830
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/48.npz",
+      "sha256": "c5dbb9b3b6f04c0ad89278a5bd62b619fa5b68de1f343edd614aaab48cac9834",
+      "bytes": 14463
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/49.npz",
+      "sha256": "711add739a189cbd0d69a17edd5e389fa88817de2c59d865cd12f3140883589b",
+      "bytes": 14558
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/50.npz",
+      "sha256": "010a69dc44fcdef91c5205385bd9e2bdd8af1e4edd141d5e86e5795eb86e6539",
+      "bytes": 14746
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/51.npz",
+      "sha256": "7f8d4e4c3f0b24bc201be43ff2906cf60a36c0a1b89cb44d1e2acff0600944b6",
+      "bytes": 15399
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/52.npz",
+      "sha256": "9286d9205d0db8083b402c21edf9b1e50520f7c489d6628288f787b25cee61b8",
+      "bytes": 15153
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/53.npz",
+      "sha256": "4cdcbf78f9eb0be4c58f9f89c194fdf895a62ddae5f0e86b3aed5842f13902e5",
+      "bytes": 14242
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/54.npz",
+      "sha256": "4098e371139b83eaef6fc4b8c9ff1c9cd8339d8158a76e77335dc814487e5b73",
+      "bytes": 14816
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/55.npz",
+      "sha256": "e7877c8a0c7790cb1699d3493a4c99d1a26feb7716bec12fb92a6c63c795a056",
+      "bytes": 14268
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/56.npz",
+      "sha256": "22437258c15c01623b7bba795e43687d55f566ed9e9b7d61e14106637f623acd",
+      "bytes": 14145
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/57.npz",
+      "sha256": "95f0168050945e0166743ae937b2b2b50b785c668d76c03b161774abafb2730d",
+      "bytes": 14092
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/58.npz",
+      "sha256": "1718e0e732f874e3fd87423d6d59f6a8587f8ec3bc2264043f16f913ffc59da4",
+      "bytes": 13881
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/00/59.npz",
+      "sha256": "bdc1a34809e34af4d4e06b4089e5827e59683acfebfbcb2bc78a40800767c582",
+      "bytes": 13880
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/00.npz",
+      "sha256": "49b17e8b92a157ca5aa5a36bbf06cc3948d50f01a3466e8362ac474b768d3bce",
+      "bytes": 14638
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/01.npz",
+      "sha256": "70696d63838669dbe79f1e885439745ba24a621d9ab313d2a8179e01cab7ce43",
+      "bytes": 14551
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/02.npz",
+      "sha256": "b2e690228e3f612cd2c64daae32bd25273a78f5079c0595a8dbc809ac8d8b298",
+      "bytes": 15542
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/03.npz",
+      "sha256": "01a692be0de4e130752577ecdc2e80e22c71b1c82f7a338fdac11f9d7135eb30",
+      "bytes": 14920
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/04.npz",
+      "sha256": "15ed79fa43a878d63a69a80610a080ce7c83409f2ec6f8857ee5d7beab1041a3",
+      "bytes": 15663
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/05.npz",
+      "sha256": "583ce3c309368cad571716a5e768563be47ca7a21c5836f90c41d78e5c212ae9",
+      "bytes": 15001
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/06.npz",
+      "sha256": "32730f57bde3c6ffc9f8d8eccff2b69064cd0bf74fd69275d9042fb02746aa6c",
+      "bytes": 15664
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/07.npz",
+      "sha256": "5ba037a1aeae455fe7b07ea5e178c0d9eaea00f2a6730a2e2bc6f1a086210e90",
+      "bytes": 13664
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/08.npz",
+      "sha256": "d55fae6d577f1d9f821c2d1402312bfa5432f98ac9c04414fb282255899682df",
+      "bytes": 13792
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/09.npz",
+      "sha256": "0368b3d2071518bbff549eb372b4331292d831df6057a142f8c68b7c83c8ff91",
+      "bytes": 13705
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/10.npz",
+      "sha256": "94052fa6358c2f8150c3147dc4debf9c8d8d65187eed6d59959ebb9dc6bdaf78",
+      "bytes": 14565
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/11.npz",
+      "sha256": "e33c17325ab62a75be2adb13147613e68a93f971b70558efc76a9f18182ae3f4",
+      "bytes": 15019
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/12.npz",
+      "sha256": "946c5988d917327a29c5871bab5af438d472315a1798c52d42d7183b4f690baf",
+      "bytes": 15046
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/13.npz",
+      "sha256": "74b3fcf1c658225590fa03d5fcaca1ba549c2096da5a4eb24eeab0ab90d5813d",
+      "bytes": 14581
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/14.npz",
+      "sha256": "7c89bec5ddc6f2f3726fd7208de8619cbb6a6b133a3d12045251a7bf6531d13b",
+      "bytes": 15981
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/15.npz",
+      "sha256": "d7ccd2ddc172261c1640b3e6a80bb52608641c980b9c0a2f83d578cec4143df1",
+      "bytes": 15642
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/16.npz",
+      "sha256": "009352d3f6dd5689bd35b3059a4d9e5731da877dc5eaddfccb6f11dc9dcfa5fc",
+      "bytes": 15720
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/17.npz",
+      "sha256": "920fb05e586b3f3f16abad0efb7cc0f47e1cda8d3b1e00643ec2b1b80ad4ce95",
+      "bytes": 14546
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/18.npz",
+      "sha256": "3c82082b30495f9931de2724b5632c9e58aa8f5935965dfc89ae289af4bab306",
+      "bytes": 15208
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/19.npz",
+      "sha256": "cc3ebdbbadd999996eaf9471f2313f7fbd453ff2b1019e6e2ecf8ea6abe3db52",
+      "bytes": 15008
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/20.npz",
+      "sha256": "952c64639a20ad9e50610bb8f19dff4f5085d15bed16439f1a2c4eb401edfa80",
+      "bytes": 13416
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/21.npz",
+      "sha256": "01acc0c5966230e4232db960a93181611f48edc34adf170973920ae2c24a3c60",
+      "bytes": 14015
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/22.npz",
+      "sha256": "4e0a12b7373e4f88cbe2bfc8fe0c69414331f2ddb584d6aa8947e5f0ff6910e7",
+      "bytes": 13768
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/23.npz",
+      "sha256": "136ea114755cc613c5ba9e6953e109b84ff8e3aef89ffd0add37a7c777f3d60b",
+      "bytes": 14727
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/24.npz",
+      "sha256": "cf3b3095182090febb77d9ed6550e0c5c4e22d2610375f7f66237a2eeccfae35",
+      "bytes": 15483
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/25.npz",
+      "sha256": "84d44296f45e6b3d82a5baec17d258a8a7ddc2dc85e85e685c7d627cf554ddae",
+      "bytes": 13971
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/26.npz",
+      "sha256": "d0658d6f23b737009f64dfa0d14ce5410c92f7ba7c9a6027f37f127b82479246",
+      "bytes": 15815
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/27.npz",
+      "sha256": "5af58dc01a7b7b5316890d9c3dc9960dca86ee7522fc5b0ee7648cf33ee67cba",
+      "bytes": 15875
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/28.npz",
+      "sha256": "d6e30e5b78f9b9e59f1979befdb45089b4520a37eddcb7a0a0fe1dd89eba713d",
+      "bytes": 15802
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/29.npz",
+      "sha256": "8c5edf135156c566966fb0291cd6cd8a96a3bfde4aae639dfbed7024fb27def5",
+      "bytes": 14833
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/30.npz",
+      "sha256": "23b67de0dbd7d1ebae7df987d6086828800ddc5c1570c22fc4e652f5dfb8883a",
+      "bytes": 15018
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/31.npz",
+      "sha256": "71edf2bd0d67b480ba7b26ce5231ab2f2c85343cf1fbcba10a6680c575917193",
+      "bytes": 14745
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/32.npz",
+      "sha256": "afa81caa44ef6ee4177be875ec143c1a5aef8d589f912af07740658ccef356b8",
+      "bytes": 14012
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/33.npz",
+      "sha256": "895f011d6f075aa17c7ba78ee98a3a33a1c39d8221ce339664951c8f1deaf4cd",
+      "bytes": 14453
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/34.npz",
+      "sha256": "eb29ac9bd5d06b09b2e41034e30eb61ab8e2fcf145842208dcd1862cc4d3ea4e",
+      "bytes": 13579
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/35.npz",
+      "sha256": "9dfd6178edd66e20fb3fb71eee3c800b0095ea0b6d5af2ad62d9a5d684970c90",
+      "bytes": 14779
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/36.npz",
+      "sha256": "5af68ec4dcfff438dd94c5ce7f1af826733a4a55184852775a4bd347ec9bd4e1",
+      "bytes": 15153
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/37.npz",
+      "sha256": "f7074b366189c56715f6df53ccb59c7aaedf41bb567d669580b57499ab77284f",
+      "bytes": 14089
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/38.npz",
+      "sha256": "9f88f6dfbd8229a7cec56537378ff1687f103ea5407d14df4cf8f978c6806bf9",
+      "bytes": 15210
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/39.npz",
+      "sha256": "2b16fb7f0e0791c00ce37e53d8d16d36ddd35c7a8f6077846c7f5a4500beee4d",
+      "bytes": 15301
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/40.npz",
+      "sha256": "1b9d4e17aad81526ef6c023a5132583105238774e8059657886e2506d06707fd",
+      "bytes": 15469
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/41.npz",
+      "sha256": "ca6d5377f894b8447b17445a9391f6cb5175fb09c0f404477ba87d67eab9813b",
+      "bytes": 15473
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/42.npz",
+      "sha256": "9e681643f5f9c0ddb5851e6adae15e871679559f4ec84e0bdd4ac6a16265a830",
+      "bytes": 15599
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/43.npz",
+      "sha256": "7b4ac9600ffc7ff44ef2e3d825478333c6484e7cb1ec6aa44ebb5df0f59ec6e7",
+      "bytes": 14969
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/44.npz",
+      "sha256": "f6491a642bf5d224459f242d11b2bac93ec69ed6248ab74ecb8b4528a9f2ad16",
+      "bytes": 14747
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/45.npz",
+      "sha256": "98a22a2ca05a486b59a78995a2ca5d7816646a18dbcce819f238744d0ce9df11",
+      "bytes": 13741
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/46.npz",
+      "sha256": "0da4566a2dad645d178dd85f7d154abe773971241aed411214071e05940d658e",
+      "bytes": 13840
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/47.npz",
+      "sha256": "be05c8fa1264200f91f532593b31f681a862a31723c1a92024eb62f6321c7607",
+      "bytes": 14802
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/48.npz",
+      "sha256": "69452d3d76685c0c7b7d424712146f1f65d616d028a9ed15c9f937daa834a899",
+      "bytes": 15257
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/49.npz",
+      "sha256": "cb1616cc953fb87285f1f6060adee00b6c089809562416f225b55c79858cdbe5",
+      "bytes": 14943
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/50.npz",
+      "sha256": "b7e3a64f66e833de02f8703e1a332bc098b8d30ec05ddb2ca8f0568d0c19ad83",
+      "bytes": 15613
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/51.npz",
+      "sha256": "3bfd4fa5a61f7df8d86eedb57eab75d1f1b2596ed4b6f38edbb009c8787b8fb3",
+      "bytes": 15415
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/52.npz",
+      "sha256": "1f9aeec3fd3324b631030e8144f8190d428cae1ce73c4efda1d8933bb0f810f7",
+      "bytes": 15192
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/53.npz",
+      "sha256": "6c2a6225b9801718b46977221a8cf79c6d379a4159cc4f65078d1fd05b3c7dd7",
+      "bytes": 14351
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/54.npz",
+      "sha256": "ca50e9534fbb72f23e0a8b41a4780a9b3dcd81a37e16aaf8b2600d5be619b144",
+      "bytes": 15142
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/55.npz",
+      "sha256": "51fabe9c7970bd0ec9cf77f52b572755ca928a8ddeae18fc74c5b44ed1b13fa5",
+      "bytes": 14646
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/56.npz",
+      "sha256": "04413b116f2dcd090544118c2d78ffba4212da4b73f7c7510c190b45d2c7af48",
+      "bytes": 14373
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/57.npz",
+      "sha256": "fa0fdff1c56629b46a2346ea105b98c882a68620bef3a8d0ee8906fe0001a7a1",
+      "bytes": 14082
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/58.npz",
+      "sha256": "a37bf017098294f2c574c2e3906356f7fa2df88ffe6086900bcd0646917d7486",
+      "bytes": 14564
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/01/59.npz",
+      "sha256": "638bae4d6ad7508dc266c6bd5b6e89fd80d53825880590a6655baaf68b059816",
+      "bytes": 14523
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/00.npz",
+      "sha256": "4f365b91715fc2e23aaf11d73c80449ca6012e4d99a05297d57f5e36e270fc28",
+      "bytes": 12031
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/01.npz",
+      "sha256": "e2ecf53ce85ef254662f6937feb899c1e63df62618c913b23d5de2e72f3ce556",
+      "bytes": 12218
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/02.npz",
+      "sha256": "10dce41aece07f48d7bac2461c86e3dace3277281ccaccd81eedc69506994849",
+      "bytes": 12582
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/03.npz",
+      "sha256": "1ddf555548f7eed308764c0b4205b37e6643bd7a4334735d28f1969ca782a9a0",
+      "bytes": 12925
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/04.npz",
+      "sha256": "94fa1d71c43983e096378e939257cb630ee32528e846ee35845549b852523ca7",
+      "bytes": 13680
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/05.npz",
+      "sha256": "1b05f31b94c380a122a3aa7cf01e1efa8ad792ad5c6ba432e5bcf8c03fb207ff",
+      "bytes": 12667
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/06.npz",
+      "sha256": "588af99cd2f1bfdb51d6c166d7ba58d81081612ad8f7d7ea3ea9891ab1e813ca",
+      "bytes": 12757
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/07.npz",
+      "sha256": "f3a750f608bbed066296b3708ab89409fb8a3795079c859be10818ec987064ae",
+      "bytes": 11543
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/08.npz",
+      "sha256": "a9064aad794b05a1590a98cfe44f6cff811381beead6fb4c22f1bbac77701c63",
+      "bytes": 11168
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/09.npz",
+      "sha256": "fc327db59c77ae406fe9ad368a0b6fc6c14179388f86694fa970525aba460bb0",
+      "bytes": 11420
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/10.npz",
+      "sha256": "5f14c40e51c73651b98deabf86571588b84efd29fe0610877ac45210a80904bf",
+      "bytes": 12231
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/11.npz",
+      "sha256": "b28ac73a34f07a3a4d4d2f2192ff5072ec00431a1dc3e085a86601db8e1f1fdf",
+      "bytes": 13061
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/12.npz",
+      "sha256": "b1fdcc1e14230c8f16b80f3de5c96069ca20700c3aced740dd200deb1d688501",
+      "bytes": 13032
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/13.npz",
+      "sha256": "e7976c576cbc98d20c0fb3458e33257af337236d0f2d23868cf1f2f35a265f96",
+      "bytes": 11656
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/14.npz",
+      "sha256": "a2cf51c7524510d180d8d1afe0be9e677176e60e377f3f8db6ebf72fa95fee97",
+      "bytes": 12190
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/15.npz",
+      "sha256": "31d26a0daa9bee098b847c45dd751a1dd4e045e39e417e2a2bbbc049ac905d40",
+      "bytes": 12761
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/16.npz",
+      "sha256": "1d148b3aca22fc4edf557c70df798ca00c4cac1b0a76b4eeffd4effb575a1da4",
+      "bytes": 12755
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/17.npz",
+      "sha256": "e09f8c0bb539929b260c89b87a540fcbc104164bd4dd574f05ba1ef08aacf11f",
+      "bytes": 12615
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/18.npz",
+      "sha256": "36ba99805de46487d4ab60e116cbd0378fb9e47de4267194a38cfdd109819674",
+      "bytes": 13292
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/19.npz",
+      "sha256": "cbda2871392b3009ab7260273d02d95d4b48bec5abb1887359f5f6a5d68e70f9",
+      "bytes": 11874
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/20.npz",
+      "sha256": "b66a67f87141c4476b69de7df6ea3a255f480b8d043f4efd4f000ed6f582a374",
+      "bytes": 12293
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/21.npz",
+      "sha256": "3ec6cabb8e61744bf984acfc7b330838169f51177c9f4dea6b366e25b32432df",
+      "bytes": 11287
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/22.npz",
+      "sha256": "43b352bfe74398c14aa576f403ef040e559d5ef89b1e3c205193d667ef3cebcf",
+      "bytes": 11520
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/23.npz",
+      "sha256": "c11a8070774a2ce42b76fa3d8498855e3627599c5d63921e716bdddd8f57af8c",
+      "bytes": 12210
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/24.npz",
+      "sha256": "628cc4d65bc765e2387ae6cba5affa8cbde0cf71c108576386381f7cfb453eca",
+      "bytes": 13149
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/25.npz",
+      "sha256": "ca4dd262ebb10df98e763ccf4b302bc7da4545298856392fe64e63d8ce358499",
+      "bytes": 12305
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/26.npz",
+      "sha256": "fa8588e548721b63df14be9338c8f45ee9473c5622aee4330ac12bffe595076f",
+      "bytes": 12691
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/27.npz",
+      "sha256": "deb4265706bf2118691afb7b9738f22c0af6d3c058332ace30e543ea7e66754e",
+      "bytes": 12392
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/28.npz",
+      "sha256": "1606bb686d5ce7aee0198e2ddfd911046d040d08275b4bce93c254028804f73c",
+      "bytes": 13129
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/29.npz",
+      "sha256": "5974b9504b20cdd3d337a6f437d04b083a99db5d9665dd7628eee19c050897e4",
+      "bytes": 13337
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/30.npz",
+      "sha256": "e75cd0607dc765e838d2bd546a22bcb2fc09885db7fe688e41cf8f1f121a3870",
+      "bytes": 11593
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/31.npz",
+      "sha256": "b2cad9b224d40cd2a85eafa29586504d8d1758fef6f209e1bf14de4c26ac48be",
+      "bytes": 11703
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/32.npz",
+      "sha256": "1598b1bbc3afcd52f1f24c495f11f82e2770a34e44c12763972aac50e485fd4d",
+      "bytes": 11411
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/33.npz",
+      "sha256": "8953ca46f3be630fccc20b2bc5f2b1c8973f91ff46207bd9fa83b7464f54ad30",
+      "bytes": 12273
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/34.npz",
+      "sha256": "31338f75de029d0d0e506950fde821d117a2683e9f4c2bd6f6a35bca7f7bebdd",
+      "bytes": 10807
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/35.npz",
+      "sha256": "a80b2690e3b7064526c28d632a7eb6ef7c30add0e77e986c8ca34795fdf4ca14",
+      "bytes": 11943
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/36.npz",
+      "sha256": "d61f519868007b109c89127b244ab0fd87ef4609321c0d042e14ce6ea570270f",
+      "bytes": 13263
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/37.npz",
+      "sha256": "2e779732a364171e47bbda63dfcb853ef4dd7947a3f3a7cd5ea6a7ce33dd8c56",
+      "bytes": 11027
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/38.npz",
+      "sha256": "21aab0f913328267069302cd874479012a3222f89cd1acb9c51ac5e324fd8375",
+      "bytes": 13767
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/39.npz",
+      "sha256": "427971afebfdc18fe73605193a7fed6c0b7e1389dcaba9302b108106051304ad",
+      "bytes": 13247
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/40.npz",
+      "sha256": "e7f4d3b2b942dc55b8c2ed11fe29628ef8bc25f46fc927f1e261b2e1c4e623e7",
+      "bytes": 13337
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/41.npz",
+      "sha256": "fb538049ded6e4d0a106c992960cab90ab825bdf3b6ff40ec8a64d6bf5949201",
+      "bytes": 12314
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/42.npz",
+      "sha256": "092822852cfe6cbbceb7e7598b3886c6ae28a00d3f39fc783a782c419e01c026",
+      "bytes": 12132
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/43.npz",
+      "sha256": "a4fe1657484f794044ddce3bb235a109529650e2e6dda6a18fc2f9a34943a6d2",
+      "bytes": 12624
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/44.npz",
+      "sha256": "82cc371a3feb34d31bf5bb0e024297670ab6f3948003c1ca4a49932e9a1ccbd9",
+      "bytes": 10359
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/45.npz",
+      "sha256": "a50247175b94cfc58ad9a9964afafdcf44b19e34956fa4914b984e523d18f715",
+      "bytes": 11145
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/46.npz",
+      "sha256": "11c9e7c469f06ad3c12588fbdf65c9ad4c01b6e4e568ca77e785fc1bcb67ed2c",
+      "bytes": 11154
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/47.npz",
+      "sha256": "5fd53de66beee24247f6e8a141ba74f54877bd02125e318889f9fbef2dc9809a",
+      "bytes": 11183
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/48.npz",
+      "sha256": "6a8e5b933dd7a87b85984fa8f1a7a1aae9e3bc3e81092bb7356cafdfc5430281",
+      "bytes": 13234
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/49.npz",
+      "sha256": "78a618025f9ce913b3a23baac1b740c9b037f02b83439901565859b33315ff33",
+      "bytes": 11263
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/50.npz",
+      "sha256": "2a54d374d798ca4721c102354d0c98d80d6652feefaaf8de23c3f61c5a66c9df",
+      "bytes": 13200
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/51.npz",
+      "sha256": "50a90016c0156e271021bc7eb7ab40deb1948dfc2486bf9a0616265f2d8fbbea",
+      "bytes": 12539
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/52.npz",
+      "sha256": "73a78efb5594a06176e9655f52a25be55006b1b4e29e9a6c53208d1fe3cdab08",
+      "bytes": 13545
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/53.npz",
+      "sha256": "7a4d2f70935b909a86ee056f2036e624c7f8a315488077800db285fd572b32ba",
+      "bytes": 12100
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/54.npz",
+      "sha256": "ec4aa8d2a2806e2ed8b52aa22958c3ee43a201e58980bdf71947ff0c2f839e32",
+      "bytes": 12825
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/55.npz",
+      "sha256": "76763fecf5b7a29ef68ce9008cba87743240e8bfd67138b907fa113ba7d3d688",
+      "bytes": 11518
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/56.npz",
+      "sha256": "79508d933a7b7aa6930d74e179cf9e400d2bea786df760d050edb47bcde9c325",
+      "bytes": 12202
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/57.npz",
+      "sha256": "ced46af7e3ff9366dfa31a460ead326a22c2a56356daa02f2e1504b694fb212f",
+      "bytes": 11718
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/58.npz",
+      "sha256": "65edc92ed7f177874c53d18099ef683ce5d84b0322b378c00308aa8adec9e29f",
+      "bytes": 12027
+    },
+    {
+      "path": "PIPE_JEPA_TRAIN_20261120/02/59.npz",
+      "sha256": "853ac2bcdcf9556f493420c6780d15e46951217a579e982aa8610b6fa271749e",
+      "bytes": 12013
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/00.npz",
+      "sha256": "6761a522d15f6365461ec2dbb7ae2446661fa6067304a5ba0bbf40d9537bc2b0",
+      "bytes": 15702
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/01.npz",
+      "sha256": "971e27b3d7eefce0fc42467f37acda9a271b8ba1cc2476e54231eda95755d285",
+      "bytes": 15285
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/02.npz",
+      "sha256": "38ccf8f0cac3c4dd806e94de4316701ecb513f3260d4c85906e1a3f969a37dbe",
+      "bytes": 15787
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/03.npz",
+      "sha256": "9e25ca0d719ea63ea17536a48663b8192ff6bfa3c0c2d467331598cf09662da2",
+      "bytes": 15529
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/04.npz",
+      "sha256": "aab6435383a4e75ed10f0ba25ae045b0669d80264522ced82c09b2a1d3633deb",
+      "bytes": 15932
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/05.npz",
+      "sha256": "d9fd064416ea15bd6296c0a6c5c545280d353136d5357006acf7e506bd5f6dfd",
+      "bytes": 16316
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/06.npz",
+      "sha256": "1034e514c3fe814d98329f102fe200afae4262a84806dc80aec5375a0a34b5b1",
+      "bytes": 15636
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/07.npz",
+      "sha256": "7b0968d826432fe1ea7216785aed15010bedb6b746cb3fed35fb867c516a3b61",
+      "bytes": 15171
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/08.npz",
+      "sha256": "c6f0a682fa13f79291e4651310b077e36739406eff3eb56bcaf6301fbff86ea6",
+      "bytes": 14782
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/09.npz",
+      "sha256": "d3e3d875f546f76264a50d25bd885562bbba0c4c9cc20d424ea4772cf58735dd",
+      "bytes": 15185
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/10.npz",
+      "sha256": "30d048969a7be25c14914e8e74c3c82c07e28c06ad31cf8bc29e7a93aa3be65d",
+      "bytes": 15231
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/11.npz",
+      "sha256": "4634d4b56d79414ba60315c1ebb0ef9870ec145c5457cd3ba7c141e849506823",
+      "bytes": 16429
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/12.npz",
+      "sha256": "25408029e42e58e1f30b8069a52dfbc88d9775ad569a41f01c39ef20bc17ecc2",
+      "bytes": 15575
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/13.npz",
+      "sha256": "34431615b31b9d3fc3519c35f52fcccfacb1703b53450cab39b07cff865107ae",
+      "bytes": 14243
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/14.npz",
+      "sha256": "d70ea667b1e3dbcebc8f5104933124e92c8279772c564c8a37c63c341ae15f9c",
+      "bytes": 15713
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/15.npz",
+      "sha256": "cf58426d0e4414b0eaf2b848a12329c6afac58e8207cf7ac7bf4e08b9a6a26d1",
+      "bytes": 15740
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/16.npz",
+      "sha256": "263a089ef17af668beda77b19305bcc0cfc157a745522d0133be34979ed5ba4a",
+      "bytes": 15691
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/17.npz",
+      "sha256": "e65c861430cde10e5f3056f674a1f87226497e09a4108c0d3c2f6e3fd3750f65",
+      "bytes": 16259
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/18.npz",
+      "sha256": "671c0ed2937b01e07d48324f99fcbbeb0f66758947ba2a9f45f283572f335264",
+      "bytes": 15293
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/19.npz",
+      "sha256": "5461cc7c8d4211ee258b7dd0389a9be4e6b63590998493c3f51a9cc828089384",
+      "bytes": 15671
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/20.npz",
+      "sha256": "f5206e7cfe268983975735bf26f97c6eab1657051f2681d45dc0a5889324d2b2",
+      "bytes": 14277
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/21.npz",
+      "sha256": "58e81013374d2d9693008566d6dca1872b6d5cea409e7acb825f63402f8258e8",
+      "bytes": 14518
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/22.npz",
+      "sha256": "bb5890daec77fbe114bb622d045a8bd45799e5039fd96f9bd00226b3b294ac52",
+      "bytes": 14419
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/23.npz",
+      "sha256": "d86ae39063dace57e2d563150a2016e2b93bf7ea85dcbbd2ea5d6210266bd442",
+      "bytes": 16270
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/24.npz",
+      "sha256": "0ef1a07af58071583ccdc5fdbd8a30aa25e5c39c8fbb188fa137960e20872b7e",
+      "bytes": 15007
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/25.npz",
+      "sha256": "33ecbd4b2123a3866d6280bf5cdf0ab3efe164858f7174125e731a93c38d14ad",
+      "bytes": 14526
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/26.npz",
+      "sha256": "d1ceb94846608ad9ce75f914d84db5f565cd7a59a954f329c2f77be6b4bb90be",
+      "bytes": 16288
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/27.npz",
+      "sha256": "80dc338499750ac30466e8bcf19f9ed5da5be5625bc3af8eeefa7dcd52687f9f",
+      "bytes": 15607
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/28.npz",
+      "sha256": "242c1ec5fe24b12aa7c02dac310c73feedbe6721f5b99d646982dcb6b641cff1",
+      "bytes": 15810
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/29.npz",
+      "sha256": "24b251f8545a0a6167f80d5c7c7d00ce7c545b1d35a2a64f0e77f188bc5cd224",
+      "bytes": 16299
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/30.npz",
+      "sha256": "93c283f7474990a65e29a4bf6c001ca354ef7b227a5404b50476b6391ef8a9eb",
+      "bytes": 16033
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/31.npz",
+      "sha256": "1389d57eaf89959f682d892643a7c6d4c1419232db99600f6d04643731644b13",
+      "bytes": 15089
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/32.npz",
+      "sha256": "baa50b595a1c5b9e9018ff29cb12645b3e501819f0be2818b6794610bb524dd7",
+      "bytes": 15228
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/33.npz",
+      "sha256": "a6f08e428210eea0609025f34adc09c327125203df74fd418b18218011de1733",
+      "bytes": 15730
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/34.npz",
+      "sha256": "ab3935e0b0f329df941aa5a1ab79ff41d689c8701de7a2f7a62a10525d26566f",
+      "bytes": 14881
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/35.npz",
+      "sha256": "d89dcb0bf30976d277565706ed42da9db10202e969819196065cec8bef08a2b4",
+      "bytes": 16446
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/36.npz",
+      "sha256": "78f457c0bd53c67e29e8a61634d5446457e7ee95415deec9fbcde49518ee497d",
+      "bytes": 15255
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/37.npz",
+      "sha256": "02ddb6544863bd6a690e7e6fd27f229ed605d2a5bb13c02dfc5f38c778d713fc",
+      "bytes": 14612
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/38.npz",
+      "sha256": "db02e609f0bdac0ef8ab1dd2b0beaf76a63d9c770686984a9834da82fc576721",
+      "bytes": 15698
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/39.npz",
+      "sha256": "d2411ed7fe0ff50d08eee3f1a6f5c0d5a06bf3de35d1c9866c25a66a392d1ae0",
+      "bytes": 15920
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/40.npz",
+      "sha256": "5747046f451c74ac4f930a7653e1e964568c252646879e530e44c06f2e826a56",
+      "bytes": 15652
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/41.npz",
+      "sha256": "24978c2e45385e94dde90e3fc793f8f1a1fce12eea998c63d341a9508bf561d4",
+      "bytes": 16311
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/42.npz",
+      "sha256": "e3df24c6806ae5bb5807b425e0f75c04140a98f7fe4c373686ddc0f580e84eb8",
+      "bytes": 15466
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/43.npz",
+      "sha256": "2c2baeb79ffa58b33b585e061facce2e51ac8403486622497264a49e483d6212",
+      "bytes": 15078
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/44.npz",
+      "sha256": "bb7bc7d1d58aeaae0a14f89fca13d3ac5135e8951e88b99d9164c160a7b06a8d",
+      "bytes": 14429
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/45.npz",
+      "sha256": "a201eb1b55edd8aa888507f2aacdf2cf5118e92c0315df7d246fbe8f85d790b7",
+      "bytes": 15311
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/46.npz",
+      "sha256": "aa83c915ad5262e4af2f14b95b8019a296e35e59ac945d051b5baf01366cb007",
+      "bytes": 14427
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/47.npz",
+      "sha256": "b390c40f78166752ab296d0ad0dbf6260a458c68094449a941fd581bad91ed5f",
+      "bytes": 15931
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/48.npz",
+      "sha256": "639b18eecd55e910dcaedc362edd7aec6d256d96d8413e2aad9c46d811949bd4",
+      "bytes": 15337
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/49.npz",
+      "sha256": "c53ccab73170c517ad38186babc8abfd6d98e77657bda222ca79c361086754e4",
+      "bytes": 15022
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/50.npz",
+      "sha256": "0ca40812737506b570d4bee9c34492bd44889413cceb310158e9ebb4a6ba3c12",
+      "bytes": 15951
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/51.npz",
+      "sha256": "90a6393c9d047f24eef7f64c1ae40e1cd6de3776d87ed84bb8c5d81e8cd6937b",
+      "bytes": 15480
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/52.npz",
+      "sha256": "b63394c6330c8d327acad2aa0dbd7d0222ed08fad09fca2ca24d423f976dd2b7",
+      "bytes": 16073
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/53.npz",
+      "sha256": "6b3e2699e2665aba3548ee47f8d14ffefdb76dde37e761f3aa88a1dc4dd8f42f",
+      "bytes": 16547
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/54.npz",
+      "sha256": "8ec82db27ac426782d21f41dc55b4c94a88d278f67c87c38760178432b98fb80",
+      "bytes": 15842
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/55.npz",
+      "sha256": "807e834931d03ed865cd3abf5872eff3ce7c2b247eff43e604d9a71fb6ec0f14",
+      "bytes": 15028
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/56.npz",
+      "sha256": "fe1cfc793284834a2917c4c1333141b09f882d6360763d80c9eb0cad302b68f9",
+      "bytes": 14129
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/57.npz",
+      "sha256": "d9085fba86b5337467eae17cdc1a397ada87f2913abf826f25c28c6e97f645bc",
+      "bytes": 14887
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/58.npz",
+      "sha256": "4d60c54b184087e1b1b1bce8329bc677a682bc7e0bf85aa1c21f1271fc0e21c8",
+      "bytes": 15151
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/00/59.npz",
+      "sha256": "3c91f1005272f7fadac6468b5de4f8ecc81637e9c6d65ca17bab855410f1accd",
+      "bytes": 16233
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/00.npz",
+      "sha256": "98acac9fddedcc45db15db15992945236c1b032f7c008b3cc9577e7d61f76344",
+      "bytes": 13632
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/01.npz",
+      "sha256": "062000ed6bb1bae07c5bd7a0804d02d65d404fa6c434288c1ea23882419f3cbc",
+      "bytes": 13616
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/02.npz",
+      "sha256": "727d0122a637a4c2ab605c94c781045ece6cafa1a31ba02dff2b9ef624a6558c",
+      "bytes": 14295
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/03.npz",
+      "sha256": "5254cbb2549fc98c77922b9bfd380332b8e2135f6b9e7d290d53c7d32de0cc06",
+      "bytes": 14423
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/04.npz",
+      "sha256": "f2702ed2b6e890306dbab289c5a888eea71cd1de095a55bf9d1dced95ab36c22",
+      "bytes": 14072
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/05.npz",
+      "sha256": "e6412b365fb08d47dd3a02ed80e70a57d462f3f81decdb6852e94c5660ba68a5",
+      "bytes": 14732
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/06.npz",
+      "sha256": "0c584fef842449e4478bc8326ab530ff1bf39393976597af2fbb85faabbe8b44",
+      "bytes": 12653
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/07.npz",
+      "sha256": "6c5853b8a90e89f3fe49309762b2c788801c036a82929e6d8089c7aa9353ae03",
+      "bytes": 13296
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/08.npz",
+      "sha256": "1aa83f259d2ec0f5eff7b75a0713cfc5e6878fcc51d076feeaa159713885eb2f",
+      "bytes": 12285
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/09.npz",
+      "sha256": "b493ddc350d0c1af3820ee394f0007fd4619afa44625d80d607477e21013d41f",
+      "bytes": 12497
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/10.npz",
+      "sha256": "58b8efb6757e4bd41c3f2118bb2a3e6a2c60e58805f8e4e192609193dd3bdcc3",
+      "bytes": 13185
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/11.npz",
+      "sha256": "3244e07cadf5bb36944bb59c3b9715b5694cb50226a8e065cd5dde21ac2c4209",
+      "bytes": 14309
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/12.npz",
+      "sha256": "866834e66391d404276acb17a6403ec9980aca3eb6146103342fb9a887faa3c9",
+      "bytes": 14143
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/13.npz",
+      "sha256": "3b2e47a0aa484ba6ac1ee4f9ebc04b26cb07598f74074c2f59222c66a35b89ee",
+      "bytes": 13012
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/14.npz",
+      "sha256": "abef70ba1f60ae748a6ffb822f1ff8b7d8d58a57dd243f4161c1e93594b1cdde",
+      "bytes": 14103
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/15.npz",
+      "sha256": "174e9dd1ad8db48c8cb60cced261ea899b2450e3199f16d0c222089a06c48afd",
+      "bytes": 14511
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/16.npz",
+      "sha256": "241545cbd3fa1a98932ac419cfee219ddec17699a3181bead36ebaf52d718c04",
+      "bytes": 14492
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/17.npz",
+      "sha256": "e8f2fa1ede8835a7e3b9c0c7135b69efc89f76273cb5e1d273b8bcdd0d5b87ea",
+      "bytes": 15044
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/18.npz",
+      "sha256": "c08d900e13e77d9c1430de852a9a49730a52c9a1e72ed83ca02c8115d9a91f77",
+      "bytes": 12572
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/19.npz",
+      "sha256": "649aba261cb2ec8372f6ae4bf84ac837efc78b7d13f927555d8cac0265b8b2be",
+      "bytes": 13128
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/20.npz",
+      "sha256": "2e977c7d4ce0eca43024748358374eb451018d02005de2d7b69749d44194b889",
+      "bytes": 13460
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/21.npz",
+      "sha256": "006f5020234918864655c587968ef3239f4a4ad3b7a493e338cd7203d2bc3a28",
+      "bytes": 12924
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/22.npz",
+      "sha256": "2ce0b9619466480b5cc32308a629399ac34cdd077726e18fdec5c95cac080b98",
+      "bytes": 12671
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/23.npz",
+      "sha256": "ae14822415cd0e41409a5617ca52d0f27f266f58540a839ed8ad8c8046230911",
+      "bytes": 14403
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/24.npz",
+      "sha256": "24f24659a0b82a02407d38b6215a7778e98654717d9882c0bacba827b1ed78c4",
+      "bytes": 13765
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/25.npz",
+      "sha256": "0aeaaedd955fbe397fb6e3cb3f3ba2b958f0c52f5ae4fdafdcd773d26a28b810",
+      "bytes": 12870
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/26.npz",
+      "sha256": "fd53a34f5084dc1e3b0dca0587e14e864db565a6f3c3110d8280761b1c672357",
+      "bytes": 13750
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/27.npz",
+      "sha256": "5c3c60a6d43cf9a872e7336e6303c6360dd2932c215bba5403dc6ca893a39d48",
+      "bytes": 14140
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/28.npz",
+      "sha256": "6a46368ab6a9b84b599f3b4bedc68dd4cc5cdd1bd7f525ef0002591ed4be2b18",
+      "bytes": 14797
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/29.npz",
+      "sha256": "f996ae6707a99d19dac451e21685fcb26719900c44a97f0fc14afe4e8463a30d",
+      "bytes": 13845
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/30.npz",
+      "sha256": "fe4eff208d703bf3b13ad71bf3bf40e0f11c6e955f7657255b73ed5b9f6e41eb",
+      "bytes": 13753
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/31.npz",
+      "sha256": "61e6b026a025ad6404d0d3890dd819a3cf998bddc0ee9147e59f50643fce8221",
+      "bytes": 12770
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/32.npz",
+      "sha256": "61c3e686bcfdd9ee9f2a7899b76e4a1c4bf462fd3a17c40242d0fac0509f8058",
+      "bytes": 12927
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/33.npz",
+      "sha256": "588507e551b20653bddba1cc35d6789052fc51800854fb02eb0ce3b86b5c29bd",
+      "bytes": 13484
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/34.npz",
+      "sha256": "6f3e603bd347b8dcba7e53b667db615d2522cd1b0346601970d069cf42aadae2",
+      "bytes": 13565
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/35.npz",
+      "sha256": "34a66285b2e3527b804e9771d1cc95b68edfe5d2ae7142d3487b4f4d7bb8fd1e",
+      "bytes": 14624
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/36.npz",
+      "sha256": "700279962b40ff91f112b765a4f0b38966147efb3bb40f6cf356ac158e48fea4",
+      "bytes": 13819
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/37.npz",
+      "sha256": "d103f301dd8f6b57c78ff77e33f928d7bee622e8d50e517658f614a4b4255127",
+      "bytes": 12421
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/38.npz",
+      "sha256": "0aaa7c09ddea664c492a2f8e50bd2073788ba060d714f69c128bec52cc763d3f",
+      "bytes": 13452
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/39.npz",
+      "sha256": "cfa730bcc24d6bf5a3f466f5bbb2e4734b2b5bbcb144d285fd4803d80f54a272",
+      "bytes": 13686
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/40.npz",
+      "sha256": "110d58e2de8e98ae1a3a6110d9e56aacff369cfb6a6e82d62fab288e3c32274b",
+      "bytes": 13457
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/41.npz",
+      "sha256": "85de1e246819f59e1ea7a86c53aa5b3f4ea76e5a9d480c54f3f0ba30d955b6ec",
+      "bytes": 14949
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/42.npz",
+      "sha256": "2f67ca51ef9c4ba1b31b7909fecc328b9fc2ccc73f3d0b1d3d61beeb549f7a51",
+      "bytes": 13822
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/43.npz",
+      "sha256": "eaf92c91b43eacd14ca2a17f84d6b608a195759fe9c7c88d9d783de62169726b",
+      "bytes": 13850
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/44.npz",
+      "sha256": "64fc8814cd97491e491dd153976acda13c8c79067b81d0ef84f830fe6f7dc63f",
+      "bytes": 12156
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/45.npz",
+      "sha256": "12a46699df97a3468769c0d5338b000770d88b66fcf9974b9683e6fcd5ee158d",
+      "bytes": 12062
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/46.npz",
+      "sha256": "817cb3c313fb86f3ee03a5dd87df85b58da1118ce48e8b43e01411004e9cadaf",
+      "bytes": 13694
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/47.npz",
+      "sha256": "70c914c167bfe0f3d2ef1adabe8ea8ac112f9464f53dc500b5471333c010dca6",
+      "bytes": 14554
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/48.npz",
+      "sha256": "5b0045df21da6676006f99781d3b3014c1efb535732678e8a2255e3ed6def898",
+      "bytes": 14198
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/49.npz",
+      "sha256": "234bbbf8c77cbbf595661e370da4a0315cefe4ad0ee35216bb7010805001832c",
+      "bytes": 13119
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/50.npz",
+      "sha256": "17c9d98127eae4c7fff7ebf014578337c3f0fb79a9c3a5f68c69cd842b061018",
+      "bytes": 14004
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/51.npz",
+      "sha256": "601ca08222ec6ae597c0e8fbf076ec3711ac4e7f5f3c820032ce8b213d466dd9",
+      "bytes": 14051
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/52.npz",
+      "sha256": "c0f0bdccf8982fbde09ac548b4f5853e773f53f80988f8d69702850d5749f985",
+      "bytes": 14039
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/53.npz",
+      "sha256": "144af4f11dae5f1c7feee264614f4607cfc43aa3820f7ff196fac05ff3694b15",
+      "bytes": 14723
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/54.npz",
+      "sha256": "4854ee6cf9a6fdfbd78781ad4ca4a78a4086daca32efadca235342d2b2e29358",
+      "bytes": 13390
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/55.npz",
+      "sha256": "02f4f010377055c1340344f90ad170bf840c2dd384c5d1ced4aa6501ecd5866f",
+      "bytes": 13780
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/56.npz",
+      "sha256": "803c0076bc244448ead11a16b448c4a97a91d9259941d9509fc71be9d448957b",
+      "bytes": 13359
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/57.npz",
+      "sha256": "0cd0e5449e857f4e25766acae27004a9b9b85a553b69b92fde0e87aa715e5fce",
+      "bytes": 12195
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/58.npz",
+      "sha256": "bf6032bcc3951c3b6f80d8bea46305534c156e02737033c22df7f1547d660855",
+      "bytes": 12985
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/01/59.npz",
+      "sha256": "a53ec2a8ac300e0d26b17c65c612755442d811a4abef87e03d6720a987231f40",
+      "bytes": 14434
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/00.npz",
+      "sha256": "dfb49525c89a96da15b70e25222857584e4e3491d6d118f112f3900197fb257b",
+      "bytes": 13509
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/01.npz",
+      "sha256": "d130536e297abab1400ccdf1a5b9aa6784495a596b7092ed8822c67269094d7d",
+      "bytes": 12504
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/02.npz",
+      "sha256": "ad19619026b131988318da1a52f6eaf2f349be46ed012a69793af073ba2521e8",
+      "bytes": 13670
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/03.npz",
+      "sha256": "3c3310a1fc5b99ea561d14a2ec10db444dc1b616985804df98e7362bfa54ffb3",
+      "bytes": 12877
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/04.npz",
+      "sha256": "4c1c362c2ff9aae0262c0c7fa4ce7e8f0dabc3ec5bc7c3b9447c73ad6eebb7da",
+      "bytes": 13933
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/05.npz",
+      "sha256": "051ffa4a4920433db7bd3705a9e27518bb031475992dad801a348a19de5587a3",
+      "bytes": 14232
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/06.npz",
+      "sha256": "039bc472244377ae5c1e8ec96531c7d1ad881b79eeaad127dfd0d738963f69b8",
+      "bytes": 12278
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/07.npz",
+      "sha256": "d0015d8dad033b0c4e2b9deac8f169e842b89c8502638f8b2fa02728ee48bda2",
+      "bytes": 12851
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/08.npz",
+      "sha256": "cd3b3bb448b9faeef36354ca82e8cbec60c88568e902b3244e6a3feb1f8bb8e3",
+      "bytes": 11916
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/09.npz",
+      "sha256": "d955f69201e43ac879c02c6aa35325bc7da0ca370692be4e90f742decea95246",
+      "bytes": 11922
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/10.npz",
+      "sha256": "676aaab12c61549532e7b842611dd39d35216b6ab105c8433039933a7c23c23c",
+      "bytes": 13151
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/11.npz",
+      "sha256": "4b13ec6432aafd10fd84bffc3ed17b8b378ea1e30542b822703a2ba691a3be40",
+      "bytes": 14542
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/12.npz",
+      "sha256": "46323e667ccac72cc6e1ec684f5ac64a6de9d5e2903350a234e7656537ecd071",
+      "bytes": 12983
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/13.npz",
+      "sha256": "1e85ecbfe494e38041df7a0ac5b6af51a38fbeeba22a720a4a39d9c04d41239d",
+      "bytes": 12782
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/14.npz",
+      "sha256": "3d396f5e1ed69fedb01ee3292150bc12676dae18e8eb7a9b7b44a154d0ba23e6",
+      "bytes": 13402
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/15.npz",
+      "sha256": "8f27bd432c2a723443c5c754c73f65d0030094761d9677e604b4e56d17c4919c",
+      "bytes": 14022
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/16.npz",
+      "sha256": "c51663edd559bfa78d6f1e2391c810888e58b6a807541b31fba137252f4526e3",
+      "bytes": 14174
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/17.npz",
+      "sha256": "35de75971a7107509584f58f7899d16d8593ba713adf31650b7fb09509a0b45a",
+      "bytes": 13973
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/18.npz",
+      "sha256": "b42cdfeb79938a22261d9e65eec4805d0c9480c982bf98b60eaffe5c2d2aaba5",
+      "bytes": 12649
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/19.npz",
+      "sha256": "e6a2fe1f7a6594cfd36ebb15604ea00a4a4e07ec10e935753d99e388ee324cf3",
+      "bytes": 12506
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/20.npz",
+      "sha256": "90ca8704548bda643b5f215d4d55fedeaf30a1d976899f6bb671365128b40881",
+      "bytes": 11270
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/21.npz",
+      "sha256": "6959c36866dc8d2644a87243d72d1333ae5f8f8be100a0e9d200d569ad5c4435",
+      "bytes": 11908
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/22.npz",
+      "sha256": "079bed05015ba7b1e6929916330c2904d0e7efd6a338e4dc897245ea8ccd5ab1",
+      "bytes": 11987
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/23.npz",
+      "sha256": "5f32a0fc6edbb26ed6623bf7b6b80701a57c23306bb675c216498f8a26afd39b",
+      "bytes": 13710
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/24.npz",
+      "sha256": "52b7d93fcdbc3a467bb796537858ece92165355dc671114fb728e19d4e1b319f",
+      "bytes": 13015
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/25.npz",
+      "sha256": "f0be74e892384dbf087e5dcd39a6f5a6f979376af620df26c647053a36d5a3eb",
+      "bytes": 12769
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/26.npz",
+      "sha256": "a9cd453fd026496a21d4f9dc4947c8c99630460050a0b026fc7e67f57dfcc7db",
+      "bytes": 13059
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/27.npz",
+      "sha256": "fe0319f296a33d6651e084e1acec3e9ee96372cd4b794fffec5e82b000160408",
+      "bytes": 13693
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/28.npz",
+      "sha256": "3aef176132a0f4ff683595a5b8ab8228f1393171129be247ddc8c30b4ff01fb8",
+      "bytes": 14387
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/29.npz",
+      "sha256": "d1fba8df8904dbf0d26e08ec7d9dc966660cba4d57a92aadfffd0363a0f6c15e",
+      "bytes": 14319
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/30.npz",
+      "sha256": "a1f53b9c914d76a07028330eb3d0b73ec2caecffaa7f80d4416c98debe212087",
+      "bytes": 13700
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/31.npz",
+      "sha256": "7fcc85ac68a5e3819eefe8104f1da9e22ea3db03f99bb4f9a4a6a4abe3ab48e0",
+      "bytes": 13372
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/32.npz",
+      "sha256": "758fd2a7f185d249cbe41bdb48bc279c6ef28279c8d20809a3dc9eda4e81fc74",
+      "bytes": 12270
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/33.npz",
+      "sha256": "e38d751e6c395177558f0819b5f61886791bc2c684c626b50efb24c229a11b12",
+      "bytes": 12678
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/34.npz",
+      "sha256": "cfea8dbebccc3dd283e45f33550659cac02ac2c083d33a9582fa4dca94b8f142",
+      "bytes": 11266
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/35.npz",
+      "sha256": "40679d27dc860cc3c0b0274aea96e5d233bf05f5ef89540a4754bd8abff51c4c",
+      "bytes": 14646
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/36.npz",
+      "sha256": "f3e1b41ad544143438c2be188c533e7a1a0e2084dad1edd7ea30bd5830275bc1",
+      "bytes": 12232
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/37.npz",
+      "sha256": "16be028b003c1f009c3925693fa62965722c92d61996bcee3ef4274d12ab9e43",
+      "bytes": 12765
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/38.npz",
+      "sha256": "b9b990b60a4386cfb529da418cd170945d5ee08e4366165582db0f606146a16e",
+      "bytes": 14110
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/39.npz",
+      "sha256": "73eaeb204b69124fbe85464ff7f375eb215d913f2bfe40501d889f60d15b7490",
+      "bytes": 13606
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/40.npz",
+      "sha256": "ee9bf6872beb0e76ea48a7c5cd67d1202a01505362f2537face2ef865172d540",
+      "bytes": 14374
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/41.npz",
+      "sha256": "1c387326422ed07921f2f1d848eeb97119328c9d719d432d84d9f74f32674b76",
+      "bytes": 14727
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/42.npz",
+      "sha256": "f1e2c05d753f61020bd480aa308a04771301579e7d678c3477045d2cbeaed0f7",
+      "bytes": 12632
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/43.npz",
+      "sha256": "141a596c3eaa9207670119bd0fe7f9e1105c4ce476380775d184d285545870fd",
+      "bytes": 13050
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/44.npz",
+      "sha256": "8141024af4156f2cc5fc87e172098a5e26371971b2a09a7b25e13d36f66b5839",
+      "bytes": 11587
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/45.npz",
+      "sha256": "1a4a45243ae62933d2c4d1a888bb78a18f1dfea7d05e362c86908236b75b2fcb",
+      "bytes": 12854
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/46.npz",
+      "sha256": "7a7cfa94a60f5c72219ac3e74cf93983221166e5757f448526ce763956e8b391",
+      "bytes": 12423
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/47.npz",
+      "sha256": "318eb7e34903bcaa7e2ff35c00593d5ddb119e78c6992e7b5c18770c4843e950",
+      "bytes": 13271
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/48.npz",
+      "sha256": "786b8df64009f0aa543e0423f66f72a9dee43fba79c04b582a203dfa2a74f331",
+      "bytes": 13321
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/49.npz",
+      "sha256": "ff8aa35ac0d7aa9f6a2ee3ade30df0927f154301b0b8c7bafabe30fdd57e1e8e",
+      "bytes": 12662
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/50.npz",
+      "sha256": "d9c9bb33cb95418db871f0a98d3f48ea6cbfc7809282ad117da8036e059bb6c9",
+      "bytes": 13521
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/51.npz",
+      "sha256": "0693babae999618935045191a6b312ff2c633da0cf0b2b839f40930c9b6eaacc",
+      "bytes": 13603
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/52.npz",
+      "sha256": "4f658aee7322e2ec075a2f19886e800f102a3543c45d964c86acc883ba60d831",
+      "bytes": 13961
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/53.npz",
+      "sha256": "df1e0112f66b3de1cb10d6968900fed02c58359d0a3e06d5f7eca7ac9597b0ea",
+      "bytes": 14189
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/54.npz",
+      "sha256": "e70054d64380b21bd8bd321211103a7a5cf82f7f6575507ba4c23f087aa3dc85",
+      "bytes": 13628
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/55.npz",
+      "sha256": "e0ace8a67a37222c488e47845664b64b963588b98fac5f2948bb6f108727967a",
+      "bytes": 12242
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/56.npz",
+      "sha256": "f8319bef903140eceaa5f7cc4b6591a2adc6146af6cb7a947dc52d4b6c8eb0b4",
+      "bytes": 12062
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/57.npz",
+      "sha256": "4f3047310af39f339259925d0c9b4cb28cdf45ec37101955d719a9000d3a2ada",
+      "bytes": 12275
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/58.npz",
+      "sha256": "b97ab4ef02c88f8d925476bce88512956e995f6bbc71f3508da37098a2e7d93a",
+      "bytes": 12712
+    },
+    {
+      "path": "PIPE_JEPA_TEST_20261120/02/59.npz",
+      "sha256": "c710e2a4a3b7a73601d47078023203aa1dd30fe3df03c3241fb2da8dcbe55e21",
+      "bytes": 13750
+    }
+  ]
+}

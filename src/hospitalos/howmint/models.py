@@ -32,9 +32,12 @@ def mlp(i: int, h: int, o: int) -> nn.Sequential:
 
 
 class GraphWM(nn.Module):
-    def __init__(self, d: int = 128, use_messages: bool = True, use_history: bool = True):
+    def __init__(self, d: int = 128, use_messages: bool = True, use_history: bool = True,
+                 instant_resource_messages: bool = False):
         super().__init__()
         self.d, self.use_messages, self.use_history = d, use_messages, use_history
+        # Opt-in current-interval resource effects; preserve existing checkpoints.
+        self.instant_resource_messages = instant_resource_messages
         self.unit_enc = mlp(UNIT_IN, d, d)
         self.res_enc = mlp(RES_IN, d, d)
         self.glob_enc = nn.Linear(GLOB_IN, d)
@@ -83,15 +86,20 @@ class GraphWM(nn.Module):
         latents = []
         for t in range(T):
             if self.use_messages:
-                mu = self.m_uu(a @ hu) + self.m_uu_rev(at @ hu) + self.m_ru(ur_mask @ hr)
+                mu = self.m_uu(a @ hu) + self.m_uu_rev(at @ hu)
                 mr = self.m_ur((ur_mask.transpose(1, 2) @ hu) / cnt[..., None])
             else:  # ablation: no exchange between units and resources (each node evolves on its own inputs)
                 mu = torch.zeros_like(hu)
                 mr = torch.zeros_like(hr)
-            xu = torch.cat([U[:, t], C[:, t, None, :].expand(B, n, CLOCK), state, mu], -1)
             xr = torch.cat([R[:, t], C[:, t, None, :].expand(B, 3, CLOCK), mr], -1)
+            if self.instant_resource_messages:
+                hr = self.cell_r(xr.reshape(B * 3, -1), hr.reshape(B * 3, d)).reshape(B, 3, d)
+            if self.use_messages:
+                mu = mu + self.m_ru(ur_mask @ hr)
+            xu = torch.cat([U[:, t], C[:, t, None, :].expand(B, n, CLOCK), state, mu], -1)
             hu = self.cell_u(xu.reshape(B * n, -1), hu.reshape(B * n, d)).reshape(B, n, d)
-            hr = self.cell_r(xr.reshape(B * 3, -1), hr.reshape(B * 3, d)).reshape(B, 3, d)
+            if not self.instant_resource_messages:
+                hr = self.cell_r(xr.reshape(B * 3, -1), hr.reshape(B * 3, d)).reshape(B, 3, d)
             state, cost, rup = self.readout(hu, beds)
             if return_latents:
                 latents.append(hu)

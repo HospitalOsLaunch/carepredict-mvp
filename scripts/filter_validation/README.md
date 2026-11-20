@@ -30,3 +30,5 @@ python scripts/filter_validation/analyse.py evidence/filter_validation/run
 ```
 
 L'analyse exige les 24 fichiers structure-retard. Chaque fichier contient les deux futurs, les prédictions d'état, les probabilités par tâche, les décisions et les coûts prévus. Les paramètres ajustés sont dans fit.json. La graine du bootstrap et les partitions sont fixées dans le protocole.
+
+La campagne suivante exécute l'extension des événements invisibles, le benchmark des conséquences à 6/12/24 h et les dix cycles avec/sans JEPA. Voir [le protocole et la reproduction](../filter_pipeline/README.md) et [les résultats complets](../filter_pipeline/RESULTATS.md). JEPA reste une variante expérimentale : son gain de prévision des lits libres ne valide pas un gain décisionnel.
