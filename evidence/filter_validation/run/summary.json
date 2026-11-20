@@ -1,0 +1,1339 @@
+{
+  "state": [
+    {
+      "delay": 0,
+      "metric": "cleaning",
+      "reported_mae": 0.0,
+      "filtered_mae": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "free_beds",
+      "reported_mae": 0.0,
+      "filtered_mae": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "transport",
+      "reported_mae": 0.0,
+      "filtered_mae": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "cleaning",
+      "reported_mae": 0.091796875,
+      "filtered_mae": 0.09032578952205918,
+      "gain": {
+        "mean": 0.0014710854779408154,
+        "ci95": [
+          -0.011286963784777204,
+          0.012052080932586449
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "free_beds",
+      "reported_mae": 1.03125,
+      "filtered_mae": 1.0552715866069804,
+      "gain": {
+        "mean": -0.024021586606980533,
+        "ci95": [
+          -0.0434112149000782,
+          -0.010404803155711276
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "transport",
+      "reported_mae": 0.032552083333333336,
+      "filtered_mae": 0.03981984103761906,
+      "gain": {
+        "mean": -0.007267757704285734,
+        "ci95": [
+          -0.012266536784503472,
+          -0.003109143619004148
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "cleaning",
+      "reported_mae": 0.15755208333333334,
+      "filtered_mae": 0.1171499188852983,
+      "gain": {
+        "mean": 0.040402164448035044,
+        "ci95": [
+          0.015268681070995943,
+          0.06596669263209506
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "free_beds",
+      "reported_mae": 1.0397135416666667,
+      "filtered_mae": 1.104823808748622,
+      "gain": {
+        "mean": -0.06511026708195533,
+        "ci95": [
+          -0.09511417408879176,
+          -0.038851228699540406
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "transport",
+      "reported_mae": 0.06901041666666667,
+      "filtered_mae": 0.06348710219121172,
+      "gain": {
+        "mean": 0.005523314475454963,
+        "ci95": [
+          -0.0022981750477829403,
+          0.013835397139105126
+        ],
+        "structures": 8
+      }
+    }
+  ],
+  "services": [
+    {
+      "delay": 0,
+      "kind": "cleaning",
+      "count": 208,
+      "reported_brier": 0.0,
+      "filtered_brier": 0.0,
+      "ece": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "kind": "transport",
+      "count": 116,
+      "reported_brier": 0.0,
+      "filtered_brier": 0.0,
+      "ece": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "kind": "cleaning",
+      "count": 143,
+      "reported_brier": 0.3076923076923077,
+      "filtered_brier": 0.12003381384918428,
+      "ece": 0.10754838395230441,
+      "gain": {
+        "mean": 0.17779455188894863,
+        "ci95": [
+          0.09270145208228311,
+          0.2633200234411494
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "kind": "transport",
+      "count": 84,
+      "reported_brier": 0.11904761904761904,
+      "filtered_brier": 0.1238328146668998,
+      "ece": 0.10761563843078535,
+      "gain": {
+        "mean": -0.004171074436203851,
+        "ci95": [
+          -0.07728256024880373,
+          0.07575976900993425
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "kind": "cleaning",
+      "count": 172,
+      "reported_brier": 0.7441860465116279,
+      "filtered_brier": 0.06321303419901764,
+      "ece": 0.06350348734459946,
+      "gain": {
+        "mean": 0.6416519971338301,
+        "ci95": [
+          0.5278272140676482,
+          0.7329117010883198
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "kind": "transport",
+      "count": 62,
+      "reported_brier": 0.46774193548387094,
+      "filtered_brier": 0.13513947805710594,
+      "ece": 0.12197449788108719,
+      "gain": {
+        "mean": 0.2055054379999014,
+        "ci95": [
+          -0.05982620303707961,
+          0.4247693781791252
+        ],
+        "structures": 8
+      }
+    }
+  ],
+  "outcomes": [
+    {
+      "delay": 0,
+      "metric": "rejected",
+      "reference": "workload_rule",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "rejected",
+      "reference": "observed_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "rejected",
+      "reference": "true_state_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "staff_hours",
+      "reference": "workload_rule",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "staff_hours",
+      "reference": "observed_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "staff_hours",
+      "reference": "true_state_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "terminal_queue",
+      "reference": "workload_rule",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "terminal_queue",
+      "reference": "observed_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "terminal_queue",
+      "reference": "true_state_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "uncovered_care_min",
+      "reference": "workload_rule",
+      "reference_mean": 4033.375,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": -0.4375,
+        "ci95": [
+          -3.1875,
+          1.875
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "uncovered_care_min",
+      "reference": "observed_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "uncovered_care_min",
+      "reference": "true_state_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "wait_patient_min",
+      "reference": "workload_rule",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          -8.4375,
+          8.4375
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "wait_patient_min",
+      "reference": "observed_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 0,
+      "metric": "wait_patient_min",
+      "reference": "true_state_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "rejected",
+      "reference": "workload_rule",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "rejected",
+      "reference": "observed_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "rejected",
+      "reference": "true_state_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "staff_hours",
+      "reference": "workload_rule",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "staff_hours",
+      "reference": "observed_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "staff_hours",
+      "reference": "true_state_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "terminal_queue",
+      "reference": "workload_rule",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "terminal_queue",
+      "reference": "observed_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "terminal_queue",
+      "reference": "true_state_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "uncovered_care_min",
+      "reference": "workload_rule",
+      "reference_mean": 4033.375,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": -0.4375,
+        "ci95": [
+          -3.1875,
+          1.875
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "uncovered_care_min",
+      "reference": "observed_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "uncovered_care_min",
+      "reference": "true_state_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "wait_patient_min",
+      "reference": "workload_rule",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          -8.4375,
+          8.4375
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "wait_patient_min",
+      "reference": "observed_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 60,
+      "metric": "wait_patient_min",
+      "reference": "true_state_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "rejected",
+      "reference": "workload_rule",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "rejected",
+      "reference": "observed_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "rejected",
+      "reference": "true_state_planner",
+      "reference_mean": 0.0,
+      "filtered_mean": 0.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "staff_hours",
+      "reference": "workload_rule",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "staff_hours",
+      "reference": "observed_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "staff_hours",
+      "reference": "true_state_planner",
+      "reference_mean": 48.0,
+      "filtered_mean": 48.0,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "terminal_queue",
+      "reference": "workload_rule",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "terminal_queue",
+      "reference": "observed_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "terminal_queue",
+      "reference": "true_state_planner",
+      "reference_mean": 7.1875,
+      "filtered_mean": 7.1875,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "uncovered_care_min",
+      "reference": "workload_rule",
+      "reference_mean": 4033.375,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": -0.4375,
+        "ci95": [
+          -3.1875,
+          1.875
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "uncovered_care_min",
+      "reference": "observed_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "uncovered_care_min",
+      "reference": "true_state_planner",
+      "reference_mean": 4033.8125,
+      "filtered_mean": 4033.8125,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "wait_patient_min",
+      "reference": "workload_rule",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          -8.4375,
+          8.4375
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "wait_patient_min",
+      "reference": "observed_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    },
+    {
+      "delay": 180,
+      "metric": "wait_patient_min",
+      "reference": "true_state_planner",
+      "reference_mean": 8984.0625,
+      "filtered_mean": 8984.0625,
+      "gain": {
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "structures": 8
+      }
+    }
+  ],
+  "action_diagnostics": [
+    {
+      "structure": 0,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 0,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 0,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 0,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 0,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 0,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 0.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 235.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 235.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 250.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 250.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 225.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 1,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 225.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 1245.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 1245.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 1005.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 1005.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 1005.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 2,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 1005.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 30.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 30.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 3,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 4,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 15.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 5,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 45.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 75.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 75.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 65.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 65.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 65.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 6,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 65.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 0,
+      "future": 1,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 0,
+      "future": 2,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 180,
+      "future": 1,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 180,
+      "future": 2,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 60,
+      "future": 1,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    },
+    {
+      "structure": 7,
+      "delay": 60,
+      "future": 2,
+      "candidate_gap": 25.0,
+      "filtered_differs": false,
+      "changed_actions": 0,
+      "oracle_changed_actions": 0
+    }
+  ]
+}
