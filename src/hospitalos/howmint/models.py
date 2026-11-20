@@ -69,7 +69,7 @@ class GraphWM(nn.Module):
         rup = self.head_rup(hu)[..., 0]
         return state, cost, rup
 
-    def forward(self, unit, res, glob, ur_mask, uu, U, R, C, beds, steps: int | None = None):
+    def forward(self, unit, res, glob, ur_mask, uu, U, R, C, beds, steps: int | None = None, *, return_latents: bool = False):
         """unit [B,n,54] res [B,3,10] glob [B,8] ur_mask [B,n,3] uu [B,n,n] U [B,T,n,3] R [B,T,3,3] C [B,T,3].
         Returns states [B,T,n,9], costs [B,T,n] (scaled units), rupture logits [B,T,n]."""
         hu, hr = self.init(unit, res, glob)
@@ -80,6 +80,7 @@ class GraphWM(nn.Module):
         at = uu.transpose(1, 2) / uu.transpose(1, 2).sum(-1, keepdim=True).clamp(min=1.0)
         cnt = ur_mask.sum(1).clamp(min=1.0)  # [B,3]
         S, Cc, Rr = [], [], []
+        latents = []
         for t in range(T):
             if self.use_messages:
                 mu = self.m_uu(a @ hu) + self.m_uu_rev(at @ hu) + self.m_ru(ur_mask @ hr)
@@ -92,10 +93,15 @@ class GraphWM(nn.Module):
             hu = self.cell_u(xu.reshape(B * n, -1), hu.reshape(B * n, d)).reshape(B, n, d)
             hr = self.cell_r(xr.reshape(B * 3, -1), hr.reshape(B * 3, d)).reshape(B, 3, d)
             state, cost, rup = self.readout(hu, beds)
+            if return_latents:
+                latents.append(hu)
             S.append(state)
             Cc.append(cost)
             Rr.append(rup)
-        return torch.stack(S, 1), torch.stack(Cc, 1), torch.stack(Rr, 1)
+        outputs = torch.stack(S, 1), torch.stack(Cc, 1), torch.stack(Rr, 1)
+        if return_latents:
+            return (*outputs, torch.stack(latents, 1))
+        return outputs
 
 
 class DSet(nn.Module):
