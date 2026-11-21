@@ -79,4 +79,3 @@
 .ud-head > *, .ud-cases > li > *, .ud-situ-grid > section { min-width: 0; overflow-wrap: anywhere; }
 
 .ud-details { min-width: 0; max-width: 100%; }
-.ud-details:not([open]) { overflow: clip; }

@@ -5,7 +5,7 @@
 .unit-context-bar .select { font-size: var(--t-md); max-width: 100%; }
 .unit-ward-bar { border-bottom: 1px solid var(--line-strong); padding-bottom: 18px; align-items: center; }
 .unit-ward-bar > span { color: var(--ink-3); }
-.unit-source { margin-left: auto; white-space: nowrap; }
+.unit-source { margin-left: auto; max-width: 50%; padding: 4px 10px; border-radius: 999px; background: var(--brand-wash); color: var(--brand-strong); text-align: center; font-size: var(--t-sm); font-weight: 600; }
 .unit-information { margin-block: 16px; padding: clamp(16px,3vw,30px); }
 .unit-information h2 { margin-top: 0; font-family: var(--display); }
 .unit-information .btn + .linkbtn { margin-inline-start: 12px; }
@@ -28,5 +28,5 @@
   .tabbar.unit-tabbar { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
 
-.unit-workspace { overflow-wrap: anywhere; overflow-x: auto; }
+.unit-workspace { overflow-wrap: anywhere; }
 .unit-information { white-space: normal; }

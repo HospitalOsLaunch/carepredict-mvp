@@ -47,7 +47,7 @@ export function HospitalUnit({ view }: { view: View }) {
     <header className="topbar"><div className="topbar__row">
       <a href="#/" className="brand" aria-label="HospitalOS, vue unité"><Mark /><span>HospitalOS</span></a>
       <Navigation view={view} />
-      <span className="mode unit-source">Données synthétiques</span>
+      <span className="unit-source">Données synthétiques</span>
     </div></header>
     <main className="main unit-workspace" id="contenu" tabIndex={-1}>
       <div className="unit-context-bar">
