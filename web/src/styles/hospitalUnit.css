@@ -6,10 +6,10 @@
 .unit-ward-bar { border-bottom: 1px solid var(--line-strong); padding-bottom: 18px; align-items: center; }
 .unit-ward-bar > span { color: var(--ink-3); }
 .unit-source { margin-left: auto; white-space: nowrap; }
-.unit-status { margin-block: 16px; padding: clamp(16px,3vw,30px); }
-.unit-status h2 { margin-top: 0; font-family: var(--display); }
-.unit-status .btn + .linkbtn { margin-inline-start: 12px; }
-.unit-status details, .unit-status button { margin-block: 8px; }
+.unit-information { margin-block: 16px; padding: clamp(16px,3vw,30px); }
+.unit-information h2 { margin-top: 0; font-family: var(--display); }
+.unit-information .btn + .linkbtn { margin-inline-start: 12px; }
+.unit-information details, .unit-information button { margin-block: 8px; }
 .unit-facts { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,230px),1fr)); gap: 16px; }
 .unit-facts dd { margin: 4px 0 0; overflow-wrap: anywhere; font-weight: 600; }
 .unit-facts dt { color: var(--ink-3); }
@@ -27,3 +27,6 @@
   .unit-workspace .select { width: 100%; min-width: 0; }
   .tabbar.unit-tabbar { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
+
+.unit-workspace { overflow-wrap: anywhere; overflow-x: auto; }
+.unit-information { white-space: normal; }

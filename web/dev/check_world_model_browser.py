@@ -13,14 +13,18 @@ from playwright.sync_api import Browser, Page, Response, expect, sync_playwright
 
 
 def check_width(page: Page) -> None:
-    overflow = page.evaluate("""() => {
-        if (document.documentElement.scrollWidth <= innerWidth) return [];
-        return Array.from(document.body.querySelectorAll("*"))
-            .filter(el => el.getBoundingClientRect().right > innerWidth + 0.25)
-            .map(el => [el.tagName, el.className, Math.round(el.getBoundingClientRect().right)])
-            .slice(0, 20);
+    layout = page.evaluate("""async () => {
+        await document.fonts.ready;
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const width = document.documentElement.scrollWidth;
+        const overflow = Array.from(document.body.querySelectorAll("*"))
+            .filter(el => el.getBoundingClientRect().right + scrollX > innerWidth + .25 ||
+                    (el.scrollWidth > el.clientWidth + 1 && el.clientWidth))
+            .map(el => [el.tagName, String(el.className), el.clientWidth, el.scrollWidth])
+            .slice(0, 25);
+        return { width, viewport: innerWidth, scrollX, overflow };
     }""")
-    assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), overflow
+    assert layout["width"] <= layout["viewport"], layout
 
 
 def unit_journey(

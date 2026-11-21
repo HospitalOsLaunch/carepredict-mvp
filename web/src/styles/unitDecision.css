@@ -77,3 +77,6 @@
 .ud-stack, .ud-card, .ud-editor { grid-template-columns: minmax(0, 1fr); }
 .ud-card > *, .ud-situation > *, .ud-actions li > div, .ud-forecast > div,
 .ud-head > *, .ud-cases > li > *, .ud-situ-grid > section { min-width: 0; overflow-wrap: anywhere; }
+
+.ud-details { min-width: 0; max-width: 100%; }
+.ud-details:not([open]) { overflow: clip; }

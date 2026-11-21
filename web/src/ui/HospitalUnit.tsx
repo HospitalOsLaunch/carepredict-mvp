@@ -58,7 +58,7 @@ export function HospitalUnit({ view }: { view: View }) {
           }}>{catalogue.contexts.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select>
         </label>}
       </div>
-      {failure ? <div className="wm-card unit-status"><p role="alert">Le moteur de recommandation est indisponible. Reconnectez le cockpit pour charger les données de l’unité.</p>
+      {failure ? <div className="wm-card unit-information"><p role="alert">Le moteur de recommandation est indisponible. Reconnectez le cockpit pour charger les données de l’unité.</p>
         <button type="button" className="btn" onClick={() => retry(v => v + 1)}>Réessayer</button>
         <a href="#/dossiers" className="linkbtn">Ouvrir les dossiers patients de démonstration</a></div>
       : context ? <UnitWorkspace key={context.id} context={context} view={view} />
@@ -72,7 +72,7 @@ function UnitWorkspace({ context, view }: { context: WmContext; view: View }) {
   const work = useWorldSession(context.id, "unit");
   const [preferred, chooseWard] = useState(() => remembered("ward." + context.id) ?? (context.id === "rives" ? "u6" : null));
   const state = work.state;
-  if (work.error) return <div className="wm-card unit-status"><p role="alert">{work.error}</p>
+  if (work.error) return <div className="wm-card unit-information"><p role="alert">{work.error}</p>
     <button className="btn" onClick={work.reload}>Réessayer</button>
     <button className="btn" onClick={work.restart}>Ouvrir un nouvel épisode de démonstration</button></div>;
   if (!state || state.context.id !== context.id) return <p role="status">Chargement de l’état de l’établissement…</p>;
@@ -88,7 +88,7 @@ function UnitWorkspace({ context, view }: { context: WmContext; view: View }) {
       <UnitDecision key={state.id + ":" + ward.id} session={state} ward={ward} onConfirmed={work.recordDecision} />
     </div>
     {view === "unite" ? null : view === "journal" ? <DecisionJournal session={state} busy={Boolean(work.busy)} advance={() => void work.advance()} /> :
-      <section className="wm-card unit-status"><h2>Données de {ward.label}</h2>
+      <section className="wm-card unit-information"><h2>Données de {ward.label}</h2>
         <dl className="unit-facts"><div><dt>Établissement</dt><dd>{context.label}</dd></div>
         <div><dt>Lits équipés au planning</dt><dd>{ward.beds}</dd></div>
         <div><dt>Disponibilité du suivi</dt><dd>{feeds[context.feed]} · {time(state.publication_hour)}</dd></div>
@@ -106,7 +106,7 @@ function DecisionJournal({ session, busy, advance }: { session: WmSession; busy:
   const plan = session.confirmed_plan;
   const ward = session.wards.find(w => w.id === session.decision_ward_id);
   const observed = ward && session.observation?.by_ward[session.wards.indexOf(ward)];
-  return <section className="wm-card unit-status" aria-label="Journal des décisions">
+  return <section className="wm-card unit-information" aria-label="Journal des décisions">
     <h2>Décisions de {session.context.label}</h2>
     <ol className="unit-event-list">{session.journal.map((entry, index) => <li key={index}>
       <time>{time(entry.hour)}</time><div><strong>{events[entry.event]}</strong>
