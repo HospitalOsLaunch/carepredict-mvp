@@ -16,6 +16,8 @@ export const METRICS = [
 ] as const;
 const ACCESS_METRICS = ["redirected_patients", "admission_queue_at_16", "named_admissions", "named_discharges"] as const;
 export type PlanMetrics = Record<(typeof METRICS)[number], number> & Partial<Record<(typeof ACCESS_METRICS)[number], number>>;
+export const UNIT_METRICS = ["transfer_queue", "bed_wait_patient_hours", "uncovered_ide_minutes", "uncovered_as_minutes"] as const;
+export type UnitMetrics = Record<(typeof UNIT_METRICS)[number], number>;
 export type CaseHours = Record<string, number | null>;
 export const WARD_METRICS = ["transfer_queue", "admissions", "redirected_patients", "care_minutes", "transport_used", "beds_cleaned", "smr_transfers", "available_beds"] as const;
 export type WardMetric = (typeof WARD_METRICS)[number];
@@ -23,6 +25,8 @@ export type WardImpact = { ward_id: string } & Record<WardMetric, number>;
 export interface PlanEvaluation {
   id: string; action_ids: string[]; feasible: boolean; conflicts: string[]; cost_eur: number;
   metrics: PlanMetrics | null; realized: Record<string, number>;
+  ward_id?: string | null; context_id?: string | null;
+  ward_metrics?: UnitMetrics | null;
   access_warnings?: string[]; case_hours?: CaseHours; ward_impacts?: WardImpact[];
 }
 export interface PlanReport {
@@ -30,9 +34,21 @@ export interface PlanReport {
   case_hours?: CaseHours | null;
   alternatives: Array<{ plan: PlanEvaluation; reconstructed_queue: number }>;
 }
+export interface UnitIntake {
+  context_id: string; ward_id: string;
+  as_of_hour: number;
+  capacity_beds: number;
+  available_beds: number;
+  admission_queue: number;
+  transfer_queue: number;
+  cases: { id: string; kind: "admission" | "discharge"; available_hour: number; scheduled_hour: number | null; eligible: boolean }[];
+}
 export interface PlanMenu {
+  context_id?: string | null;
   objective: ComparisonObjective; actions: PlanAction[]; reference: PlanEvaluation; recommendations: PlanEvaluation[];
   search: { evaluated: number; complete: boolean; examined?: number; feasible?: number; recommendable?: number; scope_size?: number }; budget_eur: number;
+  ward_id?: string | null;
+  ward_state?: UnitIntake | null;
   example_action_ids?: string[]; scope_ids?: string[];
 }
 
@@ -53,6 +69,7 @@ function invalid(): never { throw new Error("Le simulateur a retourné un plan i
 export function isEvaluation(v: unknown): v is PlanEvaluation {
   return object(v) && text(v.id) && strings(v.action_ids) && new Set(v.action_ids).size === v.action_ids.length &&
     typeof v.feasible === "boolean" && strings(v.conflicts) && number(v.cost_eur) && counts(v.realized) &&
+    (v.ward_metrics == null || (object(v.ward_metrics) && UNIT_METRICS.every(k => number((v.ward_metrics as Record<string, unknown>)[k])))) &&
     (v.access_warnings === undefined || strings(v.access_warnings)) && (v.case_hours === undefined || hours(v.case_hours)) &&
     (v.ward_impacts === undefined || wardImpacts(v.ward_impacts)) &&
     (metrics(v.metrics) || (!v.feasible && v.metrics === null));
@@ -82,7 +99,44 @@ export function readMenu(v: unknown, objective: ComparisonObjective): PlanMenu {
   return v as unknown as PlanMenu;
 }
 const plansPath = (sessionId: string) => "/world-model/sessions/" + encodeURIComponent(sessionId) + "/plans";
+function isUnitIntake(v: unknown, context: string, ward: string): v is UnitIntake {
+  return object(v) && v.context_id === context && v.ward_id === ward && v.as_of_hour === 12 && count(v.capacity_beds) && number(v.available_beds) &&
+    v.available_beds <= v.capacity_beds + 1e-6 && number(v.admission_queue) && number(v.transfer_queue) &&
+    Array.isArray(v.cases) && v.cases.every(c => object(c) && text(c.id) &&
+      (c.kind === "admission" || c.kind === "discharge") && count(c.available_hour) &&
+      (c.scheduled_hour === null || count(c.scheduled_hour)) && typeof c.eligible === "boolean") &&
+    new Set(v.cases.map(c => c.id)).size === v.cases.length;
+}
+
+export function readUnitMenu(raw: unknown, objective: ComparisonObjective, wardId: string, context: string): PlanMenu {
+  const menu = readMenu(raw, objective);
+  if (menu.ward_id !== wardId || menu.context_id !== context || !isUnitIntake(menu.ward_state, context, wardId) ||
+      [menu.reference, ...menu.recommendations].some(plan => !plan.ward_metrics || plan.context_id !== context || plan.ward_id !== wardId)) {
+    throw new Error("La recommandation reçue ne correspond pas à cette unité.");
+  }
+  return menu;
+}
 export const plansApi = {
+  async unitMenu(sessionId: string, objective: ComparisonObjective, wardId: string, context: string, signal: AbortSignal): Promise<PlanMenu> {
+    const query = new URLSearchParams({ objective, ward_id: wardId });
+    const raw = await call<unknown>(plansPath(sessionId) + "?" + query, { signal }, 90000);
+    return readUnitMenu(raw, objective, wardId, context);
+  },
+  async unitPreview(sessionId: string, context: string, ward: string, ids: string[], objective: ComparisonObjective, signal: AbortSignal) {
+    const result = await call<unknown>(plansPath(sessionId) + "/preview", {
+      method: "POST", body: JSON.stringify({ ward_id: ward, context_id: context, objective, action_ids: ids }), signal,
+    }, 90000);
+    if (!isEvaluation(result) || result.context_id !== context || result.ward_id !== ward ||
+        (result.feasible && !result.ward_metrics) || result.action_ids.length !== ids.length ||
+        !ids.every(id => result.action_ids.includes(id))) invalid();
+    return result;
+  },
+  async unitState(sessionId: string, context: string, ward: string, signal: AbortSignal) {
+    const path = "/world-model/sessions/" + encodeURIComponent(sessionId) + "/wards/" + encodeURIComponent(ward) + "/state";
+    const result = await call<unknown>(path, { signal });
+    if (!isUnitIntake(result, context, ward)) invalid();
+    return result;
+  },
   async menu(sessionId: string, objective: ComparisonObjective, signal: AbortSignal): Promise<PlanMenu> {
     return readMenu(await call<unknown>(plansPath(sessionId) + "?objective=" + encodeURIComponent(objective), { signal }, 90000), objective);
   },

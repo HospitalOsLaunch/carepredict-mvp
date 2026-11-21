@@ -162,7 +162,7 @@ export function Journal(props: {
         <Empty illu="cloud" title="Cette décision n'est pas dans ce journal.">
           Elle a peut-être été prise sur un autre poste : dans ce prototype, le journal reste sur le poste où
           il a été écrit.{" "}
-          <a className="link" href="#/journal">
+          <a className="link" href="#/dossiers/journal">
             Revenir au journal
           </a>
         </Empty>
@@ -173,7 +173,7 @@ export function Journal(props: {
   return (
     <>
       <header className="page-head">
-        <a className="back" href="#/">
+        <a className="back" href="#/dossiers">
           <Back size={14} /> Unité
         </a>
         <h1>
@@ -183,8 +183,8 @@ export function Journal(props: {
         <p>Ce qui a été proposé et décidé : par qui, quand, pourquoi.</p>
         <SignedAs me={me} />
         {hasWorldSession() && (
-          <a className="btn journal-simulation-link" href="#/simulation">
-            <SimulationIcon /> Reprendre la simulation de midi
+          <a className="btn journal-simulation-link" href="#/">
+            <SimulationIcon /> Revenir à la vue Unité
           </a>
         )}
       </header>
@@ -367,7 +367,7 @@ function Row({
     <li className={`jrow${open ? " jrow--open" : ""}`}>
       <a
         className="jrow__link"
-        href={`#/journal/${encodeURIComponent(r.id)}`}
+        href={`#/dossiers/journal/${encodeURIComponent(r.id)}`}
         aria-current={open ? "true" : undefined}
       >
         <span className="jrow__time num">{clock(r.proposedAt)}</span>
@@ -410,14 +410,14 @@ const STEP: Record<string, string> = {
 
 function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: string; onToast: ToastFn }) {
   const s = statusOf(r, now);
-  const link = `${window.location.href.split("#")[0]}#/journal/${encodeURIComponent(r.id)}`;
+  const link = `${window.location.href.split("#")[0]}#/dossiers/journal/${encodeURIComponent(r.id)}`;
   return (
     <section className="panel jdetail" aria-labelledby="jdetail-title">
       <header className="jdetail__head">
         <Pill s={s} />
         {r.sample ? <span className="jrow__sample">exemple de démonstration</span> : null}
         <span className="spacer" />
-        <a className="linkbtn" href="#/journal" aria-label="Fermer la fiche">
+        <a className="linkbtn" href="#/dossiers/journal" aria-label="Fermer la fiche">
           Fermer
         </a>
       </header>
@@ -511,7 +511,7 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
       {s === "pending" ? (
         <p className="jdetail__hint">
           Pour répondre, ouvrez l'unité :{" "}
-          <a className="link" href="#/">
+          <a className="link" href="#/dossiers">
             {r.unitName}
           </a>
           .

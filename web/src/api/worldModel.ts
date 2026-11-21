@@ -1,5 +1,5 @@
 import { call } from "./client";
-import { isEvaluation, isPlanReport, readMenu, type PlanEvaluation, type PlanMenu, type PlanReport } from "./worldPlans";
+import { isEvaluation, isPlanReport, readMenu, readUnitMenu, type PlanEvaluation, type PlanMenu, type PlanReport } from "./worldPlans";
 
 export type Flow = "full" | "partial" | "delayed";
 export type Phase = "planning" | "confirmed" | "awaiting_report" | "review";
@@ -35,11 +35,12 @@ export interface WmReading {
   visible_components: number;
   total_components: number;
 }
-export interface WmEvent { hour: number; event: "opened" | "confirmed" | "awaiting_report" | "report_received"; option_id: string | null }
+export interface WmEvent { hour: number; event: "opened" | "confirmed" | "awaiting_report" | "report_received"; option_id: string | null; ward_id?: string | null }
 export interface WmSession {
   id: string; context: WmContext; phase: Phase; hour: number; decision_hour: 12; target_hour: 16;
   publication_hour: number; model_version: string; morning_plan: string[]; wards: WmWard[];
   decision_objective?: ComparisonObjective | null;
+  decision_ward_id?: string | null;
   plan_version?: string | null;
   confirmed_plan?: PlanEvaluation | null;
   plan_snapshot?: PlanMenu | null;
@@ -82,13 +83,19 @@ function session(raw: unknown, id: string, context: string): WmSession {
   const report = raw.plan_report;
   if (raw.plan_snapshot != null) {
     if (!plan || !COMPARISON_OBJECTIVES.some((key) => key === raw.decision_objective)) fail();
-    const snapshot = readMenu(raw.plan_snapshot, raw.decision_objective as ComparisonObjective);
+    const objective = raw.decision_objective as ComparisonObjective;
+    const snapshot = str(raw.decision_ward_id)
+      ? readUnitMenu(raw.plan_snapshot, objective, raw.decision_ward_id, context)
+      : readMenu(raw.plan_snapshot, objective);
+    if ((snapshot.ward_id ?? null) !== (raw.decision_ward_id ?? null)) fail();
     if (!plan.action_ids.every((id) => snapshot.actions.some((a) => a.id === id))) fail();
   }
   if (plan && raw.phase === "review" && !report) fail();
   if (report && raw.context.feed !== "full" && (report.actual_metrics !== null || report.realized !== null || report.case_hours != null)) fail();
   const count = raw.wards.length;
   const wards = new Set(raw.wards.map((w) => w.id));
+  if (raw.decision_ward_id != null && (!wards.has(raw.decision_ward_id) || !plan?.ward_metrics ||
+      plan.context_id !== context || plan.ward_id !== raw.decision_ward_id || !raw.plan_snapshot)) fail();
   const options = new Set<string>();
   for (const o of raw.options) {
     if (!object(o) || !str(o.id) || options.has(o.id) || !str(o.label) || !one(o.kind, ["reference", ...RESOURCE_FAMILIES]) ||
@@ -147,6 +154,14 @@ export const worldApi = {
     sessionCall(id, context, "/confirm", { method: "POST", body: JSON.stringify({ option_id: option, objective }), signal }),
   confirmPlan: (id: string, context: string, actionIds: string[], signal: AbortSignal, objective: ComparisonObjective, scopeIds?: string[]) =>
     sessionCall(id, context, "/plans/confirm", { method: "POST", body: JSON.stringify({ action_ids: actionIds, objective, scope_ids: scopeIds }), signal }),
+  async confirmUnit(id: string, context: string, wardId: string, plan: PlanEvaluation, objective: ComparisonObjective, signal: AbortSignal, previewId?: string) {
+    const saved = await sessionCall(id, context, "/plans/confirm", {
+      method: "POST", body: JSON.stringify({ ward_id: wardId, context_id: context, action_ids: plan.action_ids, objective, preview_id: previewId }), signal,
+    });
+    if (saved.decision_ward_id !== wardId || saved.decision_objective !== objective || saved.confirmed_plan?.id !== plan.id ||
+        saved.confirmed_plan.action_ids.length !== plan.action_ids.length || !plan.action_ids.every(k => saved.confirmed_plan!.action_ids.includes(k))) fail();
+    return saved;
+  },
   advance: (id: string, context: string, from: 12 | 16, signal: AbortSignal) =>
     sessionCall(id, context, "/advance", { method: "POST", body: JSON.stringify({ from_hour: from }), signal }),
 };

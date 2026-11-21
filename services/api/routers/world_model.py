@@ -17,9 +17,11 @@ from hospitalos.world_model.contracts import (
     PlanConfirmation,
     PlanEvaluation,
     PlanMenu,
+    PlanPreview,
     PlanRequest,
     Session,
     Start,
+    WardState,
 )
 from hospitalos.world_model.physics import ModelUnavailable
 from hospitalos.world_model.sessions import Conflict, SessionStore, Unknown
@@ -78,14 +80,21 @@ def world_model_router(store: SessionStore) -> APIRouter:
     def advance(identifier: UUID, body: Advance, response: Response) -> Session:
         return respond(response, lambda: store.mutate(str(identifier), "advance", body.from_hour))
 
+    @router.get("/sessions/{identifier}/wards/{ward_id}/state")
+    def unit_state(identifier: UUID, ward_id: str, response: Response) -> WardState:
+        return respond(response, lambda: store.unit_state(str(identifier), ward_id))
+
     @router.get("/sessions/{identifier}/plans")
     def plans(
-        identifier: UUID, response: Response, objective: Objective = "transfer_queue"
+        identifier: UUID,
+        response: Response,
+        objective: Objective = "transfer_queue",
+        ward_id: str | None = None,
     ) -> PlanMenu:
-        return respond(response, lambda: store.plan_menu(str(identifier), objective))
+        return respond(response, lambda: store.plan_menu(str(identifier), objective, ward_id))
 
     @router.post("/sessions/{identifier}/plans/preview")
-    def preview(identifier: UUID, body: PlanRequest, response: Response) -> PlanEvaluation:
+    def preview(identifier: UUID, body: PlanPreview, response: Response) -> PlanEvaluation:
         return respond(response, lambda: store.plan_preview(str(identifier), body))
 
     @router.post("/sessions/{identifier}/plans/optimize")

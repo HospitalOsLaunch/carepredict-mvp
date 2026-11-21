@@ -23,7 +23,7 @@ export function ProposalDetail({ a }: { a: Assessment }) {
         <div className="panel">
           <Empty illu="plane" title="Rien à détailler pour l'instant.">
             L'unité n'a pas encore été évaluée, ou l'évaluation s'est abstenue.{" "}
-            <a className="link" href="#/">
+            <a className="link" href="#/dossiers">
               Revenir à l'unité
             </a>
           </Empty>
@@ -55,7 +55,7 @@ export function ProposalDetail({ a }: { a: Assessment }) {
 function Head({ title, subtitle, illu }: { title: string; subtitle?: string; illu: IlluName }) {
   return (
     <header className="page-head">
-      <a className="back" href="#/">
+      <a className="back" href="#/dossiers">
         <Back size={14} /> Unité
       </a>
       <h1>

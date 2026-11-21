@@ -56,7 +56,8 @@ export function worldError(e: unknown) {
   return e instanceof Error ? e.message : "Impossible de joindre le simulateur.";
 }
 
-export function useWorldSession(context: string) {
+export function useWorldSession(context: string, workspace: "research" | "unit" = "research") {
+  const ticketKey = workspace === "unit" ? "unit." + context : context;
   const [state, setState] = useState<WmSession | null>(null);
   const [busy, setBusy] = useState<"load" | "confirm" | "advance" | null>("load");
   const [error, setError] = useState<string | null>(null);
@@ -71,14 +72,14 @@ export function useWorldSession(context: string) {
   useEffect(() => {
     const ctrl = new AbortController();
     active.current = ctrl;
-    const t = storedTicket(context) ?? newTicket(context);
+    const t = storedTicket(ticketKey) ?? newTicket(ticketKey);
     setBusy("load");
     setError(null);
     const request = t.saved ? worldApi.read(t.id, context, ctrl.signal) : worldApi.open(t.id, context, ctrl.signal);
     request.then((next) => {
       if (ctrl.signal.aborted || active.current !== ctrl) return;
-      remember("session." + context, JSON.stringify({ id: next.id, saved: true }));
-      remember("active-context", context);
+      remember("session." + ticketKey, JSON.stringify({ id: next.id, saved: true }));
+      remember(workspace === "unit" ? "unit-context" : "active-context", context);
       accept(next);
     }).catch((e: unknown) => {
       if (!ctrl.signal.aborted && active.current === ctrl) setError(worldError(e));
@@ -90,7 +91,24 @@ export function useWorldSession(context: string) {
       active.current?.abort();
       active.current = null;
     };
-  }, [context, version, accept]);
+  }, [context, ticketKey, workspace, version, accept]);
+
+  const recordDecision = useCallback((next: WmSession) => {
+    if (lastState.current?.id !== next.id || next.context.id !== context) return;
+    accept(next);
+    remember("confirmed." + ticketKey, next.id);
+  }, [context, ticketKey, accept]);
+
+  useEffect(() => {
+    if (workspace !== "unit") return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === namespace + "confirmed." + ticketKey && event.newValue === lastState.current?.id) {
+        setVersion(v => v + 1);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [ticketKey, workspace]);
 
   const reload = () => {
     if (active.current) return;
@@ -101,7 +119,7 @@ export function useWorldSession(context: string) {
   const restart = () => {
     if (active.current) return;
     active.current = new AbortController();
-    newTicket(context);
+    newTicket(ticketKey);
     lastState.current = null;
     setState(null);
     setBusy("load");
@@ -135,7 +153,7 @@ export function useWorldSession(context: string) {
     }
   }
   return {
-    state, busy, error, reload, restart,
+    state, busy, error, reload, restart, recordDecision,
     confirm: (id: string, objective: ComparisonObjective) => mutate({ kind: "option", id, objective }),
     confirmPlan: (ids: string[], objective: ComparisonObjective, scopeIds?: string[]) => mutate({ kind: "plan", ids, objective, scopeIds }),
     advance: () => mutate({ kind: "advance" }),

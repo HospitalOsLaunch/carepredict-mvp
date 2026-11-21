@@ -90,13 +90,25 @@ class WardImpact(Contract):
     available_beds: float
 
 
+class WardMetrics(Contract):
+    transfer_queue: float
+    bed_wait_patient_hours: float
+    uncovered_ide_minutes: float
+    uncovered_as_minutes: float
+    admissions: float
+    redirected_patients: float
+
+
 class PlanEvaluation(Contract):
+    context_id: str | None = None
+    ward_id: str | None = None
     id: str
     action_ids: list[str]
     feasible: bool
     conflicts: list[str]
     cost_eur: int
     metrics: PlanMetrics | None
+    ward_metrics: WardMetrics | None = None
     realized: dict[str, float]
     case_hours: dict[str, int | None] = Field(default_factory=dict)
     access_warnings: list[str] = Field(default_factory=list)
@@ -112,7 +124,29 @@ class PlanSearch(Contract):
     complete: bool
 
 
+class WardCase(Contract):
+    id: str
+    kind: Literal["admission", "discharge"]
+    eligible: bool
+    available_hour: int
+    scheduled_hour: int | None
+
+
+class WardState(Contract):
+    context_id: str
+    ward_id: str
+    as_of_hour: Literal[12] = 12
+    capacity_beds: int
+    available_beds: float
+    admission_queue: float
+    transfer_queue: float
+    cases: list[WardCase]
+
+
 class PlanMenu(Contract):
+    context_id: str | None = None
+    ward_state: WardState | None = None
+    ward_id: str | None = None
     objective: Objective
     actions: list[PlanAction]
     reference: PlanEvaluation
@@ -147,7 +181,13 @@ class PlanRequest(Contract):
         return sorted(actions)
 
 
-class PlanConfirmation(PlanRequest):
+class PlanPreview(PlanRequest):
+    context_id: str | None = Field(default=None, min_length=1, max_length=48)
+    ward_id: str | None = Field(default=None, max_length=48)
+
+
+class PlanConfirmation(PlanPreview):
+    preview_id: str | None = Field(default=None, min_length=1, max_length=64)
     scope_ids: list[Annotated[str, Field(min_length=1, max_length=64)]] | None = Field(
         default=None, max_length=128
     )
@@ -186,6 +226,7 @@ class Observation(Contract):
 
 
 class Entry(Contract):
+    ward_id: str | None = None
     hour: int
     event: Literal["opened", "confirmed", "awaiting_report", "report_received"]
     option_id: str | None = None
@@ -205,6 +246,7 @@ class Session(Contract):
     reference_id: str
     selected_id: str | None = None
     decision_objective: Objective | None = None
+    decision_ward_id: str | None = None
     plan_version: str | None = None
     confirmed_plan: PlanEvaluation | None = None
     plan_snapshot: PlanMenu | None = None

@@ -1,24 +1,19 @@
 # HospitalOS / CarePredict MVP
 
-## Démo du world model hospitalier
+## Cockpit de décision par unité
 
-À midi, le cadre peut coordonner des sorties et des entrées identifiées, remplacer une absence,
-réaffecter une personne, solliciter un renfort et mobiliser le transport, le bionettoyage,
-un lit ou une place de SMR. Le cockpit compare ces actions **ensemble** au planning de 8 h.
-Il chiffre l’effet prévu de chaque plan sur les ressources et présente les écarts par unité.
-Le cadre choisit son critère, ajuste les actions et valide le plan en simulation.
-Trois établissements synthétiques illustrent un relevé de 16 h complet, partiel ou publié à 18 h.
+La page **Unité** présente l’action, la combinaison d’actions ou le maintien du planning recommandé pour le service choisi. Le cadre voit les quantités, les créneaux, les effets prévus pour son unité et les conséquences sur les autres unités avant de valider. Le journal enregistre la décision. Le moteur utilise l’état disponible de l’établissement et prend en compte le personnel, les lits, le transport, le bionettoyage et les places de SMR. La démo fournit trois établissements synthétiques.
 
 ```bash
 make demo-world-model
 ```
 
 Le lanceur prépare le cockpit et démarre les deux API en local. Ouvrir
-[la simulation](http://127.0.0.1:5173/#/simulation). Pour lancer cette branche dans un navigateur,
+[la page Unité](http://127.0.0.1:5173/#/). Pour lancer cette branche dans un navigateur,
 utiliser [GitHub Codespaces](https://codespaces.new/HospitalOsLaunch/carepredict-mvp/tree/demo/world-model-cockpit).
 Le port 5173 donne accès au cockpit de l’espace créé.
 
-[Guide de démonstration](web/README.md#simuler-le-plan-de-midi) ·
+[Guide de démonstration](web/README.md#décider-depuis-la-page-unité) ·
 [Méthode, poids et résultats de l’expérience](research/balestriero/README.md)
 
 ## New MVP direction: explicit state, probabilistic simulation, assisted decisions

@@ -25,7 +25,10 @@ from .contracts import (
     PlanSearch,
     ReconstructedPlan,
     Session,
+    WardCase,
     WardImpact,
+    WardMetrics,
+    WardState,
 )
 from .joint_physics import JointResult, simulate_batch, simulate_joint
 from .plan_catalogue import Catalogue, catalogue, conflicts, reconcile_noon_intake
@@ -36,9 +39,10 @@ OBJECTIVES: tuple[Objective, ...] = ("transfer_queue", "bed_wait", "uncovered_ca
 EXACT_SCOPE = 12
 
 
-def _identity(context: str, ids: Ids) -> str:
+def _identity(context: str, ids: Ids, ward_id: str | None = None) -> str:
+    scope = (f"unit:{ward_id}",) if ward_id is not None else ()
     encoded = "\x00".join(
-        (engine.plan_version(), context, engine.cases()[context].public_sha, *ids)
+        (engine.plan_version(), context, engine.cases()[context].public_sha, *scope, *ids)
     )
     return "plan-" + hashlib.sha256(encoded.encode()).hexdigest()[:28]
 
@@ -86,9 +90,66 @@ def _public_rolls(c: Catalogue, keys: Sequence[Ids]) -> list[JointResult]:
     )
 
 
+def ward_index(context: str, ward_id: str) -> int:
+    for index in range(len(engine.cases()[context].wards)):
+        if ward_id == f"u{index + 1}":
+            return index
+    raise ValueError("Cette unité n’appartient pas à cet établissement.")
+
+
+def unit_scope(c: Catalogue, ward: int) -> Ids:
+    # A named loan into the unit may require replacement coverage at the donor.
+    # A loan out of the unit also affects this unit and its available staff.
+    local = [
+        item.action for item in c.items.values() if ward in (item.action.ward, item.action.donor)
+    ]
+    donors = {
+        (a.donor, "ide" if a.mode == "loan" else "as")
+        for a in local
+        if a.ward == ward and a.mode in ("loan", "redeploy")
+    }
+    support = {
+        k
+        for k, item in c.items.items()
+        if (item.action.ward, "ide" if item.action.mode == "replacement" else item.action.mode)
+        in donors
+    }
+    return tuple(sorted({a.id for a in local} | support))
+
+
+def ward_state(context: str, ward_id: str) -> WardState:
+    ward = ward_index(context, ward_id)
+    c = catalogue(context)
+    stock = c.data["initial"][ward]
+    beds = int(c.data["beds"][ward])
+    return WardState(
+        context_id=context,
+        ward_id=ward_id,
+        capacity_beds=beds,
+        available_beds=max(0.0, beds - float(stock[1:].sum())),
+        admission_queue=float(stock[0]),
+        transfer_queue=float(engine.queue(stock)),
+        cases=[
+            WardCase(
+                id=k,
+                kind=item.description.kind,
+                eligible=item.description.eligible,
+                available_hour=item.description.start_hour,
+                scheduled_hour=next((p.scheduled_hour for p in c.cases if p.id == k), None)
+                if item.description.eligible
+                else None,
+            )
+            for k, item in c.items.items()
+            if item.action.ward == ward and item.description.kind in ("admission", "discharge")
+        ],
+    )
+
+
 class Evaluator:
-    def __init__(self, context: str) -> None:
+    def __init__(self, context: str, ward: int | None = None) -> None:
+        self.ward = ward
         self.context = context
+        self.ward_id = f"u{ward + 1}" if ward is not None else None
         self.c = catalogue(context)
         self.values: dict[Ids, PlanEvaluation] = {}
         self.simulated = 0
@@ -100,7 +161,9 @@ class Evaluator:
                 continue
             problems = conflicts(self.c, ids)
             value = PlanEvaluation(
-                id=_identity(self.context, ids),
+                id=_identity(self.context, ids, self.ward_id),
+                context_id=self.context,
+                ward_id=self.ward_id,
                 action_ids=list(ids),
                 feasible=not problems,
                 conflicts=problems,
@@ -117,6 +180,17 @@ class Evaluator:
                 self.simulated += 1
                 value = self.values[ids]
                 value.metrics = metrics(result, self.c)
+                if self.ward is not None:
+                    w = self.ward
+                    counts = result.metrics[w]
+                    value.ward_metrics = WardMetrics(
+                        transfer_queue=float(engine.queue(result.stocks)[w]),
+                        bed_wait_patient_hours=float(counts[0]),
+                        uncovered_ide_minutes=float(counts[2]),
+                        uncovered_as_minutes=float(counts[3]),
+                        admissions=float(counts[4]),
+                        redirected_patients=float(counts[7]),
+                    )
                 value.realized = result.realized
                 value.case_hours = result.case_hour
                 value.access_warnings = access_warnings(value, self.values[()])
@@ -149,6 +223,12 @@ def access_warnings(plan: PlanEvaluation, reference: PlanEvaluation) -> list[str
             f"Davantage de réorientations prévues ({a.redirected_patients:.2f} "
             f"contre {b.redirected_patients:.2f})."
         )
+    wa, wb = plan.ward_metrics, reference.ward_metrics
+    if wa is not None and wb is not None:
+        if wa.admissions < wb.admissions - 1e-7:
+            messages.append("Moins d’admissions prévues dans l’unité.")
+        if wa.redirected_patients > wb.redirected_patients + 1e-7:
+            messages.append("Davantage de réorientations prévues dans l’unité.")
     missed = [
         k for k, h in reference.case_hours.items() if h is not None and plan.case_hours[k] is None
     ]
@@ -168,7 +248,7 @@ def access_warnings(plan: PlanEvaluation, reference: PlanEvaluation) -> list[str
 
 
 def _score(plan: PlanEvaluation, objective: Objective) -> tuple[float, int, int, tuple[str, ...]]:
-    m = plan.metrics
+    m = plan.ward_metrics or plan.metrics
     if m is None:
         target = float("inf")
     elif objective == "transfer_queue":
@@ -254,7 +334,11 @@ def _best(values: Iterable[PlanEvaluation], objective: Objective) -> list[PlanEv
     seen = set()
     for plan in ranked:
         assert plan.metrics is not None
-        signature = (plan.cost_eur, *(round(v, 6) for v in plan.metrics.model_dump().values()))
+        local = plan.ward_metrics.model_dump().values() if plan.ward_metrics else ()
+        signature = (
+            plan.cost_eur,
+            *(round(v, 6) for v in (*local, *plan.metrics.model_dump().values())),
+        )
         if signature not in seen:
             seen.add(signature)
             distinct.append(plan)
@@ -308,8 +392,8 @@ def trim_recommendations(e: Evaluator) -> None:
 
 
 @lru_cache(maxsize=24)
-def _search(context: str, scope: Ids) -> dict[Objective, PlanMenu]:
-    e = Evaluator(context)
+def _search(context: str, scope: Ids, ward_id: str | None = None) -> dict[Objective, PlanMenu]:
+    e = Evaluator(context, ward_index(context, ward_id) if ward_id is not None else None)
     _check_ids(e.c, scope)
     exact = len(scope) <= EXACT_SCOPE
     if exact:
@@ -320,11 +404,22 @@ def _search(context: str, scope: Ids) -> dict[Objective, PlanMenu]:
         _beam(e, scope)
         trim_recommendations(e)
     best_by_goal = {goal: _best(e.values.values(), goal) for goal in OBJECTIVES}
+    if ward_id is not None:
+        reference = e.values[()]
+        for goal, plans in best_by_goal.items():
+            threshold = _score(reference, goal)[0]
+            best_by_goal[goal] = [p for p in plans if _score(p, goal)[0] < threshold] or [reference]
     with_ward_impacts(e.c, [e.values[()], *(p for plans in best_by_goal.values() for p in plans)])
+    state = ward_state(context, ward_id) if ward_id is not None else None
     return {
         goal: PlanMenu(
+            context_id=context,
+            ward_state=state,
             objective=goal,
-            actions=[v.description for v in e.c.items.values()],
+            ward_id=ward_id,
+            actions=[
+                item.description for k, item in e.c.items.items() if ward_id is None or k in scope
+            ],
             reference=e.values[()],
             recommendations=best_by_goal[goal],
             search=PlanSearch(
@@ -336,7 +431,7 @@ def _search(context: str, scope: Ids) -> dict[Objective, PlanMenu]:
                 scope_size=len(scope),
             ),
             scope_ids=list(scope),
-            example_action_ids=list(e.c.example),
+            example_action_ids=list(e.c.example) if ward_id is None else [],
             budget_eur=e.c.budget,
         )
         for goal in OBJECTIVES
@@ -348,9 +443,17 @@ def menu(context: str, objective: Objective, scope: Sequence[str] | None = None)
     return _search(context, selected)[objective]
 
 
-def preview(context: str, action_ids: Sequence[str]) -> PlanEvaluation:
+def unit_menu(context: str, ward_id: str, objective: Objective) -> PlanMenu:
+    scope = unit_scope(catalogue(context), ward_index(context, ward_id))
+    return _search(context, scope, ward_id)[objective]
+
+
+def preview(context: str, action_ids: Sequence[str], ward_id: str | None = None) -> PlanEvaluation:
     ids = tuple(sorted(action_ids))
-    e = Evaluator(context)
+    ward = ward_index(context, ward_id) if ward_id is not None else None
+    e = Evaluator(context, ward)
+    if ward is not None and not set(ids).issubset(unit_scope(e.c, ward)):
+        raise ValueError("Certaines actions sont hors du périmètre de l’unité.")
     _check_ids(e.c, ids)
     e.evaluate([ids])
     with_ward_impacts(e.c, [e.values[ids]])

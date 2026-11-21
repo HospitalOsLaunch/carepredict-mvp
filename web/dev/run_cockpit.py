@@ -58,7 +58,6 @@ def setup() -> str:
         ["npm", "run", "build"],
         cwd=WEB,
         check=True,
-        env={**os.environ, "VITE_HOSPITALOS_START_PAGE": "simulation"},
     )
     return python
 
@@ -148,7 +147,7 @@ def main() -> None:
             if space and domain
             else f"http://127.0.0.1:{args.port}"
         )
-        print(f"\nHospitalOS · Démo de simulation prête\n{url}/#/simulation\n", flush=True)
+        print(f"\nHospitalOS · Démo de simulation prête\n{url}/#/\n", flush=True)
         while all(child.poll() is None for child in children):
             time.sleep(0.5)
         raise RuntimeError("Un service du cockpit s’est arrêté. Relancez le démonstrateur.")

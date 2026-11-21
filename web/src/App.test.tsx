@@ -10,8 +10,7 @@ beforeEach(() => {
   HTMLDialogElement.prototype.showModal = vi.fn();
   // No local API in tests: the cockpit must fall back to the bundled planner outputs.
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
-  window.history.replaceState(null, "", "/?situation=nominal");
-  window.location.hash = "";
+  window.history.replaceState(null, "", "/?situation=nominal#/dossiers");
 });
 
 const ready = () => screen.findByRole("heading", { name: "Demander le transport de P-0412" });
@@ -32,23 +31,17 @@ describe("cockpit", () => {
     expect(screen.getByRole("button", { name: /Refuser/ })).toBeTruthy();
   });
 
-  it("ouvre la simulation par défaut du lanceur et conserve le lien explicite vers l’unité", async () => {
-    vi.stubEnv("VITE_HOSPITALOS_START_PAGE", "simulation");
-    try {
-      const first = render(<App />);
-      expect(await screen.findByRole("heading", { name: "Simuler le plan de midi" })).toBeTruthy();
-      first.unmount();
-      window.history.replaceState(null, "", "/?situation=nominal#/");
-      render(<App />);
-      await ready();
-      expect(screen.getByRole("link", { name: "Simuler le plan de midi" })).toBeTruthy();
-    } finally {
-      vi.unstubAllEnvs();
-    }
+  it.each(["/", "/#/unite", "/#/simulation"])("opens the Unit decision page at %s and abstains offline", async (url) => {
+    window.history.replaceState(null, "", url);
+    render(<App />);
+    expect(await screen.findByRole("heading", { name: "Unité" })).toBeTruthy();
+    expect(await screen.findByRole("alert")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
+    expect(screen.queryByText("Simuler le plan de midi")).toBeNull();
   });
 
   it("abstains instead of proposing on unreliable data", async () => {
-    window.history.replaceState(null, "", "/?situation=incomplete");
+    window.history.replaceState(null, "", "/?situation=incomplete#/dossiers");
     render(<App />);
     expect(await screen.findByRole("heading", { name: /Pas de proposition/ })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
@@ -112,7 +105,7 @@ describe("cockpit", () => {
     await ready();
     fireEvent.keyDown(window, { key: "o" });
     await screen.findByText(/^Validée par Vous/);
-    window.location.hash = "/journal";
+    window.location.hash = "/dossiers/journal";
     window.dispatchEvent(new HashChangeEvent("hashchange"));
     expect(await screen.findByRole("heading", { name: "Journal des décisions" })).toBeTruthy();
     const follow = screen.getByRole("region", { name: "À suivre" });
@@ -123,7 +116,7 @@ describe("cockpit", () => {
     fireEvent.click(within(history).getByRole("button", { name: /^Refusées/ }));
     expect(within(history).queryByText("Demander le transport de P-0412")).toBeNull();
     expect(within(history).getByText("Demander le transport de G-2207")).toBeTruthy();
-    window.location.hash = "/journal/demo-2";
+    window.location.hash = "/dossiers/journal/demo-2";
     window.dispatchEvent(new HashChangeEvent("hashchange"));
     const detail = (await screen.findAllByRole("region", { name: "Demander le transport de G-2207" }))[0]!;
     expect(within(detail).getByText(/Patient revu par le médecin/)).toBeTruthy();

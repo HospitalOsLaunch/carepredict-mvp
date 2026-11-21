@@ -4,6 +4,7 @@ import { type Connection, type Store, useAssessment } from "./data/useAssessment
 import { type Assessment, clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { DecisionPlan } from "./ui/DecisionPlan";
+import { HospitalUnit } from "./ui/HospitalUnit";
 import { WorldModel } from "./ui/WorldModel";
 import { Journal } from "./ui/Journal";
 import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
@@ -11,7 +12,7 @@ import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
-import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon, SimulationIcon } from "./ui/icons";
+import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
 type Route = "unite" | "proposition" | "plan" | "simulation" | "journal" | "donnees";
@@ -20,26 +21,35 @@ interface Location {
   route: Route;
   /** Journal entry opened from a shared link: #/journal/<id>. */
   param: string | null;
+  patientRecords: boolean;
 }
 
 function readRoute(): Location {
-  if (!window.location.hash && import.meta.env.VITE_HOSPITALOS_START_PAGE === "simulation") {
-    return { route: "simulation", param: null };
-  }
-  const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
-  const route =
-    head === "proposition" || head === "plan" || head === "simulation" || head === "donnees" || head === "journal" ? head : "unite";
-  return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
+  const parts = window.location.hash.replace(/^#\/?/, "").split("/");
+  const patientRecords = parts[0] === "dossiers" || parts[0] === "proposition" || (parts[0] === "journal" && !!parts[1]);
+  if (parts[0] === "dossiers") parts.shift();
+  const [head, ...rest] = parts;
+  const route: Route = head === "laboratoire" ? "simulation" :
+    head === "journal" || head === "donnees" || head === "plan" || head === "proposition" ? head : "unite";
+  return { route, patientRecords, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
 function go(route: Route) {
-  window.location.hash = route === "unite" ? "/" : `/${route}`;
+  window.location.hash = route === "plan" ? "/plan" :
+    route === "unite" ? "/dossiers" : `/dossiers/${route}`;
 }
 
 function useRoute(): Location {
   const [route, setRoute] = useState(readRoute);
   useEffect(() => {
+    const canonicalize = () => {
+      if (window.location.hash === "#/simulation" || window.location.hash === "#simulation") {
+        window.history.replaceState(window.history.state, "", "#/");
+      }
+    };
+    canonicalize();
     const on = () => {
+      canonicalize();
       setRoute(readRoute());
       window.scrollTo({ top: 0 });
     };
@@ -50,12 +60,11 @@ function useRoute(): Location {
 }
 
 const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon: () => JSX.Element }> = [
-  { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
-  { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
+  { id: "unite", href: "#/dossiers", label: "Dossiers", key: "A", Icon: () => <BoardIcon /> },
+  { id: "proposition", href: "#/dossiers/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
   { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
-  { id: "simulation", href: "#/simulation", label: "Simulation de midi", key: "S", Icon: () => <SimulationIcon /> },
-  { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
-  { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
+  { id: "journal", href: "#/dossiers/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
+  { id: "donnees", href: "#/dossiers/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
 
 const ORIGIN: Record<Connection, string> = {
@@ -84,7 +93,6 @@ const SHORTCUTS: Array<[string, string]> = [
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
   ["P", "Plan jusqu'à demain (24 h)"],
-  ["S", "Simuler le plan de midi"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
@@ -118,7 +126,6 @@ function useShortcuts(
       else if (k === "a") go("unite");
       else if (k === "d") go("proposition");
       else if (k === "p") go("plan");
-      else if (k === "s") go("simulation");
       else if (k === "q") go("donnees");
       else if (digit >= 1 && digit <= 9) {
         // While the "why not" reasons are open, digits pick a reason instead of a unit.
@@ -136,7 +143,14 @@ function useShortcuts(
 }
 
 export function App() {
-  const { route, param } = useRoute();
+  const location = useRoute();
+  if (location.patientRecords || location.route === "plan" || location.route === "simulation") {
+    return <PatientCockpit location={location} />;
+  }
+  return <HospitalUnit view={location.route === "journal" || location.route === "donnees" ? location.route : "unite"} />;
+}
+
+function PatientCockpit({ location: { route, param } }: { location: Location }) {
   const simulation = route === "simulation";
   const store = useAssessment(!simulation);
   const [toast, setToast] = useState<ToastState | null>(null);
@@ -198,6 +212,7 @@ export function App() {
             />
           )}
           <nav className="nav" aria-label="Sections">
+            <a href="#/">Unité</a>
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
                 {r.label}
@@ -300,6 +315,7 @@ export function App() {
       </footer>
 
       <nav className="tabbar" aria-label="Sections">
+        <a href="#/"><span className="tabbar__icon"><BoardIcon /></span>Unité</a>
         {ROUTES.map(({ id, href, label, Icon }) => (
           <a key={id} href={href} aria-current={route === id ? "page" : undefined}>
             <span className="tabbar__icon">
@@ -404,10 +420,9 @@ function UnitPage(props: {
             {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
           </span>
         </h1>
-        <a className="btn unit-heading__simulation" href="#/simulation">
-          <SimulationIcon /> Simuler le plan de midi
-        </a>
+        <a className="btn" href="#/">Ouvrir la vue Unité</a>
       </div>
+      <p className="demobar">Dossiers patients · Les propositions ci-dessous utilisent le flux de cet écran. Le classement multiressource est disponible pour les unités raccordées au moteur.</p>
       <TensionStrip a={a} onJump={jump} />
       <Proposal {...props} />
       <InProgress

@@ -2,12 +2,27 @@
 
 <a id="simuler-une-affectation"></a>
 
-## Simuler le plan de midi
+<a id="simuler-le-plan-de-midi"></a>
+
+## Décider depuis la page Unité
 
 Depuis la racine du dépôt, exécuter `make demo-world-model` puis ouvrir
-[le cockpit de simulation](http://127.0.0.1:5173/#/simulation). Le lanceur vérifie Python 3.11+,
+[la page Unité](http://127.0.0.1:5173/#/). Le lanceur vérifie Python 3.11+,
 Node.js 22+, npm et un compilateur C++17. Il prépare les dépendances et sert les API sur le même port.
 `Ctrl+C` ferme les services. Autre port possible avec `make demo-world-model DEMO_ARGS='--port 5180'`.
+
+Le produit démarre dans **Unité**. Le premier exemple est **Hôpital des Rives · Observation courte 6**. Pour chaque établissement, le navigateur mémorise ensuite le service choisi. L’ancienne adresse `#/simulation` ouvre également Unité.
+
+1. Choisir l’établissement et le service. La carte présente la décision à valider puis les dossiers de sortie, les lits et les entrées du même service. Les quantités fractionnaires correspondent aux estimations agrégées du modèle.
+2. Choisir la priorité de l’unité. Le moteur classe les actions locales et leurs soutiens par effet sur l’attente d’un lit, les soins non couverts ou la file de transfert du service. Il peut recommander une intervention, plusieurs interventions coordonnées ou le maintien du planning.
+3. Utiliser **Comparer les alternatives** pour sélectionner une autre proposition ou **Ajuster les actions** pour modifier la composition et la réévaluer. Examiner les effets dans le service et dans les autres unités concernées. Valider la recommandation depuis la carte. Le **Journal** conserve l’établissement, l’unité, le critère et le détail des actions. La validation engage un seul plan dans l’épisode de démonstration partagé par les unités de cet établissement.
+4. Dans le Journal, consulter le relevé synthétique quand il est disponible. **Données** indique la source et permet d’ouvrir un nouvel épisode. Le jeu de dossiers du prototype hybride dispose de son propre identifiant d’établissement, sans correspondance implicite avec les trois hôpitaux du modèle.
+
+Le backend charge la session de l’établissement avec `PUT|GET /world-model/sessions/{id}`. La page obtient ses propositions avec `GET /world-model/sessions/{id}/plans?ward_id=u6&objective=bed_wait`. La confirmation envoie le service, le critère et la liste d’actions à `POST /world-model/sessions/{id}/plans/confirm`. Le navigateur utilise le préfixe `/api`. En cas d’indisponibilité du moteur, la page signale que la recommandation est indisponible.
+
+## Reproduction des expériences du modèle
+
+Le parcours d’étude reste accessible par son adresse technique `#/laboratoire`, avec son propre historique.
 
 1. Choisir un établissement et lire le planning de 8 h. À midi, ouvrir **Plan composé** et choisir le critère de classement : attente cumulée d’un lit, file de transfert à 16 h ou minutes de soins IDE et AS non couvertes.
 2. Comparer les propositions au planning de référence ou **composer son plan**. Chaque ligne identifie un dossier ou une ressource, une quantité, une unité de soins et un créneau. Aux Rives, **Essayer le plan à 8 actions** sélectionne S1 et S2 en sortie, A1 à A3 en entrée, un remplacement IDE, une réaffectation AS et un renfort AS.
@@ -31,7 +46,7 @@ L’[inventaire des offres](../src/hospitalos/world_model/data/noon_offers.json)
 
 L’API crée ou relit la session avec `PUT|GET /world-model/sessions/{id}`. Sous cette route, `GET /plans?objective=bed_wait` présente les recommandations, `POST /plans/preview` évalue la sélection, `POST /plans/optimize` compare ses sous-ensembles, `POST /plans/confirm` enregistre le choix, et `POST /advance` avance l’horloge. Le navigateur utilise le préfixe `/api`. Les écritures sont atomiques. L’identifiant de session persiste dans le navigateur et la décision dans SQLite, sous `${XDG_STATE_HOME:-~/.local/state}/hospitalos/world-model.sqlite` ou dans le fichier désigné par `HOSPITALOS_WORLD_MODEL_DB`.
 
-## Cockpit d’unité
+## Dossiers du prototype hybride
 
 Interface du MVP hybride (`src/hospitalos/hybrid`). Un seul parcours couplé :
 le **cadre de santé** voit ce qui bloque chaque sortie, le **gestionnaire de lits**

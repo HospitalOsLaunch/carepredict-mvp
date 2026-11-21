@@ -133,7 +133,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
           <button className="btn" onClick={onEvaluate} disabled={busy}>
             <Refresh /> {busy ? "Évaluation…" : "Réévaluer"}
           </button>
-          <a className="btn btn--quiet" href="#/donnees">
+          <a className="btn btn--quiet" href="#/dossiers/donnees">
             Voir la qualité des données
           </a>
         </div>
@@ -238,7 +238,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             <Refresh /> {evaluateLabel}
           </button>
           <span className="spacer" />
-          <a className="btn btn--quiet" href="#/proposition">
+          <a className="btn btn--quiet" href="#/dossiers/proposition">
             Options comparées
           </a>
         </div>
@@ -436,7 +436,7 @@ function Decision(p: DecisionProps) {
         line={`${stamp}. L'état de l'unité a changé : réévaluez pour la suite.`}
       >
         {reevaluate(true)}
-        <a className="btn btn--quiet" href="#/journal">
+        <a className="btn btn--quiet" href="#/dossiers/journal">
           Journal
         </a>
         {noteButton}
@@ -490,7 +490,7 @@ function Decision(p: DecisionProps) {
             Refuser <kbd className="kbd">N</kbd>
           </button>
           <span className="spacer" />
-          <a className="btn btn--quiet" href="#/proposition">
+          <a className="btn btn--quiet" href="#/dossiers/proposition">
             Détail <kbd className="kbd">D</kbd>
           </a>
         </div>

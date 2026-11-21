@@ -27,7 +27,7 @@ export function DataQuality({
   return (
     <>
       <header className="page-head">
-        <a className="back" href="#/">
+        <a className="back" href="#/dossiers">
           <Back size={14} /> Unité
         </a>
         <h1>
