@@ -9,7 +9,18 @@ from itertools import product
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-from playwright.sync_api import Browser, Response, expect, sync_playwright
+from playwright.sync_api import Browser, Page, Response, expect, sync_playwright
+
+
+def check_width(page: Page) -> None:
+    overflow = page.evaluate("""() => {
+        if (document.documentElement.scrollWidth <= innerWidth) return [];
+        return Array.from(document.body.querySelectorAll("*"))
+            .filter(el => el.getBoundingClientRect().right > innerWidth + 0.25)
+            .map(el => [el.tagName, el.className, Math.round(el.getBoundingClientRect().right)])
+            .slice(0, 20);
+    }""")
+    assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), overflow
 
 
 def unit_journey(
@@ -144,7 +155,7 @@ def unit_journey(
         page.goto(url.rstrip("/") + "/#/unite")
         expect(ward).to_have_value("u6")
         expect(panel.get_by_text("Choix enregistré", exact=False)).to_be_visible()
-        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+        check_width(page)
         assert not errors, errors
         print(f"{site}/u6 : recommandation locale validée et journal repris", flush=True)
     finally:
@@ -199,7 +210,7 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
         expect(
             journal.get_by_text(re.compile(r"Remplacer l.IDE absente.*Observation courte 6"))
         ).to_be_visible()
-        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+        check_width(page)
         assert not errors, errors
         print("Rives/u6 : remplacement IDE évalué, validé et relu dans le journal", flush=True)
     finally:
@@ -267,7 +278,7 @@ def composed_journey(
         page.reload()
         expect(page.get_by_role("region", name="Relevé du plan composé")).to_be_visible()
         expect(page.get_by_role("region", name="Plan composé validé")).to_be_visible()
-        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+        check_width(page)
         if screenshots:
             page.screenshot(
                 path=screenshots
@@ -350,7 +361,7 @@ def check(url: str, screenshots: Path | None = None) -> None:
                     expect(reading.get_by_text("Non renseignée").first).to_be_visible()
                 page.reload()
                 expect(page.get_by_role("region", name="Comparaison après relevé")).to_be_visible()
-                assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+                check_width(page)
                 if screenshots and family == "beds":
                     page.screenshot(path=screenshots / f"{context_id}-releve.png", full_page=True)
                 assert not page_errors, page_errors

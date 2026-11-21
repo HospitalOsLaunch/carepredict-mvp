@@ -18,3 +18,12 @@
 .unit-event-list time { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-3); }
 .unit-event-list p { margin: 6px 0; }
 .unit-tabbar { grid-template-columns: repeat(3,1fr); }
+.unit-workspace, .unit-workspace > *, .unit-workspace .unit-context-bar > * { min-width: 0; }
+.unit-context-bar label { grid-template-columns: minmax(0,1fr); }
+@media (max-width: 760px) {
+  .unit-workspace { padding-inline: 16px; }
+  .unit-context-bar { align-items: start; }
+  .unit-context-bar label { width: 100%; }
+  .unit-workspace .select { width: 100%; min-width: 0; }
+  .tabbar.unit-tabbar { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}

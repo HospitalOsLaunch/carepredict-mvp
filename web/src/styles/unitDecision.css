@@ -72,3 +72,8 @@
 .ud-picks span { display: grid; }
 .ud-picks small { font-size: var(--t-sm); color: var(--ink-2); }
 .ud-edit-controls { display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; }
+
+/* Constrain intrinsic grid widths when service names, selections and figures share a phone screen. */
+.ud-stack, .ud-card, .ud-editor { grid-template-columns: minmax(0, 1fr); }
+.ud-card > *, .ud-situation > *, .ud-actions li > div, .ud-forecast > div,
+.ud-head > *, .ud-cases > li > *, .ud-situ-grid > section { min-width: 0; overflow-wrap: anywhere; }
