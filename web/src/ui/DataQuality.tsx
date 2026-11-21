@@ -1,3 +1,4 @@
+import { PatientLink } from "./PatientNavigation";
 import type { ResourceBudget, ShadowSummary, SourceReceipt } from "../api/types";
 import { entityLabel, explain } from "../domain/labels";
 import { type Assessment, age, duration, freshnessIndex, longClock, minutesBetween } from "../domain/view";
@@ -27,9 +28,9 @@ export function DataQuality({
   return (
     <>
       <header className="page-head">
-        <a className="back" href="#/dossiers">
+        <PatientLink className="back" href="#/dossiers">
           <Back size={14} /> Unité
-        </a>
+        </PatientLink>
         <h1>
           <Illu name="magnifier" size={64} />
           Qualité des données

@@ -1,3 +1,4 @@
+import { PatientLink } from "./PatientNavigation";
 import { useId, useState } from "react";
 import type { Candidate, FutureChange, PairedTrace, Plan, Transition } from "../api/types";
 import { DECISION, TRACE_EVENT, actionShort, actionTitle, explain } from "../domain/labels";
@@ -23,9 +24,9 @@ export function ProposalDetail({ a }: { a: Assessment }) {
         <div className="panel">
           <Empty illu="plane" title="Rien à détailler pour l'instant.">
             L'unité n'a pas encore été évaluée, ou l'évaluation s'est abstenue.{" "}
-            <a className="link" href="#/dossiers">
+            <PatientLink className="link" href="#/dossiers">
               Revenir à l'unité
-            </a>
+            </PatientLink>
           </Empty>
         </div>
       </>
@@ -55,9 +56,9 @@ export function ProposalDetail({ a }: { a: Assessment }) {
 function Head({ title, subtitle, illu }: { title: string; subtitle?: string; illu: IlluName }) {
   return (
     <header className="page-head">
-      <a className="back" href="#/dossiers">
+      <PatientLink className="back" href="#/dossiers">
         <Back size={14} /> Unité
-      </a>
+      </PatientLink>
       <h1>
         <Illu name={illu} size={64} />
         {title}

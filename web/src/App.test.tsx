@@ -31,10 +31,10 @@ describe("cockpit", () => {
     expect(screen.getByRole("button", { name: /Refuser/ })).toBeTruthy();
   });
 
-  it.each(["/", "/#/unite", "/#/simulation"])("opens the Unit decision page at %s and abstains offline", async (url) => {
+  it.each([["/", "Unité"], ["/#/unite", "Unité"], ["/#/simulation", "Unité"], ["/#/action", "Action"]])("opens %s with its own title and abstains offline", async (url, title) => {
     window.history.replaceState(null, "", url);
     render(<App />);
-    expect(await screen.findByRole("heading", { name: "Unité" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: title })).toBeTruthy();
     expect(await screen.findByRole("alert")).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
     expect(screen.queryByText("Simuler le plan de midi")).toBeNull();

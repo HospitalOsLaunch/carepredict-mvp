@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { worldApi, type WmCatalogue, type WmContext, type WmSession } from "../api/worldModel";
 import { remember, remembered, useWorldSession } from "../data/worldModel";
 import { objectives, time } from "../domain/worldModel";
-import { BoardIcon, BookIcon, Mark, PulseIcon } from "./icons";
+import { BoardIcon, BookIcon, Mark, PulseIcon, ScalesIcon } from "./icons";
+import { LegacyUnitWorkspace } from "./LegacyUnitWorkspace";
+import type { PatientView } from "./PatientNavigation";
 import { UnitDecision } from "./UnitDecision";
 import "../styles/hospitalUnit.css";
 
-type View = "unite" | "journal" | "donnees";
+type View = PatientView;
 const sections = [
   { id: "unite", label: "Unité", href: "#/", Icon: BoardIcon },
+  { id: "action", label: "Action", href: "#/action", Icon: ScalesIcon },
   { id: "journal", label: "Journal", href: "#/journal", Icon: BookIcon },
   { id: "donnees", label: "Données", href: "#/donnees", Icon: PulseIcon },
 ] as const;
@@ -40,6 +43,7 @@ export function HospitalUnit({ view }: { view: View }) {
     return () => ctrl.abort();
   }, [attempt]);
   const context = catalogue?.contexts.find(c => c.id === contextId) ?? catalogue?.contexts[0];
+  const legacy = contextId === "ch-fictif";
   const title = sections.find(s => s.id === view)!.label;
   useEffect(() => { document.title = title + " · HospitalOS"; }, [title]);
   return <div className="shell">
@@ -52,15 +56,19 @@ export function HospitalUnit({ view }: { view: View }) {
     <main className="main unit-workspace" id="contenu" tabIndex={-1}>
       <div className="unit-context-bar">
         <h1>{title}</h1>
-        {catalogue && context && <label>Établissement
-          <select className="select" value={context.id} onChange={e => {
+        {(catalogue || failure || legacy) && <label>Établissement
+          <select className="select" value={legacy ? "ch-fictif" : context?.id ?? ""} onChange={e => {
             remember("unit-context", e.target.value); chooseContext(e.target.value);
-          }}>{catalogue.contexts.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select>
+          }}>{!legacy && !context && <option value="">Connexion indisponible</option>}
+            {catalogue?.contexts.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+            <option value="ch-fictif">CH fictif · dossiers patients</option>
+          </select>
         </label>}
+        {legacy && failure && <button type="button" className="btn" onClick={() => retry(v => v + 1)}>Reconnecter les autres établissements</button>}
       </div>
-      {failure ? <div className="wm-card unit-information"><p role="alert">Le moteur de recommandation est indisponible. Reconnectez le cockpit pour charger les données de l’unité.</p>
+      {legacy ? <LegacyUnitWorkspace view={view} /> : failure ? <div className="wm-card unit-information"><p role="alert">Le moteur de recommandation est indisponible. Reconnectez le cockpit pour charger les données de l’unité.</p>
         <button type="button" className="btn" onClick={() => retry(v => v + 1)}>Réessayer</button>
-        <a href="#/dossiers" className="linkbtn">Ouvrir les dossiers patients de démonstration</a></div>
+        <a href="#/" className="linkbtn" onClick={() => {remember("unit-context", "ch-fictif"); chooseContext("ch-fictif");}}>Ouvrir les dossiers patients de démonstration</a></div>
       : context ? <UnitWorkspace key={context.id} context={context} view={view} />
       : <p role="status">Chargement des établissements…</p>}
     </main>
@@ -84,10 +92,10 @@ function UnitWorkspace({ context, view }: { context: WmContext; view: View }) {
       }}>{state.wards.map(w => <option key={w.id} value={w.id}>{w.label}</option>)}</select></label>
       <span>État de décision <strong>{time(state.decision_hour)}</strong></span>
     </div>
-    <div hidden={view !== "unite"}>
-      <UnitDecision key={state.id + ":" + ward.id} session={state} ward={ward} onConfirmed={work.recordDecision} />
+    <div hidden={view !== "unite" && view !== "action"}>
+      <UnitDecision key={state.id + ":" + ward.id} view={view === "unite" ? "unite" : "action"} session={state} ward={ward} onConfirmed={work.recordDecision} />
     </div>
-    {view === "unite" ? null : view === "journal" ? <DecisionJournal session={state} busy={Boolean(work.busy)} advance={() => void work.advance()} /> :
+    {view === "unite" || view === "action" ? null : view === "journal" ? <DecisionJournal session={state} busy={Boolean(work.busy)} advance={() => void work.advance()} /> :
       <section className="wm-card unit-information"><h2>Données de {ward.label}</h2>
         <dl className="unit-facts"><div><dt>Établissement</dt><dd>{context.label}</dd></div>
         <div><dt>Lits équipés au planning</dt><dd>{ward.beds}</dd></div>
@@ -119,7 +127,7 @@ function DecisionJournal({ session, busy, advance }: { session: WmSession; busy:
         })}</ul> : <p>{session.options.find(o => o.id === entry.option_id)?.label ?? "Maintenir le planning en cours"}</p>}
       </>}
       </div></li>)}</ol>
-    {session.phase === "planning" && <a href="#/" className="linkbtn">Voir la recommandation de l’unité</a>}
+    {session.phase === "planning" && <a href="#/action" className="linkbtn">Ouvrir la recommandation dans Action</a>}
     {(session.phase === "confirmed" || session.phase === "awaiting_report") && <button className="btn" disabled={busy} onClick={advance}>
       Consulter le relevé de démonstration de {time(session.hour === 12 ? 16 : session.publication_hour)}
     </button>}

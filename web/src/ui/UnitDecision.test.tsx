@@ -34,11 +34,11 @@ function commit(m: PlanMenu, plan=m.recommendations[0]!): WmSession {
   return {...state,phase:"confirmed",decision_ward_id:m.ward_id,decision_objective:m.objective,selected_id:plan.id,confirmed_plan:plan,plan_snapshot:m,
     journal:[...state.journal,{hour:12,event:"confirmed",option_id:plan.id,ward_id:m.ward_id}]};
 }
-function Host({initial=state, ward="u2"}: {initial?:WmSession;ward?:string}) {
+function Host({initial=state, ward="u2", view="action"}: {initial?:WmSession;ward?:string;view?:"action"|"unite"}) {
   const [session,setSession]=useState(initial);
-  return <UnitDecision session={session} ward={wards.find(w=>w.id===ward)!} onConfirmed={setSession}/>;
+  return <UnitDecision view={view} session={session} ward={wards.find(w=>w.id===ward)!} onConfirmed={setSession}/>;
 }
-afterEach(()=>vi.unstubAllGlobals());
+afterEach(()=>{ vi.unstubAllGlobals(); window.sessionStorage.clear(); });
 
 describe("décision sur la page Unité",()=>{
   it("affiche la cohorte de l’unité et valide ensemble les quantités du meilleur plan courant",async()=>{
@@ -56,7 +56,6 @@ describe("décision sur la page Unité",()=>{
     render(<Host/>);
     const approve=await screen.findByRole("button",{name:"Valider les 2 actions"});
     expect(screen.getByRole("heading",{name:"Coordonner 2 actions"})).toBeTruthy();
-    expect(within(screen.getByRole("region",{name:"Situation · Observation"})).getByText("S2")).toBeTruthy();
     expect(screen.getByText("17,5")).toBeTruthy();
     const conditions=screen.getByText("Conditions et disponibilité des ressources");
     fireEvent.click(conditions);
@@ -72,7 +71,6 @@ describe("décision sur la page Unité",()=>{
     vi.stubGlobal("fetch",vi.fn(async()=>json(menu("u1"))));
     render(<Host ward="u1"/>);
     expect(await screen.findByRole("button",{name:"Valider le maintien du planning"})).toBeTruthy();
-    expect(screen.getByText("S1")).toBeTruthy();
     expect(screen.queryByText("S2")).toBeNull();
   });
 
@@ -104,7 +102,6 @@ describe("décision sur la page Unité",()=>{
     expect(await screen.findByRole("heading",{name:"Décision enregistrée pour Médecine"})).toBeTruthy();
     expect(screen.queryByRole("button",{name:/Valider/})).toBeNull();
     expect(screen.queryByText("S1")).toBeNull();
-    expect(await screen.findByText("S2")).toBeTruthy();
     expect(screen.getByText("Effets sur les ressources · Observation")).toBeTruthy();
   });
 
@@ -160,6 +157,78 @@ describe("décision sur la page Unité",()=>{
     fireEvent.click(await screen.findByRole("button",{name:"Valider l’action"}));
     await screen.findByText("Décision validée");
     expect(submitted).toEqual({ward_id:"u2",context_id:"rives",objective:"bed_wait",action_ids:["r"],preview_id:manual.id});
+  });
+
+  it("garde la même combinaison, son coût et sa validation quand on passe d’Unité à Action", async()=>{
+    const m = menu();
+    let reads = 0, writes = 0;
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url.includes("/plans?")) { reads++; return json(m); }
+      writes++; return json(commit(m));
+    }));
+    const page = render(<Host view="unite"/>);
+    const summary = () => within(screen.getByRole("region",{name:"Recommandation de l’unité"}));
+    await summary().findByRole("heading",{name:"Coordonner 2 actions"});
+    expect(summary().getByRole("link",{name:"Ouvrir dans Action"}).getAttribute("href")).toBe("#/action");
+    expect(summary().getByText("Renfort IDE")).toBeTruthy();
+    expect(summary().getByText("Avancer l’entrée A2")).toBeTruthy();
+    expect(summary().getByText("90 €")).toBeTruthy();
+    expect(summary().getByText(/4,5 heures-patients/)).toBeTruthy();
+    expect(screen.getByRole("heading",{name:"Libérer"})).toBeTruthy();
+    expect(screen.getByText("S2")).toBeTruthy();
+    page.rerender(<Host view="action"/>);
+    expect(summary().getByRole("heading",{name:"Coordonner 2 actions"})).toBeTruthy();
+    fireEvent.click(summary().getByRole("button",{name:"Valider les 2 actions"}));
+    await summary().findByText("Décision validée");
+    page.rerender(<Host view="unite"/>);
+    expect(summary().getByText("Choix enregistré dans le journal de l’établissement.")).toBeTruthy();
+    expect(reads).toBe(1);
+    expect(writes).toBe(1);
+  });
+
+  it("restaure la priorité et le brouillon du même épisode après recharge en exigeant une nouvelle évaluation", async()=>{
+    const reads: string[] = [];
+    vi.stubGlobal("fetch",vi.fn(async(url:string)=>{
+      const objective=new URL(url,"http://local").searchParams.get("objective") as ComparisonObjective;
+      reads.push(objective); return json(menu("u2", objective));
+    }));
+    const first=render(<Host/>);
+    await screen.findByRole("button",{name:"Valider les 2 actions"});
+    fireEvent.change(screen.getByLabelText("Priorité de l’unité"),{target:{value:"uncovered_care"}});
+    await screen.findByRole("button",{name:"Valider l’action"});
+    fireEvent.click(screen.getByRole("button",{name:"Ajuster les actions"}));
+    fireEvent.click(screen.getByRole("checkbox",{name:/Avancer l’entrée A2/}));
+    first.unmount();
+    const second=render(<Host view="unite"/>);
+    const summary=within(screen.getByRole("region",{name:"Recommandation de l’unité"}));
+    expect(await summary.findByText("Avancer l’entrée A2")).toBeTruthy();
+    expect(summary.getByRole("heading",{name:"Composition à évaluer"})).toBeTruthy();
+    expect(summary.queryByText("90 €")).toBeNull();
+    second.rerender(<Host view="action"/>);
+    expect((screen.getByLabelText("Priorité de l’unité") as HTMLSelectElement).value).toBe("uncovered_care");
+    expect((screen.getByRole("checkbox",{name:/Renfort IDE/}) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("checkbox",{name:/Avancer l’entrée A2/}) as HTMLInputElement).checked).toBe(true);
+    expect(screen.queryByRole("button",{name:/Valider/})).toBeNull();
+    expect(reads).toEqual(["bed_wait","uncovered_care","uncovered_care"]);
+  });
+
+  it("restaure uniquement l’identifiant d’une alternative et actualise ses mesures serveur", async()=>{
+    let round = 0;
+    vi.stubGlobal("fetch", vi.fn(async () => {
+      const m = menu(); const alt=evaluate(["r"]); alt.ward_metrics!.bed_wait_patient_hours = round++ ? 20 : 18;
+      m.recommendations.push(alt); return json(m);
+    }));
+    const first=render(<Host/>);
+    await screen.findByRole("button",{name:"Valider les 2 actions"});
+    fireEvent.click(screen.getByText("Comparer les alternatives"));
+    fireEvent.click(screen.getAllByRole("radio")[1]!);
+    expect(screen.getByText("18")).toBeTruthy();
+    first.unmount();
+    render(<Host/>);
+    await screen.findByRole("button",{name:"Valider l’action"});
+    expect(screen.getByRole("heading",{name:"Renfort IDE"})).toBeTruthy();
+    expect(screen.getByText("20")).toBeTruthy();
+    expect(screen.queryByText("18")).toBeNull();
   });
 
   it("bloque une réponse au mauvais périmètre ou privée de ses mesures locales",()=>{

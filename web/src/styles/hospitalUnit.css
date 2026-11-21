@@ -17,7 +17,7 @@
 .unit-event-list > li { display: flex; gap: 18px; padding-block: 14px; border-top: 1px solid var(--line); }
 .unit-event-list time { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-3); }
 .unit-event-list p { margin: 6px 0; }
-.unit-tabbar { grid-template-columns: repeat(3,1fr); }
+.unit-tabbar { grid-template-columns: repeat(4,1fr); }
 .unit-workspace, .unit-workspace > *, .unit-workspace .unit-context-bar > * { min-width: 0; }
 .unit-context-bar label { grid-template-columns: minmax(0,1fr); }
 @media (max-width: 760px) {
@@ -25,8 +25,21 @@
   .unit-context-bar { align-items: start; }
   .unit-context-bar label { width: 100%; }
   .unit-workspace .select { width: 100%; min-width: 0; }
-  .tabbar.unit-tabbar { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .tabbar.unit-tabbar { grid-template-columns: repeat(4,minmax(0,1fr)); }
 }
 
 .unit-workspace { overflow-wrap: anywhere; }
 .unit-information { white-space: normal; }
+
+.ward-overview .flowgrid { margin-top: var(--s5); }
+.ward-cases li, .ward-beds, .ward-empty { padding: var(--s4); }
+.ward-cases li + li { border-top: 1px solid var(--line); }
+.ward-cases li > div { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); flex-wrap: wrap; }
+.ward-cases p, .ward-cases span, .ward-beds p, .ward-empty { color: var(--ink-2); font-size: var(--t-sm); }
+.ward-cases small { color: var(--brand-strong); }
+.ward-case-picked { box-shadow: inset 3px 0 var(--brand); }
+.ward-beds strong { font: 650 var(--t-xl) var(--display); }
+.ward-beds strong small { font: 500 var(--t-sm) var(--font); }
+.ward-capacity { height: 9px; border-radius: 5px; overflow: hidden; background: var(--well-strong); margin: var(--s3) 0; }
+.ward-capacity i { display: block; height: 100%; background: var(--bloc); }
+.ward-overview .flowtabs__tab[aria-pressed=true] { background: var(--sheet); color: var(--brand-strong); }

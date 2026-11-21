@@ -1,3 +1,4 @@
+import { PatientLink } from "./PatientNavigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   type DecisionRecord,
@@ -133,9 +134,9 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
           <button className="btn" onClick={onEvaluate} disabled={busy}>
             <Refresh /> {busy ? "Évaluation…" : "Réévaluer"}
           </button>
-          <a className="btn btn--quiet" href="#/dossiers/donnees">
+          <PatientLink className="btn btn--quiet" href="#/dossiers/donnees">
             Voir la qualité des données
-          </a>
+          </PatientLink>
         </div>
       </section>
     );
@@ -238,9 +239,9 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             <Refresh /> {evaluateLabel}
           </button>
           <span className="spacer" />
-          <a className="btn btn--quiet" href="#/dossiers/proposition">
+          <PatientLink className="btn btn--quiet" href="#/dossiers/proposition">
             Options comparées
-          </a>
+          </PatientLink>
         </div>
       ) : (
         <Decision
@@ -436,9 +437,9 @@ function Decision(p: DecisionProps) {
         line={`${stamp}. L'état de l'unité a changé : réévaluez pour la suite.`}
       >
         {reevaluate(true)}
-        <a className="btn btn--quiet" href="#/dossiers/journal">
+        <PatientLink className="btn btn--quiet" href="#/dossiers/journal">
           Journal
-        </a>
+        </PatientLink>
         {noteButton}
         {undo}
       </Outcome>
@@ -490,9 +491,9 @@ function Decision(p: DecisionProps) {
             Refuser <kbd className="kbd">N</kbd>
           </button>
           <span className="spacer" />
-          <a className="btn btn--quiet" href="#/dossiers/proposition">
+          <PatientLink className="btn btn--quiet" href="#/dossiers/proposition">
             Détail <kbd className="kbd">D</kbd>
-          </a>
+          </PatientLink>
         </div>
       ) : (
         outcome

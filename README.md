@@ -2,7 +2,7 @@
 
 ## Cockpit de décision par unité
 
-La page **Unité** présente l’action, la combinaison d’actions ou le maintien du planning recommandé pour le service choisi. Le cadre voit les quantités, les créneaux, les effets prévus pour son unité et les conséquences sur les autres unités avant de valider. Le journal enregistre la décision. Le moteur utilise l’état disponible de l’établissement et prend en compte le personnel, les lits, le transport, le bionettoyage et les places de SMR. La démo fournit trois établissements synthétiques.
+**Unité** rassemble la situation du service, la recommandation en cours et les trois colonnes **Libérer**, **Lits**, **Attribuer**. **Action** ouvre le même plan pour en examiner l’effet, comparer les options, ajuster les interventions et valider. Les deux onglets partagent l’établissement, le service et la décision enregistrée. Le démonstrateur propose trois hôpitaux à flux modélisés ainsi que la vue historique du CH fictif avec ses dossiers détaillés.
 
 ```bash
 make demo-world-model

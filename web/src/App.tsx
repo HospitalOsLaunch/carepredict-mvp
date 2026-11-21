@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
-import { type Assessment, clock, longClock } from "./domain/view";
+import { remember } from "./data/worldModel";
+import { clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { DecisionPlan } from "./ui/DecisionPlan";
 import { HospitalUnit } from "./ui/HospitalUnit";
 import { WorldModel } from "./ui/WorldModel";
 import { Journal } from "./ui/Journal";
-import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
-import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
+import { UnitPage } from "./ui/UnitPage";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
 import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
-import { Illu, momentIllu } from "./ui/illustrations";
+import { Illu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "plan" | "simulation" | "journal" | "donnees";
+type Route = "unite" | "action" | "proposition" | "plan" | "simulation" | "journal" | "donnees";
 
 interface Location {
   route: Route;
@@ -30,7 +30,7 @@ function readRoute(): Location {
   if (parts[0] === "dossiers") parts.shift();
   const [head, ...rest] = parts;
   const route: Route = head === "laboratoire" ? "simulation" :
-    head === "journal" || head === "donnees" || head === "plan" || head === "proposition" ? head : "unite";
+    head === "action" || head === "journal" || head === "donnees" || head === "plan" || head === "proposition" ? head : "unite";
   return { route, patientRecords, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
@@ -76,6 +76,7 @@ const ORIGIN: Record<Connection, string> = {
 
 const TITLES: Record<Route, string> = {
   unite: "Unité",
+  action: "Action",
   proposition: "Proposition",
   plan: "Plan à 24 h",
   simulation: "Simuler le plan de midi",
@@ -147,11 +148,14 @@ export function App() {
   if (location.patientRecords || location.route === "plan" || location.route === "simulation") {
     return <PatientCockpit location={location} />;
   }
-  return <HospitalUnit view={location.route === "journal" || location.route === "donnees" ? location.route : "unite"} />;
+  return <HospitalUnit view={location.route === "action" || location.route === "journal" || location.route === "donnees" ? location.route : "unite"} />;
 }
 
-function PatientCockpit({ location: { route, param } }: { location: Location }) {
+function PatientCockpit({ location: { route, param, patientRecords } }: { location: Location }) {
   const simulation = route === "simulation";
+  useEffect(() => {
+    if (patientRecords) remember("unit-context", "ch-fictif");
+  }, [patientRecords]);
   const store = useAssessment(!simulation);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
@@ -357,100 +361,5 @@ function Badge({ n }: { n: number }) {
     <span className="badge" aria-label={`${n} à faire`}>
       {n}
     </span>
-  );
-}
-
-/** Bonjour / Bonsoir / Bonne garde, from the hour of the reconstructed state in Paris. */
-function parisHour(iso: string): number {
-  const parts = new Intl.DateTimeFormat("fr-FR", {
-    hour: "numeric",
-    hourCycle: "h23",
-    timeZone: "Europe/Paris",
-  }).formatToParts(new Date(iso));
-  return Number(parts.find((p) => p.type === "hour")?.value ?? 12);
-}
-
-function greeting(hour: number): string {
-  if (hour >= 5 && hour < 18) return "Bonjour.";
-  if (hour >= 18 && hour < 22) return "Bonsoir.";
-  return "Bonne garde.";
-}
-
-type Zone = "liberer" | "lits" | "attribuer";
-const ZONES: Array<[Zone, string]> = [
-  ["liberer", "Libérer"],
-  ["lits", "Lits"],
-  ["attribuer", "Attribuer"],
-];
-
-function UnitPage(props: {
-  a: Assessment;
-  now: string;
-  busy: boolean;
-  awaitingEvaluation: boolean;
-  onEvaluate: () => void;
-  unit: { id: string; name: string };
-  onToast: ToastFn;
-}) {
-  const { a } = props;
-  const hour = parisHour(a.state.at);
-  // Phone: one flow column at a time; the proposal decides which one opens first.
-  const [zone, setZone] = useState<Zone>(() =>
-    a.plan?.selected.kind === "request_transport"
-      ? "liberer"
-      : a.plan?.selected.kind === "prioritize_cleaning"
-        ? "lits"
-        : "attribuer",
-  );
-
-  const jump = (target: StripTarget["zone"]) => {
-    if (target === "donnees") return go("donnees");
-    setZone(target);
-    const el = document.getElementById(`zone-${target}`);
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    el?.focus({ preventScroll: true });
-  };
-
-  return (
-    <>
-      <div className="unit-heading">
-        <h1 className="hello">
-          <Illu name={momentIllu(hour)} size={44} className="hello__illu" />
-          <span>
-            {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
-          </span>
-        </h1>
-        <a className="btn" href="#/">Ouvrir la vue Unité</a>
-      </div>
-      <p className="demobar">Dossiers patients · Les propositions ci-dessous utilisent le flux de cet écran. Le classement multiressource est disponible pour les unités raccordées au moteur.</p>
-      <TensionStrip a={a} onJump={jump} />
-      <Proposal {...props} />
-      <InProgress
-        unitId={props.unit.id}
-        excludePlan={a.plan?.plan_id ?? null}
-        now={props.now}
-        onToast={props.onToast}
-      />
-      <div className="flowtabs" role="tablist" aria-label="Colonne affichée">
-        {ZONES.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={zone === id}
-            aria-controls={`zone-${id}`}
-            className="flowtabs__tab"
-            onClick={() => setZone(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className={`flowgrid flowgrid--show-${zone}`}>
-        <ReleaseBoard a={a} />
-        <BedBoard a={a} />
-        <Queue a={a} />
-      </div>
-    </>
   );
 }

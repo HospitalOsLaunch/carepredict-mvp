@@ -1,3 +1,4 @@
+import { PatientLink } from "./PatientNavigation";
 import { useMemo, useState } from "react";
 import {
   type DecisionRecord,
@@ -162,9 +163,9 @@ export function Journal(props: {
         <Empty illu="cloud" title="Cette décision n'est pas dans ce journal.">
           Elle a peut-être été prise sur un autre poste : dans ce prototype, le journal reste sur le poste où
           il a été écrit.{" "}
-          <a className="link" href="#/dossiers/journal">
+          <PatientLink className="link" href="#/dossiers/journal">
             Revenir au journal
-          </a>
+          </PatientLink>
         </Empty>
       </section>
     )
@@ -173,9 +174,9 @@ export function Journal(props: {
   return (
     <>
       <header className="page-head">
-        <a className="back" href="#/dossiers">
+        <PatientLink className="back" href="#/dossiers">
           <Back size={14} /> Unité
-        </a>
+        </PatientLink>
         <h1>
           <Illu name="notebook" size={64} />
           Journal des décisions
@@ -365,7 +366,7 @@ function Row({
   ].filter(Boolean);
   return (
     <li className={`jrow${open ? " jrow--open" : ""}`}>
-      <a
+      <PatientLink
         className="jrow__link"
         href={`#/dossiers/journal/${encodeURIComponent(r.id)}`}
         aria-current={open ? "true" : undefined}
@@ -379,7 +380,7 @@ function Row({
         <span className="jrow__end">
           <Pill s={s} />
         </span>
-      </a>
+      </PatientLink>
       {quick && s === "validated" && !r.sample ? (
         <button
           type="button"
@@ -417,9 +418,9 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
         <Pill s={s} />
         {r.sample ? <span className="jrow__sample">exemple de démonstration</span> : null}
         <span className="spacer" />
-        <a className="linkbtn" href="#/dossiers/journal" aria-label="Fermer la fiche">
+        <PatientLink className="linkbtn" href="#/dossiers/journal" aria-label="Fermer la fiche">
           Fermer
-        </a>
+        </PatientLink>
       </header>
       <h2 className="jdetail__title" id="jdetail-title">
         {r.title}
@@ -511,9 +512,9 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
       {s === "pending" ? (
         <p className="jdetail__hint">
           Pour répondre, ouvrez l'unité :{" "}
-          <a className="link" href="#/dossiers">
+          <PatientLink className="link" href="#/dossiers">
             {r.unitName}
-          </a>
+          </PatientLink>
           .
         </p>
       ) : null}

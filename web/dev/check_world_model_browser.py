@@ -9,7 +9,42 @@ from itertools import product
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
-from playwright.sync_api import Browser, Page, Response, expect, sync_playwright
+from playwright.sync_api import Browser, Page, Request, Response, expect, sync_playwright
+
+CONFIRM_UNIT = re.compile(r"^Valider (?:l.action|les \d+ actions|le maintien du planning)$")
+
+
+def open_section(page: Page, label: str) -> None:
+    page.get_by_role("navigation", name="Sections").get_by_role(
+        "link", name=label, exact=True
+    ).first.click()
+
+
+def check_unit_board(page: Page, evidence: dict[str, list[str]] | None = None) -> None:
+    for label in ("Libérer", "Lits", "Attribuer"):
+        controls = page.get_by_role("group", name="Colonne affichée")
+        if controls.count():
+            controls.get_by_role("button", name=label, exact=True).click()
+        else:
+            tab = page.get_by_role("tab", name=label, exact=True)
+            if tab.count():
+                tab.click()
+        region = page.get_by_role("region", name=label, exact=True)
+        expect(region.get_by_role("heading", name=label, exact=True)).to_be_visible()
+        for value in (evidence or {}).get(label, []):
+            expect(region.get_by_text(value, exact=True).first).to_be_visible()
+    expect(page.get_by_role("button", name=CONFIRM_UNIT)).to_have_count(0)
+
+
+def confirmation_requests(page: Page) -> list[str]:
+    requests: list[str] = []
+
+    def record(request: Request) -> None:
+        if request.method == "POST" and urlsplit(request.url).path.endswith("/plans/confirm"):
+            requests.append(request.url)
+
+    page.context.on("request", record)
+    return requests
 
 
 def check_width(page: Page) -> None:
@@ -35,6 +70,7 @@ def unit_journey(
     )
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    confirmations = confirmation_requests(page)
     try:
         page.goto(url.rstrip("/") + "/" + entry)
         hospital = page.get_by_role("combobox", name="Établissement")
@@ -45,7 +81,7 @@ def unit_journey(
         expect(panel).to_be_visible()
         expect(hospital).to_have_value("rives")
         expect(ward).to_have_value("u6")
-        expect(priority).to_have_value("bed_wait")
+        check_unit_board(page)
         expect(page.get_by_role("combobox", name="Contexte synthétique")).to_have_count(0)
         with page.expect_response(
             lambda response: (
@@ -85,6 +121,20 @@ def unit_journey(
         )
         assert initial["reference"]["ward_metrics"] is not None
         expect(ward.locator("option:checked")).to_contain_text(ward_label)
+        census = initial["ward_state"]
+        check_unit_board(
+            page,
+            {
+                "Libérer": [c["id"] for c in census["cases"] if c["kind"] == "discharge"],
+                "Lits": [f"{census['capacity_beds']} lits équipés · {ward_label}"],
+                "Attribuer": [c["id"] for c in census["cases"] if c["kind"] == "admission"],
+            },
+        )
+        panel.get_by_role("link", name="Ouvrir dans Action").click()
+        expect(page).to_have_url(re.compile(r"#/action$"))
+        expect(hospital).to_have_value(site)
+        expect(ward).to_have_value("u6")
+        expect(priority).to_have_value("bed_wait")
         with page.expect_response(
             lambda response: matching_menu(response, "uncovered_care")
         ) as revised:
@@ -101,12 +151,21 @@ def unit_journey(
         )
         expect(panel.get_by_text(f"Soins non couverts · {ward_label}", exact=True)).to_be_visible()
         expect(panel.get_by_text(f"{formatted} minutes", exact=True).first).to_be_visible()
-        button_name = r"^Valider (?:l.action|les \d+ actions|le maintien du planning)$"
-        confirm = panel.get_by_role("button", name=re.compile(button_name))
+        confirm = panel.get_by_role("button", name=CONFIRM_UNIT)
         expect(confirm).to_be_enabled()
+        action_title = panel.get_by_role("heading", level=2).inner_text()
+        open_section(page, "Unité")
+        expect(hospital).to_have_value(site)
+        expect(ward).to_have_value("u6")
+        check_unit_board(page)
+        expect(panel.get_by_role("heading", name=action_title, exact=True)).to_be_visible()
         if screenshots:
             screenshots.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=screenshots / f"{site}-unite-u6.png", full_page=True)
+        open_section(page, "Action")
+        expect(priority).to_have_value("uncovered_care")
+        expect(panel.get_by_role("heading", name=action_title, exact=True)).to_be_visible()
+        expect(panel.get_by_text(f"{formatted} minutes", exact=True).first).to_be_visible()
         with page.expect_response(
             lambda response: (
                 response.request.method == "POST"
@@ -160,6 +219,7 @@ def unit_journey(
         expect(ward).to_have_value("u6")
         expect(panel.get_by_text("Choix enregistré", exact=False)).to_be_visible()
         check_width(page)
+        assert confirmations == [confirmation.value.url], confirmations
         assert not errors, errors
         print(f"{site}/u6 : recommandation locale validée et journal repris", flush=True)
     finally:
@@ -170,11 +230,22 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
     page = browser.new_page(viewport={"width": 390, "height": 844}, locale="fr-FR")
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    confirmations = confirmation_requests(page)
     try:
         page.goto(url.rstrip("/") + "/#/unite")
         expect(page.get_by_role("combobox", name="Établissement")).to_have_value("rives")
         expect(page.get_by_role("combobox", name="Unité suivie")).to_have_value("u6")
         panel = page.get_by_role("region", name="Recommandation de l’unité")
+        check_unit_board(page, {"Libérer": ["S2"], "Attribuer": ["A2", "A3"]})
+        open_section(page, "Action")
+        panel.get_by_text("Comparer les alternatives", exact=True).click()
+        panel.get_by_role("radio", name=re.compile(r"^Maintenir le planning actuel")).check()
+        open_section(page, "Unité")
+        expect(panel.get_by_role("heading", name="Maintenir le planning actuel")).to_be_visible()
+        page.reload()
+        expect(panel.get_by_text("Alternative sélectionnée", exact=True)).to_be_visible()
+        open_section(page, "Action")
+        expect(panel.get_by_role("heading", name="Maintenir le planning actuel")).to_be_visible()
         panel.get_by_role("button", name="Ajuster les actions").click()
         choices = panel.get_by_role("group", name="Actions du plan ajusté")
         for box in choices.get_by_role("checkbox").all():
@@ -183,6 +254,18 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
         replacement = choices.get_by_role("checkbox", name=re.compile(r"Remplacer l.IDE absente"))
         replacement.check()
         confirm = panel.get_by_role("button", name="Valider l’action", exact=True)
+        expect(confirm).to_have_count(0)
+        open_section(page, "Unité")
+        check_unit_board(page)
+        expect(panel.get_by_role("heading", name="Composition à évaluer")).to_be_visible()
+        expect(
+            panel.get_by_text(re.compile(r"Remplacer l.IDE absente.*Observation courte 6"))
+        ).to_be_visible()
+        page.reload()
+        expect(panel.get_by_role("heading", name="Composition à évaluer")).to_be_visible()
+        open_section(page, "Action")
+        expect(replacement).to_be_checked()
+        expect(choices.locator("input:checked")).to_have_count(1)
         expect(confirm).to_have_count(0)
         with page.expect_response(
             lambda r: r.request.method == "POST" and r.url.endswith("/plans/preview")
@@ -194,9 +277,21 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
         assert preview["access_warnings"] == [] and preview["cost_eur"] == 190
         assert preview["realized"]["replacement-ide"] == 240 and preview["ward_metrics"]
         expect(confirm).to_be_enabled()
+        action_title = panel.get_by_role("heading", level=2).inner_text()
+        open_section(page, "Unité")
+        check_unit_board(page)
+        expect(panel.get_by_role("heading", name=action_title, exact=True)).to_be_visible()
+        open_section(page, "Action")
+        expect(replacement).to_be_checked()
+        expect(confirm).to_be_enabled()
         if screenshots:
             screenshots.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=screenshots / "rives-u6-ajustement.png", full_page=True)
+        # A second browser tab is reading the very same hospital and episode before validation.
+        mirror = page.context.new_page()
+        mirror.goto(url.rstrip("/") + "/#/")
+        mirror_panel = mirror.get_by_role("region", name="Recommandation de l’unité")
+        expect(mirror_panel.get_by_role("link", name="Ouvrir dans Action")).to_be_visible()
         with page.expect_response(
             lambda r: r.request.method == "POST" and r.url.endswith("/plans/confirm")
         ) as result:
@@ -207,6 +302,12 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
         assert saved["confirmed_plan"]["id"] == preview["id"]
         assert saved["confirmed_plan"]["action_ids"] == ["replacement-ide"]
         assert saved["phase"] == "confirmed" and saved["observation"] is None
+        assert len([entry for entry in saved["journal"] if entry["event"] == "confirmed"]) == 1
+        expect(mirror_panel.get_by_text("Choix enregistré", exact=False)).to_be_visible()
+        expect(mirror_panel.get_by_role("heading", name=action_title, exact=True)).to_be_visible()
+        mirror.close()
+        open_section(page, "Unité")
+        check_unit_board(page)
         page.get_by_role("link", name="Journal", exact=True).first.click()
         page.reload()
         journal = page.get_by_role("region", name="Journal des décisions")
@@ -215,8 +316,87 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
             journal.get_by_text(re.compile(r"Remplacer l.IDE absente.*Observation courte 6"))
         ).to_be_visible()
         check_width(page)
+        assert confirmations == [result.value.url], confirmations
         assert not errors, errors
         print("Rives/u6 : remplacement IDE évalué, validé et relu dans le journal", flush=True)
+    finally:
+        page.close()
+
+
+def patient_unit_journey(browser: Browser, url: str, screenshots: Path | None) -> None:
+    page = browser.new_page(viewport={"width": 1440, "height": 940}, locale="fr-FR")
+    errors: list[str] = []
+    evaluations: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    noon_confirmations = confirmation_requests(page)
+
+    def count_assessments(request: Request) -> None:
+        if request.method == "POST" and urlsplit(request.url).path.endswith("/hybrid/shadow"):
+            evaluations.append(request.url)
+
+    page.on("request", count_assessments)
+    try:
+        page.goto(url.rstrip("/") + "/#/")
+        hospital = page.get_by_role("combobox", name="Établissement")
+        with page.expect_response(lambda r: r.url.endswith("/hybrid/live")) as observed:
+            hospital.select_option("ch-fictif")
+        state = observed.value.json()["state"]
+        assert state["hospital_id"] == "ch-fictif"
+        assert [u["id"] for u in state["units"]] == ["medecine-polyvalente"]
+        expect(page.get_by_text("08:30", exact=True).first).to_be_visible()
+        release = page.get_by_role("region", name="Libérer", exact=True)
+        beds = page.get_by_role("region", name="Lits", exact=True)
+        queue = page.get_by_role("region", name="Attribuer", exact=True)
+        expect(release.get_by_text("P-0412", exact=True)).to_be_visible()
+        expect(beds.get_by_text("L02", exact=True)).to_be_visible()
+        expect(queue.get_by_text("U-1041", exact=True)).to_be_visible()
+        open_section(page, "Action")
+        expect(page).to_have_url(re.compile(r"#/action$"))
+        with page.expect_response(lambda r: r.url.endswith("/hybrid/shadow")) as assessment:
+            page.get_by_role("button", name="Évaluer maintenant").click()
+        submitted = assessment.value.request.post_data_json
+        assert submitted["horizon_minutes"] == 480 and submitted["scenarios"] == 32
+        measured = assessment.value.json()["assessment"]
+        assert measured["snapshot"]["state"] == state
+        assert measured["plan"]["selected"] == {
+            "kind": "request_transport",
+            "bed_id": "L02",
+            "patient_id": "P-0412",
+        }
+        title = "Demander le transport de P-0412"
+        plan = page.get_by_role("region", name=title, exact=True)
+        expect(plan.get_by_role("heading", name=title)).to_be_visible()
+        effect = plan.get_by_label("Effet simulé", exact=True).inner_text()
+        open_section(page, "Unité")
+        expect(plan.get_by_role("heading", name=title)).to_be_visible()
+        expect(plan.get_by_label("Effet simulé", exact=True)).to_have_text(
+            effect, use_inner_text=True
+        )
+        expect(beds.get_by_text("L02", exact=True)).to_be_visible()
+        if screenshots:
+            screenshots.mkdir(parents=True, exist_ok=True)
+            page.screenshot(path=screenshots / "ch-fictif-unite-patients.png", full_page=True)
+        open_section(page, "Action")
+        plan.get_by_role("button", name=re.compile(r"^Valider(?:\s+O)?$")).click()
+        expect(plan.get_by_text("Validée, à faire", exact=False)).to_be_visible()
+        open_section(page, "Journal")
+        expect(
+            page.get_by_role("heading", name="Journal des décisions", exact=True)
+        ).to_be_visible()
+        entries = page.get_by_role("link").filter(has_text=title)
+        expect(entries.first).to_be_visible()
+        links = {link.get_attribute("href") for link in entries.all()}
+        assert len(links) == 1 and all(link and "/journal/" in link for link in links)
+        entries.first.click()
+        expect(page.locator("#jdetail-title")).to_have_text(title)
+        open_section(page, "Unité")
+        expect(hospital).to_have_value("ch-fictif")
+        expect(plan.get_by_text("Validée, à faire", exact=False)).to_be_visible()
+        expect(release.get_by_text("P-0412", exact=True)).to_be_visible()
+        assert evaluations == [assessment.value.url] and not noon_confirmations
+        check_width(page)
+        assert not errors, errors
+        print("CH fictif : P-0412, L02 et décision conservés entre les onglets", flush=True)
     finally:
         page.close()
 
@@ -305,6 +485,7 @@ def check(url: str, screenshots: Path | None = None) -> None:
             unit_journey(browser, url, "", "parc", False, screenshots)
             unit_journey(browser, url, "#/simulation", "belvedere", True, screenshots)
             adjusted_unit_journey(browser, url, screenshots)
+            patient_unit_journey(browser, url, screenshots)
             cases = [("rives", 1440, 940), ("parc", 390, 844), ("belvedere", 390, 844)]
             families = ("transport", "cleaning", "staffing", "smr", "beds")
             for (context_id, width, height), family in product(cases, families):

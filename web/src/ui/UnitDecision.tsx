@@ -3,13 +3,36 @@ import { ApiError } from "../api/client";
 import { COMPARISON_OBJECTIVES, worldApi, type ComparisonObjective, type WmSession, type WmWard } from "../api/worldModel";
 import { plansApi, type PlanEvaluation, type PlanMenu, type UnitIntake, type UnitMetrics, type WardImpact } from "../api/worldPlans";
 import { n, objectives, signed, time } from "../domain/worldModel";
-import { Check, Clock } from "./icons";
+import { Check } from "./icons";
+import { WardOverview } from "./WardOverview";
 import "../styles/unitDecision.css";
 
 interface Props {
+  view?: "unite" | "action";
   session: WmSession;
   ward: WmWard;
   onConfirmed: (session: WmSession) => void;
+}
+
+type Preference = {
+  priority: ComparisonObjective;
+  selection: string | null;
+  draft: string[] | null;
+};
+
+function readPreference(key: string): Preference {
+  const initial: Preference = { priority: "bed_wait", selection: null, draft: null };
+  try {
+    const raw: unknown = JSON.parse(window.sessionStorage.getItem(key) ?? "null");
+    if (!raw || typeof raw !== "object") return initial;
+    const value = raw as Record<string, unknown>;
+    const validId = (id: unknown): id is string => typeof id === "string" && id.length > 0 && id.length <= 128;
+    const priority = COMPARISON_OBJECTIVES.find(o => o === value.priority);
+    if (!priority || !(value.selection === null || validId(value.selection)) ||
+        !(value.draft === null || (Array.isArray(value.draft) && value.draft.length <= 128 &&
+          value.draft.every(validId) && new Set(value.draft).size === value.draft.length))) return initial;
+    return { priority, selection: value.selection, draft: value.draft };
+  } catch { return initial; }
 }
 
 const priorities: Record<ComparisonObjective, string> = {
@@ -42,26 +65,19 @@ function errorMessage(error: unknown) {
   return "La réponse du moteur tarde à arriver.";
 }
 
-function KnownCases({ list }: { list: UnitIntake["cases"] }) {
-  if (!list.length) return <p className="ud-muted">Aucun dossier identifié dans le registre.</p>;
-  return <ul className="ud-cases">{list.map(c => <li key={c.id}>
-    <strong>{c.id}</strong><span>{c.eligible
-      ? c.scheduled_hour === null ? `Disponible dès ${time(c.available_hour)}` : `Prévu à ${time(c.scheduled_hour)}`
-      : "Accord en attente"}</span>
-  </li>)}</ul>;
-}
-
-function Situation({ state, unit }: { state: UnitIntake; unit: string }) {
-  return <section className="ud-situation" aria-label={`Situation · ${unit}`}>
-    <header><h2>Situation de l’unité</h2><span><Clock />Données de {time(state.as_of_hour)}</span></header>
-    <div className="ud-situ-grid">
-      <section><h3>Sorties à coordonner</h3><KnownCases list={state.cases.filter(c => c.kind === "discharge")} /></section>
-      <section><h3>Lits disponibles</h3><p className="ud-census"><strong>{n(state.available_beds)}</strong> sur {n(state.capacity_beds)} lits</p>
-        <p className="ud-muted">Lits propres et libres estimés.</p></section>
-      <section><h3>Admissions à organiser</h3><p className="ud-muted">File estimée de {n(state.admission_queue)} patients.</p>
-        <KnownCases list={state.cases.filter(c => c.kind === "admission")} /></section>
+function Forecast({ before, after, priority, ward, cost }: {
+  before: number; after: number; priority: ComparisonObjective; ward: string; cost: number;
+}) {
+  const objective = objectives[priority];
+  const difference = after - before;
+  return <div className="ud-forecast">
+    <div className="ud-prediction"><p>{objective.column} · {ward}</p>
+      <div><strong>{n(after)} <small>{objective.unit}</small></strong>
+        <span className="ud-change"><span className="visually-hidden">Écart prévu · </span>{formatSigned(difference)} {objective.unit}</span></div>
+      <p>Planning actuel · {n(before)} {objective.unit}</p>
     </div>
-  </section>;
+    <div className="ud-cost"><p>Coût additionnel</p><strong>{n(cost)} €</strong></div>
+  </div>;
 }
 
 function UnitImpacts({ impact, unit }: { impact: WardImpact | undefined; unit: string }) {
@@ -107,17 +123,19 @@ function Actions({ menu, plan, session, saved }: { menu: PlanMenu; plan: PlanEva
 }
 
 export function UnitDecision(props: Props) {
-  return <Decision key={`${props.session.id}:${props.ward.id}`} {...props} />;
+  return <Decision key={JSON.stringify([props.session.context.id, props.session.id, props.ward.id, props.session.plan_version])} {...props} />;
 }
 
-function Decision({ session, ward, onConfirmed }: Props) {
-  const [priority, setPriority] = useState<ComparisonObjective>("bed_wait");
+function Decision({ view = "action", session, ward, onConfirmed }: Props) {
+  const prefKey = "hospitalos.unit-decision." + JSON.stringify([session.context.id, session.id, ward.id, session.plan_version]);
+  const [initial] = useState(() => readPreference(prefKey));
+  const [priority, setPriority] = useState<ComparisonObjective>(initial.priority);
   const [menu, setMenu] = useState<PlanMenu | null>(null);
   const [failure, setFailure] = useState("");
   const [retry, setRetry] = useState(0);
   const [saving, setSaving] = useState(false);
-  const [selection, setSelection] = useState<string | null>(null);
-  const [draft, setDraft] = useState<string[] | null>(null);
+  const [selection, setSelection] = useState<string | null>(initial.selection);
+  const [draft, setDraft] = useState<string[] | null>(initial.draft);
   const [preview, setPreview] = useState<PlanEvaluation | null>(null);
   const [checking, setChecking] = useState(false);
   const [previewError, setPreviewError] = useState("");
@@ -131,6 +149,12 @@ function Decision({ session, ward, onConfirmed }: Props) {
   const otherUnit = saved && session.decision_ward_id !== ward.id;
   const priorityInUse = saved ? session.decision_objective ?? priority : priority;
 
+  useEffect(() => {
+    try {
+      if (saved) window.sessionStorage.removeItem(prefKey);
+      else window.sessionStorage.setItem(prefKey, JSON.stringify({ priority, selection, draft }));
+    } catch { /* The decision still works in memory when tab storage is unavailable. */ }
+  }, [prefKey, saved, priority, selection, draft]);
   useEffect(() => () => { write.current?.abort(); inspection.current?.abort(); }, []);
   useEffect(() => {
     if (!otherUnit) return;
@@ -145,7 +169,11 @@ function Decision({ session, ward, onConfirmed }: Props) {
     const controller = new AbortController();
     setFailure(""); setMenu(null);
     plansApi.unitMenu(session.id, priority, ward.id, session.context.id, controller.signal).then(next => {
-      if (!controller.signal.aborted) setMenu(next);
+      if (controller.signal.aborted) return;
+      const offered = new Set(next.actions.filter(a => a.eligible).map(a => a.id));
+      setDraft(ids => ids && ids.some(id => !offered.has(id)) ? ids.filter(id => offered.has(id)) : ids);
+      setSelection(id => id && [next.reference, ...next.recommendations].some(p => p.id === id) ? id : null);
+      setMenu(next);
     }).catch(async (e: unknown) => {
       if (controller.signal.aborted) return;
       if (e instanceof ApiError && e.status === 409) {
@@ -215,45 +243,78 @@ function Decision({ session, ward, onConfirmed }: Props) {
     }
   }
 
+  const compact = view === "unite";
+  const selectedIds = saved ? plan?.action_ids ?? [] : draft ?? plan?.action_ids ?? [];
+  const selectedActions = current?.actions.filter(a => selectedIds.includes(a.id)).sort((a, b) => a.start_hour - b.start_hour) ?? [];
+  const isDraft = !saved && draft !== null;
+  let title = "Action à valider";
+  if (otherUnit) title = `Décision enregistrée pour ${scope}`;
+  else if (isDraft && plan && !candidateOK) title = "Composition à ajuster";
+  else if (isDraft && !plan) title = "Composition à évaluer";
+  else if (plan) {
+    if (count === 0) title = "Maintenir le planning actuel";
+    else if (count === 1) title = selectedActions[0]?.label ?? "Action recommandée";
+    else title = `Coordonner ${count} actions`;
+  }
+
+  const feedback = <>
+    {failure && <div className="ud-alert" role="alert"><p>{failure}</p>
+      <button className="btn" onClick={() => { setFailure(""); setMenu(null); setRetry(r => r + 1); }}>Actualiser la recommandation</button></div>}
+    {!failure && !saved && !current && <p role="status">Calcul de la recommandation pour {ward.label}…</p>}
+    {!failure && !saved && current && !isDraft && !plan && <p role="status">Aucune action recommandée avec les données disponibles.</p>}
+    {otherUnit && <p>Cette décision engage les ressources de {session.context.label}.</p>}
+  </>;
+  const recorded = saved && <p className="ud-status" role="status"><Check />Choix enregistré dans le journal de l’établissement.</p>;
+  const scopeError = otherUnit && !situation && stateError && <p role="alert">{stateError} <button className="btn" onClick={() => {
+    setStateError(""); setRetry(r => r + 1);
+  }}>Relire la situation de l’unité</button></p>;
+  const canAssess = !otherUnit && !failure && candidateOK && before && after;
+  const delta = canAssess ? score(after, priorityInUse) - score(before, priorityInUse) : null;
+  const sourceLabel = saved ? "Décision validée" : isDraft ? "Plan ajusté"
+    : selection && plan?.id !== top?.id ? "Alternative sélectionnée" : "Recommandation de l’unité";
+  if (compact) {
+    return <WardOverview state={situation ?? null} ward={ward}
+      selectedIds={candidateOK && !otherUnit ? plan?.action_ids ?? [] : []}>
+      <section className="ud-compact" aria-label="Recommandation de l’unité">
+        <div className="ud-compact-title"><p className="ud-overline">{sourceLabel}</p><h2>{title}</h2></div>
+        <a className="btn" href="#/action">Ouvrir dans Action <span aria-hidden="true">→</span></a>
+        <div className="ud-compact-body">
+          {feedback}
+          {!otherUnit && selectedActions.length > 0 && <ol className="ud-compact-actions">{selectedActions.map(a =>
+            <li key={a.id}><strong>{a.label}</strong> <span>· {n(a.quantity)} {a.unit}</span></li>)}</ol>}
+          {plan && canAssess && delta !== null && <p className="ud-compact-impact">
+            <span>{objective.column} · <strong>{formatSigned(delta)} {objective.unit}</strong></span>
+            <span>Coût additionnel · <strong>{n(plan.cost_eur)} €</strong></span>
+          </p>}
+          {isDraft && !plan && !failure && <p className="ud-muted">Évaluation requise pour estimer l’effet de cette composition.</p>}
+          {isDraft && preview && !candidateOK && <p role="alert">{[...preview.conflicts, ...preview.access_warnings ?? []].join(" ")}</p>}
+          {isDraft && previewError && <p role="alert">{previewError}</p>}
+          {checking && <p role="status">Évaluation du plan en cours…</p>}
+          {recorded}{scopeError}
+        </div>
+      </section>
+    </WardOverview>;
+  }
+
   return <div className="ud-stack">
     <section className="ud-card" aria-label="Recommandation de l’unité">
-      <header className="ud-head"><div><p className="ud-overline">{saved ? "Décision validée" : "Recommandation de l’unité"}</p>
-        <h2>{otherUnit ? `Décision enregistrée pour ${scope}` : !saved && draft !== null && plan && !candidateOK ? "Composition à ajuster" : !saved && draft !== null && !plan ? "Composition à évaluer" : !plan ? "Action à valider" : count === 0 ? "Maintenir le planning actuel"
-          : count === 1 ? current?.actions.find(a => a.id === plan.action_ids[0])?.label ?? "Action recommandée"
-          : `Coordonner ${count} actions`}</h2></div>
+      <header className="ud-head"><div><p className="ud-overline">{sourceLabel}</p><h2>{title}</h2></div>
         {!saved && <label className="ud-priority">Priorité de l’unité<select className="select"
           value={priority} disabled={saving} onChange={e => {
             const choice = COMPARISON_OBJECTIVES.find(o => o === e.target.value);
-            if (choice) { edit(null); setSelection(null); setMenu(null); setFailure(""); setPriority(choice); }
+            if (choice && choice !== priority) { edit(null); setSelection(null); setMenu(null); setFailure(""); setPriority(choice); }
           }}>{COMPARISON_OBJECTIVES.map(o => <option key={o} value={o}>{priorities[o]}</option>)}</select></label>}
       </header>
-      {failure && <div className="ud-alert" role="alert"><p>{failure}</p>
-        <button className="btn" onClick={() => { setFailure(""); setMenu(null); setRetry(r => r + 1); }}>Actualiser la recommandation</button></div>}
-      {!failure && !saved && !current && <p role="status">Calcul de la recommandation pour {ward.label}…</p>}
-      {!failure && !saved && current && draft === null && !plan && <p role="status">Aucune action recommandée avec les données disponibles.</p>}
-      {otherUnit && <p>Cette décision engage les ressources de {session.context.label}.
-        {impact && ` Ses effets prévus sur ${ward.label} figurent ci-dessous.`}</p>}
-      {plan && current && !otherUnit && candidateOK && <>
-        {before && after && <div className="ud-forecast">
-          <div><p>{objective.column} · {ward.label}</p><strong>{n(score(after, priorityInUse))} <small>{objective.unit}</small></strong>
-            <p>Prévision avec {count ? "la décision" : "le planning actuel"}</p></div>
-          <div><p>Planning actuel</p><strong>{n(score(before, priorityInUse))} <small>{objective.unit}</small></strong></div>
-        </div>}
-        <Actions menu={current} plan={plan} session={session} saved={saved}/>
-        {count > 0 && <details className="ud-details"><summary>Conditions et disponibilité des ressources</summary>
-          <ul className="ud-conditions">{current.actions.filter(a => plan.action_ids.includes(a.id) && a.constraint).map(a =>
-            <li key={a.id}><strong>{a.label}</strong><p>{a.constraint}</p></li>)}</ul></details>}
-        {(saved || draft === null) && <p className="ud-muted">{plan.id !== current.recommendations[0]?.id ? "Plan alternatif."
-          : current.search.complete ? "Meilleur plan admissible sur le périmètre de l’unité." : "Meilleur résultat parmi les combinaisons examinées."}
-          {current.search.examined != null && ` ${n(current.search.examined)} combinaisons comparées.`}</p>}
-      </>}
-      {impact && <UnitImpacts impact={impact} unit={ward.label} />}
-      {plan && current && !otherUnit && count > 0 && <HospitalEffects menu={current} plan={plan} session={session} ward={ward} />}
-      {saved ? <p className="ud-status" role="status"><Check />Choix enregistré dans le journal de l’établissement.</p>
-        : plan && current && candidateOK && !failure && <div className="ud-footer"><button className="btn btn--primary" disabled={saving || !plan.feasible}
-          onClick={confirm}>{saving ? "Validation en cours…" : count === 0 ? "Valider le maintien du planning" : count === 1 ? "Valider l’action" : `Valider les ${count} actions`}</button>
-          <span>Coût additionnel prévu <strong>{n(plan.cost_eur)} €</strong></span></div>}
-      {(saved || plan) && <p className="ud-muted">La validation est enregistrée dans le journal de démo. Les réservations et demandes de renfort dans le SIH restent manuelles.</p>}
+      {feedback}
+      {plan && canAssess && <Forecast before={score(before, priorityInUse)} after={score(after, priorityInUse)}
+        priority={priorityInUse} ward={ward.label} cost={plan.cost_eur}/>}
+      {plan && current && !otherUnit && candidateOK && <Actions menu={current} plan={plan} session={session} saved={saved}/>}
+      {recorded}
+      {!saved && plan && current && candidateOK && !failure && <div className="ud-footer">
+        <button className="btn btn--primary" disabled={saving} onClick={confirm}>
+          {saving ? "Validation en cours…" : count === 0 ? "Valider le maintien du planning" : count === 1 ? "Valider l’action" : `Valider les ${count} actions`}</button>
+        <span>Validation dans le journal de démo. Exécution manuelle dans le SIH.</span>
+      </div>}
       {!saved && current && !failure && <div className="ud-tools">
         {draft === null && choices.length > 1 && <details className="ud-details"><summary>Comparer les alternatives</summary>
           <fieldset className="ud-picks" disabled={saving}><legend className="visually-hidden">Plans admissibles</legend>
@@ -278,8 +339,18 @@ function Decision({ session, ward, onConfirmed }: Props) {
           {preview && !candidateOK && <ul className="ud-alert" role="alert">{[...preview.conflicts, ...preview.access_warnings ?? []].map(w => <li key={w}>{w}</li>)}</ul>}
         </div>}
       </div>}
+      {plan && current && !otherUnit && candidateOK && <div className="ud-evidence">
+        {count > 0 && <details className="ud-details"><summary>Conditions et disponibilité des ressources</summary>
+          <ul className="ud-conditions">{selectedActions.filter(a => a.constraint).map(a =>
+            <li key={a.id}><strong>{a.label}</strong><p>{a.constraint}</p></li>)}</ul></details>}
+        {impact && <UnitImpacts impact={impact} unit={ward.label}/>}
+        {count > 0 && <HospitalEffects menu={current} plan={plan} session={session} ward={ward}/>}
+        <details className="ud-details"><summary>Critère de sélection</summary>
+          <p>{priorities[priorityInUse]} pour {ward.label}, entre 12 h et 16 h.</p>
+          <p>{current.search.complete ? "Recherche exhaustive sur le périmètre disponible." : "Recherche partielle sur le périmètre disponible."}
+            {current.search.examined != null && ` ${n(current.search.examined)} combinaisons examinées.`}</p></details>
+      </div>}
+      {otherUnit && impact && <UnitImpacts impact={impact} unit={ward.label}/>}
     </section>
-    {situation && <Situation state={situation} unit={ward.label} />}
-    {otherUnit && !situation && stateError && <p role="alert">{stateError} <button className="btn" onClick={() => { setStateError(""); setRetry(r => r + 1); }}>Relire la situation de l’unité</button></p>}
   </div>;
 }
