@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Contract(BaseModel):
@@ -31,6 +31,131 @@ class Ward(Contract):
 
 Objective = Literal["transfer_queue", "bed_wait", "uncovered_care"]
 Kind = Literal["reference", "transport", "cleaning", "staffing", "smr", "beds"]
+
+
+PlanKind = Literal[
+    "discharge",
+    "admission",
+    "replacement",
+    "redeployment",
+    "reinforcement",
+    "transport",
+    "cleaning",
+    "smr",
+    "beds",
+]
+
+
+class PlanAction(Contract):
+    id: str
+    label: str
+    kind: PlanKind
+    ward_id: str
+    unit: str
+    quantity: int = 1
+    start_hour: int = 12
+    end_hour: int = 16
+    cost_eur: int = 0
+    eligible: bool
+    constraint: str
+
+
+class PlanMetrics(Contract):
+    transfer_queue: float
+    bed_wait_patient_hours: float
+    uncovered_ide_minutes: float
+    uncovered_as_minutes: float
+    transport_used: float
+    beds_cleaned: float
+    smr_transfers: float
+    open_beds: float
+    available_beds: float
+    admissions: float
+    discharges: float
+    redirected_patients: float
+    admission_queue_at_16: float
+    named_admissions: int
+    named_discharges: int
+
+
+class WardImpact(Contract):
+    ward_id: str
+    transfer_queue: float
+    admissions: float
+    redirected_patients: float
+    care_minutes: float
+    transport_used: float
+    beds_cleaned: float
+    smr_transfers: float
+    available_beds: float
+
+
+class PlanEvaluation(Contract):
+    id: str
+    action_ids: list[str]
+    feasible: bool
+    conflicts: list[str]
+    cost_eur: int
+    metrics: PlanMetrics | None
+    realized: dict[str, float]
+    case_hours: dict[str, int | None] = Field(default_factory=dict)
+    access_warnings: list[str] = Field(default_factory=list)
+    ward_impacts: list[WardImpact] = Field(default_factory=list)
+
+
+class PlanSearch(Contract):
+    evaluated: int
+    examined: int
+    feasible: int
+    recommendable: int
+    scope_size: int
+    complete: bool
+
+
+class PlanMenu(Contract):
+    objective: Objective
+    actions: list[PlanAction]
+    reference: PlanEvaluation
+    recommendations: list[PlanEvaluation]
+    search: PlanSearch
+    budget_eur: int
+    example_action_ids: list[str] = Field(default_factory=list)
+    scope_ids: list[str] = Field(default_factory=list)
+
+
+class ReconstructedPlan(Contract):
+    plan: PlanEvaluation
+    reconstructed_queue: float
+
+
+class PlanReport(Contract):
+    actual_metrics: PlanMetrics | None
+    realized: dict[str, float] | None
+    case_hours: dict[str, int | None] | None = None
+    alternatives: list[ReconstructedPlan]
+
+
+class PlanRequest(Contract):
+    action_ids: list[Annotated[str, Field(min_length=1, max_length=64)]] = Field(max_length=128)
+    objective: Objective
+
+    @field_validator("action_ids")
+    @classmethod
+    def unique_actions(cls, actions: list[str]) -> list[str]:
+        if len(actions) != len(set(actions)):
+            raise ValueError("Une action identifiée ne peut être engagée deux fois.")
+        return sorted(actions)
+
+
+class PlanConfirmation(PlanRequest):
+    scope_ids: list[Annotated[str, Field(min_length=1, max_length=64)]] | None = Field(
+        default=None, max_length=128
+    )
+
+    @field_validator("scope_ids")
+    @classmethod
+    def unique_scope(cls, ids: list[str] | None) -> list[str] | None:
+        return None if ids is None else cls.unique_actions(ids)
 
 
 class Option(Contract):
@@ -80,6 +205,10 @@ class Session(Contract):
     reference_id: str
     selected_id: str | None = None
     decision_objective: Objective | None = None
+    plan_version: str | None = None
+    confirmed_plan: PlanEvaluation | None = None
+    plan_snapshot: PlanMenu | None = None
+    plan_report: PlanReport | None = None
     options: list[Option]
     observation: Observation | None = None
     journal: list[Entry]

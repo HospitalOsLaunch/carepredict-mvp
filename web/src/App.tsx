@@ -53,7 +53,7 @@ const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon:
   { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
   { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
   { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
-  { id: "simulation", href: "#/simulation", label: "Simulation", key: "S", Icon: () => <SimulationIcon /> },
+  { id: "simulation", href: "#/simulation", label: "Simulation de midi", key: "S", Icon: () => <SimulationIcon /> },
   { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
   { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
@@ -69,7 +69,7 @@ const TITLES: Record<Route, string> = {
   unite: "Unité",
   proposition: "Proposition",
   plan: "Plan à 24 h",
-  simulation: "Simuler une affectation",
+  simulation: "Simuler le plan de midi",
   journal: "Journal des décisions",
   donnees: "Qualité des données",
 };
@@ -84,7 +84,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
   ["P", "Plan jusqu'à demain (24 h)"],
-  ["S", "Simuler une affectation"],
+  ["S", "Simuler le plan de midi"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
@@ -405,7 +405,7 @@ function UnitPage(props: {
           </span>
         </h1>
         <a className="btn unit-heading__simulation" href="#/simulation">
-          <SimulationIcon /> Simuler une affectation
+          <SimulationIcon /> Simuler le plan de midi
         </a>
       </div>
       <TensionStrip a={a} onJump={jump} />

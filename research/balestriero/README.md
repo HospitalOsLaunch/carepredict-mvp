@@ -2,6 +2,8 @@
 
 Le cockpit reprend **J7-CF-2026.11.21** et étend les interventions dans **MIDI5-v1**. Les résultats scientifiques ci-dessous portent sur le catalogue du protocole initial. Les nouvelles actions de personnel, de SMR et de lit utilisent le modèle physique. Le modèle d’état projette le nombre de patients en attente d’un transfert dans chaque unité. Le réseau JEPA prédit une correction à partir du même état public et de l’action envisagée. Après réception des données de l’option validée, l’application peut estimer ce que la file aurait été sous une autre affectation. Les prévisions sont calculées en ligne sur des établissements synthétiques.
 
+Le cockpit de midi propose aussi des combinaisons chiffrées de ressources et de mouvements de patients. Son simulateur d’actions conjointes réutilise le noyau de dynamique hospitalière, avec un registre des dossiers connus, un calendrier et des contraintes partagées. Les résultats JEPA du tableau se rapportent aux actions du protocole J7. [Parcours de démonstration des plans composés](../../web/README.md#simuler-le-plan-de-midi)
+
 ## Ce que les essais ont établi
 
 | Question | Population | Résultat |
@@ -18,7 +20,7 @@ Le code opérationnel, le noyau natif C++17 de l’essai, les poids JEPA de grai
 
 Les trois sites de démonstration ont été choisis parmi les prévisions publiques pour illustrer des écarts entre options et trois niveaux de disponibilité des données. Les moyennes scientifiques ci-dessus portent sur les panels complets. La démonstration n’exécute aucune action dans un établissement.
 
-- [Parcours produit et lancement](../../web/README.md#simuler-une-affectation)
+- [Parcours produit et lancement](../../web/README.md#simuler-le-plan-de-midi)
 - [Contrat et contrôles d’horloge](cf/PROTOCOLE.md)
 - [Planification hiérarchique et ablation](hierarchie/HIERARCHIE.md)
 - [Projection sur les capacités](contraintes/PROTOCOLE.md)

@@ -8,8 +8,16 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal
 
-from . import engine
-from .contracts import Entry, Objective, Session
+from . import engine, plan_search
+from .contracts import (
+    Entry,
+    Objective,
+    PlanConfirmation,
+    PlanEvaluation,
+    PlanMenu,
+    PlanRequest,
+    Session,
+)
 
 
 class Unknown(LookupError):
@@ -49,9 +57,11 @@ class SessionStore:
     def get(self, identifier: str) -> Session:
         with self.connection() as db:
             version, state = self.lookup(db, identifier)
-        if state.phase == "planning" and state.model_version == engine.manifest()["version"]:
+        if state.phase == "planning" and (
+            state.plan_version is None or state.model_version == engine.manifest()["version"]
+        ):
             case = engine.cases().get(state.context.id)
-            if case and version == engine.revision(case, legacy=True):
+            if case and version in (engine.revision(case), engine.revision(case, legacy=True)):
                 return self.start(identifier, state.context.id)
         return state
 
@@ -59,7 +69,11 @@ class SessionStore:
     def upgrade_planning(
         db: sqlite3.Connection, state: Session, case: engine.Case, revision: str
     ) -> tuple[str, Session]:
-        if state.phase != "planning" or revision != engine.revision(case, legacy=True):
+        if (
+            state.phase != "planning"
+            or (state.plan_version is not None and state.model_version == engine.model_version())
+            or revision not in (engine.revision(case, legacy=True), engine.revision(case))
+        ):
             return revision, state
         updated = engine.open_session(state.id, case)
         updated.journal = state.journal
@@ -150,7 +164,12 @@ class SessionStore:
                         hour=following, event="awaiting_report", option_id=state.selected_id
                     )
                 else:
-                    engine.publish(state, case, following)
+                    if state.confirmed_plan is None:
+                        engine.publish(state, case, following)
+                    else:
+                        if state.plan_version != engine.plan_version():
+                            raise Conflict("Le modèle qui a produit ce plan a changé.")
+                        plan_search.publish(state, case, following)
                     state.phase = "review"
                     event = Entry(
                         hour=following, event="report_received", option_id=state.selected_id
@@ -163,3 +182,90 @@ class SessionStore:
             )
             db.commit()
             return state
+
+    def _plan_state(self, identifier: str) -> Session:
+        state = self.get(identifier)
+        if state.confirmed_plan is None and state.phase != "planning":
+            raise Conflict("Ce parcours a déjà validé une action individuelle.")
+        if state.plan_version != engine.plan_version():
+            raise Conflict("Les règles de composition ont changé. Ouvrez un nouveau parcours.")
+        return state
+
+    def plan_menu(self, identifier: str, objective: Objective) -> PlanMenu:
+        state = self.get(identifier)
+        if state.plan_snapshot is not None:
+            return state.plan_snapshot
+        state = self._plan_state(identifier)
+        return plan_search.menu(state.context.id, objective)
+
+    def plan_preview(self, identifier: str, request: PlanRequest) -> PlanEvaluation:
+        state = self._plan_state(identifier)
+        if state.phase != "planning":
+            raise Conflict("Ce plan a déjà été validé.")
+        return plan_search.preview(state.context.id, request.action_ids)
+
+    def plan_optimize(self, identifier: str, request: PlanRequest) -> PlanMenu:
+        state = self._plan_state(identifier)
+        if state.phase != "planning":
+            raise Conflict("Ce plan a déjà été validé.")
+        return plan_search.menu(state.context.id, request.objective, request.action_ids)
+
+    @staticmethod
+    def same_confirmation(state: Session, request: PlanConfirmation) -> bool:
+        if state.confirmed_plan is None or state.plan_snapshot is None:
+            return False
+        scope = (
+            request.scope_ids
+            if request.scope_ids is not None
+            else sorted(a.id for a in state.plan_snapshot.actions)
+        )
+        return (
+            state.confirmed_plan.action_ids == request.action_ids
+            and state.decision_objective == request.objective
+            and state.plan_snapshot.scope_ids == scope
+        )
+
+    def confirm_plan(self, identifier: str, request: PlanConfirmation) -> Session:
+        # Evaluate outside the SQLite write transaction. Recheck the snapshot and competing
+        # single/composed confirmations under the same lock used by the original state machine.
+        if request.scope_ids is not None and not set(request.action_ids) <= set(request.scope_ids):
+            raise ValueError("Le plan dépasse le périmètre de comparaison demandé.")
+        state = self.get(identifier)
+        if state.phase != "planning":
+            if self.same_confirmation(state, request):
+                return state
+            raise Conflict("Une autre décision est déjà validée pour ce parcours.")
+        if state.plan_version != engine.plan_version():
+            raise Conflict("Les règles de composition ont changé. Ouvrez un nouveau parcours.")
+        candidate = plan_search.preview(state.context.id, request.action_ids)
+        if not candidate.feasible:
+            raise Conflict(" ".join(candidate.conflicts))
+        shortlist = plan_search.menu(state.context.id, request.objective, request.scope_ids)
+        with self.connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            version, current = self.lookup(db, identifier)
+            case = engine.cases().get(current.context.id)
+            if (
+                case is None
+                or version != engine.revision(case)
+                or current.plan_version != engine.plan_version()
+            ):
+                raise Conflict("Le catalogue ou l’état du parcours a changé.")
+            if current.phase != "planning":
+                if self.same_confirmation(current, request):
+                    return current
+                raise Conflict("Une autre décision est déjà validée pour ce parcours.")
+            current.confirmed_plan = candidate
+            current.plan_snapshot = shortlist
+            current.selected_id = candidate.id
+            current.decision_objective = request.objective
+            current.phase = "confirmed"
+            current.journal.append(
+                Entry(hour=current.hour, event="confirmed", option_id=candidate.id)
+            )
+            db.execute(
+                "UPDATE demo_world_model_sessions SET snapshot=? WHERE id=?",
+                (current.model_dump_json(), identifier),
+            )
+            db.commit()
+            return current

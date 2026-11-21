@@ -1,46 +1,37 @@
 # Cockpit HospitalOS — libérer → attribuer
 
-## Simuler une affectation
+<a id="simuler-une-affectation"></a>
+
+## Simuler le plan de midi
 
 Depuis la racine du dépôt, exécuter `make demo-world-model` puis ouvrir
-[Simuler une affectation](http://127.0.0.1:5173/#/simulation). Le lanceur vérifie Python 3.11+,
-Node.js 22+, npm et un compilateur C++17, prépare les dépendances du cockpit et connecte les API
-FastAPI et Plan 24 h derrière le même port. Le premier lancement télécharge les dépendances.
-`Ctrl+C` ferme les services. Pour choisir un autre port, utiliser
-`make demo-world-model DEMO_ARGS='--port 5180'`.
+[le cockpit de simulation](http://127.0.0.1:5173/#/simulation). Le lanceur vérifie Python 3.11+,
+Node.js 22+, npm et un compilateur C++17. Il prépare les dépendances et sert les API sur le même port.
+`Ctrl+C` ferme les services. Autre port possible avec `make demo-world-model DEMO_ARGS='--port 5180'`.
 
-1. **À 8 h**, consulter le planning de référence et les ressources déjà réservées.
-2. **À midi**, comparer le planning horaire aux cinq familles d’intervention ci-dessous. Le tableau affiche la mesure choisie et son unité.
-   Le détail par unité et les effets sur les soins et l’attente de lit sont visibles avant validation.
-3. **Valider en simulation**, puis avancer l’horloge. Aux Rives, le relevé est complet. Au Parc,
-   les composantes manquantes restent visibles comme telles. Au Belvédère, le relevé de 16 h est
-   disponible à 18 h. Seule l’option validée produit une observation.
-4. **Relire la journée**, comparer le relevé à l’estimation d’une autre affectation puis retrouver
-   le choix et ses horaires dans le journal. Le rechargement conserve le parcours. « Nouveau
-   parcours » permet de rejouer une autre décision.
+1. Choisir un établissement et lire le planning de 8 h. À midi, ouvrir **Plan composé** et choisir le critère de classement : attente cumulée d’un lit, file de transfert à 16 h ou minutes de soins IDE et AS non couvertes.
+2. Comparer les propositions au planning de référence ou **composer son plan**. Chaque ligne identifie un dossier ou une ressource, une quantité, une unité de soins et un créneau. Aux Rives, **Essayer le plan à 8 actions** sélectionne S1 et S2 en sortie, A1 à A3 en entrée, un remplacement IDE, une réaffectation AS et un renfort AS.
+3. **Évaluer ma composition** calcule ses effets conjoints. **Comparer les sous-ensembles** cherche les meilleures combinaisons dans la sélection. La référence conserve les créneaux ordinaires des dossiers connus. Un plan peut n’avancer qu’une partie de ces dossiers. Consulter les effets par unité et les dossiers retardés avant de choisir.
+4. **Valider le plan en simulation**, puis avancer à 16 h. Le journal conserve le choix complet, le critère, les coûts et les alternatives disponibles à midi. Aux Rives, comparer prévisions et réalisations pour chaque action. Le Parc dispose d’un relevé partiel. Au Belvédère, le relevé de 16 h arrive à 18 h. Les simulations alternatives restent des estimations.
+5. Recharger pour retrouver le plan confirmé. **Nouveau parcours** permet de tester une autre décision. **Action unique** donne accès à l’expérience initiale.
 
-| Famille | Choix simulé de midi à 16 h | Contrainte appliquée |
+| Famille de ressources | Décisions possibles | Effets et contraintes simulés |
 |---|---|---|
-| Transport | Redéployer l’équipe partagée vers une unité | La même équipe dessert les transferts internes et les départs vers le SMR. |
-| Bionettoyage | Prioriser la remise en état des lits d’une unité | Le nombre de lits sales et la capacité de l’équipe limitent les remises à disposition. |
-| Personnel IDE et AS | Affecter un renfort qualifié ou prêter une IDE entre deux unités autorisées | Le renfort exige une offre confirmée et un budget disponible. Le prêt protège les soins de l’unité donneuse chaque heure. |
-| Aval SMR | Mobiliser une place supplémentaire pour une unité | La place peut être consommée une fois sur la période et le patient doit pouvoir être transporté. |
-| Lits | Ouvrir un lit de réserve équipé dans l’unité | L’ouverture requiert des minutes IDE et AS à midi. Les effectifs disponibles continuent de limiter les admissions. |
+| Personnel IDE et AS | Remplacer une absence, faire venir un renfort qualifié, réaffecter une personne identifiée | Budget et disponibilités partagés, minutes non couvertes, couverture de l’unité prêteuse vérifiée chaque heure |
+| Lits | Ouvrir un lit équipé, coordonner des sorties et avancer des entrées acceptées | Lits propres disponibles, admissions et sorties, file d’entrée et attente cumulée. Chaque dossier nommé requiert une place entière et ses conditions de prise en charge |
+| Transport | Prioriser les transports d’une unité | Capacité utilisée, partagée entre les sorties, les transferts et les départs en SMR |
+| Bionettoyage | Prioriser la remise en état dans une unité | Lits nettoyés et remis à disposition, sous la limite de l’équipe et du nombre de lits sales |
+| Aval SMR | Allouer une place supplémentaire en soins médicaux et de réadaptation | Une place sur la période, avec un départ réalisable et un transport disponible |
 
-À midi, le cadre peut classer les options par file de transfert à 16 h, attente de lit cumulée ou minutes de soins IDE et AS non couvertes. Il confirme une intervention par parcours. Le journal conserve le critère choisi au moment de la validation. Les cinq familles utilisent les mêmes hypothèses d’arrivées. La comparaison présente le coût additionnel, les minutes IDE et AS non couvertes, les heures-patients d’attente de lit entre midi et 16 h et la file de transfert à 16 h. Une option indisponible affiche le motif et le serveur bloque sa validation.
+Le modèle d’état déroule chaque composition de midi à 16 h sous les mêmes arrivées et disponibilités que la référence. Un renfort peut rendre possible un prêt de personnel qui, seul, laisserait l’unité d’origine en sous-effectif. Deux affectations d’une même personne, d’une même équipe ou d’une même place sur le même créneau sont bloquées.
 
-Les offres de renfort, les lits équipés, les corridors de prêt infirmier et le budget restant à midi sont déclarés dans un [inventaire synthétique](../src/hospitalos/world_model/data/noon_offers.json) propre à chaque site. Les corridors de personnel sont définis par le planning des équipes. Le réseau de transfert des patients est défini séparément. Les montants sont des hypothèses de simulation. Le modèle d’état simule toutes les actions. La projection JEPA est disponible pour le planning de référence, le transport et le bionettoyage, couverts par l’étude de midi. Le relevé est toujours associé à l’intervention effectivement validée en simulation.
+Le classement automatique protège les admissions totales, les réorientations de l’établissement et les horaires des dossiers identifiés par rapport à la référence. Le cadre peut examiner un plan faisable qui comporte un compromis signalé. Le détail par unité montre notamment si une file s’allonge ailleurs. Le moteur compare tous les sous-ensembles jusqu’à **12 actions** dans le périmètre. Au-delà, le cockpit affiche que la recherche est limitée. La comparaison manuelle reste disponible. Le JEPA de l’expérience J7 couvre la référence et certaines actions unitaires de logistique. Les plans composés utilisent le modèle d’état sous contraintes.
 
-Une session est identifiée par un UUID conservé dans le navigateur. Les décisions et leurs
-prévisions sont enregistrées côté serveur dans SQLite, sous `${XDG_STATE_HOME:-~/.local/state}/hospitalos/world-model.sqlite`.
-`HOSPITALOS_WORLD_MODEL_DB` permet de choisir le fichier. Les décisions sont simulées. Le mode
-HTML autonome du cockpit historique demande une API joignable pour cette vue.
+L’[inventaire des offres](../src/hospitalos/world_model/data/noon_offers.json) et le [registre des dossiers et affectations](../src/hospitalos/world_model/data/noon_cases.json) décrivent les trois établissements synthétiques. Les dossiers d’entrée nommément présents fixent un minimum pour la file de leur unité lorsque le recensement agrégé est incomplet. Une entrée programmée et confirmée hors du recensement, comme A1 aux Rives, est comptée à midi dans chaque scénario, y compris la référence. Les coûts sont des hypothèses de démonstration. La validation humaine et le relevé se déroulent intégralement en simulation.
 
-Les routes FastAPI sont `GET /world-model/contexts`, `PUT|GET /world-model/sessions/{id}`,
-`POST /world-model/sessions/{id}/confirm` et `POST /world-model/sessions/{id}/advance`.
-Depuis le navigateur elles s’appellent sous `/api/world-model`. La démo fournit trois jeux
-d’entrées synthétiques, le vrai moteur C++ et les poids du JEPA. Les autres API et le cockpit
-patient conservent leurs parcours habituels.
+L’API crée ou relit la session avec `PUT|GET /world-model/sessions/{id}`. Sous cette route, `GET /plans?objective=bed_wait` présente les recommandations, `POST /plans/preview` évalue la sélection, `POST /plans/optimize` compare ses sous-ensembles, `POST /plans/confirm` enregistre le choix, et `POST /advance` avance l’horloge. Le navigateur utilise le préfixe `/api`. Les écritures sont atomiques. L’identifiant de session persiste dans le navigateur et la décision dans SQLite, sous `${XDG_STATE_HOME:-~/.local/state}/hospitalos/world-model.sqlite` ou dans le fichier désigné par `HOSPITALOS_WORLD_MODEL_DB`.
+
+## Cockpit d’unité
 
 Interface du MVP hybride (`src/hospitalos/hybrid`). Un seul parcours couplé :
 le **cadre de santé** voit ce qui bloque chaque sortie, le **gestionnaire de lits**

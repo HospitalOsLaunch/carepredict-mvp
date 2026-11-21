@@ -68,5 +68,8 @@
     }
   ],
   "noon_offer_sha256": "77936f4fb86348652143f325208086b2ce6bc79b7c56efa69bc56517d3ea31f7",
-  "noon_version": "MIDI5-v1"
+  "noon_version": "MIDI5-v1",
+  "joint_version": "MIDI-PLANS-v1",
+  "joint_registry_sha256": "11bd6a327bc73bde394cdfb579f48ade74a94e8719211669f08cf9ee8a797268",
+  "joint_kernel_sha256": "25da38ba62774850d374fdfea57f49dabb6593d35ed46fc5fc6de2ec103e2345"
 }

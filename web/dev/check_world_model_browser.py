@@ -7,7 +7,84 @@ import os
 from itertools import product
 from pathlib import Path
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import Browser, expect, sync_playwright
+
+
+def composed_journey(
+    browser: Browser, url: str, context: str, subset: bool, screenshots: Path | None
+) -> None:
+    phone = context != "rives" or subset
+    page = browser.new_page(
+        viewport={"width": 390 if phone else 1440, "height": 844 if phone else 940}, locale="fr-FR"
+    )
+    errors: list[str] = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    try:
+        page.goto(url.rstrip("/") + "/#/simulation")
+        page.get_by_role("combobox", name="Contexte synthétique").select_option(context)
+        expect(page.get_by_role("heading", name="Comparer les plans composés")).to_be_visible()
+        page.get_by_role("combobox", name="Critère du plan à midi").select_option("bed_wait")
+        if context == "rives":
+            with page.expect_response(lambda r: r.url.endswith("/plans/preview")) as res:
+                page.get_by_role("button", name="Essayer le plan à 8 actions").click()
+            example = res.value.json()
+            assert example["feasible"] and len(example["action_ids"]) == 8
+            if subset:
+                with page.expect_response(lambda r: r.url.endswith("/plans/optimize")) as res:
+                    page.get_by_role("button", name="Comparer les sous-ensembles").click()
+                assert res.value.json()["search"]["examined"] == 256
+                page.get_by_role("region", name="Sous-plans du brouillon").get_by_role(
+                    "radio"
+                ).first.check()
+        # Wait for the initial site/criterion request before acting on the current menu.
+        confirm = page.get_by_role("button", name="Valider le plan en simulation")
+        expect(confirm).to_be_enabled()
+        with page.expect_response(lambda r: r.url.endswith("/plans/confirm")) as res:
+            confirm.click()
+        saved = res.value.json()
+        assert saved["context"]["id"] == context and saved["phase"] == "confirmed"
+        assert saved["decision_objective"] == "bed_wait" and saved["plan_report"] is None
+        if context == "rives":
+            assert saved["plan_snapshot"]["search"]["complete"] == subset
+            assert len(saved["confirmed_plan"]["action_ids"]) in (range(1, 8) if subset else (8,))
+        if screenshots:
+            screenshots.mkdir(parents=True, exist_ok=True)
+            page.screenshot(
+                path=screenshots / f"{context}-plan-{'partiel' if subset else 'complet'}.png",
+                full_page=True,
+            )
+        with page.expect_response(lambda r: r.url.endswith("/advance")) as res:
+            page.get_by_role("button", name="Avancer à 16 h").click()
+        final = res.value.json()
+        if context == "belvedere":
+            assert final["observation"] is None and final["plan_report"] is None
+            with page.expect_response(lambda r: r.url.endswith("/advance")) as res:
+                page.get_by_role("button", name="Avancer à 18 h").click()
+            final = res.value.json()
+        assert final["phase"] == "review" and final["confirmed_plan"] == saved["confirmed_plan"]
+        assert (final["plan_report"]["actual_metrics"] is not None) == (context == "rives")
+        if context == "rives" and not subset:
+            assert (
+                final["plan_report"]["realized"]["A3"] == 0
+                and saved["confirmed_plan"]["realized"]["A3"] == 1
+            )
+        page.reload()
+        expect(page.get_by_role("region", name="Relevé du plan composé")).to_be_visible()
+        expect(page.get_by_role("region", name="Plan composé validé")).to_be_visible()
+        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+        if screenshots:
+            page.screenshot(
+                path=screenshots
+                / f"{context}-relecture-{'partielle' if subset else 'complete'}.png",
+                full_page=True,
+            )
+        assert not errors, errors
+        print(
+            f"{context}: {len(saved['confirmed_plan']['action_ids'])} interventions relues",
+            flush=True,
+        )
+    finally:
+        page.close()
 
 
 def check(url: str, screenshots: Path | None = None) -> None:
@@ -21,8 +98,9 @@ def check(url: str, screenshots: Path | None = None) -> None:
                 page_errors: list[str] = []
                 page.on("pageerror", lambda error, errors=page_errors: errors.append(str(error)))
                 page.goto(url.rstrip("/") + "/#/simulation")
-                expect(page.get_by_role("heading", name="Simuler une affectation")).to_be_visible()
+                expect(page.get_by_role("combobox", name="Contexte synthétique")).to_be_visible()
                 page.get_by_role("combobox", name="Contexte synthétique").select_option(context_id)
+                page.get_by_role("button", name="Action unique").click()
                 objective = {"staffing": "uncovered_care", "beds": "bed_wait"}.get(
                     family, "transfer_queue"
                 )
@@ -82,6 +160,13 @@ def check(url: str, screenshots: Path | None = None) -> None:
                     flush=True,
                 )
                 page.close()
+            for ctx, subset in (
+                ("rives", False),
+                ("rives", True),
+                ("parc", False),
+                ("belvedere", False),
+            ):
+                composed_journey(browser, url, ctx, subset, screenshots)
         finally:
             browser.close()
 

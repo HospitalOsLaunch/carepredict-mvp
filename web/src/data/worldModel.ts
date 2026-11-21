@@ -107,19 +107,26 @@ export function useWorldSession(context: string) {
     setBusy("load");
     setVersion((v) => v + 1);
   };
-  async function mutate(kind: "confirm" | "advance", optionId?: string, objective?: ComparisonObjective) {
+  type Decision =
+    | { kind: "advance" }
+    | { kind: "option"; id: string; objective: ComparisonObjective }
+    | { kind: "plan"; ids: string[]; objective: ComparisonObjective; scopeIds?: string[] };
+
+  async function mutate(decision: Decision) {
     const current = lastState.current;
     if (!current || active.current || error) return;
-    if (kind === "confirm" && (current.phase !== "planning" || !current.options.some((o) => o.id === optionId && canConfirm(o)))) return;
-    if (kind === "advance" && current.phase !== "confirmed" && current.phase !== "awaiting_report") return;
+    if (decision.kind === "advance" ? current.phase !== "confirmed" && current.phase !== "awaiting_report" : current.phase !== "planning") return;
+    if (decision.kind === "option" && !current.options.some((o) => o.id === decision.id && canConfirm(o))) return;
+    if (decision.kind === "plan" && !current.plan_version) return;
     const ctrl = new AbortController();
     active.current = ctrl;
-    setBusy(kind);
+    setBusy(decision.kind === "advance" ? "advance" : "confirm");
     setError(null);
     try {
-      const next = kind === "confirm"
-        ? await worldApi.confirm(current.id, context, optionId!, ctrl.signal, objective)
-        : await worldApi.advance(current.id, context, current.phase === "awaiting_report" ? 16 : 12, ctrl.signal);
+      let next: WmSession;
+      if (decision.kind === "advance") next = await worldApi.advance(current.id, context, current.phase === "awaiting_report" ? 16 : 12, ctrl.signal);
+      else if (decision.kind === "plan") next = await worldApi.confirmPlan(current.id, context, decision.ids, ctrl.signal, decision.objective, decision.scopeIds);
+      else next = await worldApi.confirm(current.id, context, decision.id, ctrl.signal, decision.objective);
       if (!ctrl.signal.aborted && active.current === ctrl) accept(next);
     } catch (e) {
       if (!ctrl.signal.aborted && active.current === ctrl) setError(worldError(e));
@@ -127,5 +134,10 @@ export function useWorldSession(context: string) {
       if (active.current === ctrl) { active.current = null; setBusy(null); }
     }
   }
-  return { state, busy, error, reload, restart, confirm: (id: string, objective: ComparisonObjective) => mutate("confirm", id, objective), advance: () => mutate("advance") };
+  return {
+    state, busy, error, reload, restart,
+    confirm: (id: string, objective: ComparisonObjective) => mutate({ kind: "option", id, objective }),
+    confirmPlan: (ids: string[], objective: ComparisonObjective, scopeIds?: string[]) => mutate({ kind: "plan", ids, objective, scopeIds }),
+    advance: () => mutate({ kind: "advance" }),
+  };
 }

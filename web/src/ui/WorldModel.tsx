@@ -1,36 +1,14 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ApiError } from "../api/client";
-import { canConfirm, COMPARISON_OBJECTIVES, RESOURCE_FAMILIES, RESOURCE_INDICATORS, worldApi, type ComparisonObjective, type ResourceFamily, type ResourceIndicator, type Flow, type WmCatalogue, type WmContext, type WmOption, type WmSession } from "../api/worldModel";
+import { canConfirm, COMPARISON_OBJECTIVES, RESOURCE_FAMILIES, RESOURCE_INDICATORS, worldApi, type ComparisonObjective, type ResourceFamily, type Flow, type WmCatalogue, type WmContext, type WmOption, type WmSession } from "../api/worldModel";
 import { remember, remembered, useWorldSession, worldError } from "../data/worldModel";
-import { Alert, BookIcon, Check, Clock, Info, Refresh, SimulationIcon } from "./icons";
+import { familyName, indicatorName, objectives, n, signed, time } from "../domain/worldModel";
+import { Alert, Check, Clock, Refresh, SimulationIcon } from "./icons";
+import { ContextCards, JourneyClock, WorldJournal } from "./WorldJourney";
+import { ComposedPlans } from "./ComposedPlans";
 import "../styles/worldModel.css";
 
 const flowName: Record<Flow, string> = { full: "Flux complet", partial: "Flux partiel", delayed: "Flux retardé" };
-const familyName: Record<ResourceFamily, string> = {
-  transport: "Transport", cleaning: "Bionettoyage", staffing: "Personnel IDE et AS",
-  smr: "Soins médicaux et de réadaptation (SMR)", beds: "Lits",
-};
-const indicatorName: Record<ResourceIndicator, string> = {
-  uncovered_ide_minutes: "Soins infirmiers non couverts (min)",
-  uncovered_as_minutes: "Soins aides-soignants non couverts (min)",
-  bed_wait_patient_hours: "Attente d’un lit (heures-patients)",
-  cost_eur: "Coût de l’affectation (€)",
-};
-const objectives: Record<ComparisonObjective, { label: string; column: string; unit: string; description: string }> = {
-  transfer_queue: {
-    label: "File de transfert à 16 h", column: "File à 16 h", unit: "patients",
-    description: "La file de transfert à 16 h est estimée en équivalents patients.",
-  },
-  bed_wait: {
-    label: "Attente d’un lit de 12 h à 16 h", column: "Attente d’un lit", unit: "heures-patients",
-    description: "L’attente cumulée additionne le temps passé par chaque patient à attendre un lit entre midi et 16 h.",
-  },
-  uncovered_care: {
-    label: "Soins IDE et AS non couverts de 12 h à 16 h", column: "Soins non couverts", unit: "minutes",
-    description: "Le total additionne les minutes de soins infirmiers et aides-soignants non couvertes entre midi et 16 h.",
-  },
-};
-
 function objectiveValue(option: WmOption, objective: ComparisonObjective): number | null {
   if (objective === "transfer_queue") return option.forecast;
   if (objective === "bed_wait") return option.bed_wait_patient_hours ?? null;
@@ -53,19 +31,6 @@ function bestMeasured(options: WmOption[], objective: ComparisonObjective): WmOp
   }
   return best;
 }
-
-const numeric = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
-const signed = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2, signDisplay: "exceptZero" });
-const n = (x: number) => numeric.format(x);
-const time = (x: number) => `${x} h`;
-const statusName: Record<WmSession["phase"], string> = {
-  planning: "Décision à prendre", confirmed: "Affectation validée en simulation",
-  awaiting_report: "Relevé en attente", review: "Relevé publié",
-};
-const journalName = {
-  opened: "Parcours ouvert", confirmed: "Choix validé en simulation",
-  awaiting_report: "Relevé de 16 h encore en attente", report_received: "Relevé de 16 h publié",
-};
 
 function Loading({ children }: { children: ReactNode }) {
   return <p className="wm-loading" role="status"><span aria-hidden="true" />{children}</p>;
@@ -102,8 +67,8 @@ export function WorldModel() {
     <header className="wm-heading">
       <div>
         <div className="wm-kicker"><SimulationIcon size={17} /> World model <span aria-hidden="true">/</span> Hôpital synthétique</div>
-        <h1>Simuler une affectation</h1>
-        <p>Comparez les options de midi pour la file de patients en attente de transfert à 16 h.</p>
+        <h1>Simuler le plan de midi</h1>
+        <p>Comparez à midi les effets des affectations sur les soins, les lits et les transferts jusqu’à 16 h.</p>
       </div>
       {catalogue && context && <label className="wm-context">Contexte synthétique
         <select className="select" value={id ?? ""} onChange={(e) => {
@@ -119,20 +84,6 @@ export function WorldModel() {
   </div>;
 }
 
-function Clockline({ session }: { session: WmSession }) {
-  const step = session.phase === "planning" || session.phase === "confirmed" ? 1 : 2;
-  return <ol className="wm-clockline" aria-label="Chronologie du parcours">
-    {[
-      { at: 8, label: "Planning de référence" },
-      { at: session.decision_hour, label: "Décision simulée" },
-      { at: session.target_hour, label: session.phase === "awaiting_report" ? "Relevé attendu" : "Relevé de la file" },
-    ].map((point, i) => <li key={point.at} className={i === step ? "is-now" : i < step ? "is-past" : ""} aria-current={i === step ? "step" : undefined}>
-      <span className="wm-clockline__dot" aria-hidden="true">{i < step ? <Check size={14} /> : <Clock size={15} />}</span>
-      <span><strong>{time(point.at)}</strong><span>{point.label}</span></span>
-    </li>)}
-  </ol>;
-}
-
 function Workspace({ context }: { context: WmContext }) {
   const run = useWorldSession(context.id);
   return <>
@@ -146,9 +97,25 @@ function Workspace({ context }: { context: WmContext }) {
       </div>
     </div>
     {run.error && <Problem text={run.error} onRetry={run.reload} disabled={!!run.busy} />}
-    {run.state ? <Journey key={run.state.id} session={run.state} locked={!!run.busy || !!run.error}
-      busy={run.busy} onConfirm={run.confirm} onAdvance={run.advance} /> :
+    {run.state ? <Modes key={run.state.id} session={run.state} run={run} /> :
       !run.error && <Loading>Chargement du planning de cet établissement…</Loading>}
+  </>;
+}
+
+function Modes({ session, run }: { session: WmSession; run: ReturnType<typeof useWorldSession> }) {
+  const [single, setSingle] = useState(false);
+  const planning = session.phase === "planning";
+  const composed = planning ? Boolean(session.plan_version) && !single : Boolean(session.confirmed_plan);
+  const locked = Boolean(run.busy || run.error);
+  return <>
+    <JourneyClock session={session} busy={run.busy} />
+    {planning && session.plan_version && <div className="jp-modes" role="group" aria-label="Mode de décision">
+      <button type="button" aria-pressed={composed} disabled={locked} onClick={() => setSingle(false)}>Plan composé</button>
+      <button type="button" aria-pressed={!composed} disabled={locked} onClick={() => setSingle(true)}>Action unique</button>
+    </div>}
+    {composed
+      ? <ComposedPlans session={session} locked={locked} busy={run.busy} onConfirm={run.confirmPlan} onAdvance={run.advance} />
+      : <Journey session={session} locked={locked} busy={run.busy} onConfirm={run.confirm} onAdvance={run.advance} />}
   </>;
 }
 
@@ -215,12 +182,6 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
   }
 
   return <>
-    <Clockline session={session} />
-    <div className="wm-phase" role="status">
-      <span className="wm-status"><i aria-hidden="true" />{statusName[session.phase]}</span>
-      <span>Horloge simulée <strong>{time(session.hour)}</strong></span>
-      {busy === "load" && <span>Actualisation…</span>}
-    </div>
     <div className="wm-layout">
       <div className="wm-primary">
         {session.phase === "review" && selected && <Observed session={session} selected={selected} />}
@@ -293,23 +254,12 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
           <button className="btn btn--small" type="button" disabled><Clock /> Avancer à 16 h</button>
           <span>Disponible après validation.</span>
         </div>}
-        <Journal session={session} />
+        <WorldJournal session={session} />
       </div>
       <aside className="wm-aside" aria-label="Repères du parcours">
         <Projection session={session} option={selected ?? reference} reference={reference} id={detailId}
           confirmId={isPlanning && selected ? confirmId : undefined} />
-        <section className="wm-card wm-side-card">
-          <div className="wm-side-head"><Clock /><h2>Planning de 8 h</h2></div>
-          {session.morning_plan.length ? <ul className="wm-plan">{session.morning_plan.map((item, i) => <li key={i}>{item}</li>)}</ul> :
-            <p>Aucune affectation inscrite au planning de référence.</p>}
-        </section>
-        <section className="wm-card wm-side-card">
-          <div className="wm-side-head"><Info /><h2>Disponibilité des données</h2></div>
-          <p>{session.context.feed === "full" ? "Les deux composantes de la file sont attendues pour chaque unité." :
-            session.context.feed === "partial" ? "Certains relevés d’unité peuvent rester incomplets. La file totale exige les deux composantes de chaque unité." :
-            `La file est mesurée à 16 h. Dans ce contexte, le relevé est publié à ${time(session.publication_hour)}.`}</p>
-          <p className="wm-model-version">Version du modèle <span>{session.model_version}</span></p>
-        </section>
+        <ContextCards session={session} />
       </aside>
     </div>
   </>;
@@ -387,18 +337,5 @@ function Observed({ session, selected }: { session: WmSession; selected: WmOptio
       <thead><tr><th scope="col">Unité</th><th scope="col">Observée</th>{option && <th scope="col">Autre option estimée</th>}</tr></thead>
       <tbody>{session.wards.map((w,i) => <tr key={w.id}><th scope="row">{w.label}</th><td>{out(reading.by_ward[i])}</td>{option && <td>{out(option.reconstructed_by_ward?.[i])}</td>}</tr>)}</tbody>
     </table></div>
-  </section>;
-}
-
-function Journal({ session }: { session: WmSession }) {
-  return <section className="wm-card wm-journal" aria-label="Journal du parcours">
-    <div className="wm-side-head"><BookIcon /><h2>Journal du parcours</h2></div>
-    <ol>{session.journal.map((entry,i) => {
-      const option = session.options.find((o) => o.id === entry.option_id);
-      return <li key={i}><span className="wm-journal__at">{time(entry.hour)}</span><span><strong>{journalName[entry.event]}</strong>{option && <small>{option.label}</small>}
-        {entry.event === "confirmed" && <small>{session.decision_objective
-          ? `Critère enregistré · ${objectives[session.decision_objective].label}` : "Critère de comparaison non renseigné"}</small>}
-      </span></li>;
-    })}</ol>
   </section>;
 }

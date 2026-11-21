@@ -2,10 +2,12 @@
 
 ## Démo du world model hospitalier
 
-À midi, le cadre compare cinq leviers : transport, bionettoyage, personnel IDE/AS, places en
-soins médicaux et de réadaptation (SMR) et lits équipés. Il peut aussi conserver le planning.
-Après validation en simulation, le cockpit présente la file observée à 16 h. Le cockpit peut ensuite estimer ce qu’aurait donné un autre choix. Trois
-établissements synthétiques illustrent un relevé complet, partiel ou publié à 18 h.
+À midi, le cadre peut coordonner des sorties et des entrées identifiées, remplacer une absence,
+réaffecter une personne, solliciter un renfort et mobiliser le transport, le bionettoyage,
+un lit ou une place de SMR. Le cockpit compare ces actions **ensemble** au planning de 8 h.
+Il chiffre l’effet prévu de chaque plan sur les ressources et présente les écarts par unité.
+Le cadre choisit son critère, ajuste les actions et valide le plan en simulation.
+Trois établissements synthétiques illustrent un relevé de 16 h complet, partiel ou publié à 18 h.
 
 ```bash
 make demo-world-model
@@ -16,7 +18,7 @@ Le lanceur prépare le cockpit et démarre les deux API en local. Ouvrir
 utiliser [GitHub Codespaces](https://codespaces.new/HospitalOsLaunch/carepredict-mvp/tree/demo/world-model-cockpit).
 Le port 5173 donne accès au cockpit de l’espace créé.
 
-[Guide de démonstration](web/README.md#simuler-une-affectation) ·
+[Guide de démonstration](web/README.md#simuler-le-plan-de-midi) ·
 [Méthode, poids et résultats de l’expérience](research/balestriero/README.md)
 
 ## New MVP direction: explicit state, probabilistic simulation, assisted decisions

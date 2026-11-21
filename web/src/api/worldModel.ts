@@ -1,4 +1,5 @@
 import { call } from "./client";
+import { isEvaluation, isPlanReport, readMenu, type PlanEvaluation, type PlanMenu, type PlanReport } from "./worldPlans";
 
 export type Flow = "full" | "partial" | "delayed";
 export type Phase = "planning" | "confirmed" | "awaiting_report" | "review";
@@ -39,6 +40,10 @@ export interface WmSession {
   id: string; context: WmContext; phase: Phase; hour: number; decision_hour: 12; target_hour: 16;
   publication_hour: number; model_version: string; morning_plan: string[]; wards: WmWard[];
   decision_objective?: ComparisonObjective | null;
+  plan_version?: string | null;
+  confirmed_plan?: PlanEvaluation | null;
+  plan_snapshot?: PlanMenu | null;
+  plan_report?: PlanReport | null;
   reference_id: string; selected_id: string | null; options: WmOption[]; observation: WmReading | null; journal: WmEvent[];
 }
 
@@ -70,6 +75,18 @@ function session(raw: unknown, id: string, context: string): WmSession {
       !Array.isArray(raw.wards) || raw.wards.length !== raw.context.ward_count ||
       !raw.wards.every((ward) => object(ward) && str(ward.id) && str(ward.label) && num(ward.beds)) ||
       !Array.isArray(raw.options) || !raw.options.length || !str(raw.reference_id) || !Array.isArray(raw.journal)) fail();
+  if (!(raw.plan_version == null || str(raw.plan_version)) ||
+      !(raw.confirmed_plan == null || (isEvaluation(raw.confirmed_plan) && raw.confirmed_plan.feasible && raw.phase !== "planning")) ||
+      !(raw.plan_report == null || (raw.phase === "review" && raw.confirmed_plan != null && isPlanReport(raw.plan_report)))) fail();
+  const plan = raw.confirmed_plan;
+  const report = raw.plan_report;
+  if (raw.plan_snapshot != null) {
+    if (!plan || !COMPARISON_OBJECTIVES.some((key) => key === raw.decision_objective)) fail();
+    const snapshot = readMenu(raw.plan_snapshot, raw.decision_objective as ComparisonObjective);
+    if (!plan.action_ids.every((id) => snapshot.actions.some((a) => a.id === id))) fail();
+  }
+  if (plan && raw.phase === "review" && !report) fail();
+  if (report && raw.context.feed !== "full" && (report.actual_metrics !== null || report.realized !== null || report.case_hours != null)) fail();
   const count = raw.wards.length;
   const wards = new Set(raw.wards.map((w) => w.id));
   const options = new Set<string>();
@@ -85,7 +102,8 @@ function session(raw: unknown, id: string, context: string): WmSession {
     options.add(o.id);
   }
   if (wards.size !== count || !raw.options.some((o) => o.id === raw.reference_id && o.kind === "reference") ||
-      !(raw.phase === "planning" ? raw.selected_id === null : str(raw.selected_id) && options.has(raw.selected_id))) fail();
+      !(raw.phase === "planning" ? raw.selected_id === null :
+        plan ? raw.selected_id === plan.id : str(raw.selected_id) && options.has(raw.selected_id))) fail();
   const r = raw.observation;
   if (raw.phase === "review") {
     if (!object(r) || r.sample_hour !== 16 || !int(r.published_hour) || r.published_hour !== raw.publication_hour || r.published_hour !== raw.hour ||
@@ -97,7 +115,7 @@ function session(raw: unknown, id: string, context: string): WmSession {
     if (allObserved && num(r.observed_stock) && Math.abs(r.by_ward.reduce((a: number, b: number) => a + b, 0) - r.observed_stock) > 1e-4 * Math.max(1, Math.abs(r.observed_stock))) fail();
   } else if (r !== null || (raw.phase === "awaiting_report" ? raw.hour !== 16 : raw.hour !== 12)) fail();
   if (!raw.journal.every((j) => object(j) && int(j.hour) && one(j.event, ["opened", "confirmed", "awaiting_report", "report_received"]) &&
-      (j.option_id === null || (str(j.option_id) && options.has(j.option_id))))) fail();
+      (j.option_id === null || (str(j.option_id) && (options.has(j.option_id) || j.option_id === plan?.id))))) fail();
   const validated = raw as unknown as WmSession;
   const withinCapacity = (amount: number, capacity: number) =>
     amount >= -1e-6 && amount <= capacity + 1e-6 * Math.max(1, capacity);
@@ -127,6 +145,8 @@ export const worldApi = {
   read: (id: string, context: string, signal: AbortSignal) => sessionCall(id, context, "", { signal }),
   confirm: (id: string, context: string, option: string, signal: AbortSignal, objective?: ComparisonObjective) =>
     sessionCall(id, context, "/confirm", { method: "POST", body: JSON.stringify({ option_id: option, objective }), signal }),
+  confirmPlan: (id: string, context: string, actionIds: string[], signal: AbortSignal, objective: ComparisonObjective, scopeIds?: string[]) =>
+    sessionCall(id, context, "/plans/confirm", { method: "POST", body: JSON.stringify({ action_ids: actionIds, objective, scope_ids: scopeIds }), signal }),
   advance: (id: string, context: string, from: 12 | 16, signal: AbortSignal) =>
     sessionCall(id, context, "/advance", { method: "POST", body: JSON.stringify({ from_hour: from }), signal }),
 };

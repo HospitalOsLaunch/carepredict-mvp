@@ -1,0 +1,217 @@
+{
+  "rives": {
+    "as_of_hour": 12,
+    "cases": [
+      {
+        "id": "S1",
+        "ward": 3,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "S2",
+        "ward": 6,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A1",
+        "ward": 2,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 14,
+        "authorized": true,
+        "logistics_confirmed": true,
+        "source": "registered_direct_arrival"
+      },
+      {
+        "id": "A2",
+        "ward": 6,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A3",
+        "ward": 6,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      }
+    ],
+    "replacement": {
+      "ward": 6,
+      "absence_confirmed": true,
+      "staff_confirmed": true,
+      "staff_id": "IDE-RP-01",
+      "cost_eur": 190
+    },
+    "redeployment": {
+      "from_ward": 1,
+      "to_ward": 6,
+      "staff_confirmed": true,
+      "staff_id": "AS-MOBILE"
+    },
+    "example_action_ids": [
+      "S1",
+      "S2",
+      "A1",
+      "A2",
+      "A3",
+      "replacement-ide",
+      "redeploy-as",
+      "staffing-as-u1"
+    ]
+  },
+  "parc": {
+    "as_of_hour": 12,
+    "cases": [
+      {
+        "id": "S1",
+        "ward": 3,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "S2",
+        "ward": 5,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 16,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A1",
+        "ward": 2,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 14,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A2",
+        "ward": 5,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A3",
+        "ward": 5,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 16,
+        "authorized": true,
+        "logistics_confirmed": true
+      }
+    ],
+    "replacement": {
+      "ward": 3,
+      "absence_confirmed": true,
+      "staff_confirmed": true,
+      "staff_id": "IDE-VIVIER",
+      "cost_eur": 190
+    },
+    "redeployment": {
+      "from_ward": 4,
+      "to_ward": 6,
+      "staff_confirmed": true,
+      "staff_id": "AS-MOBILE"
+    }
+  },
+  "belvedere": {
+    "as_of_hour": 12,
+    "cases": [
+      {
+        "id": "S1",
+        "ward": 1,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 14,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "S2",
+        "ward": 7,
+        "kind": "discharge",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A1",
+        "ward": 4,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 14,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A2",
+        "ward": 5,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 15,
+        "authorized": true,
+        "logistics_confirmed": true
+      },
+      {
+        "id": "A3",
+        "ward": 6,
+        "kind": "admission",
+        "known_hour": 12,
+        "available_hour": 12,
+        "scheduled_hour": 16,
+        "authorized": true,
+        "logistics_confirmed": true
+      }
+    ],
+    "replacement": {
+      "ward": 7,
+      "absence_confirmed": true,
+      "staff_confirmed": false,
+      "staff_id": "IDE-RP-03",
+      "cost_eur": 190
+    },
+    "redeployment": {
+      "from_ward": 1,
+      "to_ward": 7,
+      "staff_confirmed": true,
+      "staff_id": "AS-MOBILE"
+    }
+  }
+}

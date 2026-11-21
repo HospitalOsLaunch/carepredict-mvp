@@ -70,7 +70,7 @@ include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
 [tool.setuptools.package-data]
 hospitalos = ["py.typed"]
-"hospitalos.world_model" = ["flow_kernel.cpp", "data/*.npz", "data/*.json"]
+"hospitalos.world_model" = ["flow_kernel.cpp", "joint_kernel.cpp", "data/*.npz", "data/*.json"]
 
 [tool.ruff]
 target-version = "py311"

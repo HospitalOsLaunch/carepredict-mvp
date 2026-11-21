@@ -184,7 +184,7 @@ export function Journal(props: {
         <SignedAs me={me} />
         {hasWorldSession() && (
           <a className="btn journal-simulation-link" href="#/simulation">
-            <SimulationIcon /> Reprendre le parcours de simulation
+            <SimulationIcon /> Reprendre la simulation de midi
           </a>
         )}
       </header>

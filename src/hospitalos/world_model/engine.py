@@ -40,6 +40,9 @@ def manifest() -> dict[str, Any]:
                 "cases",
                 "noon_version",
                 "noon_offer_sha256",
+                "joint_version",
+                "joint_registry_sha256",
+                "joint_kernel_sha256",
             )
         ):
             raise ValueError("Incomplete bundle")
@@ -77,6 +80,18 @@ def cases() -> dict[str, Case]:
 
 def model_version() -> str:
     return f"{manifest()['version']} / {manifest()['noon_version']}"
+
+
+def plan_version() -> str:
+    info = manifest()
+    identity = [
+        info["joint_version"],
+        info["joint_registry_sha256"],
+        info["noon_offer_sha256"],
+        info["kernel_sha256"],
+        info["joint_kernel_sha256"],
+    ]
+    return f"{identity[0]}/{hashlib.sha256(json.dumps(identity).encode()).hexdigest()[:16]}"
 
 
 def revision(case: Case, *, legacy: bool = False) -> str:
@@ -227,6 +242,7 @@ def open_session(identifier: str, case: Case) -> Session:
         hour=12,
         publication_hour=case.publication,
         model_version=model_version(),
+        plan_version=plan_version(),
         morning_plan=morning,
         wards=wards,
         reference_id="reference",

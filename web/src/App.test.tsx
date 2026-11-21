@@ -36,12 +36,12 @@ describe("cockpit", () => {
     vi.stubEnv("VITE_HOSPITALOS_START_PAGE", "simulation");
     try {
       const first = render(<App />);
-      expect(await screen.findByRole("heading", { name: "Simuler une affectation" })).toBeTruthy();
+      expect(await screen.findByRole("heading", { name: "Simuler le plan de midi" })).toBeTruthy();
       first.unmount();
       window.history.replaceState(null, "", "/?situation=nominal#/");
       render(<App />);
       await ready();
-      expect(screen.getByRole("link", { name: "Simuler une affectation" })).toBeTruthy();
+      expect(screen.getByRole("link", { name: "Simuler le plan de midi" })).toBeTruthy();
     } finally {
       vi.unstubAllEnvs();
     }

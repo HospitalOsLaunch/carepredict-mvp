@@ -9,7 +9,18 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Response
 
 from hospitalos.world_model import engine
-from hospitalos.world_model.contracts import Advance, Confirm, Contexts, Session, Start
+from hospitalos.world_model.contracts import (
+    Advance,
+    Confirm,
+    Contexts,
+    Objective,
+    PlanConfirmation,
+    PlanEvaluation,
+    PlanMenu,
+    PlanRequest,
+    Session,
+    Start,
+)
 from hospitalos.world_model.physics import ModelUnavailable
 from hospitalos.world_model.sessions import Conflict, SessionStore, Unknown
 
@@ -66,5 +77,23 @@ def world_model_router(store: SessionStore) -> APIRouter:
     @router.post("/sessions/{identifier}/advance")
     def advance(identifier: UUID, body: Advance, response: Response) -> Session:
         return respond(response, lambda: store.mutate(str(identifier), "advance", body.from_hour))
+
+    @router.get("/sessions/{identifier}/plans")
+    def plans(
+        identifier: UUID, response: Response, objective: Objective = "transfer_queue"
+    ) -> PlanMenu:
+        return respond(response, lambda: store.plan_menu(str(identifier), objective))
+
+    @router.post("/sessions/{identifier}/plans/preview")
+    def preview(identifier: UUID, body: PlanRequest, response: Response) -> PlanEvaluation:
+        return respond(response, lambda: store.plan_preview(str(identifier), body))
+
+    @router.post("/sessions/{identifier}/plans/optimize")
+    def optimize(identifier: UUID, body: PlanRequest, response: Response) -> PlanMenu:
+        return respond(response, lambda: store.plan_optimize(str(identifier), body))
+
+    @router.post("/sessions/{identifier}/plans/confirm")
+    def confirm_plan(identifier: UUID, body: PlanConfirmation, response: Response) -> Session:
+        return respond(response, lambda: store.confirm_plan(str(identifier), body))
 
     return router

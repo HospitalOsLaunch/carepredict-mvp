@@ -1,0 +1,71 @@
+.jp-modes { display: inline-flex; flex-wrap: wrap; gap: 3px; padding: 3px; margin: 2px 0 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--well); }
+.jp-modes button { padding: 5px 13px; min-height: 34px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--ink-2); font: inherit; font-size: var(--t-sm); font-weight: 600; cursor: pointer; }
+.jp-modes [aria-pressed="true"] { border-color: var(--line); background: var(--sheet); color: var(--brand-strong); box-shadow: 0 1px 2px var(--line); }
+.jp-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); align-items: start; gap: clamp(14px, 2vw, 25px); }
+.jp-main, .jp-side { display: grid; min-width: 0; gap: 14px; }
+.jp-card { padding: var(--wm-pad); }
+.jp-head { display: flex; align-items: start; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+.jp-tools { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.jp-tools .jp-mobile-shortcut { display: none; }
+.jp-card .wm-eyebrow { margin-bottom: 4px; }
+.jp-card .jp-hint { margin-top: 6px; color: var(--ink-2); font-size: var(--t-sm); line-height: 1.42; }
+.jp-input-label { display: grid; gap: 4px; margin: 12px 0; font-size: var(--t-sm); font-weight: 650; }
+.jp-input-label .select { min-width: 0; max-width: 100%; width: 100%; font-size: var(--t-md); }
+.jp-picks, .jp-editor-list { margin: 10px 0; border: 0; padding: 0; min-inline-size: 0; }
+.jp-pick, .jp-editor-action { display: grid; align-items: center; gap: 10px; min-height: 45px; padding: 9px; border: 1px solid transparent; border-top-color: var(--line); cursor: pointer; }
+.jp-pick { grid-template-columns: 16px minmax(0, 1fr) auto; }
+.jp-editor-action { grid-template-columns: 16px minmax(0,1fr); }
+.jp-pick:has(:focus-visible), .jp-editor-action:has(:focus-visible) { outline: 2px solid var(--focus); outline-offset: -2px; }
+.jp-pick:has(input:disabled), .jp-editor-action:has(input:disabled) { cursor: default; }
+.jp-pick.is-picked, .jp-editor-action.is-picked { border-color: var(--brand); border-radius: 7px; background: var(--brand-wash); }
+.jp-pick input, .jp-editor-action input { width: 16px; height: 16px; margin: 0; accent-color: var(--brand); }
+.jp-pick__body, .jp-score, .jp-editor-action > span { display: grid; gap: 3px; overflow-wrap: anywhere; }
+.jp-pick small, .jp-editor-action small, .jp-action-list small { color: var(--ink-2); font-size: var(--t-sm); line-height: 1.35; }
+.jp-score { justify-items: end; max-width: 82px; text-align: right; }
+.jp-score strong, .jp-summary__numbers strong, .jp-readouts strong { font-family: var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.035em; }
+.jp-score strong { font-size: var(--t-lg); }
+.jp-score small { font-size: var(--t-xs); }
+.jp-editor-list { max-height: 390px; overflow-y: auto; overscroll-behavior: contain; }
+.jp-editor-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 12px; }
+.jp-editor-controls > strong { width: 100%; font-size: var(--t-sm); }
+.jp-conflicts { padding: 11px 13px; margin: 10px 0; background: var(--alerte-wash); color: var(--ink); border-radius: var(--r-sm); }
+.jp-conflicts > strong { color: var(--alerte); }
+.jp-conflicts ul { margin: 5px 0 0; padding-left: 20px; }
+.jp-summary__numbers { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; margin: 12px 0 4px; }
+.jp-summary__numbers strong { color: var(--brand-strong); font-size: var(--t-xl); }
+.jp-total { color: var(--ink-2); font-size: var(--t-sm); }
+.jp-action-list { list-style: none; padding: 0; margin: 10px 0 !important; }
+.jp-action-list li { display: grid; gap: 2px; border-top: 1px solid var(--line); padding: 7px 0; }
+.jp-confirm { margin-top: 12px; }
+.jp-delay { margin-top: 12px; padding: 10px; background: var(--sac-wash); border-radius: var(--r-sm); }
+.jp-delay h3 { margin: 0; }
+.jp-delay p { margin: 6px 0; }
+.jp-table-wrap { min-width: 0; overflow-x: auto; margin-top: 9px; }
+.jp-impacts { width: 100%; border-collapse: collapse; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
+.jp-impacts th, .jp-impacts td { padding: 5px 4px; border-bottom: 1px solid var(--line-soft); text-align: right; overflow-wrap: anywhere; }
+.jp-impacts th:first-child { text-align: left; }
+.jp-impacts tbody th { font-weight: 500; }
+.jp-impacts .jp-table-group th { padding-top: 8px; color: var(--brand-strong); font-weight: 650; }
+.jp-readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px,1fr)); gap: 6px; margin-top: 12px; }
+.jp-readouts > div { background: var(--well); padding: 10px; display: grid; gap: 3px; border-radius: var(--r-sm); }
+.jp-readouts > div:first-child { background: var(--bloc-wash); }
+.jp-readouts span { color: var(--ink-2); font-size: var(--t-sm); }
+.jp-readouts strong { font-size: var(--t-lg); }
+.jp-disclosure { margin-top: 12px; font-size: var(--t-sm); }
+.jp-disclosure summary { cursor: pointer; color: var(--brand-strong); font-weight: 650; }
+.jp-archived { margin-top: 0; }
+.jp-disclosure dl { margin: 5px 0 0; }
+.jp-disclosure dl > div { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; }
+.jp-disclosure dd { margin: 0; font-variant-numeric: tabular-nums; }
+.wm-journal .jp-journal-actions { padding-left: 16px; margin-top: 5px; }
+.wm-journal .jp-journal-actions li { display: list-item; border: 0; padding: 1px 0; font-size: var(--t-xs); color: var(--ink-2); }
+@media (max-width: 760px) {
+  .jp-tools .jp-mobile-shortcut { display: inline-flex; }
+  .jp-layout { grid-template-columns: minmax(0, 1fr); }
+  .jp-editor-list { max-height: 320px; }
+  .jp-pick { padding-inline: 5px; gap: 7px; }
+  .jp-impacts { font-size: var(--t-xs); }
+}
+
+.wm-journal__entry { display: grid; }
+.jp-impact-panel:focus, .jp-summary:focus { scroll-margin-top: 70px; outline: 2px solid var(--focus); }
