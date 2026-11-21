@@ -1,25 +1,26 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
-// "demo" mode produces one self-contained HTML file running on bundled fixtures,
-// suitable for sharing a preview. The default build talks to the local API.
-export default defineConfig(({ mode }) => ({
-  plugins: mode === "demo" ? [react(), viteSingleFile()] : [react()],
-  define: { __DEMO_ONLY__: JSON.stringify(mode === "demo") },
-  build: { outDir: mode === "demo" ? "dist-demo" : "dist" },
-  server: {
-    port: 5173,
-    proxy: {
-      // 24-hour decision-support engine (web/decision/serve.py), loopback only. Must precede "/api".
-      "/api/decision": {
-        target: "http://127.0.0.1:8765",
-        rewrite: (p) => p.replace(/^\/api\/decision/, "/api"),
-      },
-      // FastAPI hybrid app (services/api/hybrid_app.py), loopback only.
-      "/api": { target: "http://127.0.0.1:8000", rewrite: (p) => p.replace(/^\/api/, "") },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, ".", "HOSPITALOS_");
+  const proxy = {
+    "/api/decision": {
+      target: `http://127.0.0.1:${env.HOSPITALOS_DECISION_PORT || "8765"}`,
+      rewrite: (path: string) => path.replace(/^\/api\/decision/, "/api"),
     },
-  },
-  test: { environment: "jsdom", globals: true },
-}));
+    "/api": {
+      target: `http://127.0.0.1:${env.HOSPITALOS_API_PORT || "8000"}`,
+      rewrite: (path: string) => path.replace(/^\/api/, ""),
+    },
+  };
+  return {
+    plugins: mode === "demo" ? [react(), viteSingleFile()] : [react()],
+    define: { __DEMO_ONLY__: JSON.stringify(mode === "demo") },
+    build: { outDir: mode === "demo" ? "dist-demo" : "dist" },
+    server: { port: 5173, proxy },
+    preview: { proxy },
+    test: { environment: "jsdom", globals: true },
+  };
+});

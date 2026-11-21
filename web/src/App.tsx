@@ -4,16 +4,17 @@ import { type Connection, type Store, useAssessment } from "./data/useAssessment
 import { type Assessment, clock, longClock } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { DecisionPlan } from "./ui/DecisionPlan";
+import { WorldModel } from "./ui/WorldModel";
 import { Journal } from "./ui/Journal";
 import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
-import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon, SimulationIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "plan" | "journal" | "donnees";
+type Route = "unite" | "proposition" | "plan" | "simulation" | "journal" | "donnees";
 
 interface Location {
   route: Route;
@@ -22,9 +23,12 @@ interface Location {
 }
 
 function readRoute(): Location {
+  if (!window.location.hash && import.meta.env.VITE_HOSPITALOS_START_PAGE === "simulation") {
+    return { route: "simulation", param: null };
+  }
   const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
   const route =
-    head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
+    head === "proposition" || head === "plan" || head === "simulation" || head === "donnees" || head === "journal" ? head : "unite";
   return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
@@ -49,6 +53,7 @@ const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon:
   { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
   { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
   { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
+  { id: "simulation", href: "#/simulation", label: "Simulation", key: "S", Icon: () => <SimulationIcon /> },
   { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
   { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
 ];
@@ -64,6 +69,7 @@ const TITLES: Record<Route, string> = {
   unite: "Unité",
   proposition: "Proposition",
   plan: "Plan à 24 h",
+  simulation: "Simuler une affectation",
   journal: "Journal des décisions",
   donnees: "Qualité des données",
 };
@@ -78,6 +84,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
   ["P", "Plan jusqu'à demain (24 h)"],
+  ["S", "Simuler une affectation"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
@@ -89,6 +96,7 @@ function useShortcuts(
   selectUnit: (id: string) => void,
   openSwitcher: () => void,
   openHelp: () => void,
+  simulation: boolean,
 ) {
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
@@ -99,6 +107,7 @@ function useShortcuts(
       const k = e.key.toLowerCase();
       const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
       const digit = Number(e.key);
+      if (simulation && (["u", "o", "n", "f", "r"].includes(k) || (digit >= 1 && digit <= 9))) return;
       if (k === "u") openSwitcher();
       else if (k === "?") openHelp();
       else if (k === "o") emit("yes");
@@ -109,6 +118,7 @@ function useShortcuts(
       else if (k === "a") go("unite");
       else if (k === "d") go("proposition");
       else if (k === "p") go("plan");
+      else if (k === "s") go("simulation");
       else if (k === "q") go("donnees");
       else if (digit >= 1 && digit <= 9) {
         // While the "why not" reasons are open, digits pick a reason instead of a unit.
@@ -122,12 +132,13 @@ function useShortcuts(
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [store, selectUnit, openSwitcher, openHelp]);
+  }, [store, selectUnit, openSwitcher, openHelp, simulation]);
 }
 
 export function App() {
-  const store = useAssessment();
   const { route, param } = useRoute();
+  const simulation = route === "simulation";
+  const store = useAssessment(!simulation);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
   const help = useRef<HTMLDialogElement>(null);
@@ -149,7 +160,7 @@ export function App() {
   }, [store.connection, stateAt, store.units]);
 
   useEffect(() => {
-    document.title = `${store.unitName} · ${TITLES[route]} · HospitalOS`;
+    document.title = route === "simulation" ? `${TITLES[route]} · HospitalOS` : `${store.unitName} · ${TITLES[route]} · HospitalOS`;
   }, [route, store.unitName]);
 
   // Announce a unit change made by the person (switcher or digit key), not the initial load.
@@ -162,11 +173,14 @@ export function App() {
     },
     [store],
   );
-  useShortcuts(store, selectUnit, openSwitcher, openHelp);
+  useShortcuts(store, selectUnit, openSwitcher, openHelp, simulation);
 
   return (
     <div className="shell">
-      <a className="skip" href="#contenu">
+      <a className="skip" href="#contenu" onClick={(event) => {
+        event.preventDefault();
+        document.getElementById("contenu")?.focus();
+      }}>
         Aller au contenu
       </a>
       <header className="topbar">
@@ -175,12 +189,14 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          <UnitSwitcher
-            summaries={store.summaries}
-            unitId={store.unitId}
-            onSelect={selectUnit}
-            openSignal={switcherSignal}
-          />
+          {!simulation && (
+            <UnitSwitcher
+              summaries={store.summaries}
+              unitId={store.unitId}
+              onSelect={selectUnit}
+              openSignal={switcherSignal}
+            />
+          )}
           <nav className="nav" aria-label="Sections">
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
@@ -190,7 +206,7 @@ export function App() {
             ))}
           </nav>
           <div className="topbar__end">
-            {a && route !== "plan" ? (
+            {a && route !== "plan" && !simulation ? (
               <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
                 <span className="stateclock__label">État</span>
                 <span className="stateclock__time num">{clock(a.state.at)}</span>
@@ -215,13 +231,13 @@ export function App() {
       </header>
 
       <main className="main" id="contenu" tabIndex={-1}>
-        {store.error ? (
+        {!simulation && store.error ? (
           <div className="notice notice--error" role="alert">
             <Alert />
             <span>{store.error}</span>
           </div>
         ) : null}
-        {route !== "plan" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {!simulation && route !== "plan" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -244,7 +260,9 @@ export function App() {
             ) : null}
           </div>
         ) : null}
-        {route === "plan" ? (
+        {simulation ? (
+          <WorldModel />
+        ) : route === "plan" ? (
           // Independent synthetic unit and engine: computed on arrival, no scenario typed.
           <DecisionPlan />
         ) : !a || !now ? (
@@ -379,12 +397,17 @@ function UnitPage(props: {
 
   return (
     <>
-      <h1 className="hello">
-        <Illu name={momentIllu(hour)} size={44} className="hello__illu" />
-        <span>
-          {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
-        </span>
-      </h1>
+      <div className="unit-heading">
+        <h1 className="hello">
+          <Illu name={momentIllu(hour)} size={44} className="hello__illu" />
+          <span>
+            {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
+          </span>
+        </h1>
+        <a className="btn unit-heading__simulation" href="#/simulation">
+          <SimulationIcon /> Simuler une affectation
+        </a>
+      </div>
       <TensionStrip a={a} onJump={jump} />
       <Proposal {...props} />
       <InProgress

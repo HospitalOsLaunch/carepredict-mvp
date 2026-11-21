@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import UTC, datetime
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 
@@ -19,10 +20,17 @@ from hospitalos.hybrid.planning import Plan, PlanRequest, plan
 def create_app(
     live: LiveStore | None = None,
     clock: Callable[[], datetime] = lambda: datetime.now(UTC),
+    *,
+    world_model_db: Path | None = None,
 ) -> FastAPI:
     if live is not None and live.policy.mode != "shadow":
         raise ValueError("The local API only accepts a shadow-mode store")
     app = FastAPI(title="HospitalOS Hybrid MVP - local prototype", version="0.2.0")
+    if world_model_db is not None:
+        from hospitalos.world_model.sessions import SessionStore
+        from services.api.routers.world_model import world_model_router
+
+        app.include_router(world_model_router(SessionStore(world_model_db)))
 
     @app.post("/hybrid/plan", response_model=Plan)
     def recommend(request: PlanRequest) -> Plan:

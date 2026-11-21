@@ -13,10 +13,11 @@ import {
   todoHint,
   who,
 } from "../data/journal";
+import { hasWorldSession } from "../data/worldModel";
 import { clock, longClock, minutesBetween } from "../domain/view";
 import type { ToastFn } from "./Proposal";
 import { NoteField } from "./Proposal";
-import { Back, Check, Copy, Download, LinkIcon, Search } from "./icons";
+import { Back, Check, Copy, Download, LinkIcon, Search, SimulationIcon } from "./icons";
 import { Empty, Illu } from "./illustrations";
 
 /*
@@ -181,6 +182,11 @@ export function Journal(props: {
         </h1>
         <p>Ce qui a été proposé et décidé : par qui, quand, pourquoi.</p>
         <SignedAs me={me} />
+        {hasWorldSession() && (
+          <a className="btn journal-simulation-link" href="#/simulation">
+            <SimulationIcon /> Reprendre le parcours de simulation
+          </a>
+        )}
       </header>
 
       <div className={`journal${openId ? " journal--open" : ""}`}>

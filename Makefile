@@ -1,6 +1,10 @@
 COMPOSE ?= docker compose
 PYTHON ?= python3
 
+.PHONY: demo-world-model
+demo-world-model:
+	$(PYTHON) web/dev/run_cockpit.py $(DEMO_ARGS)
+
 .PHONY: up down seed features test logs clean lint type-check docker-build
 
 up:

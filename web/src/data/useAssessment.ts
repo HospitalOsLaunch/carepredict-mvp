@@ -108,7 +108,7 @@ function writeUrl(key: string, value: string): void {
   }
 }
 
-export function useAssessment(): Store {
+export function useAssessment(enabled = true): Store {
   const [connection, setConnection] = useState<Connection>("probing");
   const [bundle, setBundle] = useState<FixtureBundle | null>(null);
   const [scenarioId, setScenarioId] = useState(
@@ -123,9 +123,11 @@ export function useAssessment(): Store {
   const [refresh, setRefresh] = useState(0);
   const lastByUnit = useRef<Record<string, string>>({});
   const request = useRef(0);
+  const initialized = useRef(false);
 
   // Probe once: live store → plan API → bundled fixtures.
   useEffect(() => {
+    if (!enabled || initialized.current) return;
     let cancelled = false;
     (async () => {
       const fixtures = await loadFixtures();
@@ -136,21 +138,24 @@ export function useAssessment(): Store {
         const first = fixtures.scenarios.find((s) => s.unit === unit);
         if (first) setScenarioId(first.id);
       }
-      if (__DEMO_ONLY__) return setConnection("fixture");
+      if (__DEMO_ONLY__) { initialized.current = true; return setConnection("fixture"); }
       try {
         await api.health();
+        if (cancelled) return;
       } catch {
-        if (!cancelled) setConnection("fixture");
+        if (!cancelled) { initialized.current = true; setConnection("fixture"); }
         return;
       }
       try {
         const live = await api.live();
         if (cancelled) return;
+        initialized.current = true;
         setSnapshot(live);
         setScenarioId("live");
         setConnection("api-live");
       } catch (e) {
         if (cancelled) return;
+        initialized.current = true;
         // 404: the API runs without a live store. 409: store present but not assessable.
         if (e instanceof ApiError && e.status === 409) {
           setError(readError(e));
@@ -161,7 +166,7 @@ export function useAssessment(): Store {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [enabled]);
 
   // Plan API: evaluate every unit's default request once, for the switcher.
   useEffect(() => {

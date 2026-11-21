@@ -1,5 +1,6 @@
 .env
 .venv/
+web/.demo-venv/
 node_modules/
 __pycache__/
 *.py[cod]

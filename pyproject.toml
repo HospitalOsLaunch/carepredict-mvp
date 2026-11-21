@@ -70,11 +70,18 @@ include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
 [tool.setuptools.package-data]
 hospitalos = ["py.typed"]
+"hospitalos.world_model" = ["flow_kernel.cpp", "data/*.npz", "data/manifest.json"]
 
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-extend-exclude = ["src/hospitalos/synthetic/v041", "build"]
+# Historical study files are verbatim inputs to published SHA-256 receipts.
+extend-exclude = [
+  "src/hospitalos/synthetic/v041", "build",
+  "research/balestriero/cf", "research/balestriero/contraintes",
+  "research/balestriero/hierarchie", "research/balestriero/revue",
+  "research/balestriero/publication", "research/balestriero/rejouer.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]

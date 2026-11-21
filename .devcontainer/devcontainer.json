@@ -1,0 +1,12 @@
+{
+  "name": "HospitalOS · Cockpit de démonstration",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {"version": "22"},
+    "ghcr.io/devcontainers/features/python:1": {"version": "3.12"}
+  },
+  "forwardPorts": [5173],
+  "portsAttributes": {"5173": {"label": "HospitalOS · Simulation", "onAutoForward": "openPreview"}},
+  "postCreateCommand": "python3 web/dev/run_cockpit.py --prepare-only",
+  "postStartCommand": "nohup make demo-world-model > /tmp/hospitalos-world-model-demo.log 2>&1 < /dev/null &"
+}

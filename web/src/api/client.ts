@@ -13,9 +13,13 @@ export class ApiError extends Error {
   }
 }
 
-async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Promise<T> {
+export async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const upstream = init?.signal;
+  const cancel = () => controller.abort();
+  if (upstream?.aborted) cancel();
+  else upstream?.addEventListener("abort", cancel, { once: true });
+  const timer = setTimeout(cancel, timeoutMs);
   try {
     const response = await fetch(`${BASE}${path}`, {
       ...init,
@@ -35,6 +39,7 @@ async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Pro
     return (await response.json()) as T;
   } finally {
     clearTimeout(timer);
+    upstream?.removeEventListener("abort", cancel);
   }
 }
 

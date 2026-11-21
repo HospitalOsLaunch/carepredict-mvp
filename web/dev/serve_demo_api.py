@@ -3,12 +3,13 @@
     PYTHONPATH=src:. python web/dev/serve_demo_api.py            # frozen clock (stable demo)
     PYTHONPATH=src:. python web/dev/serve_demo_api.py --ageing   # time runs: confirmations go stale
 
-Loopback only. Uses services/api/hybrid_app.create_app unchanged; no execution endpoint.
+Loopback only. The opt-in world-model routes use a local synthetic session journal.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 from datetime import timedelta
@@ -28,6 +29,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ageing", action="store_true", help="let the clock run from 08:30")
     parser.add_argument("--port", type=int, default=8000)
+    default_db = (
+        Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
+        / "hospitalos/world-model.sqlite"
+    )
+    parser.add_argument(
+        "--world-model-db",
+        type=Path,
+        default=os.environ.get("HOSPITALOS_WORLD_MODEL_DB", str(default_db)),
+    )
     args = parser.parse_args()
     store = LiveStore(live_policy())
     store.ingest(live_batch(), AT)
@@ -37,7 +47,11 @@ def main() -> None:
         elapsed = time.monotonic() - started if args.ageing else 0
         return AT + timedelta(seconds=30 + elapsed)
 
-    uvicorn.run(create_app(store, clock), host="127.0.0.1", port=args.port)
+    uvicorn.run(
+        create_app(store, clock, world_model_db=args.world_model_db),
+        host="127.0.0.1",
+        port=args.port,
+    )
 
 
 if __name__ == "__main__":

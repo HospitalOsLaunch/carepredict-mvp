@@ -1,5 +1,36 @@
 # Cockpit HospitalOS — libérer → attribuer
 
+## Simuler une affectation
+
+Depuis la racine du dépôt, exécuter `make demo-world-model` puis ouvrir
+[Simuler une affectation](http://127.0.0.1:5173/#/simulation). Le lanceur vérifie Python 3.11+,
+Node.js 22+, npm et un compilateur C++17, prépare les dépendances du cockpit et connecte les API
+FastAPI et Plan 24 h derrière le même port. Le premier lancement télécharge les dépendances.
+`Ctrl+C` ferme les services. Pour choisir un autre port, utiliser
+`make demo-world-model DEMO_ARGS='--port 5180'`.
+
+1. **À 8 h**, consulter le planning de référence et les ressources déjà réservées.
+2. **À midi**, comparer le maintien du planning horaire aux redéploiements de transport et de
+   bionettoyage. Le chiffre principal estime les patients en attente d’un transfert à 16 h.
+   Le détail par unité et la projection JEPA sont consultables avant la validation.
+3. **Valider en simulation**, puis avancer l’horloge. Aux Rives, le relevé est complet. Au Parc,
+   les composantes manquantes restent visibles comme telles. Au Belvédère, le relevé de 16 h est
+   disponible à 18 h. Seule l’option validée produit une observation.
+4. **Relire la journée**, comparer le relevé à l’estimation d’une autre affectation puis retrouver
+   le choix et ses horaires dans le journal. Le rechargement conserve le parcours. « Nouveau
+   parcours » permet de rejouer une autre décision.
+
+Une session est identifiée par un UUID conservé dans le navigateur. Les décisions et leurs
+prévisions sont enregistrées côté serveur dans SQLite, sous `${XDG_STATE_HOME:-~/.local/state}/hospitalos/world-model.sqlite`.
+`HOSPITALOS_WORLD_MODEL_DB` permet de choisir le fichier. Les décisions sont simulées. Le mode
+HTML autonome du cockpit historique demande une API joignable pour cette vue.
+
+Les routes FastAPI sont `GET /world-model/contexts`, `PUT|GET /world-model/sessions/{id}`,
+`POST /world-model/sessions/{id}/confirm` et `POST /world-model/sessions/{id}/advance`.
+Depuis le navigateur elles s’appellent sous `/api/world-model`. La démo fournit trois jeux
+d’entrées synthétiques, le vrai moteur C++ et les poids du JEPA. Les autres API et le cockpit
+patient conservent leurs parcours habituels.
+
 Interface du MVP hybride (`src/hospitalos/hybrid`). Un seul parcours couplé :
 le **cadre de santé** voit ce qui bloque chaque sortie, le **gestionnaire de lits**
 voit qui attend quel lit, et les deux lisent la même proposition simulée.

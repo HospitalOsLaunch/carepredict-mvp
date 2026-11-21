@@ -1,5 +1,23 @@
 # HospitalOS / CarePredict MVP
 
+## Démo du world model hospitalier
+
+Un cadre compare les affectations possibles à midi, valide un choix en simulation et retrouve la
+file observée à 16 h. Le cockpit peut ensuite estimer ce qu’aurait donné un autre choix. Trois
+établissements synthétiques illustrent un relevé complet, partiel ou publié à 18 h.
+
+```bash
+make demo-world-model
+```
+
+Le lanceur prépare le cockpit et démarre les deux API en local. Ouvrir
+[la simulation](http://127.0.0.1:5173/#/simulation). Pour lancer cette branche dans un navigateur,
+utiliser [GitHub Codespaces](https://codespaces.new/HospitalOsLaunch/carepredict-mvp/tree/demo/world-model-cockpit).
+Le port 5173 donne accès au cockpit de l’espace créé.
+
+[Guide de démonstration](web/README.md#simuler-une-affectation) ·
+[Méthode, poids et résultats de l’expérience](research/balestriero/README.md)
+
 ## New MVP direction: explicit state, probabilistic simulation, assisted decisions
 
 The hybrid MVP now has an executable first slice under `src/hospitalos/hybrid/`:

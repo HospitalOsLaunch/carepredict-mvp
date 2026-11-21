@@ -1819,7 +1819,7 @@ body::before {
   }
   .tabbar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     position: fixed;
     left: 0;
     right: 0;
@@ -3099,3 +3099,9 @@ textarea.input {
 .jrow__end {
   align-self: center;
 }
+
+.unit-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2) var(--s4); margin-bottom: var(--s4); }
+.unit-heading .hello { margin-bottom: 0; }
+.journal-simulation-link { align-self: flex-start; margin-top: var(--s2); font-size: var(--t-sm); text-decoration: none; }
+.unit-heading__simulation { font-size: var(--t-sm); text-decoration: none; }
+@media (min-width: 761px) and (max-width: 1140px) { .nav { margin-left: 0; gap: 0; } .nav a { padding-inline: var(--s2); } }

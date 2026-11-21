@@ -119,6 +119,12 @@ export const LinkIcon = (p: { size?: number }) => (
     <path d="M7 9a3 3 0 0 0 4.2 0l2-2A3 3 0 0 0 9 2.8l-1 1M9 7a3 3 0 0 0-4.2 0l-2 2A3 3 0 0 0 7 13.2l1-1" />
   </Svg>
 );
+export const SimulationIcon = (p: { size?: number }) => (
+  <Svg {...p}>
+    <path d="M4 12V8a3 3 0 0 1 3-3h5m-3-3 3 3-3 3M4 8a3 3 0 0 0 3 3h4" />
+    <circle cx="4" cy="13" r="1" />
+  </Svg>
+);
 export const PulseIcon = (p: { size?: number }) => (
   <Svg {...p}>
     <path d="M1.5 8.5h3l1.5-4 3 7 1.5-3h4" />

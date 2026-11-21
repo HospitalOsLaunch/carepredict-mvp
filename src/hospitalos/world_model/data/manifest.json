@@ -1,0 +1,70 @@
+{
+  "version": "J7-CF-2026.11.21",
+  "kernel_sha256": "d2b824489cb87326e17cfb3a221579af0f0975586f4b2968300966644cf0e2d4",
+  "weights_sha256": "3373cd0b53ad4a62f6f53abcf0f290677e478ce0a95dfe62d2bd2b2ac93b6100",
+  "source_sha256": "7adb566b03fb48661984bab010be9965360ab3195a43281f54c9128a790d1c15",
+  "public_receipt": "b4b287c16940c22899fa2cf0daba3e838b9a70418955451861634dcd5a5fa2bc",
+  "cases": [
+    {
+      "id": "rives",
+      "label": "Hôpital des Rives",
+      "feed": "full",
+      "site": 116004,
+      "episode": 0,
+      "wards": [
+        "Médecine 1",
+        "Médecine 2",
+        "Observation courte 3",
+        "Médecine 4",
+        "Médecine 5",
+        "Observation courte 6",
+        "Médecine 7",
+        "Médecine 8"
+      ],
+      "published_hour": 16,
+      "public_sha": "2395589d37498d0a0c5a1406a0c50322e250049c414b9839ec997c830d8091a7",
+      "events_sha": "6287786f99808e510a7bc3c5fd06050527ab4d13f3a5aeddfb08e04898a50097",
+      "public_view_sha": "7e7a3d13f0e42ad95adb8da42d9bdc3acf478420fe31a2251c27c892aeee6e98"
+    },
+    {
+      "id": "parc",
+      "label": "Centre hospitalier du Parc",
+      "feed": "partial",
+      "site": 116043,
+      "episode": 0,
+      "wards": [
+        "Médecine 1",
+        "Médecine 2",
+        "Observation courte 3",
+        "Médecine 4",
+        "Médecine 5",
+        "Médecine 6",
+        "Observation courte 7"
+      ],
+      "published_hour": 16,
+      "public_sha": "0b313450c7e9f8f374b39a12c37f0278f58c534414e092fda8512bdca0a4a284",
+      "events_sha": "9ec78efcfa886a2b466ac49eda659daf0f1b93a583c9362b78758ae2359870c1",
+      "public_view_sha": "c2582541c873e64ec771513d9b87c30b06538477dad3277fec82e46cb9677304"
+    },
+    {
+      "id": "belvedere",
+      "label": "Hôpital du Belvédère",
+      "feed": "delayed",
+      "site": 116013,
+      "episode": 0,
+      "wards": [
+        "Observation courte 1",
+        "Médecine 2",
+        "Médecine 3",
+        "Médecine 4",
+        "Médecine 5",
+        "Médecine 6",
+        "Observation courte 7"
+      ],
+      "published_hour": 18,
+      "public_sha": "e2057ccf2b766365158a2231bbdc8523aa5e58dbb10f7e4babbf9e3bbdf2a780",
+      "events_sha": "ba76176f34448553a85ecd378b3bb4fd7635fc8f0ad13b3cdeb452f77e1c885e",
+      "public_view_sha": "253bf8f270494563cac7a2c1b4c2da18c2854f2fe161831d4a1d3a1e70c28513"
+    }
+  ]
+}

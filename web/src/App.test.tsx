@@ -32,6 +32,21 @@ describe("cockpit", () => {
     expect(screen.getByRole("button", { name: /Refuser/ })).toBeTruthy();
   });
 
+  it("ouvre la simulation par défaut du lanceur et conserve le lien explicite vers l’unité", async () => {
+    vi.stubEnv("VITE_HOSPITALOS_START_PAGE", "simulation");
+    try {
+      const first = render(<App />);
+      expect(await screen.findByRole("heading", { name: "Simuler une affectation" })).toBeTruthy();
+      first.unmount();
+      window.history.replaceState(null, "", "/?situation=nominal#/");
+      render(<App />);
+      await ready();
+      expect(screen.getByRole("link", { name: "Simuler une affectation" })).toBeTruthy();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("abstains instead of proposing on unreliable data", async () => {
     window.history.replaceState(null, "", "/?situation=incomplete");
     render(<App />);

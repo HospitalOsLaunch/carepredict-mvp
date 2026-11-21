@@ -1,0 +1,67 @@
+name: World model demo
+
+on:
+  push:
+    branches: [demo/world-model-cockpit]
+  pull_request:
+    paths:
+      - "src/hospitalos/world_model/**"
+      - "services/api/hybrid_app.py"
+      - "services/api/routers/world_model.py"
+      - "tests/world_model/**"
+      - "web/**"
+      - ".github/workflows/world-model-demo.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cockpit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: src:.
+      OPENBLAS_NUM_THREADS: 1
+      OMP_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install demo and test dependencies
+        run: python -m pip install -r web/dev/requirements-demo.txt pytest httpx jsonschema playwright
+      - name: Verify the model, the API and the existing decision flows
+        run: python -m pytest -q tests/world_model tests/decision_support tests/hybrid
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Serve the normal entry point and run the browser journey
+        shell: bash
+        run: |
+          make demo-world-model > "$RUNNER_TEMP/hospitalos-demo.log" 2>&1 &
+          launcher=$!
+          trap 'kill "$launcher" 2>/dev/null || true' EXIT
+          for i in {1..120}; do
+            if curl -fsS http://127.0.0.1:5173/api/world-model/contexts >/dev/null 2>&1; then break; fi
+            if ! kill -0 "$launcher" 2>/dev/null; then cat "$RUNNER_TEMP/hospitalos-demo.log"; exit 1; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5173/api/world-model/contexts >/dev/null || { cat "$RUNNER_TEMP/hospitalos-demo.log"; exit 1; }
+          python web/dev/check_world_model_browser.py --screenshots "$RUNNER_TEMP/world-model-views"
+      - name: React tests and offline cockpit build
+        working-directory: web
+        run: |
+          npm run typecheck
+          npm test
+          npm run build:demo
+      - name: Desktop and phone views
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-model-demo-views
+          path: ${{ runner.temp }}/world-model-views/
+          retention-days: 7
