@@ -54,6 +54,28 @@
 .wm-option.is-selected { border: 1px solid color-mix(in srgb,var(--brand) 55%,transparent); border-radius: var(--r-sm); }
 .wm-option__name { display: grid; gap: 2px; overflow-wrap: anywhere; line-height: 1.25; }
 .wm-option__name small, .wm-results small, .wm-journal small { color: var(--ink-3); font-size: var(--t-sm); }
+.wm-option.is-unavailable { background: var(--well); }
+.wm-option.is-unavailable .wm-option__name small { color: var(--sac); font-weight: 650; }
+.wm-limit { display: block; margin-top: 3px; color: var(--ink-2); font-weight: 450; }
+.wm-filter { padding-top: 12px; }
+.wm-objective { margin-top: 13px; }
+.wm-column-score { display: grid; gap: 1px; text-align: right; }
+.wm-column-score small { color: var(--ink-3); font-size: var(--t-xs); font-weight: 500; }
+.wm-option .wm-option__unknown { font-size: var(--t-xs); max-width: 85px; text-align: right; }
+.wm-choice { min-width: 0; flex: 1 1 210px; }
+.wm-choice .wm-rule { margin-top: 5px; }
+.wm-jump { padding: 5px 0; background: none; border: none; color: var(--brand-strong); font: inherit; font-size: var(--t-sm); font-weight: 650; cursor: pointer; text-align: left; }
+.wm-jump:hover { text-decoration: underline; }
+.wm-jump--back { margin: 0 var(--wm-pad) 12px; }
+.wm-projection:focus { scroll-margin-top: 68px; outline: 2px solid var(--focus); }
+.wm-projection__rule, .wm-effects { padding: 0 var(--wm-pad) 12px; font-size: var(--t-sm); }
+.wm-projection__rule strong { display: block; }
+.wm-effects h3 { margin: 0 0 2px; font-family: var(--display); font-size: var(--t-md); }
+.wm-effects > p { color: var(--ink-2); }
+.wm-effects table { margin-top: 6px; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.wm-effects th, .wm-effects td { padding: 6px 3px; text-align: right; border-bottom: 1px solid var(--line-soft); }
+.wm-effects th:first-child { text-align: left; }
+.wm-effects tbody th { font-weight: 500; }
 .wm-option__count { font-size: 18px; font-weight: 570; font-variant-numeric: tabular-nums; }
 .wm-more { margin: 5px var(--wm-pad); padding: 6px 0; min-height: 34px; border: 0; background: none; font: inherit; font-size: var(--t-sm); font-weight: 650; color: var(--brand-strong); text-align: left; cursor: pointer; }
 .wm-more:hover { text-decoration: underline; }

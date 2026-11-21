@@ -1,6 +1,6 @@
 # HospitalOS · Effet d’une affectation et relecture de la journée
 
-Le cockpit utilise la version **J7-CF-2026.11.21**. Le modèle d’état projette le nombre de patients en attente d’un transfert dans chaque unité. Le réseau JEPA prédit une correction à partir du même état public et de l’action envisagée. Après réception des données de l’option validée, l’application peut estimer ce que la file aurait été sous une autre affectation. Les prévisions sont calculées en ligne sur des établissements synthétiques.
+Le cockpit reprend **J7-CF-2026.11.21** et étend les interventions dans **MIDI5-v1**. Les résultats scientifiques ci-dessous portent sur le catalogue du protocole initial. Les nouvelles actions de personnel, de SMR et de lit utilisent le modèle physique. Le modèle d’état projette le nombre de patients en attente d’un transfert dans chaque unité. Le réseau JEPA prédit une correction à partir du même état public et de l’action envisagée. Après réception des données de l’option validée, l’application peut estimer ce que la file aurait été sous une autre affectation. Les prévisions sont calculées en ligne sur des établissements synthétiques.
 
 ## Ce que les essais ont établi
 

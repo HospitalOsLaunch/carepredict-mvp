@@ -13,6 +13,7 @@ import numpy as np
 from .contracts import Context, Entry, Observation, Option, Session, Ward
 from .physics import DATA, ModelUnavailable, learned_stocks, rollout, verified
 from .projection import reconstruct
+from .resources import Offer, capacities, noon_offers, simulate_offer
 
 
 @dataclass(frozen=True)
@@ -30,7 +31,17 @@ def manifest() -> dict[str, Any]:
         metadata = json.loads((DATA / "manifest.json").read_text())
         if not isinstance(metadata, dict):
             raise ValueError("Invalid bundle")
-        if not all(metadata[k] for k in ("version", "kernel_sha256", "weights_sha256", "cases")):
+        if not all(
+            metadata[k]
+            for k in (
+                "version",
+                "kernel_sha256",
+                "weights_sha256",
+                "cases",
+                "noon_version",
+                "noon_offer_sha256",
+            )
+        ):
             raise ValueError("Incomplete bundle")
         return metadata
     except (KeyError, OSError, ValueError, TypeError) as exc:
@@ -64,7 +75,11 @@ def cases() -> dict[str, Case]:
     return all_cases
 
 
-def revision(case: Case) -> str:
+def model_version() -> str:
+    return f"{manifest()['version']} / {manifest()['noon_version']}"
+
+
+def revision(case: Case, *, legacy: bool = False) -> str:
     info = manifest()
     identity = [
         info["version"],
@@ -76,6 +91,8 @@ def revision(case: Case) -> str:
         case.wards,
         case.context.model_dump(mode="json"),
     ]
+    if not legacy:
+        identity.extend([info["noon_version"], info["noon_offer_sha256"]])
     return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
 
 
@@ -94,15 +111,39 @@ def queue(stocks: np.ndarray) -> np.ndarray:
     return np.asarray(stocks[..., 2] + stocks[..., 4])
 
 
+@dataclass
+class Projection:
+    data: dict[str, np.ndarray]
+    stocks: np.ndarray
+    metrics: np.ndarray
+    neural: np.ndarray
+    offers: tuple[Offer, ...]
+    capacities: np.ndarray
+
+
 @lru_cache(maxsize=8)
-def public_projection(context_id: str) -> tuple[dict[str, np.ndarray], np.ndarray, np.ndarray]:
+def public_projection(context_id: str) -> Projection:
     data = arrays(cases()[context_id], "public")
     info = manifest()
     metrics, stocks = rollout(
         data, data["initial"], data["drivers"], data["schedules"], info["kernel_sha256"]
     )
     neural = learned_stocks(data, metrics, stocks, info["weights_sha256"])
-    return data, stocks, neural
+    case = cases()[context_id]
+    offers = tuple(noon_offers(context_id, case.wards, data, info["noon_offer_sha256"]))
+    new = [
+        simulate_offer(data, data["initial"], data["drivers"], offer, info["kernel_sha256"])
+        for offer in offers
+    ]
+    all_caps = [data["beds"]] * len(stocks) + [capacities(data, offer) for offer in offers]
+    return Projection(
+        data,
+        np.stack([*stocks, *(st for _, st in new)]),
+        np.stack([*metrics, *(m for m, _ in new)]),
+        neural,
+        offers,
+        np.stack(all_caps),
+    )
 
 
 def shift_label(kind: int, dest: int, donor: int, wards: tuple[str, ...]) -> str:
@@ -119,9 +160,10 @@ def shift_label(kind: int, dest: int, donor: int, wards: tuple[str, ...]) -> str
 
 
 def open_session(identifier: str, case: Case) -> Session:
-    data, physical, neural = public_projection(case.context.id)
-    baseline = queue(physical)
-    comparison = queue(neural)
+    simulation = public_projection(case.context.id)
+    data = simulation.data
+    baseline = queue(simulation.stocks)
+    comparison = queue(simulation.neural)
     wards = [
         Ward(id=f"u{i + 1}", label=name, beds=int(data["beds"][i]))
         for i, name in enumerate(case.wards)
@@ -149,9 +191,34 @@ def open_session(identifier: str, case: Case) -> Session:
                 ward_id=ward,
                 forecast=float(baseline[i].sum()),
                 jepa_forecast=float(comparison[i].sum()),
+                cost_eur=0,
+                constraint={
+                    "reference": "Affectations et réservations horaires déjà prévues.",
+                    "transport": "Redéploiement de l’équipe de transport partagée.",
+                    "cleaning": "Redéploiement de l’équipe de bionettoyage partagée.",
+                }[option_kind],
                 by_ward=baseline[i].tolist(),
             )
         )
+    for i, offer in enumerate(simulation.offers, start=len(options)):
+        options.append(
+            Option(
+                id=offer.id,
+                label=offer.label,
+                kind=offer.kind,
+                ward_id=wards[offer.ward].id,
+                forecast=float(baseline[i].sum()),
+                by_ward=baseline[i].tolist(),
+                jepa_forecast=None,
+                cost_eur=offer.cost,
+                eligible=offer.eligible,
+                constraint=offer.constraint,
+            )
+        )
+    for option, metrics in zip(options, simulation.metrics.sum(axis=1), strict=True):
+        option.bed_wait_patient_hours = float(metrics[0])
+        option.uncovered_ide_minutes = float(metrics[2])
+        option.uncovered_as_minutes = float(metrics[3])
     morning = [shift_label(int(k), int(w), int(d), case.wards) for k, w, d in data["morning"] if k]
     return Session(
         id=identifier,
@@ -159,7 +226,7 @@ def open_session(identifier: str, case: Case) -> Session:
         phase="planning",
         hour=12,
         publication_hour=case.publication,
-        model_version=manifest()["version"],
+        model_version=model_version(),
         morning_plan=morning,
         wards=wards,
         reference_id="reference",
@@ -172,20 +239,33 @@ def publish(session: Session, case: Case, now: int) -> None:
     if now < case.publication or session.selected_id is None:
         raise ValueError("Le relevé n’est pas disponible pour cette décision.")
     index = next(i for i, option in enumerate(session.options) if option.id == session.selected_id)
-    data, forecasts, _ = public_projection(case.context.id)
+    simulation = public_projection(case.context.id)
+    data = simulation.data
     future = arrays(case, "events")
-    # Simulate just the selected assignment, never return the simulator's counterfactual truth.
-    _, actual = rollout(
-        data,
-        future["initial"],
-        future["drivers"],
-        data["schedules"][index : index + 1],
-        manifest()["kernel_sha256"],
-    )
+    kernel = manifest()["kernel_sha256"]
+    old_count = len(data["schedules"])
+    if index < old_count:
+        _, actual = rollout(
+            data, future["initial"], future["drivers"], data["schedules"][index : index + 1], kernel
+        )
+        observed = actual[0]
+    else:
+        offer = simulation.offers[index - old_count]
+        if not offer.eligible or offer.id != session.selected_id:
+            raise ValueError("Cette affectation est indisponible.")
+        _, observed = simulate_offer(data, future["initial"], future["drivers"], offer, kernel)
     mask = future["mask"]
-    reported = np.where(mask, actual[0], np.nan)
+    reported = np.where(mask, observed, np.nan)
+    # Archived sessions retain the exact menu presented at the time of confirmation.
+    count = len(session.options)
     estimated = reconstruct(
-        forecasts, index, reported, mask, data["beds"], now=now, published=case.publication
+        simulation.stocks[:count],
+        index,
+        reported,
+        mask,
+        simulation.capacities[:count],
+        now=now,
+        published=case.publication,
     )
     for option, counts in zip(session.options, queue(estimated), strict=True):
         option.reconstruction = float(counts.sum())

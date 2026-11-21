@@ -56,8 +56,9 @@ def test_http_forecasts_reports_and_reconstructions_match_the_sealed_study(
             assert opened.observation is None
             assert opened.context.feed == expected.feed
             assert opened.publication_hour == expected.published_hour
-            assert {o.id for o in opened.options} == expected.options.keys()
-            for option in opened.options:
+            sealed = [o for o in opened.options if o.kind in ("reference", "transport", "cleaning")]
+            assert {o.id for o in sealed} == expected.options.keys()
+            for option in sealed:
                 golden = expected.options[option.id]
                 assert option.by_ward == pytest.approx(golden.by_ward, abs=1e-7, rel=1e-8)
                 assert option.forecast == pytest.approx(sum(golden.by_ward), abs=1e-7, rel=1e-8)
@@ -82,7 +83,7 @@ def test_http_forecasts_reports_and_reconstructions_match_the_sealed_study(
                     assert actual is None
                 else:
                     assert actual == pytest.approx(expected_value, abs=1e-7, rel=1e-8)
-            for option in completed.options:
+            for option in (o for o in completed.options if o.id in expected.options):
                 reference = example.reconstructed_by_option[option.id]
                 assert option.reconstructed_by_ward == pytest.approx(reference, abs=1e-7, rel=1e-8)
                 assert option.reconstruction == pytest.approx(sum(reference), abs=1e-7, rel=1e-8)

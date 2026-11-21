@@ -10,15 +10,26 @@ FastAPI et Plan 24 h derrière le même port. Le premier lancement télécharge 
 `make demo-world-model DEMO_ARGS='--port 5180'`.
 
 1. **À 8 h**, consulter le planning de référence et les ressources déjà réservées.
-2. **À midi**, comparer le maintien du planning horaire aux redéploiements de transport et de
-   bionettoyage. Le chiffre principal estime les patients en attente d’un transfert à 16 h.
-   Le détail par unité et la projection JEPA sont consultables avant la validation.
+2. **À midi**, comparer le planning horaire aux cinq familles d’intervention ci-dessous. Le tableau affiche la mesure choisie et son unité.
+   Le détail par unité et les effets sur les soins et l’attente de lit sont visibles avant validation.
 3. **Valider en simulation**, puis avancer l’horloge. Aux Rives, le relevé est complet. Au Parc,
    les composantes manquantes restent visibles comme telles. Au Belvédère, le relevé de 16 h est
    disponible à 18 h. Seule l’option validée produit une observation.
 4. **Relire la journée**, comparer le relevé à l’estimation d’une autre affectation puis retrouver
    le choix et ses horaires dans le journal. Le rechargement conserve le parcours. « Nouveau
    parcours » permet de rejouer une autre décision.
+
+| Famille | Choix simulé de midi à 16 h | Contrainte appliquée |
+|---|---|---|
+| Transport | Redéployer l’équipe partagée vers une unité | La même équipe dessert les transferts internes et les départs vers le SMR. |
+| Bionettoyage | Prioriser la remise en état des lits d’une unité | Le nombre de lits sales et la capacité de l’équipe limitent les remises à disposition. |
+| Personnel IDE et AS | Affecter un renfort qualifié ou prêter une IDE entre deux unités autorisées | Le renfort exige une offre confirmée et un budget disponible. Le prêt protège les soins de l’unité donneuse chaque heure. |
+| Aval SMR | Mobiliser une place supplémentaire pour une unité | La place peut être consommée une fois sur la période et le patient doit pouvoir être transporté. |
+| Lits | Ouvrir un lit de réserve équipé dans l’unité | L’ouverture requiert des minutes IDE et AS à midi. Les effectifs disponibles continuent de limiter les admissions. |
+
+À midi, le cadre peut classer les options par file de transfert à 16 h, attente de lit cumulée ou minutes de soins IDE et AS non couvertes. Il confirme une intervention par parcours. Le journal conserve le critère choisi au moment de la validation. Les cinq familles utilisent les mêmes hypothèses d’arrivées. La comparaison présente le coût additionnel, les minutes IDE et AS non couvertes, les heures-patients d’attente de lit entre midi et 16 h et la file de transfert à 16 h. Une option indisponible affiche le motif et le serveur bloque sa validation.
+
+Les offres de renfort, les lits équipés, les corridors de prêt infirmier et le budget restant à midi sont déclarés dans un [inventaire synthétique](../src/hospitalos/world_model/data/noon_offers.json) propre à chaque site. Les corridors de personnel sont définis par le planning des équipes. Le réseau de transfert des patients est défini séparément. Les montants sont des hypothèses de simulation. Le modèle d’état simule toutes les actions. La projection JEPA est disponible pour le planning de référence, le transport et le bionettoyage, couverts par l’étude de midi. Le relevé est toujours associé à l’intervention effectivement validée en simulation.
 
 Une session est identifiée par un UUID conservé dans le navigateur. Les décisions et leurs
 prévisions sont enregistrées côté serveur dans SQLite, sous `${XDG_STATE_HOME:-~/.local/state}/hospitalos/world-model.sqlite`.

@@ -106,6 +106,8 @@ def export(study):
         "version": "J7-CF-2026.11.21",
         "kernel_sha256": file_sha(kernel),
         "weights_sha256": file_sha(weights),
+        "noon_version": "MIDI5-v1",
+        "noon_offer_sha256": file_sha(TARGET / "noon_offers.json"),
         "source_sha256": experiment.PARENT,
         "public_receipt": receipts["public"],
         "cases": records,

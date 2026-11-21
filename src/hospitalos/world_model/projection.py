@@ -55,11 +55,12 @@ def reconstruct(
         or not _clock(now)
         or not _clock(published)
         or not np.isfinite(x).all()
-        or caps.shape != (x.shape[1],)
+        or caps.shape not in ((x.shape[1],), x.shape[:2])
         or not np.isfinite(caps).all()
         or np.any((caps <= 0) | (caps > 1_000_000))
     ):
         raise ValueError("Invalid forecast, capacities, factual option or clock")
+    caps = np.broadcast_to(caps, x.shape[:2])
     prior = x.copy()
     if now >= published:
         y = np.asarray(observed, dtype=float)
@@ -69,7 +70,7 @@ def reconstruct(
             or visible.dtype != np.bool_
             or not np.array_equal(np.isfinite(y), visible)
             or np.any(y[visible] < -1e-7)
-            or np.any(np.where(visible[:, 1:], y[:, 1:], 0.0).sum(-1) > caps + 1e-7)
+            or np.any(np.where(visible[:, 1:], y[:, 1:], 0.0).sum(-1) > caps[factual] + 1e-7)
         ):
             raise ValueError("Published census conflicts with its coverage or bed capacity")
         prior += np.where(visible, y - x[factual], 0.0)
@@ -84,6 +85,6 @@ def reconstruct(
             row = result[factual, i, 1:]
             row[known] = np.maximum(0.0, y[i, 1:][known])
             if known.any() and not known.all():
-                left = max(0.0, caps[i] - row[known].sum())
+                left = max(0.0, caps[factual, i] - row[known].sum())
                 row[~known] = _bed_simplex(prior[factual, i, 1:][~known], left)
     return np.asarray(result)

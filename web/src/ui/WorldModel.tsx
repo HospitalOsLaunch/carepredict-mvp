@@ -1,11 +1,59 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ApiError } from "../api/client";
-import { worldApi, type Flow, type WmCatalogue, type WmContext, type WmOption, type WmSession } from "../api/worldModel";
+import { canConfirm, COMPARISON_OBJECTIVES, RESOURCE_FAMILIES, RESOURCE_INDICATORS, worldApi, type ComparisonObjective, type ResourceFamily, type ResourceIndicator, type Flow, type WmCatalogue, type WmContext, type WmOption, type WmSession } from "../api/worldModel";
 import { remember, remembered, useWorldSession, worldError } from "../data/worldModel";
 import { Alert, BookIcon, Check, Clock, Info, Refresh, SimulationIcon } from "./icons";
 import "../styles/worldModel.css";
 
 const flowName: Record<Flow, string> = { full: "Flux complet", partial: "Flux partiel", delayed: "Flux retardé" };
+const familyName: Record<ResourceFamily, string> = {
+  transport: "Transport", cleaning: "Bionettoyage", staffing: "Personnel IDE et AS",
+  smr: "Soins médicaux et de réadaptation (SMR)", beds: "Lits",
+};
+const indicatorName: Record<ResourceIndicator, string> = {
+  uncovered_ide_minutes: "Soins infirmiers non couverts (min)",
+  uncovered_as_minutes: "Soins aides-soignants non couverts (min)",
+  bed_wait_patient_hours: "Attente d’un lit (heures-patients)",
+  cost_eur: "Coût de l’affectation (€)",
+};
+const objectives: Record<ComparisonObjective, { label: string; column: string; unit: string; description: string }> = {
+  transfer_queue: {
+    label: "File de transfert à 16 h", column: "File à 16 h", unit: "patients",
+    description: "La file de transfert à 16 h est estimée en équivalents patients.",
+  },
+  bed_wait: {
+    label: "Attente d’un lit de 12 h à 16 h", column: "Attente d’un lit", unit: "heures-patients",
+    description: "L’attente cumulée additionne le temps passé par chaque patient à attendre un lit entre midi et 16 h.",
+  },
+  uncovered_care: {
+    label: "Soins IDE et AS non couverts de 12 h à 16 h", column: "Soins non couverts", unit: "minutes",
+    description: "Le total additionne les minutes de soins infirmiers et aides-soignants non couvertes entre midi et 16 h.",
+  },
+};
+
+function objectiveValue(option: WmOption, objective: ComparisonObjective): number | null {
+  if (objective === "transfer_queue") return option.forecast;
+  if (objective === "bed_wait") return option.bed_wait_patient_hours ?? null;
+  const ide = option.uncovered_ide_minutes;
+  const as = option.uncovered_as_minutes;
+  return ide == null || as == null ? null : ide + as;
+}
+
+function bestMeasured(options: WmOption[], objective: ComparisonObjective): WmOption | undefined {
+  let best: WmOption | undefined;
+  let minimum = Infinity;
+  for (const option of options) {
+    const value = objectiveValue(option, objective);
+    if (value === null) continue;
+    const cheaperTie = value === minimum && (option.cost_eur ?? Infinity) < (best?.cost_eur ?? Infinity);
+    if (value < minimum || cheaperTie) {
+      best = option;
+      minimum = value;
+    }
+  }
+  return best;
+}
+
 const numeric = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
 const signed = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2, signDisplay: "exceptZero" });
 const n = (x: number) => numeric.format(x);
@@ -105,35 +153,64 @@ function Workspace({ context }: { context: WmContext }) {
 }
 
 function Journey({ session, locked, busy, onConfirm, onAdvance }: {
-  session: WmSession; locked: boolean; busy: string | null; onConfirm: (id: string) => Promise<void>; onAdvance: () => Promise<void>;
+  session: WmSession; locked: boolean; busy: string | null; onConfirm: (id: string, objective: ComparisonObjective) => Promise<void>; onAdvance: () => Promise<void>;
 }) {
   const [draft, setDraft] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [family, setFamily] = useState<ResourceFamily | "all">("all");
+  const [requestedObjective, setObjective] = useState<ComparisonObjective>(session.decision_objective ?? "transfer_queue");
   const toggle = useRef<HTMLButtonElement>(null);
   const reference = session.options.find((o) => o.id === session.reference_id)!;
-  const selected = session.options.find((o) => o.id === (session.selected_id ?? draft));
   const isPlanning = session.phase === "planning";
+  const selected = session.options.find((o) => o.id === (session.selected_id ?? draft) && (!isPlanning || canConfirm(o)));
   const stateId = useId();
-  const minima = (["transport", "cleaning"] as const).flatMap((kind) => {
-    const ranked = session.options.filter((o) => o.kind === kind).sort((a, b) => a.forecast - b.forecast);
-    return ranked.length ? [ranked[0]!] : [];
-  });
-  const featured = [reference, ...minima];
+  const detailId = stateId + "-detail";
+  const confirmId = stateId + "-confirm";
+  const recorded = session.decision_objective;
+  const availableObjectives = COMPARISON_OBJECTIVES.filter((key) => key === "transfer_queue" || key === recorded ||
+    session.options.some((o) => o.kind !== "reference" && canConfirm(o) && objectiveValue(o, key) !== null));
+  const preferred = isPlanning ? requestedObjective : recorded ?? "transfer_queue";
+  const comparison = availableObjectives.includes(preferred) ? preferred : "transfer_queue";
+  const objective = objectives[comparison];
+  const formatScore = (option: WmOption) => {
+    const value = objectiveValue(option, comparison);
+    return value === null ? "Non renseigné" : n(value) + " " + objective.unit;
+  };
+  const featured = [reference];
+  for (const kind of RESOURCE_FAMILIES) {
+    const candidates = session.options.filter((o) => o.kind === kind);
+    const eligible = candidates.filter(canConfirm);
+    // An unmeasured or unavailable family remains inspectable, without claiming an optimum.
+    const representative = bestMeasured(eligible, comparison) ?? eligible[0] ?? candidates[0];
+    if (representative) featured.push(representative);
+  }
   const extras = session.options.filter((o) => !featured.some((f) => f.id === o.id));
-  const extraSelected = selected && extras.some((o) => o.id === selected.id);
-  const summary = extraSelected && !expanded ? [...featured, selected] : featured;
+  const filters = RESOURCE_FAMILIES.filter((kind) => extras.some((o) => o.kind === kind));
+  const activeFamily = family !== "all" && filters.includes(family) ? family : "all";
+  const visibleExtras = extras.filter((o) => activeFamily === "all" || o.kind === activeFamily);
+  const outsideFeatured = selected && extras.some((o) => o.id === selected.id);
+  const pinSelection = outsideFeatured && (!expanded || !visibleExtras.some((o) => o.id === selected.id));
+  const summary = pinSelection ? [...featured, selected] : featured;
   const hiddenCount = session.options.length - summary.length;
 
   function optionRow(o: WmOption) {
     const match = selected?.id === o.id;
-    const forecastId = stateId + "-forecast-" + o.id;
-    const subtitle = o.kind === "reference" ? "Planning horaire de midi" :
-      minima.some((m) => m.id === o.id) ? "File estimée la plus basse de cette famille" : null;
-    return <label className={`wm-option${match ? " is-selected" : ""}`} key={o.id}>
-      <input type="radio" name={stateId} value={o.id} checked={match}
-        onChange={() => setDraft(o.id)} aria-label={o.label} aria-describedby={forecastId} />
-      <span className="wm-option__name"><strong>{o.label}</strong>{subtitle && <small>{subtitle}</small>}</span>
-      <strong id={forecastId} className="wm-option__count">{n(o.forecast)}<span className="visually-hidden"> patients à 16 h</span></strong>
+    const available = canConfirm(o);
+    const countsId = stateId + "-forecast-" + o.id;
+    const noteId = stateId + "-note-" + o.id;
+    const familyLabel = o.kind === "reference" ? "Planning horaire de midi" : familyName[o.kind];
+    const value = objectiveValue(o, comparison);
+    const note = available ? familyLabel : `${familyLabel} · Indisponible à midi`;
+    return <label className={`wm-option${match ? " is-selected" : ""}${available ? "" : " is-unavailable"}`} key={o.id}>
+      <input type="radio" name={stateId} value={o.id} checked={match} disabled={!available}
+        onChange={() => { if (available) setDraft(o.id); }} aria-label={o.label} aria-describedby={noteId + " " + countsId} />
+      <span className="wm-option__name"><strong>{o.label}</strong><small id={noteId}>
+        {note}{!available && o.constraint && <span className="wm-limit">{o.constraint}</span>}
+      </small></span>
+      <strong id={countsId} className={`wm-option__count${value === null ? " wm-option__unknown" : ""}`}>
+        {!available ? <><span aria-hidden="true">—</span><span className="visually-hidden">Option non réalisable</span></> :
+          value === null ? "Non renseigné" : <>{n(value)}<span className="visually-hidden"> {objective.unit} · {objective.label}</span></>}
+      </strong>
     </label>;
   }
 
@@ -159,10 +236,19 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
             <div><p className="wm-eyebrow">Projection à midi</p><h2 id={stateId}>Comparer les affectations</h2></div>
             <span className="wm-time-chip"><Clock size={14} /> Cible 16 h</span>
           </div>
-          <p className="wm-intro">Le modèle d’état (SSM) estime la file totale en équivalents patients.</p>
+          {availableObjectives.length > 1 && <label className="wm-alt wm-objective">Critère de comparaison à midi
+            <select className="select" value={comparison} disabled={!isPlanning || locked} onChange={(event) => {
+              if (!isPlanning || locked) return;
+              const next = availableObjectives.find((key) => key === event.target.value);
+              if (next) { setObjective(next); setExpanded(false); }
+            }}>
+              {availableObjectives.map((key) => <option key={key} value={key}>{objectives[key].label}</option>)}
+            </select>
+          </label>}
+          <p className="wm-intro">{objective.description} Pour chaque famille, le minimum disponible parmi les options réalisables apparaît en premier. À égalité, le coût renseigné le plus bas est prioritaire.</p>
           <fieldset className="wm-options" disabled={locked || !isPlanning}>
             <legend className="visually-hidden">Affectation à simuler à midi</legend>
-            <div className="wm-option-head" aria-hidden="true"><span>Affectation</span><span>File à 16 h</span></div>
+            <div className="wm-option-head" aria-hidden="true"><span>Affectation</span><span className="wm-column-score">{objective.column}<small>{objective.unit}</small></span></div>
             {summary.map(optionRow)}
           </fieldset>
           {extras.length > 0 && <button className="wm-more" ref={toggle} type="button"
@@ -170,9 +256,14 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
             {expanded ? "Masquer les autres affectations" : hiddenCount ? `Voir les autres affectations (${hiddenCount})` : "Afficher la liste complète"}
           </button>}
           {isPlanning ? <div className="wm-decision">
-            <p>{selected ? <><strong>{selected.label}</strong><br />{n(selected.forecast)} patients estimés à 16 h · référence {n(reference.forecast)}</> : "Sélectionnez une affectation pour la valider en simulation."}</p>
-            <button type="button" className="btn btn--primary" disabled={!selected || locked}
-              onClick={() => selected && onConfirm(selected.id)}><Check />{busy === "confirm" ? "Validation…" : "Valider en simulation"}</button>
+            <div className="wm-choice">
+              <p>{selected ? <><strong>{selected.label}</strong><br />{objective.column} · {formatScore(selected)}<br />Référence · {formatScore(reference)}</> : "Sélectionnez une affectation pour la valider en simulation."}</p>
+              {selected?.constraint && <p className="wm-rule">{selected.constraint}</p>}
+              {selected && <button type="button" className="wm-jump" aria-controls={detailId}
+                onClick={() => document.getElementById(detailId)?.focus()}>Voir les effets estimés</button>}
+            </div>
+            <button id={confirmId} type="button" className="btn btn--primary" disabled={!selected || locked}
+              onClick={() => selected && onConfirm(selected.id, comparison)}><Check />{busy === "confirm" ? "Validation…" : "Valider en simulation"}</button>
           </div> : session.phase === "confirmed" && <div className="wm-decision">
             <p><strong>{selected?.label}</strong><br />Affectation validée pour ce parcours.</p>
             <button type="button" className="btn btn--primary" disabled={locked} onClick={onAdvance}>
@@ -180,9 +271,16 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
           </div>}
           {extras.length > 0 && <div hidden={!expanded} id={stateId + "-more"} className="wm-extra">
             {expanded && <>
+              {filters.length > 1 && <label className="wm-alt wm-filter">Famille de ressources
+                <select className="select" value={activeFamily}
+                  onChange={(e) => setFamily(RESOURCE_FAMILIES.find((kind) => kind === e.target.value) ?? "all")}>
+                  <option value="all">Toutes les familles</option>
+                  {filters.map((kind) => <option key={kind} value={kind}>{familyName[kind]}</option>)}
+                </select>
+              </label>}
               <fieldset className="wm-options" disabled={locked || !isPlanning}>
                 <legend>Autres affectations</legend>
-                {extras.map(optionRow)}
+                {visibleExtras.map(optionRow)}
               </fieldset>
               <button type="button" className="wm-more" onClick={() => {
                 setExpanded(false);
@@ -198,7 +296,8 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
         <Journal session={session} />
       </div>
       <aside className="wm-aside" aria-label="Repères du parcours">
-        <Projection session={session} option={selected ?? reference} reference={reference} />
+        <Projection session={session} option={selected ?? reference} reference={reference} id={detailId}
+          confirmId={isPlanning && selected ? confirmId : undefined} />
         <section className="wm-card wm-side-card">
           <div className="wm-side-head"><Clock /><h2>Planning de 8 h</h2></div>
           {session.morning_plan.length ? <ul className="wm-plan">{session.morning_plan.map((item, i) => <li key={i}>{item}</li>)}</ul> :
@@ -216,44 +315,77 @@ function Journey({ session, locked, busy, onConfirm, onAdvance }: {
   </>;
 }
 
-function Projection({ session, option, reference }: { session: WmSession; option: WmOption; reference: WmOption }) {
+function Projection({ session, option, reference, id, confirmId }: {
+  session: WmSession; option: WmOption; reference: WmOption; id: string; confirmId?: string;
+}) {
   const diff = option.forecast - reference.forecast;
-  return <section className="wm-card wm-projection" aria-label="Détail de la projection à midi">
+  const selectedReference = option.id === reference.id;
+  const metrics = RESOURCE_INDICATORS.filter((key) => option[key] != null || reference[key] != null);
+  const reading = (value: number | null | undefined) => value == null ? "Non renseigné" : n(value);
+  return <section className="wm-card wm-projection" aria-label="Détail de la projection à midi" id={id} tabIndex={-1}>
     <div className="wm-projection__head"><p className="wm-eyebrow">Estimation à midi</p><h2>File attendue à 16 h</h2></div>
     <div className="wm-projection__value"><strong>{n(option.forecast)}</strong><span>patients</span></div>
     <p className="wm-projection__option">{option.label}</p>
     {option.id !== reference.id && <p className="wm-delta">{signed.format(diff)} patient{Math.abs(diff) > 1 ? "s" : ""} par rapport à la référence de {n(reference.forecast)}</p>}
+    {option.constraint && <p className="wm-projection__rule"><strong>Conditions à midi</strong> {option.constraint}</p>}
+    {metrics.length > 0 && <div className="wm-effects">
+      <h3>Effets estimés pour l’établissement</h3>
+      {metrics.some((key) => key !== "cost_eur") && <p>Soins et attente cumulés de 12 h à 16 h.</p>}
+      <table>
+        <caption className="visually-hidden">Conséquences prévues à midi pour l’établissement</caption>
+        <thead><tr><th scope="col">Indicateur</th><th scope="col">Référence</th>
+          {!selectedReference && <th scope="col">Choix</th>}</tr></thead>
+        <tbody>{metrics.map((key) => <tr key={key}><th scope="row">{indicatorName[key]}</th>
+          <td>{reading(reference[key])}</td>{!selectedReference && <td>{reading(option[key])}</td>}</tr>)}</tbody>
+      </table>
+    </div>}
     <details className="wm-details"><summary>Détail par unité</summary>
       <table><thead><tr><th>Unité</th><th>Référence</th><th>Option</th></tr></thead>
         <tbody>{session.wards.map((w, i) => <tr key={w.id}><th scope="row">{w.label}</th><td>{n(reference.by_ward[i]!)}</td><td>{n(option.by_ward[i]!)}</td></tr>)}</tbody>
       </table>
     </details>
-    <details className="wm-details"><summary>Projection secondaire JEPA</summary><p>Pour cette affectation, JEPA prévoyait <strong>{n(option.jepa_forecast)} patients</strong> à 16 h.</p></details>
+    <details className="wm-details"><summary>Projection secondaire JEPA</summary>
+      {option.jepa_forecast === null
+        ? <p>Projection JEPA indisponible pour cette affectation.</p>
+        : <p>Pour cette affectation, JEPA prévoyait <strong>{n(option.jepa_forecast)} patients</strong> à 16 h.</p>}
+    </details>
+    {confirmId && <button className="wm-jump wm-jump--back" type="button"
+      onClick={() => document.getElementById(confirmId)?.focus()}>Revenir à la validation</button>}
   </section>;
 }
 
 function Observed({ session, selected }: { session: WmSession; selected: WmOption }) {
   const alternatives = session.options.filter((o) => o.id !== selected.id);
-  const [other, setOther] = useState(alternatives.find((o) => o.id === session.reference_id)?.id ?? alternatives[0]?.id);
-  const option = alternatives.find((o) => o.id === other);
+  const feasible = alternatives.filter(canConfirm);
+  const initialAlternative = feasible.find((o) => o.id === session.reference_id) ?? feasible[0];
+  const [other, setOther] = useState(initialAlternative?.id);
+  const option = feasible.find((o) => o.id === other) ?? initialAlternative;
   const reading = session.observation!;
   const out = (value: number | null | undefined) => value == null ? "Non renseignée" : n(value);
   return <section className="wm-card" aria-label="Comparaison après relevé">
     <div className="wm-card-head"><div><p className="wm-eyebrow">Relevé publié à {time(reading.published_hour)}</p><h2>La file observée à 16 h</h2></div><Check size={20} /></div>
     <div className="wm-results">
       <div><span className="wm-eyebrow">Observée en simulation</span><strong>{out(reading.observed_stock)}</strong><small>{selected.label}</small></div>
-      <div><span className="wm-eyebrow">Autre option estimée</span><strong>{out(option?.reconstruction)}</strong><small>{option?.label ?? "Aucune autre option"}</small></div>
+      <div><span className="wm-eyebrow">Autre option estimée</span><strong>{option ? out(option.reconstruction) : "—"}</strong><small>{option?.label ?? "Aucune autre affectation réalisable à midi"}</small></div>
     </div>
     <p className="wm-coverage">{reading.visible_components} composantes du relevé publiées sur {reading.total_components}. {reading.observed_stock === null ? "Le total observé reste inconnu." : "Les flux simulés sont exprimés en équivalents patients."}</p>
     {option && <label className="wm-alt">Estimer la file avec une autre affectation
       <select className="select" value={option.id} onChange={(e) => setOther(e.target.value)}>
-        {alternatives.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+        {alternatives.map((o) => <option key={o.id} value={o.id} disabled={!canConfirm(o)}>
+          {o.label}{!canConfirm(o) && ` — Indisponible à midi${o.constraint ? " · " + o.constraint : ""}`}
+        </option>)}
       </select>
     </label>}
-    <p className="wm-intro">Le modèle utilise les composantes publiées pour estimer la file de l’autre affectation.</p>
+    {!option && alternatives.length > 0 && <details className="wm-details">
+      <summary>Affectations indisponibles à midi ({alternatives.length})</summary>
+      <ul>{alternatives.map((o) => <li key={o.id}><strong>{o.label}</strong>{o.constraint && <> · {o.constraint}</>}</li>)}</ul>
+    </details>}
+    {option && <p className="wm-intro">Le modèle utilise les composantes publiées pour estimer la file de l’autre affectation.
+      {option.constraint && <> <strong>Conditions de cette option à midi</strong> {option.constraint}</>}
+    </p>}
     <div className="wm-table-wrap"><table className="wm-reading"><caption className="visually-hidden">File de transfert à 16 h par unité, en patients</caption>
-      <thead><tr><th scope="col">Unité</th><th scope="col">Observée</th><th scope="col">Autre option estimée</th></tr></thead>
-      <tbody>{session.wards.map((w,i) => <tr key={w.id}><th scope="row">{w.label}</th><td>{out(reading.by_ward[i])}</td><td>{out(option?.reconstructed_by_ward?.[i])}</td></tr>)}</tbody>
+      <thead><tr><th scope="col">Unité</th><th scope="col">Observée</th>{option && <th scope="col">Autre option estimée</th>}</tr></thead>
+      <tbody>{session.wards.map((w,i) => <tr key={w.id}><th scope="row">{w.label}</th><td>{out(reading.by_ward[i])}</td>{option && <td>{out(option.reconstructed_by_ward?.[i])}</td>}</tr>)}</tbody>
     </table></div>
   </section>;
 }
@@ -263,7 +395,10 @@ function Journal({ session }: { session: WmSession }) {
     <div className="wm-side-head"><BookIcon /><h2>Journal du parcours</h2></div>
     <ol>{session.journal.map((entry,i) => {
       const option = session.options.find((o) => o.id === entry.option_id);
-      return <li key={i}><span className="wm-journal__at">{time(entry.hour)}</span><span><strong>{journalName[entry.event]}</strong>{option && <small>{option.label}</small>}</span></li>;
+      return <li key={i}><span className="wm-journal__at">{time(entry.hour)}</span><span><strong>{journalName[entry.event]}</strong>{option && <small>{option.label}</small>}
+        {entry.event === "confirmed" && <small>{session.decision_objective
+          ? `Critère enregistré · ${objectives[session.decision_objective].label}` : "Critère de comparaison non renseigné"}</small>}
+      </span></li>;
     })}</ol>
   </section>;
 }

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Literal
 
 from . import engine
-from .contracts import Entry, Session
+from .contracts import Entry, Objective, Session
 
 
 class Unknown(LookupError):
@@ -48,7 +48,27 @@ class SessionStore:
 
     def get(self, identifier: str) -> Session:
         with self.connection() as db:
-            return self.lookup(db, identifier)[1]
+            version, state = self.lookup(db, identifier)
+        if state.phase == "planning" and state.model_version == engine.manifest()["version"]:
+            case = engine.cases().get(state.context.id)
+            if case and version == engine.revision(case, legacy=True):
+                return self.start(identifier, state.context.id)
+        return state
+
+    @staticmethod
+    def upgrade_planning(
+        db: sqlite3.Connection, state: Session, case: engine.Case, revision: str
+    ) -> tuple[str, Session]:
+        if state.phase != "planning" or revision != engine.revision(case, legacy=True):
+            return revision, state
+        updated = engine.open_session(state.id, case)
+        updated.journal = state.journal
+        current = engine.revision(case)
+        db.execute(
+            "UPDATE demo_world_model_sessions SET revision=?, snapshot=? WHERE id=?",
+            (current, updated.model_dump_json(), state.id),
+        )
+        return current, updated
 
     def start(self, identifier: str, context_id: str) -> Session:
         case = engine.cases().get(context_id)
@@ -57,13 +77,17 @@ class SessionStore:
         with self.connection() as db:
             db.execute("BEGIN IMMEDIATE")
             existing = db.execute(
-                "SELECT context_id, snapshot FROM demo_world_model_sessions WHERE id=?",
+                "SELECT context_id, snapshot, revision FROM demo_world_model_sessions WHERE id=?",
                 (identifier,),
             ).fetchone()
             if existing:
                 if existing[0] != context_id:
                     raise Conflict("Cette session correspond déjà à un autre établissement.")
-                return Session.model_validate_json(existing[1])
+                _, state = self.upgrade_planning(
+                    db, Session.model_validate_json(existing[1]), case, existing[2]
+                )
+                db.commit()
+                return state
             session = engine.open_session(identifier, case)
             db.execute(
                 "INSERT INTO demo_world_model_sessions VALUES (?, ?, ?, ?)",
@@ -73,19 +97,31 @@ class SessionStore:
             return session
 
     def mutate(
-        self, identifier: str, action: Literal["confirm", "advance"], value: str | int
+        self,
+        identifier: str,
+        action: Literal["confirm", "advance"],
+        value: str | int,
+        *,
+        objective: Objective | None = None,
     ) -> Session:
         with self.connection() as db:
             db.execute("BEGIN IMMEDIATE")
             version, state = self.lookup(db, identifier)
             case = engine.cases().get(state.context.id)
-            if case is None or version != engine.revision(case):
+            if case is None:
+                raise Conflict("Ce contexte a changé. Ouvrez une nouvelle simulation.")
+            version, state = self.upgrade_planning(db, state, case, version)
+            legacy = state.model_version == engine.manifest()["version"]
+            if version != engine.revision(case, legacy=legacy):
                 raise Conflict(
                     "Ce parcours utilise un ancien modèle. Ouvrez une nouvelle simulation."
                 )
             if action == "confirm":
-                if not any(option.id == value for option in state.options):
+                choice = next((o for o in state.options if o.id == value), None)
+                if choice is None:
                     raise Unknown("Cette affectation n’appartient pas à ce contexte.")
+                if not choice.eligible:
+                    raise Conflict(choice.constraint or "Cette ressource est indisponible.")
                 if state.selected_id == value:
                     return state
                 if state.phase != "planning":
@@ -93,6 +129,7 @@ class SessionStore:
                 if not isinstance(value, str):
                     raise ValueError("Identifiant d’affectation invalide.")
                 state.selected_id = value
+                state.decision_objective = objective
                 state.phase = "confirmed"
                 event = Entry(hour=state.hour, event="confirmed", option_id=value)
             else:

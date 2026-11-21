@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "../api/client";
-import { worldApi, type WmSession } from "../api/worldModel";
+import { canConfirm, worldApi, type ComparisonObjective, type WmSession } from "../api/worldModel";
 
 const namespace = "hospitalos.world-model.v1.";
 const pendingStorage = new Map<string, string>();
@@ -107,10 +107,10 @@ export function useWorldSession(context: string) {
     setBusy("load");
     setVersion((v) => v + 1);
   };
-  async function mutate(kind: "confirm" | "advance", optionId?: string) {
+  async function mutate(kind: "confirm" | "advance", optionId?: string, objective?: ComparisonObjective) {
     const current = lastState.current;
     if (!current || active.current || error) return;
-    if (kind === "confirm" && (current.phase !== "planning" || !current.options.some((o) => o.id === optionId))) return;
+    if (kind === "confirm" && (current.phase !== "planning" || !current.options.some((o) => o.id === optionId && canConfirm(o)))) return;
     if (kind === "advance" && current.phase !== "confirmed" && current.phase !== "awaiting_report") return;
     const ctrl = new AbortController();
     active.current = ctrl;
@@ -118,7 +118,7 @@ export function useWorldSession(context: string) {
     setError(null);
     try {
       const next = kind === "confirm"
-        ? await worldApi.confirm(current.id, context, optionId!, ctrl.signal)
+        ? await worldApi.confirm(current.id, context, optionId!, ctrl.signal, objective)
         : await worldApi.advance(current.id, context, current.phase === "awaiting_report" ? 16 : 12, ctrl.signal);
       if (!ctrl.signal.aborted && active.current === ctrl) accept(next);
     } catch (e) {
@@ -127,5 +127,5 @@ export function useWorldSession(context: string) {
       if (active.current === ctrl) { active.current = null; setBusy(null); }
     }
   }
-  return { state, busy, error, reload, restart, confirm: (id: string) => mutate("confirm", id), advance: () => mutate("advance") };
+  return { state, busy, error, reload, restart, confirm: (id: string, objective: ComparisonObjective) => mutate("confirm", id, objective), advance: () => mutate("advance") };
 }

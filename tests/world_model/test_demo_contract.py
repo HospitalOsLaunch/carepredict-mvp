@@ -1,5 +1,7 @@
 """Black-box, offline checks for the clock and information boundary of the cockpit."""
 
+import json
+import sqlite3
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
@@ -21,7 +23,7 @@ from hospitalos.world_model.contracts import Context, Contexts, Session
 from hospitalos.world_model.physics import rollout
 from services.api.hybrid_app import create_app
 
-Forecasts = dict[str, tuple[float, float, list[float]]]
+Forecasts = dict[str, tuple[float, float | None, list[float]]]
 CensusArray = NDArray[np.generic]
 
 
@@ -92,7 +94,10 @@ def check_forecasts(state: Session) -> None:
         per_ward = option.by_ward
         assert len(per_ward) == len(wards)
         assert all(
-            isfinite(x) and 0 <= x <= ward.beds + 1e-7
+            isfinite(x)
+            and 0
+            <= x
+            <= ward.beds + int(option.kind == "beds" and option.ward_id == ward.id) + 1e-7
             for x, ward in zip(per_ward, wards, strict=True)
         )
         assert option.forecast == pytest.approx(sum(per_ward))
@@ -120,7 +125,12 @@ def check_review(state: Session, initial_forecasts: Forecasts) -> None:
         assert len(reconstructed) == len(state.wards)
         assert option.reconstruction == pytest.approx(sum(reconstructed))
         for value, ward in zip(reconstructed, state.wards, strict=True):
-            assert isfinite(value) and 0 <= value <= ward.beds + 1e-7
+            assert (
+                isfinite(value)
+                and 0
+                <= value
+                <= ward.beds + int(option.kind == "beds" and option.ward_id == ward.id) + 1e-7
+            )
         if option.id == state.selected_id:
             for expected, actual in zip(observed, reconstructed, strict=True):
                 if expected is not None:
@@ -300,3 +310,84 @@ def test_catalogue_rejects_a_publication_before_its_measured_hour(
         assert client.get("/world-model/contexts").status_code == 503
     finally:
         engine.cases.cache_clear()
+
+
+@pytest.mark.parametrize("confirmed", [False, True])
+def test_existing_cockpit_database_retains_a_morning_session(
+    db: Path, client: TestClient, confirmed: bool
+) -> None:
+    ctx = context_for(client, "full")
+    path, state = start(client, ctx)
+    if confirmed:
+        state = success(client.post(f"{path}/confirm", json={"option_id": "reference"}))
+    legacy = state.model_dump(mode="json")
+    legacy["model_version"] = engine.manifest()["version"]
+    old_options = [
+        option
+        for option in legacy["options"]
+        if option["kind"] in {"reference", "transport", "cleaning"}
+    ]
+    for option in old_options:
+        for key in (
+            "eligible",
+            "constraint",
+            "cost_eur",
+            "uncovered_ide_minutes",
+            "uncovered_as_minutes",
+            "bed_wait_patient_hours",
+        ):
+            del option[key]
+    legacy["options"] = old_options
+    with sqlite3.connect(db) as connection:
+        connection.execute(
+            "UPDATE demo_world_model_sessions SET revision=?, snapshot=? WHERE id=?",
+            (engine.revision(engine.cases()[ctx.id], legacy=True), json.dumps(legacy), state.id),
+        )
+    restored = success(client.get(path))
+    assert restored.journal == state.journal
+    if confirmed:
+        assert len(restored.options) == len(old_options)
+        reviewed = success(client.post(f"{path}/advance", json={"from_hour": 12}))
+        assert reviewed.selected_id == "reference" and reviewed.observation is not None
+        assert len(reviewed.options) == len(old_options)
+    else:
+        assert {o.kind for o in restored.options} == {
+            "reference",
+            "cleaning",
+            "transport",
+            "beds",
+            "smr",
+            "staffing",
+        }
+        assert success(client.get(path)) == restored
+
+
+def test_no_additional_noon_offers_preserves_the_original_choices(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(engine, "noon_offers", lambda *args: [])
+    engine.public_projection.cache_clear()
+    try:
+        state = engine.open_session("empty", engine.cases()["rives"])
+        assert len(state.options) == 15
+        assert {o.kind for o in state.options} == {"reference", "transport", "cleaning"}
+    finally:
+        engine.public_projection.cache_clear()
+
+
+def test_decision_keeps_the_objective_selected_at_confirmation(client: TestClient) -> None:
+    path, state = start(client, context_for(client, "full"))
+    assert state.decision_objective is None
+    invalid = client.post(
+        f"{path}/confirm", json={"option_id": "reference", "objective": "unknown"}
+    )
+    assert invalid.status_code == 422
+    assert success(client.get(path)).phase == "planning"
+    for objective in ("uncovered_care", "bed_wait"):
+        committed = success(
+            client.post(f"{path}/confirm", json={"option_id": "reference", "objective": objective})
+        )
+        assert committed.decision_objective == "uncovered_care"
+    end = success(client.post(f"{path}/advance", json={"from_hour": 12}))
+    assert end.decision_objective == "uncovered_care" and end.phase == "review"
+    assert success(client.get(path)) == end

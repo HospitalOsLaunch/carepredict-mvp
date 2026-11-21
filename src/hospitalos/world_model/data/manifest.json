@@ -66,5 +66,7 @@
       "events_sha": "ba76176f34448553a85ecd378b3bb4fd7635fc8f0ad13b3cdeb452f77e1c885e",
       "public_view_sha": "253bf8f270494563cac7a2c1b4c2da18c2854f2fe161831d4a1d3a1e70c28513"
     }
-  ]
+  ],
+  "noon_offer_sha256": "77936f4fb86348652143f325208086b2ce6bc79b7c56efa69bc56517d3ea31f7",
+  "noon_version": "MIDI5-v1"
 }

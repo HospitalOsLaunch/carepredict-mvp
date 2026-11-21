@@ -71,6 +71,9 @@ def rollout(
     drivers: np.ndarray,
     schedules: np.ndarray,
     kernel_sha: str,
+    *,
+    start_offset: int = START_OFFSET,
+    hours: int = HORIZON,
 ) -> tuple[np.ndarray, np.ndarray]:
     """One four-hour forecast from noon. All inputs come from verified local artifacts."""
     beds = np.ascontiguousarray(data["beds"], dtype=np.float64)
@@ -80,7 +83,9 @@ def rollout(
     state = np.ascontiguousarray(initial, dtype=np.float64)
     tape = np.ascontiguousarray(drivers, dtype=np.float64)
     if (
-        not 4 <= n <= 8
+        not 1 <= hours <= HORIZON
+        or not START_OFFSET <= start_offset <= START_OFFSET + HORIZON - hours
+        or not 4 <= n <= 8
         or beds.shape != (n,)
         or route.shape != (n,)
         or np.any((route < 0) | (route >= n))
@@ -90,7 +95,7 @@ def rollout(
         or not np.isfinite(state).all()
         or np.any(state < -1e-8)
         or np.any(state[:, 1:].sum(axis=1) > beds + 1e-7)
-        or tape.shape != (HORIZON, n, 17)
+        or tape.shape != (hours, n, 17)
         or not np.isfinite(tape).all()
         or np.any(tape < 0)
         or plans.ndim != 4
@@ -110,11 +115,11 @@ def rollout(
         or np.any(active & ~loans & (donors != -1))
     ):
         raise ModelUnavailable("Affectation incompatible avec l’unité ou la ressource.")
-    endpoints = np.array([HORIZON], dtype=np.int32)
+    endpoints = np.array([hours], dtype=np.int32)
     metrics = np.empty((len(plans), n, 14), dtype=np.float64)
     stocks = np.empty((len(plans), n, 5), dtype=np.float64)
     buffers = (endpoints, beds, route, state, tape, plans, metrics, stocks)
-    _kernel(kernel_sha)(n, len(plans), 1, START_OFFSET, 1, *(a.ctypes.data for a in buffers))
+    _kernel(kernel_sha)(n, len(plans), 1, start_offset, 1, *(a.ctypes.data for a in buffers))
     if not np.isfinite(stocks).all() or not np.isfinite(metrics).all():
         raise ModelUnavailable("La prévision contient une valeur non finie.")
     return metrics, stocks

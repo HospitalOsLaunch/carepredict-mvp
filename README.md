@@ -2,8 +2,9 @@
 
 ## Démo du world model hospitalier
 
-Un cadre compare les affectations possibles à midi, valide un choix en simulation et retrouve la
-file observée à 16 h. Le cockpit peut ensuite estimer ce qu’aurait donné un autre choix. Trois
+À midi, le cadre compare cinq leviers : transport, bionettoyage, personnel IDE/AS, places en
+soins médicaux et de réadaptation (SMR) et lits équipés. Il peut aussi conserver le planning.
+Après validation en simulation, le cockpit présente la file observée à 16 h. Le cockpit peut ensuite estimer ce qu’aurait donné un autre choix. Trois
 établissements synthétiques illustrent un relevé complet, partiel ou publié à 18 h.
 
 ```bash

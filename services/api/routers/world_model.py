@@ -42,7 +42,7 @@ def world_model_router(store: SessionStore) -> APIRouter:
             response,
             lambda: Contexts(
                 contexts=[case.context for case in engine.cases().values()],
-                model_version=engine.manifest()["version"],
+                model_version=engine.model_version(),
             ),
         )
 
@@ -56,7 +56,12 @@ def world_model_router(store: SessionStore) -> APIRouter:
 
     @router.post("/sessions/{identifier}/confirm")
     def confirm(identifier: UUID, body: Confirm, response: Response) -> Session:
-        return respond(response, lambda: store.mutate(str(identifier), "confirm", body.option_id))
+        return respond(
+            response,
+            lambda: store.mutate(
+                str(identifier), "confirm", body.option_id, objective=body.objective
+            ),
+        )
 
     @router.post("/sessions/{identifier}/advance")
     def advance(identifier: UUID, body: Advance, response: Response) -> Session:
