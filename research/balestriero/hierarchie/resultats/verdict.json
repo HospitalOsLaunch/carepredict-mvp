@@ -1,0 +1,1013 @@
+{
+  "arms": {
+    "hierarchique": {
+      "active_delivered_ge_1h_already_planned": [
+        119,
+        78,
+        45
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        1033,
+        5,
+        114,
+        0
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.3602219824498674,
+              0.03636577681011325
+            ],
+            "mean": -0.13741164227191038
+          },
+          "harmful_contexts": 8,
+          "harmful_contexts_bed_ide_as": [
+            8,
+            3,
+            5
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.13741164227191038,
+            0.16074489042526535,
+            -1.4852970495729485,
+            -0.08646409170321026
+          ],
+          "site_ward_breaches": 3,
+          "site_ward_role_breaches": 3,
+          "sites_with_any_ward_breach": 3,
+          "unchanged_all_ward_costs": 1141,
+          "ward_role_breaches_bed_ide_as": [
+            1,
+            0,
+            2
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.01567093743872321,
+              0.020445569401520175
+            ],
+            "mean": 0.0019418283371667074
+          },
+          "harmful_contexts": 6,
+          "harmful_contexts_bed_ide_as": [
+            5,
+            2,
+            2
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.0019418283371667074,
+            0.01895843005218696,
+            -0.0028307703156286914,
+            -0.020741654983465682
+          ],
+          "site_ward_breaches": 3,
+          "site_ward_role_breaches": 3,
+          "sites_with_any_ward_breach": 3,
+          "unchanged_all_ward_costs": 1144,
+          "ward_role_breaches_bed_ide_as": [
+            2,
+            0,
+            1
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.15585891940909283,
+              0.07096327301419744
+            ],
+            "mean": -0.032790456569835626
+          },
+          "harmful_contexts": 8,
+          "harmful_contexts_bed_ide_as": [
+            7,
+            1,
+            4
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.032790456569835626,
+            0.035749982768202716,
+            -0.5757624624478836,
+            -0.05837237043807776
+          ],
+          "site_ward_breaches": 4,
+          "site_ward_role_breaches": 5,
+          "sites_with_any_ward_breach": 3,
+          "unchanged_all_ward_costs": 1141,
+          "ward_role_breaches_bed_ide_as": [
+            2,
+            0,
+            3
+          ]
+        }
+      }
+    },
+    "hierarchique_brut": {
+      "active_delivered_ge_1h_already_planned": [
+        190,
+        130,
+        74
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        962,
+        23,
+        166,
+        1
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.7160975496811465,
+              -0.054497135359570056
+            ],
+            "mean": -0.35390283187962035
+          },
+          "harmful_contexts": 16,
+          "harmful_contexts_bed_ide_as": [
+            14,
+            6,
+            9
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.3539028318796204,
+            0.23437566193855341,
+            -1.7042664648166128,
+            -0.07140954083890866
+          ],
+          "site_ward_breaches": 9,
+          "site_ward_role_breaches": 10,
+          "sites_with_any_ward_breach": 6,
+          "unchanged_all_ward_costs": 1124,
+          "ward_role_breaches_bed_ide_as": [
+            4,
+            1,
+            5
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.03188679200290533,
+              0.025190664591994476
+            ],
+            "mean": -0.005010056729160527
+          },
+          "harmful_contexts": 11,
+          "harmful_contexts_bed_ide_as": [
+            9,
+            2,
+            3
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.005010056729160526,
+            -0.004525254983229331,
+            -0.016636101112045252,
+            -0.02043461559201989
+          ],
+          "site_ward_breaches": 4,
+          "site_ward_role_breaches": 4,
+          "sites_with_any_ward_breach": 4,
+          "unchanged_all_ward_costs": 1130,
+          "ward_role_breaches_bed_ide_as": [
+            3,
+            0,
+            1
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.2180423845806133,
+              0.06030737820079035
+            ],
+            "mean": -0.07202675622433324
+          },
+          "harmful_contexts": 16,
+          "harmful_contexts_bed_ide_as": [
+            14,
+            2,
+            9
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.07202675622433324,
+            0.0019756266435649386,
+            -0.6913178966173723,
+            -0.03804975908111581
+          ],
+          "site_ward_breaches": 9,
+          "site_ward_role_breaches": 12,
+          "sites_with_any_ward_breach": 6,
+          "unchanged_all_ward_costs": 1124,
+          "ward_role_breaches_bed_ide_as": [
+            4,
+            1,
+            7
+          ]
+        }
+      }
+    },
+    "horaire": {
+      "active_delivered_ge_1h_already_planned": [
+        0,
+        0,
+        0
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        1152,
+        0,
+        0,
+        0
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "j7_initial": {
+      "active_delivered_ge_1h_already_planned": [
+        208,
+        2,
+        0
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        944,
+        0,
+        0,
+        208
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -1.3408073387930646,
+              0.006760334719155621
+            ],
+            "mean": -0.4498910938435549
+          },
+          "harmful_contexts": 3,
+          "harmful_contexts_bed_ide_as": [
+            2,
+            3,
+            2
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.4498910938435549,
+            -0.01678022097886847,
+            -0.06506273206098062,
+            -0.009009860230977046
+          ],
+          "site_ward_breaches": 2,
+          "site_ward_role_breaches": 2,
+          "sites_with_any_ward_breach": 2,
+          "unchanged_all_ward_costs": 1148,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            1,
+            1
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.0021370147476724,
+              0.005208319913713361
+            ],
+            "mean": 0.0011884298296528737
+          },
+          "harmful_contexts": 4,
+          "harmful_contexts_bed_ide_as": [
+            2,
+            3,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.0011884298296528737,
+            0.010975319153252477,
+            0.30077223253024127,
+            0.0
+          ],
+          "site_ward_breaches": 3,
+          "site_ward_role_breaches": 4,
+          "sites_with_any_ward_breach": 3,
+          "unchanged_all_ward_costs": 1148,
+          "ward_role_breaches_bed_ide_as": [
+            1,
+            3,
+            0
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.10574656516711187,
+              0.010860330123826374
+            ],
+            "mean": -0.030593264495464935
+          },
+          "harmful_contexts": 4,
+          "harmful_contexts_bed_ide_as": [
+            3,
+            3,
+            2
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.03059326449546494,
+            -0.03629636412816663,
+            -0.07265038015141582,
+            0.0020986919877745516
+          ],
+          "site_ward_breaches": 3,
+          "site_ward_role_breaches": 3,
+          "sites_with_any_ward_breach": 3,
+          "unchanged_all_ward_costs": 1148,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            2,
+            1
+          ]
+        }
+      }
+    },
+    "j7_livre": {
+      "active_delivered_ge_1h_already_planned": [
+        0,
+        0,
+        0
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        1152,
+        0,
+        0,
+        0
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              0.0,
+              0.0
+            ],
+            "mean": 0.0
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 1152,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "oracle": {
+      "active_delivered_ge_1h_already_planned": [
+        326,
+        267,
+        0
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        826,
+        225,
+        48,
+        53
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              5.252523161551232,
+              10.793523974154681
+            ],
+            "mean": 7.759485348261419
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -7.759485348261418,
+            -2.4387567638083896,
+            -10.609636442407352,
+            -1.635591367200448
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 779,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              1.009046366226203,
+              2.285735827127126
+            ],
+            "mean": 1.5872449841327998
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -1.5872449841328,
+            -0.5037338628504362,
+            -3.1606911615909734,
+            -0.2508387718207179
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 844,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              3.311355000827226,
+              6.643962372275938
+            ],
+            "mean": 4.831612505623187
+          },
+          "harmful_contexts": 0,
+          "harmful_contexts_bed_ide_as": [
+            0,
+            0,
+            0
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -4.831612505623186,
+            -1.49298979963255,
+            -4.342180027283218,
+            -0.6620864705440923
+          ],
+          "site_ward_breaches": 0,
+          "site_ward_role_breaches": 0,
+          "sites_with_any_ward_breach": 0,
+          "unchanged_all_ward_costs": 826,
+          "ward_role_breaches_bed_ide_as": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "physique": {
+      "active_delivered_ge_1h_already_planned": [
+        171,
+        100,
+        49
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        981,
+        119,
+        31,
+        21
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -5.678894434557284,
+              -0.8242568567245233
+            ],
+            "mean": -2.9534100349617054
+          },
+          "harmful_contexts": 66,
+          "harmful_contexts_bed_ide_as": [
+            56,
+            43,
+            49
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            2.953410034961705,
+            0.38002210229977446,
+            -0.27112436829403,
+            0.2602271099044204
+          ],
+          "site_ward_breaches": 46,
+          "site_ward_role_breaches": 64,
+          "sites_with_any_ward_breach": 23,
+          "unchanged_all_ward_costs": 1061,
+          "ward_role_breaches_bed_ide_as": [
+            18,
+            17,
+            29
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -1.10194139226476,
+              -0.13244425121373346
+            ],
+            "mean": -0.5491756538506982
+          },
+          "harmful_contexts": 66,
+          "harmful_contexts_bed_ide_as": [
+            58,
+            17,
+            16
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            0.5491756538506981,
+            0.3884813819273789,
+            0.5379280056322493,
+            0.0036860320256394525
+          ],
+          "site_ward_breaches": 25,
+          "site_ward_role_breaches": 30,
+          "sites_with_any_ward_breach": 23,
+          "unchanged_all_ward_costs": 1065,
+          "ward_role_breaches_bed_ide_as": [
+            20,
+            5,
+            5
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -3.020937254731466,
+              -0.5519459803655231
+            ],
+            "mean": -1.6492855874828765
+          },
+          "harmful_contexts": 66,
+          "harmful_contexts_bed_ide_as": [
+            56,
+            42,
+            40
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            1.6492855874828762,
+            0.45863495074389127,
+            1.0563810254435657,
+            -0.0811088327307182
+          ],
+          "site_ward_breaches": 30,
+          "site_ward_role_breaches": 45,
+          "sites_with_any_ward_breach": 21,
+          "unchanged_all_ward_costs": 1062,
+          "ward_role_breaches_bed_ide_as": [
+            16,
+            13,
+            16
+          ]
+        }
+      }
+    },
+    "plat": {
+      "active_delivered_ge_1h_already_planned": [
+        208,
+        148,
+        85
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        944,
+        4,
+        204,
+        0
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.2917734468797878,
+              0.651390163254095
+            ],
+            "mean": 0.12710758879944004
+          },
+          "harmful_contexts": 16,
+          "harmful_contexts_bed_ide_as": [
+            16,
+            7,
+            10
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.12710758879944004,
+            0.15054730451957332,
+            -1.1638147361461453,
+            0.02934106821026829
+          ],
+          "site_ward_breaches": 9,
+          "site_ward_role_breaches": 9,
+          "sites_with_any_ward_breach": 6,
+          "unchanged_all_ward_costs": 1129,
+          "ward_role_breaches_bed_ide_as": [
+            6,
+            0,
+            3
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.0015939538280346037,
+              0.05823541656832215
+            ],
+            "mean": 0.019541730737640206
+          },
+          "harmful_contexts": 9,
+          "harmful_contexts_bed_ide_as": [
+            7,
+            3,
+            2
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.019541730737640203,
+            0.011186666342292003,
+            -0.004727772609373897,
+            0.0036877935046510197
+          ],
+          "site_ward_breaches": 3,
+          "site_ward_role_breaches": 4,
+          "sites_with_any_ward_breach": 2,
+          "unchanged_all_ward_costs": 1137,
+          "ward_role_breaches_bed_ide_as": [
+            2,
+            1,
+            1
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.006589315235300323,
+              0.5702523542157288
+            ],
+            "mean": 0.22886704177763076
+          },
+          "harmful_contexts": 14,
+          "harmful_contexts_bed_ide_as": [
+            11,
+            4,
+            5
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.22886704177763076,
+            0.06560882627499282,
+            -0.46633433583927647,
+            -0.01438005872218304
+          ],
+          "site_ward_breaches": 7,
+          "site_ward_role_breaches": 9,
+          "sites_with_any_ward_breach": 5,
+          "unchanged_all_ward_costs": 1129,
+          "ward_role_breaches_bed_ide_as": [
+            5,
+            1,
+            3
+          ]
+        }
+      }
+    },
+    "plat_brut": {
+      "active_delivered_ge_1h_already_planned": [
+        240,
+        174,
+        101
+      ],
+      "choice_counts_by_kind_0_4_5_6": [
+        912,
+        21,
+        219,
+        0
+      ],
+      "horizon": {
+        "168": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.7818423110034028,
+              1.4886437790065794
+            ],
+            "mean": 0.23582795392265704
+          },
+          "harmful_contexts": 23,
+          "harmful_contexts_bed_ide_as": [
+            22,
+            12,
+            16
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.23582795392265707,
+            -0.031122972463946956,
+            -1.2415684823778332,
+            0.23404624220409548
+          ],
+          "site_ward_breaches": 17,
+          "site_ward_role_breaches": 20,
+          "sites_with_any_ward_breach": 10,
+          "unchanged_all_ward_costs": 1119,
+          "ward_role_breaches_bed_ide_as": [
+            10,
+            2,
+            8
+          ]
+        },
+        "24": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.015837895427105828,
+              0.1212406232281261
+            ],
+            "mean": 0.044037207034188106
+          },
+          "harmful_contexts": 16,
+          "harmful_contexts_bed_ide_as": [
+            13,
+            6,
+            4
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.044037207034188106,
+            -0.010935029061138286,
+            0.010555475884812923,
+            0.00619436606780414
+          ],
+          "site_ward_breaches": 8,
+          "site_ward_role_breaches": 10,
+          "sites_with_any_ward_breach": 7,
+          "unchanged_all_ward_costs": 1128,
+          "ward_role_breaches_bed_ide_as": [
+            6,
+            2,
+            2
+          ]
+        },
+        "72": {
+          "gain_transfer_h": {
+            "cluster_95": [
+              -0.15527212494539996,
+              0.8086583798617164
+            ],
+            "mean": 0.28347918224376545
+          },
+          "harmful_contexts": 23,
+          "harmful_contexts_bed_ide_as": [
+            18,
+            7,
+            9
+          ],
+          "mean_cost_delta_transfer_bed_ide_as": [
+            -0.28347918224376545,
+            0.06682052015799603,
+            -0.6506884459854009,
+            -0.02642820276944393
+          ],
+          "site_ward_breaches": 12,
+          "site_ward_role_breaches": 16,
+          "sites_with_any_ward_breach": 8,
+          "unchanged_all_ward_costs": 1119,
+          "ward_role_breaches_bed_ide_as": [
+            9,
+            3,
+            4
+          ]
+        }
+      }
+    }
+  },
+  "contexts": 1152,
+  "demonstrated_operational_improvement": false,
+  "mean_lower_refinements_when_active": 2.9157894736842107,
+  "means_catalogue_eligible_families_lower_candidates": [
+    24.875,
+    5.301215277777778,
+    3.0277777777777777,
+    1.3159722222222223
+  ],
+  "method": "Two-sided percentile intervals, 20000 hospital-cluster resamples, 18 matched contexts per hospital.",
+  "n_site_wards": 382,
+  "paired_cluster_contrasts_h72": {
+    "hierarchique_brut_vs_horaire": {
+      "cluster_95": [
+        -0.2180423845806133,
+        0.06030737820079035
+      ],
+      "mean": -0.07202675622433324
+    },
+    "hierarchique_brut_vs_plat_brut": {
+      "cluster_95": [
+        -0.8866950111660806,
+        0.08903791801416451
+      ],
+      "mean": -0.3555059384680987
+    },
+    "hierarchique_vs_horaire": {
+      "cluster_95": [
+        -0.15585891940909283,
+        0.07096327301419744
+      ],
+      "mean": -0.032790456569835626
+    },
+    "hierarchique_vs_j7_livre": {
+      "cluster_95": [
+        -0.15585891940909283,
+        0.07096327301419744
+      ],
+      "mean": -0.032790456569835626
+    },
+    "hierarchique_vs_plat": {
+      "cluster_95": [
+        -0.5951875596197919,
+        -0.03852961294224331
+      ],
+      "mean": -0.2616574983474664
+    },
+    "plat_vs_j7_livre": {
+      "cluster_95": [
+        -0.006589315235300323,
+        0.5702523542157288
+      ],
+      "mean": 0.22886704177763076
+    }
+  },
+  "provenance": {
+    "assign": "b5df56cd6cb8a55ee80f050ea541baf8c511eea60bda18b2b3612f7d05ff21ba",
+    "lock": "d299e1ac6241a2c49aeb6f6ed057ac92ed8c47fd71717f39b8208e4a92098a91",
+    "reveal": "fbb416389cd2bb899b4ca8ee84f3b7ea5f732e5f8992479dbd3b60436106f8af"
+  },
+  "raw_nonzero_upper": 190,
+  "raw_same_primitive": 866,
+  "sites": 64,
+  "total_nonzero_catalogue_offers": 27504
+}
