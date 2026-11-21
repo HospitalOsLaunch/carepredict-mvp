@@ -227,7 +227,8 @@ def unit_journey(
 
 
 def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) -> None:
-    page = browser.new_page(viewport={"width": 390, "height": 844}, locale="fr-FR")
+    context = browser.new_context(viewport={"width": 390, "height": 844}, locale="fr-FR")
+    page = context.new_page()
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     confirmations = confirmation_requests(page)
@@ -320,7 +321,7 @@ def adjusted_unit_journey(browser: Browser, url: str, screenshots: Path | None) 
         assert not errors, errors
         print("Rives/u6 : remplacement IDE évalué, validé et relu dans le journal", flush=True)
     finally:
-        page.close()
+        context.close()
 
 
 def patient_unit_journey(browser: Browser, url: str, screenshots: Path | None) -> None:
