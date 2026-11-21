@@ -2487,9 +2487,6 @@ textarea.input {
   position: sticky;
   top: 84px;
 }
-.journal__detail-phone {
-  display: none;
-}
 .jtools {
   display: flex;
   flex-wrap: wrap;
@@ -2832,13 +2829,10 @@ textarea.input {
     grid-template-columns: minmax(0, 1fr);
   }
   .journal__side {
-    position: static;
+    display: contents;
   }
-  .journal__detail-phone {
-    display: block;
-  }
-  .journal__detail-desk {
-    display: none;
+  .journal__side > .jdetail {
+    order: -1;
   }
 }
 @media (max-width: 760px) {

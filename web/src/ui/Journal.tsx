@@ -192,7 +192,6 @@ export function Journal(props: {
 
       <div className={`journal${openId ? " journal--open" : ""}`}>
         <div className="journal__main stack">
-          {openId ? <div className="journal__detail-phone">{detail}</div> : null}
           <section className="panel" aria-labelledby="follow-title">
             <header className="panel__head">
               <h2 className="panel__title" id="follow-title">
@@ -322,7 +321,7 @@ export function Journal(props: {
         </div>
 
         <aside className="journal__side stack">
-          {detail ? <div className="journal__detail-desk">{detail}</div> : null}
+          {detail}
           <Handover
             records={scoped}
             me={me}

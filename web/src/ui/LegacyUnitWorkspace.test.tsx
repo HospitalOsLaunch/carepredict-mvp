@@ -34,7 +34,7 @@ it("keeps the same patient, resource, chosen alternative and decision record thr
   const link = within(pending).getByRole("link", { name: new RegExp(alternative) });
   expect(link.getAttribute("href")).toMatch(/^#\/dossiers\/journal\//);
   fireEvent.click(link);
-  const fiche = screen.getAllByRole("region", { name: alternative })[0]!;
+  const fiche = screen.getByRole("region", { name: alternative });
   expect(within(fiche).getByRole("heading", { name: alternative })).toBeTruthy();
   fireEvent.click(within(fiche).getByRole("link", { name: "Fermer la fiche" }));
   expect(screen.queryByRole("region", { name: alternative })).toBeNull();
