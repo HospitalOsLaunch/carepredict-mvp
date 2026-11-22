@@ -22,7 +22,7 @@ class RSSMOutput:
 class RSSM(nn.Module):
     """RSSM with posterior context updates and prior-only target rollout."""
 
-    def __init__(self, cfg: Stage1Config, n_static: int = 0) -> None:
+    def __init__(self, cfg: Stage1Config, n_static: int = 0, *, future_known_dim: int = 0) -> None:
         super().__init__()
         self.latent_dim = int(cfg.latent_dim)
         self.deter_dim = int(cfg.rssm_deter_dim)
@@ -35,6 +35,9 @@ class RSSM(nn.Module):
         self.gru = nn.GRUCell(
             self.latent_dim + self.stoch_dim + self.action_dim,
             self.deter_dim,
+        )
+        self.future_to_input = (
+            nn.Linear(future_known_dim, self.latent_dim, bias=False) if future_known_dim else None
         )
         self.prior = nn.Linear(self.deter_dim, 2 * self.stoch_dim)
         self.posterior = nn.Linear(self.deter_dim + self.latent_dim, 2 * self.stoch_dim)
@@ -134,6 +137,7 @@ class RSSM(nn.Module):
         static: torch.Tensor | None = None,
         actions_context: torch.Tensor | None = None,
         actions_future: torch.Tensor | None = None,
+        future_known: torch.Tensor | None = None,
     ) -> RSSMOutput:
         """Roll target states with the prior only; target observations are not read."""
 
@@ -172,12 +176,26 @@ class RSSM(nn.Module):
             device=z_context.device,
             dtype=z_context.dtype,
         )
+        projected = None
+        if self.future_to_input is not None:
+            expected = (batch_size, horizon, self.future_to_input.in_features)
+            if (
+                future_known is None
+                or future_known.shape != expected
+                or not torch.isfinite(future_known).all()
+            ):
+                raise ValueError("Future calendar must match every rollout interval")
+            projected = self.future_to_input(future_known.to(z_context))
+        elif future_known is not None:
+            raise ValueError("Legacy RSSM does not accept future calendar inputs")
         states = []
         prior_means = []
         prior_stds = []
         for step in range(horizon):
             a_t = future_actions[:, step]
-            h = self.gru(torch.cat([zero_z, s, a_t], dim=-1), h)
+            h = self.gru(
+                torch.cat([zero_z if projected is None else projected[:, step], s, a_t], dim=-1), h
+            )
             prior_mean, prior_std = self._stats(self.prior, h)
             s = prior_mean
             states.append(self._state(h, s))

@@ -11,6 +11,8 @@ import re
 from pathlib import Path
 from typing import Any, cast
 
+from .future_calendar import RULE, check_step
+
 MODEL_SCHEMA = "hospitalos.integrated_full_model_v1"
 CHECKPOINT_SCHEMA = "hospitalos.integrated_checkpoint_v1"
 TARGET_UNITS = frozenset(("patients", "beds", "persons", "synthetic_minutes_per_hour"))
@@ -47,6 +49,13 @@ def validate_spec(raw: Any) -> dict[str, Any]:
         "action_features", "targets", "latent_dim", "rssm_deter_dim",
         "rssm_stoch_dim", "head_hidden_dim", "asof_contract", "action_policy",
     }
+    if isinstance(raw, dict) and "future_calendar" in raw:
+        keys.add("future_calendar")
+        grid = raw["future_calendar"]
+        if (not isinstance(grid, dict) or set(grid) != {"rule", "default_step_minutes", "use_civil_calendar"}
+                or grid["rule"] != RULE or type(grid["use_civil_calendar"]) is not bool):
+            raise ValueError("Unknown future calendar contract")
+        check_step(grid["default_step_minutes"])
     if not isinstance(raw, dict) or set(raw) != keys:
         raise ValueError("Unknown or missing integrated model spec fields")
     if raw["schema"] != MODEL_SCHEMA or raw["synthetic_only"] is not True:
@@ -97,6 +106,8 @@ def validate_spec(raw: Any) -> dict[str, Any]:
         ["anticipation_sorties", "lits_supplementaires",
          "renfort_soignant", "acceleration_aval"],
     )
+    if "future_calendar" in raw and raw["action_features"] != supported_actions[1]:
+        raise ValueError("Calendar grids require the four native v0.4.1 request-count channels")
     if raw["action_features"] not in supported_actions:
         raise ValueError("Only the two explicitly mapped synthetic action sets are approved")
     targets = raw["targets"]
@@ -258,9 +269,18 @@ def make_example_spec() -> dict[str, Any]:
     })
 
 
-def make_v041_synthetic_spec() -> dict[str, Any]:
+def make_v041_synthetic_spec(
+    *, future_step_minutes: int | None = None, use_civil_calendar: bool = True,
+) -> dict[str, Any]:
     """V0.4.1 native requested-action counts, not Phase-A action deltas."""
     spec = make_example_spec()
+    if future_step_minutes is not None:
+        spec["future_calendar"] = {
+            "rule": RULE, "default_step_minutes": check_step(future_step_minutes),
+            "use_civil_calendar": use_civil_calendar,
+        }
+    elif use_civil_calendar is not True:
+        raise ValueError("Civil calendar ablation requires an explicit forecast grid")
     spec["action_features"] = [
         "anticipation_sorties", "lits_supplementaires",
         "renfort_soignant", "acceleration_aval",

@@ -17,6 +17,7 @@ import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
 
+from research_lab.future_calendar import FEATURES, NATIVE_MINUTES, calendar_grid, check_step
 from research_lab.integrated_full_model_v1_contract import (
     CHECKPOINT_SCHEMA,
     COMPONENTS,
@@ -33,18 +34,29 @@ from rs_jepa.rssm import RSSM
 
 
 @dataclass(frozen=True)
+class ForecastGrid:
+    """Model estimates at interval ends. Intermediate estimates have no 014 labels."""
+
+    end_offsets_minutes: tuple[int, ...]
+    means: Tensor
+    scales: Tensor
+
+
+@dataclass(frozen=True)
 class ForecastOutput:
     """No clinical calibration or causal identification claim."""
     means: Tensor  # [B, n_horizons, n_targets], in target physical units
     scales: Tensor  # [B, n_horizons, n_targets], positive but uncalibrated
-    predicted_latents: Tensor  # [B, max_horizon / step_hours, latent_dim]
-    belief_states: Tensor  # [B, max_horizon / step_hours, deter+stoch]
+    predicted_latents: Tensor  # [B, future steps, latent_dim]
+    belief_states: Tensor  # [B, future steps, deter+stoch]
     prior_means: Tensor
     prior_stds: Tensor
     horizons_hours: tuple[int, ...]
     target_names: tuple[str, ...]
     action_mode: str
     uncertainty_kind: str = "heteroscedastic_uncalibrated"
+    future_step_minutes: int = 60
+    grid: ForecastGrid | None = None
 
 
 class MultiHorizonGaussianHead(nn.Module):
@@ -91,10 +103,13 @@ class IntegratedFullModelV1(nn.Module):
         n_static = len(self.spec["static_features"])
         self.action_dim = len(self.spec["action_features"])
         self.context_steps = self.spec["history_steps"]
-        self.rollout_steps = max(self.spec["horizons_hours"]) // self.spec["step_hours"]
-        self.horizon_indices = tuple(
-            h // self.spec["step_hours"] - 1 for h in self.spec["horizons_hours"]
+        calendar = self.spec.get("future_calendar")
+        self.has_calendar = calendar is not None
+        self.default_step_minutes = (
+            calendar["default_step_minutes"] if calendar else self.spec["step_hours"] * 60
         )
+        self.horizon_indices = self._indices(self.default_step_minutes)
+        self.rollout_steps = self.horizon_indices[-1] + 1
         self.target_names = tuple(t["name"] for t in self.spec["targets"])
 
         # This integrated operational contract supplies its own admissible
@@ -104,13 +119,18 @@ class IntegratedFullModelV1(nn.Module):
             n_obs=n_obs, n_static=n_static, cfg=stage1
         )
         self.target_encoder = EMATargetEncoder(self.encoder)
-        self.rssm = RSSM(stage1, n_static=n_static)
+        self.rssm = RSSM(
+            stage1, n_static=n_static, future_known_dim=len(FEATURES) if self.has_calendar else 0
+        )
         self.jepa_predictor = LatentPredictor(stage1)
         self.forecast_head = MultiHorizonGaussianHead(
             latent_dim=stage1.latent_dim,
             hidden=self.spec["head_hidden_dim"],
             n_targets=len(self.target_names),
         )
+
+    def _indices(self, step_minutes: int) -> tuple[int, ...]:
+        return tuple(h * 60 // step_minutes - 1 for h in self.spec["horizons_hours"])
 
     def _check_input(
         self,
@@ -124,6 +144,7 @@ class IntegratedFullModelV1(nn.Module):
         future_actions: Tensor | None,
         future_actions_available_ns: Tensor | None,
         action_mode: str,
+        steps: int,
     ) -> None:
         b = x.shape[0] if x.ndim else -1
         t = self.context_steps
@@ -161,14 +182,14 @@ class IntegratedFullModelV1(nn.Module):
                 raise ValueError("No-op scenario must not use future action arrays")
         else:
             if future_actions is None or future_actions.shape != (
-                b, self.rollout_steps, self.action_dim
+                b, steps, self.action_dim
             ):
                 raise ValueError("Future action schedule shape mismatch")
             if not torch.isfinite(future_actions).all().item():
                 raise ValueError("Nonfinite future actions")
             if action_mode == "known_plan":
                 if (future_actions_available_ns is None
-                        or future_actions_available_ns.shape != (b, self.rollout_steps)
+                        or future_actions_available_ns.shape != (b, steps)
                         or future_actions_available_ns.dtype != torch.int64):
                     raise ValueError("Known plans need version-level availability times")
                 if (future_actions_available_ns > origin_ns[:, None]).any():
@@ -189,25 +210,64 @@ class IntegratedFullModelV1(nn.Module):
         action_mode: str,
         future_actions: Tensor | None = None,
         future_actions_available_ns: Tensor | None = None,
+        future_step_minutes: int | None = None,
+        return_grid_forecasts: bool = False,
     ) -> ForecastOutput:
+        step = (
+            self.default_step_minutes if future_step_minutes is None else check_step(future_step_minutes)
+        )
+        if not self.has_calendar and step != self.default_step_minutes:
+            raise ValueError("Changing forecast resolution requires a calendar-enabled model")
+        indices = self._indices(step)
+        steps = indices[-1] + 1
         self._check_input(
             x, static, actions_context, action_available_ns, origin_ns,
             event_ns, available_ns, future_actions, future_actions_available_ns,
-            action_mode,
+            action_mode, steps,
         )
+        known = None
+        stride = 1
+        if self.has_calendar:
+            # A fixed integration clock keeps predictions at common times invariant to the grid.
+            stride = step // NATIVE_MINUTES
+            origins = origin_ns.detach().cpu().tolist()
+            grids = {d: calendar_grid(d, max(self.spec["horizons_hours"]), NATIVE_MINUTES)
+                     for d in set(origins)}
+            known = x.new_tensor([grids[d] for d in origins])
+            if not self.spec["future_calendar"]["use_civil_calendar"]:
+                known[:, :, :-1] = 0  # Keep duration and integration clock in the control arm.
+            if future_actions is not None:
+                if (
+                    future_actions.dtype == torch.bool
+                    or (future_actions < 0).any()
+                    or (future_actions != future_actions.floor()).any()
+                ):
+                    raise ValueError("Native lever requests must be nonnegative integer counts")
+                # Each slot carries requests at its start. Never repeat a request on substeps.
+                impulses = future_actions.new_zeros(x.shape[0], steps * stride, self.action_dim)
+                impulses[:, ::stride] = future_actions
+                future_actions = impulses
         z_context = self.encoder(x, static)
         rollout = self.rssm.rollout(
-            z_context, self.rollout_steps, static=static,
-            actions_context=actions_context, actions_future=future_actions,
+            z_context, steps * stride, static=static,
+            actions_context=actions_context, actions_future=future_actions, future_known=known,
         )
-        z_pred = self.jepa_predictor(rollout.states)
-        means, scales = self.forecast_head(z_pred, self.horizon_indices)
+        at_boundaries = slice(stride - 1, None, stride)
+        states = rollout.states[:, at_boundaries]
+        z_pred = self.jepa_predictor(states)
+        grid = None
+        if return_grid_forecasts:
+            all_means, all_scales = self.forecast_head(z_pred, tuple(range(steps)))
+            grid = ForecastGrid(tuple(range(step, (steps + 1) * step, step)), all_means, all_scales)
+            means, scales = all_means[:, list(indices)], all_scales[:, list(indices)]
+        else:
+            means, scales = self.forecast_head(z_pred, indices)
         return ForecastOutput(
             means=means, scales=scales, predicted_latents=z_pred,
-            belief_states=rollout.states, prior_means=rollout.prior_mean,
-            prior_stds=rollout.prior_std,
+            belief_states=states, prior_means=rollout.prior_mean[:, at_boundaries],
+            prior_stds=rollout.prior_std[:, at_boundaries],
             horizons_hours=tuple(self.spec["horizons_hours"]),
-            target_names=self.target_names, action_mode=action_mode,
+            target_names=self.target_names, action_mode=action_mode, future_step_minutes=step, grid=grid,
         )
 
     @torch.no_grad()

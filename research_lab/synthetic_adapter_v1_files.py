@@ -156,6 +156,8 @@ def build_from_archives(
     observations, actions, topology, partition, provenance = read_sources(
         observed_root, action_root, entity_id
     )
+    if "future_calendar" in spec and provenance["source_clock"] != "fixed_utc_plus_01_no_dst":
+        raise ValueError("Calendar rule requires the v0.4.1 fixed UTC+01 synthetic source clock")
     s0b_receipt = None
     if spec.get("action_features") == list(V041_ACTIONS):
         if stage1 is None:
