@@ -55,7 +55,7 @@ def used_hours(eng: Any) -> tuple[dict[int, float], float]:
 
 
 def eligible_coord(eng: Any) -> bool:
-    if any(st.departed is None and st.authorised and st.transport and st.tr_req is None for st in eng.stays.values()):
+    if any(st.departed is None and st.authorised and st.transport and not st.transport_requested for st in eng.stays.values()):
         return True
     return eng.cleaning_mode_until < eng.tick
 

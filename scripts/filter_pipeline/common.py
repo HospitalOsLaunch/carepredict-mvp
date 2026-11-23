@@ -38,7 +38,7 @@ def candidates(ps,pe):
     min(24,(now*15-pub.get('ready',now*15))/60),min(24,(now*15-pub.get('transport_accepted',now*15))/60)]
   if s.ready and not getattr(s,'dest',None) and not getattr(s,'aval',False) and (not s.transport or 'transport_done' in pub):
    out.append(('departure',sid,features))
-  if s.ready and s.tr_accepted and s.tr_start is None:
+  if s.ready and s.tr_accepted and not s.transport_started:
    out.append(('transport_start',sid,features))
  for bid,b in pe.beds.items():
   if b.state=='dirty':
@@ -67,7 +67,7 @@ def extended(pe,ps,law,draw,prov,models,enabled):
     b.state='cleaning';b.clean_start=eng.tick-1;b.clean_end=10**9
   else:
    s=eng.stays.get(ref)
-   if s is not None and s.departed is None and s.tr_start is None and len(eng.tr_service)<eng.base_c_tr+eng.active_extra('tr',eng.tick):
+   if s is not None and s.departed is None and not s.transport_started and len(eng.tr_service)<eng.base_c_tr+eng.active_extra('tr',eng.tick):
     s.tr_start=eng.tick-1;s.tr_end=10**9;eng.tr_service.append(ref)
  assert_consistent(eng)
  return eng
