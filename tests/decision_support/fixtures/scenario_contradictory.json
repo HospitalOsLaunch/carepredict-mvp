@@ -1,0 +1,27 @@
+{
+ "description": "S02 both discharged at 10:00 and prolonged: contradictory locks.",
+ "fixture": "nominal_auto.json",
+ "locks": {
+  "deadline": {
+   "day_offset": 1,
+   "local_time": "20:00:00"
+  },
+  "locks": [
+   {
+    "at": "2026-11-17T09:00:00+00:00",
+    "basis": "validated_instruction",
+    "kind": "discharge_at",
+    "stay_id": "S02"
+   },
+   {
+    "basis": "validated_instruction",
+    "extension_hours": 2,
+    "kind": "extend_presence",
+    "reference_time": "2026-11-17T11:00:00+00:00",
+    "stay_id": "S02"
+   }
+  ]
+ },
+ "scenario_id": "SC-CONTRADICTORY",
+ "synthetic": true
+}

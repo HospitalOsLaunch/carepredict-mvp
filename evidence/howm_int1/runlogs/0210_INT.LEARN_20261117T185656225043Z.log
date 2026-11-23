@@ -1,0 +1,71 @@
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+{
+ "val_ALL": {
+  "W": {
+   "situations": 519,
+   "effect_rmse": 343.6651916503906,
+   "regret": 169.08236994219652,
+   "rel_regret": 0.018527335632909387,
+   "gap_err": 276.25458751524116
+  },
+  "D": {
+   "situations": 519,
+   "effect_rmse": 313.2626261472599,
+   "regret": 180.86705202312137,
+   "rel_regret": 0.035697552688992475,
+   "gap_err": 308.15985549335295
+  }
+ },
+ "val_SF1": {
+  "W": {
+   "situations": 90,
+   "effect_rmse": 671.1915893554688,
+   "regret": 269.3333333333333,
+   "rel_regret": 0.018337158669601193,
+   "gap_err": 401.80181206597223
+  },
+  "D": {
+   "situations": 90,
+   "effect_rmse": 540.2142715391302,
+   "regret": 246.25,
+   "rel_regret": 0.01826555900010539,
+   "gap_err": 414.2192001022853
+  }
+ },
+ "train_SF1": {
+  "W": {
+   "situations": 135,
+   "effect_rmse": 797.0945434570312,
+   "regret": 108.5,
+   "rel_regret": 0.011163870943710208,
+   "gap_err": 207.4228660300926
+  },
+  "D": {
+   "situations": 135,
+   "effect_rmse": 476.62713124413705,
+   "regret": 162.04166666666666,
+   "rel_regret": 0.015539725465458577,
+   "gap_err": 282.6475714091575
+  }
+ },
+ "fit": {
+  "upd": 1500,
+  "loss": 1.7357046604156494,
+  "eff": 0.2132185846567154,
+  "situations": 16,
+  "effect_rmse": 98.0643539428711,
+  "regret": 3.75,
+  "rel_regret": 0.0001605651923455298,
+  "gap_err": 11.33306884765625
+ },
+ "drift": [
+  0.162,
+  0.154,
+  0.202,
+  0.245,
+  0.232,
+  0.256
+ ]
+}

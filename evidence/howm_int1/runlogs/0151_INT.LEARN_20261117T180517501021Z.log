@@ -1,0 +1,6 @@
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t1_S_s2", "upd": 21000, "stopped": null, "best": 18000, "params": 317460, "last": {"upd": 21000, "val": {"2": {"situations": 519, "rel_regret": 0.034397089774394006, "regret": 177.57947976878611, "effect_rmse": 376.9265441894531, "spearman": 0.5544362598462853, "state_mse": 0.20525809498737083}, "8": {"situations": 198, "rel_regret": 0.0016610420793630042, "regret": 36.83712121212121, "effect_rmse": 192.41502380371094, "spearman": 0.3789709238379178, "state_mse": 0.2975809279490601}, "4": {"situations": 183, "rel_regret": 0.0028037719156267377, "regret": 42.5, "effect_rmse": 144.34246826171875, "spearman": 0.40545413372724093, "state_mse": 0.6031893073718567}}}}

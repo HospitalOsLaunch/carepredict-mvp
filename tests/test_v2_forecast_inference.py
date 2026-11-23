@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 import torch
@@ -25,11 +26,12 @@ def legacy_eval_predict_from_history(model: nn.Module, history: Tensor, origin: 
     from hospitalos.dynamics.jepa_rssm import calendar_encoding, symexp
     from hospitalos.training.train_v2_forecast import build_calendar_features
 
+    m: Any = model
     with torch.inference_mode():
-        z = model.encode_series(history)
-        states = model.unroll(z)
+        z = m.encode_series(history)
+        states = m.unroll(z)
         origin_features = states["features"][:, -1:, :]
-        if model.forecast_head[0].in_features == origin_features.shape[-1] + 2:
+        if m.forecast_head[0].in_features == origin_features.shape[-1] + 2:
             day = torch.tensor([float(origin.weekday())], dtype=torch.float32)
             hour = torch.zeros(1, dtype=torch.float32)
             origin_calendar = calendar_encoding(hour, day)[:, -2:].reshape(1, 1, 2)
@@ -37,7 +39,7 @@ def legacy_eval_predict_from_history(model: nn.Module, history: Tensor, origin: 
             calendar = build_calendar_features(origin - timedelta(hours=167), 168).unsqueeze(0)
             origin_calendar = calendar[:, -1:, :]
         forecast_input = torch.cat([origin_features, origin_calendar], dim=-1)
-        forecast = symexp(model.forecast_head(forecast_input))
+        forecast = symexp(m.forecast_head(forecast_input))
         return forecast[0, 0, :].detach().cpu()
 
 
@@ -63,5 +65,5 @@ def test_shared_history_length_matches_daily_eval_origin_state() -> None:
     """Daily patch artifacts use 120 hourly feature rows to extract state d=4."""
     artifacts = load_v2_forecast_artifacts(ARTIFACT_DIR)
 
-    assert artifacts.model.patcher.proj.weight.shape == (256, 168)
+    assert cast(Any, artifacts.model).patcher.proj.weight.shape == (256, 168)
     assert v2_forecast_history_length(artifacts) == 120

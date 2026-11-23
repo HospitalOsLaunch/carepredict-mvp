@@ -1,0 +1,165 @@
+.....FFFFFFFFF.......................................................... [ 51%]
+....................................................................     [100%]
+=================================== FAILURES ===================================
+____________ test_a01_known_readiness_contradiction_not_approvable _____________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d72e120>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a01_known_readiness_contradiction_not_approvable(setup):
+        raw,settings,_=setup;obs=copy.deepcopy(raw['observations'])
+        v=observation_value(obs,'readiness_estimate','S01')
+        v.update({'earliest':'2026-11-17T17:00:00+00:00','delay_hours':{'support':[0],'weights':[1]}})
+        rec=simulate(snapshot(setup,obs),locks(),settings)
+>       assert not rec.approvable, 'A contradicted readiness assumption must remain hypothetical or infeasible'
+E       AssertionError: A contradicted readiness assumption must remain hypothetical or infeasible
+E       assert not True
+E        +  where True = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-4b919a4bd054b041', status='NO_ACTION_PREF...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).approvable
+
+tests/decision_support/test_independent_acceptance.py:43: AssertionError
+____________ test_a02_observed_obstacle_not_bypassed_by_manual_lock ____________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d5d2e90>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a02_observed_obstacle_not_bypassed_by_manual_lock(setup):
+        raw,settings,_=setup;obs=copy.deepcopy(raw['observations'])
+        obs.append({'obs_id':'audit-obstacle','kind':'obstacle','subject':'S01.audit','event_time':raw['as_of'],'available_at':raw['as_of'],'source':'independent_synthetic_probe','synthetic':True,'value':{'stay_id':'S01','code':'destination_unavailable','active':True}})
+        rec=simulate(snapshot(setup,obs),locks(),settings)
+>       assert not rec.approvable, 'An active logistical obstacle must not disappear in manual mode'
+E       AssertionError: An active logistical obstacle must not disappear in manual mode
+E       assert not True
+E        +  where True = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-5a60c8681794c4f5', status='NO_ACTION_PREF...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).approvable
+
+tests/decision_support/test_independent_acceptance.py:49: AssertionError
+___________________ test_a03_aggregate_lending_unit_minimum ____________________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d5d39d0>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a03_aggregate_lending_unit_minimum(setup):
+        raw,settings,_=setup;obs=copy.deepcopy(raw['observations'])
+        for ident in ('R1','R2'):
+            observation_value(obs,'reinforcement_option',ident).update({'source':'shared_unit','confirmation':'confirmed','lending_unit':'U-LOAN','lending_unit_scheduled':4,'lending_unit_minimum':3,'start':'2026-11-17T13:00:00+00:00','end':'2026-11-17T19:00:00+00:00'})
+        rec=recommend(snapshot(setup,obs),settings)
+        offenders=[e.plan.plan_id for e in rec.bundle.evaluations if e.admissible and {a.target for a in e.plan.actions if a.type=='reinforcement'}>={'R1','R2'}]
+>       assert not offenders, f'4 - 2 = 2 < minimum 3: {offenders}'
+E       AssertionError: 4 - 2 = 2 < minimum 3: ['plan-ca5a5ae1da24d22f', 'plan-44e255cb341cd9b1', 'plan-8924d7cfd3cc5b00']
+E       assert not ['plan-ca5a5ae1da24d22f', 'plan-44e255cb341cd9b1', 'plan-8924d7cfd3cc5b00']
+
+tests/decision_support/test_independent_acceptance.py:57: AssertionError
+________________ test_a04_rejected_plan_reservations_are_atomic ________________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d63c8a0>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a04_rejected_plan_reservations_are_atomic(setup):
+        _,settings,at=setup;s=snapshot(setup);rec=recommend(s,settings);store=ReviewStore()
+        a=next(a for a in primary(rec).plan.actions if a.type=='reinforcement' and a.target=='R1')
+        store.ledger.capacity[(a.target,a.window_start.isoformat())]=1
+        store.ledger.reserve(a.target,a.window_start.isoformat(),'external-holder')
+        before=copy.deepcopy(store.ledger.by_key)
+        out=review(rec,'approve',s,at,'audit-atomicity',store)
+        assert out.outcome=='REFUSED'
+>       assert store.ledger.by_key==before, 'Rejected plan leaked reservations'
+E       AssertionError: Rejected plan leaked reservations
+E       assert {'external-ho...00:00+00:00')} == {'external-ho...00:00+00:00')}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Left contains 2 more items:
+E         {'4493035ed154eff2aa6dbbd3': ('R2', '2026-11-17T06:00:00+00:00'),
+E          '59d8ba7cd69ff005aa66c4bc': ('transport', '2026-11-17T09:00:00+00:00')}
+E         Use -v to get more diff
+
+tests/decision_support/test_independent_acceptance.py:67: AssertionError
+_________ test_a05_idempotency_conflicting_payload_not_success_replay __________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d63cd60>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a05_idempotency_conflicting_payload_not_success_replay(setup):
+        _,settings,at=setup;s=snapshot(setup);rec=recommend(s,settings);store=ReviewStore()
+        review(rec,'approve',s,at,'shared-key',store)
+        try:
+            out=review(rec,'reject',s,at,'shared-key',store)
+        except ValueError:
+            return  # explicit key/payload conflict is acceptable
+>       assert out.outcome!='APPROVED_IN_DEMO' and out.decision=='reject', 'Reject request returned cached approval'
+E       AssertionError: Reject request returned cached approval
+E       assert ('APPROVED_IN_DEMO' != 'APPROVED_IN_DEMO')
+E        +  where 'APPROVED_IN_DEMO' = ReviewResult(review_id='rev-e6600d79142aedd8', recommendation_id='reco-1b37cf01d1f10f71', decision='approve', outcome=...t:R2:reserved'), idempotency_key='shared-key', at=datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc)).outcome
+
+tests/decision_support/test_independent_acceptance.py:76: AssertionError
+_____________ test_a06_minute_precision_not_silently_rounded_down ______________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d5fb770>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a06_minute_precision_not_silently_rounded_down(setup):
+        _,settings,at=setup;s=snapshot(setup)
+        try:
+            rec=simulate(s,locks('2026-11-17T09:30:00+00:00'),settings)
+        except (ValueError,ValidationError):
+            return  # explicit refusal of unsupported time precision is acceptable
+        if not rec.approvable:
+            return
+        e=primary(rec)
+        r=simulate_world(s,settings.profile,at,24,decisions_from_plan(e.plan,s,at),SampledProvider(101))
+>       assert at+timedelta(hours=r.departures['S01'])==e.plan.actions[0].window_start, 'Locked 10:30, simulated 10:00 Paris'
+E       AssertionError: Locked 10:30, simulated 10:00 Paris
+E       assert (datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc) + datetime.timedelta(seconds=50400)) == datetime.datetime(2026, 11, 17, 9, 30, tzinfo=datetime.timezone.utc)
+E        +  where datetime.timedelta(seconds=50400) = timedelta(hours=14)
+E        +  and   datetime.datetime(2026, 11, 17, 9, 30, tzinfo=datetime.timezone.utc) = ActionSpec(action_id='lock:locked_discharge:S01:20261117T0930Z', type='locked_discharge', target='S01', window_start=d... 11, 16, 19, 30, tzinfo=datetime.timezone.utc), origin='manual_lock', basis='validated_instruction', conditional=False).window_start
+
+tests/decision_support/test_independent_acceptance.py:88: AssertionError
+_________ test_a07_unknown_cleaning_is_not_silent_one_hour_assumption __________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d6189e0>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a07_unknown_cleaning_is_not_silent_one_hour_assumption(setup):
+        raw,settings,_=setup;obs=copy.deepcopy(raw['observations'])
+        observation_value(obs,'bed','L01').pop('cleaning_hours')
+        rec=recommend(snapshot(setup,obs),settings)
+>       assert not rec.approvable or any(tag in s for s in (*rec.diagnostics,*rec.conditions,*rec.uncertainties) for tag in ('cleaning_duration_unknown:L01', 'assumed_cleaning_duration:L01')), 'Silent default replaces missing cleaning duration'
+E       AssertionError: Silent default replaces missing cleaning duration
+E       assert (not True or False)
+E        +  where True = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-24d8e934763ecef2', status='RECOMMENDATION...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).approvable
+E        +  and   False = any(<generator object test_a07_unknown_cleaning_is_not_silent_one_hour_assumption.<locals>.<genexpr> at 0x7f1e2d30da80>)
+
+tests/decision_support/test_independent_acceptance.py:94: AssertionError
+____________ test_a08_required_skill_roster_unknown_not_silent_zero ____________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d619040>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a08_required_skill_roster_unknown_not_silent_zero(setup):
+        raw,settings,_=setup;obs=copy.deepcopy(raw['observations'])
+        o=copy.deepcopy(next(o for o in obs if o['kind']=='care_profile' and o['subject']=='S01.IDE'))
+        o.update({'obs_id':'audit-AS','subject':'S01.AS'});o['value'].update({'skill':'AS','day_minutes_per_hour':15,'night_minutes_per_hour':15});obs.append(o)
+        rec=recommend(snapshot(setup,obs),settings)
+>       assert not rec.approvable or any('roster_unknown:AS' in d for d in rec.diagnostics), 'AS care is declared but AS roster is unknown, not zero'
+E       AssertionError: AS care is declared but AS roster is unknown, not zero
+E       assert (not True or False)
+E        +  where True = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-e97b57860d0882de', status='RECOMMENDATION...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).approvable
+E        +  and   False = any(<generator object test_a08_required_skill_roster_unknown_not_silent_zero.<locals>.<genexpr> at 0x7f1e2d20fb90>)
+
+tests/decision_support/test_independent_acceptance.py:101: AssertionError
+_______________ test_a09_config_changes_change_document_identity _______________
+
+setup = ({'as_of': '2026-11-16T19:00:00+00:00', 'description': 'Nominal auto case: no user scenario. Unit U-MED-SYN, 8 beds, 7...r.ReferenceForecaster object at 0x7f1e2d5edb50>), datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc))
+
+    def test_a09_config_changes_change_document_identity(setup):
+        _,settings,_=setup;s=snapshot(setup);first=recommend(s,settings)
+        score=copy.deepcopy(settings.score);score['coefficients']['uncovered_minutes_divisor']=1500
+        other=recommend(s,Settings(settings.profile,settings.objective,score))
+>       assert first.recommendation_id!=other.recommendation_id and first.bundle.bundle_id!=other.bundle.bundle_id, 'Same document ids for different calculated scores'
+E       AssertionError: Same document ids for different calculated scores
+E       assert ('reco-1b37cf01d1f10f71' != 'reco-1b37cf01d1f10f71')
+E        +  where 'reco-1b37cf01d1f10f71' = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-1b37cf01d1f10f71', status='RECOMMENDATION...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).recommendation_id
+E        +  and   'reco-1b37cf01d1f10f71' = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-1b37cf01d1f10f71', status='RECOMMENDATION...a2e1349e758e755a8909642d5e95b665ce0867ce748d8e463', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).recommendation_id
+
+tests/decision_support/test_independent_acceptance.py:107: AssertionError
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_independent_acceptance.py::test_a01_known_readiness_contradiction_not_approvable
+FAILED tests/decision_support/test_independent_acceptance.py::test_a02_observed_obstacle_not_bypassed_by_manual_lock
+FAILED tests/decision_support/test_independent_acceptance.py::test_a03_aggregate_lending_unit_minimum
+FAILED tests/decision_support/test_independent_acceptance.py::test_a04_rejected_plan_reservations_are_atomic
+FAILED tests/decision_support/test_independent_acceptance.py::test_a05_idempotency_conflicting_payload_not_success_replay
+FAILED tests/decision_support/test_independent_acceptance.py::test_a06_minute_precision_not_silently_rounded_down
+FAILED tests/decision_support/test_independent_acceptance.py::test_a07_unknown_cleaning_is_not_silent_one_hour_assumption
+FAILED tests/decision_support/test_independent_acceptance.py::test_a08_required_skill_roster_unknown_not_silent_zero
+FAILED tests/decision_support/test_independent_acceptance.py::test_a09_config_changes_change_document_identity
+9 failed, 131 passed in 2.94s

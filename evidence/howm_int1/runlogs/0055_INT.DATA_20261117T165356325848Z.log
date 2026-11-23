@@ -1,0 +1,8 @@
+n4|aval {"no_bed_hold": {"upstream": 1418, "downstream": -4}, "aval_unlimited": {"upstream": 1979, "downstream": 4214}}
+n4|cleaning {"no_bed_hold": {"upstream": 318, "downstream": -174}, "aval_unlimited": {"upstream": 8, "downstream": 1}}
+n4|transfer {"no_bed_hold": {"upstream": 4072, "downstream": -26}, "aval_unlimited": {"upstream": 82, "downstream": 366}}
+n4|transfer+aval {"no_bed_hold": {"upstream": 4408, "downstream": -9}, "aval_unlimited": {"upstream": 632, "downstream": 1235}}
+n8|aval {"no_bed_hold": {"upstream": 2458, "downstream": 59}, "aval_unlimited": {"upstream": 710, "downstream": 2082}}
+n8|cleaning {"no_bed_hold": {"upstream": 2666, "downstream": -86}, "aval_unlimited": {"upstream": 62, "downstream": 142}}
+n8|transfer {"no_bed_hold": {"upstream": 8289, "downstream": -41}, "aval_unlimited": {"upstream": 0, "downstream": 0}}
+n8|transfer+aval {"no_bed_hold": {"upstream": 5175, "downstream": -108}, "aval_unlimited": {"upstream": 1328, "downstream": 2568}}

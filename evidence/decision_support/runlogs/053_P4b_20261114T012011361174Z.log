@@ -1,0 +1,23 @@
+E501 Line too long (109 > 100)
+  --> scripts/ds_package.py:49:101
+   |
+47 | HEAD=$(cat "$PKG/HEAD.txt")
+48 | export PYTHONPATH="${PYTEST_PATH:+$PYTEST_PATH:}src:."
+49 | python3 -m pytest -q -p no:cacheprovider tests/decision_support > restore_pytest.log 2>&1 && T=pass || T=fail
+   |                                                                                                     ^^^^^^^^^
+50 | python3 -m hospitalos.decision_support export --out restore_results > /dev/null
+51 | python3 - "$PKG" "$TARGET" "$HEAD" "$T" <<'PY'
+   |
+
+E501 Line too long (108 > 100)
+  --> scripts/ds_package.py:57:101
+   |
+55 | index = json.loads((pkg / "evidence/results/index.json").read_text())
+56 | diff = [f["file"] for f in index["files"]
+57 |         if hashlib.sha256((target / "restore_results" / f["file"]).read_bytes()).hexdigest() != f["sha256"]]
+   |                                                                                                     ^^^^^^^^
+58 | receipt = {"test": "T30", "restored_tree_of_head": head, "method": "source_head.tar",
+59 |            "tests": tests, "results_compared": len(index["files"]), "results_differing": diff,
+   |
+
+Found 2 errors.

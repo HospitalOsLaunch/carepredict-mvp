@@ -116,10 +116,10 @@ class WorldModelTrainer:
     def _balanced_kl_loss(self, priors: list[Normal], posteriors: list[Normal]) -> Tensor:
         terms: list[Tensor] = []
         for prior_dist, posterior_dist in zip(priors, posteriors, strict=True):
-            posterior_stop = Normal(  # type: ignore[no-untyped-call]
+            posterior_stop = Normal(
                 posterior_dist.mean.detach(), posterior_dist.stddev.detach()
             )
-            prior_stop = Normal(  # type: ignore[no-untyped-call]
+            prior_stop = Normal(
                 prior_dist.mean.detach(), prior_dist.stddev.detach()
             )
             posterior_weighted = kl_divergence(posterior_stop, prior_dist).sum(dim=-1)

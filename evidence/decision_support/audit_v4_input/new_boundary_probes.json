@@ -1,0 +1,226 @@
+{
+  "V4_B01_offset_loan_windows": {
+    "snapshot_issues": [],
+    "offending_admissible_plans": [
+      "plan-991adc4dd3c76a37",
+      "plan-76c74f4c0698e3a2",
+      "plan-691b1c1285c4d890"
+    ],
+    "primary_actions": [
+      "S01",
+      "R1",
+      "R2"
+    ],
+    "approvable": true,
+    "review": {
+      "review_id": "rev-0d4ac5cc3b552246",
+      "recommendation_id": "reco-a8471ee41f5a4d77",
+      "decision": "approve",
+      "outcome": "APPROVED_IN_DEMO",
+      "reasons": [],
+      "recompute_required": false,
+      "external_command_sent": false,
+      "lifecycle": {
+        "request": "created_in_demo",
+        "approval": "approved_in_demo",
+        "reservation": "local_demo_ledger_only",
+        "execution": "not_executed_no_external_system",
+        "result": "not_observed"
+      },
+      "reservations": [
+        "transport@2026-11-17T09:00:00+00:00:reserved",
+        "R1@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved",
+        "R2@2026-11-17T13:30:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T13:30:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T14:30:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T15:30:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T16:30:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T17:30:00+00:00:reserved"
+      ],
+      "idempotency_key": "offgrid",
+      "request_fingerprint": "c9d00ff942694505c36e22018ead7eff6ffec76048c0613c2b5f4b40afd6bbc5",
+      "at": "2026-11-16T19:00:00Z",
+      "replayed": false,
+      "current_validity": null
+    },
+    "expected": "Reject unsupported minutes or detect cumulative overlap; never approve two loans leaving 2 < 3."
+  },
+  "V4_B02_missing_lender_identity": {
+    "snapshot_issues": [],
+    "rejected": {
+      "S02": "no_target_hour_before_habitual_plan",
+      "S03": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "S04": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "S05": "medical_authorization_revoked,readiness_estimate_unknown",
+      "S06": "obstacle:aval_non_confirme",
+      "S07": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+      "R3": "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3"
+    },
+    "primary_actions": [
+      "S01",
+      "R1",
+      "R2"
+    ],
+    "approvable": true,
+    "review": {
+      "review_id": "rev-6f121d919f76d0a8",
+      "recommendation_id": "reco-6c5e8bf9d6846fd8",
+      "decision": "approve",
+      "outcome": "APPROVED_IN_DEMO",
+      "reasons": [],
+      "recompute_required": false,
+      "external_command_sent": false,
+      "lifecycle": {
+        "request": "created_in_demo",
+        "approval": "approved_in_demo",
+        "reservation": "local_demo_ledger_only",
+        "execution": "not_executed_no_external_system",
+        "result": "not_observed"
+      },
+      "reservations": [
+        "transport@2026-11-17T09:00:00+00:00:reserved",
+        "R1@2026-11-17T13:00:00+00:00:reserved",
+        "R2@2026-11-17T13:00:00+00:00:reserved"
+      ],
+      "idempotency_key": "unknownlender",
+      "request_fingerprint": "dc47640c1bb4a3dd6cc2a8b98d10918c9a623cfbf60828e8417a92c360741636",
+      "at": "2026-11-16T19:00:00Z",
+      "replayed": false,
+      "current_validity": null
+    },
+    "expected": "Unknown lender identity should prevent an executable shared-unit loan."
+  },
+  "V4_B03_lower_updated_capacity": {
+    "first": {
+      "review_id": "rev-7aa956724792cd59",
+      "recommendation_id": "reco-8979a7706ba58480",
+      "decision": "approve",
+      "outcome": "APPROVED_IN_DEMO",
+      "reasons": [],
+      "recompute_required": false,
+      "external_command_sent": false,
+      "lifecycle": {
+        "request": "created_in_demo",
+        "approval": "approved_in_demo",
+        "reservation": "local_demo_ledger_only",
+        "execution": "not_executed_no_external_system",
+        "result": "not_observed"
+      },
+      "reservations": [
+        "R1@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+      ],
+      "idempotency_key": "reserve-first",
+      "request_fingerprint": "8ae34c4b5227a31f9ec0a3a5bc9c486fe7ac112ce35e5356f49b7f39d1fbbcce",
+      "at": "2026-11-16T19:00:00Z",
+      "replayed": false,
+      "current_validity": null
+    },
+    "second": {
+      "review_id": "rev-0ac5ec66d32b711a",
+      "recommendation_id": "reco-127f4b2f11a275e1",
+      "decision": "approve",
+      "outcome": "APPROVED_IN_DEMO",
+      "reasons": [],
+      "recompute_required": false,
+      "external_command_sent": false,
+      "lifecycle": {
+        "request": "created_in_demo",
+        "approval": "approved_in_demo",
+        "reservation": "local_demo_ledger_only",
+        "execution": "not_executed_no_external_system",
+        "result": "not_observed"
+      },
+      "reservations": [
+        "R2@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:reserved",
+        "lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:reserved"
+      ],
+      "idempotency_key": "reserve-second",
+      "request_fingerprint": "84a74e755b05c9d5a0bd35aaba47a4afcc98655f5dce5b140aeea744ccbc131c",
+      "at": "2026-11-16T19:00:00Z",
+      "replayed": false,
+      "current_validity": null
+    },
+    "old_scheduled": 5,
+    "current_scheduled": 4,
+    "minimum": 3,
+    "lender_slots": [
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T13:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T13:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T13:00:00+00:00"
+        ]
+      },
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T14:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T14:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T14:00:00+00:00"
+        ]
+      },
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T15:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T15:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T15:00:00+00:00"
+        ]
+      },
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T16:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T16:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T16:00:00+00:00"
+        ]
+      },
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T17:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T17:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T17:00:00+00:00"
+        ]
+      },
+      {
+        "resource": "lend:U-LOAN:IDE",
+        "slot": "2026-11-17T18:00:00+00:00",
+        "cached_capacity": 2,
+        "holders": [
+          "81571cabf1966285ba893536:2026-11-17T18:00:00+00:00",
+          "4493035ed154eff2aa6dbbd3:2026-11-17T18:00:00+00:00"
+        ]
+      }
+    ],
+    "expected": "New capacity must be reconciled; a second held loan must not leave 4-2 < 3."
+  },
+  "V4_B04_control_same_snapshot": {
+    "first": "APPROVED_IN_DEMO",
+    "second": "REFUSED",
+    "expected": "APPROVED_IN_DEMO then REFUSED"
+  }
+}

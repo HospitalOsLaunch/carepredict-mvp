@@ -1,0 +1,89 @@
+{
+ "source": "evidence/howm2_bfrag2/runs/S/BF2_CONF (recorded CONF-S, Mr/Md/E as recorded per file)",
+ "recorded_primary_mean": 253.984375,
+ "n_structures": 24,
+ "n_decisions": 72,
+ "groups": {
+  "G1_same_action": {
+   "decisions": 35,
+   "structures": 22,
+   "gain_sum_patient_min": 0.0,
+   "gain_mean_per_decision": 0.0,
+   "contribution_to_primary": 0.0,
+   "staff_hours_F_sum": 80,
+   "staff_hours_R1_sum": 80,
+   "decisions_with_F_better": 0,
+   "decisions_with_R1_better": 0
+  },
+  "G2_F_coord_R1_other": {
+   "decisions": 16,
+   "structures": 13,
+   "gain_sum_patient_min": 6943.125,
+   "gain_mean_per_decision": 433.9453125,
+   "contribution_to_primary": 96.43229166666667,
+   "staff_hours_F_sum": 0,
+   "staff_hours_R1_sum": 120,
+   "decisions_with_F_better": 12,
+   "decisions_with_R1_better": 3
+  },
+  "G3_R1_coord_F_other": {
+   "decisions": 7,
+   "structures": 6,
+   "gain_sum_patient_min": 6067.5,
+   "gain_mean_per_decision": 866.7857142857143,
+   "contribution_to_primary": 84.27083333333333,
+   "staff_hours_F_sum": 56,
+   "staff_hours_R1_sum": 0,
+   "decisions_with_F_better": 4,
+   "decisions_with_R1_better": 3
+  },
+  "G4a_one_is_none": {
+   "decisions": 1,
+   "structures": 1,
+   "gain_sum_patient_min": 0.0,
+   "gain_mean_per_decision": 0.0,
+   "contribution_to_primary": 0.0,
+   "staff_hours_F_sum": 0,
+   "staff_hours_R1_sum": 8,
+   "decisions_with_F_better": 0,
+   "decisions_with_R1_better": 0
+  },
+  "G4b_same_resource_other_slot": {
+   "decisions": 11,
+   "structures": 8,
+   "gain_sum_patient_min": 5293.125,
+   "gain_mean_per_decision": 481.1931818181818,
+   "contribution_to_primary": 73.515625,
+   "staff_hours_F_sum": 88,
+   "staff_hours_R1_sum": 88,
+   "decisions_with_F_better": 8,
+   "decisions_with_R1_better": 2
+  },
+  "G4c_other_resource_same_slot": {
+   "decisions": 1,
+   "structures": 1,
+   "gain_sum_patient_min": -16.875,
+   "gain_mean_per_decision": -16.875,
+   "contribution_to_primary": -0.234375,
+   "staff_hours_F_sum": 8,
+   "staff_hours_R1_sum": 8,
+   "decisions_with_F_better": 0,
+   "decisions_with_R1_better": 1
+  },
+  "G4d_other_resource_other_slot": {
+   "decisions": 1,
+   "structures": 1,
+   "gain_sum_patient_min": 0.0,
+   "gain_mean_per_decision": 0.0,
+   "contribution_to_primary": 0.0,
+   "staff_hours_F_sum": 8,
+   "staff_hours_R1_sum": 8,
+   "decisions_with_F_better": 0,
+   "decisions_with_R1_better": 0
+  }
+ },
+ "sum_of_contributions": 253.984375,
+ "abs_error_vs_recorded": 0.0,
+ "check_ok": true,
+ "note": "descriptive explanation of the recorded gap; not a new confirmatory test; choice counts do not attribute benefit"
+}

@@ -1,0 +1,27 @@
+{
+ "freeze": "PROTOCOLE_BFRAG2 P1 (freeze 1: protocol, before any comparative measurement)",
+ "status": "PROTOTYPE_UNVALIDATED; clinical_validation=false; G2=NO-GO",
+ "dev_design_revisions_used": 0,
+ "M_risk": 32,
+ "M_dec": 32,
+ "E": 8,
+ "files_sha256": {
+  "docs/howm2/bfrag/PROTOCOLE_BFRAG2.md": "2f01e6e1f459109737b8b43b5c283082bf9b2188c97b8e4431ceee79e7c8aa58",
+  "docs/howm2/bfrag/AUDIT_F_BFRAG2.md": "013a318e3cca20e9de5a7b23e58d96aed447cd86648be92194c3f1e2903f282f",
+  "docs/howm2/bfrag/DESIGN_D2.json": "66b7ebdb81970028db53e42edb8047419ffdee1a4cabb099f6f3221c01d25d08",
+  "docs/howm2/HOWM2_DECISION_7.json": "0ffb31a9ce8104cdca3901cbe8d3c3cadde5556ba6220a93fde85310c4c0018e",
+  "src/hospitalos/bfrag2/__init__.py": "7f7ab0bdd942849d0b2ed154d7bad331d26f010ef732a68df0e208a05d635d28",
+  "src/hospitalos/bfrag2/core2.py": "bf4d11698b3bd6bcb2c6ab37505f921383d22c90fcb3e911a4fd0c746cc59894",
+  "scripts/bfrag2.py": "f49c891f5d071d59739c0536edfa2a14dd2f4556a8c2fda1d5ae698d63c001af",
+  "scripts/bfrag2_stability.py": "e0289afef284f81ac533958fa8d89023e5659206e48775250356c54dc672de1b",
+  "scripts/bfrag2_describe.py": "7306cc959ca179144311afd67a656ee9965d2bc9cc96509538b6305cca81e93c",
+  "scripts/howm2_b_budget_run.py": "69038f2e252b8f816903719421e3d96d9fb0f02c42cc90aa0a3edb521fd223e1",
+  "tests/bfrag2/test_bfrag2.py": "92bb3471c29f2c74d2f4bfcfeac04d17621c42063ae5ce8087779e3045bc5680",
+  "evidence/howm2_bfrag2/MC_TOLERANCE_PREDECLARED.json": "40b4c016ae8eac8e0fb5462415a745957108eafe20d94708fec1e45534579d66",
+  "evidence/howm2_bfrag2/MC_STABILITY_DEV.json": "0d7eaedeac45ec7ddbd69c4e81b6a86d5bc8ca68fb1b7190f36ceeb3601883e8",
+  "evidence/howm2_bfrag2/MC_CHOICE.json": "12f65a86776a99d33a584cb9975e971382255bdbbaedb035aad4952e90d2ce82",
+  "evidence/howm2_bfrag2/CORRECTION_CALENDAR.json": "2f2ce4cbca0b30abc6b1a7c43e72c0e0a07c94cd42ce1424a88ab9351f6fa5fa",
+  "evidence/howm2_bfrag2/LOTS_BFRAG2.json": "b05d7920c03f01337db2156e322f4a577d29b5040f889635e04eafd0cd5cf17c",
+  "evidence/howm2_bfrag2/DEV_DESCRIPTIVE.json": "28f19b3a16bc78a47261d430fc82ec914513f892c40a718732ead5a8509fc88f"
+ }
+}

@@ -1,0 +1,40 @@
+HospitalOS — clôture ciblée après ré-audit indépendant v6, 14 novembre 2026
+
+Entrée vérifiée : HospitalOS_DS_P0-P4_20261114_v6.zip
+SHA-256 : 4fca8aecde4fa35a47bc18696785d28df7465b5191b48e8a2881b0ec1e117f90
+Arbre : 856a57c65fb0d55190addf6c39a45c57913eac07
+Lire RAPPORT_AUDIT_V6.md, AUDIT_SUMMARY.json et les preuves du dossier joint.
+
+V5-R01 est clos sur le périmètre audité : capacité commune par prêteur x compétence x heure,
+utilisée par planification, revalidation et réservations. R1→R2 et R2→R1 refusent tous deux
+le second prêt en présence de déclarations simultanées 4/5 IDE, minimum3. Les engagements
+antérieurs sont conservés. Aucun défaut produit nouveau reproduit dans ce périmètre.
+Ne pas réécrire le moteur et ne pas relancer un cycle de correctifs sans nouveau défaut établi.
+
+Acquis indépendants : 182/182 tests (96 DS + 86 hybrides, compteur activé sur vraie restauration),
+9/9 contrôles ciblés supplémentaires, 11 résultats identiques octet pour octet, registre final
+installé dans la cible, TypeScript autonome réussi. A/B/C inchangés. Les 96 tests de restauration
+sont inclus dans les 182. Les tests supplémentaires ont eu une erreur d'assertion de l'auditeur
+corrigée (prêteur tiers inclus par erreur) ; preuve initiale conservée, aucun code produit modifié.
+
+Réserves : pas de rejeu React/navigateur indépendant, pas de Python exact 3.11.9 ici.
+Les 181+1 tests d'auteur sous 3.11.18 ne prouvent pas 3.11.9. Le typecheck autonome ne remplace
+pas React. Garder PARTIAL_WITH_CHECKPOINT tant que les portes acceptées restent ouvertes ;
+distinguer la clôture du défaut ciblé du statut global. Mettre à jour la mention historique 163
+encore présente dans STATUS.json/open_gates, sans modifier les preuves de tests.
+
+Budget : lignée de cet audit 175 enregistrements / 421,325 s, reliquat 178,675 s /600,
+30 s par commande. Source v6 166 lignes /396,451 s, ajout 24,874 s sans double comptage.
+Dernière empreinte : 9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973
+Adopter cette lignée seulement après vérification du préfixe exact et réconciliation avec toute
+exécution plus récente. Registre, ancre et journaux joints. Ne jamais remettre le compteur à zéro.
+
+Ce document n'autorise AUCUNE nouvelle exécution à sa seule lecture. À la reprise explicitement
+ordonnée par l'utilisateur : terminer uniquement les vérifications techniques restantes dans les
+autorisations existantes. Aucune installation réseau, dépense, push/merge/rebase, modification de
+mvp/computer-use, chargement de poids, entraînement, inférence AJ-H ou P5/P6 sans accord distinct.
+
+Pour sortir du cycle de reprise : livrer le reçu de clôture et l'état exact des portes. Préparer le
+protocole P5 (population réservée, comparateur, métriques, critères d'arrêt et budget) est un travail
+documentaire distinct ; ne pas générer un corpus ni lancer les expériences sous l'ancien budget.
+PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO restent inchangés.

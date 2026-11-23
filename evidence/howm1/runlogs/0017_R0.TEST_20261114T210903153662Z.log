@@ -1,0 +1,90 @@
+....F
+=================================== FAILURES ===================================
+_______________________ test_T_INF_05_T_EQV_01_renaming ________________________
+
+val_ep = Episode(spec=EstablishmentSpec(partition='VAL', index=1, population='REF', ekey=6219262376151719607, start_utc='2027-0... 3, 3, 3, 1, 1, 1]}, 'minimum': {'IDE': 1, 'AS': 1}}}, 'c_tr': 2, 'c_cl': 2, 'start_utc': '2027-01-31T23:00:00+00:00'})
+b0p = B0Params(base={'auth': array([ -9.95396964,  -9.76878894,  -9.6272635 ,  -9.40068893,
+        -9.22163386,  -9.0236160...[2.4887622 , 3.21644098]]]), care_sigma=array([0.48553328, 0.4907501 ]), presence_p=0.875, tau={}, new_profile_freq={})
+
+    def test_T_INF_05_T_EQV_01_renaming(val_ep, b0p):
+        H = 100
+        obs2, names = rename(val_ep.observations)
+        e1 = build(val_ep, [H])
+        e2 = build(type(val_ep)(**{**val_ep.__dict__, "observations": obs2}), [H])
+        assert np.array_equal(e1.b2, e2.b2)
+        inv = {v: k for k, v in names.items()}
+>       p1, p2 = preds_all(b0p, e1, H), preds_all(b0p, e2, H)
+                                        ^^^^^^^^^^^^^^^^^^^^^
+
+tests/howm/test_howm_r0.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/howm/test_howm_r0.py:69: in preds_all
+    "B2": predict(b2, est, H), "H1": predict(h1, est, H)}
+          ^^^^^^^^^^^^^^^^^^^
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/torch/utils/_contextlib.py:158: in no_grad
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = B2(
+  (inp): Sequential(
+    (0): Linear(in_features=55, out_features=64, bias=True)
+    (1): ReLU()
+  )
+  (gru): GRU(... out_features=32, bias=True)
+      (1): ReLU()
+      (2): Linear(in_features=32, out_features=1, bias=True)
+    )
+  )
+)
+est = EstablishmentData(partition='VAL', index=1, population='REF', n_beds={'A': 15, 'B': 11}, b2=array([[1.4, 0.1, 0. , ......, 'BB02': 'B', 'BB03': 'B', 'BB04': 'B', 'BB05': 'B', 'BB06': 'B', 'BB07': 'B', 'BB08': 'B', 'BB09': 'B', 'BB10': 'B'})
+H = 100
+
+    @torch.no_grad()
+    def predict(model: nn.Module, est: EstablishmentData, H: int) -> Prediction:
+        """Prediction (numpy) for one origin: cohort items, existing entities, new-entity tables."""
+        kind = "B2" if isinstance(model, B2) else "H1"
+        batch = make_batch([(est, H)], kind, with_labels=False)
+        hd: Heads = model.heads  # type: ignore[assignment]
+        z, enc = model.encode(batch)
+        zk = model.prop(z, batch["hours"])
+        od = est.origins[H]
+        t = H * 60
+        delta_items = {}
+        for fam in HAZARD_FAMILIES:
+            it = batch["items"][fam]
+            if it["x"].shape[0] == 0:
+                delta_items[fam] = np.zeros(0)
+                continue
+            delta_items[fam] = hd.haz(torch.cat([z[it["o"]], _ent(model, enc, it["ent"]), it["x"]], 1)).squeeze(1).numpy().astype(float)
+        # existing entities: future items (ready/transport/confirmation for stays, cleaning for beds)
+        delta_entity: dict[str, dict[str, float]] = {f: {} for f in HAZARD_FAMILIES}
+        offsets = batch["graph"]["offsets"] if kind == "H1" else None
+        stays = {}
+        for i, sid in enumerate(od.care_ref):
+            stays[sid] = od.care_x[i]
+        rows, keys = [], []
+        for sid, x in stays.items():
+            for fam in ("ready", "transport", "confirmation"):
+                fx = np.array(x, np.float32).copy()
+                fx[:6] = 0.0
+                fx[("auth", "ready", "transport", "cleaning", "confirmation").index(fam)] = 1.0
+                fx[12] = 0.0  # elapsed 0 at the future start
+                gi = int(offsets[0]["stay"][est.refs["stay"].index(sid)]) if offsets is not None and sid in est.refs["stay"] else -1
+                rows.append((fx, gi)); keys.append((fam, sid))
+        for bed in est.refs["bed"]:
+>           fx = np.array(item_features("cleaning", {"unit": est.bed_unit[bed], "start": t}, t), np.float32)
+                                                             ^^^^^^^^^^^^^^^^^
+E           KeyError: 'E3baf508df7'
+
+src/hospitalos/howm/nets.py:403: KeyError
+=============================== warnings summary ===============================
+tests/howm/test_howm_r0.py::test_T_INF_03_same_public_past_same_outputs
+  /home/user/carepredict-mvp/src/hospitalos/howm/nets.py:155: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+    a = a - torch.zeros(g["n_origins"]).index_reduce_(0, g["origin"], a, "amax", include_self=False)[g["origin"]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/howm/test_howm_r0.py::test_T_INF_05_T_EQV_01_renaming - KeyError...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 4 passed, 1 warning in 2.14s

@@ -1,0 +1,28 @@
+PROPOSITION DE DÉCISION — NON APPROUVÉE, NON TRANSMISE
+HospitalOS — clôture qualifiée de P5A-D02, 14 novembre 2026
+
+Ce texte ne vaut ordre que s’il est expressément adopté par l’utilisateur. Le dépôt des archives n’est pas une adoption de cette décision.
+
+Texte proposé à adopter :
+
+« J’accepte la clôture de P5A-D02 avec la réserve explicite T04-a NON_INFORMATIF pour le rang 48 (structure 7f0869e7430c81ce, parent 5).
+
+Je prends acte du bilan exact : 50 épisodes contrôlés (47 méthode v1 + 3 méthode v2), T03 et T04-b/c/d réussis dans les reçus des 50 épisodes, 49 témoins T04-a informatifs et détectés, un témoin non informatif. Il ne faut pas annoncer une réussite intégrale 50/50 de T04-a ni une preuve formelle d’absence de fuite. La réserve est postérieure au gel et ne change pas rétroactivement le protocole ni le statut exploratoire de P5a.
+
+J’autorise uniquement la consignation documentaire de cette décision et la production d’un reçu de clôture référencé aux preuves existantes. Ne relance aucun épisode, test du produit, simulateur, ajustement ou analyse d’efficacité ; ne remplace aucun épisode ; ne modifie ni F_a, ni RESULTS_P5a, ni les relevés réservés, ni le moteur v6, ni l’échec historique.
+
+Conserve intégralement les deux méthodes et leurs reçus, ainsi que les critères et statuts historiques. Le statut du défaut peut indiquer une clôture acceptée avec réserve nommée, mais ne doit pas masquer NON_INFORMATIF.
+
+Corrige uniquement dans le reçu la ligne budgétaire P5.1 : 43,770 s, et non 38,786 s ; la commande n° 80 explique cet écart de tableau. Le total terminal est 134,580 s / 87 enregistrements, après le contrôle d’extraction. Le registre n’est pas remis à zéro et aucune nouvelle autorisation de calcul n’est créée.
+
+P5b/(iii), D16, P6, AJ-H, nouvelles installations, dépenses, push, merge et rebase restent fermés. Statuts conservés : PARTIAL_WITH_CHECKPOINT, PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO. Arrêt après le reçu documentaire. »
+
+Références de décision :
+- Archive principale : HospitalOS_P5a_Isolation50_Resume_20261114.zip
+  SHA-256 : 45db113cbc932c43d056269f75953e88d933ebec1509b54f18678953566f5b3e
+- Archive POST : HospitalOS_P5a_Isolation50_Resume_POST_20261114.zip
+  SHA-256 : afb5649c7c3ee7e9bbd3dc5680ebc632188efb757e83c3ab601aaba5c69b8370
+- Sélection : d4522515dc9b3e1565b1a33bdf893590318651f139193b930fd85a3a269be993
+- Registre terminal : 804689861fa9c697aba2396c4fa12c1fce6ce29a0b706e76d2bb52250843d64c
+- Registre, empreinte de fichier : 6fe6ce76bd44e88015cdd227cac5a9e4284c207576c8ca940a4f5a4ef423b1f4
+- Méthode : v1 historique sur 47 épisodes ; v2 de reprise sur 3, sans mise à niveau rétrospective des 47.

@@ -1,0 +1,116 @@
+{
+ "SF1_cleaning_window": {
+  "c_cl": 1,
+  "theta": {
+   "cl_min": [
+    60,
+    75
+   ],
+   "arr_mult": [
+    1.0,
+    1.15
+   ]
+  },
+  "buffer": [
+   0.35,
+   0.5
+  ],
+  "relaxed": {
+   "c_cl_plus": 1
+  }
+ },
+ "SF2_transport_window": {
+  "c_tr": 1,
+  "theta": {
+   "tr_min": [
+    70,
+    90
+   ],
+   "conf_tr_min": [
+    80,
+    120
+   ]
+  },
+  "buffer": [
+   0.35,
+   0.5
+  ],
+  "relaxed": {
+   "c_tr_plus": 1
+  }
+ },
+ "SF3_planned_drop": {
+  "c_cl": 2,
+  "drop": {
+   "day": 3,
+   "from_h": 6,
+   "to_h": 22,
+   "minus": 1
+  },
+  "theta": {
+   "cl_min": [
+    55,
+    75
+   ]
+  },
+  "buffer": [
+   0.35,
+   0.5
+  ],
+  "relaxed": {
+   "no_drop": true
+  }
+ },
+ "SC4_high_load_absorbable": {
+  "c_cl": 3,
+  "c_tr": 3,
+  "theta": {
+   "arr_mult": [
+    1.05,
+    1.15
+   ]
+  },
+  "buffer": [
+   0.5,
+   0.6
+  ]
+ },
+ "SC5_drop_with_margin": {
+  "c_cl": 3,
+  "drop": {
+   "day": 3,
+   "from_h": 6,
+   "to_h": 22,
+   "minus": 1
+  },
+  "theta": {
+   "cl_min": [
+    30,
+    45
+   ]
+  },
+  "buffer": [
+   0.5,
+   0.6
+  ]
+ },
+ "SC6_low_load": {
+  "c_cl": 2,
+  "c_tr": 2,
+  "theta": {
+   "arr_mult": [
+    0.85,
+    0.95
+   ],
+   "los_days": [
+    2.5,
+    3.5
+   ]
+  },
+  "buffer": [
+   0.5,
+   0.6
+  ]
+ },
+ "_note": "design D2 = TUNE iteration 1; theta ranges inside the REF prior support; buffer = public extra beds above the nominal (planned) capacity that drives arrivals; synthetic benchmark hypotheses, not clinically validated"
+}

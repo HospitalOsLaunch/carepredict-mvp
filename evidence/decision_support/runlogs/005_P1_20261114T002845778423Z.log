@@ -1,0 +1,8 @@
+nominal_auto.json
+nominal_auto_truth_b.json
+no_action.json
+insufficient_data.json
+scenario_x1x2.json
+scenario_hypothesis.json
+scenario_impossible.json
+scenario_contradictory.json

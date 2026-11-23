@@ -1,0 +1,14 @@
+{
+ "pilot_protocol": "PROTOCOLE_PILOTE_W P1, registered before training-data generation and any comparative learning",
+ "files_sha256": {
+  "docs/howm2/bfrag/PROTOCOLE_PILOTE_W.md": "b81aeb09a586e8bcf61a84a877f251268da070e92b233f09b544b2bcd8faa2c3",
+  "src/hospitalos/bfrag2w/__init__.py": "4f9016657fe90946d714330213c5d47f4db3fab71835900c62ce70498cdbbebe",
+  "src/hospitalos/bfrag2w/core_w.py": "1c289089007963a2f18a99da5e050ae3b31c8a376d6cee2301978b599a57ed70",
+  "scripts/bf2w_data.py": "9a1b4b03b7ba2ef253f600ea2396bfae429e6f19ee2dab15bd8aaa4366e42567",
+  "scripts/bf2w_models.py": "fd7d571c35accfa8f6a697673434021dc91ee9c947405d7ff5e721bcf8737cdf",
+  "tests/bfrag2w/test_pilot.py": "dd58b5d875faffd4ae7eb9c3e70d41a57cc1329c17c6af1974e0e9cd52452c0c",
+  "scripts/howm2_bw_budget_run.py": "7174a758e82ff39cc57114069dc1a5853f86df5dbf26ccc168b1d23202e6d5c1",
+  "docs/howm2/HOWM2_DECISION_8.json": "3d710265a6157e5ecbcd2603f6466e2bca3cdeb52452eebb5be87a28d4472042",
+  "evidence/howm2_bfrag2w/EVAL_MARGIN.json": "025e8dbfb18a20cc846650b2a338607295eeaddcca0c26a6073cb9aa35fded9c"
+ }
+}

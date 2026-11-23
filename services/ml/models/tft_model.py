@@ -149,7 +149,7 @@ class PytorchForecastingTFTBackend:
         so that predict() can run without re-training.
         Raises FileNotFoundError if the bundle is missing.
         """
-        import cloudpickle  # type: ignore[import-untyped]
+        import cloudpickle  # type: ignore[import-untyped,import-not-found,unused-ignore]
 
         if not checkpoint_path.exists():
             raise FileNotFoundError(
@@ -179,12 +179,12 @@ class PytorchForecastingTFTBackend:
         """Fit a pytorch-forecasting TFT model on the provided dataset."""
         import lightning as L
         from lightning.pytorch.callbacks import EarlyStopping
-        from pytorch_forecasting import (  # type: ignore[import-untyped]
+        from pytorch_forecasting import (  # type: ignore[import-untyped,import-not-found,unused-ignore]
             TemporalFusionTransformer,
             TimeSeriesDataSet,
         )
-        from pytorch_forecasting.data import GroupNormalizer  # type: ignore[import-untyped]
-        from pytorch_forecasting.metrics import QuantileLoss  # type: ignore[import-untyped]
+        from pytorch_forecasting.data import GroupNormalizer  # type: ignore[import-untyped,import-not-found,unused-ignore]
+        from pytorch_forecasting.metrics import QuantileLoss  # type: ignore[import-untyped,import-not-found,unused-ignore]
 
         self._configure_lightning_logging()
         train_frame, validation_frame = self._resolve_fit_frames(

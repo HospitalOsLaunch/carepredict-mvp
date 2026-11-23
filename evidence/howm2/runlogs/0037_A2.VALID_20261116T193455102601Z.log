@@ -1,0 +1,159 @@
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:4596: RuntimeWarning: invalid value encountered in scalar subtract
+  diff_b_a = b - a
+{
+ "n_instants": 96,
+ "S": 64,
+ "N_o_L4N": {
+  "mean": Infinity,
+  "ci95": [
+   NaN,
+   NaN
+  ],
+  "pass": false,
+  "instants_with_pending": 20,
+  "note": "literal rule: point mass on S_pub has infinite NLL whenever a pending event exists (degenerate, addendum A2-1 s.3)"
+ },
+ "N_o_prime_L4N": {
+  "mean": 0.003201427645674243,
+  "ci95": [
+   -0.04941806812816487,
+   0.05075076357014978
+  ],
+  "pass": false
+ },
+ "N_o_L5N": {
+  "mean": Infinity,
+  "ci95": [
+   NaN,
+   NaN
+  ],
+  "pass": false,
+  "instants_with_pending": 20,
+  "note": "literal rule: point mass on S_pub has infinite NLL whenever a pending event exists (degenerate, addendum A2-1 s.3)"
+ },
+ "N_o_prime_L5N": {
+  "mean": 0.018742446629133706,
+  "ci95": [
+   -0.019102438078061796,
+   0.05933240918926727
+  ],
+  "pass": false
+ },
+ "N_a": {
+  "auth": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 22,
+   "mean_pred_L4N": 7.890625,
+   "mean_pred_L5N": 6.796875,
+   "L4N": {
+    "KS_D": 0.06381941010621905,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0870412554386093,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "ready": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 17,
+   "mean_pred_L4N": 10.84375,
+   "mean_pred_L5N": 10.3125,
+   "L4N": {
+    "KS_D": 0.07675943582453071,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.1525598392125579,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "conf_transport": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 3,
+   "mean_pred_L4N": 2.25,
+   "mean_pred_L5N": 2.171875,
+   "L4N": {
+    "KS_D": 0.04983637447100009,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0928924201013851,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "conf_offer": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 0,
+   "mean_pred_L4N": 0.78125,
+   "mean_pred_L5N": 0.71875,
+   "L4N": {
+    "KS_D": 0.0742302677393778,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.0710610305004456,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "transport": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 10,
+   "mean_pred_L4N": 1.328125,
+   "mean_pred_L5N": 0.625,
+   "L4N": {
+    "KS_D": 0.07631401990280784,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.10411359618338045,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "cleaning": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 17,
+   "mean_pred_L4N": 4.390625,
+   "mean_pred_L5N": 4.25,
+   "L4N": {
+    "KS_D": 0.16110971714300698,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.13287845955766164,
+    "pass": true
+   },
+   "status": "pass"
+  },
+  "arrival": {
+   "n": 96,
+   "threshold": 0.16636117836402417,
+   "truth_total": 5,
+   "mean_pred_L4N": 6.484375,
+   "mean_pred_L5N": 6.359375,
+   "L4N": {
+    "KS_D": 0.06384951718669679,
+    "pass": true
+   },
+   "L5N": {
+    "KS_D": 0.10091702610852948,
+    "pass": true
+   },
+   "status": "pass"
+  }
+ },
+ "fallbacks_L4N": 56,
+ "rejected_L4N": 0,
+ "stop": true
+}

@@ -1,0 +1,2085 @@
+{
+ "id": "perturbations",
+ "label": "Transport coup\u00e9, vague des urgences",
+ "unit": "medecine-polyvalente",
+ "unit_name": "M\u00e9decine polyvalente",
+ "source": "fixture",
+ "request": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "expected_entities": [
+   "unit:medecine-polyvalente",
+   "pool:transport-sanitaire",
+   "pool:smr-nord",
+   "bed:L01",
+   "bed:L02",
+   "bed:L03",
+   "bed:L04",
+   "bed:L05",
+   "bed:L06",
+   "bed:L07",
+   "bed:L08",
+   "bed:L09",
+   "bed:L10",
+   "bed:L11",
+   "bed:L12",
+   "bed:L13",
+   "bed:L14",
+   "patient:P-0371",
+   "patient:P-0412",
+   "patient:P-0402",
+   "patient:P-0420",
+   "patient:P-0388",
+   "patient:P-0409",
+   "patient:P-0431",
+   "patient:P-0415",
+   "patient:P-0397",
+   "patient:P-0425",
+   "patient:U-1049",
+   "patient:U-1041",
+   "patient:U-1043",
+   "patient:U-1047",
+   "discharge:P-0412",
+   "discharge:P-0420",
+   "discharge:P-0388",
+   "discharge:P-0397",
+   "discharge:P-0431"
+  ],
+  "events": [
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:unit:medecine-polyvalente",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:28:00Z",
+    "available_at": "2026-10-24T06:28:00Z",
+    "fact": {
+     "kind": "unit",
+     "id": "medecine-polyvalente",
+     "staffed_beds": 13,
+     "cleaning_teams": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pool:transport-sanitaire",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:24:00Z",
+    "available_at": "2026-10-24T06:24:00Z",
+    "fact": {
+     "kind": "pool",
+     "id": "transport-sanitaire",
+     "resource": "transport",
+     "unit_ids": [
+      "medecine-polyvalente"
+     ],
+     "available": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pool:smr-nord",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:52:00Z",
+    "available_at": "2026-10-24T05:52:00Z",
+    "fact": {
+     "kind": "pool",
+     "id": "smr-nord",
+     "resource": "downstream",
+     "unit_ids": [
+      "medecine-polyvalente"
+     ],
+     "available": 2
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L01",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L01",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0371",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L02",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L02",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0412",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L03",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L03",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0402",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L04",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L04",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0420",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L05",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:18:00Z",
+    "available_at": "2026-10-24T06:18:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L05",
+     "unit_id": "medecine-polyvalente",
+     "state": "dirty",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L06",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L06",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0388",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L07",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L07",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0409",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L08",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:23:00Z",
+    "available_at": "2026-10-24T06:23:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L08",
+     "unit_id": "medecine-polyvalente",
+     "state": "clean",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L09",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L09",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0431",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L10",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L10",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0415",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L11",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:04:00Z",
+    "available_at": "2026-10-24T06:04:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L11",
+     "unit_id": "medecine-polyvalente",
+     "state": "dirty",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L12",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L12",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0397",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L13",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:27:00Z",
+    "available_at": "2026-10-24T06:27:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L13",
+     "unit_id": "medecine-polyvalente",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0425",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:bed:L14",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:46:00Z",
+    "available_at": "2026-10-24T05:46:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "L14",
+     "unit_id": "medecine-polyvalente",
+     "state": "closed",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0371",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0371",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T06:30:00Z",
+     "bed_id": "L01",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0412",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:21:00Z",
+    "available_at": "2026-10-24T06:21:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0412",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-18T10:30:00Z",
+     "bed_id": "L02",
+     "medically_cleared": true,
+     "downstream_confirmed": true
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0402",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0402",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T04:30:00Z",
+     "bed_id": "L03",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0420",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:16:00Z",
+    "available_at": "2026-10-24T06:16:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0420",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T06:30:00Z",
+     "bed_id": "L04",
+     "medically_cleared": true,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0388",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:08:00Z",
+    "available_at": "2026-10-24T06:08:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0388",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T06:30:00Z",
+     "bed_id": "L06",
+     "medically_cleared": true,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0409",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0409",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-23T00:30:00Z",
+     "bed_id": "L07",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0431",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:59:00Z",
+    "available_at": "2026-10-24T05:59:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0431",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T14:30:00Z",
+     "bed_id": "L09",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0415",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0415",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T18:30:00Z",
+     "bed_id": "L10",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0397",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:19:00Z",
+    "available_at": "2026-10-24T06:19:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0397",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-17T14:30:00Z",
+     "bed_id": "L12",
+     "medically_cleared": true,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:P-0425",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0425",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-23T10:30:00Z",
+     "bed_id": "L13",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:U-1049",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-1049",
+     "status": "waiting",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 4,
+     "waiting_since": "2026-10-23T23:48:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:U-1041",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-1041",
+     "status": "waiting",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 3,
+     "waiting_since": "2026-10-24T01:25:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:U-1043",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-1043",
+     "status": "waiting",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 2,
+     "waiting_since": "2026-10-24T03:22:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:patient:U-1047",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-1047",
+     "status": "waiting",
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-24T05:09:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:discharge:P-0412",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:21:00Z",
+    "available_at": "2026-10-24T06:21:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0412",
+     "documents_ready": true,
+     "escort_required": false,
+     "escort_confirmed": null,
+     "downstream_required": true,
+     "downstream_pool_id": "smr-nord",
+     "transport_required": true,
+     "transport_pool_id": "transport-sanitaire",
+     "transport_requested": false
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:discharge:P-0420",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:16:00Z",
+    "available_at": "2026-10-24T06:16:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0420",
+     "documents_ready": true,
+     "escort_required": false,
+     "escort_confirmed": null,
+     "downstream_required": false,
+     "downstream_pool_id": null,
+     "transport_required": false,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:discharge:P-0388",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:08:00Z",
+    "available_at": "2026-10-24T06:08:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0388",
+     "documents_ready": false,
+     "escort_required": false,
+     "escort_confirmed": null,
+     "downstream_required": false,
+     "downstream_pool_id": null,
+     "transport_required": true,
+     "transport_pool_id": "transport-sanitaire",
+     "transport_requested": false
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:discharge:P-0397",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:19:00Z",
+    "available_at": "2026-10-24T06:19:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0397",
+     "documents_ready": true,
+     "escort_required": true,
+     "escort_confirmed": null,
+     "downstream_required": false,
+     "downstream_pool_id": null,
+     "transport_required": false,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:discharge:P-0431",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:59:00Z",
+    "available_at": "2026-10-24T05:59:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0431",
+     "documents_ready": null,
+     "escort_required": null,
+     "escort_confirmed": null,
+     "downstream_required": true,
+     "downstream_pool_id": "smr-nord",
+     "transport_required": null,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   }
+  ],
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": {
+   "schema_version": "HYBRID_FUTURE_1",
+   "provenance": "synthetic_hypothesis",
+   "declared_at": "2026-10-24T06:30:00Z",
+   "arrivals": [
+    {
+     "id": "vague-urgences-midi",
+     "minute_options": [
+      150,
+      210,
+      270
+     ],
+     "count_options": [
+      1,
+      2,
+      3
+     ],
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 2
+    }
+   ],
+   "changes": [
+    {
+     "kind": "resource_change",
+     "id": "transport-indisponible",
+     "minute": 20,
+     "resource": "transport",
+     "target_id": "transport-sanitaire",
+     "capacity": 0
+    },
+    {
+     "kind": "resource_change",
+     "id": "transport-retabli",
+     "minute": 140,
+     "resource": "transport",
+     "target_id": "transport-sanitaire",
+     "capacity": 1
+    },
+    {
+     "kind": "resource_change",
+     "id": "bionettoyage-renfort",
+     "minute": 60,
+     "resource": "cleaning_teams",
+     "target_id": "medecine-polyvalente",
+     "capacity": 2
+    },
+    {
+     "kind": "bed_admissions",
+     "id": "L14-reouverture",
+     "minute": 300,
+     "bed_id": "L14",
+     "admissions_open": true
+    }
+   ]
+  },
+  "preparation": null,
+  "max_age_minutes": 60,
+  "horizon_minutes": 480,
+  "scenarios": 32,
+  "max_candidates": 32,
+  "seed": 7,
+  "tail_weight": 0.25
+ },
+ "state": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "fingerprint": "b590b82f61d1fc735f27a1d305ff777fe001e9b7a1fc157cac6ab160dfaade85",
+  "units": [
+   {
+    "kind": "unit",
+    "id": "medecine-polyvalente",
+    "staffed_beds": 13,
+    "cleaning_teams": 1
+   }
+  ],
+  "beds": [
+   {
+    "kind": "bed",
+    "id": "L01",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0371",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L02",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": "P-0412",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L03",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0402",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L04",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0420",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L05",
+    "unit_id": "medecine-polyvalente",
+    "state": "dirty",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L06",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0388",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L07",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": "P-0409",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L08",
+    "unit_id": "medecine-polyvalente",
+    "state": "clean",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L09",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0431",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L10",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0415",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L11",
+    "unit_id": "medecine-polyvalente",
+    "state": "dirty",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L12",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0397",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L13",
+    "unit_id": "medecine-polyvalente",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0425",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "L14",
+    "unit_id": "medecine-polyvalente",
+    "state": "closed",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   }
+  ],
+  "patients": [
+   {
+    "kind": "patient",
+    "id": "P-0371",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T06:30:00Z",
+    "bed_id": "L01",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0388",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T06:30:00Z",
+    "bed_id": "L06",
+    "medically_cleared": true,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0397",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-17T14:30:00Z",
+    "bed_id": "L12",
+    "medically_cleared": true,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0402",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-22T04:30:00Z",
+    "bed_id": "L03",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0409",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-23T00:30:00Z",
+    "bed_id": "L07",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0412",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-18T10:30:00Z",
+    "bed_id": "L02",
+    "medically_cleared": true,
+    "downstream_confirmed": true
+   },
+   {
+    "kind": "patient",
+    "id": "P-0415",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-21T18:30:00Z",
+    "bed_id": "L10",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0420",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-21T06:30:00Z",
+    "bed_id": "L04",
+    "medically_cleared": true,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0425",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-23T10:30:00Z",
+    "bed_id": "L13",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0431",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T14:30:00Z",
+    "bed_id": "L09",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-1041",
+    "status": "waiting",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 3,
+    "waiting_since": "2026-10-24T01:25:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-1043",
+    "status": "waiting",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 2,
+    "waiting_since": "2026-10-24T03:22:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-1047",
+    "status": "waiting",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-24T05:09:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-1049",
+    "status": "waiting",
+    "compatible_units": [
+     "medecine-polyvalente"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 4,
+    "waiting_since": "2026-10-23T23:48:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   }
+  ],
+  "pools": [
+   {
+    "kind": "pool",
+    "id": "smr-nord",
+    "resource": "downstream",
+    "unit_ids": [
+     "medecine-polyvalente"
+    ],
+    "available": 2
+   },
+   {
+    "kind": "pool",
+    "id": "transport-sanitaire",
+    "resource": "transport",
+    "unit_ids": [
+     "medecine-polyvalente"
+    ],
+    "available": 1
+   }
+  ],
+  "discharges": [
+   {
+    "kind": "discharge",
+    "id": "P-0388",
+    "documents_ready": false,
+    "escort_required": false,
+    "escort_confirmed": null,
+    "downstream_required": false,
+    "downstream_pool_id": null,
+    "transport_required": true,
+    "transport_pool_id": "transport-sanitaire",
+    "transport_requested": false
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0397",
+    "documents_ready": true,
+    "escort_required": true,
+    "escort_confirmed": null,
+    "downstream_required": false,
+    "downstream_pool_id": null,
+    "transport_required": false,
+    "transport_pool_id": null,
+    "transport_requested": null
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0412",
+    "documents_ready": true,
+    "escort_required": false,
+    "escort_confirmed": null,
+    "downstream_required": true,
+    "downstream_pool_id": "smr-nord",
+    "transport_required": true,
+    "transport_pool_id": "transport-sanitaire",
+    "transport_requested": false
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0420",
+    "documents_ready": true,
+    "escort_required": false,
+    "escort_confirmed": null,
+    "downstream_required": false,
+    "downstream_pool_id": null,
+    "transport_required": false,
+    "transport_pool_id": null,
+    "transport_requested": null
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0431",
+    "documents_ready": null,
+    "escort_required": null,
+    "escort_confirmed": null,
+    "downstream_required": true,
+    "downstream_pool_id": "smr-nord",
+    "transport_required": null,
+    "transport_pool_id": null,
+    "transport_requested": null
+   }
+  ],
+  "issues": [],
+  "warnings": []
+ },
+ "plan": {
+  "schema_version": "HYBRID_PLAN_4",
+  "evidence": "simulation_under_declared_assumptions",
+  "decision": "recommend",
+  "plan_id": "c6e1e6e3a858da08440ca71622c324cce961520d8f7c5cea8b363a062a2cccb4",
+  "hospital_id": "ch-fictif",
+  "state_fingerprint": "b590b82f61d1fc735f27a1d305ff777fe001e9b7a1fc157cac6ab160dfaade85",
+  "created_at": "2026-10-24T06:30:00Z",
+  "expires_at": "2026-10-24T06:45:00Z",
+  "selected": {
+   "kind": "request_transport",
+   "bed_id": "L02",
+   "patient_id": "P-0412"
+  },
+  "reasons": [
+   "lower_simulated_waiting_cost_requires_human_approval"
+  ],
+  "warnings": [],
+  "candidates": [
+   {
+    "action": {
+     "kind": "no_op",
+     "bed_id": null,
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1002.1875,
+    "worst_decile_waiting_patient_minutes": 1305.0,
+    "objective": 1077.890625,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 3,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "request_transport",
+     "bed_id": "L02",
+     "patient_id": "P-0412"
+    },
+    "mean_waiting_patient_minutes": 809.0625,
+    "worst_decile_waiting_patient_minutes": 1165.0,
+    "objective": 898.046875,
+    "violations": [],
+    "scenarios_with_unserved_demand": 25,
+    "max_waiting_at_end": 2,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "prioritize_cleaning",
+     "bed_id": "L05",
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1002.1875,
+    "worst_decile_waiting_patient_minutes": 1305.0,
+    "objective": 1077.890625,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 3,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "reserve_bed",
+     "bed_id": "L08",
+     "patient_id": "U-1043"
+    },
+    "mean_waiting_patient_minutes": 1002.1875,
+    "worst_decile_waiting_patient_minutes": 1305.0,
+    "objective": 1077.890625,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 3,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "reserve_bed",
+     "bed_id": "L08",
+     "patient_id": "U-1047"
+    },
+    "mean_waiting_patient_minutes": 1002.1875,
+    "worst_decile_waiting_patient_minutes": 1305.0,
+    "objective": 1077.890625,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 3,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "prioritize_cleaning",
+     "bed_id": "L11",
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 999.375,
+    "worst_decile_waiting_patient_minutes": 1301.25,
+    "objective": 1074.84375,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 3,
+    "max_arrived": 3,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   }
+  ],
+  "candidates_truncated": false,
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": {
+   "schema_version": "HYBRID_FUTURE_1",
+   "provenance": "synthetic_hypothesis",
+   "declared_at": "2026-10-24T06:30:00Z",
+   "arrivals": [
+    {
+     "id": "vague-urgences-midi",
+     "minute_options": [
+      150,
+      210,
+      270
+     ],
+     "count_options": [
+      1,
+      2,
+      3
+     ],
+     "compatible_units": [
+      "medecine-polyvalente"
+     ],
+     "requirements": [],
+     "priority": 2
+    }
+   ],
+   "changes": [
+    {
+     "kind": "resource_change",
+     "id": "transport-indisponible",
+     "minute": 20,
+     "resource": "transport",
+     "target_id": "transport-sanitaire",
+     "capacity": 0
+    },
+    {
+     "kind": "resource_change",
+     "id": "transport-retabli",
+     "minute": 140,
+     "resource": "transport",
+     "target_id": "transport-sanitaire",
+     "capacity": 1
+    },
+    {
+     "kind": "resource_change",
+     "id": "bionettoyage-renfort",
+     "minute": 60,
+     "resource": "cleaning_teams",
+     "target_id": "medecine-polyvalente",
+     "capacity": 2
+    },
+    {
+     "kind": "bed_admissions",
+     "id": "L14-reouverture",
+     "minute": 300,
+     "bed_id": "L14",
+     "admissions_open": true
+    }
+   ]
+  },
+  "preparation": null,
+  "seed": 7,
+  "scenarios": 32,
+  "horizon_minutes": 480,
+  "tail_weight": 0.25,
+  "discharge_readiness": [
+   {
+    "patient_id": "P-0371",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0388",
+    "stage": "logistics_blocked",
+    "blockers": [
+     "documents_not_confirmed",
+     "transport_not_requested"
+    ]
+   },
+   {
+    "patient_id": "P-0397",
+    "stage": "logistics_blocked",
+    "blockers": [
+     "escort_not_confirmed"
+    ]
+   },
+   {
+    "patient_id": "P-0402",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0409",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0412",
+    "stage": "transport_to_request",
+    "blockers": [
+     "transport_not_requested"
+    ]
+   },
+   {
+    "patient_id": "P-0415",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0420",
+    "stage": "ready_for_simulation",
+    "blockers": []
+   },
+   {
+    "patient_id": "P-0425",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0431",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "documents_not_confirmed",
+     "escort_not_confirmed",
+     "transport_requirement_unknown",
+     "downstream_acceptance_not_confirmed"
+    ]
+   }
+  ],
+  "service_status": "unserved_in_some_sampled_scenarios"
+ },
+ "trace": {
+  "baseline": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "admit",
+      "patient_id": "U-1043",
+      "bed_id": "L08",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 0,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 20,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "transport-sanitaire",
+      "external_id": "transport-indisponible"
+     },
+     {
+      "minute": 45,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 45,
+      "kind": "admit",
+      "patient_id": "U-1047",
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 45,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "medecine-polyvalente",
+      "external_id": "bionettoyage-renfort"
+     },
+     {
+      "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0420",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0420",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 90,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 90,
+      "kind": "admit",
+      "patient_id": "U-1049",
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 120,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 140,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "transport-sanitaire",
+      "external_id": "transport-retabli"
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:c092e0b7586f3f65fef4ac0fa5e4bd90",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:c092e0b7586f3f65fef4ac0fa5e4bd90"
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:cd6e8d6897b1ac57a53c3c3f849c477b",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:cd6e8d6897b1ac57a53c3c3f849c477b"
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:f49cfd30a4033271c54243026c9e8ad3",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:f49cfd30a4033271c54243026c9e8ad3"
+     },
+     {
+      "minute": 270,
+      "kind": "admit",
+      "patient_id": "hypothetical:c092e0b7586f3f65fef4ac0fa5e4bd90",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 300,
+      "kind": "bed_admissions",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": "L14-reouverture"
+     },
+     {
+      "minute": 300,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 360,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 1035,
+    "admitted": 4,
+    "waiting_at_end": 3,
+    "violations": [],
+    "arrived": 3,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  },
+  "selected": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "request_transport",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 0,
+      "kind": "admit",
+      "patient_id": "U-1043",
+      "bed_id": "L08",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 0,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 20,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "transport-sanitaire",
+      "external_id": "transport-indisponible"
+     },
+     {
+      "minute": 30,
+      "kind": "departure_ready",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 45,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 45,
+      "kind": "admit",
+      "patient_id": "U-1047",
+      "bed_id": "L05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 45,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "medecine-polyvalente",
+      "external_id": "bionettoyage-renfort"
+     },
+     {
+      "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0420",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0420",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 90,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 90,
+      "kind": "admit",
+      "patient_id": "U-1049",
+      "bed_id": "L11",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 120,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 140,
+      "kind": "resource_change",
+      "patient_id": null,
+      "bed_id": "",
+      "resource_id": "transport-sanitaire",
+      "external_id": "transport-retabli"
+     },
+     {
+      "minute": 140,
+      "kind": "downstream_reserve",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": "smr-nord",
+      "external_id": null
+     },
+     {
+      "minute": 140,
+      "kind": "transport_start",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 185,
+      "kind": "transport_depart",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 185,
+      "kind": "depart",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 185,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L02",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 215,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L02",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 215,
+      "kind": "transport_end",
+      "patient_id": "P-0412",
+      "bed_id": "L02",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 215,
+      "kind": "admit",
+      "patient_id": "U-1041",
+      "bed_id": "L02",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:c092e0b7586f3f65fef4ac0fa5e4bd90",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:c092e0b7586f3f65fef4ac0fa5e4bd90"
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:cd6e8d6897b1ac57a53c3c3f849c477b",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:cd6e8d6897b1ac57a53c3c3f849c477b"
+     },
+     {
+      "minute": 270,
+      "kind": "arrival",
+      "patient_id": "hypothetical:f49cfd30a4033271c54243026c9e8ad3",
+      "bed_id": "",
+      "resource_id": null,
+      "external_id": "arrival:f49cfd30a4033271c54243026c9e8ad3"
+     },
+     {
+      "minute": 270,
+      "kind": "admit",
+      "patient_id": "hypothetical:c092e0b7586f3f65fef4ac0fa5e4bd90",
+      "bed_id": "L04",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 300,
+      "kind": "bed_admissions",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": "L14-reouverture"
+     },
+     {
+      "minute": 300,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 360,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "L14",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 770,
+    "admitted": 5,
+    "waiting_at_end": 2,
+    "violations": [],
+    "arrived": 3,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  }
+ }
+}

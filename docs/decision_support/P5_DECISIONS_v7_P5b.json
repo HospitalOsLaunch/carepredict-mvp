@@ -1,0 +1,45 @@
+{
+ "schema": "HOSPITALOS_P5_DECISIONS_7",
+ "date": "2026-11-14",
+ "adoption": "user wrote 'Approuve' and, asked what it applied to, chose 'Mandat P5b, option A' (adopt as is the agreement of § 5 of P5b_MANDATE_PROPOSAL.md; no push)",
+ "adopted_document": "docs/decision_support/P5b_MANDATE_PROPOSAL.md",
+ "adopted_document_sha256": "10bd0ebafd005894602342ff5323ef62178b5d0ca0057a3c7d904facadf555cc",
+ "iii": {
+  "scope": "P5b only, under P5-PROTO-3 + 3.1 (D13), sizes D5, HGB D8",
+  "lots": {
+   "P5.4": {
+    "cap_s": 470
+   },
+   "P5.5": "analysis and delivery within its existing cap"
+  },
+  "per_command_s": 30,
+  "spend_eur": 0,
+  "option": "A: L2 applied by explicit decision (28 fits = 24 selection with random_state 0 + 4 inter-seed controls on each family's selected configuration); seed identity shown on the A5 bench only (bounded scope)",
+  "isolation": "50 episodes before F_b, method v2, T04-a NON_INFORMATIF accepted and named in advance",
+  "stops": [
+   "non-informative twin precheck (before validation and evaluation)",
+   "lot or global ceiling",
+   "any single fit > 30 s per command (no warm_start splitting)",
+   "violation / leakage / stop rules of the protocol"
+  ],
+  "after": "stop after P5b delivery"
+ },
+ "not_authorised": [
+  "D16",
+  "P6",
+  "AJ-H",
+  "installation",
+  "push",
+  "merge",
+  "rebase",
+  "spend",
+  "re-opening P5a"
+ ],
+ "statuses_unchanged": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "P5a": "exploratory"
+ }
+}

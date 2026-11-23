@@ -1,0 +1,68 @@
+{
+  "0": {
+    "cleaning": {
+      "law": {
+        "median": 69.13019482301763,
+        "sigma": 0.3899175107328349,
+        "lag": 0.0
+      },
+      "completed": 455,
+      "censored": 0,
+      "negative_log_likelihood": 919.9200424067392
+    },
+    "transport": {
+      "law": {
+        "median": 83.26295880524181,
+        "sigma": 0.46927492029255274,
+        "lag": 0.0
+      },
+      "completed": 250,
+      "censored": 0,
+      "negative_log_likelihood": 597.176500642543
+    }
+  },
+  "60": {
+    "cleaning": {
+      "law": {
+        "median": 69.02113733213629,
+        "sigma": 0.391165033031991,
+        "lag": 60.059741430953146
+      },
+      "completed": 451,
+      "censored": 3,
+      "negative_log_likelihood": 3209.543037716043
+    },
+    "transport": {
+      "law": {
+        "median": 83.24779541229032,
+        "sigma": 0.4715416684371436,
+        "lag": 63.38764517968719
+      },
+      "completed": 248,
+      "censored": 1,
+      "negative_log_likelihood": 1869.8683627404605
+    }
+  },
+  "180": {
+    "cleaning": {
+      "law": {
+        "median": 68.6851309228425,
+        "sigma": 0.38350911726261694,
+        "lag": 179.3267498105015
+      },
+      "completed": 414,
+      "censored": 22,
+      "negative_log_likelihood": 3388.0012610342364
+    },
+    "transport": {
+      "law": {
+        "median": 82.78535947614104,
+        "sigma": 0.4729185494076205,
+        "lag": 191.67131268664556
+      },
+      "completed": 227,
+      "censored": 15,
+      "negative_log_likelihood": 1960.111802086971
+    }
+  }
+}

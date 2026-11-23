@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/int1/diag_sf1.py", line 139, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/diag_sf1.py", line 79, in main
+    dm = pickle.loads((S / "int1_runs" / a.d.split("/")[0] / f"{a.d.split('/')[1]}.pkl").read_bytes())
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: Can't get attribute 'BaseEffect' on <module '__main__' from '/home/user/carepredict-mvp/scripts/int1/diag_sf1.py'>

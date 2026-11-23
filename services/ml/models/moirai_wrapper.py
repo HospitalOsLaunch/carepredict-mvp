@@ -197,7 +197,7 @@ class Uni2TSMoiraiBackend:
         return {"baseline_mae": mae, "epochs": float(epochs), "windows": float(len(errors))}
 
     def _build_forecaster(self, horizon_override: int | None = None) -> None:
-        from uni2ts.model.moirai import (  # type: ignore[import-untyped]
+        from uni2ts.model.moirai import (  # type: ignore[import-untyped,import-not-found,unused-ignore]
             MoiraiForecast,
             MoiraiModule,
         )

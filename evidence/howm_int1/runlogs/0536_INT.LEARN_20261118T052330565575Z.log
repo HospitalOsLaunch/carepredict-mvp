@@ -1,0 +1,14 @@
+{"run": "W_t2_M_s1", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t2_M_s0", "upd": 12357, "stopped": null, "best": 6000, "params": 1899540, "last": {"upd": 12350, "loss": 1.5512988567352295, "st": 0.6575929522514343, "co": 0.24961107969284058, "cum": 0.09942685812711716, "eff": 0.09872719645500183, "rup": 0.10206382721662521, "T": 12}}
+{"run": "W_t2_M_s2", "upd": 12279, "stopped": null, "best": 8000, "params": 1899540, "last": {"upd": 12250, "loss": 3.2131752967834473, "st": 0.45305708050727844, "co": 0.483529269695282, "cum": 0.1845438927412033, "eff": 0.4138046205043793, "rup": 0.0460439994931221, "T": 36}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}

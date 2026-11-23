@@ -18,25 +18,59 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install package
+      - name: Install locked environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install ".[dev]"
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
 
       - name: Lint
         run: ruff check .
 
       - name: Type-check
-        run: mypy --strict services orchestration data tests
+        # Research tests (frozen campaigns) and tests/decision_support (open strict-typing gate, see
+        # docs/ENVIRONMENT.md) are outside this scope; tests/synthetic is type-checked by its own workflow.
+        run: mypy --strict services data tests/unit tests/integration tests/e2e tests/hybrid tests/operational tests/test_*.py
 
       - name: Tests
-        run: pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=xml
+        # The P5 runner tests need an approved-interpreter venv to exist (runner reads its pyvenv.cfg); P5_VENV
+        # points the runner at a throwaway one, as scripts/p5_budget_run.py allows.
+        run: |
+          python -m venv "$RUNNER_TEMP/p5venv"
+          P5_VENV="$RUNNER_TEMP/p5venv" pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=xml
 
       - name: Docker compose config
         run: docker compose config
 
+      - name: Release envelope gate (digests, 127.0.0.1, secrets, mounts, privileges)
+        run: |
+          python scripts/deploy/check_release.py
+          sed "s/REPLACE_ME/ci-$(python -c 'import secrets; print(secrets.token_hex(16))')/" \
+            deploy/nantes/env.release.template > deploy/nantes/.env.release
+          python scripts/deploy/check_release.py --env deploy/nantes/.env.release
+          docker compose -f deploy/nantes/docker-compose.release.yml --env-file deploy/nantes/.env.release config -q
+          rm deploy/nantes/.env.release
+
       - name: Docker build
         run: docker compose build
+
+  # Data-platform orchestration (Dagster/dbt/Feast) runs in its own image with exact pins
+  # (infrastructure/dagster/Dockerfile); it needs numpy<2 and is not part of requirements.lock.
+  platform-typecheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install the Dagster image pins
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install dagster==1.7.16 dagster-dbt==0.23.16 dagster-postgres==0.23.16 \
+            dagster-webserver==1.7.16 dbt-core==1.7.19 dbt-postgres==1.7.19 'feast[redis,postgres]==0.40.1' \
+            great-expectations==0.18.22 structlog==24.2.0 mypy types-PyYAML
+      - name: Type-check orchestration
+        run: mypy --strict orchestration
 
   # DSI-facing Gate A safety gate: fast, self-contained (no heavy deps), STRICT.
   # Blocks merge if the Nantes data-safety layer is not clean, typed, and covered.

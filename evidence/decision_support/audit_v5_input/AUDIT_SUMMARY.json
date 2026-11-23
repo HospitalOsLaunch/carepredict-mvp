@@ -1,0 +1,164 @@
+{
+  "schema": "HOSPITALOS_DS_INDEPENDENT_AUDIT_V5_1",
+  "audit_date": "2026-11-14",
+  "audit_id": "HospitalOS_DS_v5_independent_20261114",
+  "input": {
+    "name": "HospitalOS_DS_P0-P4_20261114_v5.zip",
+    "zip_sha256": "37cc8cde64ccc8afcd9b16ad4e9b4001f1f28680bd83b88bb0f17feed84a349d",
+    "zip_bytes": 24248351,
+    "manifests": {
+      "SHA256SUMS": {
+        "pass": 218,
+        "fail": []
+      },
+      "SHA256SUMS.post": {
+        "pass": 6,
+        "fail": []
+      },
+      "SHA256SUMS.final": {
+        "pass": 6,
+        "fail": []
+      },
+      "reference/SHA256SUMS.txt": {
+        "pass": 8,
+        "fail": []
+      }
+    },
+    "code_commit": "56ad3cfeda775a20396cb80dfa4554f6a8899321",
+    "external_report_equals_internal": true
+  },
+  "verdict": {
+    "delivery": "PARTIAL_WITH_CHECKPOINT",
+    "v4_findings": "V4-R01/R02/R03 and V4-D01 pass independent original cases",
+    "new_finding": "V5-R01 capacity depends on selected offer and approval order within one contradictory snapshot",
+    "scientific_status": "PROTOTYPE_UNVALIDATED",
+    "clinical_validation": false,
+    "G2": "NO-GO"
+  },
+  "independent_environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "packages": {
+      "pydantic": "2.13.5",
+      "numpy": "2.3.5",
+      "pytest": "9.0.2",
+      "jsonschema": "4.26.0"
+    },
+    "pytest_auto_plugins_disabled": true,
+    "network_installs": false
+  },
+  "tests": {
+    "full_ds_plus_86_hybrid": {
+      "tests": 174,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 174
+    },
+    "real_restoration": {
+      "test": "T30",
+      "restored_tree_of_head": "56ad3cfeda775a20396cb80dfa4554f6a8899321",
+      "method": "source_head.tar",
+      "ledger_lineage": "final_after_postseal_restore",
+      "ledger_source": "ledger/BUDGET_LEDGER.final.jsonl",
+      "source_records": 137,
+      "source_used_wall_seconds": 315.676,
+      "target_status_after_replay": {
+        "ledger": "/mnt/data/ds_v5_independent_audit/restored/evidence/decision_support/BUDGET_LEDGER.jsonl",
+        "commands": 129,
+        "used_wall_seconds": 324.813,
+        "limit_wall_seconds": 600.0,
+        "remaining_wall_seconds": 275.187,
+        "stopped": false
+      },
+      "package_ledger_is_exact_prefix_of_target": true,
+      "tests": "pass",
+      "pytest": "88 passed in 5.83s",
+      "results_compared": 11,
+      "results_differing": [],
+      "status": "PASS"
+    },
+    "new_capacity_consistency": {
+      "tests": 5,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4
+    },
+    "original_test_integrity": {
+      "test_independent_acceptance.py": {
+        "exact_copy_of_independent_test": true,
+        "sha256": "bea463dba724f9c78389612d0481539a2e1c89eef0feea7117a66f8bb8a64adb"
+      },
+      "test_v4_resource_boundaries.py": {
+        "exact_copy_of_independent_test": true,
+        "sha256": "9f0e4601fd139455a7b1b0602f5824afe05d75c62ccc143b1267e7fd83de7e23"
+      },
+      "test_v4_restoration_counter.py": {
+        "exact_copy_of_independent_test": true,
+        "sha256": "d5a348c7f3a79ccf0069c6616d7f0dd420aaeb35adcd6646880109a013bd6916"
+      }
+    },
+    "standalone_typescript": {
+      "result": "PASS",
+      "command": "tsc -p web/decision/tsconfig.json --noEmit"
+    },
+    "author_python_3_11_junit": {
+      "tests": 174,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 173
+    },
+    "react_browser_independent_replay": "NOT_RUN: no cockpit node_modules; no network installation authorised for this audit"
+  },
+  "new_finding": {
+    "id": "V5-R01",
+    "scope": "one lender, one skill, same six hourly slots, same public snapshot",
+    "input": "R1 scheduled=4 minimum=3; R2 scheduled=5 minimum=3; both confirmed from U-LOAN/IDE",
+    "joint_plan": "R1+R2 rejected by conservative 4-2<3 rule",
+    "R1_then_R2": [
+      "APPROVED_IN_DEMO",
+      "APPROVED_IN_DEMO"
+    ],
+    "R2_then_R1": [
+      "APPROVED_IN_DEMO",
+      "REFUSED"
+    ],
+    "positive_controls": [
+      "consistent scheduled=5 allows two loans",
+      "genuine new snapshot capacity rise allows second loan",
+      "disjoint windows with different declared capacity stay allowed"
+    ],
+    "interpretation": "Demonstrated inconsistency between joint and sequential approval. Contradictory input does not establish actual real staffing; it requires explicit conservative resolution or refusal, not last-offer-wins."
+  },
+  "budget": {
+    "source_records": 137,
+    "source_used_seconds": 315.676,
+    "terminal_records": 146,
+    "terminal_used_seconds": 343.115,
+    "independent_audit_added_seconds": 27.439,
+    "remaining_seconds": 256.885,
+    "limit_seconds": 600,
+    "per_command_limit_seconds": 30,
+    "source_final_is_exact_prefix": true,
+    "last_record_sha256": "a7b9b9702d78348b2bb1f90ddb4ddc8a9854d97c69683aa3ed9217149e184a99",
+    "all_new_commands_within_limit": true,
+    "restoration_outer_overhead_accounted": true
+  },
+  "not_executed": [
+    "training",
+    "fit_benchmark",
+    "AJ-H inference",
+    "weight loading",
+    "P5/P6",
+    "remote changes",
+    "network installation",
+    "clinical actions"
+  ],
+  "limitations": [
+    "Python 3.11.9 exact not available; independent tests under 3.13.5 only",
+    "Browser, Vitest and React build are author evidence only",
+    "No comprehensive or clinical validation; bounded synthetic tests",
+    "No product source changed; root cause fix not performed"
+  ]
+}

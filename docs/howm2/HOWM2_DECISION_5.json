@@ -1,0 +1,56 @@
+{
+ "schema": "HOWM2_DECISION_5",
+ "date": "2026-11-16",
+ "previous_decisions": [
+  "HOWM2_DECISION_1.json",
+  "decision_2 (ledger #22, NORME_HOWM2_A_ADDENDUM_2.md)",
+  "HOWM2_DECISION_3.json",
+  "HOWM2_DECISION_4.json"
+ ],
+ "decision": [
+  "close A-prime with a scientific addendum (historical results unchanged)",
+  "execute C1 amended, palier 1 only (100 and 1000 establishments)",
+  "prepare B amended (no simulation, no G_ID measurement, no training)"
+ ],
+ "message": {
+  "path": "docs/howm2/inputs/MESSAGE_HOWM2_DECISION_5.txt",
+  "sha256": "ae3b9f10fce43541fc9b7fdaaa9d6b6a81584c07dcf876b2442c2ee04286ac42",
+  "note": "the message is long; the file holds its header, a section summary and the common restrictions verbatim; the full text is in the session transcript"
+ },
+ "authorised": {
+  "C1": [
+   "systems C.1, C.2a, C.2b as defined in docs/howm2/proposition_A2/C1_AMENDE (+ proposition_BCD for unchanged clauses)",
+   "N in {100, 1000}",
+   "one pass on fresh HOWM2_CTRAIN",
+   "selection on HOWM2_CVAL",
+   "F-C1 freeze",
+   "single final campaign on HOWM2_CEVAL",
+   "transfer to HOWM2_DIAG without retraining",
+   "gradient descent for these systems only"
+  ],
+  "budget": {
+   "wall_s": 17400,
+   "device": "CPU",
+   "eur": 0,
+   "ledger": "evidence/howm2_c1/BUDGET_LEDGER_HOWM2_C1.jsonl",
+   "per_command_s": 540,
+   "no_transfer_from_other_envelopes": true
+  }
+ },
+ "not_authorised": [
+  "palier 2 (10000) and 100000",
+  "B execution (simulation, G_ID, training)",
+  "push, merge, rebase, external publication",
+  "modifying G0/F1-frozen files, v6, P5, mvp/computer-use, historical R1/A/A-prime results",
+  "HOWM-1 reserve, DEVTEST, DIAG-DEV",
+  "HOWM2-N",
+  "any additional decision diagnostic on HOWM-1",
+  "GPU",
+  "JEPA, closed loop, P6, AJ-H"
+ ],
+ "statuses_unchanged": [
+  "PROTOTYPE_UNVALIDATED",
+  "clinical_validation=false",
+  "G2=NO-GO"
+ ]
+}

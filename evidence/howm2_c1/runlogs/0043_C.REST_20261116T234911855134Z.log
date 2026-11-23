@@ -1,0 +1,116 @@
+{
+ "package": "HOWM2_P2_C1_P1_FINAL.zip",
+ "package_sha256": "bd8a75994fe076cf24eafcb1af4e44eaddeb09e3d195ada69e7f643f5e1c7a35",
+ "training_reproduced": false,
+ "note": "training is not re-run; sections below state exactly what was checked",
+ "1_file_integrity": {
+  "files_checked": 397,
+  "bad": [],
+  "ok": true
+ },
+ "tests_c1": {
+  "exit": 0,
+  "tail": [
+   "11 passed, 2 warnings in 12.74s"
+  ]
+ },
+ "2_checkpoint_loading": {
+  "checkpoints": {
+   "C.1:100:0": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.1:100:1": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.1:100:2": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.1:1000:0": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.1:1000:1": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.1:1000:2": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:100:0": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:100:1": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:100:2": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:1000:0": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:1000:1": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2b:1000:2": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2a:100:0": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2a:100:1": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   },
+   "C.2a:100:2": {
+    "hash_ok": true,
+    "loaded": true,
+    "forward_finite": true
+   }
+  },
+  "ok": true
+ },
+ "3_analysis_reproduction": {
+  "exit": 0,
+  "RESULTS_C1_P1_identical": true,
+  "ok": true
+ },
+ "4_regenerations_performed": {
+  "items": {
+   "final/HOWM2_CEVAL/000": true,
+   "final/HOWM2_CEVAL/001": true,
+   "training_record_CTRAIN_0_regenerable": true
+  },
+  "ok": true,
+  "not_regenerated": [
+   "training runs",
+   "all other final-score files (packaged, hash-checked)"
+  ]
+ },
+ "seconds": 84.9,
+ "ok": true
+}

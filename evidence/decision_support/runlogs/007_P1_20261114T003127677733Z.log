@@ -1,0 +1,6 @@
+Observation.schema.json
+PublicSnapshot.schema.json
+ScenarioLocks.schema.json
+ForecastBundle.schema.json
+Recommendation.schema.json
+ReviewResult.schema.json

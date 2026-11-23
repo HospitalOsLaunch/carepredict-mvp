@@ -1,0 +1,56 @@
+{
+ "freeze": "PILOT W freeze before the single final evaluation campaign",
+ "status": "PROTOTYPE_UNVALIDATED; clinical_validation=false; G2=NO-GO",
+ "D_selected": "D_hgb_5",
+ "W_seeds": [
+  0,
+  1,
+  2
+ ],
+ "W_main_system": "ensemble (mean predicted plan cost) of the 3 seeds at their VAL-selected checkpoints",
+ "W_val_ensemble": {
+  "val_decision_loss": 32325.868055555555,
+  "val_effect_rmse": 1825.6304802568893
+ },
+ "D_val": {
+  "val_decision_loss": 32392.5,
+  "val_effect_rmse": 1785.8508118778636
+ },
+ "W_val_seeds": [
+  {
+   "seed": 0,
+   "selected_epoch": 24,
+   "val": [
+    32385.972222,
+    2176.6679748893835
+   ],
+   "stop": "patience"
+  },
+  {
+   "seed": 1,
+   "selected_epoch": 14,
+   "val": [
+    32485.416667,
+    1745.586944510634
+   ],
+   "stop": "patience"
+  },
+  {
+   "seed": 2,
+   "selected_epoch": 58,
+   "val": [
+    32332.534722,
+    2234.345824625179
+   ],
+   "stop": "patience"
+  }
+ ],
+ "eval_partition": "BF2W_CONF",
+ "eval_structures": 16,
+ "episodes": 3,
+ "E": 12,
+ "Md": 32,
+ "eval_futures": "r = 1..12 (truth provider of each new episode)",
+ "primary": "W - D decision gain, paired 95 % CI, cluster bootstrap over structures (B=2000, seed 20261117)",
+ "min_structures": 10
+}

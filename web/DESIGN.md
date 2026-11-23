@@ -1,0 +1,141 @@
+# Système visuel du cockpit
+
+La charte complète (plateforme de marque, voix, logo, jetons, composants) vit dans le
+design system « HospitalOS » ; ce fichier en résume ce qui touche le code. Logo : `public/brand/`,
+régénérable par `python web/dev/build_brand.py web/public/brand`.
+
+## Direction « Lumière »
+
+Une bouffée d'air et de lumière pour les cadres et les gestionnaires de lits : fond « Air »
+(#f4f7ff) éclairé d'un halo soleil en haut de page, cartes blanches à l'ombre douce, encre
+« Nuit » (#121a3a), une marque « Outremer » (#3047e6) qui agit, un « Soleil » (#ffb61a) qui
+montre ce que touche la proposition, et des états francs : Menthe (prêt), Abricot (à faire),
+Framboise (bloqué). Titres et chiffres en Lexend, texte et identifiants en Atkinson
+Hyperlegible Next. Formes douces (6 / 14 / 20 px, pilules).
+
+## Logo
+
+Deux lits, et entre eux un soleil qui se lève : la place qui se libère laisse entrer la
+lumière, et l'ensemble dessine le H. Pilules en `--brand`, soleil en `--sun`. Logotype Lexend
+600 vectorisé. Zone de protection : le diamètre du soleil. Minimum : 16 px (favicon), 96 px en
+horizontal. Au chargement, le soleil se lève une fois (700 ms, coupé sous reduced-motion).
+
+## Voix
+
+Chaleureuse, claire, encourageante : « Bonjour. Voici votre unité à 08:30. »,
+« C'est vous qui décidez. », « Merci, c'est noté. », « Tout roule. », « Pas de proposition pour
+l'instant. Mieux vaut ne rien proposer que se tromper. » Signature : « Libérer. Attribuer.
+Respirer. »
+
+## Sobriété sous tension
+
+Une seule chose forte par écran : la carte « Action suivante ». Tout le reste se lit en
+chiffres et en mots courts.
+
+- Pas de phrase là où un chiffre suffit : compteurs à côté des titres (« Libérer 5 »), bande de
+  tension en valeur + deux mots, fraîcheur de la proposition dans le bandeau.
+- Carte proposition : titre, deux faits concrets au plus, l'effet en grand, deux boutons. La
+  méthode de simulation passe en infobulle et dans le détail.
+- Étiquettes des maillons de sortie une seule fois en tête de colonne ; « Libère L02 pour… »
+  seulement sur la sortie concernée ; l'âge d'une information seulement quand elle vieillit.
+- Raccourcis clavier affichés seulement après la première touche utilisée (`?` les liste).
+- Démonstration signalée par une étiquette discrète, pied de page sur une ligne.
+
+## Cycle de vie d'une proposition
+
+HospitalOS propose, la personne décide et agit ; l'outil garde la trace. Valider n'envoie rien.
+
+```
+proposée ──Valider (O)──▶ validée, à faire ──C'est fait (F)──▶ faite
+    │                          └──Finalement non + motif──▶ finalement non
+    ├──Refuser (N) + motif (1–6)──▶ refusée
+    ├──Choisir plutôt une autre option──▶ refusée (« autre option préférée ») + option validée
+    ├──fraîcheur dépassée──▶ sans réponse
+    └──nouvelle évaluation de l'unité──▶ remplacée
+```
+
+- **Une réponse en un geste** : `O` valide, `N` puis `1`–`6` refuse avec un motif. Chaque pas
+  s'annule (bouton « Annuler » dans la carte et dans le toast, 6 s).
+- **Après validation** : la carte passe en abricot « Validée, à faire » et dit quoi faire hors
+  outil (« Appelez le transport pour P-0412. »). « C'est fait » la passe en menthe et invite à
+  réévaluer : l'état de l'unité a changé.
+- **Après refus** : le motif s'affiche, une note libre peut le préciser pour l'équipe, et les
+  autres options utiles s'ouvrent.
+- **Plusieurs propositions** : la carte garde la première, la plus utile ; « N autres options
+  utiles » liste celles qui battent « ne rien faire » sans enfreindre de règle (simulées une à une,
+  effets non cumulables). Une option validée et non faite reste visible sous la carte
+  (« En cours de votre côté ») pendant que de nouvelles propositions arrivent. Entre unités, le
+  sélecteur et le badge « Journal » comptent ce qui reste à faire.
+- **Journal des décisions** (`J`) : « À suivre » (à faire et en attente, toutes unités),
+  « Historique » filtrable (recherche patient, lit, personne, motif ; unité ; période ; moi ou
+  tout le monde ; statut), une fiche par décision avec sa chronologie (qui, quand, motif, notes)
+  et un lien partageable `#/journal/<id>`, « Transmission » à copier et export CSV. Les décisions
+  sont signées (nom et rôle). Prototype : le journal vit sur le poste ; le partage entre collègues
+  passe par l'API (README, « Suite côté API »).
+
+## Illustrations
+
+Des illustrations « spot » fines et légères donnent un peu de chaleur au cockpit, comme une
+plante sur un bureau (`src/ui/illustrations.tsx`). Une seule grammaire sur une grille de 64 :
+un blob doux en teinte lavée (soleil, menthe, lavande ou abricot), un trait d'encre de 1,5 px
+qui ne grossit jamais avec la taille, une ou deux aplats de la palette et une étincelle de soleil.
+
+- **Où** : la salutation (fenêtre du matin, lueur du soir, lune et tisane de garde), les trois
+  zones (porte entrouverte pour Libérer, lit pour Lits, clé pour Attribuer), la proposition
+  (le dessin montre ce qu'elle demande : véhicule, spray de bionettoyage, clé, tasse quand tout
+  roule, nuage quand les données manquent), les titres de page et de bloc, les états vides
+  (« Belle accalmie. » avec un voilier), l'aide aux raccourcis.
+- **Tailles** : 56 px salutation et proposition, 36 px zones, 32 px blocs, 64 px titres de page,
+  72 px états vides ; réduites sur téléphone.
+- **Règles** : décoratives seulement (`aria-hidden`), jamais porteuses d'information ; toutes les
+  couleurs viennent des jetons, donc le thème de nuit suit ; masquées en couleurs forcées. Seul
+  mouvement : le soleil du matin se lève et les étincelles s'allument une fois, coupés sous
+  reduced-motion.
+
+## Zoning sous tension
+
+1. Barre haute : symbole, sélecteur d'unité avec statut (`U`, `1`–`9`), sections, heure de l'état.
+2. Bande de tension : à placer, lits utilisables, sorties, données ; chaque cellule mène à sa zone.
+3. Action suivante : titre à l'impératif, effet simulé, deux réponses (`O`, `N` puis `1`–`6`).
+4. Flux en trois colonnes, dans l'ordre physique : Libérer → Lits → Attribuer. Sur téléphone,
+   un onglet par zone, ouvert sur celle que touche la proposition.
+
+## Intention
+
+- **Qui** : gestionnaire de lits à son bureau, téléphone qui sonne, deux écrans ;
+  cadre de santé en mouvement, sur tablette ou téléphone, entre deux transmissions.
+- **Verbe** : débloquer une sortie ; attribuer un lit.
+- **Sensation** : une fenêtre qu'on ouvre le matin. Lumineux et vivant, dense mais lisible,
+  jamais alarmiste. La couleur vive marque un état ou une action, jamais une décoration.
+
+## Signatures du produit
+
+1. **La chaîne de libération** : cinq maillons par sortie, la seule étape manquante à l'impératif.
+2. **Le soleil** : tout ce que touche la proposition (sortie, lit) porte l'anneau et le halo `--sun`.
+3. **L'encre qui pâlit** : chaque information porte son âge ; périmée, elle passe en abricot.
+
+## Jetons
+
+| Rôle | Clair | Garde de nuit |
+|---|---|---|
+| `--board` Air | #f4f7ff | #0c1230 |
+| `--sheet` carte | #ffffff | #141b3d |
+| `--well` encart | #ebf0fb | #1b2450 |
+| `--ink` / `-2` / `-3` / `-4` Nuit | #121a3a / #3a4468 / #5a6385 / #98a0bd | #eef1ff / #c3c9e6 / #959cc0 / #67709a |
+| `--brand` Outremer, action | #3047e6 | #8b99ff |
+| `--sun` Soleil, ce que touche la proposition | #ffb61a | #ffc94d |
+| `--bloc` / `--mint` Menthe, prêt | #08754f / #2bd49b | #4fe0ae / #3ddca6 |
+| `--sac` / `--sac-mark` Abricot, à faire | #a04d00 / #ff9f43 | #ffb25c |
+| `--alerte` Framboise, bloqué | #c81e4a | #ff7a96 |
+| `--magnet` lit occupé | #dde3ff | #2a3570 |
+
+Contrastes texte vérifiés ≥ 4,5:1 dans les deux thèmes ; `--ink-4`, `--sun` et `--mint` ne portent
+jamais de texte sur fond clair. Audit axe-core : 0 violation.
+
+- **Type** : Lexend 600 (titres, chiffres, logotype) + Atkinson Hyperlegible Next (texte,
+  identifiants), auto-hébergées. Échelle 1,25 sur 15 px : 12 · 13,5 · 15 · 19 · 23 · 29 · 36.
+- **Espacement** : base 4 px ; cartes 16–20 px.
+- **Profondeur** : ombre douce `--lift` + bordure `--line-soft` ; halo `--glow` en haut de page.
+- **Rayons** : 6 (aimants) · 14 (cartes) · 20 (dialogues) · pilules (étiquettes, toasts) ; boutons 12.
+- **Mouvement** : le soleil se lève au chargement (une fois) ; ailleurs < 200 ms,
+  `cubic-bezier(0.23, 1, 0.32, 1)`, transform/opacité, coupé sous `prefers-reduced-motion`.

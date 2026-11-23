@@ -1,0 +1,34 @@
+HospitalOS — proposition de reprise limitée du contrôle d’isolation P5A-D02
+14 novembre 2026 — PROPOSITION NON APPROUVÉE, NON ENVOYÉE.
+Ce document n’autorise aucune exécution. Il devient un mandat seulement après adoption explicite par l’utilisateur. La remise de la livraison précédente n’est pas une adoption.
+
+Entrées :
+- HospitalOS_P5a_Isolation50_20261114.zip, SHA-256 bd5556e1284780614ae76a01baf44af5a9faa5ea1773d4180199d287e0ea1767.
+- HospitalOS_P5a_Isolation50_POST_20261114.zip, SHA-256 13b8a6aec1ee45d3689db43ca2aace0f4e1f4a68471ca86e47d97c04a15aa05d.
+- Revue indépendante : RAPPORT_REVUE.md, STATIC_CHECKS.json et FAILURE_CASE_RECORD.json.
+
+Constat à préserver : 47 reçus positifs sur les 50 épisodes sélectionnés, 377 plans T03-b, arrêt AVANT les assertions sur le rang48, rangs49–50 non contrôlés. Aucun nouvel échec produit ni fuite démontrée. L’arrêt est dû à une précondition du témoin positif trop restrictive. Il reste historique, il n’est jamais effacé.
+
+Périmètre, seulement après adoption : amender le code/procédure de contrôle puis reprendre les trois épisodes restants. Pas de correction moteur v6, pas de changement du générateur, des données, graines, plans, seuils, prévisions ou comparateurs d’efficacité.
+
+1. Vérifier les empreintes et le dernier registre. Référence POST : 74 enregistrements, 119,950 s/1200, terminal 9436389d89978b2f42df5efb172d0f1bbf8a545314eb04bb4279f94a4fcfccd4. Reprendre la lignée la plus récente démontrable sans double comptage. Plafonds existants conservés : 30 s/commande, P5.0 30 s, P5.1 130 s, P5.3 330 s, aucun transfert. P5.3 utilisé47,350 s ; P5.1 utilisé33,329 s. La revue documentaire n’a pas prolongé le registre.
+
+2. Sceller une nouvelle procédure, son code et ses assertions avant toute nouvelle vérification. Garder la sélection de50 et son empreinte d4522515dc9b3e1565b1a33bdf893590318651f139193b930fd85a3a269be993, ainsi que l’ancien répertoire et ISOLATION_FAILURE.json. Utiliser une nouvelle identité/répertoire de reprise. Qualifier explicitement la différence de méthode entre les47 anciens reçus et les3 nouveaux.
+
+3. Ne plus conditionner les contrôles d’isolation du produit T03 et de refus structurel T04-b/c/d à un effet sur HABITUAL-1. Exécuter les assertions T03-a et T03-b pour chaque épisode repris sur les plans de l’univers reconstruit ; garder la correspondance au choix P5a enregistré. Fixer avant exécution l’ordre des vérités : A=(R1,1), B dans [(R2,3),(R2,2),(R2,1),(R1,3),(R1,2)], sans nouveau tirage. Pour T03-b, comparer A à ces vérités sur chaque plan, indépendamment de l’existence d’un témoin positif sensible. Si les vérités elles-mêmes sont identiques, le signaler, sans gonfler la portée du contrôle.
+
+4. T04-a : chercher un plan témoin dans l’univers PUBLIC EXISTANT, par ordre stable des plans et des cinq B consigné dans la procédure. Utiliser EXACTEMENT la projection comparée par check_isolation, pas uniquement le déficit total U. Les relevés historiques du rang48 donnent déjà des U identiques sur les six réalisations pour chacun des six plans : [610,560,530,550,480,530] ; cela ne prouve pas l’identité de toutes les trajectoires. Si une signature diffère, le détecteur du backend lecteur de vérité doit réagir sur cette paire et ce plan. Si aucune paire/plan ne fournit une signature différente, écrire T04-a=NON_INFORMATIF pour ces vérités et cette projection ; conserver l’épisode, poursuivre T03 et T04-b/c/d, ne pas inscrire un succès fictif et ne pas remplacer l’épisode. Ne changer ni le moteur ni les sorties du détecteur pour forcer sa sensibilité dans cette reprise.
+
+5. Préserver la force du test : fuite réelle, recommandation historique différente, empreinte d’univers différente, invariant violé, faux négatif du témoin sur une signature effectivement distincte => arrêt immédiat et reçu. L’absence de variation du témoin n’est pas une fuite. Le bilan distingue : couverture des50, T03 réellement passé, T04-a informatif et détecté, T04-a non informatif, T04-b/c/d, véritables échecs. Pas de « 50/50 tout passé » si un témoin est non informatif. Aucun changement automatique du critère de clôture P5A-D02 ; une acceptation d’un critère différent doit être explicite.
+
+6. Corriger uniquement le script de contrôle pour qu’un fichier de procédure absent/non enregistré soit refusé proprement AVANT reconstruction ou test, avec code/raison/reçu appropriés, plutôt qu’un FileNotFoundError non rattrapé. Tester ce refus et trois cas de développement : HABITUAL-1 insensible mais autre plan sensible ; toutes les signatures insensibles ; véritable fuite injectée détectée. Ne pas utiliser un succès sur fixture pour déclarer informatif un épisode naturel qui ne l’est pas.
+
+7. Reprendre les rangs humains48–50 (indices de sélection47–49), sans relancer les47 acquis :
+   - 7f0869e7430c81ce / parent5 ;
+   - a1e973184bf456ee / parent1 ;
+   - e9b01fb227dd3d3a / parent8.
+   Utiliser l’environnement approuvé Python3.11.18 et le gel post-D14 bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22. En cas d’environnement manquant, arrêter ; pas d’installation implicite. Seuls les calculs bornés nécessaires au contrôle sont couverts après adoption. Ils doivent être comptabilisés ; ne pas les appeler une simple revue statique.
+
+8. Livrer nouvelles procédure/identité/code, tests et journaux, reçus par épisode/plan, anciennes preuves inchangées, synthèse des47+3 sans mélange silencieux de méthodes, empreintes, environnement, registre terminal et contrôle de complétude après extraction. F_a, RESULTS_P5a, relevés réservés et verdict d’efficacité restent inchangés. Aucun nouveau calcul comparatif d’efficacité P5a ni recalcul d’IC n’est demandé.
+
+Arrêt après cette livraison. P5a demeure exploratory même si le contrôle est complété. PARTIAL_WITH_CHECKPOINT ; PROTOTYPE_UNVALIDATED ; clinical_validation=false ; G2=NO-GO. P5b/(iii), D16, P6, AJ-H, entraînement, dépense, installation et écritures distantes restent fermés.

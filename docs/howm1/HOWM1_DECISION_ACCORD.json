@@ -1,0 +1,18 @@
+{
+ "schema": "HOWM1_DECISION_1",
+ "date": "2026-11-14",
+ "decision": "ADOPTED",
+ "how": "User answered 'Oui, j'adopte tel quel' to an explicit question quoting the accord text, the v1.1 package hash, 'installation A puis B', 'persistance P2, sans push' and conditions 1-6.",
+ "accord_text": {"path": "docs/howm1/inputs/accord/ACCORD_HOWM1_v1_1_ADOPTE.txt", "sha256": "1f530d66e63178dc29383caa238c2963b31d1feb0e652f91b8edb3953b60daef"},
+ "package_adopted": {"name": "HOWM1_R0R1_complement_v1_1.zip", "sha256": "44951a90dea55c364f0aa58cdbf2fd53baaada195252e167180dac43a8ecef87"},
+ "review_inputs": {
+  "review_zip_C11": "304d7c375be474bda23f9f46ded89e96712c6738533a24c0c41d253810690f30",
+  "verification_json_C11": {"path": "docs/howm1/inputs/accord/VERIFICATION_REVUE_C11.json", "sha256": "2d1b87ae6b3943e3b257d0571f53c144d6149282467c6d6c322aacd11fc15146"},
+  "review_report_C11": "docs/howm1/inputs/accord/RAPPORT_REVUE_C11.md",
+  "first_review_zip": "a3c85ca22fa5b5cc4693c7310299e62eed22e037d2f19dcc75a426c9c94a69b5"
+ },
+ "choices": {"installation": "A puis B (B only if A refused/unavailable and within R0.ENV caps)", "persistence": "P2 renforcée, sans push (packages G0, F1, end R1 + after each model/lr/seed run + before voluntary interruption)", "torch": "2.15.0 (explicit choice, no exclusivity claim)"},
+ "conditions_before_G0_training": ["HOWM-C11-01 positive common loss normalisation", "HOWM-C11-02 oracle outside choice/eval disjunction; U_star exact min; C_full not certified", "HOWM-C11-03 care score mask, bounds, zeros, s_c=0, null reference", "HOWM-C11-04 pilot costs full evaluation; M total per system", "HOWM-C11-05 self-contained intermediate packages"],
+ "scope": "R0+R1 to the stop point; no reserve, H2/H3, JEPA, closed loop, P6, AJ-H, push, merge, rebase",
+ "statuses_unchanged": ["PROTOTYPE_UNVALIDATED", "clinical_validation=false", "G2=NO-GO"]
+}

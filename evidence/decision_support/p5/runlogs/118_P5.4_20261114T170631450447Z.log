@@ -1,0 +1,1 @@
+{"M_agg": {"config": [5, 0.05, 400], "max_abs_diff_vs_seed0": {"1": 0.0, "2": 0.0}, "identical": true}, "M_ent": {"config": [5, 0.1, 400], "max_abs_diff_vs_seed0": {"1": 0.0, "2": 0.0}, "identical": true}, "total_fits": 28}

@@ -1,0 +1,79 @@
+{
+ "freeze": "PILOT W freeze before the single final evaluation campaign",
+ "status": "PROTOTYPE_UNVALIDATED; clinical_validation=false; G2=NO-GO",
+ "D_selected": "D_hgb_5",
+ "W_seeds": [
+  0,
+  1,
+  2
+ ],
+ "W_main_system": "ensemble (mean predicted plan cost) of the 3 seeds at their VAL-selected checkpoints",
+ "W_val_ensemble": {
+  "val_decision_loss": 32325.868055555555,
+  "val_effect_rmse": 1825.6304802568893
+ },
+ "D_val": {
+  "val_decision_loss": 32392.5,
+  "val_effect_rmse": 1785.8508118778636
+ },
+ "W_val_seeds": [
+  {
+   "seed": 0,
+   "selected_epoch": 24,
+   "val": [
+    32385.972222,
+    2176.6679748893835
+   ],
+   "stop": "patience"
+  },
+  {
+   "seed": 1,
+   "selected_epoch": 14,
+   "val": [
+    32485.416667,
+    1745.586944510634
+   ],
+   "stop": "patience"
+  },
+  {
+   "seed": 2,
+   "selected_epoch": 58,
+   "val": [
+    32332.534722,
+    2234.345824625179
+   ],
+   "stop": "patience"
+  }
+ ],
+ "eval_partition": "BF2W_CONF",
+ "eval_structures": 16,
+ "episodes": 3,
+ "E": 12,
+ "Md": 32,
+ "eval_futures": "r = 1..12 (truth provider of each new episode)",
+ "primary": "W - D decision gain, paired 95 % CI, cluster bootstrap over structures (B=2000, seed 20261117)",
+ "min_structures": 10,
+ "files_sha256": {
+  "docs/howm2/bfrag/PROTOCOLE_PILOTE_W.md": "b81aeb09a586e8bcf61a84a877f251268da070e92b233f09b544b2bcd8faa2c3",
+  "src/hospitalos/bfrag2w/core_w.py": "1c289089007963a2f18a99da5e050ae3b31c8a376d6cee2301978b599a57ed70",
+  "src/hospitalos/bfrag2w/__init__.py": "4f9016657fe90946d714330213c5d47f4db3fab71835900c62ce70498cdbbebe",
+  "scripts/bf2w_data.py": "9a1b4b03b7ba2ef253f600ea2396bfae429e6f19ee2dab15bd8aaa4366e42567",
+  "scripts/bf2w_models.py": "fd7d571c35accfa8f6a697673434021dc91ee9c947405d7ff5e721bcf8737cdf",
+  "scripts/bf2w_analyse.py": "96b0f13c45b900d7cdbf768edfeb4673866d2b8a7aae6ac764e0525ee3442b50",
+  "scripts/bfrag2_lib.py": "585d3dd171f73b93a6c239a7e1e55899b3ba391c9d892555adf843e426cbfbfa",
+  "tests/bfrag2w/test_pilot.py": "dd58b5d875faffd4ae7eb9c3e70d41a57cc1329c17c6af1974e0e9cd52452c0c",
+  "scripts/howm2_bw_budget_run.py": "7174a758e82ff39cc57114069dc1a5853f86df5dbf26ccc168b1d23202e6d5c1",
+  "evidence/howm2_bfrag2w/LEARN_D.json": "262860b1da8dc01415d6ca56bb625b6f7fbe78b979cce91e10cf2879db858d4a",
+  "evidence/howm2_bfrag2w/LEARN_W.json": "b77a26591f7856e53ac0b8af68069b779df1e880beb365cfe8b3d3ddcbb47536",
+  "evidence/howm2_bfrag2w/models/D_hgb_3.pkl": "dd171bf77d11bd8724716ece73d2ab5d79fc9a3dad951250d3d45bc66321e9bd",
+  "evidence/howm2_bfrag2w/models/D_hgb_5.pkl": "1beb0dd4575c83a5e6f5d83e2b5cb5ab07977c1dbecab3d2a7a91fe23d0925b3",
+  "evidence/howm2_bfrag2w/models/D_ridge_inter_10.0.pkl": "88dc16d681000ac62b7221621dca81b82a696089f8402b6d901d193b41d6f1de",
+  "evidence/howm2_bfrag2w/models/D_ridge_inter_1000.0.pkl": "fdbdc04159da5267bd458fa74be768eb6511da2fb0d3b82ea8b04430f3f5c760",
+  "evidence/howm2_bfrag2w/models/W_seed0_best.pt": "e1c133328252f790a6cca549f78a4f56ad9abb62b3c9817d5642ae1ea58a4253",
+  "evidence/howm2_bfrag2w/models/W_seed0_last.pt": "bede8e8e759c10508c03ae7c8080480f4fd101fd1a74d0e595e09e18f7efa896",
+  "evidence/howm2_bfrag2w/models/W_seed1_best.pt": "137c051efd90a9bbe3325a4c17994894826ee327f51a95330bb475b2d061f0df",
+  "evidence/howm2_bfrag2w/models/W_seed1_last.pt": "af74c27de053c2d9efa4ce4be490ed745e5564ed9c495b97a9ca6a1ef2b62409",
+  "evidence/howm2_bfrag2w/models/W_seed2_best.pt": "d8a91d9a8bc7f6eb74aeda83fe6e109796a78f09886db47189df2bf885920248",
+  "evidence/howm2_bfrag2w/models/W_seed2_last.pt": "720d9c5654e2ced1735dd358509ffcc1e6a47dd9037781445a28cadb1594fea9"
+ }
+}

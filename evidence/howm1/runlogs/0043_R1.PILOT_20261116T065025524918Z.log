@@ -1,0 +1,12 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:206: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/dev/howm_h1bench.py", line 15, in <module>
+    t0 = time.time(); b = make_batch(pairs[i*32:(i+1)*32], "H1"); tb.append(time.time() - t0)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm/nets.py", line 377, in make_batch
+    arr = np.stack([e.origins[H].arrivals for e, H in pairs])  # [B,2,24]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/numpy/_core/shape_base.py", line 454, in stack
+    raise ValueError('need at least one array to stack')
+ValueError: need at least one array to stack

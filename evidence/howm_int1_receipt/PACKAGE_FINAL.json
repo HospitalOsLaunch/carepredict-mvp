@@ -1,0 +1,16 @@
+{
+ "package": "HOWM_INT1_FINAL.zip",
+ "sha256": "fb46fab31231172d3e879cbd07f89ca963289eb14a798369fc124001b38d0490",
+ "bytes": 121480091,
+ "head": "7af2e10b92513c8368b77d63a7c47f950c616925",
+ "files": 4245,
+ "bad": [],
+ "frozen_models_hash_ok": true,
+ "eval_files": {
+  "MAIN": 600,
+  "SUB32": 384,
+  "EXT": 288,
+  "COMBO": 144,
+  "SIZE12": 144
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "package": "HOWM_INT1_REHEARSAL.zip",
+ "sha256": "a61170adc66d24e3f59fe3cc343a766ede652368b6f2cfc02595790fb0330f2b",
+ "bytes": 121179387,
+ "head": "2fe0107b1a2d88b0c02c837cbf8f830ccb846183",
+ "files": 3877,
+ "bad": [],
+ "frozen_models_hash_ok": true,
+ "eval_files": {
+  "MAIN": 600,
+  "SUB32": 16,
+  "EXT": 288,
+  "COMBO": 144,
+  "SIZE12": 144
+ }
+}

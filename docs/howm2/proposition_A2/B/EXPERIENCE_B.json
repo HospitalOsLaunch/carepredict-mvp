@@ -1,0 +1,55 @@
+{
+ "experiment": "HOWM2-B",
+ "status": "PROPOSED_NOT_EXECUTED",
+ "training": false,
+ "justification": {
+  "pi_regime_A": "<=0",
+  "kappa_A2": [
+   0.07,
+   0.001,
+   0.18
+  ],
+  "pending_events_per_instant": 1.3,
+  "C_full_minus_L4": 72.3
+ },
+ "levers": [
+  "6-unit pole with shared teams",
+  "regimes lasting >= one shift, multi-unit",
+  "4-week episodes with slow theta drift and staffing changes",
+  "actions whose effect depends on hidden state",
+  "t0 convention fixed; operator decisions published with zero lag"
+ ],
+ "guardrails": [
+  "tuned with L4-v2 and explicit references only",
+  "<=3 iterations, all recorded",
+  "G_alt-v2 (whole world) before freeze",
+  "G0-v2 freeze before any training"
+ ],
+ "partitions": {
+  "REF2_TUNE": 60,
+  "REF2_GATE": 200,
+  "REF2_DEC": "24 establishments x 4 instants",
+  "RESERVE_v2": "sealed at freeze"
+ },
+ "gate_G_ID": {
+  "M_pub_lower_bound_ge": 0.02,
+  "horizons": [
+   6,
+   24
+  ],
+  "decision_margin_lower_bound_ge": 15,
+  "kappa_v2_informative": ">0.3"
+ },
+ "fail_verdict": "PAS_DE_MARGE_IDENTIFIABLE_A_CETTE_ECHELLE",
+ "compute": {
+  "device": "CPU",
+  "eur": 0,
+  "ceiling_s": 11400,
+  "ledger": "BUDGET_LEDGER_HOWM2_B"
+ },
+ "statuses": {
+  "prototype": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO"
+ }
+}

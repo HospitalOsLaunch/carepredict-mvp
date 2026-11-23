@@ -1,0 +1,1161 @@
+{
+ "id": "interne",
+ "label": "Matin\u00e9e calme",
+ "unit": "medecine-interne",
+ "unit_name": "M\u00e9decine interne",
+ "source": "fixture",
+ "request": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "expected_entities": [
+   "unit:medecine-interne",
+   "pool:transport-sanitaire",
+   "bed:I01",
+   "patient:P-0601",
+   "bed:I02",
+   "patient:P-0602",
+   "bed:I03",
+   "patient:P-0603",
+   "bed:I04",
+   "patient:P-0604",
+   "bed:I05",
+   "patient:P-0605",
+   "bed:I06",
+   "patient:P-0606",
+   "bed:I07",
+   "patient:P-0607",
+   "bed:I08",
+   "patient:P-0608",
+   "bed:I09",
+   "patient:P-0609",
+   "bed:I10",
+   "patient:P-0612",
+   "discharge:P-0612",
+   "bed:I11",
+   "bed:I12",
+   "patient:U-3004"
+  ],
+  "events": [
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:unit:medecine-interne",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:28:00Z",
+    "available_at": "2026-10-24T06:28:00Z",
+    "fact": {
+     "kind": "unit",
+     "id": "medecine-interne",
+     "staffed_beds": 12,
+     "cleaning_teams": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:pool:transport-sanitaire",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:24:00Z",
+    "available_at": "2026-10-24T06:24:00Z",
+    "fact": {
+     "kind": "pool",
+     "id": "transport-sanitaire",
+     "resource": "transport",
+     "unit_ids": [
+      "medecine-interne"
+     ],
+     "available": 2
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I01",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I01",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0601",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0601",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0601",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T23:30:00Z",
+     "bed_id": "I01",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I02",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I02",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0602",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0602",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0602",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T12:30:00Z",
+     "bed_id": "I02",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I03",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I03",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0603",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0603",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0603",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T01:30:00Z",
+     "bed_id": "I03",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I04",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I04",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0604",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0604",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0604",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T14:30:00Z",
+     "bed_id": "I04",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I05",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I05",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0605",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0605",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0605",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T03:30:00Z",
+     "bed_id": "I05",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I06",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I06",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0606",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0606",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0606",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T16:30:00Z",
+     "bed_id": "I06",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I07",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I07",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0607",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0607",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0607",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T05:30:00Z",
+     "bed_id": "I07",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I08",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I08",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0608",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0608",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0608",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T18:30:00Z",
+     "bed_id": "I08",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I09",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I09",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0609",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0609",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0609",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T07:30:00Z",
+     "bed_id": "I09",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I10",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I10",
+     "unit_id": "medecine-interne",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0612",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:P-0612",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:05:00Z",
+    "available_at": "2026-10-24T06:05:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0612",
+     "status": "admitted",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T08:30:00Z",
+     "bed_id": "I10",
+     "medically_cleared": true,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:discharge:P-0612",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:05:00Z",
+    "available_at": "2026-10-24T06:05:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0612",
+     "documents_ready": false,
+     "escort_required": false,
+     "escort_confirmed": null,
+     "downstream_required": false,
+     "downstream_pool_id": null,
+     "transport_required": false,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I11",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:18:00Z",
+    "available_at": "2026-10-24T06:18:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I11",
+     "unit_id": "medecine-interne",
+     "state": "clean",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:bed:I12",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:18:00Z",
+    "available_at": "2026-10-24T06:18:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "I12",
+     "unit_id": "medecine-interne",
+     "state": "clean",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:medecine-interne:patient:U-3004",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-3004",
+     "status": "waiting",
+     "compatible_units": [
+      "medecine-interne"
+     ],
+     "requirements": [],
+     "priority": 2,
+     "waiting_since": "2026-10-24T04:55:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   }
+  ],
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "max_age_minutes": 60,
+  "horizon_minutes": 480,
+  "scenarios": 32,
+  "max_candidates": 32,
+  "seed": 7,
+  "tail_weight": 0.25
+ },
+ "state": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "fingerprint": "cb4ea3adb737c76731e5b99a60f3941018f7fa4f40dff5b80621d5d0b4dddb7f",
+  "units": [
+   {
+    "kind": "unit",
+    "id": "medecine-interne",
+    "staffed_beds": 12,
+    "cleaning_teams": 1
+   }
+  ],
+  "beds": [
+   {
+    "kind": "bed",
+    "id": "I01",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0601",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I02",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0602",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I03",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0603",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I04",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0604",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I05",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0605",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I06",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0606",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I07",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0607",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I08",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0608",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I09",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0609",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I10",
+    "unit_id": "medecine-interne",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0612",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I11",
+    "unit_id": "medecine-interne",
+    "state": "clean",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "I12",
+    "unit_id": "medecine-interne",
+    "state": "clean",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   }
+  ],
+  "patients": [
+   {
+    "kind": "patient",
+    "id": "P-0601",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-22T23:30:00Z",
+    "bed_id": "I01",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0602",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-22T12:30:00Z",
+    "bed_id": "I02",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0603",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-22T01:30:00Z",
+    "bed_id": "I03",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0604",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-21T14:30:00Z",
+    "bed_id": "I04",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0605",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-21T03:30:00Z",
+    "bed_id": "I05",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0606",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T16:30:00Z",
+    "bed_id": "I06",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0607",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T05:30:00Z",
+    "bed_id": "I07",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0608",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T18:30:00Z",
+    "bed_id": "I08",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0609",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T07:30:00Z",
+    "bed_id": "I09",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0612",
+    "status": "admitted",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-21T08:30:00Z",
+    "bed_id": "I10",
+    "medically_cleared": true,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-3004",
+    "status": "waiting",
+    "compatible_units": [
+     "medecine-interne"
+    ],
+    "requirements": [],
+    "priority": 2,
+    "waiting_since": "2026-10-24T04:55:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   }
+  ],
+  "pools": [
+   {
+    "kind": "pool",
+    "id": "transport-sanitaire",
+    "resource": "transport",
+    "unit_ids": [
+     "medecine-interne"
+    ],
+    "available": 2
+   }
+  ],
+  "discharges": [
+   {
+    "kind": "discharge",
+    "id": "P-0612",
+    "documents_ready": false,
+    "escort_required": false,
+    "escort_confirmed": null,
+    "downstream_required": false,
+    "downstream_pool_id": null,
+    "transport_required": false,
+    "transport_pool_id": null,
+    "transport_requested": null
+   }
+  ],
+  "issues": [],
+  "warnings": []
+ },
+ "plan": {
+  "schema_version": "HYBRID_PLAN_4",
+  "evidence": "simulation_under_declared_assumptions",
+  "decision": "no_change",
+  "plan_id": "46ed15b19ea67324b66ae55c8c1ce6e1f7af3f985319415db12b1292a018f20f",
+  "hospital_id": "ch-fictif",
+  "state_fingerprint": "cb4ea3adb737c76731e5b99a60f3941018f7fa4f40dff5b80621d5d0b4dddb7f",
+  "created_at": "2026-10-24T06:30:00Z",
+  "expires_at": "2026-10-24T06:45:00Z",
+  "selected": {
+   "kind": "no_op",
+   "bed_id": null,
+   "patient_id": null
+  },
+  "reasons": [
+   "no_admissible_simulated_improvement"
+  ],
+  "warnings": [],
+  "candidates": [
+   {
+    "action": {
+     "kind": "no_op",
+     "bed_id": null,
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 0.0,
+    "worst_decile_waiting_patient_minutes": 0.0,
+    "objective": 0.0,
+    "violations": [],
+    "scenarios_with_unserved_demand": 0,
+    "max_waiting_at_end": 0,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "reserve_bed",
+     "bed_id": "I11",
+     "patient_id": "U-3004"
+    },
+    "mean_waiting_patient_minutes": 0.0,
+    "worst_decile_waiting_patient_minutes": 0.0,
+    "objective": 0.0,
+    "violations": [],
+    "scenarios_with_unserved_demand": 0,
+    "max_waiting_at_end": 0,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "reserve_bed",
+     "bed_id": "I12",
+     "patient_id": "U-3004"
+    },
+    "mean_waiting_patient_minutes": 0.0,
+    "worst_decile_waiting_patient_minutes": 0.0,
+    "objective": 0.0,
+    "violations": [],
+    "scenarios_with_unserved_demand": 0,
+    "max_waiting_at_end": 0,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   }
+  ],
+  "candidates_truncated": false,
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "seed": 7,
+  "scenarios": 32,
+  "horizon_minutes": 480,
+  "tail_weight": 0.25,
+  "discharge_readiness": [
+   {
+    "patient_id": "P-0601",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0602",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0603",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0604",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0605",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0606",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0607",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0608",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0609",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0612",
+    "stage": "logistics_blocked",
+    "blockers": [
+     "documents_not_confirmed"
+    ]
+   }
+  ],
+  "service_status": "served_in_all_sampled_scenarios"
+ },
+ "trace": {
+  "baseline": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "admit",
+      "patient_id": "U-3004",
+      "bed_id": "I11",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 0,
+    "admitted": 1,
+    "waiting_at_end": 0,
+    "violations": [],
+    "arrived": 0,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  },
+  "selected": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "admit",
+      "patient_id": "U-3004",
+      "bed_id": "I11",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 0,
+    "admitted": 1,
+    "waiting_at_end": 0,
+    "violations": [],
+    "arrived": 0,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  }
+ }
+}

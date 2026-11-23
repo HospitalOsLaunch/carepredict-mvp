@@ -1,0 +1,2 @@
+{"ledger_source": "ledger/BUDGET_LEDGER.final.jsonl", "records": 166, "used_wall_seconds": 396.451, "terminal_records": 162, "terminal_used_wall_seconds": 391.533, "terminal_is_prefix": true}
+VERIFY-ONLY: OK (lineage=final_after_postseal_restore)

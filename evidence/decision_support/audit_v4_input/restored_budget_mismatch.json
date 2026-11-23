@@ -1,0 +1,13 @@
+{
+  "package_terminal_records": 105,
+  "package_terminal_seconds": 237.139,
+  "restored_tree_records": 102,
+  "restored_tree_seconds": 229.062,
+  "missing_records": [
+    103,
+    104,
+    105
+  ],
+  "missing_seconds": 8.077,
+  "root_cause": "restore.sh verifies the PACKAGE ledger but extracts the older source tree without copying the terminal ledger+anchor into the TARGET runner path."
+}

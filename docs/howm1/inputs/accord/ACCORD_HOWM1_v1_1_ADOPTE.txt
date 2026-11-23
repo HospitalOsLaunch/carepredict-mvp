@@ -1,0 +1,89 @@
+PROPOSITION D’ACCORD — NON APPROUVÉE, NON ENVOYÉE
+HOWM-1 R0+R1, paquet v1.1 et addendum de revue du 14 novembre 2026
+
+Texte à adopter explicitement par l’utilisateur, ou à amender avant adoption.
+
+J’adopte la tranche R0+R1 HOWM-1 décrite dans HOWM1_R0R1_complement_v1_1.zip,
+SHA-256 44951a90dea55c364f0aa58cdbf2fd53baaada195252e167180dac43a8ecef87,
+avec les choix « installation A puis B » et « persistance P2, sans push »,
+et les conditions complémentaires ci-dessous. Elles prévalent sur les passages contradictoires
+v1/v1.1, sans modifier silencieusement les originaux.
+
+1. Périmètre et résultat attendu
+Conserver R0+R1 : deux unités liées, comparateurs B0-pool/B0-local/B2/H1, objectifs de prévision,
+24/12 établissements DEVTEST/DIAG-DEV, réserve fermée. Les choix de population et modèles ne
+sont pas redéfinis pour améliorer un résultat. Livrer des checkpoints réels, optimiseur/RNG,
+corpus ou recette complète, prévisions H1/H6/H24, résultats favorables comme négatifs et reçu
+de restauration. Pas de retour à l’ancien AJ-H, pas d’ouverture H2/H3, JEPA, boucle fermée,
+P6 ou réserve.
+
+2. Amendement obligatoire avant G0/entraînement, dans cette même tranche
+Consigner une note normative et un JSON harmonisé, avec empreintes, sans nouvelle demande par
+fichier. Les tests doivent bloquer les violations suivantes :
+- Normalisations des pertes strictement positives, finies et communes pour comparer les pertes
+  de validation. Ne jamais diviser par une NLL continue signée. Définir la règle avant G0,
+  établir ses valeurs sur TRAIN uniquement, puis les geler avant entraînement. Tester NLL
+  négative, nulle et quasi nulle ; garder le bon sens d’amélioration.
+- Réalisations de choix et d’évaluation disjointes pour les systèmes publics et contrôleurs
+  non anticipatifs. Exclure l’oracle clairvoyant de cette disjonction : son U_star est le minimum
+  exact de U sur les plans publics pour chaque réalisation évaluée elle-même, sans tolérance
+  lexicographique. Tout oracle métier tolérant reste séparé.
+- C_full est un contrôleur privilégié évalué, pas un optimum non anticipatif certifié.
+  V_param+V_latent est une marge observée sous information privilégiée, pas la preuve d’un gain
+  exploitable par l’historique public. Delta_dec=15 et ambition=5 restent des conventions
+  inchangées. Une marge faible ne bloque pas l’étude prédictive.
+- Distinguer cohorte publique à t et masque de score utilisant la présence future réalisée.
+  Ce masque est commun aux modèles, indépendant de leurs départs prédits et réservé au score,
+  jamais à l’entrée. Nommer la portée conditionnelle du score de soins. Définir les bornes,
+  soins nuls, normalisations à variance nulle et ratios de référence nuls avant G0 ; aucun
+  epsilon ou retrait de cas silencieux. Préserver la mesure de charge totale par déroulé.
+
+Ces points sont des corrections de spécification et contrôles d’implémentation, pas une
+campagne supplémentaire. Si leur mise en œuvre exige de changer substantiellement une
+population, un objectif ou un plafond, arrêter avec une proposition distincte.
+
+3. Installation
+Autoriser une seule mise en place de l’environnement HOWM isolé Python 3.11.18, torch 2.15.0.
+A : index officiel CPU si l’hôte est autorisé par le mécanisme prévu dans l’environnement.
+B : PyPI et dépendances seulement si A est refusée/indisponible et B autorisée ; respecter le
+plafond R0.ENV=600 s, 540 s par commande et l’espace disponible. Aucun contournement d’un refus
+réseau, changement de version ni seconde installation implicite. Consigner le couple Python/
+gel, les roues et les vérifications. Ne plus qualifier 2.15.0 de seule version hors des trois
+avis ; c’est la version retenue explicitement.
+Charger seulement les checkpoints produits par la tranche et contrôlés par empreinte,
+weights_only=True. Sauvegarder RNG/optimiseur sous un format compatible ; le tester au pilote.
+Pas de weights_only=False, de poids externes ni d’anciens .pt.
+
+4. Budget et pilote
+Conserver 0 €, plafond total 21 600 s de temps mural, plafonds par lot, 540 s par commande,
+120 s par commande de test ; temps CPU distinctement rapporté. Registre HOWM neuf, sans
+transfert des reliquats historiques. Aucune exécution en arrière-plan.
+Le pilote doit chiffrer aussi l’évaluation complète : à la grille pleine, 36 établissements
+× 120 origines × 16 trajectoires × 4 systèmes = 276 480 trajectoires prédictives de 24 h,
+avant mutualisation, sans compter les diagnostics décisionnels et la restauration. M désigne
+le total par système ; toute autre convention est explicite. Ne pas tripler les trajectoires
+pour H1/H6/H24 si une même trajectoire suffit. Contrôler R1.EVAL autant que les entraînements.
+Seuls les paliers de repli déjà déclarés s’appliquent avant résultats de développement réservés.
+Pas de réduction silencieuse des origines de score pour tenir le plafond. Au-delà : arrêt et
+livraison de l’état, pas de nouveau budget implicite.
+
+5. Persistance P2 renforcée
+Aucun push, merge, rebase, publication ou écriture distante. Ne pas toucher main ni
+mvp/computer-use. Livrer les paquets G0, F1, fin R1 ; livrer aussi un point de reprise à la fin
+de chaque run modèle/taux/graine et avant toute interruption volontaire ou fin de session.
+Conserver les checkpoints locaux au rythme prévu (<=400 s et fin de commande).
+Fournir code autonome (bundle complet ou arbre exact) ou tous les prérequis d’un bundle
+incrémental ; 68320a8..HEAD seul n’est pas une restauration autonome. Checkpoints dernier/meilleur,
+optimiseur, ordonnanceur, RNG, position d’échantillonnage, corpus/recette, environnement,
+registre, manifestes et procédure sont inclus. Vérifier les paquets et tester une reprise dans
+un dossier neuf, sans accès caché à l’ancien espace de travail. Fractionner si nécessaire.
+Les coûts de paquet/reprise restent dans l’enveloppe ; la disponibilité de crédits d’assistant
+n’est pas garantie par ce plafond CPU/mural.
+
+6. Conduite et arrêt
+Une fois ce texte adopté, exécuter cette seule tranche jusqu’au point d’arrêt sans redemander
+une autorisation par test. Figer les règles/empreintes avant les étapes correspondantes.
+Conserver tout échec et tous les résultats. Une violation d’information, d’invariant, une
+installation impossible ou un dépassement après repli arrête proprement la tranche.
+Après livraison R1, arrêter. Le statut scientifique reste PROTOTYPE_UNVALIDATED,
+clinical_validation=false, G2=NO-GO ; aucun bénéfice hospitalier réel n’est revendiqué.

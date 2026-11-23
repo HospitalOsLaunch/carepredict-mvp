@@ -1,0 +1,5 @@
+{"receipt_attempt": 1, "ledger_record": 114, "result": "ok=false: 3 of 4 regenerations reported different",
+ "cause": "receipt-script defect, not a scientific difference: (i) the regenerations were launched with --Md 32 while the CONF features run had recorded the default Md=8 (metadata only; features do not use Md); (ii) per-origin 'score_seconds' (a timing) was not stripped before comparison",
+ "check": "local diff of a regenerated features episode: only Md, maxrss_mb and timing_s differ",
+ "unaffected_sections": "integrity, tests (21 passed), learned references (reload, refit identical), analysis reproduction (identical)",
+ "fix": "restore script reuses Mr/Md/E recorded in each file and strips score_seconds; receipt rerun in full (attempt 2)"}

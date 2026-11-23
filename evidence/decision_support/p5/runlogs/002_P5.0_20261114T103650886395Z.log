@@ -1,0 +1,14 @@
+F841 Local variable `free` is assigned to but never used
+   --> src/hospitalos/p5/generator.py:247:15
+    |
+245 |     n_free = min(int(u01(*k, "n_free") * 3), 2)
+246 |     order = keyed_order(beds_all, *k, "bed_order")
+247 |     occupied, free = order[: len(order) - n_free], order[len(order) - n_free :]
+    |               ^^^^
+248 |     beds = []
+249 |     for b in sorted(beds_all):
+    |
+help: Remove assignment to unused variable `free`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

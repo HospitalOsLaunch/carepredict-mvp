@@ -1,0 +1,64 @@
+{
+ "envelope": "HOWM2_BW_CLOSURE_ENVELOPE.zip",
+ "sha256": "0b6e344035ea965fd3f5c7d2210064a05a5108da5a5be023e225e2f4929888be",
+ "bytes": 45070276,
+ "bad": [],
+ "manifest": {
+  "envelope": "HOWM2_BW_CLOSURE_ENVELOPE",
+  "decision": "n.8",
+  "scientific_package": {
+   "file": "scientific_package/HOWM2_P2_BW_FINAL.zip",
+   "sha256": "40590505c9967c9c3aa7e85c29733b1fb57c0ca66eaff5e3d8be312b0a80592d",
+   "intact": true
+  },
+  "receipt_is_external": true,
+  "previous_envelope": "HOWM2_BFRAG2_CLOSURE_ENVELOPE.zip (B-FRAG 2, decision n.7, unchanged)",
+  "note": "the ledger copy and the report here are later than the scientific package (package, receipts, delivery section); receipt attempts 1 and 2 failed on receipt-script defects, attempt 3 passed on the same package",
+  "files": {
+   "scientific_package/HOWM2_P2_BW_FINAL.zip": {
+    "sha256": "40590505c9967c9c3aa7e85c29733b1fb57c0ca66eaff5e3d8be312b0a80592d",
+    "bytes": 44838374
+   },
+   "receipt/RESTORE_RECEIPT_BW.json": {
+    "sha256": "38b8b7fec9a287f0587e6dfbdfbb5f15fc59a25d3b66f406c922ae7691e58482",
+    "bytes": 1542
+   },
+   "receipt/RECEIPT_ATTEMPT1_DEFECT.json": {
+    "sha256": "19d3eaab907593a83152434611952da570bc9450866e25719f067db105f3726d",
+    "bytes": 653
+   },
+   "receipt/RECEIPT_ATTEMPT2_DEFECT.json": {
+    "sha256": "d771a833543ec47a8b06152a1fa72288957e1d3037bce16a226dff70516925c4",
+    "bytes": 637
+   },
+   "docs/RAPPORT_PILOTE_W.md": {
+    "sha256": "0a5b95dc45ca2b3fd42f4f5cd27eb71475aeea076600ac3ccdd5551bb54d8494",
+    "bytes": 12694
+   },
+   "docs/PROTOCOLE_PILOTE_W.md": {
+    "sha256": "b81aeb09a586e8bcf61a84a877f251268da070e92b233f09b544b2bcd8faa2c3",
+    "bytes": 10498
+   },
+   "docs/ADDENDUM_BFRAG2_CLOTURE.md": {
+    "sha256": "88e73593c9e166da97fb7377be185ce5517fac6a20caee87077804c9126a4589",
+    "bytes": 6739
+   },
+   "docs/VERIFICATION_NUMERIQUE_BFRAG2.md": {
+    "sha256": "006eed370706c740586ce382dccec7525a4a326154e493b7b9106e224e8bceb6",
+    "bytes": 3432
+   },
+   "docs/HOWM2_DECISION_8.json": {
+    "sha256": "3d710265a6157e5ecbcd2603f6466e2bca3cdeb52452eebb5be87a28d4472042",
+    "bytes": 2578
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.jsonl": {
+    "sha256": "c36d19ecaac3abaa5106c95d490b98c23d3a5ebee929f594cfb9eeed1d08086c",
+    "bytes": 189019
+   },
+   "ledger/BUDGET_LEDGER_HOWM2_B.anchor.json": {
+    "sha256": "70c9e370b66e1a0bfa10425ecbd5e2d15332bf47e7f9ce3c8701f8f01767834a",
+    "bytes": 235
+   }
+  }
+ }
+}

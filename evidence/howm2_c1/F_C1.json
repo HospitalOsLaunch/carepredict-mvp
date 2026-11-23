@@ -1,0 +1,200 @@
+{
+ "freeze": "F-C1",
+ "at_utc": "2026-11-16T23:24:51Z",
+ "selection_sha256": "e5fa53d61aa242eafbca055b833f371afde75e4eebfc8b41a096bdb5fb39d3a0",
+ "leading_system": "C.2b",
+ "retained_point": {
+  "C.1": 1000,
+  "C.2a": 100,
+  "C.2b": 1000
+ },
+ "weights": {
+  "C.1:100:0": {
+   "best.pt": "c43883b2b63260590fe96c0eca423873e87226881bf755dc4a1b97a3beb2767f",
+   "state.json": "bfcd3d1635486f0371ad428f9697a80b0fbecc9e8c4f6f95974ee10123a396c4"
+  },
+  "C.1:100:1": {
+   "best.pt": "dc4c91b56abff1d899473a4ba601eebb93a30aa3616fa54ef41d8e279e055257",
+   "state.json": "294eead61ed1fbbff2fb41c90e738130128f7e67d8145de43dae6bce0a76f4ab"
+  },
+  "C.1:100:2": {
+   "best.pt": "cf7fb662ab2f64187ed4094c218f6866ec46d77ff0c33e1d7ff209bc888a6def",
+   "state.json": "9cadc8f5beae20cf625cf83a15517a3518b3a9a4e3a719e7dd6eceb304949c9a"
+  },
+  "C.1:1000:0": {
+   "best.pt": "aad9edc9f129d994458e2898c09dd7433c220130b5bae897f5979bb964d3dafb",
+   "state.json": "f87890f2151bd688e54b807d31b1c4e2532b51a1ebe84fb37a94ed117102d9ea"
+  },
+  "C.1:1000:1": {
+   "best.pt": "9e9e5f35c62ccf04ac94953d89ddb4cb06d107d81d44e9cd410f9470e6c715d5",
+   "state.json": "a2167a80bffaa7bc6006008db6052006b409278633243586d6e3f00bb1dfe3d9"
+  },
+  "C.1:1000:2": {
+   "best.pt": "73a138161fc0f7e17f2ee34cc7b40b7255b159f317a0bef3382d01ba3af545f8",
+   "state.json": "3e0c003285ed5f1792478c698dd77a3f9f4f3caa03c9f4f886fe6837d38104be"
+  },
+  "C.2b:100:0": {
+   "best.pt": "bf465bf767a2cce54d01bb65dfce9a6fd93081de147c4c2055a6d96112483f2f",
+   "state.json": "e12cdbe8d1614675aea83b543ea496acde26928f30805aa4e59a7fd59e485c67"
+  },
+  "C.2b:100:1": {
+   "best.pt": "3a693efdbeabc9a586a03a332266ff522dcacc2a8c849516f222e1af86be44f6",
+   "state.json": "efdc65082e0e3d2926903cb6e66e6db90316294ad1274fb9a77a8410289538ce"
+  },
+  "C.2b:100:2": {
+   "best.pt": "651cac0544ffe6892fed7e17248e19efd9594674beddc3fd77b64c2d22e7dc05",
+   "state.json": "809e3cc192c9f3957e10d881fd906e2c95cbfdf71f5f65fb5f6a78e73cc145f4"
+  },
+  "C.2b:1000:0": {
+   "best.pt": "fac4007648a2ba22faac4c148be26f880d8992d211c2a4ae0f88f1fcd6fba431",
+   "state.json": "cdf13ad1eb68f1514c8a6c1f85583c9e55d0e6e7908902cab78c0444e3daa766"
+  },
+  "C.2b:1000:1": {
+   "best.pt": "af715a84a2fc0e20010d843eadb46282e19d03c9440eb0e1f61801ee02ec1939",
+   "state.json": "723b27a2585877fffe0d609b841a1d73ada799c0ff772bc32c85eb42068de3ac"
+  },
+  "C.2b:1000:2": {
+   "best.pt": "2f685e37c41208a397b710f828ccb687750df7299692f8875f86b3fe79b07a7e",
+   "state.json": "8f5f9c5f205ebbb24f8759b62a3fd53fb8043b52e200a5e4b6fc70216268dbae"
+  },
+  "C.2a:100:0": {
+   "best.pt": "97f5349f99dc32ac93ab6680dff5eb8882a3e9ceba7adf6e33abe4178496755a",
+   "state.json": "d9c9ddb3c30bdf4a714583832c552cee5dcf8fcfef5dc5f5c8506f2aae5103dd"
+  },
+  "C.2a:100:1": {
+   "best.pt": "5efba1f809a6995f63a5250afa2a86b8273bc7134236207f3952d0d3bd2a6e61",
+   "state.json": "51615ac7acb9812a2b79bb8142544eb855cc49c1590c1f7718d9adb003af3786"
+  },
+  "C.2a:100:2": {
+   "best.pt": "be1673ac813f0994596accf615411e2676e9a49d0de600427094de1908d34551",
+   "state.json": "38d4c67b8e0ade5233bad3956ef63da1eef22a24b9f685fc4407bbf934c225ce"
+  }
+ },
+ "code": {
+  "src/hospitalos/howm2/__init__.py": "6bb4fa93a3e7e765d85633490df386e1ed1061f4fd3a7d27ffe3e7cabafa2670",
+  "src/hospitalos/howm2/a2.py": "8c14d12d2a7efb3c472e393c5d83bdc450f0eaf9031a43389aaaeb0049647ebf",
+  "src/hospitalos/howm2/c1.py": "e369a08ad5dd2feff0c8628a13bdf667a4cd90dfb226ba63a9c07483ae8ee82a",
+  "src/hospitalos/howm2/data.py": "74eb62cfb5c32d293c4c5e00a0c48630d35d1c474641bb419d2c54fb574cc774",
+  "src/hospitalos/howm2/filter.py": "776b6e7a4531983fc1cbed2b244d234511d8f327a03a323d68a5e8510aa65875",
+  "src/hospitalos/howm2/ladder.py": "2377fb8c57bd943a40d6286e979068f61fbb9be2cbe5abf60f4384efb4b29a67",
+  "src/hospitalos/howm2/laws.py": "ceb6d2d6f3bebdd0458aaea9537e268737c75baf48fe77bd69d175cc54205261",
+  "src/hospitalos/howm2/nowcast.py": "031f68f521a6a244742cc60aa4c3b29b32b279f90bec35b0f7c06e89461d07b3",
+  "src/hospitalos/howm2/space.py": "89e061ce36e563bf7bf98b439e3dbf17ac6d75a0b1f5215b3b9a9075df7f42f5",
+  "scripts/howm2_c1.py": "7800bf5a5439ad5c3903c834912a39277f77ec69d317e959b18183ee2419f6fe",
+  "scripts/howm2_c1_budget_run.py": "2042c5cf06b08a8249b99381eb50bc356af527fd42f7102bb8998aa104beeadf",
+  "scripts/howm2_c1_final.py": "7321703569fec4337f5e190536f754d0273f8a607e3e8f27fbcd29256227ded2",
+  "scripts/howm2_c1_package.py": "2cea35d0e4dc2db905bc250a90015fcc227a0525adfb0650f4716f973a7cf1d8",
+  "scripts/howm2_c1_restore.py": "995144c2a242bcbd67dec113cfddc42d822fee3e2925ac4b5aca982a428c9706",
+  "scripts/howm2_a2_l2c.py": "aba14ab06cc504af3c7168568849eb0ddea533bc5d12978f76a1083337501693"
+ },
+ "frozen_howm1_code": {
+  "src/hospitalos/howm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/hospitalos/howm/b0.py": "e7fdbe58db8de67d086916d2ec36b81b2465472d2ac2ac77f9101390ad7e058a",
+  "src/hospitalos/howm/ckpt.py": "f1145d15f4ab1cb1055c2823821b99be756c488a6cf647cf527a7cd88ca5849a",
+  "src/hospitalos/howm/controllers.py": "976e49fdbc782f8cdfd9c3128bebd60c7140f8d70c885e23217b14249062134e",
+  "src/hospitalos/howm/corpus.py": "f08597aaae29489c92469adff18a2fff7cac61b567e57451e75d80023e654fce",
+  "src/hospitalos/howm/dataset.py": "6e2f7f60fb00bf75eee23d0c132dbc905edded4b2b33c4af828b8d7b00fcfeea",
+  "src/hospitalos/howm/g0check.py": "2037d2231955d6f594ab79061cef97470d3bd99995ee1eb0323542b4d61e3612",
+  "src/hospitalos/howm/galt.py": "3d36cdab2785c63d83c1a59dc123e7a25d1a6162011ec6fe871cd572c6a69623",
+  "src/hospitalos/howm/generator.py": "6f46d500a6c732a5fd18ff019974e89afaf384e737c1c3d8ae00ed782ea9271c",
+  "src/hospitalos/howm/heads.py": "d922ea3a7fbd12a2494359b7d5f265ddc72b83e0946453f44fe2b4bebd18bf63",
+  "src/hospitalos/howm/history.py": "06f2b9f05a315a939515ee488429a18b89c26c1d1ac2d369a9eec5c54e5f64a0",
+  "src/hospitalos/howm/keys.py": "b547c3ff0c5d313cc075a3f48cd3d254e8bbae700db9af7fb16875f947a79018",
+  "src/hospitalos/howm/ledger.py": "52cbf05d0ec6e870de433c9d2895ff6c4e301c6447c5a18abe753def08a9b3fb",
+  "src/hospitalos/howm/manual.py": "5681b5295cb31b31ec92e1903e0ccf48e89edb591cf3e59f4b71037ae011f78d",
+  "src/hospitalos/howm/nets.py": "1265afcde07625e80f4463dda78fa63ca7034225a6ac7b5977885765efc8f80e",
+  "src/hospitalos/howm/predict.py": "cc1f48b4e979ebc4d9d6e9e4ca6f336d9399a5667391a86959b44b41246a70a2",
+  "src/hospitalos/howm/rollout.py": "75485cead99dddccc515667c368ed4601bb6ab1f5905a35f311e64eb7a12fbf2",
+  "src/hospitalos/howm/train.py": "267f8fd12bdc9c6556a781757d64b00b8f90bb81e292014989f5361851d22bdf",
+  "src/hospitalos/howm/verify.py": "5540a9e62bfaa75deedc1204306db77a12d2a31ae7fc0989ca75391aae3fcad7",
+  "src/hospitalos/howm/world.py": "6869fc4aa891e1d0b4c42fe74296a5d739d625e64fbda8732ae5e4993bd4df4a",
+  "scripts/howm_budget_run.py": "da17e8b56bf6fa0b5ca50c2c043a561fda6557ad2c54eafcd1c58caa21354698",
+  "scripts/howm_env_check.py": "1970c85d1ec193192060d65456168d5dd92a2b05a69192a117446c7f71507cf9",
+  "scripts/howm_eval.py": "9f90b232746ad290c80b89ac5116bb1c87f3f793e2ce249f9abe371d99ceb73c",
+  "scripts/howm_package.py": "8e22f7755d5b63d8de0eff57d329fe79031ed3a2cd38a920bcc781d81f050925",
+  "scripts/howm_r0.py": "5ab4072d4d2d22c1c52175336f5ef79e840feae18585ae0d231c0ec39d972cc5",
+  "scripts/howm_r1.py": "a435ecdf62304dab3c63165926d7ffe73c30e1fb656de789ed3d593ee3232c4b",
+  "scripts/howm_restore.py": "b1122d85de6d92db5eda6c316cc7cd42be26f6e8a4a305adbc46ebdc089a4b04"
+ },
+ "references": {
+  "L2": "hospitalos.howm2.ladder.l2_predict + evidence/howm1/B0_PARAMS.json",
+  "B0_PARAMS.json": "e2d0cd0abb1fe58107b18bfb63be78f75db5ddfd47200de62d44bf0e4cbecdb2",
+  "L2c": "evidence/howm2/L2C_PARAMS.json",
+  "L2C_PARAMS.json": "c1b07c31d122bef99aea645eb41b602641fffc05521d965ff162022bd669ee21",
+  "L4": "hospitalos.howm2.ladder (filter of tranche A)",
+  "levels": "L0..L5 via ladder.run_establishment on C1 origins"
+ },
+ "populations": {
+  "HOWM2_CEVAL": 200,
+  "HOWM2_DIAG": 100
+ },
+ "origins": [
+  24,
+  27,
+  30,
+  33,
+  36,
+  39,
+  42,
+  45,
+  48,
+  51,
+  54,
+  57,
+  60,
+  63,
+  66,
+  69,
+  72,
+  75,
+  78,
+  81,
+  84,
+  87,
+  90,
+  93,
+  96,
+  99,
+  102,
+  105,
+  108,
+  111,
+  114,
+  117,
+  120,
+  123,
+  126,
+  129,
+  132,
+  135,
+  138,
+  141,
+  144,
+  147,
+  150,
+  153,
+  156,
+  159,
+  162,
+  165
+ ],
+ "horizons": [
+  1,
+  6,
+  24
+ ],
+ "comparisons_closed_list": {
+  "verdict": "per system in {C.1, C.2b} at N=1000: Delta_C(h) = L(R) - L(model), R = best of {L2, L2c} per horizon at R1-aggregate level, re-chosen per replicate; labels C1_BAT_REF / C1_NE_BAT_PAS_REF / C1_INDETERMINE; tranche verdict = leading system",
+  "rho": "aggregate and per family on RHO_FAMS; unstable if denominator CI contains 0 or lower bound < 0.02",
+  "descriptive": [
+   "all 5 ensembles (incl. C.2a N=100) on CEVAL and DIAG",
+   "scaling N=100 vs 1000",
+   "absolute losses L_model, L2, L2c, L4 per family/horizon"
+  ],
+  "bootstrap": {
+   "B": 2000,
+   "seed": "key('HOWM2','C1','bootstrap') mod 2^31",
+   "cluster": "establishment"
+  }
+ }
+}

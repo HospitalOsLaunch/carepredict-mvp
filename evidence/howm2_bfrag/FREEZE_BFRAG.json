@@ -1,0 +1,202 @@
+{
+ "freeze": "B-FRAG / G0-v2-BFRAG-D2",
+ "status": "TECHNICAL FREEZE ONLY (integrity of the benchmark version); scientific results pending CONF; not a scientific pass",
+ "retained_design": "D2 (TUNE iteration 1 of at most 3; first to satisfy V1-V4)",
+ "tune_validity": {
+  "V2_prevalence_168": 0.3463541666666667,
+  "V2_pass": true,
+  "V3_active_at_t0": 0.0,
+  "V3_pass": true,
+  "V4_worlds_without_rupture": 0.22916666666666666,
+  "V4_SC6_vs_SF": [
+   0.21875,
+   0.421875
+  ],
+  "V4_pass": true,
+  "V5_paired_controls": {
+   "SF1_cleaning_window": {
+    "n": 8,
+    "wait_reduction_mean": 20494.453125,
+    "wait_reduction_ci95": [
+     8442.462890625,
+     33203.484375
+    ],
+    "rupture_rate_reduction_mean": 0.234375
+   },
+   "SF2_transport_window": {
+    "n": 8,
+    "wait_reduction_mean": 3391.171875,
+    "wait_reduction_ci95": [
+     1145.748046875,
+     6579.169921875
+    ],
+    "rupture_rate_reduction_mean": 0.03125
+   },
+   "SF3_planned_drop": {
+    "n": 8,
+    "wait_reduction_mean": 1603.359375,
+    "wait_reduction_ci95": [
+     459.029296875,
+     3185.630859375
+    ],
+    "rupture_rate_reduction_mean": 0.0
+   }
+  },
+  "family_prevalence_168": {
+   "SC4_high_load_absorbable": 0.265625,
+   "SC5_drop_with_margin": 0.328125,
+   "SC6_low_load": 0.21875,
+   "SF1_cleaning_window": 0.421875,
+   "SF2_transport_window": 0.453125,
+   "SF3_planned_drop": 0.390625
+  },
+  "V2_V4_pass": true
+ },
+ "selection": {
+  "decision_competitor": "R0",
+  "anticipation_competitor": "R1",
+  "alert_thresholds": {
+   "R0": {
+    "6": {
+     "threshold": 0.24242424242424243,
+     "J": 0.6070460704607046,
+     "tpr": 1.0,
+     "fpr": 0.39295392953929537,
+     "alert_rate": 0.4166666666666667
+    },
+    "24": {
+     "threshold": 0.24242424242424243,
+     "J": 0.5777777777777778,
+     "tpr": 0.9583333333333334,
+     "fpr": 0.38055555555555554,
+     "alert_rate": 0.4166666666666667
+    },
+    "72": {
+     "threshold": 0.5,
+     "J": 0.24432614177640793,
+     "tpr": 0.3373493975903614,
+     "fpr": 0.09302325581395349,
+     "alert_rate": 0.14583333333333334
+    },
+    "168": {
+     "threshold": 0.10526315789473684,
+     "J": 0.2101668513914267,
+     "tpr": 0.6165413533834586,
+     "fpr": 0.4063745019920319,
+     "alert_rate": 0.4791666666666667
+    }
+   },
+   "R1": {
+    "6": {
+     "threshold": 0.75,
+     "J": 0.5333333333333333,
+     "tpr": 0.5333333333333333,
+     "fpr": 0.0,
+     "alert_rate": 0.020833333333333332
+    },
+    "24": {
+     "threshold": 0.125,
+     "J": 0.6,
+     "tpr": 0.625,
+     "fpr": 0.025,
+     "alert_rate": 0.0625
+    },
+    "72": {
+     "threshold": 0.125,
+     "J": 0.38266020894208064,
+     "tpr": 0.4457831325301205,
+     "fpr": 0.06312292358803986,
+     "alert_rate": 0.14583333333333334
+    },
+    "168": {
+     "threshold": 0.125,
+     "J": 0.28733187550549677,
+     "tpr": 0.45864661654135336,
+     "fpr": 0.17131474103585656,
+     "alert_rate": 0.2708333333333333
+    }
+   },
+   "F": {
+    "6": {
+     "threshold": 0.75,
+     "J": 0.5333333333333333,
+     "tpr": 0.5333333333333333,
+     "fpr": 0.0,
+     "alert_rate": 0.020833333333333332
+    },
+    "24": {
+     "threshold": 0.25,
+     "J": 0.9111111111111111,
+     "tpr": 0.9166666666666666,
+     "fpr": 0.005555555555555556,
+     "alert_rate": 0.0625
+    },
+    "72": {
+     "threshold": 0.25,
+     "J": 0.3743345474922948,
+     "tpr": 0.39759036144578314,
+     "fpr": 0.023255813953488372,
+     "alert_rate": 0.10416666666666667
+    },
+    "168": {
+     "threshold": 0.25,
+     "J": 0.31560974148518706,
+     "tpr": 0.518796992481203,
+     "fpr": 0.20318725099601595,
+     "alert_rate": 0.3125
+    }
+   },
+   "O": {
+    "6": {
+     "threshold": 1.0,
+     "J": 0.997289972899729,
+     "tpr": 1.0,
+     "fpr": 0.0027100271002710027,
+     "alert_rate": 0.041666666666666664
+    },
+    "24": {
+     "threshold": 0.625,
+     "J": 0.9111111111111111,
+     "tpr": 0.9166666666666666,
+     "fpr": 0.005555555555555556,
+     "alert_rate": 0.0625
+    },
+    "72": {
+     "threshold": 0.375,
+     "J": 0.6381939719008927,
+     "tpr": 0.7710843373493976,
+     "fpr": 0.132890365448505,
+     "alert_rate": 0.2708333333333333
+    },
+    "168": {
+     "threshold": 0.375,
+     "J": 0.5217026630320821,
+     "tpr": 0.7368421052631579,
+     "fpr": 0.2151394422310757,
+     "alert_rate": 0.3958333333333333
+    }
+   }
+  }
+ },
+ "conf_partition": "BFRAG_CONF",
+ "conf_size": 96,
+ "conf_keys": "key('HOWM1','BFRAG_CONF',i), runtime registration, never generated before this freeze",
+ "M": 8,
+ "E": 8,
+ "files_sha256": {
+  "docs/howm2/bfrag/DESIGN_D2.json": "66b7ebdb81970028db53e42edb8047419ffdee1a4cabb099f6f3221c01d25d08",
+  "docs/howm2/bfrag/PROTOCOLE_BFRAG.md": "d5b56cfc396a95f9c58e94a4f0e8ba4d93913487bba9a7ebe82e82eca2a0537c",
+  "scripts/bfrag.py": "e79fe5a2de022146be9e773cc909e7dc264cddae75c3d104a77115d090bd806f",
+  "scripts/bfrag_analyse.py": "e1ecb1674681c5d7d9b37de19ff90dda771b477f510b3ff8fac1358800cc98ed",
+  "scripts/bfrag_freeze.py": "a1d66a871d5491d8b56c9cec7041ffd38d810716894ca6f412c911e7d732639d",
+  "scripts/howm2_decision.py": "8dd9728e45b865cf75cd47297fa000d8a79e2ed9b9364d02f0215dcf3ab2b689",
+  "scripts/howm_eval.py": "9f90b232746ad290c80b89ac5116bb1c87f3f793e2ce249f9abe371d99ceb73c",
+  "src/hospitalos/bfrag/__init__.py": "14c4c8dd6429dbfe0c48c68889588f45b65dafa81d6d25d348020e7ca1889813",
+  "src/hospitalos/bfrag/core.py": "5af47de66a0b3457c782202106cf8a0c6714eb2f3db4efad3b2492a664c99fde",
+  "src/hospitalos/howm2/filter.py": "776b6e7a4531983fc1cbed2b244d234511d8f327a03a323d68a5e8510aa65875",
+  "src/hospitalos/howm2/ladder.py": "2377fb8c57bd943a40d6286e979068f61fbb9be2cbe5abf60f4384efb4b29a67",
+  "src/hospitalos/howm2/nowcast.py": "031f68f521a6a244742cc60aa4c3b29b32b279f90bec35b0f7c06e89461d07b3",
+  "tests/bfrag/test_bfrag.py": "e4b7eaf906e5a99cdeb43898785b6c6a43282a3624289e11af9b7f2ab21c7327"
+ },
+ "self_sha256": "9b348deea5d9b848c9259df70a651d6d4268ccfb843df840e6f709bc3bf9446a"
+}

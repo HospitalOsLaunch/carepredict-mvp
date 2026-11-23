@@ -1,0 +1,38 @@
+{
+ "package": "HOWM2_P2_BFRAG_FINAL.zip",
+ "package_sha256": "47e07ef7523f926a73b63a3c3df0c24e25b979a07146d8507f2185ae11f39511",
+ "1_integrity": {
+  "files": 180,
+  "bad": [],
+  "ok": true
+ },
+ "tests_bfrag": {
+  "exit": 0,
+  "tail": [
+   "11 passed in 15.59s"
+  ]
+ },
+ "2_analysis_reproduction": {
+  "identical": {
+   "TUNE_TUNE_D2.json": true,
+   "RESULTS_BFRAG_CONF.json": true,
+   "CONF_DESCRIPTIVE.json": true
+  },
+  "ok": true
+ },
+ "3_regenerations_executed": {
+  "items": {
+   "CONF_D2/BFRAG_CONF/000": true,
+   "CONF_D2/BFRAG_CONF/005": true,
+   "TUNE_D2/BFRAG_TUNE/002": true
+  },
+  "ok": true
+ },
+ "4_not_reproduced": [
+  "the other 141 TUNE/CONF world files (packaged, hash-checked, used by the reproduced analyses)",
+  "DEV scans and cost pilot",
+  "C1 training (closure envelope only)"
+ ],
+ "seconds": 128.9,
+ "ok": true
+}

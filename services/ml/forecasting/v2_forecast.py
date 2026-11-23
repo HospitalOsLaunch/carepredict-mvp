@@ -7,7 +7,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import torch
@@ -134,7 +134,7 @@ def v2_forecast_history_length(artifacts: V2ForecastArtifacts) -> int:
     origin_slice = forecast_origin_slice(
         steps=nominal_steps,
         patch_len=patch_len,
-        forecast_horizon=int(artifacts.model.cfg.forecast_horizon),
+        forecast_horizon=int(cast(Any, artifacts.model).cfg.forecast_horizon),
     )
     return int(origin_slice.stop * patch_len)
 
@@ -166,13 +166,14 @@ def build_calendar_features(start: datetime, length: int) -> Tensor:
 @torch.inference_mode()
 def predict_v2_from_history(model: nn.Module, history: Tensor, origin: datetime) -> Tensor:
     """Return a raw-space 48-hour direct forecast for the requested origin."""
+    m: Any = model  # JepaRssm attributes are not visible through nn.Module
     ensure_hospitalos_importable()
     from hospitalos.dynamics.jepa_rssm import calendar_encoding, symexp
 
-    z = model.encode_series(history)
-    states = model.unroll(z)
+    z = m.encode_series(history)
+    states = m.unroll(z)
     origin_features = states["features"][:, -1:, :]
-    if model.forecast_head[0].in_features == origin_features.shape[-1] + 2:
+    if m.forecast_head[0].in_features == origin_features.shape[-1] + 2:
         day = torch.tensor([float(origin.weekday())], dtype=torch.float32)
         hour = torch.zeros(1, dtype=torch.float32)
         origin_calendar = calendar_encoding(hour, day)[:, -2:].reshape(1, 1, 2)
@@ -180,7 +181,7 @@ def predict_v2_from_history(model: nn.Module, history: Tensor, origin: datetime)
         calendar = build_calendar_features(origin - timedelta(hours=167), 168).unsqueeze(0)
         origin_calendar = calendar[:, -1:, :]
     forecast_input = torch.cat([origin_features, origin_calendar], dim=-1)
-    forecast = symexp(model.forecast_head(forecast_input))
+    forecast = symexp(m.forecast_head(forecast_input))
     return forecast[0, 0, :].detach().cpu()
 
 
@@ -192,7 +193,7 @@ def forecast_v2_steps(
     horizon: int,
 ) -> list[V2ForecastStep]:
     """Return raw-space forecast steps with saved conformal intervals."""
-    if horizon < 1 or horizon > int(artifacts.model.cfg.forecast_horizon):
+    if horizon < 1 or horizon > int(cast(Any, artifacts.model).cfg.forecast_horizon):
         raise ValueError("horizon exceeds v2 forecast artifact support")
     forecast = predict_v2_from_history(artifacts.model, history, origin)
     steps: list[V2ForecastStep] = []

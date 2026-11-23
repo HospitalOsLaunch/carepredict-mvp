@@ -1,0 +1,31 @@
+{
+ "W": {
+  "W_S": [
+   "W_t2_S_s0",
+   "W_t2_S_s1",
+   "W_t2_S_s2"
+  ],
+  "W_M": [
+   "W_t2_M_s0",
+   "W_t2_M_s1",
+   "W_t2_M_s2"
+  ]
+ },
+ "D": {
+  "D_ridge": {
+   "kind": "ridge",
+   "run": "D_t2_ridge",
+   "name": "ridge_100.0"
+  },
+  "D_hgb": {
+   "kind": "hgb",
+   "run": "D_t2_hgb",
+   "name": "hgb_4"
+  },
+  "D_dset": {
+   "kind": "dset",
+   "run": "D_t1_dset",
+   "norm_run": "W_t1_S_s0"
+  }
+ }
+}

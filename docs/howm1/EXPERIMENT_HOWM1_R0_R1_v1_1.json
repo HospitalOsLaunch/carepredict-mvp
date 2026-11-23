@@ -1,0 +1,523 @@
+{
+ "schema": "HOWM1_EXPERIMENT_1_1",
+ "status": "PROPOSED_NOT_APPROVED",
+ "date": "2026-11-14",
+ "scope": "R0+R1 (one tranche), stop point = delivery of trained weights and development results",
+ "authorises_nothing": "No spending, install, corpus generation, training or reserve read before explicit approval of the tranche.",
+ "history_kept": {
+  "P5b": {
+   "verdict": "insufficient",
+   "delta_rep_R1": 2.2708333333333335,
+   "ci95": [
+    -2.5350694444444444,
+    6.944791666666666
+   ],
+   "threshold": 15.0,
+   "source": "evidence/decision_support/p5/p5b/RESULTS_P5b.json"
+  },
+  "P5a": {
+   "reading": "exploratory"
+  },
+  "v6": {
+   "role": "experimental reference and constraint base, not ceiling",
+   "commit": "856a57c65fb0d55190addf6c39a45c57913eac07"
+  },
+  "statuses": [
+   "PARTIAL_WITH_CHECKPOINT",
+   "PROTOTYPE_UNVALIDATED",
+   "clinical_validation=false",
+   "G2=NO-GO"
+  ]
+ },
+ "hypotheses": [
+  {
+   "id": "HP1",
+   "statement": "H1 (entity memory + typed graph) yields lower event NLL and trajectory CRPS than B2 (aggregate memory) and B0-local (recalibrated mechanisms) at H6 and H24 on unseen REF establishments.",
+   "type": "development, not confirmatory"
+  },
+  {
+   "id": "HP2",
+   "statement": "The gain of HP1 is concentrated where hidden mechanisms m2/m3 are active; where only m0/m1 act, B0-local is not worse than H1 beyond a declared margin.",
+   "type": "development, diagnostic"
+  },
+  {
+   "id": "HP3",
+   "statement": "Paired action/control effect errors are smaller for H1 than B2 and B0-local, including correct recognition of null effects.",
+   "type": "development"
+  },
+  {
+   "id": "HP4",
+   "statement": "Per-instant decision regret against C_full is smaller for H1 than for B0-local, only if the R0 precheck margin is informative.",
+   "type": "development, conditional on precheck"
+  },
+  {
+   "id": "HS",
+   "statement": "Simple-model sufficiency is a valid outcome: if B0-local matches H1, this is reported as such.",
+   "type": "explicit null"
+  }
+ ],
+ "world": {
+  "units": 2,
+  "units_supported_for_tests": 3,
+  "beds_per_unit": {
+   "proposal": [
+    8,
+    24
+   ],
+   "status": "TO_FIX_BEFORE_G0"
+  },
+  "shared_resources": [
+   "transport_team",
+   "cleaning_team",
+   "reinforcement_pool",
+   "lending_between_units"
+  ],
+  "node_types": [
+   "stay",
+   "bed",
+   "unit",
+   "task",
+   "team",
+   "offer",
+   "shared_resource"
+  ],
+  "relation_types": [
+   "occupies",
+   "needs",
+   "waits_for",
+   "precedes",
+   "reserves",
+   "depends_on",
+   "belongs_to",
+   "lends_to"
+  ],
+  "event_schema": "HOWM1_EVENTS_1 (to implement)",
+  "action_lifecycle": [
+   "requested",
+   "accepted",
+   "refused",
+   "executed",
+   "completed",
+   "cancelled"
+  ],
+  "action_catalogue": {
+   "a0": "keep current plan",
+   "a1": "discharge logistics for publicly authorised stays",
+   "a2": "task priority order (cleaning/transport)",
+   "a3": "reinforcement request (skill x unit x slot x source)"
+  },
+  "excluded_actions": [
+   "medical authorisation or prolongation",
+   "information-request actions (innovation C, later)"
+  ],
+  "simulated_days_per_establishment": {
+   "proposal": 8,
+   "warmup_days_discarded": 1,
+   "status": "TO_FIX_BEFORE_G0"
+  },
+  "context_window_W_hours": 24,
+  "forecast_horizon_hours": 24,
+  "decision_instants_local_hours": {
+   "proposal": [
+    7,
+    11,
+    15,
+    19
+   ],
+   "status": "TO_FIX_BEFORE_G0"
+  },
+  "time_grid": {
+   "world": "integer minutes",
+   "model_hazard_bin_minutes": 15,
+   "reporting": "hourly"
+  },
+  "mechanisms": {
+   "m0": "independent delays, fixed laws per establishment",
+   "m1": "establishment parameters theta_h",
+   "m2": "hidden 2-state team slowdown regime",
+   "m3": "nursing workload delays ready discharges",
+   "m4": "establishment-specific observation lags",
+   "m5": "correlated transport/cleaning delays, capacity change, order-dependent tasks (DIAG only)"
+  },
+  "mechanism_status": "engineering hypotheses; none validated on real data or by interviews",
+  "independent_generator": {
+   "name": "G_alt",
+   "family": "transport+cleaning queue, m0+m1",
+   "implementation": "fixed time step, written separately from event-driven G_main",
+   "use": "development out-of-generator check only"
+  }
+ },
+ "populations": {
+  "REF": {
+   "purpose": "motivated reference population, includes cases where simple models suffice",
+   "share_m2_off_and_m3_off": {
+    "proposal": 0.3,
+    "status": "TO_FIX_BEFORE_G0"
+   },
+   "share_m2_on": {
+    "proposal": 0.5,
+    "status": "TO_FIX_BEFORE_G0"
+   },
+   "m3_strength": {
+    "proposal": "weak",
+    "status": "TO_FIX_BEFORE_G0"
+   }
+  },
+  "DIAG": {
+   "purpose": "difficulty diagnostic (resource conflicts, correlated delays, changing capacity, delayed observations, order-dependent decisions)",
+   "frequency_claim": "none: no real frequency is inferred from this stress test",
+   "training_use": {
+    "proposal": "evaluation only in R1",
+    "status": "TO_CONFIRM"
+   }
+  },
+  "rule": "Population laws and mixture weights are fixed in G0 before any generation; they are never tuned on any model's gain; no simple-case removal from any partition."
+ },
+ "partitions": {
+  "unit": "establishment (all its days, windows, branches and decision instants stay together)",
+  "seed_namespace": "HOWM1 (no P5 seed reused)",
+  "TRAIN": {
+   "population": "REF",
+   "establishments": {
+    "proposal": 48,
+    "status": "TO_FIX_BEFORE_G0"
+   }
+  },
+  "VAL": {
+   "population": "REF",
+   "establishments": {
+    "proposal": 12,
+    "status": "TO_FIX_BEFORE_G0"
+   },
+   "use": "early stopping, lr choice, overshooting weights, R0 precheck"
+  },
+  "DEVTEST": {
+   "population": "REF",
+   "establishments": {
+    "proposal": 24,
+    "status": "TO_FIX_BEFORE_G0"
+   },
+   "use": "read once after F1; development results"
+  },
+  "DIAG_DEV": {
+   "population": "DIAG",
+   "establishments": {
+    "proposal": 12,
+    "status": "TO_FIX_BEFORE_G0"
+   },
+   "use": "read once after F1; diagnostic"
+  },
+  "RESERVE": {
+   "population": "REF 48 + DIAG 16 (proposal)",
+   "state": "seeds sealed by hash in G0; generator refuses without token; NOT generated in R1",
+   "status": "TO_FIX_BEFORE_G0"
+  },
+  "P5_reserves": "known historical regression data only (test V0), not a blind evaluation"
+ },
+ "information_sets": {
+  "I_public_W": "public observations with available_at <= t and event_time <= t over the last W hours (all compared systems)",
+  "I_snapshot": "public state at t only (C_pub-snap, B0-pool snapshot mode)",
+  "I_param": "true theta_h + public state (C_param, evaluation only)",
+  "I_full": "true theta_h + true current latent state, no future innovations (C_full, evaluation only)",
+  "I_clairvoyant": "realised future (oracle ceiling, never a target)"
+ },
+ "comparators": {
+  "primary_model_comparison": "same planner, same candidate set (identical hash), same public history, same resources, same sample budget M",
+  "V0": "v6 historical on its own domain: non-regression (tests/decision_support, v6 tree diff empty, P5b EVAL_CHOICES regression sample)",
+  "B0_pool": "explicit m0+m1 laws, censored MLE on TRAIN, common parameters",
+  "B0_local": "B0_pool + empirical-Bayes shrinkage on the same public window W (mandatory calibrated-simulator reference)",
+  "B2": "aggregate hourly vector -> GRU(64) -> distributional heads; no entity memory, no message passing",
+  "H1": "typed-graph encoder (shared weights per type), 2 message-passing rounds per hour, shared node GRU(48) with type embedding, same heads",
+  "habitual": "habitual practice rule",
+  "strengthened_rule": "strengthened business rule (best simple heuristic)",
+  "C_param": "privileged non-anticipative controller (theta_h)",
+  "C_full": "privileged non-anticipative controller (theta_h + current latent)",
+  "oracle": "clairvoyant ceiling",
+  "parameter_counts": "exact counts measured after construction; expected B2 ~0.08 M, H1 ~0.15-0.25 M"
+ },
+ "interfaces_disabled_in_R1": {
+  "context_c_h": "off",
+  "contrast_loss_weight": 0,
+  "jepa_predictor": "off",
+  "stochastic_latent": "off",
+  "rule": "one variation at a time, in R2"
+ },
+ "training": {
+  "framework": {
+   "version": "torch==2.15.0",
+   "routes": {
+    "A": "torch==2.15.0+cpu from download.pytorch.org/whl/cpu; host currently REFUSED by environment proxy (observed 2026-11-14); needs environment allowlist change approved by user after adoption; cp311 availability not verifiable",
+    "B": "torch==2.15.0 from PyPI with its declared Linux CUDA dependencies (unneeded on CPU; several GB, not measured)",
+    "C": "WITHDRAWN"
+   },
+   "advisories_checked": {
+    "GHSA-53q9-r3pm-6pq6": "<=2.5.1",
+    "GHSA-63cw-57p8-fm3p": "<=2.9.1, patched >=2.10.0",
+    "GHSA-v32g-mr63-3j83": ">=2.14.0, patched 2.15.0 (published 2026-11-10)"
+   },
+   "claim_limit": "outside affected ranges of these advisories only; no global security claim",
+   "load_policy": "torch.load only on tranche-produced checkpoints, sha256 checked against ledger before load, weights_only=True; never earlier/external .pt",
+   "on_failure": "clean stop and delivery of state; no unauthorised switch",
+   "status": "REQUIRES_ADOPTION"
+  },
+  "losses": [
+   "censored discrete-hazard NLL per event type",
+   "negative-binomial NLL arrivals",
+   "log-normal NLL care minutes",
+   "Bernoulli NLL no-show",
+   "latent overshooting marginal NLL at k in {1,6,24} h"
+  ],
+  "loss_normalisation": "each term divided by its initial TRAIN value; frozen after pilot",
+  "overshooting_weights": {
+   "value": {
+    "k1": 1,
+    "k6": 1,
+    "k24": 1
+   },
+   "status": "FIXED_IN_v1_1 (no VAL tuning)"
+  },
+  "lr_grid": [
+   0.0003,
+   0.001
+  ],
+  "early_stopping_patience": {
+   "value_epochs": 20,
+   "monitor": "VAL loss",
+   "max_epochs": "bounded by lot cap",
+   "status": "FIXED_IN_v1_1"
+  },
+  "seeds_per_selected_config": 3,
+  "ensemble": "the 3 seeds form the ensemble",
+  "privileged_supervision": "post-freeze linear probes only (m2 regime, theta_h, true readiness); reads_private=True; refused as planner backend",
+  "no_imitation_of_v6_choices": true,
+  "no_decision_loss_in_R1": true,
+  "selection": "lr in {3e-4,1e-3} chosen by lowest VAL loss at seed 0 (tie within 1e-4 relative -> smaller lr); seeds 1,2 at chosen lr; per-seed checkpoint = best VAL loss"
+ },
+ "metrics": {
+  "forecast": [
+   "event NLL by type at H1/H6/H24",
+   "CRPS of levels (occupancy, compatible free beds, transport queue, cleaning queue, care minutes by skill)",
+   "MAE/RMSE in business units",
+   "50%/90% interval coverage",
+   "PIT histograms",
+   "peak error and hours-above-threshold error on full trajectories",
+   "teacher-forced vs free-rollout gap",
+   "rejected-event rate",
+   "ensemble dispersion reported separately from coverage"
+  ],
+  "interventions": [
+   "paired delta error",
+   "delta sign accuracy",
+   "null-effect recognition",
+   "indirect effect on other unit",
+   "requested vs present reinforcement"
+  ],
+  "decisions_dev_diagnostic": [
+   "regret vs C_full",
+   "gap to oracle",
+   "gain vs habitual",
+   "wrong (worse than habitual)",
+   "does-not-know (top-2 gap below own dispersion)",
+   "keep-plan-was-better rate",
+   "planned reinforcement hours"
+  ],
+  "cost": [
+   "exact parameter count",
+   "training wall time",
+   "rollout latency",
+   "planner latency per instant"
+  ],
+  "breakdowns": [
+   "unit",
+   "skill",
+   "mechanism stratum (m2/m3 on/off)",
+   "population (REF/DIAG)"
+  ]
+ },
+ "decision_diagnostic": {
+  "candidates_max": 16,
+  "rollouts_M": {
+   "proposal": 16,
+   "status": "TO_FIX_AFTER_PILOT"
+  },
+  "eval_realisations_K_eval": 4,
+  "choice_and_eval_realisations_disjoint": true,
+  "after_instant_policy": "habitual rule (single-decision effect isolated); closed loop is R3"
+ },
+ "precheck_R0": {
+  "partition": "VAL",
+  "controllers": [
+   "C_pub-snap",
+   "C_param",
+   "C_full",
+   "oracle"
+  ],
+  "quantities": {
+   "V_param": "U(C_pub-snap) - U(C_param)",
+   "V_latent": "U(C_param) - U(C_full)",
+   "ceiling": "U(C_full) - U(oracle)"
+  },
+  "rule": "if V_param + V_latent < delta_dec, the R1 decision comparison on REF is declared non-informative before any model is read; forecasting comparison continues; generator is not changed",
+  "delta_dec": {
+   "value": 15,
+   "status": "FIXED_IN_v1_1"
+  }
+ },
+ "objective_U": {
+  "name": "U-HOWM-1",
+  "window": "(tau, tau+24h] after decision instant tau, under realised private truth",
+  "formula": "sum over skill x hour of uncovered care minutes (demand minus PRESENT capacity, floored at 0, admission work due included) + 15 x patient-hours waiting for a compatible bed",
+  "units": [
+   "caregiver-minutes",
+   "patient-hours"
+  ],
+  "weight_wait": {
+   "value": 15,
+   "status": "engineering hypothesis, not validated; U also reported with weight 0 (descriptive)"
+  },
+  "planner_selection": "OBJ-LEX-1 on U: E[U] within tolerance 15 of best, then fewest ACCEPTED reinforcement hours, then fewest interventions, then canonical order",
+  "reported_separately": [
+   "accepted reinforcement hours",
+   "present reinforcement hours"
+  ]
+ },
+ "analysis": {
+  "reading": "development (no confirmatory claim in R1)",
+  "intervals": "cluster bootstrap over establishments, seed committed in G0",
+  "training_seeds_are_not_patients": true,
+  "multiplicity": "all metrics reported; none promoted after reading"
+ },
+ "progress_targets": {
+  "status": "FIXED_IN_v1_1",
+  "see": "scores",
+  "retired": "v1 \"H1 NLL at least 10% below B0-local\" (unit/constant-dependent convention)"
+ },
+ "stop_rules": [
+  "invariant violation in the explicit operator on the true generator -> failure receipt, stop",
+  "information-boundary test failure -> stop before training",
+  "pilot projection above envelope after the declared scale ladder -> stop and report",
+  "any attempt to generate RESERVE -> refused and logged",
+  "NaN/divergence in a training seed -> logged; restart from last checkpoint once; else seed reported failed (not silently dropped)"
+ ],
+ "checkpoints": {
+  "content": [
+   "model state",
+   "optimizer state",
+   "scheduler state",
+   "torch/numpy/python RNG states",
+   "data-loader position",
+   "config + code hashes"
+  ],
+  "frequency": {
+   "value": "every <= 400 s of training wall time and at end of every command",
+   "status": "FIXED_IN_v1_1"
+  },
+  "restore_receipt": "fresh checkout, restore, 1 resumed step equals uninterrupted step; metric subset recomputed equal"
+ },
+ "unfixed_values": [
+  "installation route (A | B | A then B)",
+  "persistence (P0 | P1 | P2 | P1+P2)"
+ ],
+ "supersedes": {
+  "file": "EXPERIMENT_HOWM1_R0_R1.json",
+  "sha256": "7b3c9f29068608126f1c72bf367aeb9d02dacd894051cb6612c46bfc6ba7efe2",
+  "kept_unchanged": true
+ },
+ "amendment": "AMENDEMENT_HOWM1_R0_R1_v1_1.md (prevails over cited v1 passages)",
+ "scores": {
+  "primary_log_score": {
+   "name": "Delta_LS(h) = mean_e [L(B0-local,e,h) - L(H1,e,h)]",
+   "unit": "nats per evaluated item",
+   "paired": true,
+   "supports": "all discrete (15-min time bins with right censoring at h; NB counts; Bernoulli; care minutes on 5-min bins)",
+   "additive_constants": "none",
+   "families": [
+    "departure",
+    "transport",
+    "cleaning",
+    "confirmation",
+    "reinforcement_presence",
+    "arrivals",
+    "care_minutes"
+   ],
+   "aggregation": "mean over items within (establishment,family,horizon); unweighted mean over families present; equal weight per establishment",
+   "origins": "every hour of days 2-6 of each evaluated establishment",
+   "item_set": "fixed by public state at t; identical across models (hash-checked, T-PLAN-07)",
+   "criterion": "95% cluster-bootstrap lower bound of Delta_LS(6) > 0 AND of Delta_LS(24) > 0",
+   "percentage_target": "none"
+  },
+  "secondary_crps": {
+   "targets": [
+    "occupancy",
+    "compatible_free_beds",
+    "transport_queue",
+    "cleaning_queue",
+    "care_minutes_by_skill"
+   ],
+   "horizons_h": [
+    1,
+    6,
+    24
+   ],
+   "estimator": "fair sample CRPS from M=16 rollouts, common sampling seeds",
+   "normalisation": "divide by TRAIN-only standard deviation s_c (rule fixed now; value computed after TRAIN generation, before any training)",
+   "statistic": "R(h) = 1 - sum_e Cbar(H1,e,h) / sum_e Cbar(B0-local,e,h)",
+   "ambition_point": {
+    "R6": 0.1,
+    "R24": 0.1
+   },
+   "statistical_reading": "95% lower bound of R(h) > 0",
+   "labels": [
+    "ambition atteinte (estimation ponctuelle)",
+    "gain positif (borne basse > 0)",
+    "gain >= 10% demontre only if lower bound >= 0.10 (not an adopted target)"
+   ]
+  },
+  "decision": {
+   "delta_dec": {
+    "value": 15,
+    "unit": "caregiver-minutes per decision instant",
+    "object": "threshold on accessible margin V_param+V_latent measured on VAL with privileged controllers only",
+    "role": "informativeness of the R1 decision comparison, decided before any learned model"
+   },
+   "ambition": {
+    "value": 5,
+    "unit": "caregiver-minutes per decision instant",
+    "statistic": "D_dec = mean over instants of regret(B0-local) - regret(H1) vs C_full on DEVTEST REF",
+    "read_only_if": "precheck informative",
+    "statistical_reading": "95% lower bound > 0"
+   }
+  },
+  "bootstrap": "cluster bootstrap over establishments only; instants/windows nested; seed committed in G0"
+ },
+ "normative_order": [
+  "1 fix U, weights, tolerance, delta_dec, ambitions, scores/aggregations/criteria, precheck rule, population sizes/mixtures, M, K_eval, w_k, patience, selection rule (this version) -- before G0 and any VAL read",
+  "2 G0 commitment (code, laws, shares, seeds; RESERVE sealed) -- before generation",
+  "3 corpus generation; s_c from TRAIN -- before precheck and training",
+  "4 precheck on VAL with privileged controllers, read once -- before any learned model",
+  "5 pilot; only the declared scale ladder; lambda by deterministic rule -- before training",
+  "6 B2/H1 training per declared selection rule -- before F1",
+  "7 F1 freeze -- before DEVTEST/DIAG-DEV",
+  "8 single read of DEVTEST and DIAG-DEV; no selection, tuning or generator change afterwards; DIAG-DEV never used for model choice"
+ ],
+ "compute_accounting": {
+  "wall_time": "monotonic clock per command; caps apply to wall time (total 21600 s; per lot; 540 s per command; 120 s per test command)",
+  "cpu_time": "user+sys of children via getrusage; reported, may reach ~4x wall",
+  "parallelism": "one command at a time; torch.set_num_threads(4); no background process",
+  "assistant_credits": "not measurable by the author",
+  "pilot": "included (lot R1.PILOT)",
+  "after_timing": "only declared ladder steps; otherwise stop; no cap increase"
+ },
+ "persistence": {
+  "repository_visibility": "public (verified 2026-11-14)",
+  "options": {
+   "P0": "no push, no delivery; loss risk",
+   "P2": "milestone package (G0, F1, end R1) delivered as a file in the conversation: git bundle 68320a8..HEAD, checkpoints (latest+best per seed with optimizer, scheduler, RNG torch/numpy/python, sampler position), corpus or exact recipe, manifest, environment freeze, RESTORE.md + script",
+   "P1": "fast-forward-only push to origin/claude/hospitalos-auto-first-p0-p4-s2dywn at G0/F1/end R1 only; ancestry check and commit list logged before push; no force/merge/rebase; no main/mvp; corpus not pushed; PUBLIC"
+  },
+  "recommended": "P2",
+  "default_if_unstated": "P0",
+  "combinable": "P1+P2",
+  "restore_receipt": "from the delivered package in a fresh directory, not the working tree"
+ }
+}

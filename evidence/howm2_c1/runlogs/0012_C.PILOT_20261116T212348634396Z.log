@@ -1,0 +1,7 @@
+fail batch 0 IndexError('index 8 is out of bounds for dimension 0 with size 8')
+                     ^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py", line 217, in <lambda>
+    nets.graph_batch = lambda pairs: graph_batch_window(pairs, cap=cap)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<c1-derived graph_batch_window>", line 35, in graph_batch
+IndexError: index 8 is out of bounds for dimension 0 with size 8

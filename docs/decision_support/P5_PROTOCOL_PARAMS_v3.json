@@ -1,0 +1,943 @@
+{
+ "schema": "HOSPITALOS_P5_PROTOCOL_PARAMS_3",
+ "protocol_version": "P5-PROTO-3",
+ "supersedes": {
+  "version": "P5-PROTO-2",
+  "document_sha256": "ad0fdaa592d84461f61f3c68f3470f94b941bde006d0fe57af69a4005797881c",
+  "params_sha256": "1d284b0e9ebe2f0f8eb9b9dc052eb67ae73c5bcc5faca7514552213a51f8d0f7",
+  "originals_kept": true,
+  "v2_approval_bound_to_v2_hashes_only": true
+ },
+ "status": "PROPOSED_NOT_APPROVED",
+ "date": "2026-11-14",
+ "document": "docs/decision_support/P5_PROTOCOL_v3.md",
+ "changes_document": "docs/decision_support/P5_PROTOCOL_v3.md (amendments A1-A11)",
+ "review_input": {
+  "report": "HospitalOS_Revue_P5_Lots_0_2_20261114.md",
+  "findings": [
+   "P5L-01",
+   "P5L-02",
+   "P5L-03",
+   "P5L-04"
+  ],
+  "review_zip_sha256": "02fcb52104d7c53040655bb5e29233a673a9a6b637c69b4c404996e1147e1acc",
+  "v3_amendment_prompt_received": false
+ },
+ "statuses_unchanged": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "open_gates": [
+   "python_3.11.9_exact",
+   "independent_react_browser_replay"
+  ],
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "V5_R01": "closed_on_audited_cases",
+  "P6": "CLOSED"
+ },
+ "engine_reference": {
+  "package": "HospitalOS_DS_P0-P4_20261114_v6.zip",
+  "sha256": "4fca8aecde4fa35a47bc18696785d28df7465b5191b48e8a2881b0ec1e117f90",
+  "tree": "856a57c65fb0d55190addf6c39a45c57913eac07",
+  "modified_by_P5": false,
+  "v7_requested": false
+ },
+ "data": "synthetic_only",
+ "hierarchy": {
+  "levels": [
+   "structure",
+   "parent_episode",
+   "twin",
+   "private_realisation",
+   "plan"
+  ],
+  "twin_values": {
+   "P5a": [
+    "A"
+   ],
+   "P5b": [
+    "A",
+    "B"
+   ]
+  },
+  "truth_replicates_K_per_regime": {
+   "K_precheck": 3,
+   "K_labels": {
+    "default": 3,
+    "under_L1": 2,
+    "replicates_used": "1..K_labels, nested in precheck replicates"
+   },
+   "K_eval": 3,
+   "ladder_never_touches": [
+    "precheck",
+    "evaluation"
+   ]
+  },
+  "plan_universe": "candidates.enumerate_plans v6, limit 16, complete=True required; depends on public snapshot only; identical across replicates, regimes and comparators",
+  "estimand_weighting": "equal per structure, then per parent within structure, then per twin, then per replicate",
+  "twin_population": "constructed stress-test population; not a realistic case frequency"
+ },
+ "population": {
+  "unit_bounds": {
+   "beds": [
+    6,
+    8
+   ],
+   "max_present_stays": 8,
+   "max_reinforcement_offers_in_snapshot": 4,
+   "max_expected_admissions": 4,
+   "max_plans": 16,
+   "max_coordinations_per_plan": 2,
+   "max_reinforcement_options_per_plan": 2,
+   "horizon_hours": 24
+  },
+  "sizes_are": "public snapshots; each receives K replicates per evaluated regime",
+  "P5a": {
+   "development": {
+    "structures": 10,
+    "parents_per_structure": 10,
+    "regimes": [
+     "R1",
+     "R2"
+    ],
+    "max_truth_simulations": 9600
+   },
+   "evaluation_reserved": {
+    "structures": 30,
+    "parents_per_structure": 10,
+    "regimes": [
+     "R1",
+     "R2"
+    ],
+    "max_truth_simulations": 28800
+   }
+  },
+  "P5b": {
+   "train": {
+    "structures": 24,
+    "parents_per_structure": 15,
+    "twins": 2,
+    "regimes": [
+     "R1"
+    ],
+    "max_rows": 11520,
+    "max_truth_simulations": 34560
+   },
+   "validation": {
+    "structures": 8,
+    "parents_per_structure": 15,
+    "twins": 2,
+    "regimes": [
+     "R1"
+    ],
+    "max_rows": 3840,
+    "max_truth_simulations": 11520
+   },
+   "evaluation_reserved": {
+    "recommended_option_D5": {
+     "structures": 30,
+     "parents_per_structure": 4,
+     "twins": 2,
+     "regimes": [
+      "R1",
+      "R2"
+     ],
+     "max_rows": 3840,
+     "max_truth_simulations": 23040
+    },
+    "v1_option": {
+     "structures": 8,
+     "parents_per_structure": 15,
+     "twins": 2,
+     "regimes": [
+      "R1",
+      "R2"
+     ],
+     "max_rows": 3840,
+     "max_truth_simulations": 23040,
+     "consequence": "harm guardrail unattainable (0/8 -> 31.23%); P5b at most exploratory"
+    }
+   }
+  },
+  "regime_use": {
+   "R1": "primary; training, selection and evaluation",
+   "R2": "evaluation reading only, reported separately; cannot upgrade an R1 verdict"
+  },
+  "partition_unit": "structure",
+  "exclusions": {
+   "counted_on": "all generated candidate parents before filtering",
+   "criteria_public_only": [
+    "universe_incomplete",
+    "too_many_stays",
+    "too_many_offers",
+    "too_many_admissions",
+    "twin_degenerate"
+   ],
+   "replacement": "next seed of the committed list, order fixed at commitment",
+   "max_rate": 0.05,
+   "above_max": "reported; verdict inconclusive",
+   "generator_exception": "stop rule, not an exclusion"
+  },
+  "abstentions": "no recommendation / habitual preferred / invariant failure / refusal evaluated as HABITUAL-1, counted and kept",
+  "private_innovations": {
+   "keying": "H(commitment_id, partition, structure_seed, parent_index, replicate, primitive, entity)",
+   "regime_in_base_key": false,
+   "twin_in_base_key": false,
+   "r2_primitives": [
+    "r2_transport",
+    "r2_cleaning",
+    "r2_cleaning_remaining"
+   ],
+   "presence_primitives": [
+    "presence (per offer_key)",
+    "presence_pool (per pool_key)"
+   ],
+   "commitment": "seed-list commitment id 276d965da8a31a5d8ccf536df2841506a004adb8cc461ce3e8c7faf2857df45c, constant over E_k",
+   "never_call_order": true,
+   "shared_across_plans": true,
+   "shared_across_twins_same_entity": true,
+   "shared_across_regimes": true
+  },
+  "generation_seeds": "drawn once per partition, committed by SHA-256 (sorted list + salt) at E0, never redrawn, revealed in final package; disjoint from selection seeds 101-104 and forecast evaluation seeds 901-904",
+  "support_constructed": {
+   "unit": "6-8 beds, IDE only, fixed decision instant 2026-11-16 20:00 Europe/Paris",
+   "stays": "2-3 authorised; readiness 08:00 or 11:00; planned departure 12:00 or 16:00",
+   "obstacles": "3 codes",
+   "admissions": "1-3",
+   "transport": "one day window",
+   "cleaning": "capacity 1",
+   "offers": "4 fixed templates (ORA, ORB, ORC, ORD) + inadmissible ORX",
+   "coupling": "choose_offers reduces admissible offers as coordination sets increase, to keep <= 16 plans",
+   "exclusion_rate_meaning": "residual of this constructed population only; not overflow of an independently drawn population",
+   "widening": "none automatic"
+  }
+ },
+ "reinforcement_truth": {
+  "v6_policy": "conditional; counts selected offers; no presence draw; unchanged",
+  "public_sidecar_schema": "HOSPITALOS_P5_REINFORCEMENT_1",
+  "public_fields": [
+   "offer_key = source|lending_unit|skill|start|end",
+   "p_pub",
+   "pool_key = lending_unit for shared_unit else source",
+   "planned_hours"
+  ],
+  "p_pub": {
+   "confirmed": 1.0,
+   "requested": [
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+   ],
+   "not_requested_or_unknown": "not generated (erratum: v6 option_admissibility rejects only 'unknown'; 'not_requested' would be admissible as conditional)"
+  },
+  "declared_public_model": "independent presences",
+  "visible_to": {
+   "M_agg": true,
+   "M_ent": true,
+   "v6_planner": false
+  },
+  "realisation": {
+   "granularity": "all-or-nothing per offer over its window, per (structure, parent, twin, regime, replicate)",
+   "R1": {
+    "confirmed_present_prob": 1.0,
+    "requested_present_prob": "p_pub",
+    "within_pool_rho": 0.0
+   },
+   "R2": {
+    "confirmed_present_prob": 1.0,
+    "requested_present_prob": 0.5,
+    "within_pool_rho": 0.5,
+    "copula": "gaussian",
+    "transport_lead_plus_1h_prob": 0.3,
+    "cleaning_plus_1h_prob": 0.2
+   }
+  },
+  "costs": {
+   "planned_hours": "sum of selected offer hours; OBJ-LEX-1 tier 2 for every tie-break including O_lex",
+   "realised_hours": "selected and present; descriptive",
+   "lender_effect_realised": "hours actually lent; descriptive"
+  },
+  "execution_rule": "open loop at as_of; absent offer adds 0 staff; no replacement, no replanning, not revealed to planner",
+  "eval_adapter": {
+   "module": "p5/eval_adapter.py (to write)",
+   "behaviour": "removes absent reinforcement actions from the evaluation copy of the chosen plan, then calls v6 TruthProvider / PrivateOracle.outcome unchanged",
+   "v6_tree_hash_checked_each_lot": true
+  },
+  "future_tests_specified_not_run": {
+   "T-P5-R1": "same public snapshot and plan; presence differs for one selected requested offer covering uncovered demand => realised U differs (strictly higher when absent); v6 public recommendation fingerprint identical",
+   "T-P5-R2": "offer order permuted and option_id renamed => identical presences by offer_key; independent of call order"
+  },
+  "offer_identity": {
+   "offer_key": "source|lending_unit|skill|start|end (no option_id)",
+   "public_uniqueness": "checked per episode when building the sidecar; duplicate = generator defect (stop rule)",
+   "templates_distinct": true,
+   "collision_observed": false
+  }
+ },
+ "comparators": {
+  "HABITUAL-1": "primary reference; simulated habitual practice, not field-validated; no reinforcement in v6 profile",
+  "reference_planner_v6_public": "object of P5a; comparator in P5b; unchanged",
+  "U_star_exact_minimum": "min over public admissible universe of realised U, per realisation; evaluation only; certified on this universe",
+  "O_lex_business_oracle": "OBJ-LEX-1 on realised U (tolerance 15, planned reinforcement hours, interventions); diagnostic only; not a ceiling on U",
+  "M_agg": "P5b",
+  "M_ent": "P5b"
+ },
+ "metrics": {
+  "primary_unit": "uncovered care staff-minutes over 24 h realised under the private truth (OBJ-LEX-1 tier 1, owed admission work included)",
+  "P5a_1_primary": "E[U_hab - U_plan]",
+  "P5a_2_descriptive": {
+   "capture": "sum(U_hab - U_plan) / sum(U_hab - U_star), ratio of weighted sums",
+   "upper_bound_by_construction": 1.0,
+   "may_be_negative": true,
+   "clipping": "none",
+   "undefined_if": "mean headroom E[U_hab - U_star] < 15 staff-minutes per episode (point estimate); then regrets and P5a_1 only",
+   "bootstrap_resamples_below_threshold": "counted and reported"
+  },
+  "regrets": [
+   "R_plan = U_plan - U_star",
+   "R_hab = U_hab - U_star",
+   "R_lex = U_lex - U_star"
+  ],
+  "diagnostic_not_decisional": "U_fix = min_a mean_k U(a, w_k); biased downward with K=3",
+  "P5b_1_primary": "E[U(choice M_agg) - U(choice M_ent)]",
+  "resource_decomposition_descriptive": {
+   "cost": "none beyond already simulated plans",
+   "order_1": [
+    "U_hab - U(r* only): same reinforcements only",
+    "U(r* only) - U(a*): coordination at equal reinforcements"
+   ],
+   "order_2": [
+    "U_hab - U(c* only): coordination only",
+    "U(c* only) - U(a*)"
+   ],
+   "interaction": "I = U(c*) + U(r*) - U(a*) - U_hab = [U(r*) - U(a*)] - [U_hab - U(c*)]; I=0 if c* or r* empty; reported with bootstrap CI, no threshold",
+   "class_minima": [
+    "coordination_only",
+    "reinforcement_only",
+    "combination"
+   ],
+   "attribution_rule": "only coordination at equal reinforcements may be presented as value of patient choice",
+   "applies_to": [
+    "planner_v6",
+    "M_agg",
+    "M_ent"
+   ]
+  },
+  "secondary_descriptive": [
+   "waiting_patient_hours",
+   "planned and realised reinforcement hours",
+   "interventions",
+   "beds_returned",
+   "PS-EXP-1 peak and hours above threshold",
+   "lender effects",
+   "MAE",
+   "RMSE",
+   "variance by structure",
+   "complexity"
+  ]
+ },
+ "P5b_design": {
+  "twins": {
+   "logistic_vector": [
+    "destination",
+    "transport_need",
+    "transport_lead",
+    "ready_earliest",
+    "ready_delay",
+    "planned_departure",
+    "obstacles"
+   ],
+   "permuted_among": "authorized stays only",
+   "unchanged": [
+    "care",
+    "tasks",
+    "beds",
+    "shifts",
+    "offers",
+    "admissions",
+    "identifiers"
+   ],
+   "sigma": "circular shift over authorized stays sorted by stay_id hash; step from committed seed stream; never conditioned on truth or outcome",
+   "degenerate": "fewer than two authorized stays with distinct logistic vectors -> twin_degenerate exclusion",
+   "assertion": "B0 block identical",
+   "homologous_plans": "same (type, target stay_id or offer_key, window) tuple for every action; unmatched plans kept in data, counted, outside precheck"
+  },
+  "features": {
+   "schema": "HOSPITALOS_P5_FEATURES_1",
+   "inputs": [
+    "PublicSnapshot",
+    "Plan",
+    "P5 public reinforcement sidecar"
+   ],
+   "blocks": {
+    "B0_public_aggregates": {
+     "M_agg": true,
+     "M_ent": true
+    },
+    "B1_plan_descriptor": {
+     "M_agg": true,
+     "M_ent": true
+    },
+    "B2_stay_slots": {
+     "slots": 8,
+     "M_agg": false,
+     "M_ent": true,
+     "plan_link": [
+      "targeted",
+      "action_type",
+      "target_hour",
+      "target_hour_indicator"
+     ]
+    },
+    "B3_offer_slots": {
+     "slots": 4,
+     "M_agg": false,
+     "M_ent": true,
+     "plan_link": [
+      "selected"
+     ]
+    },
+    "B4_admission_slots": {
+     "slots": 4,
+     "M_agg": false,
+     "M_ent": true
+    }
+   },
+   "identifiers": "join only (action->slot, lender margins); never emitted as values nor hashed into features",
+   "canonical_order": "lexicographic on public attribute tuple, then plan-link tuple",
+   "absent_slot": "all fields 0, mask 0",
+   "not_applicable": "0 plus explicit indicator",
+   "categories": "one-hot over fixed declared vocabulary; out-of-vocabulary = stop",
+   "overflow": "public exclusion, never truncation",
+   "future_tests_specified_not_run": [
+    "F1 privacy: two truths -> identical vector",
+    "F2 renaming: random bijection on all ids -> identical vector and identical choice",
+    "F3 input permutation -> identical vector",
+    "F4 distinguishability: different target stays with different relevant attributes -> M_ent vectors differ, M_agg identical",
+    "F5 twins -> identical B0",
+    "F6 stable schema hash"
+   ],
+   "claim_limit": "empirical representation benefit in this simulator, not exact information loss"
+  },
+  "labels_and_weights": {
+   "row": "(structure, parent, twin, plan) under R1",
+   "label": "mean of K realised U",
+   "sample_weight": "(1 / n_plans(snapshot)) * (nominal_parents / valid_parents(structure))"
+  },
+  "twin_precheck": {
+   "partition": "P5b train (24 structures), R1, K=3, before any validation or evaluation generation",
+   "compared_actions": "all homologous non-habitual plan pairs",
+   "statistic": "theta = weighted mean of d_hat^2 - s^2(g)/K, g_k = [U_A,k(a) - U_A,k(hab)] - [U_B,k(a) - U_B,k(hab)]",
+   "signed": false,
+   "informative_if": "one-sided 95% lower bound of theta (bootstrap structure then parent) >= 25 staff-minutes^2 (RMS effect difference >= 5)",
+   "descriptive": "rate of parents whose best homologous plan differs between twins",
+   "non_informative": "P5b stops before validation and evaluation; reported",
+   "pair_selection_on_outcomes": "forbidden"
+  },
+  "models": {
+   "family": "sklearn.ensemble.HistGradientBoostingRegressor",
+   "grid": {
+    "max_depth": [
+     3,
+     5
+    ],
+    "learning_rate": [
+     0.05,
+     0.1
+    ],
+    "max_iter": [
+     100,
+     200,
+     400
+    ]
+   },
+   "fixed": {
+    "early_stopping": false,
+    "loss": "squared_error",
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.0,
+    "max_bins": 255,
+    "max_features": 1.0,
+    "categorical_features": null,
+    "monotonic_cst": null,
+    "interaction_cst": null,
+    "warm_start": false,
+    "verbose": 0,
+    "validation_fraction": "default, no effect",
+    "n_iter_no_change": "default, no effect",
+    "tol": "default, no effect",
+    "scoring": "default, no effect"
+   },
+   "threads": {
+    "OMP_NUM_THREADS": 1
+   },
+   "fit_seeds": {
+    "random_state": [
+     0,
+     1,
+     2
+    ],
+    "expected": "identical fits (no documented effect without early stopping, max_features=1.0, < 200000 rows); to verify, not assumed",
+    "primary": 0,
+    "others": "reproducibility control, never independent replicates in a CI",
+    "if_different": "selection criterion averaged over seeds; each seed reported in evaluation",
+    "reported": "max absolute prediction difference between seeds"
+   },
+   "fits_total": 72,
+   "training_regime": "R1 only",
+   "choice_rule": "argmin prediction over public universe; OBJ-LEX-1 ties (tolerance 15, planned reinforcement hours, interventions)",
+   "selection": {
+    "partition": "validation (8 structures)",
+    "criterion": "structure-weighted mean realised U of chosen plans (R1, mean over K)",
+    "tie_breaks": [
+     "weighted MAE",
+     "smaller max_iter",
+     "smaller max_depth"
+    ],
+    "ungrouped_internal_validation": "none"
+   }
+  }
+ },
+ "freeze_stages": {
+  "E0_initial_commitment": [
+   "protocol and params hashes",
+   "generator code hash v_g0",
+   "feature schema hash",
+   "seed lists per partition (hash of sorted list + salt)",
+   "bootstrap seed",
+   "P0-P4 terminal reference"
+  ],
+  "D_development": {
+   "data": [
+    "P5a development",
+    "P5b train",
+    "P5b validation"
+   ],
+   "activities": [
+    "code and tests",
+    "pilot",
+    "twin precheck",
+    "fits",
+    "selection"
+   ]
+  },
+  "E_k_recommitment": "any generator or feature change after E0: new version and hash recorded before corresponding generation; seed lists never redrawn; no choice based on reserved cases",
+  "F_final_freeze": "replaced by F_a and F_b",
+  "reading": "reserved evaluations generated and read only after F",
+  "single_read_means": "no tuning after inspection; reproducible audit replay allowed and recorded",
+  "post_reading": "no new reserved test added; any change = new protocol version, already-read results kept",
+  "F_a": {
+   "before": "generation of P5a reserved evaluation",
+   "requires": "authorisation (ii)",
+   "contents": [
+    "protocol",
+    "params",
+    "generator",
+    "truth",
+    "adapter",
+    "P5a analysis code",
+    "delta",
+    "thresholds",
+    "P5a precision projection"
+   ],
+   "shared_code_frozen_from_F_a": true
+  },
+  "F_b": {
+   "before": "generation of P5b reserved evaluation",
+   "requires": "authorisation (iii)",
+   "contents": [
+    "F_a contents for P5b",
+    "feature schema",
+    "selected configuration",
+    "precheck result"
+   ],
+   "shared_code_change_after_F_a": "versioned E_k, declared; P5a reading stays under F_a"
+  }
+ },
+ "analysis": {
+  "bootstrap": {
+   "stages": [
+    "structure",
+    "parent within structure"
+   ],
+   "unit_carried": "parent with both twins, all replicates, all plans",
+   "resamples": 2000,
+   "interval": "percentile 95% two-sided",
+   "seed": "committed at E0",
+   "no_pseudo_replication_over": [
+    "plans",
+    "hours",
+    "replicates",
+    "fit seeds"
+   ]
+  },
+  "delta_staff_minutes_per_episode": {
+   "P5a": 15,
+   "P5b": 15,
+   "nature": "technical convention equal to OBJ-LEX-1 tolerance; never clinical; change only by explicit amendment"
+  },
+  "decision_rule": {
+   "upper_lt_delta": "insufficient",
+   "lower_gt_delta_and_guardrails_and_precision": "demonstrated_in_this_synthetic_protocol",
+   "else": "inconclusive",
+   "precision_declared_insufficient_before_F": "exploratory"
+  },
+  "guardrails": {
+   "admissibility_or_invariant_violations": 0,
+   "chosen_plan_in_public_universe": true,
+   "universe_hash_invariant_over_replicates_and_regimes": true,
+   "leakage_checks": [
+    "T03/T04 isolation on 50 sampled episodes",
+    "F1",
+    "T-P5-R1"
+   ],
+   "excluded_universe_rate_max": 0.05,
+   "harm": {
+    "episode_harmed": "mean over the K_eval=3 realisations of the read regime of (U_compared - U_hab) > delta; P5b: parent harmed if any twin harmed",
+    "structure_harmed": "at least one parent (one twin in P5b) harmed",
+    "bound": "Clopper-Pearson one-sided 95% upper bound on harmed structures / reserved structures",
+    "validity": "any within-structure dependence; structures i.i.d. by construction; conservative for structure-weighted episode harm rate; non-degenerate at zero",
+    "threshold_max": 0.1,
+    "meaning": "limited degradation risk, not absence of degradation",
+    "reference_bounds": {
+     "n8": [
+      0.3123,
+      0.4707,
+      0.5997
+     ],
+     "n29": [
+      0.0981,
+      0.1534,
+      0.2016
+     ],
+     "n30": [
+      0.095,
+      0.1486,
+      0.1953
+     ],
+     "n40": [
+      0.0722,
+      0.1132,
+      0.1492
+     ],
+     "columns": "0, 1, 2 harmed structures"
+    },
+    "consequence": "n=30 passes only with 0 harmed structures; n=8 never passes",
+    "applies_to": {
+     "P5a": "planner vs habitual",
+     "P5b": "M_ent vs habitual (M_agg vs habitual descriptive)"
+    },
+    "bootstrap_of_zeros": "not used",
+    "not_per_realisation": true
+   }
+  },
+  "precision_projection_before_F": {
+   "P5a": "development variance between structures and parents",
+   "P5b": "validation variance for Delta_rep",
+   "rule": "projected CI half-width > delta/2 -> low precision declared before F, verdict capped at exploratory; any enlargement only before F within approved budget"
+  }
+ },
+ "environment": {
+  "correction": "P5-PROTO-1 claim 'Python 3.13.18 = environment of the green suites' withdrawn: not established by cited sources",
+  "documented": {
+   "3.13.18": {
+    "source": "BASE_MAP.json",
+    "role": "author session interpreter; session pytest 9.1.1 outside pyproject bound pytest<9"
+   },
+   "3.11.18": {
+    "source": "/usr/bin/python3.11 isolated venv; py311_venv_freeze.txt sha256 bf54098158fbda95e3ce8e9db9ec68097f73b5390d4639fa39c240538880b6da",
+    "packages": {
+     "pydantic": "2.14.3",
+     "pydantic_core": "2.50.4",
+     "numpy": "2.4.6",
+     "pytest": "8.4.2",
+     "jsonschema": "4.26.0"
+    },
+    "role": "author runs cited by closure (181 passed + 1 skipped)"
+   },
+   "3.13.5": {
+    "source": "independent audit v6 AUDIT_SUMMARY.json",
+    "role": "auditor environment"
+   },
+   "3.11.9": {
+    "source": ".python-version",
+    "role": "product reference; gate open; not closed by P5"
+   }
+  },
+  "proposed_D3": {
+   "python": "3.11.18",
+   "base_freeze_sha256": "bf54098158fbda95e3ce8e9db9ec68097f73b5390d4639fa39c240538880b6da",
+   "scikit_learn": {
+    "bound": ">=1.5,<1.9",
+    "candidate_exact": "1.7.2",
+    "wheel_availability_verified": false,
+    "exact_version_fixed_at": "install, recorded by pip freeze"
+   },
+   "transitive": [
+    "scipy",
+    "joblib",
+    "threadpoolctl"
+   ],
+   "per_record": [
+    "sys.version",
+    "freeze sha256"
+   ],
+   "venv_ephemeral": "recreation is an install to authorise and charge"
+  },
+  "cpu_only": true,
+  "dependencies": {
+   "P5a": "present (pydantic, numpy)",
+   "P5b": "scikit-learn absent; network install needs separate authorisation (D4); install permission is not training permission and vice versa"
+  }
+ },
+ "budget": {
+  "activated": "approved by D2 under P5-PROTO-2; used so far only for authorised lots P5.0-P5.2",
+  "separate_from_P0_P4": true,
+  "P0_P4_remaining_reserved_for_P0_P4_gates": 178.675,
+  "P0_P4_terminal_reference": {
+   "records": 175,
+   "used_wall_seconds": 421.325,
+   "last_record_sha256": "9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973"
+  },
+  "ledger": "evidence/decision_support/p5/BUDGET_LEDGER_P5.jsonl",
+  "proposal_ceiling_wall_seconds": 1200,
+  "alternative_D2_ceiling_wall_seconds": 1800,
+  "per_command_seconds": 30,
+  "spend_eur": 0,
+  "install_time_charged": true,
+  "install_note": "an install command exceeding 30 s is killed and charged; install package by package",
+  "estimate_basis": {
+   "measured_existing_records": [
+    "#6 recommend 0.366 s incl. startup",
+    "#124 #140 #151 #169 -> 2-6 ms per simulation"
+   ],
+   "assumed_not_measured": [
+    "batched recommend 0.15-0.35 s",
+    "HGB single-thread fit 0.3-4 s",
+    "extraction 0.2-1 ms per row"
+   ],
+   "nature": "estimates, not demonstrated durations",
+   "measured_P5_2_pilot": {
+    "truth_simulation_ms": 0.766,
+    "recommend_s_mean": 0.044,
+    "extraction_ms_per_row_per_family": 0.09,
+    "plans_per_parent_mean": 7.4
+   }
+  },
+  "lots": {
+   "P5.0_commitment_isolation": {
+    "estimate_s": [
+     10,
+     20
+    ],
+    "cap_s": 30
+   },
+   "P5.I_install_sklearn_if_D4": {
+    "estimate_s": [
+     15,
+     60
+    ],
+    "cap_s": 60
+   },
+   "P5.1_tests_generator_adapter_features": {
+    "estimate_s": [
+     60,
+     120
+    ],
+    "cap_s": 130
+   },
+   "P5.2_timed_pilot": {
+    "content": "20 development parents, R1+R2, K=3, extraction, the 2 costliest fits (max_iter 400, max_depth 5) on development data, one full bootstrap",
+    "estimate_s": [
+     15,
+     30
+    ],
+    "cap_s": 40
+   },
+   "P5.3_P5a_dev_then_reserved": {
+    "volume": {
+     "truth_simulations": 38400,
+     "recommendations": 400
+    },
+    "estimate_s": [
+     137,
+     370
+    ],
+    "cap_s": 330
+   },
+   "P5.4_P5b": {
+    "volume": {
+     "truth_simulations": 69120,
+     "recommendations": 240,
+     "fits": 72,
+     "feature_rows_per_family": 19200
+    },
+    "order": [
+     "train labels",
+     "twin precheck",
+     "validation labels",
+     "fits",
+     "selection",
+     "F",
+     "evaluation"
+    ],
+    "estimate_s": [
+     232,
+     707
+    ],
+    "cap_s": 470
+   },
+   "P5.5_bootstrap_report_restore_package": {
+    "estimate_s": [
+     25,
+     70
+    ],
+    "cap_s": 90
+   },
+   "reserve_reruns_no_widening": {
+    "cap_s": 50
+   }
+  },
+  "cap_total_s": 1200,
+  "estimate_total_s": [
+   494,
+   1377
+  ],
+  "high_estimate_exceeds_ceiling": true,
+  "fallback_ladder": {
+   "trigger": "pilot P5.2 timing projection only (never a result)",
+   "target_projection_s": 1000,
+   "steps_in_order": [
+    "L1: K 3 -> 2 for P5b train/validation labels and P5a development",
+    "L2: one seed (random_state 0) for the 24 selection fits + reproducibility check of seeds 1,2 on each family's selected config (28 fits), only if the A5 benchmark shows max abs prediction difference <= 1e-12 for BOTH families; else L2 inapplicable",
+    "L3: drop secondary comparison 'v6 planner on P5b evaluation'",
+    "stop and ask (D2: 1800 s, or P5a only)"
+   ]
+  },
+  "fit_timing_benchmark_A5": {
+   "requires": [
+    "D13 approve v3",
+    "D14 = D4 install",
+    "D15 explicit authorisation of timing fits"
+   ],
+   "matrix": {
+    "rows_source": "feature rows of development parents from a pilot run (P5a_dev)",
+    "rows": 1440,
+    "construction": "tiling",
+    "labels": "R1 mean realised U of those development rows",
+    "limitation": "repeated rows do not demonstrate the cost of a diverse corpus",
+    "extrapolation": "linear to 11520 rows, prudence margin x1.5, marked extrapolated"
+   },
+   "fits": {
+    "families": [
+     "M_agg",
+     "M_ent"
+    ],
+    "config": {
+     "max_depth": 5,
+     "learning_rate": 0.1,
+     "max_iter": 400
+    },
+    "random_state": [
+     0,
+     1,
+     2
+    ],
+    "total": 6,
+    "commands": "one per family",
+    "order": "M_agg 0,1,2 then M_ent 0,1,2",
+    "pre_launch_rule": "before seed k>=1 refuse if elapsed + seed-0 duration exceeds lot remainder"
+   },
+   "lot": "P5.2 remainder 37.476 s",
+   "models": "discarded; no prediction kept for evaluation",
+   "L2_scope": "identity shown only for this config and data"
+  },
+  "recomputed_estimates_s": {
+   "P5.3": [
+    32,
+    48
+   ],
+   "P5.4_without_fits": [
+    39,
+    70
+   ],
+   "fits_72_unmeasured": [
+    135,
+    1951
+   ],
+   "benchmark_A5_unmeasured": [
+    5,
+    35
+   ]
+  }
+ },
+ "stop_rules": [
+  "invalid hash (including modified v6 tree)",
+  "leakage",
+  "admissibility or invariant violation",
+  "generator non-determinism",
+  "generator exception",
+  "out-of-vocabulary category",
+  "lot or global ceiling reached",
+  "pilot projection > 1000 s after fallback ladder",
+  "spend, unauthorised install or remote write needed",
+  "deviation from frozen protocol"
+ ],
+ "deliverables_after_authorised_execution": [
+  "frozen protocol and E0/E_k/F hashes",
+  "seed reveal",
+  "corpus manifests",
+  "exclusion and abstention counts by reason",
+  "all results including negative",
+  "R1 and R2 separate",
+  "resource decomposition",
+  "observed fit-seed diversity",
+  "anchored P5 ledger",
+  "report continue/stop/measure more",
+  "restorable package with own manifest"
+ ],
+ "cockpit": "not involved; independent React replay remains a separate product gate",
+ "decisions_requested": [
+  "D13 approve P5-PROTO-3",
+  "D14 (=D4) scikit-learn install, lot P5.I, post-install freeze recorded",
+  "D15 authorise A5 timing benchmark (6 fits, 1440 tiled rows, P5.2 remainder, models discarded)",
+  "D16 option: 11520-row benchmark with up to 50 s moved from reserve to P5.2 (not recommended before D15 result)",
+  "(ii) P5a reserved evaluation and (iii) P5b fits/evaluation unchanged, separate, after F_a/F_b"
+ ],
+ "separate_authorisations_required": [
+  "D13",
+  "D14",
+  "D15",
+  "(ii)",
+  "(iii)"
+ ],
+ "execution_controls": {
+  "runner_pre_launch_refusals": [
+   "unauthorised lot",
+   "program not an exact approved-venv interpreter path nor an allowed static tool",
+   "dependency freeze not in approved set (D3 + ledger notes environment_approved)"
+  ],
+  "before_generation_or_resume": "verify effective commitment (last ledger commitment) against sources, sealed seeds and v6 engine",
+  "pilot_run_identity": [
+   "commitment",
+   "code hashes",
+   "partition",
+   "stable structure ids (hash, no seed)",
+   "parents",
+   "K",
+   "regimes",
+   "environment"
+  ],
+  "resume": "same identity only; other identity refused; old records kept",
+  "stop_with_failure_receipt": [
+   "invariant or admissibility violation",
+   "universe changed across realisations",
+   "recommended plan outside public universe"
+  ],
+  "genuine_abstentions": "evaluated as HABITUAL-1 and counted"
+ }
+}

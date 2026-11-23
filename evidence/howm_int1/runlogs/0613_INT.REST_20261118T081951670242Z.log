@@ -1,0 +1,126 @@
+{
+ "W_M_minus_D_hgb": {
+  "wait_patient_min": {
+   "mean": -141.98125,
+   "ci95": [
+    -259.87390625,
+    -13.267031250000077
+   ],
+   "n_structures": 200
+  },
+  "uncovered_care_min": {
+   "mean": -156.6395833333334,
+   "ci95": [
+    -217.49485416666676,
+    -105.44458333333348
+   ],
+   "n_structures": 200
+  },
+  "rejected": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_structures": 200
+  },
+  "rupture_minutes": {
+   "mean": -3.475,
+   "ci95": [
+    -11.41265625,
+    4.638124999999997
+   ],
+   "n_structures": 200
+  },
+  "rupture_onsets": {
+   "mean": 0.007083333333333333,
+   "ci95": [
+    -0.005833333333333326,
+    0.020010416666666617
+   ],
+   "n_structures": 200
+  },
+  "terminal_queue": {
+   "mean": -0.002916666666666674,
+   "ci95": [
+    -0.03042708333333336,
+    0.028343749999999945
+   ],
+   "n_structures": 200
+  },
+  "terminal_max_wait_min": {
+   "mean": -9.475,
+   "ci95": [
+    -23.726875,
+    4.77687499999999
+   ],
+   "n_structures": 200
+  },
+  "staff_hours": {
+   "mean": -0.6666666666666669,
+   "ci95": [
+    -2.2034166666666666,
+    0.8200833333333327
+   ],
+   "n_structures": 200
+  },
+  "aval_blocked_end": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_structures": 200
+  },
+  "transfer_pending_end": {
+   "mean": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_structures": 200
+  }
+ },
+ "rel": {
+  "relative_gain": 0.00411011645541051,
+  "ci95": [
+   0.00038241686253473386,
+   0.007599274794915083
+  ]
+ },
+ "by_family": {
+  "SC4_high_load_absorbable": {
+   "structures": 34,
+   "historical_minus_W_M": -160.80882352941177,
+   "D_hgb_minus_W_M": 322.16911764705884
+  },
+  "SC5_drop_with_margin": {
+   "structures": 34,
+   "historical_minus_W_M": -308.6764705882353,
+   "D_hgb_minus_W_M": 113.01470588235294
+  },
+  "SC6_low_load": {
+   "structures": 36,
+   "historical_minus_W_M": -123.78472222222223,
+   "D_hgb_minus_W_M": 199.34027777777777
+  },
+  "SF1_cleaning_window": {
+   "structures": 29,
+   "historical_minus_W_M": 8105.9051724137935,
+   "D_hgb_minus_W_M": 318.0603448275862
+  },
+  "SF2_transport_window": {
+   "structures": 33,
+   "historical_minus_W_M": 1130.2272727272727,
+   "D_hgb_minus_W_M": -279.77272727272725
+  },
+  "SF3_planned_drop": {
+   "structures": 34,
+   "historical_minus_W_M": -93.23529411764706,
+   "D_hgb_minus_W_M": 189.19117647058823
+  }
+ }
+}
+uncovered_care_min {'D_dset': 13797.6, 'D_hgb': 13911.9, 'D_ridge': 13813.1, 'W_M': 13755.3, 'W_S': 13772.6, 'historical': 13183.0, 'robust': 13767.0}
+staff_hours {'D_dset': 4.4, 'D_hgb': 13.6, 'D_ridge': 14.2, 'W_M': 12.9, 'W_S': 10.9, 'historical': 0.0, 'robust': 16.1}
+rupture_minutes {'D_dset': 717.1, 'D_hgb': 672.4, 'D_ridge': 690.3, 'W_M': 668.9, 'W_S': 674.5, 'historical': 720.6, 'robust': 709.8}

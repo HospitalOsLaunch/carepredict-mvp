@@ -1,0 +1,11 @@
+{
+ "schema": "HOWM2_DECISION_4",
+ "date": "2026-11-16",
+ "question": "stopped at L4-N validation (N-o' fails for L4-N and L5-N; N-o literal degenerate); how to continue",
+ "answer": "Limite du test, poursuivre (Recommended)",
+ "addendum": {
+  "path": "docs/howm2/NORME_HOWM2_A2_ADDENDUM_2.md",
+  "sha256": "011795b590ca5970ed246ccbd74b982d38b92fbcdefb831b4911fcd640dd4d3e"
+ },
+ "effect": "N-o' failure treated as a test limitation (L5-N fails too); flagged in every verdict using L4-N; A2.DEC/COV/L2C authorised to proceed under NORME_HOWM2_A2 unchanged"
+}

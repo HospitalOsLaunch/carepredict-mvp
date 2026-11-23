@@ -1,0 +1,98 @@
+{
+ "envelope": "HOWM_INT1_CLOSURE_ENVELOPE.zip",
+ "sha256": "c701eadcfeb3a16242e75a7d513aee8b1d78f5d01fe43a71e37294a101022bea",
+ "bytes": 122423305,
+ "bad": [],
+ "manifest": {
+  "envelope": "HOWM_INT1_CLOSURE_ENVELOPE",
+  "decision": "n.9 (HOWM-INT-1)",
+  "status": "PROTOTYPE_UNVALIDATED; clinical_validation=false; G2=NO-GO",
+  "scientific_archive": {
+   "file": "scientific_archive/HOWM_INT1_FINAL.zip",
+   "sha256": "fb46fab31231172d3e879cbd07f89ca963289eb14a798369fc124001b38d0490",
+   "intact": true,
+   "commit": "7af2e10b92513c8368b77d63a7c47f950c616925"
+  },
+  "receipt": {
+   "ok": true,
+   "made_on_archive_sha256": "fb46fab31231172d3e879cbd07f89ca963289eb14a798369fc124001b38d0490",
+   "external_to_archive": true,
+   "sections": {
+    "setup": true,
+    "tests": true,
+    "load": true,
+    "analysis": true,
+    "regen": true,
+    "refit": true
+   }
+  },
+  "previous_envelope": "HOWM2_BW_CLOSURE_ENVELOPE.zip (decision n.8, unchanged)",
+  "note": "the ledger copy and report here may be later than the archive (receipt, envelope and delivery records); no push, no external publication",
+  "files": {
+   "scientific_archive/HOWM_INT1_FINAL.zip": {
+    "sha256": "fb46fab31231172d3e879cbd07f89ca963289eb14a798369fc124001b38d0490",
+    "bytes": 121480091
+   },
+   "receipt/RESTORE_RECEIPT_INT1.json": {
+    "sha256": "9e529563d4a1376dc82f8c78329cc6739a87d465957f647a6960213798c89773",
+    "bytes": 9771
+   },
+   "receipt/REHEARSAL_SUMMARY.json": {
+    "sha256": "629fdb61ab5f713b85da3e918f9a2035ebb198154458697a65e52c8510e04145",
+    "bytes": 10173
+   },
+   "receipt/PACKAGE_FINAL.json": {
+    "sha256": "45213a1581bc4740cca4a94fc947b83fb3dc7dafdf48cfb84e0490c39106d1dd",
+    "bytes": 349
+   },
+   "docs/RAPPORT_INT1.md": {
+    "sha256": "4a7514c4510ddd7dc130cd1464faeb12f74fc2bfcfbec017dddfff953e35ef30",
+    "bytes": 32209
+   },
+   "docs/PROTOCOLE_INT1.md": {
+    "sha256": "195e4e61069140964c9ed747b1ba114714faa2d6b78e1e4cce1f7fb54ddbf2dc",
+    "bytes": 15259
+   },
+   "docs/DEMO.md": {
+    "sha256": "ab4bbfaa49f506fa7bf03ab5701f2fc04576ca3297265ab47d50faafc4735819",
+    "bytes": 3767
+   },
+   "docs/AVANCEMENT.md": {
+    "sha256": "df8d9cc000b5c6751edea9a9f43f384b6c70172d375f5e81b90526b7ca4c7515",
+    "bytes": 3023
+   },
+   "docs/ESTIMATION_FIN.md": {
+    "sha256": "fc54304835df3706f431c40376089d6b471c505edcb7ddb285f8cc8ddf602495",
+    "bytes": 8731
+   },
+   "docs/HOWM2_DECISION_9.json": {
+    "sha256": "74812055e1b4afd65b2d96a9f216d7b0d4fb7f5e488e02f29329aa42a96baa3d",
+    "bytes": 1867
+   },
+   "docs/MANDAT_HOWM2_DECISION_9_HOWM_INT_1.md": {
+    "sha256": "f71d411f4febabf2a3db6154881c2a5348311a7234eabfe89827fb5d1c9d2fa2",
+    "bytes": 24674
+   },
+   "results/RESULTS_INT1.json": {
+    "sha256": "ec574f9e2d526599a8daeca0cfc4bf559ec5033189f244b2c7e181a1030b4787",
+    "bytes": 11792
+   },
+   "results/POSTHOC_MAIN.json": {
+    "sha256": "d695a198a30767c05e61a4c36f6145741b069664a3ce7863b1994359b6f3bf30",
+    "bytes": 12158
+   },
+   "results/FREEZE_INT1.json": {
+    "sha256": "daa4bccbd782b086f022e2d648abf30b06ca8efab3408b0a1707374bc6110f71",
+    "bytes": 6512
+   },
+   "ledger/LEDGER_INT1.jsonl": {
+    "sha256": "5320d2d751fd71abbe3accb25eb12f366833abc3eee242e2bfce04c47b145631",
+    "bytes": 797396
+   },
+   "ledger/LEDGER_INT1.anchor.json": {
+    "sha256": "76135a5134c42943135ac504e0c1f20a50fcadff5df9cdc1696ae9ce1542f318",
+    "bytes": 236
+   }
+  }
+ }
+}

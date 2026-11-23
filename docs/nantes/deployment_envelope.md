@@ -100,3 +100,30 @@ d'installation/diagnostic/rollback est livré séparément en **HOS-023**.
    (timescaledb/redis/redpanda/dagster-postgres) — accès uniquement via le réseau docker interne.
 4. **Ajouter un volume nommé dédié** aux artefacts pipeline (`carepredict-artifacts`).
 5. **Overrider tous les secrets par défaut** de `.env.example` ; interdire les mots de passe de dev.
+
+### 8.1 État au 23 novembre 2026 — compose de release
+
+Les écarts ci-dessus sont appliqués dans **`deploy/nantes/docker-compose.release.yml`** (le compose de
+développement de la racine reste inchangé). Ils sont vérifiés automatiquement en CI par
+`scripts/deploy/check_release.py` (règles R1–R7) et `tests/unit/test_release_envelope.py`.
+
+| Gate | État | Comment |
+|---|---|---|
+| 1. Images par digest | **appliqué** | images tierces et bases des Dockerfiles épinglées (`deploy/nantes/images.lock.json`, `scripts/deploy/pin_images.py --check`) ; images construites nommées `hospitalos/*:${RELEASE_TAG}` ; `pull_policy: never` |
+| 2. Pas de code monté depuis l'hôte | **appliqué** | code cuit dans les images (API, Dagster, produit) ; seuls des fichiers de configuration en lecture seule sous `infrastructure/` |
+| 3. Ports | **appliqué** | 127.0.0.1 uniquement (cockpit 8080, API 8000, Dagster 3000, MLflow 5000) ; aucun port de datastore ; datastores et services produit sur réseaux Docker `internal` |
+| 4. Volume d'artefacts | **appliqué** | `carepredict-artifacts` monté sur `/app/reports` |
+| 5. Secrets | **appliqué** | variables obligatoires `${VAR:?}` sans valeur par défaut ; Redis protégé par mot de passe ; `.env.release` fourni par l'exploitant (modèle `env.release.template`, non versionné) et contrôlé (`--env` : refus des valeurs du modèle, des mots de passe de dev et des secrets < 16 caractères) |
+| Privilèges | **ajouté** | `no-new-privileges` partout ; services applicatifs en système de fichiers lecture seule, `cap_drop: ALL`, utilisateur non root (images produit et API) |
+
+**Produit livré** dans le même compose : `cockpit` (build statique + proxy nginx, en-têtes de sécurité),
+`hybrid-api` (API libérer → attribuer) et `decision-api` (planificateur 24 h). Les deux API ne sont
+joignables que par le cockpit, sur le réseau interne. L'ancien tableau de bord Vite (`services/dashboard`)
+n'est pas déployé en release.
+
+**Restent ouverts :**
+
+- digests des **images construites** : ils sont produits au build de release (`docker save` + manifeste
+  signé) ; le build des images n'a pas été exécuté dans cet environnement ;
+- chiffrement au repos et TLS interne (décision DSI) ;
+- Python 3.11.9 exact pour le planificateur (porte de l'audit v6).

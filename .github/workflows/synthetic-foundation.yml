@@ -18,7 +18,10 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install lightweight dependencies
-        run: python -m pip install 'numpy>=1.26,<3' 'pandas>=2.2,<3' 'pydantic>=2.7,<3' 'scikit-learn>=1.5,<1.9' 'pytest>=8.2,<9' 'ruff>=0.4,<1' 'mypy>=1.10,<2'
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
       - name: Lint new foundation
         run: |
           python -m ruff check src/hospitalos/synthetic tests/synthetic

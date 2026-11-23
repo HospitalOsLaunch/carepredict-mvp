@@ -1,0 +1,14 @@
+{"run": "W_t2_M_s1", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t2_M_s0", "upd": 14000, "stopped": "patience", "best": 6000, "params": 1899540, "last": {"upd": 14000, "val": {"2": {"situations": 519, "rel_regret": 0.04247760938672615, "regret": 313.9523121387283, "effect_rmse": 394.64459228515625, "spearman": 0.514390069747149, "state_mse": 0.2134674007507303}, "8": {"situations": 198, "rel_regret": 0.004958092317636585, "regret": 108.80681818181819, "effect_rmse": 248.0139923095703, "spearman": 0.3494947031944965, "state_mse": 0.33147370410763255}, "4": {"situations": 183, "rel_regret": 0.004814026001624539, "regret": 73.46311475409836, "effect_rmse": 169.58468627929688, "spearman": 0.3694765521370131, "state_mse": 0.5244958013133273}}}}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t2_M_s2", "upd": 14350, "stopped": null, "best": 8000, "params": 1899540, "last": {"upd": 14350, "loss": 0.6513087749481201, "st": 0.2963401675224304, "co": 0.12869924306869507, "cum": 0.074454665184021, "eff": 0.028433669358491898, "rup": 0.019292747601866722, "T": 12}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}

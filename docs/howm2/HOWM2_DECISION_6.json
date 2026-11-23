@@ -1,0 +1,36 @@
+{
+ "schema": "HOWM2_DECISION_6",
+ "date": "2026-11-17",
+ "previous": [
+  "HOWM2_DECISION_1..5 (decision_2 in ledger)"
+ ],
+ "decision": "B-FRAG mandate: C1 documentary closure + exploratory log reading; B-FRAG design, isolated implementation, validity tests, <=3 TUNE iterations, one independent CONF campaign if feasible; report, package, receipt",
+ "mandate": {
+  "path": "docs/howm2/inputs/MANDAT_HOWM2_DECISION_6_BFRAG.md",
+  "sha256": "5b7660dd061901c6f4d7ca8f4cbb368899a9b13232a043140523d7d85d73ffa4"
+ },
+ "b_state_before": "B never executed (no B ledger existed); no B population exposed",
+ "budget": {
+  "wall_s": 11400,
+  "device": "CPU",
+  "eur": 0,
+  "ledger": "evidence/howm2_bfrag/BUDGET_LEDGER_HOWM2_B.jsonl",
+  "per_command_s": 540,
+  "c1_closure_and_bfrag_separate_lots": true,
+  "no_transfer_from_C1": true
+ },
+ "not_authorised": [
+  "any training / gradient descent",
+  "C1 palier 2, C.2a at 1000",
+  "new closed loop",
+  "push, merge, rebase, external publication",
+  "HOWM-1 reserve, DEVTEST, DIAG-DEV",
+  "modifying frozen G0/F1/F-C1, v6, P5, mvp/computer-use, results R1/A/A-prime/C1",
+  "JEPA, HOWM2-N, P6, AJ-H"
+ ],
+ "statuses_unchanged": [
+  "PROTOTYPE_UNVALIDATED",
+  "clinical_validation=false",
+  "G2=NO-GO"
+ ]
+}

@@ -1,0 +1,1634 @@
+{
+ "enumeration": {
+  "cases": 34,
+  "max_abs_diff": 3.9716493982489e-15,
+  "pass": true,
+  "note": "real 12-hour prefixes contain no completed item: prior-only check"
+ },
+ "enumeration_relocated_items": {
+  "cases": 34,
+  "items_per_case": 26,
+  "max_abs_diff": 1.7752466163756253e-12,
+  "pass": true,
+  "note": "real completed items relocated into hours 0..12 (non-trivial data)"
+ },
+ "independent_forward_backward": {
+  "items": 200,
+  "max_abs_diff": 8.071321389024888e-14,
+  "pass": true
+ },
+ "rows_enum": [
+  {
+   "index": 3,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "items": 0,
+   "max_abs_diff": 3.9716493982489e-15
+  }
+ ],
+ "rows_reloc": [
+  {
+   "index": 3,
+   "family": "transport",
+   "items": 25,
+   "max_abs_diff": 3.126388037344441e-13
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 9.094947017729282e-13
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 2.6290081223123707e-13
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 7.673861546209082e-13
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 7.247535904753022e-13
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 6.750155989720952e-13
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "items": 24,
+   "max_abs_diff": 6.750155989720952e-13
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 6.821210263296962e-13
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "items": 20,
+   "max_abs_diff": 5.329070518200751e-13
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 1.9184653865522705e-13
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "items": 12,
+   "max_abs_diff": 4.476419235288631e-13
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 6.821210263296962e-13
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 7.602807272633072e-13
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 4.760636329592671e-13
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 7.815970093361102e-13
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 3.552713678800501e-13
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "items": 24,
+   "max_abs_diff": 3.836930773104541e-13
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 5.826450433232822e-13
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "items": 25,
+   "max_abs_diff": 1.7053025658242404e-13
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 3.126388037344441e-13
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "items": 20,
+   "max_abs_diff": 3.339550858072471e-13
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 6.892264536872972e-13
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 5.542233338928781e-13
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 5.471179065352771e-13
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "items": 17,
+   "max_abs_diff": 3.907985046680551e-13
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "items": 24,
+   "max_abs_diff": 1.7752466163756253e-12
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 3.481659405224491e-13
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 5.897504706808832e-13
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "items": 22,
+   "max_abs_diff": 4.547473508864641e-13
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 1.0160761121369433e-12
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 7.602807272633072e-13
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 3.268496584496461e-13
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "items": 26,
+   "max_abs_diff": 1.5631940186722204e-13
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "items": 26,
+   "max_abs_diff": 4.163336342344337e-14
+  }
+ ],
+ "rows_fb": [
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 15,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 19,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 44,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 45,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "transport",
+   "hour": 64,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 12,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 15,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 16,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 19,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 21,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 3,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 16,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 37,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 44,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 39,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 41,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 4,
+   "family": "cleaning",
+   "hour": 42,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 16,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 32,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 34,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 37,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 38,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 14,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 15,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 33,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 35,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 5,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 12,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 37,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 42,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "transport",
+   "hour": 43,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 13,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 33,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 35,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 7,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 6.394884621840902e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 11,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 13,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 38,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "transport",
+   "hour": 61,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 11,
+   "abs_diff": 2.1871393585115584e-14
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 13,
+   "abs_diff": 2.270406085358445e-14
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 15,
+   "abs_diff": 2.0539125955565396e-14
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 39,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 8,
+   "family": "cleaning",
+   "hour": 58,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 35,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 42,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "transport",
+   "hour": 83,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 40,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 41,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 42,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 9,
+   "family": "cleaning",
+   "hour": 43,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 12,
+   "abs_diff": 2.0650148258027912e-14
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 16,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 20,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 21,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 31,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 11,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 15,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 18,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 30,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 31,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 42,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 11,
+   "family": "cleaning",
+   "hour": 44,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 11,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 15,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 32,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 39,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "transport",
+   "hour": 43,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 11,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 12,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 14,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 15,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 13,
+   "family": "cleaning",
+   "hour": 19,
+   "abs_diff": 4.973799150320701e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 15,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 17,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 39,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 55,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 57,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 16,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 18,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 19,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 33,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 40,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 17,
+   "family": "cleaning",
+   "hour": 44,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 17,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 31,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 39,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 44,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 61,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "transport",
+   "hour": 62,
+   "abs_diff": 1.0658141036401503e-14
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 12,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 32,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 41,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 43,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 18,
+   "family": "cleaning",
+   "hour": 45,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 38,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "transport",
+   "hour": 62,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 2.498001805406602e-16
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 9.367506770274758e-17
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 40,
+   "abs_diff": 9.992007221626409e-16
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 42,
+   "abs_diff": 3.219646771412954e-15
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 60,
+   "abs_diff": 2.1510571102112408e-16
+  },
+  {
+   "index": 19,
+   "family": "cleaning",
+   "hour": 62,
+   "abs_diff": 9.107298248878237e-18
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 17,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 39,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 42,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "transport",
+   "hour": 43,
+   "abs_diff": 7.105427357601002e-15
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 14,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 18,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 19,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 22,
+   "family": "cleaning",
+   "hour": 40,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "hour": 44,
+   "abs_diff": 8.881784197001252e-15
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "hour": 46,
+   "abs_diff": 8.881784197001252e-15
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "hour": 64,
+   "abs_diff": 8.881784197001252e-15
+  },
+  {
+   "index": 25,
+   "family": "transport",
+   "hour": 66,
+   "abs_diff": 8.881784197001252e-15
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 19,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 34,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 43,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 25,
+   "family": "cleaning",
+   "hour": 55,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "transport",
+   "hour": 61,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 37,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 40,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 41,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 42,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 26,
+   "family": "cleaning",
+   "hour": 57,
+   "abs_diff": 1.4210854715202004e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 15,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 31,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 40,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "transport",
+   "hour": 66,
+   "abs_diff": 1.2434497875801753e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 12,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 14,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 16,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 34,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 35,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 29,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 3.907985046680551e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 11,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 31,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 39,
+   "abs_diff": 2.1538326677728037e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 41,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 30,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 2.1316282072803006e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 12,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 14,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 33,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 36,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 30,
+   "family": "cleaning",
+   "hour": 38,
+   "abs_diff": 2.842170943040401e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 15,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 19,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 31,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 36,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 59,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "transport",
+   "hour": 60,
+   "abs_diff": 1.7763568394002505e-14
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "hour": 17,
+   "abs_diff": 5.684341886080802e-14
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "hour": 20,
+   "abs_diff": 8.071321389024888e-14
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "hour": 31,
+   "abs_diff": 6.283862319378386e-14
+  },
+  {
+   "index": 31,
+   "family": "cleaning",
+   "hour": 32,
+   "abs_diff": 6.861178292183467e-14
+  }
+ ]
+}

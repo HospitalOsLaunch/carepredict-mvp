@@ -1,0 +1,9 @@
+{
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "pandas": "2.2.3",
+  "device": "CPU",
+  "parent_commit": "fc850b7a5c463576afafe4c23aafa28e7c0e63e8",
+  "source_branch": "claude/hospitalos-auto-first-p0-p4-s2dywn"
+}

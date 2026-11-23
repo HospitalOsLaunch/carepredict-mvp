@@ -1,0 +1,53 @@
+...........................................................F...F.....    [100%]
+=================================== FAILURES ===================================
+_____________ test_real_effective_commitment_verifies_against_disk _____________
+tests/p5/test_p5_resume_controls.py:304: in test_real_effective_commitment_verifies_against_disk
+    out = integrity.verify(eff)
+          ^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/p5/integrity.py:67: in verify
+    raise IntegrityError("; ".join(problems))
+E   hospitalos.p5.integrity.IntegrityError: code_differs_from_commitment:scripts/p5_budget_run.py; code_differs_from_commitment:src/hospitalos/p5/eval_adapter.py
+____________________ test_analyse_verdicts_capture_and_harm ____________________
+tests/p5/test_p5a.py:78: in test_analyse_verdicts_capture_and_harm
+    res = A.analyse(big, meta, "R1", 7, 200, True, primary=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/p5/p5a_analysis.py:160: in analyse
+    intervals = {k: ci(boot[:, i]) for k, i in idx.items()}
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/p5/p5a_analysis.py:160: in <dictcomp>
+    intervals = {k: ci(boot[:, i]) for k, i in idx.items()}
+                    ^^^^^^^^^^^^^^
+src/hospitalos/p5/p5a_analysis.py:139: in ci
+    return [float(np.quantile(v, a)), float(np.quantile(v, 1 - a))]
+                  ^^^^^^^^^^^^^^^^^
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:4496: in quantile
+    return _quantile_unchecked(
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:4510: in _quantile_unchecked
+    return _ureduce(a,
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:3880: in _ureduce
+    r = func(a, **kwargs)
+        ^^^^^^^^^^^^^^^^^
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:4669: in _quantile_ureduce_func
+    result = _quantile(arr,
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/lib/python3.11/site-packages/numpy/lib/_function_base_impl.py:4793: in _quantile
+    slices_having_nans = np.isnan(arr[-1, ...])
+                                  ^^^^^^^^^^^^
+E   IndexError: index -1 is out of bounds for axis 0 with size 0
+=============================== warnings summary ===============================
+tests/p5/test_p5a.py::test_analyse_verdicts_capture_and_harm
+  /home/user/carepredict-mvp/src/hospitalos/p5/p5a_analysis.py:120: RuntimeWarning: Mean of empty slice
+    return np.nanmean(np.stack([np.nanmean(s, axis=0) for s in structures]), axis=0)
+
+tests/p5/test_p5a.py::test_analyse_verdicts_capture_and_harm
+  /home/user/carepredict-mvp/src/hospitalos/p5/p5a_analysis.py:131: RuntimeWarning: Mean of empty slice
+    means.append(np.nanmean(s[rng.integers(0, len(s), len(s))], axis=0))
+
+tests/p5/test_p5a.py::test_analyse_verdicts_capture_and_harm
+  /home/user/carepredict-mvp/src/hospitalos/p5/p5a_analysis.py:132: RuntimeWarning: Mean of empty slice
+    out[b] = np.nanmean(np.stack(means), axis=0)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/p5/test_p5_resume_controls.py::test_real_effective_commitment_verifies_against_disk
+FAILED tests/p5/test_p5a.py::test_analyse_verdicts_capture_and_harm - IndexEr...
+2 failed, 67 passed, 3 warnings in 2.77s

@@ -1,0 +1,265 @@
+{
+  "schema": "HOSPITALOS_DS_INDEPENDENT_AUDIT_V6_1",
+  "audit_date": "2026-11-14",
+  "audit_id": "HospitalOS_DS_v6_independent_20261114",
+  "input": {
+    "name": "HospitalOS_DS_P0-P4_20261114_v6.zip",
+    "bytes": 27135979,
+    "sha256": "4fca8aecde4fa35a47bc18696785d28df7465b5191b48e8a2881b0ec1e117f90",
+    "code_commit": "856a57c65fb0d55190addf6c39a45c57913eac07",
+    "zip_crc": "PASS",
+    "manifests": {
+      "SHA256SUMS": 259,
+      "SHA256SUMS.post": 6,
+      "SHA256SUMS.final": 6,
+      "reference/SHA256SUMS.txt": 8
+    },
+    "all_manifest_entries_match": true,
+    "external_and_internal_reports_identical": true
+  },
+  "verdict": {
+    "V5-R01": "PASS_INDEPENDENT_ON_TESTED_CASES",
+    "new_product_defects_reproduced": [],
+    "delivery": "PARTIAL_WITH_CHECKPOINT",
+    "reason_for_partial": "Exact Python 3.11.9 and independent React/browser checks remain unverified; this is not a new resource-engine defect.",
+    "scientific_status": "PROTOTYPE_UNVALIDATED",
+    "clinical_validation": false,
+    "G2": "NO-GO",
+    "P5": "CLOSED",
+    "P6": "CLOSED"
+  },
+  "tests": {
+    "full_ds_plus_86_hybrid": {
+      "tests": 182,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 182
+    },
+    "fresh_restore": {
+      "test": "T30",
+      "restored_tree_of_head": "856a57c65fb0d55190addf6c39a45c57913eac07",
+      "method": "source_head.tar",
+      "ledger_lineage": "final_after_postseal_restore",
+      "ledger_source": "ledger/BUDGET_LEDGER.final.jsonl",
+      "source_records": 166,
+      "source_used_wall_seconds": 396.451,
+      "target_status_after_replay": {
+        "ledger": "/mnt/data/ds_v6_independent_audit/restored/evidence/decision_support/BUDGET_LEDGER.jsonl",
+        "commands": 155,
+        "used_wall_seconds": 404.67,
+        "limit_wall_seconds": 600.0,
+        "remaining_wall_seconds": 195.33,
+        "stopped": false
+      },
+      "package_ledger_is_exact_prefix_of_target": true,
+      "tests": "pass",
+      "pytest": "96 passed in 5.49s",
+      "results_compared": 11,
+      "results_differing": [],
+      "status": "PASS"
+    },
+    "additional_targeted_checks": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 9
+    },
+    "distinct_final_successful_tests": 191,
+    "original_test_integrity": {
+      "test_independent_acceptance.py": {
+        "sha256": "bea463dba724f9c78389612d0481539a2e1c89eef0feea7117a66f8bb8a64adb",
+        "exact_copy": true
+      },
+      "test_v4_resource_boundaries.py": {
+        "sha256": "9f0e4601fd139455a7b1b0602f5824afe05d75c62ccc143b1267e7fd83de7e23",
+        "exact_copy": true
+      },
+      "test_v4_restoration_counter.py": {
+        "sha256": "d5a348c7f3a79ccf0069c6616d7f0dd420aaeb35adcd6646880109a013bd6916",
+        "exact_copy": true
+      },
+      "test_v5_capacity_consistency.py": {
+        "sha256": "727140b28a07b35be11a27e4f56d5e4754491cd173b07bcd43fc0f0d0f3a17e1",
+        "exact_copy": true
+      }
+    },
+    "standalone_typescript": "PASS (tsc -p web/decision/tsconfig.json --noEmit)",
+    "react_browser_independent_replay": "NOT_RUN: no cockpit node_modules available, no new installation authorised",
+    "author_junit": {
+      "pytest_py311.xml": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "1",
+        "tests": "182",
+        "time": "4.498",
+        "timestamp": "2026-11-14T04:15:05.694310+00:00",
+        "hostname": "vm"
+      },
+      "pytest_decision_support.xml": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "1",
+        "tests": "182",
+        "time": "3.955",
+        "timestamp": "2026-11-14T04:15:41.499483+00:00",
+        "hostname": "vm"
+      }
+    },
+    "auditor_test_correction": {
+      "initial": {
+        "tests": 9,
+        "failures": 7,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 2
+      },
+      "cause": "Incorrect auditor assertions included unrelated U-CARDIO-SYN lender R3; oracle was for U-LOAN/IDE only.",
+      "fix": "Filter the inspected capacity table to U-LOAN/IDE, while keeping full snapshots for product computation. No product or author-test changes.",
+      "initial_test_and_logs_preserved": true
+    }
+  },
+  "capacity_reproduction": {
+    "joint_offenders": [],
+    "orders": [
+      {
+        "order": [
+          "R1",
+          "R2"
+        ],
+        "reviews": [
+          {
+            "offer": "R1",
+            "outcome": "APPROVED_IN_DEMO",
+            "reasons": []
+          },
+          {
+            "offer": "R2",
+            "outcome": "REFUSED",
+            "reasons": [
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:capacity_exhausted"
+            ]
+          }
+        ],
+        "first_hold_preserved": true
+      },
+      {
+        "order": [
+          "R2",
+          "R1"
+        ],
+        "reviews": [
+          {
+            "offer": "R2",
+            "outcome": "APPROVED_IN_DEMO",
+            "reasons": []
+          },
+          {
+            "offer": "R1",
+            "outcome": "REFUSED",
+            "reasons": [
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T13:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T14:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T15:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T16:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T17:00:00+00:00:capacity_exhausted",
+              "reservation_refused:lend:U-LOAN:IDE@2026-11-17T18:00:00+00:00:capacity_exhausted"
+            ]
+          }
+        ],
+        "first_hold_preserved": true
+      }
+    ],
+    "policy": "One canonical capacity by lender x skill x hour from all snapshot offers; min_scheduled - max_minimum for conflicting known declarations; unknown is non-approvable."
+  },
+  "nominal_synthetic_outputs": [
+    {
+      "label": "pratique habituelle",
+      "uncovered_care_minutes": 1040.0,
+      "waiting_patient_hours": 21.5
+    },
+    {
+      "label": "coord:S01:20261117T0900Z",
+      "uncovered_care_minutes": 905.0,
+      "waiting_patient_hours": 14.5
+    },
+    {
+      "label": "coord:S01:20261117T0900Z + renfort:R2",
+      "uncovered_care_minutes": 795.0,
+      "waiting_patient_hours": 14.5
+    },
+    {
+      "label": "renfort:R1 + renfort:R2",
+      "uncovered_care_minutes": 640.0,
+      "waiting_patient_hours": 21.5
+    },
+    {
+      "label": "coord:S01:20261117T0900Z + renfort:R1 + renfort:R2",
+      "uncovered_care_minutes": 435.0,
+      "waiting_patient_hours": 14.5
+    }
+  ],
+  "independent_environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "packages": {
+      "pydantic": "2.13.5",
+      "numpy": "2.3.5",
+      "pytest": "9.0.2",
+      "jsonschema": "4.26.0"
+    },
+    "pytest_plugins_disabled": true,
+    "react_node_modules_available": false,
+    "python_3_11_available": false
+  },
+  "code_scope": {
+    "changed_from_v5": [
+      "src/hospitalos/decision_support/candidates.py",
+      "src/hospitalos/decision_support/eligibility.py",
+      "src/hospitalos/decision_support/planner.py",
+      "src/hospitalos/decision_support/reference_forecaster.py",
+      "src/hospitalos/decision_support/resources.py"
+    ],
+    "product_modified_by_audit": false
+  },
+  "budget": {
+    "source_records": 166,
+    "source_used_seconds": 396.451,
+    "terminal_records": 175,
+    "terminal_used_seconds": 421.325,
+    "independent_audit_added_seconds": 24.874,
+    "remaining_seconds": 178.675,
+    "limit_seconds": 600,
+    "per_command_limit_seconds": 30,
+    "source_final_is_exact_prefix": true,
+    "prior_v5_audit_lineage_confirmed": true,
+    "last_record_sha256": "9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973",
+    "restoration_overhead_counted_without_double_counting": true,
+    "all_new_commands_below_limit": true
+  },
+  "not_executed": [
+    "training",
+    "fit_benchmark",
+    "model_weights_loading",
+    "AJ-H_inference",
+    "P5/P6",
+    "network_installation",
+    "push_merge_rebase",
+    "clinical_or_SIH_action",
+    "independent_browser_tests"
+  ],
+  "limitations": [
+    "Bounded functional audit, not exhaustive correctness proof",
+    "Synthetic cases only, not real-world predictive or clinical validation",
+    "Independent environment Python 3.13.5; author Python 3.11.18 is not exact 3.11.9",
+    "mypy --strict not executed in this audit",
+    "Historical logs are evidence of the author, not independently rerun unless explicitly stated"
+  ]
+}

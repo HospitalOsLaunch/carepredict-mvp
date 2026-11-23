@@ -1,0 +1,1 @@
+{"R1": {"verdict": "insufficient", "delta_rep": 2.2708333333333335, "ci95": [-2.5350694444444444, 6.944791666666666]}, "R2": {"verdict": "insufficient (robustness reading only)", "delta_rep": 1.381944444444443, "ci95": [-3.423611111111114, 6.015451388888879]}}

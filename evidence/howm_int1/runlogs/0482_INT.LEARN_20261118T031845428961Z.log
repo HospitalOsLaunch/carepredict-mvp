@@ -1,0 +1,4 @@
+  File "/home/user/carepredict-mvp/scripts/int1/train_d.py", line 156
+    st = {k: (v.item() if v.ndim == 0 else v) for k, v in np.load(OUT / "W_t1_S_s0" / "norm.npz")  # tier-1 TRAIN normalisation for both tiers (as the W continuations).items()}
+         ^
+SyntaxError: '{' was never closed

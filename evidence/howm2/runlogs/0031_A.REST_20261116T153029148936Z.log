@@ -1,0 +1,30 @@
+{
+ "package": "HOWM2_P2_A_FINAL.zip",
+ "package_sha256": "6826601c4a46143a679637e3df1b1ce282a6aa0022bd96628378e0f777d02b87",
+ "sha256sums_bad": [],
+ "tests_howm2": {
+  "exit": 0,
+  "tail": [
+   "8 passed in 3.52s"
+  ]
+ },
+ "ladder_regenerated": {
+  "HOWM2_REF": {
+   "exit": 0,
+   "identical_acc_pits": true
+  },
+  "HOWM2_DIAG": {
+   "exit": 0,
+   "identical_acc_pits": true
+  }
+ },
+ "analysis": {
+  "exit": 0,
+  "verdict_packaged": "HOWM1_DISCRIMINANT",
+  "verdict_restored": "HOWM1_DISCRIMINANT",
+  "criterion_identical": true,
+  "whole_file_identical": true
+ },
+ "seconds": 23.5,
+ "ok": true
+}

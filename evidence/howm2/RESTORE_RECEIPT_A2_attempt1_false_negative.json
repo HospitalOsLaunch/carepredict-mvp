@@ -1,0 +1,25 @@
+{
+ "package": "HOWM2_P2_A2_FINAL.zip",
+ "package_sha256": "737b26086cd0a830d03562690fef840d375b7f891429d5ede8b1fba819f2c794",
+ "sha256sums_bad": [],
+ "tests_howm2": {
+  "exit": 0,
+  "tail": [
+   "14 passed in 15.55s"
+  ]
+ },
+ "regenerated_identical": {
+  "a2_dec/VAL_000.json": true,
+  "a2_dec/HOWM2_REF_000.json": true,
+  "l2c/HOWM2_REF/000.json": true
+ },
+ "analyses_identical": {
+  "DECISION_A2.json": true,
+  "L2C_A2.json": true,
+  "VALIDATION_L4N.json": false,
+  "COVERAGE_A2.json": true
+ },
+ "verdict_restored": "NOWCAST_MARGE_LT_15",
+ "seconds": 109.9,
+ "ok": false
+}

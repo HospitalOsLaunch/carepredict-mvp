@@ -1,0 +1,28 @@
+{
+ "description": "X1=S01 discharge locked at 10:00 (observed authorisation, validated instruction); X2=S02 presence prolonged t=4 h from its visible planned departure 12:00; complements searched until tomorrow 20:00.",
+ "fixture": "nominal_auto.json",
+ "locks": {
+  "deadline": {
+   "day_offset": 1,
+   "local_time": "20:00:00"
+  },
+  "locks": [
+   {
+    "at": "2026-11-17T09:00:00+00:00",
+    "basis": "validated_instruction",
+    "kind": "discharge_at",
+    "stay_id": "S01"
+   },
+   {
+    "basis": "validated_instruction",
+    "extension_hours": 4,
+    "kind": "extend_presence",
+    "reference_time": "2026-11-17T11:00:00+00:00",
+    "stay_id": "S02"
+   }
+  ],
+  "search_complements": true
+ },
+ "scenario_id": "SC-X1X2",
+ "synthetic": true
+}

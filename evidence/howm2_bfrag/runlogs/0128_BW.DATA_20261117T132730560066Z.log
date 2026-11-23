@@ -1,0 +1,47 @@
+F.....F..........                                                        [100%]
+=================================== FAILURES ===================================
+_____________________ test_w1_partitions_new_and_disjoint ______________________
+
+    def test_w1_partitions_new_and_disjoint():
+        W.register()
+        new = {G.establishment("BF2W_CONF", s).ekey for s in range(60)}
+        for p in list(C.PARTS) + ["BFRAG_DEV", "BFRAG_TUNE", "BFRAG_CONF"]:
+>           assert not new & {G.establishment(p, s).ekey for s in range(60)}, p
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/bfrag2w/test_pilot.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/bfrag2w/test_pilot.py:43: in <setcomp>
+    assert not new & {G.establishment(p, s).ekey for s in range(60)}, p
+                      ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+partition = 'BF2_DEV', index = 6, token = None
+
+    def establishment(partition: str, index: int, token: str | None = None) -> EstablishmentSpec:
+        if partition in SEALED and token != "RESERVE-UNSEALED-BY-PROTOCOL":
+            raise SealedPartitionError(f"partition {partition} is sealed (G0): generation refused")
+        if partition not in PARTITION_SIZES or not 0 <= index < PARTITION_SIZES[partition]:
+>           raise ValueError(f"unknown establishment {partition}/{index}")
+E           ValueError: unknown establishment BF2_DEV/6
+
+src/hospitalos/howm/generator.py:128: ValueError
+_______________ test_w7_historical_sources_and_results_unchanged _______________
+
+    def test_w7_historical_sources_and_results_unchanged():
+        for fr in ("evidence/howm2_bfrag2/FREEZE1_PROTOCOL.json", "evidence/howm2_bfrag2/FREEZE2_BFRAG2.json", "evidence/howm2_bfrag/FREEZE_BFRAG.json"):
+            for p, h in json.loads((ROOT / fr).read_text())["files_sha256"].items():
+                if p.endswith("BUDGET_LEDGER_HOWM2_B.jsonl"):
+                    continue
+>               assert hashlib.sha256((ROOT / p).read_bytes()).hexdigest() == h, p
+E               AssertionError: scripts/bfrag2.py
+E               assert '311366753129...573330a66e6de' == 'f49c891f5d07...e698d63c001af'
+E                 
+E                 - f49c891f5d071d59739c0536edfa2a14dd2f4556a8c2fda1d5ae698d63c001af
+E                 + 3113667531292c9e76df511252c76d9795fe6ec4b3ff8c81b73573330a66e6de
+
+tests/bfrag2w/test_pilot.py:138: AssertionError
+=========================== short test summary info ============================
+FAILED tests/bfrag2w/test_pilot.py::test_w1_partitions_new_and_disjoint - Val...
+FAILED tests/bfrag2w/test_pilot.py::test_w7_historical_sources_and_results_unchanged
+2 failed, 15 passed in 8.81s

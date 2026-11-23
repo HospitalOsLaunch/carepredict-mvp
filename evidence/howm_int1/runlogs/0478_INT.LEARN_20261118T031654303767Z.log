@@ -1,0 +1,19 @@
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t2_M_s0", "upd": 2270, "stopped": null, "best": 1000, "params": 1899540, "last": {"upd": 2250, "loss": 0.8296300768852234, "st": 0.3175237774848938, "co": 0.11198677867650986, "cum": 0.036348856985569, "eff": 0.06750371307134628, "rup": 0.05250423401594162, "T": 12}}
+{"run": "W_t2_M_s1", "upd": 2231, "stopped": null, "best": 1000, "params": 1899540, "last": {"upd": 2200, "loss": 1.140279769897461, "st": 0.3546517491340637, "co": 0.13614152371883392, "cum": 0.055273350328207016, "eff": 0.10764546692371368, "rup": 0.11197173595428467, "T": 12}}
+{"run": "W_t2_M_s2", "upd": 2232, "stopped": null, "best": 1000, "params": 1899540, "last": {"upd": 2200, "loss": 2.995729684829712, "st": 0.9430081844329834, "co": 0.4226720631122589, "cum": 0.05917462706565857, "eff": 0.3036060929298401, "rup": 0.10568839311599731, "T": 12}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}

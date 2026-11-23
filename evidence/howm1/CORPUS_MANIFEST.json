@@ -1,0 +1,1561 @@
+{
+ "g0_sha256": "8740e59828e33f3694048c82c8fc6e2aa04833040a6996ac3ceefe28ab72252b",
+ "files": {
+  "TRAIN/000": {
+   "file": "TRAIN/000.pkl.gz",
+   "sha256": "87605f431fbb1b69f0b8e3f631c943bf3439ffc2359fdbe988f99d5cb475d785",
+   "bytes": 617509,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/001": {
+   "file": "TRAIN/001.pkl.gz",
+   "sha256": "07746840273f28d95d1a04736538382980ce86682bec9306f1faa15b0c8cd525",
+   "bytes": 388845,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/002": {
+   "file": "TRAIN/002.pkl.gz",
+   "sha256": "d96c2d9ddf61ab6e27fbb9d30cb483964c1a902aefcab48a34dbac6e71548b26",
+   "bytes": 500757,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/003": {
+   "file": "TRAIN/003.pkl.gz",
+   "sha256": "025bd64a84dd72753389c294bcf6754c8de43281e74d30ca20c4b5cc55f48064",
+   "bytes": 275711,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/004": {
+   "file": "TRAIN/004.pkl.gz",
+   "sha256": "4912eb7e151d567266b01f40703626e83d931344d7eca84b42d7887466611f03",
+   "bytes": 484197,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/005": {
+   "file": "TRAIN/005.pkl.gz",
+   "sha256": "1ab0d15955de4fa2d186dca247f7139ea7ccb4cb5a52e5c9fdce9508220e8c01",
+   "bytes": 617293,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/006": {
+   "file": "TRAIN/006.pkl.gz",
+   "sha256": "a7828db51078456fd81bb5fd4fb975b6bc968c25e547e70bd91687ce7c5346c0",
+   "bytes": 253033,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/007": {
+   "file": "TRAIN/007.pkl.gz",
+   "sha256": "2293b24821a5f770bce4f127145ce87e0d442dbefe42e4359d33e16ae7f61821",
+   "bytes": 451988,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/008": {
+   "file": "TRAIN/008.pkl.gz",
+   "sha256": "ac38d60f1523ae4ba6f0a6131da5d69926b7bc23caff1d4387b25b9a607fb828",
+   "bytes": 483632,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/009": {
+   "file": "TRAIN/009.pkl.gz",
+   "sha256": "8b0cd65bc76899b86e3c1e108014f985cf5424c3e43a157981f51828c871469b",
+   "bytes": 280086,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/010": {
+   "file": "TRAIN/010.pkl.gz",
+   "sha256": "67345bcf2f8531de31daca3affc89f328d5ac4cdfdf5ab42a149ff82cc1ea041",
+   "bytes": 257729,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/011": {
+   "file": "TRAIN/011.pkl.gz",
+   "sha256": "3b4af4a6201fe5cbc2c081d375cf9dd1f88c5c1c11152c8349b41b939979c64d",
+   "bytes": 256290,
+   "rejected_actions": {
+    "lender_minimum": 3
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/012": {
+   "file": "TRAIN/012.pkl.gz",
+   "sha256": "c6e08d17d648d9a334e8f3ebb9819f5ab80cb215d95de54d4f22f0085bc6f6c5",
+   "bytes": 267360,
+   "rejected_actions": {
+    "lender_minimum": 4
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/013": {
+   "file": "TRAIN/013.pkl.gz",
+   "sha256": "c072505fdd8100c28e12900e5112bc8a00c6691b529eeb07e44bc46331c27823",
+   "bytes": 377381,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/014": {
+   "file": "TRAIN/014.pkl.gz",
+   "sha256": "ea309d2641448735c24f84bfeae5a210b2857a0dac88afda1931ce6379347109",
+   "bytes": 365356,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/015": {
+   "file": "TRAIN/015.pkl.gz",
+   "sha256": "78f5497f1c401495b794f0bd9794d8b84d0615792a9a8241646d917e30153fc9",
+   "bytes": 345908,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/016": {
+   "file": "TRAIN/016.pkl.gz",
+   "sha256": "691fbedcbdd2c969d093d615bdfe9143754d1e485fb10a4e32c3e6423e3938cd",
+   "bytes": 346261,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/017": {
+   "file": "TRAIN/017.pkl.gz",
+   "sha256": "99344cbe59610d50e5e04711e0608ab68f03e468afed62e3986b40ad6f72d46e",
+   "bytes": 298840,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/018": {
+   "file": "TRAIN/018.pkl.gz",
+   "sha256": "a1ab7e3ac4a0a4a15b3416514f643ece7dd6b573f661c1dd8e3d00b7da4b30b4",
+   "bytes": 393252,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/019": {
+   "file": "TRAIN/019.pkl.gz",
+   "sha256": "53239bcbb9b4d6467674ccc31cf566418f35731592397649553e1f3c1f397045",
+   "bytes": 438920,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/020": {
+   "file": "TRAIN/020.pkl.gz",
+   "sha256": "f5cf505def0f1d78dcc6d843965722bc704e7cad956534e7047f73029c2876a2",
+   "bytes": 378633,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/021": {
+   "file": "TRAIN/021.pkl.gz",
+   "sha256": "fcd09bc15a98e2e3cd6900f3a5f3786484c95c7586a548b85393e4443297c7f1",
+   "bytes": 431760,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/022": {
+   "file": "TRAIN/022.pkl.gz",
+   "sha256": "e61a076c90f5030d364c20000d58dd4d7e7ff61a7af1f8f34d8b8341b2ac7a1c",
+   "bytes": 337080,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/023": {
+   "file": "TRAIN/023.pkl.gz",
+   "sha256": "93773c00df4f167bc775f1dff37004b73df9829142881e17581fc16a937454a8",
+   "bytes": 351227,
+   "rejected_actions": {
+    "lender_minimum": 3
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/024": {
+   "file": "TRAIN/024.pkl.gz",
+   "sha256": "3421cf64a7429ee381b23004bd19cf3fb51627350b1e0a8b9f789732d19684b7",
+   "bytes": 624409,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/025": {
+   "file": "TRAIN/025.pkl.gz",
+   "sha256": "a48853c24ce5b0f0e340500c18a578c513f3d36dc0e13d7993b4344f610796e9",
+   "bytes": 679109,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/026": {
+   "file": "TRAIN/026.pkl.gz",
+   "sha256": "fc74f42c656292eaf40007f42814d5b1c15d8c49070a917549fcc05e654dd66a",
+   "bytes": 258917,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/027": {
+   "file": "TRAIN/027.pkl.gz",
+   "sha256": "e51b930e696518af0c2598096ba0e0655d7b871d43e69f684596950eca5d785e",
+   "bytes": 684102,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/028": {
+   "file": "TRAIN/028.pkl.gz",
+   "sha256": "06960ca8d861b43b452f8918814f41aed9218e331df63af01f55f3b8a5dc2783",
+   "bytes": 344069,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/029": {
+   "file": "TRAIN/029.pkl.gz",
+   "sha256": "52ef17263e08a993fabff97f4be30060e58401e7ab02e0cc30a581e2a6b16a51",
+   "bytes": 273164,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/030": {
+   "file": "TRAIN/030.pkl.gz",
+   "sha256": "0dae7dc9467bf789b600485271920f63844de9ee026201736ae63c866eb5d4a3",
+   "bytes": 350564,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/031": {
+   "file": "TRAIN/031.pkl.gz",
+   "sha256": "f47431f1f21f6dc7623ece64edfb7d6f064d69061d072efaa6e550946e6d4872",
+   "bytes": 355435,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/032": {
+   "file": "TRAIN/032.pkl.gz",
+   "sha256": "e138bd1ff86df669949ad994738ba695c9f04f24810ebe0b44787eb716c35a85",
+   "bytes": 328081,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/033": {
+   "file": "TRAIN/033.pkl.gz",
+   "sha256": "7ce98d2c6df3fb8bdad325ecd9f8bb81acf06f3fcbc9925b8bb4ef935501f1ec",
+   "bytes": 342684,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/034": {
+   "file": "TRAIN/034.pkl.gz",
+   "sha256": "95da5c44fdf50a18333df464fb8954aa873cd6a1d5e8bf4a7191ef39407ffcfb",
+   "bytes": 260502,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/035": {
+   "file": "TRAIN/035.pkl.gz",
+   "sha256": "912b36a4d64c9fac4cea2fca9e439aa2b9573fc326537c489dc275c20ffbcb02",
+   "bytes": 385999,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/036": {
+   "file": "TRAIN/036.pkl.gz",
+   "sha256": "9c852e32075314f79981b50c27e85124967d365a7a4638a99c05ac00b33f825e",
+   "bytes": 308344,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/037": {
+   "file": "TRAIN/037.pkl.gz",
+   "sha256": "cc650cf4245f814972b0706f189250d2aa00721cfa1ec4640e65deb598c153e9",
+   "bytes": 342832,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/038": {
+   "file": "TRAIN/038.pkl.gz",
+   "sha256": "520ec3993ed79768ba47999f22f3213a3a2d7ac1e7b43469e83107c0838f2655",
+   "bytes": 381728,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/039": {
+   "file": "TRAIN/039.pkl.gz",
+   "sha256": "91dde62f8b2b8814e29763200655a13cf8b1b4388b60f5621e310f39f5b2fd20",
+   "bytes": 351204,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/040": {
+   "file": "TRAIN/040.pkl.gz",
+   "sha256": "849d9e83de8ad446b77b53784c2bd04253ed7afb609ddb41931724b304825b85",
+   "bytes": 428609,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "TRAIN/041": {
+   "file": "TRAIN/041.pkl.gz",
+   "sha256": "bd711367af6ef195f4d818f1cfd07e826b56c35ac2676419ac0189a444d2a063",
+   "bytes": 319758,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/042": {
+   "file": "TRAIN/042.pkl.gz",
+   "sha256": "c5ccc8a18039dfc10bb05db9d66dfe402129ed224e7e88f4d217c2e0f63958da",
+   "bytes": 395273,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/043": {
+   "file": "TRAIN/043.pkl.gz",
+   "sha256": "705a3e69cf31e3e95a1d42d39e868bf8eb3b3230a48b95df8145abb48440773c",
+   "bytes": 348749,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/044": {
+   "file": "TRAIN/044.pkl.gz",
+   "sha256": "f974923d99899823d84340413c6f76999619e2486e6ad2fbaae2e56ec9bf151f",
+   "bytes": 525465,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/045": {
+   "file": "TRAIN/045.pkl.gz",
+   "sha256": "238211a4e2042f63ac1cc9eeeb45c034ac883de14db9d37385205b06088e1167",
+   "bytes": 642300,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/046": {
+   "file": "TRAIN/046.pkl.gz",
+   "sha256": "9333f96d2f81d1f683ad3514e51f26b325afa8ecfa7f5630cff273879cc916a1",
+   "bytes": 272017,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "TRAIN/047": {
+   "file": "TRAIN/047.pkl.gz",
+   "sha256": "f2556b4fd35b15f2fa19773b1aa010c62dac2ff267cd97b3551c813a6d7455d0",
+   "bytes": 229629,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/000": {
+   "file": "VAL/000.pkl.gz",
+   "sha256": "02f6b2b31cb0e058d167e87baef24db2a4d266019426c87417d5d13d982d4129",
+   "bytes": 413536,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/001": {
+   "file": "VAL/001.pkl.gz",
+   "sha256": "70a6cb38dd2993566e925c3bac10cf483c4df4a2c7372a385aa8052bbf0f8e85",
+   "bytes": 455249,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/002": {
+   "file": "VAL/002.pkl.gz",
+   "sha256": "24a887f946f9e1d5694daef51fead257ae1ad03e59232629ae8482db642294ee",
+   "bytes": 530155,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/003": {
+   "file": "VAL/003.pkl.gz",
+   "sha256": "7929d56304643f83f17b6c76aeaf59a394c9abee8edc2600790b7e6c7187cd92",
+   "bytes": 628104,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/004": {
+   "file": "VAL/004.pkl.gz",
+   "sha256": "57a72ed8e3ce959241deb903379fcafe262ef23ba11e42938f715db25d838316",
+   "bytes": 1188580,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "VAL/005": {
+   "file": "VAL/005.pkl.gz",
+   "sha256": "849f1835e3a39fc8ea9e5b2f892cf7e5e3b5ef593acd8a5f4de6236d6a9e5bed",
+   "bytes": 396836,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/006": {
+   "file": "VAL/006.pkl.gz",
+   "sha256": "f2052cd92a3a0cafc6fc79c0f81258b4e1fe326c78237eb4dcc72515c1363897",
+   "bytes": 874680,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "VAL/007": {
+   "file": "VAL/007.pkl.gz",
+   "sha256": "f0cfb925f352f3de9e40278b867a19056267bab839919859d6a2977cac531eae",
+   "bytes": 997891,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "VAL/008": {
+   "file": "VAL/008.pkl.gz",
+   "sha256": "475af4564a8563ab663f316dabcfbdbf50b4d36b94a478f9331058e0ee878ec8",
+   "bytes": 268545,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/009": {
+   "file": "VAL/009.pkl.gz",
+   "sha256": "8a1f911db8c12d7fe1a98dbd3b532aaed5c808238fac18d9e49f7eee7c194f40",
+   "bytes": 430429,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/010": {
+   "file": "VAL/010.pkl.gz",
+   "sha256": "248268f322ec3ce1717e1717e766fe93c8ef32444c599648942a50ded733e7a1",
+   "bytes": 858056,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "VAL/011": {
+   "file": "VAL/011.pkl.gz",
+   "sha256": "8b4d39bcc144479553494d53f3697df5f3f0c3a299542d283b4e0b0f40c15ed0",
+   "bytes": 1082287,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/000": {
+   "file": "DEVTEST/000.pkl.gz",
+   "sha256": "5d5e65ee2191728b6fff8ad78e44755ac091ff9e94065a5508e65c29197a35e2",
+   "bytes": 757549,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "DEVTEST/001": {
+   "file": "DEVTEST/001.pkl.gz",
+   "sha256": "942da42807b7f5e08a55f80cb64f3b471235666dd3ceef3ff441148478fe9ee0",
+   "bytes": 637969,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "DEVTEST/002": {
+   "file": "DEVTEST/002.pkl.gz",
+   "sha256": "ed202a053487e78e0bdf0dacd0bbb42f3c1d41c4125427deb5c64e5d35317d16",
+   "bytes": 511830,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/003": {
+   "file": "DEVTEST/003.pkl.gz",
+   "sha256": "02fad1f6d5e1ad1fe7710accc571840101629fc443fbc465c5c0cd76c11ba312",
+   "bytes": 732173,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/004": {
+   "file": "DEVTEST/004.pkl.gz",
+   "sha256": "8b8c7540d6be4fb6e59b5933e76302b029299dfb911cde7196c0aacd9aa1f12a",
+   "bytes": 1209308,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/005": {
+   "file": "DEVTEST/005.pkl.gz",
+   "sha256": "e2c2e8052240d10487fa37d91e3a3c31ab7cba7ecbd79c2a3bdd404e53dcbb84",
+   "bytes": 1127928,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/006": {
+   "file": "DEVTEST/006.pkl.gz",
+   "sha256": "7b10103da68e451279e567ee04d3548ee317c15137d857eccbf31705fa7d5c68",
+   "bytes": 657495,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/007": {
+   "file": "DEVTEST/007.pkl.gz",
+   "sha256": "565dc2b6d17480eb4ba507ee6796baa33e18007860b1325395081f3d6d7334e9",
+   "bytes": 340995,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/008": {
+   "file": "DEVTEST/008.pkl.gz",
+   "sha256": "053a59170b052bd554f72fa21e14eb37a694f7576565adfa4e336d4c731bdb08",
+   "bytes": 624011,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "DEVTEST/009": {
+   "file": "DEVTEST/009.pkl.gz",
+   "sha256": "d65dcc9639d87e6702955c3a0e02e797826ba2243f841f016887bf58c4b9f588",
+   "bytes": 783629,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "DEVTEST/010": {
+   "file": "DEVTEST/010.pkl.gz",
+   "sha256": "a8bbc8eb67ab2caa4043cce2139a28a11728b5ad94e679ea0d98ba83282dd966",
+   "bytes": 772428,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/011": {
+   "file": "DEVTEST/011.pkl.gz",
+   "sha256": "1400bf86b98b026272f556b2a71d6e9c757392f04295229a8c7fb7ddb0baeaf0",
+   "bytes": 995820,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/012": {
+   "file": "DEVTEST/012.pkl.gz",
+   "sha256": "3b6d3d4a8b59650f8344a3156dc5ab2bd6e61c2d2a029c98ac4cff71c5fdbd67",
+   "bytes": 539028,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/013": {
+   "file": "DEVTEST/013.pkl.gz",
+   "sha256": "9fc44c6cb2d3d90a921bd24154c883b270551af8b0abb75e61650be38aa951f8",
+   "bytes": 774786,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.0,
+    "m5_drop": false,
+    "simple": true
+   }
+  },
+  "DEVTEST/014": {
+   "file": "DEVTEST/014.pkl.gz",
+   "sha256": "1a62396d3e2fd7b9585fb2b20f898b134e401cccb936127e23305320301991b8",
+   "bytes": 1261792,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/015": {
+   "file": "DEVTEST/015.pkl.gz",
+   "sha256": "d9ee338e6a0c8eca9b5438960e713cde09fcb9ce35ed8f755e4120c760c87e1a",
+   "bytes": 540642,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/016": {
+   "file": "DEVTEST/016.pkl.gz",
+   "sha256": "19c48b5af40043c9e796730d47cd59d499838fde01b246efc01b988717cd5ea1",
+   "bytes": 664460,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/017": {
+   "file": "DEVTEST/017.pkl.gz",
+   "sha256": "d9b5226b8166a2a0c89a082307bf2b73034dc7912055d0a6ca29a3945aac3376",
+   "bytes": 397503,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/018": {
+   "file": "DEVTEST/018.pkl.gz",
+   "sha256": "6780593d8ee74014815eea93e6eb2a4959b7b54c6b8deed2a6fdb3c0e87315fd",
+   "bytes": 633532,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/019": {
+   "file": "DEVTEST/019.pkl.gz",
+   "sha256": "279da8cfea42ff80e9dc78e02e82281764173da59cd0122f3b29331c199a8652",
+   "bytes": 412807,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": false,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/020": {
+   "file": "DEVTEST/020.pkl.gz",
+   "sha256": "eeaa5b159143af8987caf336b88dc38743dd78a9b872346854bd9cd510461c35",
+   "bytes": 367980,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/021": {
+   "file": "DEVTEST/021.pkl.gz",
+   "sha256": "5b29bb4a9c364b43b6681de6e648697ade8fe5f316a871b667f4a07d75b795de",
+   "bytes": 501704,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/022": {
+   "file": "DEVTEST/022.pkl.gz",
+   "sha256": "ffe16ea0100d8991e235ed1849f6397a0d58e4d4114a5c730bb470cc8d10f6d6",
+   "bytes": 593731,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DEVTEST/023": {
+   "file": "DEVTEST/023.pkl.gz",
+   "sha256": "b2ef03136d17f55976de21d89942cc933efb5fb6a556110ddf66017c8ac73091",
+   "bytes": 451729,
+   "rejected_actions": {},
+   "population": "REF",
+   "mech": {
+    "m2": true,
+    "m2_common": false,
+    "slow": 1.8,
+    "m3_kappa": 0.5,
+    "m5_drop": false,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/000": {
+   "file": "DIAG_DEV/000.pkl.gz",
+   "sha256": "dcda1b0fe304228095fd5d430063d1ea526bf49d7a3ed3a008d06fc9f7dcf43a",
+   "bytes": 434347,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/001": {
+   "file": "DIAG_DEV/001.pkl.gz",
+   "sha256": "d41c87bea0547ae6065fa3f313236433d4ac89d03e5e8025845a6cb009f0c9d3",
+   "bytes": 523571,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/002": {
+   "file": "DIAG_DEV/002.pkl.gz",
+   "sha256": "6d999a695cff4793c8ac1f60cd042039e93ccf5a471a9c6a9ddf85d5bbe4e257",
+   "bytes": 417724,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/003": {
+   "file": "DIAG_DEV/003.pkl.gz",
+   "sha256": "91bb381384be139c3be3b08d6dae5f8304e8cb5456cb711cbb5b94931ec91971",
+   "bytes": 461734,
+   "rejected_actions": {
+    "lender_minimum": 3
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/004": {
+   "file": "DIAG_DEV/004.pkl.gz",
+   "sha256": "c9cd6941af477d6ad9b4244667d67281b044cfc4473793c890826ec4bcff4cf5",
+   "bytes": 420517,
+   "rejected_actions": {},
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/005": {
+   "file": "DIAG_DEV/005.pkl.gz",
+   "sha256": "f530f82dbe3480a1b1e3d1b3c013ce984144283af4d0ada8a8a87dc188baccaf",
+   "bytes": 372147,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/006": {
+   "file": "DIAG_DEV/006.pkl.gz",
+   "sha256": "4a55fa37a0966a39af5ea6f3afa6815b08956c5d1f358038b6ced553cd0bdc74",
+   "bytes": 1129956,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/007": {
+   "file": "DIAG_DEV/007.pkl.gz",
+   "sha256": "09b8ef537da95ffbd70b95b221c43ad9e40b353d1c0a8150ea07114778e878ec",
+   "bytes": 314865,
+   "rejected_actions": {
+    "lender_minimum": 2
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/008": {
+   "file": "DIAG_DEV/008.pkl.gz",
+   "sha256": "e7c9471c8c9d50013522a15ee43adb6d137937404cbcb29579e8bfe1f852dad9",
+   "bytes": 540442,
+   "rejected_actions": {
+    "lender_minimum": 4
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/009": {
+   "file": "DIAG_DEV/009.pkl.gz",
+   "sha256": "aaadec5011ebc914783e23cb440b916b443de155b2aa169c64ed87b93ae16512",
+   "bytes": 284554,
+   "rejected_actions": {
+    "lender_minimum": 1
+   },
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/010": {
+   "file": "DIAG_DEV/010.pkl.gz",
+   "sha256": "7e021fed45146b39202beb4f80b18a06a53d9005b477bf62ec79ecc1ebe11453",
+   "bytes": 742847,
+   "rejected_actions": {},
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  },
+  "DIAG_DEV/011": {
+   "file": "DIAG_DEV/011.pkl.gz",
+   "sha256": "e31b7945b5321d7965b37c0c95114d1a6962c1d398c3c3468b6b21880d95fb2d",
+   "bytes": 937175,
+   "rejected_actions": {},
+   "population": "DIAG",
+   "mech": {
+    "m2": true,
+    "m2_common": true,
+    "slow": 2.5,
+    "m3_kappa": 1.5,
+    "m5_drop": true,
+    "simple": false
+   }
+  }
+ }
+}

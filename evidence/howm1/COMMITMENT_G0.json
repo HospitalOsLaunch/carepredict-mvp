@@ -1,0 +1,77 @@
+{
+ "schema": "HOWM1_G0_1",
+ "at": "2026-11-14T21:10:58Z",
+ "code": {
+  "src/hospitalos/howm/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/hospitalos/howm/b0.py": "e7fdbe58db8de67d086916d2ec36b81b2465472d2ac2ac77f9101390ad7e058a",
+  "src/hospitalos/howm/ckpt.py": "f1145d15f4ab1cb1055c2823821b99be756c488a6cf647cf527a7cd88ca5849a",
+  "src/hospitalos/howm/controllers.py": "976e49fdbc782f8cdfd9c3128bebd60c7140f8d70c885e23217b14249062134e",
+  "src/hospitalos/howm/corpus.py": "f08597aaae29489c92469adff18a2fff7cac61b567e57451e75d80023e654fce",
+  "src/hospitalos/howm/dataset.py": "6e2f7f60fb00bf75eee23d0c132dbc905edded4b2b33c4af828b8d7b00fcfeea",
+  "src/hospitalos/howm/galt.py": "3d36cdab2785c63d83c1a59dc123e7a25d1a6162011ec6fe871cd572c6a69623",
+  "src/hospitalos/howm/generator.py": "6f46d500a6c732a5fd18ff019974e89afaf384e737c1c3d8ae00ed782ea9271c",
+  "src/hospitalos/howm/heads.py": "d922ea3a7fbd12a2494359b7d5f265ddc72b83e0946453f44fe2b4bebd18bf63",
+  "src/hospitalos/howm/history.py": "06f2b9f05a315a939515ee488429a18b89c26c1d1ac2d369a9eec5c54e5f64a0",
+  "src/hospitalos/howm/keys.py": "b547c3ff0c5d313cc075a3f48cd3d254e8bbae700db9af7fb16875f947a79018",
+  "src/hospitalos/howm/ledger.py": "52cbf05d0ec6e870de433c9d2895ff6c4e301c6447c5a18abe753def08a9b3fb",
+  "src/hospitalos/howm/manual.py": "5681b5295cb31b31ec92e1903e0ccf48e89edb591cf3e59f4b71037ae011f78d",
+  "src/hospitalos/howm/nets.py": "cf9a1e074ccf20024d65071e2d5b4e37594ce75739ef9b98dfa5739f61410ceb",
+  "src/hospitalos/howm/predict.py": "cc1f48b4e979ebc4d9d6e9e4ca6f336d9399a5667391a86959b44b41246a70a2",
+  "src/hospitalos/howm/rollout.py": "635bdbdedfd320d68a6674c104676989a62c0f491ab9a6e65f055a12be1acccd",
+  "src/hospitalos/howm/train.py": "3cc076192cf2c94b9c16cf5932fde9ac6df73e92c4585720fc7dcb477d185e89",
+  "src/hospitalos/howm/verify.py": "5540a9e62bfaa75deedc1204306db77a12d2a31ae7fc0989ca75391aae3fcad7",
+  "src/hospitalos/howm/world.py": "6869fc4aa891e1d0b4c42fe74296a5d739d625e64fbda8732ae5e4993bd4df4a",
+  "scripts/howm_budget_run.py": "da17e8b56bf6fa0b5ca50c2c043a561fda6557ad2c54eafcd1c58caa21354698",
+  "scripts/howm_env_check.py": "1970c85d1ec193192060d65456168d5dd92a2b05a69192a117446c7f71507cf9",
+  "scripts/howm_r0.py": "5ab4072d4d2d22c1c52175336f5ef79e840feae18585ae0d231c0ec39d972cc5"
+ },
+ "norm": {
+  "docs/howm1/NORME_HOWM1_R0_R1_v1_2.md": "f82fe80fe60ab028f0a0437f5caadf62cca9e5eab756a616c0d07025dfb5e2ae",
+  "docs/howm1/EXPERIMENT_HOWM1_R0_R1_v1_2.json": "9c28ddca5d8cc20f963c81136d49dd15fecc00314f1732ab9e98573cabc0bec8"
+ },
+ "accord_sha256": "1f530d66e63178dc29383caa238c2963b31d1feb0e652f91b8edb3953b60daef",
+ "partitions": {
+  "TRAIN": 48,
+  "VAL": 12,
+  "DEVTEST": 24,
+  "DIAG_DEV": 12,
+  "RESERVE_REF": 48,
+  "RESERVE_DIAG": 16
+ },
+ "origins": {
+  "TRAIN": [
+   24,
+   165,
+   48
+  ],
+  "VAL": [
+   24,
+   143,
+   120
+  ],
+  "DEVTEST": [
+   24,
+   143,
+   120
+  ],
+  "DIAG_DEV": [
+   24,
+   143,
+   120
+  ]
+ },
+ "sealed_reserve_seed_digest": "f233469ab650827a9b598f82cc97d2f60d396c1094c48ff9d7e7d0095ec0729f",
+ "seed_rule": "establishment key = key('HOWM1', partition, index); realisation r and primitives keyed",
+ "bootstrap_seed": 1684492122,
+ "decision_instants": {
+  "day": 5,
+  "local_hours": [
+   7,
+   11,
+   15,
+   19
+  ]
+ },
+ "delta_dec": 15.0,
+ "rules": "population laws/mixtures fixed by code hash; never tuned on any model gain; DEVTEST/DIAG_DEV read once after F1"
+}

@@ -1,0 +1,427 @@
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/sklearn/linear_model/_ridge.py:228: LinAlgWarning: An ill-conditioned matrix detected: slice 0 has rcond = 3.53089433247078e-08.
+  return linalg.solve(A, Xy, assume_a="pos", overwrite_a=True).T
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+{"ridge_1.0": {"fit_seconds": 1.4346649646759033, "bytes": 9666, "val": {"2": {"situations": 519, "rel_regret": 0.04109331592917442, "effect_rmse": 407.3958740234375, "spearman": 0.3867716343850029}, "4": {"situations": 183, "rel_regret": 0.004364802036434412, "effect_rmse": 201.9985809326172, "spearman": 0.31516383598500747}, "8": {"situations": 198, "rel_regret": 0.004101715981960297, "effect_rmse": 268.2151794433594, "spearman": 0.32365961440632435}}, "train_rows": 67386}, "ridge_100.0": {"fit_seconds": 1.472635269165039, "bytes": 9666, "val": {"2": {"situations": 519, "rel_regret": 0.04041244089603424, "effect_rmse": 407.1786804199219, "spearman": 0.38817510768604513}, "4": {"situations": 183, "rel_regret": 0.0043046013452112675, "effect_rmse": 200.14190673828125, "spearman": 0.32047196206427553}, "8": {"situations": 198, "rel_regret": 0.004101715981960297, "effect_rmse": 266.8125915527344, "spearman": 0.3294688017554731}}, "train_rows": 67386}}

@@ -5,41 +5,37 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "carepredict-mvp"
 version = "0.1.0"
-description = "CarePredict v0 pass 1: sovereign data ingestion, feature engineering, and feature store."
+description = "HospitalOS: observation-mode decision support for bed and discharge management (hybrid cockpit, 24-hour planner), synthetic foundation and research."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+  # Product (hybrid cockpit API, 24-hour planner), synthetic foundation, research models and the
+  # CarePredict API/dashboard. Exact versions: requirements.lock (single locked environment).
   "cloudpickle>=3.0,<4.0",
   "confluent-kafka>=2.4.0,<3.0.0",
-  "dbt-core>=1.7.0,<1.8.0",
-  "dbt-postgres>=1.7.0,<1.8.0",
-  "dagster>=1.7.0,<1.8.0",
-  "dagster-dbt>=0.23.0,<0.24.0",
-  "dagster-postgres>=0.23.0,<0.24.0",
-  "dagster-webserver>=1.7.0,<1.8.0",
-  "feast[redis,postgres]>=0.40.0,<0.41.0",
   "fastapi>=0.111.0,<1.0.0",
   "fhir.resources>=7.1.0,<8.0.0",
-  "great-expectations>=0.18.0,<0.19.0",
   "hl7>=0.4.5,<0.5.0",
   "lightning>=2.3.0,<3.0.0",
-  "mlflow>=2.14.0,<3.0.0",
   "mapie>=0.8.0,<1.0.0",
+  "mlflow>=2.14.0,<3.0.0",
   "numpy>=1.26.0,<3.0.0",
   "pandas>=2.2.0,<3.0.0",
-  "scikit-learn>=1.5,<1.9",
-  "properscoring>=0.1,<1.0",
   "prometheus-client>=0.20.0,<1.0.0",
+  "properscoring>=0.1,<1.0",
   "psycopg[binary,pool]>=3.1.0,<4.0.0",
   "psycopg2-binary>=2.9.9,<3.0.0",
   "pydantic>=2.7.0,<3.0.0",
-  "pytorch-forecasting>=1.0.0,<2.0.0",
   "pyyaml>=6.0.0,<7.0.0",
-  "structlog>=24.1.0,<25.0.0",
+  "requests>=2.31,<3.0",
+  "scikit-learn>=1.8.0,<1.9",  # 1.8.0: version of the archived D pickles (INT-1, P5)
+  "scipy>=1.11,<2.0",
   "streamlit>=1.37.0,<2.0.0",
-  "torch>=2.3.1,<2.5.0",
+  "structlog>=24.1.0,<25.0.0",
+  # 2.15.0+cpu is the version of the research checkpoints (HOWM, INT-1); CPU wheels from
+  # https://download.pytorch.org/whl/cpu
+  "torch>=2.3.1,<2.16",
   "typer>=0.12.0,<1.0.0",
-  "uni2ts @ git+https://github.com/SalesforceAIResearch/uni2ts@main",
   "uvicorn[standard]>=0.30.0,<1.0.0",
 ]
 
@@ -48,6 +44,7 @@ train = "rs_jepa.cli:main"
 
 [project.optional-dependencies]
 dev = [
+  "httpx>=0.27,<1.0",
   "mypy>=1.10.0,<2.0.0",
   "pytest>=8.2.0,<9.0.0",
   "pytest-cov>=5.0.0,<6.0.0",
@@ -59,6 +56,20 @@ dev = [
   "types-PyYAML>=6.0.12,<7.0.0",
 ]
 
+# Data platform: runs in its own image (infrastructure/dagster/Dockerfile, exact pins there). Not in
+# requirements.lock: feast 0.40 and great-expectations 0.18 require numpy<2, the research results use numpy 2.
+platform = [
+  "dbt-core>=1.7.0,<1.8.0",
+  "dbt-postgres>=1.7.0,<1.8.0",
+  "dagster>=1.7.0,<1.8.0",
+  "dagster-dbt>=0.23.0,<0.24.0",
+  "dagster-postgres>=0.23.0,<0.24.0",
+  "dagster-webserver>=1.7.0,<1.8.0",
+  "feast[redis,postgres]>=0.40.0,<0.41.0",
+  "great-expectations>=0.18.0,<0.19.0",
+]
+
+# Legacy TFT/Moirai wrappers (services/ml/models); not in requirements.lock (uni2ts has no release pin).
 foundation = [
   "pytorch-forecasting>=1.0.0,<2.0.0",
   "uni2ts>=1.2.0",
@@ -74,7 +85,19 @@ hospitalos = ["py.typed"]
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-extend-exclude = ["src/hospitalos/synthetic/v041", "build"]
+# Research code under freeze (SHA-256 recorded in its campaign freezes and ledgers): reformatting it would
+# break the freeze checks. It is excluded from lint; the product, the synthetic foundation, services and the
+# shared tooling stay linted.
+extend-exclude = [
+  "src/hospitalos/synthetic/v041", "build", "web/node_modules", "delivery",
+  "src/hospitalos/howm", "src/hospitalos/howm2", "src/hospitalos/howmint",
+  "src/hospitalos/bfrag", "src/hospitalos/bfrag2", "src/hospitalos/bfrag2w", "src/hospitalos/p5",
+  "tests/howm", "tests/howm2", "tests/howm_int1", "tests/bfrag", "tests/bfrag2", "tests/bfrag2w", "tests/p5",
+  "scripts/int1", "scripts/filter_pipeline", "scripts/filter_validation", "scripts/filter_jepa",
+  "scripts/action_effects", "scripts/plan48", "scripts/dev",
+  "scripts/howm*.py", "scripts/bfrag*.py", "scripts/bf2w*.py", "scripts/p5*.py", "scripts/ds_*.py",
+  "scripts/restore_receipt_howm1.py", "evidence",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "C4"]
@@ -91,6 +114,11 @@ disallow_subclassing_any = true
 [[tool.mypy.overrides]]
 module = ["hospitalos.synthetic.v041.*"]
 ignore_errors = true
+
+# Optional extras that are not in requirements.lock (platform image, legacy foundation models).
+[[tool.mypy.overrides]]
+module = ["feast", "feast.*", "pytorch_forecasting", "pytorch_forecasting.*", "uni2ts", "uni2ts.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"

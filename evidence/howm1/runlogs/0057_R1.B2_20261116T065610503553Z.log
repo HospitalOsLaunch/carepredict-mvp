@@ -1,0 +1,1 @@
+{"kind": "B2", "lr": 0.001, "seed": 0, "load_s": 2.6, "status": "done", "epoch": 26, "batch_pos": 0, "best_val": 7.210222281442746, "best_epoch": 6, "bad": 20, "done": true, "steps": 1248, "train_seconds": 57.44253704299899}

@@ -1,0 +1,61 @@
+{
+  "version": "3-timing",
+  "dev_partition": "FILTER_V3_DEV_20261120",
+  "test_partition": "FILTER_V3_TIMING_TEST_20261120",
+  "test_structures": 8,
+  "frozen_fit": "evidence/filter_validation/run/fit.json",
+  "delays": [
+    180
+  ],
+  "origin_hours": 58,
+  "futures": [
+    1,
+    2
+  ],
+  "calibration_draws": [
+    20001,
+    20002,
+    20003,
+    20004,
+    20005,
+    20006,
+    20007,
+    20008,
+    20009,
+    20010,
+    20011,
+    20012,
+    20013,
+    20014,
+    20015,
+    20016
+  ],
+  "planning_draws": [
+    10001,
+    10002,
+    10003,
+    10004,
+    10005,
+    10006,
+    10007,
+    10008,
+    10009
+  ],
+  "arms": [
+    "legacy",
+    "public",
+    "lifecycle",
+    "true_state"
+  ],
+  "selection": "Origin 58h chosen on four DEV structures across five predeclared origins because true-state planning changed two actions there. Independent new TEST partition; evaluate all eight structures, no individual selection. No new fitting. Other V3 assumptions retained.",
+  "calibration": "Hourly paired legacy replay, corrected public replay, analytic service correction and 16-particle constrained lifecycle reconstruction; free/occupied beds, active cleaning/transport, queue.",
+  "decision": "Every 6h, none plus earliest admissible cleaning/transport slot wholly inside 24h followup. Remaining followup projection; equal daily budget cap, actual staff-hours reported. Ties prefer none. Three independent paired planning futures. Same structural law supplied to every prospective planner, not actual future innovations.",
+  "primary": "MAE free beds and patient-minutes public minus lifecycle, separately by delay, bootstrap 2000 by structure seed 20261120",
+  "guards": [
+    "uncovered_care_min",
+    "staff_hours",
+    "terminal_queue",
+    "rejected"
+  ],
+  "limits": "Service-only inference misses invisible starts, discharges and arrivals. Queue reconciliation is a constrained approximation, not a full Bayesian posterior. Actual admission times for inferred occupants remain unknown. No clinical or real-hospital validation."
+}

@@ -1,0 +1,20 @@
+1 file reformatted
+E731 Do not assign a `lambda` expression, use a `def`
+  --> tests/decision_support/test_corrections_v5.py:77:5
+   |
+75 |       assert problems and all("lending_unit_minimum_cumulative:U-LOAN" in p for p in problems)
+76 |       v = AS_OF + timedelta(minutes=30)
+77 | /     keys = lambda o: {
+78 | |         r[1]
+79 | |         for r in _reservation_requests(  # noqa: E731
+80 | |             make_plan(snap, "auto", (reinforcement_action(snap, o, v),), o.option_id).actions, snap
+81 | |         )
+82 | |         if r[0].startswith("lend:")
+83 | |     }
+   | |_____^
+84 |       assert keys(r2) <= keys(r1)  # same hourly keys: the two windows meet in the ledger
+   |
+help: Rewrite `keys` as a `def`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

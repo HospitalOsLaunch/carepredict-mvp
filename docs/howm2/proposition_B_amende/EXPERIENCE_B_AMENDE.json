@@ -1,0 +1,70 @@
+{
+ "experiment": "HOWM2-B-amended",
+ "status": "NOT_EXECUTED (decision n.5: preparation only)",
+ "training": false,
+ "time_convention": {
+  "true_state": "after all events dated <= t incl. tick t0, before any decision at t",
+  "public": "avail <= t",
+  "zero_lag_events_at_t": "in both S_true and S_pub",
+  "action": "applied at t on each system's start state, before tick t0+1",
+  "rollout_start": "tick t0+1, no replay of events <= t",
+  "tests": [
+   "T-B03",
+   "T-B03b",
+   "T-B03c",
+   "T-B03d"
+  ],
+  "must_pass_before_G_ID": true
+ },
+ "design": {
+  "iterations_max": 3,
+  "population": "REF2_TUNE (60)",
+  "tune_pass_is_not_confirmation": true
+ },
+ "confirmation": {
+  "population": "REF2_CONF (200 + 24x4 instants), generated after the design freeze, never used for tuning",
+  "single_campaign": true,
+  "no_retouch_no_reuse_on_failure": true
+ },
+ "gate_G_ID": {
+  "M_pub": {
+   "definition": "L(best of {L1-v2,L2-v2,L2c-v2}) - L(L4-v2), nats/item, R1 aggregation over families validated on TUNE (addendum-2 rule), best ref re-chosen per replicate",
+   "lower_bound_ge": 0.02,
+   "horizons": [
+    6,
+    24
+   ]
+  },
+  "decision": {
+   "definition": "U(best public competitor) - U(L4-N-v2 planner), U units, per instant then mean",
+   "best_public_competitor": "chosen on TUNE among {rule v2, C_param-v2, C_pub_snap-v2, L4-v2 planner} by a procedure frozen at design freeze",
+   "comparable": "same actions, constraints, objective, M, choice keys, OBJ-LEX-1",
+   "lower_bound_ge": 15
+  },
+  "bootstrap": {
+   "B": 2000,
+   "cluster": "establishment"
+  },
+  "reported_separately": [
+   "privileged information value = U(best public) - U(C_full-v2)",
+   "gain from public history = U(best public) - U(L4-N-v2)",
+   "share with instability flag"
+  ]
+ },
+ "freeze_G0_v2": "only after a successful independent confirmation",
+ "fail_verdict": {
+  "label": "PAS_DE_MARGE_IDENTIFIABLE_A_CETTE_ECHELLE",
+  "scope": "the tested setup only, not a general impossibility"
+ },
+ "compute_proposed_not_authorised": {
+  "ceiling_s": 11400,
+  "device": "CPU",
+  "eur": 0,
+  "ledger": "BUDGET_LEDGER_HOWM2_B"
+ },
+ "statuses": {
+  "prototype": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO"
+ }
+}

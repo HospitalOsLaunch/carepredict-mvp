@@ -1,0 +1,1708 @@
+{
+  "fitted": {
+    "cleaning": [
+      68.20261437908496,
+      25.045751633986928,
+      459
+    ],
+    "transport": [
+      78.7218045112782,
+      24.94736842105263,
+      266
+    ]
+  },
+  "pairs": [
+    {
+      "structure": 0,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 10230.0,
+        "wait_by_unit": {
+          "U0": 4275.0,
+          "U1": 2880.0,
+          "U2": 255.0,
+          "U3": 2820.0
+        },
+        "uncovered_care_min": 3748.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 10230.0,
+        "wait_by_unit": {
+          "U0": 4275.0,
+          "U1": 2880.0,
+          "U2": 255.0,
+          "U3": 2820.0
+        },
+        "uncovered_care_min": 3748.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 0,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 8130.0,
+        "wait_by_unit": {
+          "U0": 2265.0,
+          "U1": 4680.0,
+          "U2": 0.0,
+          "U3": 1185.0
+        },
+        "uncovered_care_min": 3165.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 6,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 8130.0,
+        "wait_by_unit": {
+          "U0": 2265.0,
+          "U1": 4680.0,
+          "U2": 0.0,
+          "U3": 1185.0
+        },
+        "uncovered_care_min": 3165.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 6,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 1,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 24195.0,
+        "wait_by_unit": {
+          "U0": 10980.0,
+          "U1": 12240.0,
+          "U2": 975.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 4045.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 870,
+        "rupture_onsets": 2,
+        "terminal_queue": 23,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              59,
+              96
+            ]
+          ],
+          "U1": [
+            [
+              75,
+              96
+            ]
+          ],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 24195.0,
+        "wait_by_unit": {
+          "U0": 10980.0,
+          "U1": 12240.0,
+          "U2": 975.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 4045.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 870,
+        "rupture_onsets": 2,
+        "terminal_queue": 23,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              59,
+              96
+            ]
+          ],
+          "U1": [
+            [
+              75,
+              96
+            ]
+          ],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 1,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 23100.0,
+        "wait_by_unit": {
+          "U0": 9795.0,
+          "U1": 10320.0,
+          "U2": 2985.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 5215.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 345,
+        "rupture_onsets": 2,
+        "terminal_queue": 17,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              59,
+              73
+            ]
+          ],
+          "U1": [
+            [
+              87,
+              96
+            ]
+          ],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 23100.0,
+        "wait_by_unit": {
+          "U0": 9795.0,
+          "U1": 10320.0,
+          "U2": 2985.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 5215.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 345,
+        "rupture_onsets": 2,
+        "terminal_queue": 17,
+        "terminal_max_wait_min": 3780,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              59,
+              73
+            ]
+          ],
+          "U1": [
+            [
+              87,
+              96
+            ]
+          ],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 2,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 22260.0,
+        "wait_by_unit": {
+          "U0": 13605.0,
+          "U1": 525.0,
+          "U2": 5730.0,
+          "U3": 2400.0
+        },
+        "uncovered_care_min": 7769.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 855,
+        "rupture_onsets": 1,
+        "terminal_queue": 20,
+        "terminal_max_wait_min": 2280,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              39,
+              96
+            ]
+          ],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 22260.0,
+        "wait_by_unit": {
+          "U0": 13605.0,
+          "U1": 525.0,
+          "U2": 5730.0,
+          "U3": 2400.0
+        },
+        "uncovered_care_min": 7769.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 855,
+        "rupture_onsets": 1,
+        "terminal_queue": 20,
+        "terminal_max_wait_min": 2280,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              39,
+              96
+            ]
+          ],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 2,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 22890.0,
+        "wait_by_unit": {
+          "U0": 12540.0,
+          "U1": 1860.0,
+          "U2": 8160.0,
+          "U3": 330.0
+        },
+        "uncovered_care_min": 7825.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 600,
+        "rupture_onsets": 1,
+        "terminal_queue": 23,
+        "terminal_max_wait_min": 2400,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              39,
+              79
+            ]
+          ],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 22890.0,
+        "wait_by_unit": {
+          "U0": 12540.0,
+          "U1": 1860.0,
+          "U2": 8160.0,
+          "U3": 330.0
+        },
+        "uncovered_care_min": 7825.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 600,
+        "rupture_onsets": 1,
+        "terminal_queue": 23,
+        "terminal_max_wait_min": 2400,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [
+            [
+              39,
+              79
+            ]
+          ],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 3,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 21660.0,
+        "wait_by_unit": {
+          "U0": 2055.0,
+          "U1": 3270.0,
+          "U2": 4845.0,
+          "U3": 11490.0
+        },
+        "uncovered_care_min": 6030.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 17,
+        "terminal_max_wait_min": 1920,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 21660.0,
+        "wait_by_unit": {
+          "U0": 2055.0,
+          "U1": 3270.0,
+          "U2": 4845.0,
+          "U3": 11490.0
+        },
+        "uncovered_care_min": 6030.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 17,
+        "terminal_max_wait_min": 1920,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 3,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 20745.0,
+        "wait_by_unit": {
+          "U0": 660.0,
+          "U1": 3000.0,
+          "U2": 3360.0,
+          "U3": 13725.0
+        },
+        "uncovered_care_min": 4803.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1980,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 20745.0,
+        "wait_by_unit": {
+          "U0": 660.0,
+          "U1": 3000.0,
+          "U2": 3360.0,
+          "U3": 13725.0
+        },
+        "uncovered_care_min": 4803.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1980,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 4,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 28095.0,
+        "wait_by_unit": {
+          "U0": 6765.0,
+          "U1": 2685.0,
+          "U2": 15480.0,
+          "U3": 3165.0
+        },
+        "uncovered_care_min": 2923.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 22,
+        "terminal_max_wait_min": 2040,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 28095.0,
+        "wait_by_unit": {
+          "U0": 6765.0,
+          "U1": 2685.0,
+          "U2": 15480.0,
+          "U3": 3165.0
+        },
+        "uncovered_care_min": 2923.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 22,
+        "terminal_max_wait_min": 2040,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 4,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 20925.0,
+        "wait_by_unit": {
+          "U0": 5625.0,
+          "U1": 2610.0,
+          "U2": 9690.0,
+          "U3": 3000.0
+        },
+        "uncovered_care_min": 2746.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 13,
+        "terminal_max_wait_min": 2160,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 20925.0,
+        "wait_by_unit": {
+          "U0": 5625.0,
+          "U1": 2610.0,
+          "U2": 9690.0,
+          "U3": 3000.0
+        },
+        "uncovered_care_min": 2746.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 13,
+        "terminal_max_wait_min": 2160,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 5,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 6435.0,
+        "wait_by_unit": {
+          "U0": 525.0,
+          "U1": 2370.0,
+          "U2": 3540.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3720.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 1920,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 6435.0,
+        "wait_by_unit": {
+          "U0": 525.0,
+          "U1": 2370.0,
+          "U2": 3540.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3720.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 1920,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 5,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 2580.0,
+        "wait_by_unit": {
+          "U0": 585.0,
+          "U1": 840.0,
+          "U2": 1155.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3835.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 420,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "cl_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 2580.0,
+        "wait_by_unit": {
+          "U0": 585.0,
+          "U1": 840.0,
+          "U2": 1155.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3835.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 420,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "cl_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 6,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 12375.0,
+        "wait_by_unit": {
+          "U0": 1440.0,
+          "U1": 1440.0,
+          "U2": 0.0,
+          "U3": 9495.0
+        },
+        "uncovered_care_min": 5086.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 12,
+        "terminal_max_wait_min": 3480,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "cl_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 12375.0,
+        "wait_by_unit": {
+          "U0": 1440.0,
+          "U1": 1440.0,
+          "U2": 0.0,
+          "U3": 9495.0
+        },
+        "uncovered_care_min": 5086.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 12,
+        "terminal_max_wait_min": 3480,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "cl_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 6,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 12405.0,
+        "wait_by_unit": {
+          "U0": 2130.0,
+          "U1": 0.0,
+          "U2": 150.0,
+          "U3": 10125.0
+        },
+        "uncovered_care_min": 4622.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 10,
+        "terminal_max_wait_min": 3240,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "cl_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 12405.0,
+        "wait_by_unit": {
+          "U0": 2130.0,
+          "U1": 0.0,
+          "U2": 150.0,
+          "U3": 10125.0
+        },
+        "uncovered_care_min": 4622.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 10,
+        "terminal_max_wait_min": 3240,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "cl_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 7,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 1740.0,
+        "wait_by_unit": {
+          "U0": 1440.0,
+          "U1": 0.0,
+          "U2": 300.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2665.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 3540,
+        "aval_blocked_end": 2,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 1740.0,
+        "wait_by_unit": {
+          "U0": 1440.0,
+          "U1": 0.0,
+          "U2": 300.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2665.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 3540,
+        "aval_blocked_end": 2,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 7,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 2760.0,
+        "wait_by_unit": {
+          "U0": 2760.0,
+          "U1": 0.0,
+          "U2": 0.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2052.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 3,
+        "terminal_max_wait_min": 3540,
+        "aval_blocked_end": 5,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 2760.0,
+        "wait_by_unit": {
+          "U0": 2760.0,
+          "U1": 0.0,
+          "U2": 0.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2052.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 3,
+        "terminal_max_wait_min": 3540,
+        "aval_blocked_end": 5,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 8,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 17970.0,
+        "wait_by_unit": {
+          "U0": 0.0,
+          "U1": 6375.0,
+          "U2": 11595.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2584.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1800,
+        "aval_blocked_end": 7,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 17970.0,
+        "wait_by_unit": {
+          "U0": 0.0,
+          "U1": 6375.0,
+          "U2": 11595.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2584.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1800,
+        "aval_blocked_end": 7,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 8,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 14850.0,
+        "wait_by_unit": {
+          "U0": 705.0,
+          "U1": 2460.0,
+          "U2": 11685.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3387.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 15,
+        "terminal_max_wait_min": 900,
+        "aval_blocked_end": 5,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 14850.0,
+        "wait_by_unit": {
+          "U0": 705.0,
+          "U1": 2460.0,
+          "U2": 11685.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 3387.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 15,
+        "terminal_max_wait_min": 900,
+        "aval_blocked_end": 5,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 9,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 4260.0,
+        "wait_by_unit": {
+          "U0": 165.0,
+          "U1": 0.0,
+          "U2": 1365.0,
+          "U3": 2730.0
+        },
+        "uncovered_care_min": 2842.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 7,
+        "terminal_max_wait_min": 960,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 4260.0,
+        "wait_by_unit": {
+          "U0": 165.0,
+          "U1": 0.0,
+          "U2": 1365.0,
+          "U3": 2730.0
+        },
+        "uncovered_care_min": 2842.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 7,
+        "terminal_max_wait_min": 960,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 9,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 2730.0,
+        "wait_by_unit": {
+          "U0": 0.0,
+          "U1": 105.0,
+          "U2": 2625.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2815.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 1020,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 2730.0,
+        "wait_by_unit": {
+          "U0": 0.0,
+          "U1": 105.0,
+          "U2": 2625.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2815.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 2,
+        "terminal_max_wait_min": 1020,
+        "aval_blocked_end": 0,
+        "transfer_pending_end": 1,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 10,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 10305.0,
+        "wait_by_unit": {
+          "U0": 3720.0,
+          "U1": 1365.0,
+          "U2": 3165.0,
+          "U3": 2055.0
+        },
+        "uncovered_care_min": 3295.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 600,
+        "aval_blocked_end": 3,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 10305.0,
+        "wait_by_unit": {
+          "U0": 3720.0,
+          "U1": 1365.0,
+          "U2": 3165.0,
+          "U3": 2055.0
+        },
+        "uncovered_care_min": 3295.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 9,
+        "terminal_max_wait_min": 600,
+        "aval_blocked_end": 3,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 10,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 14370.0,
+        "wait_by_unit": {
+          "U0": 6660.0,
+          "U1": 480.0,
+          "U2": 7230.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2721.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 10,
+        "terminal_max_wait_min": 780,
+        "aval_blocked_end": 4,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 14370.0,
+        "wait_by_unit": {
+          "U0": 6660.0,
+          "U1": 480.0,
+          "U2": 7230.0,
+          "U3": 0.0
+        },
+        "uncovered_care_min": 2721.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 10,
+        "terminal_max_wait_min": 780,
+        "aval_blocked_end": 4,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "cl_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 11,
+      "future": 1,
+      "reported": {
+        "wait_patient_min": 17325.0,
+        "wait_by_unit": {
+          "U0": 3315.0,
+          "U1": 0.0,
+          "U2": 5100.0,
+          "U3": 8910.0
+        },
+        "uncovered_care_min": 11037.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1440,
+        "aval_blocked_end": 3,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 17325.0,
+        "wait_by_unit": {
+          "U0": 3315.0,
+          "U1": 0.0,
+          "U2": 5100.0,
+          "U3": 8910.0
+        },
+        "uncovered_care_min": 11037.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 19,
+        "terminal_max_wait_min": 1440,
+        "aval_blocked_end": 3,
+        "transfer_pending_end": 2,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    },
+    {
+      "structure": 11,
+      "future": 2,
+      "reported": {
+        "wait_patient_min": 8910.0,
+        "wait_by_unit": {
+          "U0": 3270.0,
+          "U1": 0.0,
+          "U2": 2445.0,
+          "U3": 3195.0
+        },
+        "uncovered_care_min": 11296.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 8,
+        "terminal_max_wait_min": 2220,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      },
+      "filtered": {
+        "wait_patient_min": 8910.0,
+        "wait_by_unit": {
+          "U0": 3270.0,
+          "U1": 0.0,
+          "U2": 2445.0,
+          "U3": 3195.0
+        },
+        "uncovered_care_min": 11296.0,
+        "rejected": 0,
+        "rejections": {},
+        "rupture_minutes": 0,
+        "rupture_onsets": 0,
+        "terminal_queue": 8,
+        "terminal_max_wait_min": 2220,
+        "aval_blocked_end": 1,
+        "transfer_pending_end": 0,
+        "staff_hours": 48.0,
+        "commitments": 3,
+        "rupture_runs": {
+          "U0": [],
+          "U1": [],
+          "U2": [],
+          "U3": []
+        },
+        "choices": [
+          "tr_w1",
+          "tr_w2",
+          "tr_w4",
+          "none"
+        ]
+      }
+    }
+  ]
+}

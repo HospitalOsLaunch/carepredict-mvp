@@ -1,0 +1,54 @@
+{
+ "schema": "DS_RESULTS_INDEX_1",
+ "engine_version": "ds-reference-0.1.0",
+ "synthetic": true,
+ "scientific_status": "PROTOTYPE_UNVALIDATED",
+ "clinical_validation": false,
+ "g2": "NO-GO",
+ "files": [
+  {
+   "file": "snapshot_nominal.json",
+   "sha256": "cfd015d775d1e82c8b9b33c9c2a1cd132f6ef355bc51b8573d3058ff94e42212"
+  },
+  {
+   "file": "reco_auto_nominal.json",
+   "sha256": "7439176ef022987c3a2a692f47501374bf51f0aff504a5acce618c41977214a3"
+  },
+  {
+   "file": "reco_auto_no_action.json",
+   "sha256": "9d235f2d0648590d4b04c56836498a68d0f821eb7b9832ac175986ec3e3805c0"
+  },
+  {
+   "file": "reco_auto_insufficient_data.json",
+   "sha256": "95efb2a2f2ebc41f3b6e5de510e3aab11796f5508264fa47723431370dde3f48"
+  },
+  {
+   "file": "reco_manual_x1x2.json",
+   "sha256": "4267e0cb03444a34b90d87108a9505a72077b22d90bbcf529f4790023690a2a8"
+  },
+  {
+   "file": "reco_manual_hypothesis.json",
+   "sha256": "755a6ec65e3b0ae1dbfbc113f9610f15353bdea556af4ea78422bd40cffc6844"
+  },
+  {
+   "file": "reco_manual_impossible.json",
+   "sha256": "a62fc0ab07202d7d2ae4af544f67531a98ee36798261f4f7d5489b2ae759fdd6"
+  },
+  {
+   "file": "reco_manual_contradictory.json",
+   "sha256": "1bf0c9213eb3dc1d4fc211413f8d8abe849933327f65ac3be43e5ce8583f36a8"
+  },
+  {
+   "file": "sweep_x2_extension_t.json",
+   "sha256": "430f072240c77b3b305116616d4e4afaa863a53a441ccdc34a632efeaa1dbfd6"
+  },
+  {
+   "file": "evaluation_out_of_sample_nominal.json",
+   "sha256": "67a511369f161b822f5afa35dcf76fb053d0a6169cb1247e47be0d3de264f7d2"
+  },
+  {
+   "file": "oracle_replay_nominal.json",
+   "sha256": "fd5f011071fb98926aa31e45244dd825236df8c06ac9b9a4aa61d09765779fc9"
+  }
+ ]
+}

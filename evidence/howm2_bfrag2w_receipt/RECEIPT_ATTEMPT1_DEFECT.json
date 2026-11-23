@@ -1,0 +1,3 @@
+{"receipt_attempt": 1, "ledger_record": 163, "result": "ok=false: section 5 (RESULTS_PILOT_W.json reproduction) not identical; all other sections ok",
+ "cause": "receipt-script defect: (i) the W seed-1 refit ('train_w --seeds 1') overwrote LEARN_W.json with a single entry before the analysis was rerun; (ii) run-time measurements in RESULTS.costs (response_seconds_per_decision, W_training_seconds_per_seed) were compared although the regenerated decision has new timings",
+ "fix": "restore the packaged learning outputs after the refit comparison; exclude the two run-time fields (documented rule); rerun the receipt on the same package (attempt 2)"}

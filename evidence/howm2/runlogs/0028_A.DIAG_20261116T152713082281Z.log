@@ -1,0 +1,22 @@
+/home/user/carepredict-mvp/scripts/howm2_diag_cov.py:95: RuntimeWarning: Mean of empty slice
+  "coverage90": float(c90.mean()),
+/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/user/carepredict-mvp/scripts/howm2_diag_cov.py:96: RuntimeWarning: Mean of empty slice
+  "coverage50": float(c50.mean()),
+/home/user/carepredict-mvp/scripts/howm2_diag_cov.py:97: RuntimeWarning: Mean of empty slice
+  "degenerate90_share": float(dg.mean()),
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/howm2_diag_cov.py", line 110, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/howm2_diag_cov.py", line 100, in main
+    "pit_KS_D": ks(pit),
+                ^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/howm2_diag_cov.py", line 78, in ks
+    return float(max((np.arange(1, n + 1) / n - u).max(), (u - np.arange(n) / n).max()))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv_howm/lib/python3.11/site-packages/numpy/_core/_methods.py", line 41, in _amax
+    return umr_maximum(a, axis, None, out, keepdims, initial, where)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: zero-size array to reduction operation maximum which has no identity

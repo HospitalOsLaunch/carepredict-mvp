@@ -1,0 +1,14 @@
+{"run": "W_t1_M_s0", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t1_M_s2", "upd": 20000, "stopped": "max_updates", "best": 14000, "params": 1899540, "last": {"upd": 20000, "val": {"2": {"situations": 519, "rel_regret": 0.03583629316900882, "regret": 200.4479768786127, "effect_rmse": 365.5563659667969, "spearman": 0.5498123811906224, "state_mse": 0.2253472113045137}, "8": {"situations": 198, "rel_regret": 0.003308373527566672, "regret": 60.03787878787879, "effect_rmse": 223.569091796875, "spearman": 0.35350773630155197, "state_mse": 0.33894180544097013}, "4": {"situations": 183, "rel_regret": 0.0030594212664647505, "regret": 44.77459016393443, "effect_rmse": 143.39024353027344, "spearman": 0.38118477277221663, "state_mse": 0.5627265607256219}}}}
+{"run": "W_t1_M_s1", "upd": 20000, "stopped": "max_updates", "best": 13000, "params": 1899540, "last": {"upd": 20000, "val": {"2": {"situations": 519, "rel_regret": 0.035889979216624776, "regret": 200.72254335260115, "effect_rmse": 402.7494201660156, "spearman": 0.5398792981876496, "state_mse": 0.23525141083378784}, "8": {"situations": 198, "rel_regret": 0.003940698992113484, "regret": 81.25, "effect_rmse": 201.59713745117188, "spearman": 0.3482432313253058, "state_mse": 0.3849736838366347}, "4": {"situations": 183, "rel_regret": 0.0027831732082343533, "regret": 32.00819672131148, "effect_rmse": 134.98609924316406, "spearman": 0.37289276353205564, "state_mse": 0.53542955318476}}}}
+{'runs': ['W_t1_M_s0', 'W_t1_M_s1', 'W_t1_M_s2'], 'exit_codes': [0, 0, 0]}

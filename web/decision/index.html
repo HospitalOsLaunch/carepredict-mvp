@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HospitalOS — Proposition automatique</title>
+  <link rel="stylesheet" href="/tokens.css" />
+  <link rel="stylesheet" href="/app.css" />
+  <link rel="stylesheet" href="/decision.css" />
+</head>
+<body>
+  <header class="ds-top">
+    <div class="ds-brand"><span class="ds-dot" aria-hidden="true"></span>HospitalOS <span class="ds-sub">aide à la décision</span></div>
+    <label class="ds-unit">Unité
+      <select id="unit" class="input" data-testid="unit"></select>
+    </label>
+    <span id="asof" class="hash" data-testid="asof"></span>
+    <span class="ds-flag" data-testid="flags">Données synthétiques · prototype non validé · G2 NO-GO</span>
+  </header>
+  <main class="ds-main">
+    <section id="auto" aria-labelledby="auto-title" class="ds-col">
+      <h1 id="auto-title" class="ds-h1">Proposition calculée automatiquement</h1>
+      <p class="ds-lead">HospitalOS a observé l'unité, prévu la pratique habituelle et cherché lui-même un plan. C'est vous qui décidez.</p>
+      <div id="auto-body" aria-live="polite"><p class="ds-muted">Calcul en cours…</p></div>
+    </section>
+    <section id="manual" aria-labelledby="manual-title" class="ds-col ds-secondary">
+      <h2 id="manual-title" class="ds-h2">Simuler un scénario <span class="ds-muted">(optionnel)</span></h2>
+      <p class="ds-lead">Verrouillez des décisions X1/X2 ; le même moteur calcule les conséquences et cherche des compléments sans modifier vos verrous.</p>
+      <form id="manual-form" class="ds-form" data-testid="manual-form" hidden></form>
+      <button id="open-manual" class="btn" type="button" data-testid="open-manual">Simuler un scénario</button>
+      <div id="manual-body" aria-live="polite"></div>
+    </section>
+  </main>
+  <footer class="foot" id="prov" data-testid="provenance"></footer>
+  <script type="module" src="/js/decision.js"></script>
+</body>
+</html>

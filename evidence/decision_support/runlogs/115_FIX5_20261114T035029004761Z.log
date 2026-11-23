@@ -1,0 +1,67 @@
+FFF.                                                                     [100%]
+=================================== FAILURES ===================================
+___________________ test_b01_offgrid_loan_overlap_is_blocked ___________________
+
+    def test_b01_offgrid_loan_overlap_is_blocked():
+        obs, at, settings = loan_data()
+        offer(obs, 'R2').update({'start': '2026-11-17T13:30:00+00:00',
+                                'end': '2026-11-17T18:30:00+00:00'})
+        try:
+            rec = recommend(snap(obs, at, settings), settings)
+        except ValueError:
+            return  # Explicit unsupported precision is acceptable in an hourly prototype.
+        if rec.bundle is None:
+            assert not rec.approvable
+            return
+        offenders = [e.plan.plan_id for e in rec.bundle.evaluations if e.admissible
+                     and {'R1', 'R2'} <= {a.target for a in e.plan.actions if a.type == 'reinforcement'}]
+>       assert not offenders, ('Simultaneous loans leave 4-2 < 3 during overlapping full hours; '
+                               f'off-grid starts must not hide this: {offenders}')
+E       AssertionError: Simultaneous loans leave 4-2 < 3 during overlapping full hours; off-grid starts must not hide this: ['plan-991adc4dd3c76a37', 'plan-76c74f4c0698e3a2', 'plan-691b1c1285c4d890']
+E       assert not ['plan-991adc4dd3c76a37', 'plan-76c74f4c0698e3a2', 'plan-691b1c1285c4d890']
+
+tests/decision_support/test_v4_resource_boundaries.py:59: AssertionError
+_______________ test_b02_shared_unit_requires_identified_lender ________________
+
+    def test_b02_shared_unit_requires_identified_lender():
+        obs, at, settings = loan_data()
+        for ident in ('R1', 'R2'):
+            offer(obs, ident)['lending_unit'] = None
+        try:
+            rec = simulate(snap(obs, at, settings), only('R1'), settings)
+        except ValueError:
+            return  # Closed contract rejecting unknown identity is acceptable.
+>       assert not rec.approvable, 'An unidentified lender cannot have its cumulative margin checked.'
+E       AssertionError: An unidentified lender cannot have its cumulative margin checked.
+E       assert not True
+E        +  where True = Recommendation(schema_version='DS_RECOMMENDATION_1', recommendation_id='reco-dc32182369aac123', status='NO_ACTION_PREF...594fa0e65d990759e0cb11b2d2578aabd1324985c4abf15ef', 'threshold': 7, 'comparable_only_with_same_formula_sha256': True})).approvable
+
+tests/decision_support/test_v4_resource_boundaries.py:71: AssertionError
+________ test_b03_new_snapshot_reconciles_capacity_with_existing_holds _________
+
+    def test_b03_new_snapshot_reconciles_capacity_with_existing_holds():
+        obs, at, settings = loan_data(scheduled=5)  # two loan slots initially
+        s1 = snap(obs, at, settings)
+        r1 = simulate(s1, only('R1'), settings)
+        store = ReviewStore()
+        assert review(r1, 'approve', s1, at, 'B03-first', store).outcome == 'APPROVED_IN_DEMO'
+        holdings_before = deepcopy((store.ledger.by_key, store.ledger.used))
+        new_obs = deepcopy(obs)
+        for ident in ('R1', 'R2'):
+            offer(new_obs, ident)['lending_unit_scheduled'] = 4  # now only one slot; already held
+        s2 = snap(new_obs, at, settings)
+        assert s2.fingerprint != s1.fingerprint
+        r2 = simulate(s2, only('R2'), settings)
+        out = review(r2, 'approve', s2, at, 'B03-second', store)
+>       assert out.outcome != 'APPROVED_IN_DEMO', (
+            'Cached capacity 2 was retained although current spare capacity is 1 and already held.')
+E       AssertionError: Cached capacity 2 was retained although current spare capacity is 1 and already held.
+E       assert 'APPROVED_IN_DEMO' != 'APPROVED_IN_DEMO'
+E        +  where 'APPROVED_IN_DEMO' = ReviewResult(review_id='rev-72c2e6f66ce63073', recommendation_id='reco-127f4b2f11a275e1', decision='approve', outcome=...c131c', at=datetime.datetime(2026, 11, 16, 19, 0, tzinfo=datetime.timezone.utc), replayed=False, current_validity=None).outcome
+
+tests/decision_support/test_v4_resource_boundaries.py:88: AssertionError
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_v4_resource_boundaries.py::test_b01_offgrid_loan_overlap_is_blocked
+FAILED tests/decision_support/test_v4_resource_boundaries.py::test_b02_shared_unit_requires_identified_lender
+FAILED tests/decision_support/test_v4_resource_boundaries.py::test_b03_new_snapshot_reconciles_capacity_with_existing_holds
+3 failed, 1 passed in 0.15s

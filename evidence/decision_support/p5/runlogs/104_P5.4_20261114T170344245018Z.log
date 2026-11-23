@@ -1,0 +1,1 @@
+[{"family": "M_agg", "config": [3, 0.1, 100], "seed": 0, "fit_s": 0.8326426030000107, "n_iter": 100}, {"family": "M_agg", "config": [3, 0.1, 200], "seed": 0, "fit_s": 1.542469653000012, "n_iter": 200}, {"family": "M_agg", "config": [3, 0.1, 400], "seed": 0, "fit_s": 2.983741801000008, "n_iter": 400}]

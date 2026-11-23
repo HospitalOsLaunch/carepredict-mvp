@@ -1,0 +1,23 @@
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/hybrid/test_decision_guard.py _____________
+ImportError while importing test module '/home/user/carepredict-mvp/tests/hybrid/test_decision_guard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/local/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/hybrid/test_decision_guard.py:11: in <module>
+    from hospitalos.hybrid.decision_benchmark import (
+src/hospitalos/hybrid/decision_benchmark.py:16: in <module>
+    from .decision_cases import CHANGE_INDEX, UNITS, Stream, actual_score, episode
+src/hospitalos/hybrid/decision_cases.py:22: in <module>
+    from .survival import PreparationRecord
+src/hospitalos/hybrid/survival.py:19: in <module>
+    from sklearn.ensemble import HistGradientBoostingClassifier  # type: ignore[import-untyped]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'sklearn'
+=========================== short test summary info ============================
+ERROR tests/hybrid/test_decision_guard.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.36s

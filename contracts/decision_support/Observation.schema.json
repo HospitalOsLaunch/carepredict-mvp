@@ -1,0 +1,73 @@
+{
+ "additionalProperties": false,
+ "description": "One timestamped public fact. ``available_at`` is when the unit could know it.",
+ "properties": {
+  "available_at": {
+   "format": "date-time",
+   "title": "Available At",
+   "type": "string"
+  },
+  "event_time": {
+   "format": "date-time",
+   "title": "Event Time",
+   "type": "string"
+  },
+  "kind": {
+   "enum": [
+    "bed",
+    "stay",
+    "medical_authorization",
+    "discharge_logistics",
+    "readiness_estimate",
+    "planned_departure",
+    "care_profile",
+    "care_task",
+    "obstacle",
+    "admission_request",
+    "staff_shift",
+    "roster_coverage",
+    "reinforcement_option",
+    "team_capacity"
+   ],
+   "title": "Kind",
+   "type": "string"
+  },
+  "obs_id": {
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+   "title": "Obs Id",
+   "type": "string"
+  },
+  "source": {
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+   "title": "Source",
+   "type": "string"
+  },
+  "subject": {
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+   "title": "Subject",
+   "type": "string"
+  },
+  "synthetic": {
+   "const": true,
+   "default": true,
+   "title": "Synthetic",
+   "type": "boolean"
+  },
+  "value": {
+   "additionalProperties": true,
+   "title": "Value",
+   "type": "object"
+  }
+ },
+ "required": [
+  "obs_id",
+  "kind",
+  "subject",
+  "event_time",
+  "available_at",
+  "source",
+  "value"
+ ],
+ "title": "Observation",
+ "type": "object"
+}

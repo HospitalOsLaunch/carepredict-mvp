@@ -1,0 +1,100 @@
+{
+ "validity": {
+  "V2_prevalence_168": 0.3463541666666667,
+  "V2_pass": true,
+  "V3_active_at_t0": 0.0,
+  "V3_pass": true,
+  "V4_worlds_without_rupture": 0.22916666666666666,
+  "V4_SC6_vs_SF": [
+   0.21875,
+   0.421875
+  ],
+  "V4_pass": true,
+  "family_prevalence_168": {
+   "SC4_high_load_absorbable": 0.265625,
+   "SC5_drop_with_margin": 0.328125,
+   "SC6_low_load": 0.21875,
+   "SF1_cleaning_window": 0.421875,
+   "SF2_transport_window": 0.453125,
+   "SF3_planned_drop": 0.390625
+  },
+  "V2_V4_pass": true
+ },
+ "V5": {
+  "SF1_cleaning_window": {
+   "n": 8,
+   "wait_reduction_mean": 20494.453125,
+   "wait_reduction_ci95": [
+    8442.462890625,
+    33203.484375
+   ],
+   "rupture_rate_reduction_mean": 0.234375
+  },
+  "SF2_transport_window": {
+   "n": 8,
+   "wait_reduction_mean": 3391.171875,
+   "wait_reduction_ci95": [
+    1145.748046875,
+    6579.169921875
+   ],
+   "rupture_rate_reduction_mean": 0.03125
+  },
+  "SF3_planned_drop": {
+   "n": 8,
+   "wait_reduction_mean": 1603.359375,
+   "wait_reduction_ci95": [
+    459.029296875,
+    3185.630859375
+   ],
+   "rupture_rate_reduction_mean": 0.0
+  }
+ },
+ "auc72": {
+  "R0": {
+   "auc": 0.6673660426081343,
+   "ci95": [
+    0.5063997757645825,
+    0.8065050734055355
+   ]
+  },
+  "R1": {
+   "auc": 0.7009360877985797,
+   "ci95": [
+    0.5550767571835,
+    0.8287530708544175
+   ]
+  },
+  "F": {
+   "auc": 0.7061007101355713,
+   "ci95": [
+    0.5432424294677662,
+    0.8310562742778317
+   ]
+  },
+  "O": {
+   "auc": 0.8671723692704971,
+   "ci95": [
+    0.7724791384935173,
+    0.9359078022165257
+   ]
+  }
+ },
+ "selection": {
+  "decision_competitor": "R0",
+  "anticipation_competitor": "R1"
+ },
+ "losses": {
+  "ref": 44648,
+  "R0": 44336,
+  "R2": 44473,
+  "F": 44397,
+  "O": 44355
+ },
+ "gain_F": {
+  "mean": -61.484375,
+  "ci95": [
+   -125.01953125,
+   -11.752929687500027
+  ]
+ }
+}

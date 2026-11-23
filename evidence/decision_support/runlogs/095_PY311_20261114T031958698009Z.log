@@ -1,0 +1,17 @@
+
+==================================== ERRORS ====================================
+_________ ERROR collecting tests/decision_support/test_p1_contracts.py _________
+ImportError while importing test module '/home/user/carepredict-mvp/tests/decision_support/test_p1_contracts.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/decision_support/test_p1_contracts.py:9: in <module>
+    import jsonschema
+E   ModuleNotFoundError: No module named 'jsonschema'
+- generated xml file: /home/user/carepredict-mvp/evidence/decision_support/pytest_py311.xml -
+=========================== short test summary info ============================
+ERROR tests/decision_support/test_p1_contracts.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.36s

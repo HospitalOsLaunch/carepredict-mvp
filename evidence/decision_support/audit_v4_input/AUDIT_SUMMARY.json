@@ -1,0 +1,130 @@
+{
+  "audit_id": "HospitalOS_DS_v4_independent_20261114",
+  "created_at_utc": "2026-11-14T03:37:50.433664+00:00",
+  "input_archive": "HospitalOS_DS_P0-P4_20261114_v4.zip",
+  "input_sha256_computed": "c88853750b80a085d1dfd7ed9b9db8a8b6ccf6c3c79b1c428598e646160e045e",
+  "declared_code_commit": "bebb95bba231536331bcf80f658efddc99e44196",
+  "scope": "Independent read-only replay, small adjacent synthetic counterexamples, package and restoration; not P5/P6 or performance research.",
+  "delivery_verdict": "PARTIAL_WITH_CHECKPOINT",
+  "scientific_status": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "integrity": {
+    "zip_crc": "PASS",
+    "main_manifest": "179/179",
+    "post_manifest": "6/6",
+    "reference_manifest": "8/8",
+    "source_after_audit": {
+      "tracked_files_compared": 922,
+      "differing": []
+    }
+  },
+  "independent_replays": {
+    "unchanged_A01_A10": {
+      "passed": 10,
+      "failed": 0,
+      "test_file_sha256": "bea463dba724f9c78389612d0481539a2e1c89eef0feea7117a66f8bb8a64adb"
+    },
+    "ds_and_targeted_hybrid": {
+      "passed": 163,
+      "failed": 0,
+      "skipped": 0,
+      "ds_count": 77,
+      "hybrid_count": 86,
+      "A_tests_included_in_163": true
+    },
+    "fresh_restore": {
+      "ds_tests_passed": 77,
+      "results_compared": 11,
+      "results_differing": 0,
+      "terminal_ledger_in_package_checked": true,
+      "terminal_ledger_in_restored_runtime_matches": false
+    },
+    "standalone_typescript_no_emit": "PASS",
+    "additional_resource_boundary_tests": {
+      "passed": 1,
+      "failed": 3
+    },
+    "restored_counter_assertion": {
+      "passed": 0,
+      "failed": 1
+    }
+  },
+  "findings": [
+    {
+      "id": "V4-R01",
+      "severity": "blocking_for_constraint_closure",
+      "title": "Overlapping off-grid loans not accumulated",
+      "test": "test_b01_offgrid_loan_overlap_is_blocked",
+      "demonstrated": "R1 14:00-20:00 Paris and R2 14:30-19:30 Paris; source 4 IDE/minimum3. Three admissible plans contain both; primary with S01/R1/R2 is APPROVED_IN_DEMO."
+    },
+    {
+      "id": "V4-R02",
+      "severity": "blocking_for_constraint_closure",
+      "title": "shared_unit with unknown lending_unit remains approvable",
+      "test": "test_b02_shared_unit_requires_identified_lender",
+      "demonstrated": "lending_unit=None is accepted; no lender slots reserved; automatic and manual plans can be approved."
+    },
+    {
+      "id": "V4-R03",
+      "severity": "blocking_for_constraint_closure",
+      "title": "Old cached capacity reused after new snapshot lowers lender margin",
+      "test": "test_b03_new_snapshot_reconciles_capacity_with_existing_holds",
+      "demonstrated": "First loan with scheduled5/minimum3 held. New snapshot scheduled4/minimum3; second loan approved. setdefault retains capacity2 despite current margin1."
+    },
+    {
+      "id": "V4-D01",
+      "severity": "blocking_for_handoff_counter_closure",
+      "title": "Restored runner inherits pre-terminal ledger",
+      "test": "test_restored_runtime_preserves_sealed_terminal_history",
+      "demonstrated": "Package terminal105 records /237.139s; restored runtime102 records /229.062s. Missing103-105 =8.077s. restore.sh checks the package ledger, not the runtime target."
+    }
+  ],
+  "positive_boundary_control": "Two same-hour loans in the same unchanged snapshot: first APPROVED_IN_DEMO, second REFUSED; holdings preserved.",
+  "react": {
+    "integration_in_source_confirmed": true,
+    "route": "#/plan",
+    "component": "web/src/ui/DecisionPlan.tsx",
+    "author_tests": {
+      "vitest": 72,
+      "react_e2e": 17,
+      "standalone_e2e": 19
+    },
+    "independent_build_or_browser_replay": false,
+    "reason": "No project node_modules or compiled React distribution; no network installation performed."
+  },
+  "python": {
+    "independent_runtime": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "author_31118_xml": {
+      "tests": 163,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "independent_31118_replay": false,
+    "exact_3119_test": false
+  },
+  "document_discrepancy": "Standalone CORRECTIONS_REPORT.md predates archive report: Python3.11 addendum exists only in archive report; use archive report/STATUS with attribution to author for that run.",
+  "budget": {
+    "package_terminal_seconds": 237.139,
+    "audit_additional_seconds": 22.885,
+    "merged_cumulative_seconds": 260.024,
+    "limit_seconds": 600,
+    "remaining_seconds": 339.976,
+    "ledger_records": 114,
+    "last_record_sha256": "dfe1f3a521f0ac4c967eb6e75cc68bf2a4107fe58dd8189f33b7ffa5849353b0",
+    "audit_id_for_deduplication": "HospitalOS_DS_v4_independent_20261114"
+  },
+  "not_executed": [
+    "training",
+    "model_weight_loading",
+    "AJ-H_inference",
+    "P5_P6",
+    "network_install",
+    "remote_write",
+    "push_merge_rebase",
+    "real_SIH_action",
+    "production_code_modification"
+  ],
+  "caveat": "Passing tests validate covered cases only; this is not an exhaustive safety, clinical, statistical or generalisation validation."
+}

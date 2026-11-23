@@ -1,0 +1,26 @@
+nodes 2913 edges/h 3980.75
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:206: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+{"encode_s": 0.1727285385131836, "forward_all_s": 0.27321386337280273, "backward_s": 0.8866744041442871}
+USDT:2026-11-16 06:51:20 374:374 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-16 06:51:21 374:374 SyncActivityProfilerHandler.cpp:46] profiler_stop
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                            aten::fill_        26.61%     266.636ms        26.61%     266.636ms     420.562us           634  
+                                 aten::_index_put_impl_        19.42%     194.623ms        19.58%     196.201ms     572.013us           343  
+                                               aten::mm        17.85%     178.840ms        17.86%     178.978ms     509.909us           351  
+                                             aten::add_         9.13%      91.512ms         9.13%      91.512ms      92.064us           994  
+                                            aten::copy_         4.66%      46.725ms         4.66%      46.725ms      72.667us           643  
+       autograd::engine::evaluate_function: MmBackward0         4.58%      45.925ms        15.58%     156.072ms       3.251ms            48  
+                                            aten::index         3.42%      34.274ms         3.54%      35.457ms     102.181us           347  
+                                              aten::cat         1.29%      12.959ms         1.36%      13.668ms      64.167us           213  
+                                     aten::scatter_add_         1.12%      11.235ms         1.12%      11.235ms     115.825us            97  
+                                              aten::add         1.03%      10.342ms         1.03%      10.352ms      26.957us           384  
+                                            aten::addmm         0.87%       8.697ms         1.34%      13.397ms     112.581us           119  
+                               aten::threshold_backward         0.74%       7.454ms         0.74%       7.454ms      68.383us           109  
+                                              aten::sum         0.57%       5.750ms         0.60%       6.054ms      39.569us           153  
+                                            aten::where         0.51%       5.075ms         0.88%       8.830ms      54.842us           161  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 1.002s
+

@@ -1,0 +1,68 @@
+{
+  "schema": "HOSPITALOS_P5_PROTOCOL_PARAMS_1",
+  "protocol_version": "P5-PROTO-1",
+  "status": "PROPOSED_NOT_AUTHORISED_NOT_EXECUTED",
+  "date": "2026-11-14",
+  "document": "docs/decision_support/P5_PROTOCOL.md",
+  "statuses_unchanged": {"scientific": "PROTOTYPE_UNVALIDATED", "clinical_validation": false, "G2": "NO-GO", "P6": "CLOSED"},
+  "engine_reference": {"package": "HospitalOS_DS_P0-P4_20261114_v6.zip", "sha256": "4fca8aecde4fa35a47bc18696785d28df7465b5191b48e8a2881b0ec1e117f90", "tree": "856a57c65fb0d55190addf6c39a45c57913eac07"},
+  "data": "synthetic_only",
+  "population": {
+    "unit_bounds": {"beds": [6, 8], "max_present_stays": 8, "max_plans": 16, "max_coordinations_per_plan": 2, "max_reinforcement_options_per_plan": 2, "horizon_hours": 24},
+    "out_of_bound_universe": "excluded_and_counted_never_truncated",
+    "truth_regimes": {
+      "R1_well_specified": {"role": "primary", "truth_from": "public declared distributions"},
+      "R2_misspecified": {"role": "secondary_robustness", "transport_lead_plus_1h_prob": 0.3, "cleaning_plus_1h_prob": 0.2, "requested_reinforcement_present_prob": 0.5}
+    },
+    "P5a": {"development": {"structures": 10, "episodes_per_structure": 10}, "evaluation_reserved": {"structures": 30, "episodes_per_structure": 10}},
+    "P5b": {"train": {"structures": 24, "episodes_per_structure": 15, "twins": true}, "validation": {"structures": 8, "episodes_per_structure": 15, "twins": true}, "evaluation_reserved": {"structures": 8, "episodes_per_structure": 15, "twins": true}},
+    "partition_unit": "structure",
+    "generation_seeds": "drawn then committed by SHA-256 (sorted list + generator code hash) in the P5 ledger before any generation; disjoint from selection seeds 101-104 and forecast evaluation seeds 901-904"
+  },
+  "comparators": ["HABITUAL-1", "reference_planner_v6_public", "perfect_information_oracle_evaluation_only", "M_agg", "M_ent"],
+  "metrics": {
+    "primary_unit": "uncovered care staff-minutes over 24 h realised under the private truth (OBJ-LEX-1 tier 1)",
+    "P5a_1": "mean per episode of U(habitual) - U(planner)",
+    "P5a_2_descriptive": "sum(U(habitual) - U(planner)) / sum(U(habitual) - U(oracle))",
+    "P5b_1": "mean per episode of U(choice M_agg) - U(choice M_ent)",
+    "secondary_descriptive": ["waiting_patient_hours", "reinforcement_hours", "interventions", "beds_returned", "PS-EXP-1 peak and hours above threshold", "lender effects", "MAE", "RMSE", "variance by structure", "complexity"]
+  },
+  "P5b_models": {
+    "family": "sklearn.ensemble.HistGradientBoostingRegressor",
+    "grid": {"max_depth": [3, 5], "learning_rate": [0.05, 0.1], "max_iter": [100, 200, 400]},
+    "fit_seeds": 3,
+    "selection": "validation, primary decision criterion; tie-break MAE",
+    "choice_rule": "argmin prediction among admissible plans with OBJ-LEX-1 ties (15 min tolerance, then fewer reinforcement hours, then fewer interventions)",
+    "features": {"M_agg": "public aggregates + plan descriptor", "M_ent": "M_agg + fixed slots per stay (<=8) and per reinforcement offer; no arbitrary patient identifier"},
+    "twin_precheck": "exact aggregate equality; mean effect difference CI95 excluding 0 on development, else P5b non-informative and stopped before evaluation"
+  },
+  "analysis": {
+    "bootstrap": {"levels": ["structure", "episode"], "resamples": 2000, "interval": "percentile 95%"},
+    "delta_staff_minutes_per_episode": {"P5a": 15, "P5b": 15},
+    "decision_rule": {"upper_lt_delta": "insufficient", "lower_gt_delta_and_guardrails": "demonstrated_in_this_synthetic_protocol", "else": "inconclusive"},
+    "guardrails": {"admissibility_or_invariant_violations": 0, "leakage_checks": "T03/T04 isolation on 50 sampled episodes + feature invariance under two truths", "harm_rate_upper_ci95_max": 0.10, "excluded_universe_rate_max": 0.05},
+    "evaluation_read": "single, after freeze"
+  },
+  "environment": {"python": "3.13.18", "cpu_only": true, "P5a_dependencies": "present (pydantic, numpy)", "P5b_dependencies": {"scikit-learn": ">=1.5,<1.9 (absent; network install needs separate authorisation)", "transitive": ["scipy", "joblib", "threadpoolctl"]}},
+  "budget": {
+    "separate_from_P0_P4": true,
+    "P0_P4_terminal_reference": {"records": 175, "used_wall_seconds": 421.325, "last_record_sha256": "9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973"},
+    "ledger": "evidence/decision_support/p5/BUDGET_LEDGER_P5.jsonl",
+    "ceiling_wall_seconds": 1200,
+    "per_command_seconds": 30,
+    "spend_eur": 0,
+    "estimate_basis": "existing ledger measurements only (records #6, #124, #140, #151, #169); assumed 2-6 ms per simulation",
+    "lots": {
+      "P5.0_seed_commitment_freeze_isolation": {"estimate_s": [10, 20], "cap_s": 40},
+      "P5.1_generator_and_extractor_tests": {"estimate_s": [60, 120], "cap_s": 150},
+      "P5.2_timed_pilot_20_dev_episodes": {"estimate_s": [10, 20], "cap_s": 40},
+      "P5.3_P5a_dev_then_reserved_eval": {"estimate_s": [80, 240], "cap_s": 300},
+      "P5.4_P5b_labels_fits_selection_eval": {"estimate_s": [110, 330], "cap_s": 400},
+      "P5.5_bootstrap_report_restore_package": {"estimate_s": [40, 80], "cap_s": 120},
+      "reserve_reruns_no_widening": {"cap_s": 150}
+    },
+    "estimate_total_s": [310, 810]
+  },
+  "stop_rules": ["invalid hash", "leakage", "admissibility or invariant violation", "generator non-determinism", "lot or global ceiling reached", "pilot projection > 900 s for the whole (ask before continuing)", "spend, unauthorised install or remote write needed", "deviation from frozen protocol"],
+  "decisions_requested": ["approve or amend protocol and parameters", "approve separate P5 budget 1200 s / 30 s per command / 0 EUR", "authorise or refuse scikit-learn install for P5b (otherwise P5a only)"]
+}

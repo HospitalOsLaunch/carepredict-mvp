@@ -1,0 +1,34 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+<c1-derived encode_stats>:25: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+<c1-derived encode_stats>:25: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+<c1-derived encode_stats>:25: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:368: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+{"run": "C1_N1000_s1", "step": 1500, "of": 1500, "done": true, "best_step": 1500, "best_total": 7.964176161356384}
+{"run": "C1_N1000_s0", "step": 1500, "of": 1500, "done": true, "best_step": 1500, "best_total": 7.945218301404703}
+{"run": "C2b_N1000_s0", "step": 1500, "of": 1500, "done": true, "best_step": 1500, "best_total": 7.881558831483438}
+{"run": "C2b_N1000_s1", "step": 1500, "of": 1500, "done": true, "best_step": 1500, "best_total": 7.884049771772545}
+{"run": "C1_N1000_s2", "step": 346, "of": 1500, "done": false, "best_step": null, "best_total": null}
+{"run": "C2b_N1000_s2", "step": 599, "of": 1500, "done": false, "best_step": 500, "best_total": 7.964434730940095}
+{"C.1:1000:1": 0, "C.1:1000:0": 0, "C.2b:1000:0": 0, "C.2b:1000:1": 0, "C.1:1000:2": 0, "C.2b:1000:2": 0}

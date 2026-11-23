@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/user/carepredict-mvp/scripts/int1/train_w.py", line 209, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/train_w.py", line 174, in main
+    loss, parts = batch_loss(model, [train[i] for i in pick], st, state["upd"])
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/train_w.py", line 50, in batch_loss
+    cat = {k: torch.cat([t[k] for t in tens]) for k in tens[0]}
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/carepredict-mvp/scripts/int1/train_w.py", line 50, in <dictcomp>
+    cat = {k: torch.cat([t[k] for t in tens]) for k in tens[0]}
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Sizes of tensors must match except in dimension 0. Expected size 2 but got size 8 for tensor number 2 in the list.

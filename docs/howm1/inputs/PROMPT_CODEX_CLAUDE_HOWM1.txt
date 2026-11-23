@@ -1,0 +1,63 @@
+HospitalOS — HOWM-1, direction de recherche et préparation de la première tranche
+
+Lis PROGRAMME_HOWM1.md. L’objectif est de construire un world model hospitalier appris, et non de poursuivre indéfiniment le classement tabulaire ou les corrections documentaires de P5.
+
+Contexte établi : P5b a conclu insufficient (gain M_ent/M_agg +2,27 minutes, IC [-2,54 ; 6,94], seuil 15). Ce résultat est conservé. Les modèles classent des plans dans un petit univers à décision unique ; ils n’ont pas démontré une dynamique latente, un transfert hospitalier ni une calibration réelle. La v6 est notre référence expérimentale et notre socle de contraintes, pas notre plafond scientifique.
+
+MISSION DE PRÉPARATION
+Produis le plan exécutable de R0+R1, une seule tranche cohérente qui doit aboutir à un premier checkpoint réellement entraîné après approbation de son budget. Le présent document spécifie la cible ; il n’autorise ni dépense, ni installation, ni réutilisation d’un ancien budget, ni campagne scientifique avant la fixation de ce nouveau périmètre.
+
+Ne demande pas une nouvelle approbation pour chaque test ou fichier. Prépare une seule proposition bornée de tranche avec mesures, coût, environnements, volumes, critères, checkpoints et livrables. Une fois cette tranche explicitement autorisée, conduis-la jusqu’au point d’arrêt prévu avec les outils disponibles, sans prétendre à une exécution asynchrone non disponible.
+
+1. Réutilisation ciblée
+- Retrouve les bases réellement accessibles et les références de v6/P5 ; ne déduis pas leur présence d’un ancien lien.
+- Conserve les sources et résultats historiques. Branche de recherche séparée ; aucun push, merge, rebase ou modification de mvp/computer-use.
+- Reprends les invariants, contrats public/privé, actions ciblées et règles de ressources utiles. Ne reconstruis pas le cockpit.
+- Les réserves P5 déjà lues servent de régression historique, pas de nouvelle évaluation aveugle.
+
+2. Tâche dynamique R0
+- Deux unités et ressources communes : transport, nettoyage et compétences soignantes.
+- Historique public horodaté, événements et confirmations retardées ; état latent du monde non accessible au produit.
+- Plusieurs instants de décision. Distingue une action demandée, acceptée, exécutée et son résultat.
+- Action automatique : logistique de sorties médicalement autorisées, affectations de tâches, renforts. Pas de décision médicale autonome.
+- Mode automatique principal. Manuel = contraintes fixées sur le même planificateur.
+- Propose une population de référence motivée et une population diagnostique distincte. Aucun filtrage de la réserve sur le gain d’un modèle.
+- Fais apparaître l’intérêt possible de l’historique et de la dynamique sans cacher artificiellement des informations disponibles à une référence.
+
+3. Modèles R1
+- B0 : mécanismes explicites recalibrés sur les mêmes données d’entraînement.
+- B2 : mémoire temporelle latente agrégée, probabiliste.
+- H1 : mémoire latente par entités avec échanges sur graphe typé ; décodeur de durées/événements et sorties métier.
+- Même planificateur, mêmes observations accessibles, mêmes ressources et mêmes candidats pour la comparaison primaire des modèles.
+- Opérateur de transition explicite avec conservation et préconditions. Les durées et interactions incertaines sont apprises, pas les autorisations médicales.
+- Commence petit ; propose le compte de paramètres exact après construction. Pas de grand Transformer par défaut.
+- Prévois contexte d’établissement, contrastes d’intervention et ablation JEPA dans les interfaces, sans les activer tous dans le premier test : une variation à la fois.
+
+4. Apprentissage
+- Cibles : événements et trajectoires, pas seulement U à 24 h.
+- Prévisions factuelles et probabilistes à plusieurs pas ; diagnostics H1/H6/H24 et déroulé libre.
+- Historiques publics uniquement en entrée. Un état vrai privilégié n’est permis que pour diagnostic/supervision nommée, jamais mélangé à l’entrée de déploiement.
+- Branches action/témoin appariées sur primitives stables pour le futur objectif d’intervention.
+- Le contexte d’un établissement test doit être inféré à partir d’un préfixe public, jamais d’un paramètre privé ou de son identifiant.
+- Un bon classement de plans ne dispense pas d’une prévision absolue fiable.
+
+5. Tests et évaluation
+- Invariance au renommage et à l’ordre ; aucune fuite via timestamps, seeds, caches, labels, sélection d’actions ou états cachés.
+- Conservation, préconditions, absence de ressources fantômes ; ne pas confondre dispersion d’ensemble et calibration.
+- Épisodes et établissements couplés dans une même partition. Conserve une réserve nouvelle et scellée.
+- Comparaison des durées, trajectoires, distributions, effets d’actions et qualité des plans ; coût de calcul par méthode.
+- Sépare oracle clairvoyant, contrôle non anticipatif et meilleure heuristique trouvée.
+- Précontrôle de marge décisionnelle sur développement, pas seulement différence non nulle d’effets. Ne rends pas l’évaluation favorable en éliminant les cas simples.
+- Mesure aussi les cas où le modèle se trompe, ne sait pas ou devrait conserver le plan en cours.
+
+6. Livrables attendus de la préparation
+- DESIGN_HOWM1_R0_R1.md : interfaces, architecture, pertes et périmètre.
+- EXPERIMENT_HOWM1_R0_R1.json : hypothèses, populations, comparateurs, partitions et mesures ; valeurs non fixées identifiées, jamais inventées comme approuvées.
+- TEST_MATRIX_HOWM1.md : assertions concrètes, pas une déclaration d’absence générale de bugs.
+- COMPUTE_PLAN_HOWM1.md : pilote, devis, enveloppe et étapes reprenables ; distinguer crédits d’assistant et ressources CPU/GPU.
+- INPUT_PROVENANCE.json : références effectivement disponibles, versions et empreintes.
+- Un résumé des points d’architecture réutilisables et des inconnues qui changent réellement l’expérience.
+
+Après approbation de la tranche, l’objectif de livraison R1 sera : sources exécutables, checkpoint appris, optimiseur et RNG restaurables, corpus/manifeste, courbes H1/H6/H24, comparaison B0/B2/H1, diagnostics et reçu de restauration. Pas seulement un rapport de tests verts.
+
+Règles de recherche : conserver les échecs ; diagnostiquer la capacité manquante ; corriger la méthode sur développement ; une nouvelle question ou réserve implique un protocole distinct. La faiblesse d’un modèle n’est pas un motif d’abandon d’HospitalOS ni d’augmentation automatique de sa taille.

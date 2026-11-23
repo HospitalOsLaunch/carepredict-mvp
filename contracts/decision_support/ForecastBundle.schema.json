@@ -1,0 +1,685 @@
+{
+ "$defs": {
+  "ActionSpec": {
+   "additionalProperties": false,
+   "properties": {
+    "action_id": {
+     "title": "Action Id",
+     "type": "string"
+    },
+    "basis": {
+     "enum": [
+      "observed_authorization",
+      "validated_instruction",
+      "hypothesis_only",
+      "resource_option"
+     ],
+     "title": "Basis",
+     "type": "string"
+    },
+    "conditional": {
+     "default": false,
+     "title": "Conditional",
+     "type": "boolean"
+    },
+    "depends_on": {
+     "default": [],
+     "items": {
+      "type": "string"
+     },
+     "title": "Depends On",
+     "type": "array"
+    },
+    "idempotency_key": {
+     "title": "Idempotency Key",
+     "type": "string"
+    },
+    "interventions": {
+     "default": 1,
+     "minimum": 0,
+     "title": "Interventions",
+     "type": "integer"
+    },
+    "origin": {
+     "enum": [
+      "auto",
+      "manual_lock"
+     ],
+     "title": "Origin",
+     "type": "string"
+    },
+    "preconditions": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Preconditions",
+     "type": "array"
+    },
+    "reinforcement_hours": {
+     "default": 0,
+     "minimum": 0,
+     "title": "Reinforcement Hours",
+     "type": "integer"
+    },
+    "resources": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Resources",
+     "type": "array"
+    },
+    "target": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Target",
+     "type": "string"
+    },
+    "type": {
+     "enum": [
+      "coordinate_discharge",
+      "reinforcement",
+      "locked_discharge",
+      "locked_extension"
+     ],
+     "title": "Type",
+     "type": "string"
+    },
+    "valid_until": {
+     "format": "date-time",
+     "title": "Valid Until",
+     "type": "string"
+    },
+    "validator": {
+     "enum": [
+      "cadre_de_sante",
+      "medecin",
+      "gestionnaire_de_lits"
+     ],
+     "title": "Validator",
+     "type": "string"
+    },
+    "window_end": {
+     "format": "date-time",
+     "title": "Window End",
+     "type": "string"
+    },
+    "window_start": {
+     "format": "date-time",
+     "title": "Window Start",
+     "type": "string"
+    }
+   },
+   "required": [
+    "action_id",
+    "type",
+    "target",
+    "window_start",
+    "window_end",
+    "preconditions",
+    "resources",
+    "validator",
+    "idempotency_key",
+    "valid_until",
+    "origin",
+    "basis"
+   ],
+   "title": "ActionSpec",
+   "type": "object"
+  },
+  "BackendInfo": {
+   "additionalProperties": false,
+   "properties": {
+    "code_sha256": {
+     "title": "Code Sha256",
+     "type": "string"
+    },
+    "name": {
+     "title": "Name",
+     "type": "string"
+    },
+    "product_allowed": {
+     "title": "Product Allowed",
+     "type": "boolean"
+    },
+    "reads_private": {
+     "title": "Reads Private",
+     "type": "boolean"
+    },
+    "version": {
+     "title": "Version",
+     "type": "string"
+    }
+   },
+   "required": [
+    "name",
+    "version",
+    "code_sha256",
+    "reads_private",
+    "product_allowed"
+   ],
+   "title": "BackendInfo",
+   "type": "object"
+  },
+  "HourPoint": {
+   "additionalProperties": false,
+   "description": "One hour of a trajectory, expected over forecast scenarios (native units).",
+   "properties": {
+    "clean_free_beds": {
+     "title": "Clean Free Beds",
+     "type": "number"
+    },
+    "demand_minutes": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Demand Minutes",
+     "type": "object"
+    },
+    "hour_index": {
+     "title": "Hour Index",
+     "type": "integer"
+    },
+    "local_label": {
+     "title": "Local Label",
+     "type": "string"
+    },
+    "logistic_blockers": {
+     "title": "Logistic Blockers",
+     "type": "number"
+    },
+    "pressure_score": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Pressure Score"
+    },
+    "simultaneity_shortfall_minutes": {
+     "title": "Simultaneity Shortfall Minutes",
+     "type": "number"
+    },
+    "staff_reinforcement": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Staff Reinforcement",
+     "type": "object"
+    },
+    "staff_required": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Staff Required",
+     "type": "object"
+    },
+    "staff_scheduled": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Staff Scheduled",
+     "type": "object"
+    },
+    "start_utc": {
+     "format": "date-time",
+     "title": "Start Utc",
+     "type": "string"
+    },
+    "uncovered_in_unit_minutes": {
+     "title": "Uncovered In Unit Minutes",
+     "type": "number"
+    },
+    "uncovered_waiting_minutes": {
+     "title": "Uncovered Waiting Minutes",
+     "type": "number"
+    },
+    "waiting_patients": {
+     "title": "Waiting Patients",
+     "type": "number"
+    }
+   },
+   "required": [
+    "hour_index",
+    "start_utc",
+    "local_label",
+    "staff_scheduled",
+    "staff_reinforcement",
+    "staff_required",
+    "demand_minutes",
+    "uncovered_in_unit_minutes",
+    "uncovered_waiting_minutes",
+    "simultaneity_shortfall_minutes",
+    "waiting_patients",
+    "clean_free_beds",
+    "logistic_blockers",
+    "pressure_score"
+   ],
+   "title": "HourPoint",
+   "type": "object"
+  },
+  "Plan": {
+   "additionalProperties": false,
+   "properties": {
+    "actions": {
+     "items": {
+      "$ref": "#/$defs/ActionSpec"
+     },
+     "title": "Actions",
+     "type": "array"
+    },
+    "assumptions": {
+     "default": [],
+     "items": {
+      "type": "string"
+     },
+     "title": "Assumptions",
+     "type": "array"
+    },
+    "label": {
+     "title": "Label",
+     "type": "string"
+    },
+    "locked_action_ids": {
+     "default": [],
+     "items": {
+      "type": "string"
+     },
+     "title": "Locked Action Ids",
+     "type": "array"
+    },
+    "mode": {
+     "enum": [
+      "auto",
+      "manual"
+     ],
+     "title": "Mode",
+     "type": "string"
+    },
+    "plan_id": {
+     "title": "Plan Id",
+     "type": "string"
+    },
+    "schema_version": {
+     "const": "DS_PLAN_1",
+     "default": "DS_PLAN_1",
+     "title": "Schema Version",
+     "type": "string"
+    },
+    "snapshot_fingerprint": {
+     "title": "Snapshot Fingerprint",
+     "type": "string"
+    },
+    "snapshot_id": {
+     "title": "Snapshot Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "plan_id",
+    "snapshot_id",
+    "snapshot_fingerprint",
+    "mode",
+    "label",
+    "actions"
+   ],
+   "title": "Plan",
+   "type": "object"
+  },
+  "PlanEvaluation": {
+   "additionalProperties": false,
+   "properties": {
+    "admissible": {
+     "title": "Admissible",
+     "type": "boolean"
+    },
+    "conditional_on": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Conditional On",
+     "type": "array"
+    },
+    "confirmed_only": {
+     "anyOf": [
+      {
+       "$ref": "#/$defs/PlanMetrics"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null
+    },
+    "effect_onset_hour": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Effect Onset Hour"
+    },
+    "metrics": {
+     "$ref": "#/$defs/PlanMetrics"
+    },
+    "per_scenario_uncovered": {
+     "items": {
+      "type": "number"
+     },
+     "title": "Per Scenario Uncovered",
+     "type": "array"
+    },
+    "plan": {
+     "$ref": "#/$defs/Plan"
+    },
+    "trajectory": {
+     "items": {
+      "$ref": "#/$defs/HourPoint"
+     },
+     "title": "Trajectory",
+     "type": "array"
+    },
+    "violations": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Violations",
+     "type": "array"
+    },
+    "warnings": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Warnings",
+     "type": "array"
+    }
+   },
+   "required": [
+    "plan",
+    "admissible",
+    "violations",
+    "warnings",
+    "conditional_on",
+    "metrics",
+    "trajectory",
+    "per_scenario_uncovered"
+   ],
+   "title": "PlanEvaluation",
+   "type": "object"
+  },
+  "PlanMetrics": {
+   "additionalProperties": false,
+   "properties": {
+    "admissions_by_end": {
+     "title": "Admissions By End",
+     "type": "number"
+    },
+    "beds_returned": {
+     "title": "Beds Returned",
+     "type": "number"
+    },
+    "best_scenario_uncovered_minutes": {
+     "title": "Best Scenario Uncovered Minutes",
+     "type": "number"
+    },
+    "departures_by_end": {
+     "title": "Departures By End",
+     "type": "number"
+    },
+    "hours_above_threshold": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Hours Above Threshold"
+    },
+    "interventions": {
+     "title": "Interventions",
+     "type": "integer"
+    },
+    "max_additional_staff_required": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Max Additional Staff Required",
+     "type": "object"
+    },
+    "max_total_staff_required": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Max Total Staff Required",
+     "type": "object"
+    },
+    "peak_pressure": {
+     "anyOf": [
+      {
+       "type": "number"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Peak Pressure"
+    },
+    "peak_pressure_hour": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "title": "Peak Pressure Hour"
+    },
+    "reinforcement_hours": {
+     "title": "Reinforcement Hours",
+     "type": "integer"
+    },
+    "simultaneity_shortfall_minutes": {
+     "title": "Simultaneity Shortfall Minutes",
+     "type": "number"
+    },
+    "uncovered_by_skill": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "title": "Uncovered By Skill",
+     "type": "object"
+    },
+    "uncovered_care_minutes": {
+     "title": "Uncovered Care Minutes",
+     "type": "number"
+    },
+    "uncovered_in_unit_minutes": {
+     "title": "Uncovered In Unit Minutes",
+     "type": "number"
+    },
+    "uncovered_waiting_minutes": {
+     "title": "Uncovered Waiting Minutes",
+     "type": "number"
+    },
+    "waiting_patient_hours": {
+     "title": "Waiting Patient Hours",
+     "type": "number"
+    },
+    "worst_scenario_uncovered_minutes": {
+     "title": "Worst Scenario Uncovered Minutes",
+     "type": "number"
+    }
+   },
+   "required": [
+    "uncovered_care_minutes",
+    "uncovered_in_unit_minutes",
+    "uncovered_waiting_minutes",
+    "uncovered_by_skill",
+    "simultaneity_shortfall_minutes",
+    "waiting_patient_hours",
+    "admissions_by_end",
+    "departures_by_end",
+    "beds_returned",
+    "reinforcement_hours",
+    "interventions",
+    "peak_pressure",
+    "peak_pressure_hour",
+    "hours_above_threshold",
+    "worst_scenario_uncovered_minutes",
+    "best_scenario_uncovered_minutes",
+    "max_total_staff_required",
+    "max_additional_staff_required"
+   ],
+   "title": "PlanMetrics",
+   "type": "object"
+  },
+  "SearchReport": {
+   "additionalProperties": false,
+   "properties": {
+    "complete": {
+     "title": "Complete",
+     "type": "boolean"
+    },
+    "enumerated": {
+     "title": "Enumerated",
+     "type": "integer"
+    },
+    "evaluated": {
+     "title": "Evaluated",
+     "type": "integer"
+    },
+    "filter_rules": {
+     "items": {
+      "type": "string"
+     },
+     "title": "Filter Rules",
+     "type": "array"
+    },
+    "limit": {
+     "title": "Limit",
+     "type": "integer"
+    },
+    "rejected": {
+     "additionalProperties": {
+      "type": "string"
+     },
+     "title": "Rejected",
+     "type": "object"
+    }
+   },
+   "required": [
+    "enumerated",
+    "evaluated",
+    "limit",
+    "complete",
+    "filter_rules",
+    "rejected"
+   ],
+   "title": "SearchReport",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "properties": {
+  "assumptions": {
+   "items": {
+    "type": "string"
+   },
+   "title": "Assumptions",
+   "type": "array"
+  },
+  "backend": {
+   "$ref": "#/$defs/BackendInfo"
+  },
+  "bundle_id": {
+   "title": "Bundle Id",
+   "type": "string"
+  },
+  "config": {
+   "additionalProperties": true,
+   "title": "Config",
+   "type": "object"
+  },
+  "evaluations": {
+   "items": {
+    "$ref": "#/$defs/PlanEvaluation"
+   },
+   "title": "Evaluations",
+   "type": "array"
+  },
+  "horizon_end": {
+   "format": "date-time",
+   "title": "Horizon End",
+   "type": "string"
+  },
+  "horizon_hours": {
+   "title": "Horizon Hours",
+   "type": "integer"
+  },
+  "horizon_start": {
+   "format": "date-time",
+   "title": "Horizon Start",
+   "type": "string"
+  },
+  "schema_version": {
+   "const": "DS_FORECAST_BUNDLE_1",
+   "default": "DS_FORECAST_BUNDLE_1",
+   "title": "Schema Version",
+   "type": "string"
+  },
+  "score": {
+   "additionalProperties": true,
+   "title": "Score",
+   "type": "object"
+  },
+  "search": {
+   "$ref": "#/$defs/SearchReport"
+  },
+  "seed_role": {
+   "const": "selection_in_sample",
+   "default": "selection_in_sample",
+   "title": "Seed Role",
+   "type": "string"
+  },
+  "selection_seeds": {
+   "items": {
+    "type": "integer"
+   },
+   "title": "Selection Seeds",
+   "type": "array"
+  },
+  "snapshot_fingerprint": {
+   "title": "Snapshot Fingerprint",
+   "type": "string"
+  },
+  "snapshot_id": {
+   "title": "Snapshot Id",
+   "type": "string"
+  }
+ },
+ "required": [
+  "bundle_id",
+  "backend",
+  "config",
+  "snapshot_id",
+  "snapshot_fingerprint",
+  "horizon_start",
+  "horizon_end",
+  "horizon_hours",
+  "selection_seeds",
+  "assumptions",
+  "search",
+  "evaluations",
+  "score"
+ ],
+ "title": "ForecastBundle",
+ "type": "object"
+}

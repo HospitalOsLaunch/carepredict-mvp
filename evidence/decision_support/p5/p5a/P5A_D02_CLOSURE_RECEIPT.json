@@ -1,0 +1,138 @@
+{
+ "schema": "HOSPITALOS_P5A_D02_CLOSURE_RECEIPT_1",
+ "date": "2026-11-14",
+ "decision": "P5A-D02 CLOSED_ACCEPTED_WITH_NAMED_RESERVATION",
+ "reservation": {
+  "test": "T04-a",
+  "status": "NON_INFORMATIF",
+  "rank": 48,
+  "structure_id": "7f0869e7430c81ce",
+  "parent_index": 5,
+  "meaning": "no (truth B, plan) pair among 30 examined changes the check_isolation signature; truths do differ; T03 and T04-b/c/d passed on this episode; not a leak"
+ },
+ "adoption": {
+  "user_message": "approuver (with the attached proposition)",
+  "adopted_text_file": "evidence/decision_support/p5/DECISION_CLOTURE_P5A_D02_TEXT_ADOPTED.txt",
+  "adopted_text_sha256": "601095c90532caab99c0567dd64eec5b4185fd609a65c599212c789319fd120b",
+  "review_zip_sha256": "7c09243d5c86820e2a662010608722f0f4441598f17eeb210e2db29cb31cac05"
+ },
+ "exact_balance": {
+  "episodes_checked": 50,
+  "method_v1_historical": 47,
+  "method_v2_resume": 3,
+  "T03_passed": 50,
+  "T04bcd_passed": 50,
+  "T04a_informative_detected": 49,
+  "T04a_non_informatif": 1,
+  "true_failures": 0,
+  "not_claimed": [
+   "full 50/50 success of T04-a",
+   "formal proof of absence of leakage",
+   "retroactive change of protocol or of the exploratory P5a status"
+  ],
+  "qualification": "post-freeze; method v1 receipts not upgraded retrospectively"
+ },
+ "evidence_references": {
+  "resume_archive": {
+   "name": "HospitalOS_P5a_Isolation50_Resume_20261114.zip",
+   "sha256": "45db113cbc932c43d056269f75953e88d933ebec1509b54f18678953566f5b3e"
+  },
+  "resume_post_archive": {
+   "name": "HospitalOS_P5a_Isolation50_Resume_POST_20261114.zip",
+   "sha256": "afb5649c7c3ee7e9bbd3dc5680ebc632188efb757e83c3ab601aaba5c69b8370"
+  },
+  "historical_archive": {
+   "name": "HospitalOS_P5a_Isolation50_20261114.zip",
+   "sha256": "bd5556e1284780614ae76a01baf44af5a9faa5ea1773d4180199d287e0ea1767"
+  },
+  "selection_sha256": "d4522515dc9b3e1565b1a33bdf893590318651f139193b930fd85a3a269be993",
+  "v1_procedure_sha256": "94e57c801b3404dc802db4088fd099cadc8c6c52b1f34e5b2ffdce615bbd83a3",
+  "v1_receipts_sha256": "25f84cbbc491aaef015a4f1806c759950f5c96bf302df3df845df9f1078fef4f",
+  "v1_failure_sha256": "4e8b3ea4ec8face68ebae3db95aefd7bde07fb9501b16cb76427f9e1d70ba89c",
+  "v2_procedure_sha256": "e5b94ad7d3db9e59e926394e135ac2bcf0ae26f2e90c638e5b01b363b8f3d6a3",
+  "v2_receipts_sha256": "7bbf2105297ebcbd017279876e7094508f5ffe6d0bcb7c32a13997f4d27e9510",
+  "v2_receipts": [
+   {
+    "structure_id": "7f0869e7430c81ce",
+    "parent_index": 5,
+    "T03a": "pass",
+    "T03b": "pass",
+    "T04a": "NON_INFORMATIF",
+    "T04b": "pass",
+    "T04c": "pass",
+    "T04d": "pass"
+   },
+   {
+    "structure_id": "a1e973184bf456ee",
+    "parent_index": 1,
+    "T03a": "pass",
+    "T03b": "pass",
+    "T04a": "DETECTED",
+    "T04b": "pass",
+    "T04c": "pass",
+    "T04d": "pass"
+   },
+   {
+    "structure_id": "e9b01fb227dd3d3a",
+    "parent_index": 8,
+    "T03a": "pass",
+    "T03b": "pass",
+    "T04a": "DETECTED",
+    "T04b": "pass",
+    "T04c": "pass",
+    "T04d": "pass"
+   }
+  ],
+  "F_a_sha256": "055a4d2692472f6a6f64f51bea876bd5be808acc90c50bb9891f606af9b7a6bc",
+  "RESULTS_P5a_sha256": "1a7974176def47c24c6ee929e357de56824a43cf77ffa78148bbd2cc15d85c89",
+  "reserved_records_sha256": "445cf7de829c0ab69fd7c92c84247b0191ee417291687507d95d587423c64347"
+ },
+ "budget_correction_in_this_receipt_only": {
+  "P5.1_reported_in_resume_report": 38.786,
+  "P5.1_correct": 43.77,
+  "explanation": "command #80 (P5 suite under E7, 4.984 s) omitted from the resume report table; the historical report is not modified",
+  "terminal": {
+   "records": 87,
+   "used_wall_seconds": 134.58,
+   "last_record_sha256": "804689861fa9c697aba2396c4fa12c1fce6ce29a0b706e76d2bb52250843d64c",
+   "ledger_file_sha256": "6fe6ce76bd44e88015cdd227cac5a9e4284c207576c8ca940a4f5a4ef423b1f4"
+  },
+  "lots_at_terminal": {
+   "P5.0": 4.336,
+   "P5.1": 43.77,
+   "P5.2": 24.009,
+   "P5.I": 8.557,
+   "P5.3": 51.324,
+   "P5.5": 2.584
+  },
+  "note": "this receipt adds only a documentary ledger note (0 s); no reset; no new computation authorisation"
+ },
+ "unchanged": [
+  "F_a",
+  "RESULTS_P5a",
+  "reserved records",
+  "v6 engine",
+  "historical failure ISOLATION_FAILURE.json",
+  "both methods and their receipts",
+  "historical criteria and statuses"
+ ],
+ "no_execution": "no episode, product test, simulator, fit or efficacy analysis was run for this receipt",
+ "statuses": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "P5a": "exploratory"
+ },
+ "still_closed": [
+  "P5b/(iii)",
+  "D16",
+  "P6",
+  "AJ-H",
+  "installations",
+  "spend",
+  "push",
+  "merge",
+  "rebase"
+ ]
+}

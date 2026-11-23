@@ -1,0 +1,1 @@
+[{"family": "M_ent", "config": [3, 0.1, 100], "seed": 0, "fit_s": 1.8960971699999618, "n_iter": 100}, {"family": "M_ent", "config": [3, 0.1, 200], "seed": 0, "fit_s": 3.788619653000012, "n_iter": 200}, {"family": "M_ent", "config": [3, 0.1, 400], "seed": 0, "fit_s": 6.709474309999962, "n_iter": 400}]

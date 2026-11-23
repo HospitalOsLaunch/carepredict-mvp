@@ -1,0 +1,202 @@
+{
+ "$defs": {
+  "CivilDeadline": {
+   "additionalProperties": false,
+   "description": "'Demain 20 h' style deadline. Resolution is explicit, never truncated to the horizon.",
+   "properties": {
+    "day_offset": {
+     "default": 1,
+     "maximum": 2,
+     "minimum": 0,
+     "title": "Day Offset",
+     "type": "integer"
+    },
+    "fold": {
+     "anyOf": [
+      {
+       "enum": [
+        0,
+        1
+       ],
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Fold"
+    },
+    "local_time": {
+     "format": "time",
+     "title": "Local Time",
+     "type": "string"
+    }
+   },
+   "required": [
+    "local_time"
+   ],
+   "title": "CivilDeadline",
+   "type": "object"
+  },
+  "LockedDischarge": {
+   "additionalProperties": false,
+   "properties": {
+    "at": {
+     "format": "date-time",
+     "title": "At",
+     "type": "string"
+    },
+    "basis": {
+     "enum": [
+      "validated_instruction",
+      "hypothesis_only"
+     ],
+     "title": "Basis",
+     "type": "string"
+    },
+    "kind": {
+     "const": "discharge_at",
+     "default": "discharge_at",
+     "title": "Kind",
+     "type": "string"
+    },
+    "stay_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Stay Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "stay_id",
+    "at",
+    "basis"
+   ],
+   "title": "LockedDischarge",
+   "type": "object"
+  },
+  "LockedExtension": {
+   "additionalProperties": false,
+   "description": "Presence of a stay prolonged by t hours from a visible reference time.",
+   "properties": {
+    "basis": {
+     "enum": [
+      "validated_instruction",
+      "hypothesis_only"
+     ],
+     "title": "Basis",
+     "type": "string"
+    },
+    "extension_hours": {
+     "maximum": 24,
+     "minimum": 0,
+     "title": "Extension Hours",
+     "type": "integer"
+    },
+    "kind": {
+     "const": "extend_presence",
+     "default": "extend_presence",
+     "title": "Kind",
+     "type": "string"
+    },
+    "reference_time": {
+     "format": "date-time",
+     "title": "Reference Time",
+     "type": "string"
+    },
+    "stay_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Stay Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "stay_id",
+    "reference_time",
+    "extension_hours",
+    "basis"
+   ],
+   "title": "LockedExtension",
+   "type": "object"
+  },
+  "LockedReinforcement": {
+   "additionalProperties": false,
+   "properties": {
+    "include": {
+     "title": "Include",
+     "type": "boolean"
+    },
+    "kind": {
+     "const": "reinforcement",
+     "default": "reinforcement",
+     "title": "Kind",
+     "type": "string"
+    },
+    "option_id": {
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+     "title": "Option Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "option_id",
+    "include"
+   ],
+   "title": "LockedReinforcement",
+   "type": "object"
+  }
+ },
+ "additionalProperties": false,
+ "properties": {
+  "deadline": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/CivilDeadline"
+    },
+    {
+     "type": "null"
+    }
+   ],
+   "default": null
+  },
+  "locks": {
+   "default": [],
+   "items": {
+    "discriminator": {
+     "mapping": {
+      "discharge_at": "#/$defs/LockedDischarge",
+      "extend_presence": "#/$defs/LockedExtension",
+      "reinforcement": "#/$defs/LockedReinforcement"
+     },
+     "propertyName": "kind"
+    },
+    "oneOf": [
+     {
+      "$ref": "#/$defs/LockedDischarge"
+     },
+     {
+      "$ref": "#/$defs/LockedExtension"
+     },
+     {
+      "$ref": "#/$defs/LockedReinforcement"
+     }
+    ]
+   },
+   "title": "Locks",
+   "type": "array"
+  },
+  "schema_version": {
+   "const": "DS_SCENARIO_LOCKS_1",
+   "default": "DS_SCENARIO_LOCKS_1",
+   "title": "Schema Version",
+   "type": "string"
+  },
+  "search_complements": {
+   "default": true,
+   "title": "Search Complements",
+   "type": "boolean"
+  }
+ },
+ "title": "ScenarioLocks",
+ "type": "object"
+}

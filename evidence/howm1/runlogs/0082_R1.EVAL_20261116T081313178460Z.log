@@ -1,0 +1,7 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+19 68.3 s
+20 61.5 s
+21 76.8 s
+22 86.3 s
+23 77.2 s

@@ -1,0 +1,49 @@
+/home/user/carepredict-mvp/src/hospitalos/howm/nets.py:228: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+  - torch.zeros(g["n_origins"]).index_reduce_(
+<c1-derived encode_stats>:25: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+<c1-derived encode_long>:26: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+{
+ "timing": {
+  "C.1": {
+   "system": "C.1",
+   "step_s_mean": 0.9383429288864136,
+   "fwd_batch_s": 0.32744401693344116,
+   "maxrss_mb": 2051.4375
+  },
+  "C.2a": {
+   "system": "C.2a",
+   "step_s_mean": 13.02629086971283,
+   "fwd_batch_s": 1.9926607012748718,
+   "maxrss_mb": 4376.859375
+  },
+  "C.2b": {
+   "system": "C.2b",
+   "step_s_mean": 0.9339429855346679,
+   "fwd_batch_s": 0.3231782913208008,
+   "maxrss_mb": 2065.53125
+  }
+ },
+ "projection": {
+  "100": {
+   "per_run_s": {
+    "C.1": 174.3274085521698,
+    "C.2a": 2107.415200948715,
+    "C.2b": 173.36028480529785
+   },
+   "cpu_s_total": 7365.308682918549,
+   "wall_s_4_parallel": 2117.5262463390827
+  },
+  "1000": {
+   "per_run_s": {
+    "C.1": 1578.2423009872437,
+    "C.2a": 20069.851016044617,
+    "C.2b": 1570.720989227295
+   },
+   "cpu_s_total": 69656.44291877747,
+   "wall_s_4_parallel": 20026.22733914852
+  },
+  "final_campaign_models_wall_s": 1025.9242180734873
+ },
+ "seconds": 172.8,
+ "note": "projection = steps x mean step time + CVAL evals; wall = CPU/4 x 1.15 (parallel overhead, declared)"
+}

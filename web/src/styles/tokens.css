@@ -1,0 +1,180 @@
+/*
+  HospitalOS cockpit — tokens, direction « Lumière ».
+  Idea: a breath of air and light for people who run a ward under pressure.
+  A sky-white ground, deep night-blue ink, an ultramarine that acts, a sun that marks
+  what the proposal touches, and clear joyful state colours (mint, apricot, raspberry).
+  Every text pair here holds 4.5:1 in both themes; vivid fills carry an icon or a word.
+  Type: Lexend (display, numbers) + Atkinson Hyperlegible Next (body, identifiers).
+*/
+@import "@fontsource-variable/atkinson-hyperlegible-next/wght.css";
+@import "@fontsource-variable/lexend/wght.css";
+
+:root {
+  color-scheme: light;
+
+  /* air: page → card → inset */
+  --board: #f4f7ff;
+  --sheet: #ffffff;
+  --well: #ebf0fb;
+  --well-strong: #dce4f5;
+
+  /* night ink, four tiers */
+  --ink: #121a3a;
+  --ink-2: #3a4468;
+  --ink-3: #5a6385;
+  --ink-4: #98a0bd;
+
+  --line: rgb(18 26 58 / 0.1);
+  --line-soft: rgb(18 26 58 / 0.06);
+  --line-strong: rgb(18 26 58 / 0.2);
+
+  /* outremer — the brand, the one primary action, selection, focus */
+  --brand: #3047e6;
+  --brand-strong: #2236c4;
+  --brand-wash: #e6eaff;
+  --on-brand: #ffffff;
+
+  /* soleil — the light: logo, what the proposal touches, good news */
+  --sun: #ffb61a;
+  --sun-wash: #fff3d6;
+  --on-sun: #121a3a;
+
+  /* menthe — usable, ready, done (text tone + vivid mark) */
+  --bloc: #08754f;
+  --bloc-strong: #065c3e;
+  --bloc-wash: #ddf7ec;
+  --mint: #2bd49b;
+  --on-bloc: #ffffff;
+
+  /* abricot — to do, ageing */
+  --sac: #a04d00;
+  --sac-mark: #ff9f43;
+  --sac-wash: #fff0e0;
+
+  /* framboise — blocked, contradictory. Rare. */
+  --alerte: #c81e4a;
+  --alerte-wash: #ffe5ec;
+
+  /* bed magnets */
+  --magnet: #dde3ff;
+  --on-magnet: #1b2a8c;
+
+  --focus: #3047e6;
+  --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(18 26 58 / 0.12) 5px 6px);
+  --lift: 0 1px 2px rgb(18 26 58 / 0.05), 0 10px 28px -14px rgb(18 26 58 / 0.18);
+  --glow:
+    radial-gradient(1100px 460px at 90% -60px, rgb(255 182 26 / 0.3), transparent 70%),
+    radial-gradient(800px 380px at 6% -100px, rgb(48 71 230 / 0.12), transparent 70%);
+
+  --font: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --display: "Lexend Variable", "Lexend", "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+
+  /* type scale, ratio 1.25 on 15px */
+  --t-xs: 12px;
+  --t-sm: 13.5px;
+  --t-md: 15px;
+  --t-lg: 19px;
+  --t-xl: 23px;
+  --t-2xl: 29px;
+  --t-3xl: 36px;
+
+  /* spacing, 4px grid */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+  --s8: 32px;
+  --s10: 40px;
+
+  /* softer, friendlier shapes */
+  --r-sm: 6px;
+  --r-md: 14px;
+  --r-lg: 20px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --rail: 368px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --board: #0c1230;
+    --sheet: #141b3d;
+    --well: #1b2450;
+    --well-strong: #243063;
+    --ink: #eef1ff;
+    --ink-2: #c3c9e6;
+    --ink-3: #959cc0;
+    --ink-4: #67709a;
+    --line: rgb(238 241 255 / 0.1);
+    --line-soft: rgb(238 241 255 / 0.06);
+    --line-strong: rgb(238 241 255 / 0.22);
+    --brand: #8b99ff;
+    --brand-strong: #a9b4ff;
+    --brand-wash: rgb(139 153 255 / 0.16);
+    --on-brand: #0c1230;
+    --sun: #ffc94d;
+    --sun-wash: rgb(255 201 77 / 0.14);
+    --on-sun: #121a3a;
+    --bloc: #4fe0ae;
+    --bloc-strong: #7ae9c2;
+    --bloc-wash: rgb(79 224 174 / 0.14);
+    --mint: #3ddca6;
+    --on-bloc: #0c1230;
+    --sac: #ffb25c;
+    --sac-mark: #ffb25c;
+    --sac-wash: rgb(255 178 92 / 0.14);
+    --alerte: #ff7a96;
+    --alerte-wash: rgb(255 122 150 / 0.14);
+    --magnet: #2a3570;
+    --on-magnet: #eef1ff;
+    --focus: #8b99ff;
+    --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(238 241 255 / 0.12) 5px 6px);
+    --lift: 0 0 0 1px rgb(238 241 255 / 0.06);
+    --glow:
+      radial-gradient(900px 340px at 88% -40px, rgb(255 201 77 / 0.1), transparent 70%),
+      radial-gradient(700px 300px at 8% -80px, rgb(139 153 255 / 0.1), transparent 70%);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --board: #0c1230;
+  --sheet: #141b3d;
+  --well: #1b2450;
+  --well-strong: #243063;
+  --ink: #eef1ff;
+  --ink-2: #c3c9e6;
+  --ink-3: #959cc0;
+  --ink-4: #67709a;
+  --line: rgb(238 241 255 / 0.1);
+  --line-soft: rgb(238 241 255 / 0.06);
+  --line-strong: rgb(238 241 255 / 0.22);
+  --brand: #8b99ff;
+  --brand-strong: #a9b4ff;
+  --brand-wash: rgb(139 153 255 / 0.16);
+  --on-brand: #0c1230;
+  --sun: #ffc94d;
+  --sun-wash: rgb(255 201 77 / 0.14);
+  --on-sun: #121a3a;
+  --bloc: #4fe0ae;
+  --bloc-strong: #7ae9c2;
+  --bloc-wash: rgb(79 224 174 / 0.14);
+  --mint: #3ddca6;
+  --on-bloc: #0c1230;
+  --sac: #ffb25c;
+  --sac-mark: #ffb25c;
+  --sac-wash: rgb(255 178 92 / 0.14);
+  --alerte: #ff7a96;
+  --alerte-wash: rgb(255 122 150 / 0.14);
+  --magnet: #2a3570;
+  --on-magnet: #eef1ff;
+  --focus: #8b99ff;
+  --hatch: repeating-linear-gradient(135deg, transparent 0 5px, rgb(238 241 255 / 0.12) 5px 6px);
+  --lift: 0 0 0 1px rgb(238 241 255 / 0.06);
+  --glow:
+    radial-gradient(900px 340px at 88% -40px, rgb(255 201 77 / 0.1), transparent 70%),
+    radial-gradient(700px 300px at 8% -80px, rgb(139 153 255 / 0.1), transparent 70%);
+}

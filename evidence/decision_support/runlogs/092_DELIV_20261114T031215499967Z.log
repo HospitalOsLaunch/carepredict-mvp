@@ -1,0 +1,2 @@
+UNSEALED: ledger terminal not yet written (pre-seal restore test)
+{"test": "T30", "restored_tree_of_head": "211ae3b4a2d9388b49bc14f82630c1bbbe356bc0", "method": "source_head.tar", "package_sealed_at_restore": false, "tests": "pass", "pytest": "77 passed in 3.18s", "results_compared": 11, "results_differing": [], "status": "PASS"}

@@ -1,0 +1,21 @@
+..F
+=================================== FAILURES ===================================
+______________________ test_t2_3_no_identifiers_in_views _______________________
+
+epi = (World(part='BF2_DEV', idx=0, family='SF1_cleaning_window', spec=EstablishmentSpec(partition='BF2_DEV', index=0, popul..._transport': 0, 'n24': 0, ...}, 'B': {'block_clean': 0, 'block_compat': 0, 'block_transport': 0, 'n24': 0, ...}}, ...])
+
+    def test_t2_3_no_identifiers_in_views(epi):
+        w, _sp, ep, _tr = epi
+        pub, _ps, pe = C.public_state(ep, T0)
+        names = set(C.s0_features(w, T0)) | set(C.s1_features(pe)) | set(C.s2_history(pub, T0, {T0 // TPH: C.s1_features(pe)}))
+        for bad in ("family", "idx", "part", "ekey", "seed", "theta", "regime", "mech", "episode", "structure"):
+>           assert not any(bad in n for n in names), bad
+E           AssertionError: part
+E           assert not True
+E            +  where True = any(<generator object test_t2_3_no_identifiers_in_views.<locals>.<genexpr> at 0x7fb3a5002500>)
+
+tests/bfrag2/test_bfrag2.py:56: AssertionError
+=========================== short test summary info ============================
+FAILED tests/bfrag2/test_bfrag2.py::test_t2_3_no_identifiers_in_views - Asser...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 2 passed in 2.12s

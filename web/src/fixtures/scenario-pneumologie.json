@@ -1,0 +1,921 @@
+{
+ "id": "pneumologie",
+ "label": "Flux interrompu",
+ "unit": "pneumologie",
+ "unit_name": "Pneumologie",
+ "source": "fixture",
+ "request": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "expected_entities": [
+   "unit:pneumologie",
+   "bed:R01",
+   "patient:P-0701",
+   "bed:R02",
+   "patient:P-0702",
+   "bed:R03",
+   "patient:P-0703",
+   "bed:R04",
+   "patient:P-0704",
+   "bed:R05",
+   "patient:P-0705",
+   "bed:R06",
+   "patient:P-0706",
+   "bed:R07",
+   "patient:P-0707",
+   "bed:R08",
+   "patient:P-0708",
+   "bed:R09",
+   "patient:P-0709",
+   "bed:R10",
+   "patient:P-0710",
+   "bed:R11",
+   "patient:P-0711",
+   "bed:R12",
+   "patient:P-0712",
+   "bed:R13",
+   "patient:P-0713",
+   "bed:R14",
+   "bed:R15",
+   "bed:R16",
+   "patient:U-4002",
+   "patient:U-4007"
+  ],
+  "events": [
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:unit:pneumologie",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:28:00Z",
+    "available_at": "2026-10-24T06:28:00Z",
+    "fact": {
+     "kind": "unit",
+     "id": "pneumologie",
+     "staffed_beds": 16,
+     "cleaning_teams": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R01",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R01",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0701",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0701",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0701",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-23T05:30:00Z",
+     "bed_id": "R01",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R02",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R02",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0702",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0702",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0702",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T22:30:00Z",
+     "bed_id": "R02",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R03",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R03",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0703",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0703",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0703",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T15:30:00Z",
+     "bed_id": "R03",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R04",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R04",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0704",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0704",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0704",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T08:30:00Z",
+     "bed_id": "R04",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R05",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R05",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0705",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0705",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0705",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-22T01:30:00Z",
+     "bed_id": "R05",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R06",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R06",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0706",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0706",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0706",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T18:30:00Z",
+     "bed_id": "R06",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R07",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R07",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0707",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0707",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0707",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T11:30:00Z",
+     "bed_id": "R07",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R08",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R08",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0708",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0708",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0708",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-21T04:30:00Z",
+     "bed_id": "R08",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R09",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R09",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0709",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0709",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0709",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T21:30:00Z",
+     "bed_id": "R09",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R10",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R10",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0710",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0710",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0710",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T14:30:00Z",
+     "bed_id": "R10",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R11",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R11",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0711",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0711",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0711",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T07:30:00Z",
+     "bed_id": "R11",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R12",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R12",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0712",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0712",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0712",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T00:30:00Z",
+     "bed_id": "R12",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R13",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R13",
+     "unit_id": "pneumologie",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0713",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:P-0713",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0713",
+     "status": "admitted",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T17:30:00Z",
+     "bed_id": "R13",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R14",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R14",
+     "unit_id": "pneumologie",
+     "state": "dirty",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R15",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R15",
+     "unit_id": "pneumologie",
+     "state": "clean",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:bed:R16",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T04:50:00Z",
+    "available_at": "2026-10-24T04:50:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "R16",
+     "unit_id": "pneumologie",
+     "state": "closed",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:U-4002",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-4002",
+     "status": "waiting",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 3,
+     "waiting_since": "2026-10-24T01:00:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:pneumologie:patient:U-4007",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-4007",
+     "status": "waiting",
+     "compatible_units": [
+      "pneumologie"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 2,
+     "waiting_since": "2026-10-24T04:30:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   }
+  ],
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "max_age_minutes": 60,
+  "horizon_minutes": 480,
+  "scenarios": 32,
+  "max_candidates": 32,
+  "seed": 7,
+  "tail_weight": 0.25
+ },
+ "state": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "fingerprint": "0b0cf84cebe416800100e6432a0341c9629350e2888d9742b13e291f3f96a70c",
+  "units": [
+   {
+    "kind": "unit",
+    "id": "pneumologie",
+    "staffed_beds": 16,
+    "cleaning_teams": 1
+   }
+  ],
+  "beds": [],
+  "patients": [
+   {
+    "kind": "patient",
+    "id": "U-4002",
+    "status": "waiting",
+    "compatible_units": [
+     "pneumologie"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 3,
+    "waiting_since": "2026-10-24T01:00:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-4007",
+    "status": "waiting",
+    "compatible_units": [
+     "pneumologie"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 2,
+    "waiting_since": "2026-10-24T04:30:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   }
+  ],
+  "pools": [],
+  "discharges": [],
+  "issues": [
+   "missing_perimeter",
+   "stale:bed:R01",
+   "stale:bed:R02",
+   "stale:bed:R03",
+   "stale:bed:R04",
+   "stale:bed:R05",
+   "stale:bed:R06",
+   "stale:bed:R07",
+   "stale:bed:R08",
+   "stale:bed:R09",
+   "stale:bed:R10",
+   "stale:bed:R11",
+   "stale:bed:R12",
+   "stale:bed:R13",
+   "stale:bed:R14",
+   "stale:bed:R15",
+   "stale:bed:R16",
+   "stale:patient:P-0701",
+   "stale:patient:P-0702",
+   "stale:patient:P-0703",
+   "stale:patient:P-0704",
+   "stale:patient:P-0705",
+   "stale:patient:P-0706",
+   "stale:patient:P-0707",
+   "stale:patient:P-0708",
+   "stale:patient:P-0709",
+   "stale:patient:P-0710",
+   "stale:patient:P-0711",
+   "stale:patient:P-0712",
+   "stale:patient:P-0713"
+  ],
+  "warnings": []
+ },
+ "plan": {
+  "schema_version": "HYBRID_PLAN_4",
+  "evidence": "simulation_under_declared_assumptions",
+  "decision": "abstain",
+  "plan_id": "cc3dc86fb5cba886af3f6f60efb14e6b002ef5bf19fbb361ab7513c6d6b47168",
+  "hospital_id": "ch-fictif",
+  "state_fingerprint": "0b0cf84cebe416800100e6432a0341c9629350e2888d9742b13e291f3f96a70c",
+  "created_at": "2026-10-24T06:30:00Z",
+  "expires_at": "2026-10-24T06:45:00Z",
+  "selected": {
+   "kind": "no_op",
+   "bed_id": null,
+   "patient_id": null
+  },
+  "reasons": [
+   "missing_perimeter",
+   "stale:bed:R01",
+   "stale:bed:R02",
+   "stale:bed:R03",
+   "stale:bed:R04",
+   "stale:bed:R05",
+   "stale:bed:R06",
+   "stale:bed:R07",
+   "stale:bed:R08",
+   "stale:bed:R09",
+   "stale:bed:R10",
+   "stale:bed:R11",
+   "stale:bed:R12",
+   "stale:bed:R13",
+   "stale:bed:R14",
+   "stale:bed:R15",
+   "stale:bed:R16",
+   "stale:patient:P-0701",
+   "stale:patient:P-0702",
+   "stale:patient:P-0703",
+   "stale:patient:P-0704",
+   "stale:patient:P-0705",
+   "stale:patient:P-0706",
+   "stale:patient:P-0707",
+   "stale:patient:P-0708",
+   "stale:patient:P-0709",
+   "stale:patient:P-0710",
+   "stale:patient:P-0711",
+   "stale:patient:P-0712",
+   "stale:patient:P-0713"
+  ],
+  "warnings": [],
+  "candidates": [],
+  "candidates_truncated": false,
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "seed": 7,
+  "scenarios": 32,
+  "horizon_minutes": 480,
+  "tail_weight": 0.25,
+  "discharge_readiness": [],
+  "service_status": "not_assessed"
+ },
+ "trace": null
+}

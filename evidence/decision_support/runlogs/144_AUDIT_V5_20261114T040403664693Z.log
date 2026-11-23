@@ -1,0 +1,30 @@
+F....                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_c01_conflicting_declarations_same_snapshot_do_not_depend_on_approval_order[order0] _
+
+order = ('R1', 'R2')
+
+    @pytest.mark.parametrize('order', [('R1', 'R2'), ('R2', 'R1')])
+    def test_c01_conflicting_declarations_same_snapshot_do_not_depend_on_approval_order(order):
+        obs, at, settings = loan_data(scheduled=4)
+        offer(obs, 'R2')['lending_unit_scheduled'] = 5
+        s = snap(obs, at, settings)
+        store = ReviewStore()
+        outcomes = [approve(s, settings, ident, store, f'C01-{ident}').outcome for ident in order]
+>       assert outcomes.count('APPROVED_IN_DEMO') <= 1, (
+            'Same lender U-LOAN/IDE, same snapshot, same 6 hour slots: '
+            '4 and 5 scheduled/minimum 3 conflict. Joint candidate is correctly refused; '
+            f'separate approvals must not bypass that conservative policy. order={order}, outcomes={outcomes}'
+        )
+E       AssertionError: Same lender U-LOAN/IDE, same snapshot, same 6 hour slots: 4 and 5 scheduled/minimum 3 conflict. Joint candidate is correctly refused; separate approvals must not bypass that conservative policy. order=('R1', 'R2'), outcomes=['APPROVED_IN_DEMO', 'APPROVED_IN_DEMO']
+E       assert 2 <= 1
+E        +  where 2 = <built-in method count of list object at 0x7f27e27db900>('APPROVED_IN_DEMO')
+E        +    where <built-in method count of list object at 0x7f27e27db900> = ['APPROVED_IN_DEMO', 'APPROVED_IN_DEMO'].count
+
+../tests/test_v5_capacity_consistency.py:25: AssertionError
+=========================== short test summary info ============================
+FAILED ../tests/test_v5_capacity_consistency.py::test_c01_conflicting_declarations_same_snapshot_do_not_depend_on_approval_order[order0] - AssertionError: Same lender U-LOAN/IDE, same snapshot, same 6 hour slots: 4 and 5 scheduled/minimum 3 conflict. Joint candidate is correctly refused; separate approvals must not bypass that conservative policy. order=('R1', 'R2'), outcomes=['APPROVED_IN_DEMO', 'APPROVED_IN_DEMO']
+assert 2 <= 1
+ +  where 2 = <built-in method count of list object at 0x7f27e27db900>('APPROVED_IN_DEMO')
+ +    where <built-in method count of list object at 0x7f27e27db900> = ['APPROVED_IN_DEMO', 'APPROVED_IN_DEMO'].count
+1 failed, 4 passed in 0.21s

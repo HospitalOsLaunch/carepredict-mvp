@@ -1,0 +1,31 @@
+{
+  "schema": "HOSPITALOS_P5_DECISIONS_1",
+  "date": "2026-11-14",
+  "user_statement": "J'approuve D1 à D12 selon tes recommandations",
+  "protocol_version": "P5-PROTO-2",
+  "status": "PROTOCOL_APPROVED_EXECUTION_NOT_AUTHORISED",
+  "approved_documents_unchanged": {
+    "docs/decision_support/P5_PROTOCOL_v2.md": "ad0fdaa592d84461f61f3c68f3470f94b941bde006d0fe57af69a4005797881c",
+    "docs/decision_support/P5_PROTOCOL_PARAMS_v2.json": "1d284b0e9ebe2f0f8eb9b9dc052eb67ae73c5bcc5faca7514552213a51f8d0f7",
+    "docs/decision_support/P5_CHANGES_v1_to_v2.md": "c9309083e1a09818c9f6a1f55015384f41da3ba60e1faa5601949736f36a10d4",
+    "delivery_zip": {"name": "HospitalOS_P5_Protocol_v2_20261114.zip", "sha256": "6ab61a12af755d11a28199f45783af72ef33bd5436620c87a1e7682f6f6c30a9"}
+  },
+  "decisions": {
+    "D1": {"decision": "P5-PROTO-2 approved as basis for freeze", "effect": "any amendment = P5-PROTO-3"},
+    "D2": {"decision": "option (a): 1200 s wall ceiling with pre-registered fallback ladder L1-L3, 30 s per command, 0 EUR", "effect": "budget approved for P5 when execution is authorised; P5 ledger not yet created; P0-P4 remainder 178.675 s not used"},
+    "D3": {"decision": "option (a): Python 3.11.18 with base freeze bf54098158fbda95e3ce8e9db9ec68097f73b5390d4639fa39c240538880b6da", "effect": "3.11.9 product gate stays open"},
+    "D4": {"decision": "recommendation = install is a distinct decision that does not authorise fits", "effect": "scikit-learn install NOT authorised by this approval; explicit authorisation still required; P5b blocked until then"},
+    "D5": {"decision": "option (a): P5b reserved evaluation 30 structures x 4 parents x 2 twins", "effect": "params recommended_option_D5 selected; v1_option dropped"},
+    "D6": {"decision": "reinforcement truth values approved as written (R1 p_pub {0.4..0.9} independent; R2 marginal 0.5, rho 0.5 per pool; all-or-nothing; open loop)"},
+    "D7": {"decision": "twin precheck threshold 25 staff-min^2 (5 min RMS), K=3, train partition approved"},
+    "D8": {"decision": "early_stopping=False, fixed parameters of section 6.4, OMP_NUM_THREADS=1"},
+    "D9": {"decision": "structure-level one-sided Clopper-Pearson 95% harm bound, threshold 10%"},
+    "D10": {"decision": "resource decomposition descriptive only, no extra cost"},
+    "D11": {"decision": "execution authorisations separate and in order: (i) implementation and pilot P5.0-P5.2, (ii) P5a reserved evaluation, (iii) P5b fits and evaluation", "effect": "none of (i)-(iii) is granted by this approval"},
+    "D12": {"decision": "cockpit out of P5; independent React replay remains a separate product gate"}
+  },
+  "still_required_before_any_execution": ["explicit authorisation (i) implementation and pilot P5.0-P5.2", "explicit authorisation of scikit-learn install (D4) before P5b", "explicit authorisation (ii) P5a reserved evaluation", "explicit authorisation (iii) P5b fits and evaluation"],
+  "statuses_unchanged": {"global": "PARTIAL_WITH_CHECKPOINT", "open_gates": ["python_3.11.9_exact", "independent_react_browser_replay"], "scientific": "PROTOTYPE_UNVALIDATED", "clinical_validation": false, "G2": "NO-GO", "P6": "CLOSED"},
+  "P0_P4_ledger": {"records": 175, "used_wall_seconds": 421.325, "last_record_sha256": "9056a4a1052d0ab1deb6be7a6befa37704b61d05a43c1088187c071811c8b973", "extended": false},
+  "executed": "nothing"
+}

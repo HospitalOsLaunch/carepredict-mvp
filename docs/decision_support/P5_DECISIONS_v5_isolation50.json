@@ -1,0 +1,33 @@
+{
+ "schema": "HOSPITALOS_P5_DECISIONS_4",
+ "date": "2026-11-14",
+ "adoption": "user answered 'Oui, j'adopte le contrôle' to the explicit question whether PROPOSITION_CONTROLE_ISOLATION.txt (review HospitalOS_Revue_Complement_P5a_20261114.zip) is adopted as an order",
+ "review_zip_sha256": "8b64c9990917411f6f149de14c997193f1dc7d4f7b1c849e13c509cf7879ac2f",
+ "adopted_text_file": "evidence/decision_support/p5/ACCORD_ISOLATION50_TEXT_ADOPTED.txt",
+ "adopted_text_sha256": "815919cd55741909e335235c727540426f396db4ea0d5137d1d0d14d1865ad48",
+ "scope": "P5A-D02: T03/T04 isolation check on 50 already-evaluated P5a episodes, post-freeze; procedure and assertions recorded before execution; selection independent of gains; deterministic reconstruction with universe concordance; lot P5.3 within existing caps (30 s per command, no transfer); stop and deliver on failure without fix or change to F_a/RESULTS; does not raise the exploratory verdict; stop after delivery",
+ "not_authorised": [
+  "P5b",
+  "D16",
+  "P6",
+  "training",
+  "installation",
+  "AJ-H",
+  "push/merge/rebase",
+  "new efficacy comparison",
+  "change of F_a or RESULTS_P5a"
+ ],
+ "received_state": {
+  "ledger_records": 57,
+  "ledger_used_s": 98.501,
+  "terminal": "0d703a60b70d18377389b778b5bb9e396c4d5c3c316d0fc0923c0016b7dfbbb0",
+  "verified_identical_locally": true
+ },
+ "statuses_unchanged": {
+  "global": "PARTIAL_WITH_CHECKPOINT",
+  "scientific": "PROTOTYPE_UNVALIDATED",
+  "clinical_validation": false,
+  "G2": "NO-GO",
+  "P5a_reading": "exploratory"
+ }
+}

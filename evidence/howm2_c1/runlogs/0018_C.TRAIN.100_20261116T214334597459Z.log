@@ -1,0 +1,14 @@
+<c1-derived encode_long>:26: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+<c1-derived encode_long>:26: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+<c1-derived encode_long>:26: UserWarning: index_reduce() is in beta and the API may change at any time. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/TensorAdvancedIndexing.cpp:1522.)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:366: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:366: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+/home/user/carepredict-mvp/src/hospitalos/howm2/c1.py:366: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  st["train_sums"][f] = st["train_sums"].get(f, 0.0) + float(s)
+{"run": "C2a_N100_s2", "step": 45, "of": 150, "done": false, "best_step": null, "best_total": null}
+{"run": "C2a_N100_s0", "step": 46, "of": 150, "done": false, "best_step": null, "best_total": null}

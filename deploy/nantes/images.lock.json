@@ -1,0 +1,12 @@
+{
+ "resolved_utc": "2026-11-23T21:49:39Z",
+ "images": {
+  "redpandadata/redpanda:v24.1.9": "sha256:85a30e0084f3d479098c327575e3eb27b729ec31f7d72cd1b2ef1098dc1e3b85",
+  "timescale/timescaledb:2.14.2-pg15": "sha256:0698d9bf8cfd81e042f653ff3be767682b376bf0e95b431b2922e2d8a72195d1",
+  "redis:7.2.5-alpine": "sha256:6aaf3f5e6bc8a592fbfe2cccf19eb36d27c39d12dab4f4b01556b7449e7b1f44",
+  "postgres:15.7-alpine": "sha256:468d34fefd6338031787c7b8e94078975b3aaf4d66c7ead25c39cd3ba46a15c6",
+  "python:3.11.9-slim-bookworm": "sha256:8fb099199b9f2d70342674bd9dbccd3ed03a258f26bbd1d556822c6dfc60c317",
+  "node:22.12.0-bookworm-slim": "sha256:35531c52ce27b6575d69755c73e65d4468dba93a25644eed56dc12879cae9213",
+  "nginx:1.27.3-alpine": "sha256:814a8e88df978ade80e584cc5b333144b9372a8e3c98872d07137dbf3b44d0e4"
+ }
+}

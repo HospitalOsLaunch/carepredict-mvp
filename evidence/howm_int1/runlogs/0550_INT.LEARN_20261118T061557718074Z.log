@@ -1,0 +1,7 @@
+{"run": "W_t2_M_s1", "already_stopped": "patience"}
+{"run": "W_t2_M_s0", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+{"run": "W_t2_M_s2", "upd": 15927, "stopped": null, "best": 8000, "params": 1899540, "last": {"upd": 15900, "loss": 8.073315620422363, "st": 0.6661675572395325, "co": 0.3676528036594391, "cum": 0.23648613691329956, "eff": 1.351080060005188, "rup": 0.09521625936031342, "T": 36}}
+{'runs': ['W_t2_M_s0', 'W_t2_M_s1', 'W_t2_M_s2'], 'exit_codes': [0, 0, 0]}

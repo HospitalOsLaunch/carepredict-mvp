@@ -1,0 +1,161 @@
+{
+ "recommendation_id": "reco-1b37cf01d1f10f71",
+ "status": "RECOMMENDATION_READY",
+ "mode": "auto",
+ "scientific_status": "PROTOTYPE_UNVALIDATED",
+ "reasons": [
+  "lexicographic_objective_improvement_requires_human_approval",
+  "tier1 uncovered_care_minutes: habitual 1040.0 -> plan 435.0 (delta -605.0, equivalence tolerance 15.0)",
+  "tier2 reinforcement_hours: 10",
+  "tier3 interventions: 3",
+  "reported waiting_patient_hours: habitual 21.5 -> plan 14.5",
+  "reported beds_returned: habitual 2.0 -> plan 2.0",
+  "plan remains insufficient: 435.0 uncovered staff-minutes expected"
+ ],
+ "diagnostics": [],
+ "approvable": true,
+ "baseline": {
+  "plan_id": "plan-85a8a22276407ba7",
+  "label": "pratique habituelle",
+  "actions": [],
+  "metrics": {
+   "uncovered_care_minutes": 1040.0,
+   "uncovered_in_unit_minutes": 605.0,
+   "uncovered_waiting_minutes": 435.0,
+   "uncovered_by_skill": {
+    "IDE": 1040.0,
+    "AS": 0.0
+   },
+   "simultaneity_shortfall_minutes": 0.0,
+   "waiting_patient_hours": 21.5,
+   "admissions_by_end": 2.0,
+   "departures_by_end": 2.0,
+   "beds_returned": 2.0,
+   "reinforcement_hours": 0,
+   "interventions": 0,
+   "peak_pressure": 10.0,
+   "peak_pressure_hour": 21,
+   "hours_above_threshold": 10.5,
+   "worst_scenario_uncovered_minutes": 1055.0,
+   "best_scenario_uncovered_minutes": 1025.0,
+   "max_total_staff_required": {
+    "IDE": 5.0,
+    "AS": 0.0
+   },
+   "max_additional_staff_required": {
+    "IDE": 2.0,
+    "AS": 0.0
+   }
+  },
+  "violations": [],
+  "warnings": [],
+  "conditional_on": []
+ },
+ "primary": {
+  "plan_id": "plan-834c6594ab85f17c",
+  "label": "coord:S01:20261117T0900Z + renfort:R1 + renfort:R2",
+  "actions": [
+   "coord:S01:20261117T0900Z",
+   "renfort:R1",
+   "renfort:R2"
+  ],
+  "metrics": {
+   "uncovered_care_minutes": 435.0,
+   "uncovered_in_unit_minutes": 210.0,
+   "uncovered_waiting_minutes": 225.0,
+   "uncovered_by_skill": {
+    "IDE": 435.0,
+    "AS": 0.0
+   },
+   "simultaneity_shortfall_minutes": 0.0,
+   "waiting_patient_hours": 14.5,
+   "admissions_by_end": 2.0,
+   "departures_by_end": 2.0,
+   "beds_returned": 2.0,
+   "reinforcement_hours": 10,
+   "interventions": 3,
+   "peak_pressure": 9.0,
+   "peak_pressure_hour": 0,
+   "hours_above_threshold": 2.0,
+   "worst_scenario_uncovered_minutes": 450.0,
+   "best_scenario_uncovered_minutes": 420.0,
+   "max_total_staff_required": {
+    "IDE": 5.0,
+    "AS": 0.0
+   },
+   "max_additional_staff_required": {
+    "IDE": 2.0,
+    "AS": 0.0
+   }
+  },
+  "violations": [],
+  "warnings": [],
+  "conditional_on": [
+   "R1"
+  ]
+ },
+ "alternative": {
+  "plan_id": "plan-af3f327e26167bd4",
+  "label": "renfort:R1 + renfort:R2",
+  "actions": [
+   "renfort:R1",
+   "renfort:R2"
+  ],
+  "metrics": {
+   "uncovered_care_minutes": 640.0,
+   "uncovered_in_unit_minutes": 205.0,
+   "uncovered_waiting_minutes": 435.0,
+   "uncovered_by_skill": {
+    "IDE": 640.0,
+    "AS": 0.0
+   },
+   "simultaneity_shortfall_minutes": 0.0,
+   "waiting_patient_hours": 21.5,
+   "admissions_by_end": 2.0,
+   "departures_by_end": 2.0,
+   "beds_returned": 2.0,
+   "reinforcement_hours": 10,
+   "interventions": 2,
+   "peak_pressure": 9.0,
+   "peak_pressure_hour": 0,
+   "hours_above_threshold": 3.0,
+   "worst_scenario_uncovered_minutes": 655.0,
+   "best_scenario_uncovered_minutes": 625.0,
+   "max_total_staff_required": {
+    "IDE": 5.0,
+    "AS": 0.0
+   },
+   "max_additional_staff_required": {
+    "IDE": 2.0,
+    "AS": 0.0
+   }
+  },
+  "violations": [],
+  "warnings": [],
+  "conditional_on": [
+   "R1"
+  ]
+ },
+ "search": {
+  "enumerated": 12,
+  "evaluated": 12,
+  "limit": 16,
+  "complete": true,
+  "filter_rules": [
+   "auto discharge coordination only with observed medical authorization and no open obstacle",
+   "target hours from profile, not before readiness estimate, before any planned departure",
+   "reinforcement options: known confirmation status and external commitment respected",
+   "at most 2 coordinations and 2 reinforcement options per plan",
+   "ordering: fewer actions, fewer reinforcement hours, then identifiers; prefix kept when the universe exceeds the bound"
+  ],
+  "rejected": {
+   "S02": "no_target_hour_before_habitual_plan",
+   "S03": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+   "S04": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+   "S05": "medical_authorization_revoked,readiness_estimate_unknown",
+   "S06": "obstacle:aval_non_confirme",
+   "S07": "medical_authorization_not_authorized,destination_unknown,transport_need_unknown,readiness_estimate_unknown",
+   "R3": "violates_lending_unit_minimum:U-CARDIO-SYN:3-1<3"
+  }
+ }
+}

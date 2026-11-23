@@ -1,0 +1,82 @@
+{
+ "failing": [
+  {
+   "family": "ready",
+   "a_fail": true,
+   "b_fail": true,
+   "c_fail": false
+  },
+  {
+   "family": "transport",
+   "a_fail": true,
+   "b_fail": true,
+   "c_fail": false
+  },
+  {
+   "family": "cleaning",
+   "a_fail": true,
+   "b_fail": false,
+   "c_fail": false
+  },
+  {
+   "family": "confirmation",
+   "a_fail": false,
+   "b_fail": true,
+   "c_fail": false
+  },
+  {
+   "family": "arrivals",
+   "a_fail": false,
+   "b_fail": true,
+   "c_fail": false
+  },
+  {
+   "family": "care",
+   "a_fail": false,
+   "b_fail": true,
+   "c_fail": false
+  }
+ ],
+ "literal": {
+  "1": [
+   NaN,
+   NaN
+  ],
+  "6": [
+   NaN,
+   NaN
+  ],
+  "24": [
+   NaN,
+   NaN
+  ]
+ },
+ "literal_verdict": "HOWM1_INDETERMINE",
+ "kept": [
+  "presence"
+ ],
+ "all_fams": {
+  "1": [
+   0.045376630364074355,
+   [
+    0.040140495756860024,
+    0.05067825035349918
+   ]
+  ],
+  "6": [
+   0.09795308265251412,
+   [
+    0.08840083101864094,
+    0.10842289498070411
+   ]
+  ],
+  "24": [
+   0.1266194335227251,
+   [
+    0.11153347457973115,
+    0.1417739933602328
+   ]
+  ]
+ },
+ "all_verdict": "HOWM1_DISCRIMINANT"
+}

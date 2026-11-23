@@ -1,0 +1,676 @@
+{
+ "n_train_origins": 1536,
+ "n_val_origins": 1440,
+ "scales": {
+  "auth": 2.562627456695723,
+  "ready": 3.102473377093498,
+  "transport": 2.247443454693525,
+  "cleaning": 2.158264128293859,
+  "confirmation": 2.7996843571846304,
+  "arrivals": 0.42330867590175736,
+  "care": 1.548539828193125
+ },
+ "runs": {
+  "B2_lr0.0003_s0": {
+   "best": {
+    "TRAIN": {
+     "total": 6.983914372429521,
+     "means": {
+      "auth": 2.5553995370796376,
+      "ready": 3.097973770081919,
+      "transport": 2.235427600909502,
+      "cleaning": 2.1505110142967117,
+      "confirmation": 2.7942683536272783,
+      "arrivals": 0.4229849398963981,
+      "care": 1.548266106547295
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.214259985831274,
+     "means": {
+      "auth": 2.9801240870909353,
+      "ready": 3.5819621443129894,
+      "cleaning": 2.036785224156502,
+      "confirmation": 2.8727651373248233,
+      "arrivals": 0.396967472853484,
+      "care": 1.514308682496567,
+      "transport": 2.2728546418641744
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 6,
+     "batch_pos": 0,
+     "best_val": 7.214259985831274,
+     "best_epoch": 6,
+     "bad": 0,
+     "done": false,
+     "steps": 288,
+     "train_seconds": 12.829775661000212
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.849841660595391,
+     "means": {
+      "auth": 2.5405133973658343,
+      "ready": 3.0714410212391203,
+      "transport": 2.0988612309480326,
+      "cleaning": 2.0601676521213372,
+      "confirmation": 2.755773880160772,
+      "arrivals": 0.421801820397377,
+      "care": 1.5474257771852238
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.229877977572358,
+     "means": {
+      "auth": 2.996657268810486,
+      "ready": 3.6104926773139154,
+      "cleaning": 2.0224138235434506,
+      "confirmation": 2.8460514612287002,
+      "arrivals": 0.3978538235028585,
+      "care": 1.5143416006927264,
+      "transport": 2.3044438288922895
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 26,
+     "batch_pos": 0,
+     "best_val": 7.214259985831274,
+     "best_epoch": 6,
+     "bad": 20,
+     "done": true,
+     "steps": 1248,
+     "train_seconds": 56.92822236300003
+    }
+   }
+  },
+  "B2_lr0.001_s0": {
+   "best": {
+    "TRAIN": {
+     "total": 6.955151039734961,
+     "means": {
+      "auth": 2.548836085344998,
+      "ready": 3.0983709760563936,
+      "transport": 2.209620940379607,
+      "cleaning": 2.132792009186635,
+      "confirmation": 2.778962321006335,
+      "arrivals": 0.42251191039880115,
+      "care": 1.5481838591745487
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.210222281442746,
+     "means": {
+      "auth": 2.9987732900171977,
+      "ready": 3.590520722323475,
+      "cleaning": 2.019413157609793,
+      "confirmation": 2.8542025285346484,
+      "arrivals": 0.39750383209299156,
+      "care": 1.5135078030199276,
+      "transport": 2.2725304511555455
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 6,
+     "batch_pos": 0,
+     "best_val": 7.210222281442746,
+     "best_epoch": 6,
+     "bad": 0,
+     "done": false,
+     "steps": 288,
+     "train_seconds": 13.99114571699954
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.599903579109296,
+     "means": {
+      "auth": 2.5250477112219682,
+      "ready": 3.015147444166758,
+      "transport": 1.903078171534416,
+      "cleaning": 1.8050710179838716,
+      "confirmation": 2.7168576499590507,
+      "arrivals": 0.41945285060339504,
+      "care": 1.5458772321886458
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.451280161641224,
+     "means": {
+      "auth": 3.0030980369114673,
+      "ready": 3.6988831987373914,
+      "cleaning": 2.169611528592232,
+      "confirmation": 2.897562839828919,
+      "arrivals": 0.40043220740777474,
+      "care": 1.5149908821032434,
+      "transport": 2.5230915258850968
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 26,
+     "batch_pos": 0,
+     "best_val": 7.210222281442746,
+     "best_epoch": 6,
+     "bad": 20,
+     "done": true,
+     "steps": 1248,
+     "train_seconds": 57.44253704299899
+    }
+   }
+  },
+  "B2_lr0.001_s1": {
+   "best": {
+    "TRAIN": {
+     "total": 6.94981688903109,
+     "means": {
+      "auth": 2.5451743511933085,
+      "ready": 3.0865479808742715,
+      "transport": 2.2139743340321076,
+      "cleaning": 2.1307983387450466,
+      "confirmation": 2.776410862803459,
+      "arrivals": 0.42249329057004714,
+      "care": 1.5479478556901662
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.208016812141433,
+     "means": {
+      "auth": 2.984875867135475,
+      "ready": 3.594498369939421,
+      "cleaning": 2.0224112290602463,
+      "confirmation": 2.8503665407127308,
+      "arrivals": 0.3977600336074829,
+      "care": 1.5154412545688427,
+      "transport": 2.2726715771775496
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 6,
+     "batch_pos": 0,
+     "best_val": 7.208016812141433,
+     "best_epoch": 6,
+     "bad": 0,
+     "done": false,
+     "steps": 288,
+     "train_seconds": 12.997312085998828
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.5541804204624174,
+     "means": {
+      "auth": 2.520985194740197,
+      "ready": 3.0068993649240268,
+      "transport": 1.8757762242586185,
+      "cleaning": 1.7692122206709902,
+      "confirmation": 2.6946455309024224,
+      "arrivals": 0.4173981754316224,
+      "care": 1.5459871377657868
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.391337796759391,
+     "means": {
+      "auth": 3.0026939461065014,
+      "ready": 3.7240767786465723,
+      "cleaning": 2.061878636861459,
+      "confirmation": 2.9053850744372216,
+      "arrivals": 0.40031107090137624,
+      "care": 1.515807197377274,
+      "transport": 2.475842031993364
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 26,
+     "batch_pos": 0,
+     "best_val": 7.208016812141433,
+     "best_epoch": 6,
+     "bad": 20,
+     "done": true,
+     "steps": 1248,
+     "train_seconds": 56.607764288001135
+    }
+   }
+  },
+  "H1_lr0.0003_s0": {
+   "best": {
+    "TRAIN": {
+     "total": 6.979024975810756,
+     "means": {
+      "auth": 2.556622393355223,
+      "ready": 3.099375813072632,
+      "transport": 2.2373597450745413,
+      "cleaning": 2.1500329652689567,
+      "confirmation": 2.7759888710883946,
+      "arrivals": 0.4229941533671485,
+      "care": 1.5483445404605791
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.210589350260995,
+     "means": {
+      "auth": 2.98329547284681,
+      "ready": 3.5831621578660515,
+      "cleaning": 2.0335528447077826,
+      "confirmation": 2.8654715961384998,
+      "arrivals": 0.39700331423017715,
+      "care": 1.5141139396190364,
+      "transport": 2.2702676418580507
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 6,
+     "batch_pos": 0,
+     "best_val": 7.210589350260995,
+     "best_epoch": 6,
+     "bad": 0,
+     "done": false,
+     "steps": 288,
+     "train_seconds": 108.69605518200035
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.891721133620476,
+     "means": {
+      "auth": 2.537408515647443,
+      "ready": 3.0814605872043574,
+      "transport": 2.1684335109515067,
+      "cleaning": 2.084140673760445,
+      "confirmation": 2.7516131412524443,
+      "arrivals": 0.4214488983982139,
+      "care": 1.547607987944874
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.2106433053317165,
+     "means": {
+      "auth": 2.9923740977418127,
+      "ready": 3.6001165006848246,
+      "cleaning": 2.0178026028168508,
+      "confirmation": 2.841390192620108,
+      "arrivals": 0.4005042853178801,
+      "care": 1.51452863653734,
+      "transport": 2.2666881251753423
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 26,
+     "batch_pos": 0,
+     "best_val": 7.210589350260995,
+     "best_epoch": 6,
+     "bad": 20,
+     "done": true,
+     "steps": 1248,
+     "train_seconds": 472.37654367999914
+    }
+   }
+  },
+  "H1_lr0.0003_s1": {
+   "best": {
+    "TRAIN": {
+     "total": 6.929969153742752,
+     "means": {
+      "auth": 2.5451351315904645,
+      "ready": 3.0908380257259602,
+      "transport": 2.197748079055395,
+      "cleaning": 2.115572982669426,
+      "confirmation": 2.759211087456116,
+      "arrivals": 0.42217790707945824,
+      "care": 1.5478667398501225
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.205387969359747,
+     "means": {
+      "auth": 2.9893472820916416,
+      "ready": 3.592839630556778,
+      "cleaning": 2.0140118446105566,
+      "confirmation": 2.85114578264896,
+      "arrivals": 0.39791229212725604,
+      "care": 1.514727242518781,
+      "transport": 2.272392337259493
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 20,
+     "batch_pos": 0,
+     "best_val": 7.205387969359747,
+     "best_epoch": 20,
+     "bad": 0,
+     "done": false,
+     "steps": 960,
+     "train_seconds": 361.1400572940022
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.785569735654609,
+     "means": {
+      "auth": 2.530008470227889,
+      "ready": 3.0550347518423546,
+      "transport": 2.068407173645802,
+      "cleaning": 2.0015020614944845,
+      "confirmation": 2.7304352934543905,
+      "arrivals": 0.4198348518047068,
+      "care": 1.5467212268910913
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.2736688401718785,
+     "means": {
+      "auth": 2.9976461449986442,
+      "ready": 3.6459239488888704,
+      "cleaning": 2.0337153798494585,
+      "confirmation": 2.869135426583691,
+      "arrivals": 0.40031303917920147,
+      "care": 1.5139007913907117,
+      "transport": 2.3336115709522316
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 40,
+     "batch_pos": 0,
+     "best_val": 7.205387969359747,
+     "best_epoch": 20,
+     "bad": 20,
+     "done": true,
+     "steps": 1920,
+     "train_seconds": 712.2906247400072
+    }
+   }
+  },
+  "H1_lr0.001_s0": {
+   "best": {
+    "TRAIN": {
+     "total": 6.9905547698580595,
+     "means": {
+      "auth": 2.5590974995679674,
+      "ready": 3.099546671224542,
+      "transport": 2.2423022514734514,
+      "cleaning": 2.153957401552508,
+      "confirmation": 2.792451051565317,
+      "arrivals": 0.42320704294575584,
+      "care": 1.5485124735114508
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.2153600670599785,
+     "means": {
+      "auth": 2.9808105298395215,
+      "ready": 3.5811245199306705,
+      "cleaning": 2.0385679538433368,
+      "confirmation": 2.8727358965116125,
+      "arrivals": 0.3969189237665247,
+      "care": 1.5143378948230255,
+      "transport": 2.2737142177004563
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 1,
+     "batch_pos": 0,
+     "best_val": 7.2153600670599785,
+     "best_epoch": 1,
+     "bad": 0,
+     "done": false,
+     "steps": 48,
+     "train_seconds": 20.505871337000144
+    }
+   },
+   "last": {
+    "TRAIN": {
+     "total": 6.816454334877073,
+     "means": {
+      "auth": 2.535416255206837,
+      "ready": 3.0465047107681613,
+      "transport": 2.0844800191047863,
+      "cleaning": 2.0534096384927425,
+      "confirmation": 2.734463767363475,
+      "arrivals": 0.41929062290324104,
+      "care": 1.5469818569949352
+     },
+     "counts": {
+      "auth": 34810,
+      "ready": 1534,
+      "transport": 195,
+      "cleaning": 217,
+      "confirmation": 832,
+      "arrivals": 73728,
+      "care": 1608714
+     }
+    },
+    "VAL": {
+     "total": 7.285407864766219,
+     "means": {
+      "auth": 3.0004835390912974,
+      "ready": 3.6697562417778995,
+      "cleaning": 2.049425746233035,
+      "confirmation": 2.8702886269471355,
+      "arrivals": 0.4019479901702316,
+      "care": 1.514886036287058,
+      "transport": 2.3128462496556734
+     },
+     "counts": {
+      "auth": 32962,
+      "ready": 1349,
+      "cleaning": 195,
+      "confirmation": 535,
+      "arrivals": 69120,
+      "care": 1527876,
+      "transport": 228
+     }
+    },
+    "state": {
+     "epoch": 21,
+     "batch_pos": 0,
+     "best_val": 7.2153600670599785,
+     "best_epoch": 1,
+     "bad": 20,
+     "done": true,
+     "steps": 1008,
+     "train_seconds": 380.24195780099353
+    }
+   }
+  }
+ },
+ "seconds": 122.14719200134277
+}

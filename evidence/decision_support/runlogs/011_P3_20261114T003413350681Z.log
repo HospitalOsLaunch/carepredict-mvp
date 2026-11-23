@@ -1,0 +1,31 @@
+...........F...                                                          [100%]
+=================================== FAILURES ===================================
+____________ test_t19_extension_t_changes_only_after_departure_hour ____________
+
+nominal = PublicSnapshot(schema_version='DS_PUBLIC_SNAPSHOT_1', snapshot_id='snap-aa7de9d195c5', fingerprint='aa7de9d195c5fd040b... external_commitments=1)), issues=(), excluded_observations={'event_after_decision': 1, 'available_after_decision': 1})
+settings = Settings(profile={'schema': 'DS_UNIT_PROFILE_1', 'profile_id': 'U-MED-SYN-01', 'version': '1', 'synthetic': True, 'sta...n objective'}, backend=<hospitalos.decision_support.reference_forecaster.ReferenceForecaster object at 0x7ff8e383fb60>)
+
+    def test_t19_extension_t_changes_only_after_departure_hour(nominal, settings):
+        base = locks_of("scenario_x1x2.json").model_dump(mode="json")
+        trajectories, totals = {}, {}
+        for t in range(0, 7):
+            locks = json.loads(json.dumps(base))
+            locks["locks"][1]["extension_hours"] = t
+            locks["search_complements"] = False
+            r = simulate(nominal, ScenarioLocks.model_validate(locks), settings)
+            e = _ev(r, r.locked_plan_id)
+            trajectories[t] = e.trajectory
+            totals[t] = e.metrics.uncovered_in_unit_minutes
+        departure_index = {t: 17 + t for t in trajectories}  # 12:00 Paris = index 17
+        for t in range(0, 6):
+            a, b = trajectories[t], trajectories[t + 1]
+            diff = [i for i, (p, q) in enumerate(zip(a, b, strict=True)) if p != q]
+>           assert diff and min(diff) >= departure_index[t]  # nothing changes before X2 leaves
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           assert ([16, 17, 18] and 16 >= 17)
+E            +  where 16 = min([16, 17, 18])
+
+tests/decision_support/test_p3_planner.py:192: AssertionError
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_p3_planner.py::test_t19_extension_t_changes_only_after_departure_hour
+1 failed, 14 passed in 0.55s

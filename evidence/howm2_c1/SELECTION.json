@@ -1,0 +1,886 @@
+{
+ "rule": "NORME_C1_PALIER1 s.6 (CVAL only)",
+ "runs": {
+  "C.1:100:0": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.00226145485469,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.00226145485469,
+     "cval_means": {
+      "auth": 2.8738912172771234,
+      "ready": 3.7614839272065597,
+      "transport": 2.8539675719790405,
+      "cleaning": 2.489747065511243,
+      "confirmation": 3.1819996653075817,
+      "arrivals": 0.4707560152919204,
+      "care": 1.5427793215420191
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8483672284958983,
+      "ready": 3.556634699428499,
+      "transport": 2.5696919994925635,
+      "cleaning": 2.292021546186756,
+      "confirmation": 3.091710294805178,
+      "arrivals": 0.449105585416158,
+      "care": 1.5386518630402357
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "c43883b2b63260590fe96c0eca423873e87226881bf755dc4a1b97a3beb2767f"
+  },
+  "C.1:100:1": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.014108225677601,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.014108225677601,
+     "cval_means": {
+      "auth": 2.8746423897998357,
+      "ready": 3.7597472711042923,
+      "transport": 2.8587228727864695,
+      "cleaning": 2.5069718985721985,
+      "confirmation": 3.185218334893096,
+      "arrivals": 0.470814924273226,
+      "care": 1.54390642254286
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8486892531472883,
+      "ready": 3.5563879869799733,
+      "transport": 2.570910024744978,
+      "cleaning": 2.295552520600175,
+      "confirmation": 3.0899219005381693,
+      "arrivals": 0.4491761745346917,
+      "care": 1.5387651476901731
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "dc4c91b56abff1d899473a4ba601eebb93a30aa3616fa54ef41d8e279e055257"
+  },
+  "C.1:100:2": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.007485549192307,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.007485549192307,
+     "cval_means": {
+      "auth": 2.876043724239853,
+      "ready": 3.758108285701636,
+      "transport": 2.857210663648752,
+      "cleaning": 2.4953247303250192,
+      "confirmation": 3.1846807649462288,
+      "arrivals": 0.4708031788468361,
+      "care": 1.5433612304437292
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8483519905962793,
+      "ready": 3.5571399183526715,
+      "transport": 2.57277035015966,
+      "cleaning": 2.294914997382885,
+      "confirmation": 3.089779630571711,
+      "arrivals": 0.4490967949231466,
+      "care": 1.538721685373992
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "cf7fb662ab2f64187ed4094c218f6866ec46d77ff0c33e1d7ff209bc888a6def"
+  },
+  "C.1:1000:0": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.945218301404703,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.964624497474786,
+     "cval_means": {
+      "auth": 2.863597995955378,
+      "ready": 3.73768542174137,
+      "transport": 2.8173693244928844,
+      "cleaning": 2.4782918951977257,
+      "confirmation": 3.1722850806511524,
+      "arrivals": 0.4703300153767621,
+      "care": 1.5429632040908534
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8448643794059545,
+      "ready": 3.5684878253848655,
+      "transport": 2.5536542366316617,
+      "cleaning": 2.2955305428063393,
+      "confirmation": 3.045894652542403,
+      "arrivals": 0.45225197982788085,
+      "care": 1.5370963188516054
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 8.00405336392857,
+     "cval_means": {
+      "auth": 2.851160332416983,
+      "ready": 3.7346568750612663,
+      "transport": 2.8753989230800463,
+      "cleaning": 2.5208160718282064,
+      "confirmation": 3.173589020706822,
+      "arrivals": 0.4700811212813413,
+      "care": 1.5427425727812847
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.805412104198269,
+      "ready": 3.6054663647316536,
+      "transport": 2.5445028357077972,
+      "cleaning": 2.296852484379797,
+      "confirmation": 2.9796506695803124,
+      "arrivals": 0.4496196273167928,
+      "care": 1.5388078742289526
+     },
+     "improved": false
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.945218301404703,
+     "cval_means": {
+      "auth": 2.8429890100171837,
+      "ready": 3.7070114771525065,
+      "transport": 2.8120700549948348,
+      "cleaning": 2.4898636642543748,
+      "confirmation": 3.1620891945702687,
+      "arrivals": 0.47011936235207097,
+      "care": 1.5424345343580164
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.787073911277571,
+      "ready": 3.553210781384961,
+      "transport": 2.4724161663922395,
+      "cleaning": 2.259983350402352,
+      "confirmation": 3.0025689081466425,
+      "arrivals": 0.44538479487101235,
+      "care": 1.5471600528338803
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "aad9edc9f129d994458e2898c09dd7433c220130b5bae897f5979bb964d3dafb"
+  },
+  "C.1:1000:1": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.964176161356384,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.979160178226339,
+     "cval_means": {
+      "auth": 2.8635084695845725,
+      "ready": 3.7431731765920464,
+      "transport": 2.8333096622110725,
+      "cleaning": 2.490867849328052,
+      "confirmation": 3.1712976704533524,
+      "arrivals": 0.4703924195082099,
+      "care": 1.5430987214792327
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8427355534999705,
+      "ready": 3.5632689922729033,
+      "transport": 2.540559907211512,
+      "cleaning": 2.282321681516671,
+      "confirmation": 3.039490066951925,
+      "arrivals": 0.45241622440020246,
+      "care": 1.536983829895162
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 7.996646837200693,
+     "cval_means": {
+      "auth": 2.853652628435989,
+      "ready": 3.742087663303722,
+      "transport": 2.870938526077585,
+      "cleaning": 2.5067831664249813,
+      "confirmation": 3.167090454184974,
+      "arrivals": 0.46998248166508144,
+      "care": 1.5431554043342068
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.810590396997345,
+      "ready": 3.606651768498643,
+      "transport": 2.5549359279894444,
+      "cleaning": 2.309387273460854,
+      "confirmation": 2.995864557889473,
+      "arrivals": 0.4496123736699422,
+      "care": 1.538592958949978
+     },
+     "improved": false
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.964176161356384,
+     "cval_means": {
+      "auth": 2.8434067688395364,
+      "ready": 3.714406582442197,
+      "transport": 2.8502174416086175,
+      "cleaning": 2.4859248224346118,
+      "confirmation": 3.1662596738720774,
+      "arrivals": 0.47004304577906925,
+      "care": 1.5423620774252629
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.784380516660887,
+      "ready": 3.5571550653373354,
+      "transport": 2.479893339406825,
+      "cleaning": 2.26131648275175,
+      "confirmation": 2.9951194115712143,
+      "arrivals": 0.44528740930557253,
+      "care": 1.547461355705684
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "9e9e5f35c62ccf04ac94953d89ddb4cb06d107d81d44e9cd410f9470e6c715d5"
+  },
+  "C.1:1000:2": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.948375167521806,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.987788855500698,
+     "cval_means": {
+      "auth": 2.86481292303958,
+      "ready": 3.7462457779682046,
+      "transport": 2.841459789118924,
+      "cleaning": 2.4958925159498193,
+      "confirmation": 3.173853772027152,
+      "arrivals": 0.47035673950557355,
+      "care": 1.5436346145346365
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8424937084971216,
+      "ready": 3.5658109427144535,
+      "transport": 2.540753561913488,
+      "cleaning": 2.2845840645488353,
+      "confirmation": 3.046758918311213,
+      "arrivals": 0.45208187007904055,
+      "care": 1.53696309805806
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 7.96790421946736,
+     "cval_means": {
+      "auth": 2.851809603277093,
+      "ready": 3.7244792620340985,
+      "transport": 2.8431617611057156,
+      "cleaning": 2.484682609569067,
+      "confirmation": 3.167867510033766,
+      "arrivals": 0.47003068692154354,
+      "care": 1.5429385916344636
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.810785584429482,
+      "ready": 3.6041487125712655,
+      "transport": 2.5586213040487156,
+      "cleaning": 2.3193043381910607,
+      "confirmation": 2.9824008048005455,
+      "arrivals": 0.44988138516743975,
+      "care": 1.538399345923463
+     },
+     "improved": true
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.948375167521806,
+     "cval_means": {
+      "auth": 2.844316626436113,
+      "ready": 3.703092017318263,
+      "transport": 2.818937050444739,
+      "cleaning": 2.4874301603470728,
+      "confirmation": 3.1681298201702774,
+      "arrivals": 0.4700606468099135,
+      "care": 1.5423652942864081
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.7839456747214117,
+      "ready": 3.5542832799385287,
+      "transport": 2.474785564600719,
+      "cleaning": 2.2499160264789873,
+      "confirmation": 2.998976732296705,
+      "arrivals": 0.44530394140879315,
+      "care": 1.5476698735321222
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "73a138161fc0f7e17f2ee34cc7b40b7255b159f317a0bef3382d01ba3af545f8"
+  },
+  "C.2a:100:0": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.003090907401363,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.003090907401363,
+     "cval_means": {
+      "auth": 2.873799822852402,
+      "ready": 3.7619174097523547,
+      "transport": 2.8546460231581885,
+      "cleaning": 2.490763792224314,
+      "confirmation": 3.181867808711772,
+      "arrivals": 0.47075774934556747,
+      "care": 1.542772250215557
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8484294282021114,
+      "ready": 3.5566270426827007,
+      "transport": 2.5695426797390666,
+      "cleaning": 2.291963921933971,
+      "confirmation": 3.0919395990970853,
+      "arrivals": 0.4491056826379564,
+      "care": 1.5386514841023586
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "97f5349f99dc32ac93ab6680dff5eb8882a3e9ceba7adf6e33abe4178496755a"
+  },
+  "C.2a:100:1": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.014100803665816,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.014100803665816,
+     "cval_means": {
+      "auth": 2.874741469027467,
+      "ready": 3.7594522844661364,
+      "transport": 2.8586188820037215,
+      "cleaning": 2.506787870396143,
+      "confirmation": 3.1856820791872877,
+      "arrivals": 0.47081374404606996,
+      "care": 1.5439338005488845
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.848716609845822,
+      "ready": 3.556405622111449,
+      "transport": 2.570842907194064,
+      "cleaning": 2.2956276891718495,
+      "confirmation": 3.090125733444623,
+      "arrivals": 0.44917604790793525,
+      "care": 1.538764059354735
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "5efba1f809a6995f63a5250afa2a86b8273bc7134236207f3952d0d3bd2a6e61"
+  },
+  "C.2a:100:2": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.007123038548547,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.007123038548547,
+     "cval_means": {
+      "auth": 2.8760673915331005,
+      "ready": 3.7579830718762945,
+      "transport": 2.8568725808636173,
+      "cleaning": 2.4949781749440336,
+      "confirmation": 3.1846567778128576,
+      "arrivals": 0.4708023849460814,
+      "care": 1.543345834407543
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.848347936583412,
+      "ready": 3.55715056282214,
+      "transport": 2.5727183718484072,
+      "cleaning": 2.294813142689217,
+      "confirmation": 3.0897033904351536,
+      "arrivals": 0.4490968185000949,
+      "care": 1.5387216191204613
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "be1673ac813f0994596accf615411e2676e9a49d0de600427094de1908d34551"
+  },
+  "C.2a:1000:0": {
+   "status": "not_executed"
+  },
+  "C.2a:1000:1": {
+   "status": "not_executed"
+  },
+  "C.2a:1000:2": {
+   "status": "not_executed"
+  },
+  "C.2b:100:0": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.00089929516458,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.00089929516458,
+     "cval_means": {
+      "auth": 2.873741458606169,
+      "ready": 3.76060753735629,
+      "transport": 2.8526082657850704,
+      "cleaning": 2.4891708848120153,
+      "confirmation": 3.1815756243102404,
+      "arrivals": 0.4707567595221378,
+      "care": 1.5427797104961531
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8482895933898718,
+      "ready": 3.556554779831441,
+      "transport": 2.5691336855908773,
+      "cleaning": 2.291681991331773,
+      "confirmation": 3.09156186564439,
+      "arrivals": 0.4491046256489224,
+      "care": 1.5386518161779823
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "bf465bf767a2cce54d01bb65dfce9a6fd93081de147c4c2055a6d96112483f2f"
+  },
+  "C.2b:100:1": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.011374326426903,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.011374326426903,
+     "cval_means": {
+      "auth": 2.8747422379600716,
+      "ready": 3.7586197184793875,
+      "transport": 2.8561271795859704,
+      "cleaning": 2.5043783566047404,
+      "confirmation": 3.185117334388088,
+      "arrivals": 0.4708140343427658,
+      "care": 1.5438837914920993
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.848684866071963,
+      "ready": 3.556356578072331,
+      "transport": 2.570541332349628,
+      "cleaning": 2.2954183323629973,
+      "confirmation": 3.0899604459245857,
+      "arrivals": 0.4491757345199585,
+      "care": 1.5387639688621075
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "3a693efdbeabc9a586a03a332266ff522dcacc2a8c849516f222e1af86be44f6"
+  },
+  "C.2b:100:2": {
+   "status": "done",
+   "steps": 150,
+   "best_step": 150,
+   "best_cval_total": 8.00703241882709,
+   "consumed": {
+    "steps": 150,
+    "planned": 150,
+    "exact_no_replay": true,
+    "establishments_consumed": 100,
+    "origins_consumed": 4800
+   },
+   "log": [
+    {
+     "step": 150,
+     "cval_total": 8.00703241882709,
+     "cval_means": {
+      "auth": 2.875909916397305,
+      "ready": 3.7577822038621616,
+      "transport": 2.8563913925663456,
+      "cleaning": 2.495520656410305,
+      "confirmation": 3.1845808362821795,
+      "arrivals": 0.47080425090259975,
+      "care": 1.5433784254902188
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8482479851240514,
+      "ready": 3.557058481564757,
+      "transport": 2.5726812258256486,
+      "cleaning": 2.2949142814947376,
+      "confirmation": 3.089691570063694,
+      "arrivals": 0.44909704711702136,
+      "care": 1.5387227931007077
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "651cac0544ffe6892fed7e17248e19efd9594674beddc3fd77b64c2d22e7dc05"
+  },
+  "C.2b:1000:0": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.881558831483438,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.946401172108804,
+     "cval_means": {
+      "auth": 2.8644737400831213,
+      "ready": 3.728542127753749,
+      "transport": 2.7978908740557156,
+      "cleaning": 2.46438278110548,
+      "confirmation": 3.170915119849558,
+      "arrivals": 0.47033046103186077,
+      "care": 1.542935068442708
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.844888621161425,
+      "ready": 3.5670077143869734,
+      "transport": 2.548735308189273,
+      "cleaning": 2.290248955372275,
+      "confirmation": 3.0447336928194524,
+      "arrivals": 0.4522496038277944,
+      "care": 1.5370949750525806
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 7.905571235431236,
+     "cval_means": {
+      "auth": 2.851734085049084,
+      "ready": 3.695769907127727,
+      "transport": 2.7742269039154053,
+      "cleaning": 2.436066802616777,
+      "confirmation": 3.168430032257436,
+      "arrivals": 0.47005891110058184,
+      "care": 1.5427536521281027
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.807215931272892,
+      "ready": 3.5972899214627994,
+      "transport": 2.5056079768864534,
+      "cleaning": 2.253036890966355,
+      "confirmation": 2.974144625680824,
+      "arrivals": 0.44961352705955504,
+      "care": 1.5387995088045858
+     },
+     "improved": true
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.881558831483438,
+     "cval_means": {
+      "auth": 2.8432679312731297,
+      "ready": 3.679169084447803,
+      "transport": 2.7594567367008755,
+      "cleaning": 2.4217907124552234,
+      "confirmation": 3.1624197594973507,
+      "arrivals": 0.4701357354168539,
+      "care": 1.542434679338916
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.7863769305064987,
+      "ready": 3.551948021107104,
+      "transport": 2.424720546603203,
+      "cleaning": 2.218324172166047,
+      "confirmation": 2.9927115100172994,
+      "arrivals": 0.44536714895566304,
+      "care": 1.5471532367953829
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "fac4007648a2ba22faac4c148be26f880d8992d211c2a4ae0f88f1fcd6fba431"
+  },
+  "C.2b:1000:1": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.884049771772545,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.933851232406895,
+     "cval_means": {
+      "auth": 2.865159833768712,
+      "ready": 3.71880443240657,
+      "transport": 2.786170929670334,
+      "cleaning": 2.4504668449533398,
+      "confirmation": 3.1759785695256713,
+      "arrivals": 0.4703848361968994,
+      "care": 1.5430071068015734
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8426929652635016,
+      "ready": 3.5606288939413884,
+      "transport": 2.5332888093060886,
+      "cleaning": 2.2762231017261465,
+      "confirmation": 3.0386408728674468,
+      "arrivals": 0.4524123094876607,
+      "care": 1.5369791466744716
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 7.930873980415514,
+     "cval_means": {
+      "auth": 2.851263394263191,
+      "ready": 3.699219494154959,
+      "transport": 2.801310826133896,
+      "cleaning": 2.4532633636189605,
+      "confirmation": 3.180674140029329,
+      "arrivals": 0.4699694122429247,
+      "care": 1.5430537742824613
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.8131408462669674,
+      "ready": 3.599063789578658,
+      "transport": 2.5124710760212485,
+      "cleaning": 2.263784601852184,
+      "confirmation": 2.9915385146585742,
+      "arrivals": 0.44960650070508323,
+      "care": 1.5385876019936569
+     },
+     "improved": true
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.884049771772545,
+     "cval_means": {
+      "auth": 2.843165645144225,
+      "ready": 3.6810769734960616,
+      "transport": 2.765852866591988,
+      "cleaning": 2.4180370903563224,
+      "confirmation": 3.165349725384059,
+      "arrivals": 0.47004372433379843,
+      "care": 1.5424036347191703
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.7837765606919893,
+      "ready": 3.555106139367353,
+      "transport": 2.433028150412084,
+      "cleaning": 2.2176608857941535,
+      "confirmation": 2.9825532109185113,
+      "arrivals": 0.4452680446306864,
+      "care": 1.5474948667839719
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "af715a84a2fc0e20010d843eadb46282e19d03c9440eb0e1f61801ee02ec1939"
+  },
+  "C.2b:1000:2": {
+   "status": "done",
+   "steps": 1500,
+   "best_step": 1500,
+   "best_cval_total": 7.883166301448645,
+   "consumed": {
+    "steps": 1500,
+    "planned": 1500,
+    "exact_no_replay": true,
+    "establishments_consumed": 1000,
+    "origins_consumed": 48000
+   },
+   "log": [
+    {
+     "step": 500,
+     "cval_total": 7.964434730940095,
+     "cval_means": {
+      "auth": 2.8647932700268406,
+      "ready": 3.7321132027741633,
+      "transport": 2.8149231380813724,
+      "cleaning": 2.482163853206854,
+      "confirmation": 3.172306433363489,
+      "arrivals": 0.4703524661836801,
+      "care": 1.5435417659603954
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.842393226855595,
+      "ready": 3.5652053400224344,
+      "transport": 2.536727201949282,
+      "cleaning": 2.2812006837222727,
+      "confirmation": 3.044767810549597,
+      "arrivals": 0.45207925780614217,
+      "care": 1.536962205348506
+     },
+     "improved": true
+    },
+    {
+     "step": 1000,
+     "cval_total": 7.893760812624022,
+     "cval_means": {
+      "auth": 2.8530992932260983,
+      "ready": 3.6941659107352747,
+      "transport": 2.759555241891316,
+      "cleaning": 2.425308589825685,
+      "confirmation": 3.167498342149807,
+      "arrivals": 0.4700052064877969,
+      "care": 1.5429802253161569
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.81342425627641,
+      "ready": 3.597659619861078,
+      "transport": 2.5162599150242633,
+      "cleaning": 2.270576609758904,
+      "confirmation": 2.975810883107491,
+      "arrivals": 0.4498742164770762,
+      "care": 1.5384027150457615
+     },
+     "improved": true
+    },
+    {
+     "step": 1500,
+     "cval_total": 7.883166301448645,
+     "cval_means": {
+      "auth": 2.8425614224268947,
+      "ready": 3.685684408563556,
+      "transport": 2.7600867302863152,
+      "cleaning": 2.4216172793815876,
+      "confirmation": 3.1617486327452147,
+      "arrivals": 0.47006826295896814,
+      "care": 1.5424072319603104
+     },
+     "train_means_since_last_eval": {
+      "auth": 2.782939119846253,
+      "ready": 3.5539199658116174,
+      "transport": 2.43217893783763,
+      "cleaning": 2.206560228333295,
+      "confirmation": 2.9880624987662183,
+      "arrivals": 0.44529352386792503,
+      "care": 1.5476853428223067
+     },
+     "improved": true
+    }
+   ],
+   "best_sha256": "2f685e37c41208a397b710f828ccb687750df7299692f8875f86b3fe79b07a7e"
+  }
+ },
+ "retained_point": {
+  "C.1": 1000,
+  "C.2a": 100,
+  "C.2b": 1000
+ },
+ "cval_mean_best_total_at_1000": {
+  "C.1": 7.952589876760964,
+  "C.2b": 7.882924968234875
+ },
+ "leading_system": "C.2b",
+ "c2a_note": "C.2a N=1000 not executed (budget, ledger note c1_lot_reallocation): no verdict, no substitution; C.2a N=100 descriptive"
+}

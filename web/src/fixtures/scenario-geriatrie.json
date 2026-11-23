@@ -1,0 +1,2192 @@
+{
+ "id": "geriatrie",
+ "label": "Matin\u00e9e sous tension",
+ "unit": "court-sejour-geriatrique",
+ "unit_name": "Court s\u00e9jour g\u00e9riatrique",
+ "source": "fixture",
+ "request": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "expected_entities": [
+   "unit:court-sejour-geriatrique",
+   "pool:transport-sanitaire",
+   "pool:ehpad-partenaires",
+   "bed:G01",
+   "patient:P-0503",
+   "bed:G02",
+   "patient:P-0511",
+   "bed:G03",
+   "patient:P-0517",
+   "bed:G04",
+   "patient:P-0522",
+   "bed:G05",
+   "patient:P-0531",
+   "discharge:P-0531",
+   "bed:G06",
+   "patient:P-0536",
+   "discharge:P-0536",
+   "bed:G07",
+   "patient:P-0540",
+   "discharge:P-0540",
+   "bed:G08",
+   "patient:P-0544",
+   "bed:G09",
+   "patient:P-0548",
+   "bed:G10",
+   "patient:P-0552",
+   "bed:G11",
+   "patient:P-0556",
+   "bed:G12",
+   "patient:P-0561",
+   "bed:G13",
+   "patient:P-0565",
+   "bed:G14",
+   "patient:P-0569",
+   "bed:G15",
+   "bed:G16",
+   "bed:G17",
+   "bed:G18",
+   "patient:U-2011",
+   "patient:U-2014",
+   "patient:U-2019",
+   "patient:U-2023",
+   "patient:U-2026",
+   "patient:U-2030"
+  ],
+  "events": [
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:unit:court-sejour-geriatrique",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:28:00Z",
+    "available_at": "2026-10-24T06:28:00Z",
+    "fact": {
+     "kind": "unit",
+     "id": "court-sejour-geriatrique",
+     "staffed_beds": 18,
+     "cleaning_teams": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:pool:transport-sanitaire",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:22:00Z",
+    "available_at": "2026-10-24T06:22:00Z",
+    "fact": {
+     "kind": "pool",
+     "id": "transport-sanitaire",
+     "resource": "transport",
+     "unit_ids": [
+      "court-sejour-geriatrique"
+     ],
+     "available": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:pool:ehpad-partenaires",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:22:00Z",
+    "available_at": "2026-10-24T06:22:00Z",
+    "fact": {
+     "kind": "pool",
+     "id": "ehpad-partenaires",
+     "resource": "downstream",
+     "unit_ids": [
+      "court-sejour-geriatrique"
+     ],
+     "available": 1
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G01",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G01",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0503",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0503",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0503",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-15T02:30:00Z",
+     "bed_id": "G01",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G02",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G02",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0511",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0511",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0511",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-16T08:30:00Z",
+     "bed_id": "G02",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G03",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G03",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0517",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0517",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0517",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-17T14:30:00Z",
+     "bed_id": "G03",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G04",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G04",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0522",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0522",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0522",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-18T10:30:00Z",
+     "bed_id": "G04",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G05",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G05",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0531",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0531",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:18:00Z",
+    "available_at": "2026-10-24T06:18:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0531",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T06:30:00Z",
+     "bed_id": "G05",
+     "medically_cleared": true,
+     "downstream_confirmed": true
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:discharge:P-0531",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:18:00Z",
+    "available_at": "2026-10-24T06:18:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0531",
+     "documents_ready": true,
+     "escort_required": false,
+     "escort_confirmed": null,
+     "downstream_required": true,
+     "downstream_pool_id": "ehpad-partenaires",
+     "transport_required": true,
+     "transport_pool_id": "transport-sanitaire",
+     "transport_requested": true
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G06",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G06",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0536",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0536",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:10:00Z",
+    "available_at": "2026-10-24T06:10:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0536",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T06:30:00Z",
+     "bed_id": "G06",
+     "medically_cleared": true,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:discharge:P-0536",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:10:00Z",
+    "available_at": "2026-10-24T06:10:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0536",
+     "documents_ready": true,
+     "escort_required": true,
+     "escort_confirmed": true,
+     "downstream_required": false,
+     "downstream_pool_id": null,
+     "transport_required": false,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G07",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G07",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0540",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0540",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:56:00Z",
+    "available_at": "2026-10-24T05:56:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0540",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T22:30:00Z",
+     "bed_id": "G07",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:discharge:P-0540",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:56:00Z",
+    "available_at": "2026-10-24T05:56:00Z",
+    "fact": {
+     "kind": "discharge",
+     "id": "P-0540",
+     "documents_ready": null,
+     "escort_required": null,
+     "escort_confirmed": null,
+     "downstream_required": true,
+     "downstream_pool_id": "ehpad-partenaires",
+     "transport_required": null,
+     "transport_pool_id": null,
+     "transport_requested": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G08",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G08",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0544",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0544",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0544",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-20T06:30:00Z",
+     "bed_id": "G08",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G09",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G09",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0548",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0548",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0548",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T21:30:00Z",
+     "bed_id": "G09",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G10",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G10",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0552",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0552",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0552",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T12:30:00Z",
+     "bed_id": "G10",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G11",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G11",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0556",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0556",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0556",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-19T03:30:00Z",
+     "bed_id": "G11",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G12",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G12",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0561",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0561",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0561",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-18T18:30:00Z",
+     "bed_id": "G12",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G13",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G13",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": "P-0565",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0565",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0565",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-18T09:30:00Z",
+     "bed_id": "G13",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G14",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G14",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "occupied",
+     "capabilities": [],
+     "occupant": "P-0569",
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:P-0569",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:15:00Z",
+    "available_at": "2026-10-24T06:15:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "P-0569",
+     "status": "admitted",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-18T00:30:00Z",
+     "bed_id": "G14",
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G15",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:12:00Z",
+    "available_at": "2026-10-24T06:12:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G15",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "dirty",
+     "capabilities": [
+      "oxygene"
+     ],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G16",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T05:49:00Z",
+    "available_at": "2026-10-24T05:49:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G16",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "dirty",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G17",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:21:00Z",
+    "available_at": "2026-10-24T06:21:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G17",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "dirty",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:bed:G18",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:00:00Z",
+    "available_at": "2026-10-24T06:00:00Z",
+    "fact": {
+     "kind": "bed",
+     "id": "G18",
+     "unit_id": "court-sejour-geriatrique",
+     "state": "closed",
+     "capabilities": [],
+     "occupant": null,
+     "reserved_for": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2011",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2011",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 4,
+     "waiting_since": "2026-10-23T20:18:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2014",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2014",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 4,
+     "waiting_since": "2026-10-23T21:30:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2019",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2019",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 3,
+     "waiting_since": "2026-10-23T23:55:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2023",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2023",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [
+      "oxygene"
+     ],
+     "priority": 3,
+     "waiting_since": "2026-10-24T02:10:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2026",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2026",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 2,
+     "waiting_since": "2026-10-24T04:00:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "demo:court-sejour-geriatrique:patient:U-2030",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:25:00Z",
+    "available_at": "2026-10-24T06:25:00Z",
+    "fact": {
+     "kind": "patient",
+     "id": "U-2030",
+     "status": "waiting",
+     "compatible_units": [
+      "court-sejour-geriatrique"
+     ],
+     "requirements": [],
+     "priority": 1,
+     "waiting_since": "2026-10-24T05:26:00Z",
+     "bed_id": null,
+     "medically_cleared": null,
+     "downstream_confirmed": null
+    }
+   }
+  ],
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "max_age_minutes": 60,
+  "horizon_minutes": 480,
+  "scenarios": 32,
+  "max_candidates": 32,
+  "seed": 7,
+  "tail_weight": 0.25
+ },
+ "state": {
+  "hospital_id": "ch-fictif",
+  "at": "2026-10-24T06:30:00Z",
+  "fingerprint": "b203eddb08cd487ea94007b663e3643c41df39fa7c8747a43c90bfd280c8227b",
+  "units": [
+   {
+    "kind": "unit",
+    "id": "court-sejour-geriatrique",
+    "staffed_beds": 18,
+    "cleaning_teams": 1
+   }
+  ],
+  "beds": [
+   {
+    "kind": "bed",
+    "id": "G01",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0503",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G02",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": "P-0511",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G03",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0517",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G04",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0522",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G05",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0531",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G06",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0536",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G07",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0540",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G08",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0544",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G09",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": "P-0548",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G10",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0552",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G11",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0556",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G12",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0561",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G13",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": "P-0565",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G14",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "occupied",
+    "capabilities": [],
+    "occupant": "P-0569",
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G15",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "dirty",
+    "capabilities": [
+     "oxygene"
+    ],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G16",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "dirty",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G17",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "dirty",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   },
+   {
+    "kind": "bed",
+    "id": "G18",
+    "unit_id": "court-sejour-geriatrique",
+    "state": "closed",
+    "capabilities": [],
+    "occupant": null,
+    "reserved_for": null
+   }
+  ],
+  "patients": [
+   {
+    "kind": "patient",
+    "id": "P-0503",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-15T02:30:00Z",
+    "bed_id": "G01",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0511",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-16T08:30:00Z",
+    "bed_id": "G02",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0517",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-17T14:30:00Z",
+    "bed_id": "G03",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0522",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-18T10:30:00Z",
+    "bed_id": "G04",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0531",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T06:30:00Z",
+    "bed_id": "G05",
+    "medically_cleared": true,
+    "downstream_confirmed": true
+   },
+   {
+    "kind": "patient",
+    "id": "P-0536",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T06:30:00Z",
+    "bed_id": "G06",
+    "medically_cleared": true,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0540",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T22:30:00Z",
+    "bed_id": "G07",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0544",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-20T06:30:00Z",
+    "bed_id": "G08",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0548",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T21:30:00Z",
+    "bed_id": "G09",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0552",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T12:30:00Z",
+    "bed_id": "G10",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0556",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-19T03:30:00Z",
+    "bed_id": "G11",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0561",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-18T18:30:00Z",
+    "bed_id": "G12",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0565",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-18T09:30:00Z",
+    "bed_id": "G13",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "P-0569",
+    "status": "admitted",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-18T00:30:00Z",
+    "bed_id": "G14",
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2011",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 4,
+    "waiting_since": "2026-10-23T20:18:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2014",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 4,
+    "waiting_since": "2026-10-23T21:30:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2019",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 3,
+    "waiting_since": "2026-10-23T23:55:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2023",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [
+     "oxygene"
+    ],
+    "priority": 3,
+    "waiting_since": "2026-10-24T02:10:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2026",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 2,
+    "waiting_since": "2026-10-24T04:00:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   },
+   {
+    "kind": "patient",
+    "id": "U-2030",
+    "status": "waiting",
+    "compatible_units": [
+     "court-sejour-geriatrique"
+    ],
+    "requirements": [],
+    "priority": 1,
+    "waiting_since": "2026-10-24T05:26:00Z",
+    "bed_id": null,
+    "medically_cleared": null,
+    "downstream_confirmed": null
+   }
+  ],
+  "pools": [
+   {
+    "kind": "pool",
+    "id": "ehpad-partenaires",
+    "resource": "downstream",
+    "unit_ids": [
+     "court-sejour-geriatrique"
+    ],
+    "available": 1
+   },
+   {
+    "kind": "pool",
+    "id": "transport-sanitaire",
+    "resource": "transport",
+    "unit_ids": [
+     "court-sejour-geriatrique"
+    ],
+    "available": 1
+   }
+  ],
+  "discharges": [
+   {
+    "kind": "discharge",
+    "id": "P-0531",
+    "documents_ready": true,
+    "escort_required": false,
+    "escort_confirmed": null,
+    "downstream_required": true,
+    "downstream_pool_id": "ehpad-partenaires",
+    "transport_required": true,
+    "transport_pool_id": "transport-sanitaire",
+    "transport_requested": true
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0536",
+    "documents_ready": true,
+    "escort_required": true,
+    "escort_confirmed": true,
+    "downstream_required": false,
+    "downstream_pool_id": null,
+    "transport_required": false,
+    "transport_pool_id": null,
+    "transport_requested": null
+   },
+   {
+    "kind": "discharge",
+    "id": "P-0540",
+    "documents_ready": null,
+    "escort_required": null,
+    "escort_confirmed": null,
+    "downstream_required": true,
+    "downstream_pool_id": "ehpad-partenaires",
+    "transport_required": null,
+    "transport_pool_id": null,
+    "transport_requested": null
+   }
+  ],
+  "issues": [],
+  "warnings": []
+ },
+ "plan": {
+  "schema_version": "HYBRID_PLAN_4",
+  "evidence": "simulation_under_declared_assumptions",
+  "decision": "recommend",
+  "plan_id": "2cc05c63a27bc45e86415b757c13cff2589f1d95346c3f996d013fb2576d6cdc",
+  "hospital_id": "ch-fictif",
+  "state_fingerprint": "b203eddb08cd487ea94007b663e3643c41df39fa7c8747a43c90bfd280c8227b",
+  "created_at": "2026-10-24T06:30:00Z",
+  "expires_at": "2026-10-24T06:45:00Z",
+  "selected": {
+   "kind": "prioritize_cleaning",
+   "bed_id": "G17",
+   "patient_id": null
+  },
+  "reasons": [
+   "lower_simulated_waiting_cost_requires_human_approval"
+  ],
+  "warnings": [],
+  "candidates": [
+   {
+    "action": {
+     "kind": "no_op",
+     "bed_id": null,
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1480.78125,
+    "worst_decile_waiting_patient_minutes": 2047.5,
+    "objective": 1622.4609375,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 2,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "prioritize_cleaning",
+     "bed_id": "G15",
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1480.78125,
+    "worst_decile_waiting_patient_minutes": 2047.5,
+    "objective": 1622.4609375,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 2,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "prioritize_cleaning",
+     "bed_id": "G16",
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1476.09375,
+    "worst_decile_waiting_patient_minutes": 2040.0,
+    "objective": 1617.0703125,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 2,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   },
+   {
+    "action": {
+     "kind": "prioritize_cleaning",
+     "bed_id": "G17",
+     "patient_id": null
+    },
+    "mean_waiting_patient_minutes": 1473.28125,
+    "worst_decile_waiting_patient_minutes": 2025.0,
+    "objective": 1611.2109375,
+    "violations": [],
+    "scenarios_with_unserved_demand": 32,
+    "max_waiting_at_end": 2,
+    "max_arrived": 0,
+    "mean_staffed_pressure": 0.0,
+    "mean_cleaning_pressure": 0.0,
+    "mean_transport_pressure": 0.0,
+    "mean_downstream_pressure": 0.0,
+    "pressure_regression_scenarios": 0
+   }
+  ],
+  "candidates_truncated": false,
+  "assumptions": {
+   "provenance": "synthetic_hypothesis",
+   "version": "release-allocate-v2",
+   "cleaning_minutes": [
+    30,
+    45,
+    60
+   ],
+   "departure_minutes": [
+    30,
+    60,
+    90
+   ],
+   "transport_minutes": [
+    30,
+    45,
+    75
+   ],
+   "transport_return_minutes": [
+    30,
+    45
+   ],
+   "load_multipliers": [
+    1,
+    1,
+    2
+   ]
+  },
+  "future": null,
+  "preparation": null,
+  "seed": 7,
+  "scenarios": 32,
+  "horizon_minutes": 480,
+  "tail_weight": 0.25,
+  "discharge_readiness": [
+   {
+    "patient_id": "P-0503",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0511",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0517",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0522",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0531",
+    "stage": "ready_for_simulation",
+    "blockers": []
+   },
+   {
+    "patient_id": "P-0536",
+    "stage": "ready_for_simulation",
+    "blockers": []
+   },
+   {
+    "patient_id": "P-0540",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "documents_not_confirmed",
+     "escort_not_confirmed",
+     "transport_requirement_unknown",
+     "downstream_acceptance_not_confirmed"
+    ]
+   },
+   {
+    "patient_id": "P-0544",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0548",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0552",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0556",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0561",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0565",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   },
+   {
+    "patient_id": "P-0569",
+    "stage": "medical_not_confirmed",
+    "blockers": [
+     "medical_authorization_not_confirmed",
+     "discharge_logistics_missing"
+    ]
+   }
+  ],
+  "service_status": "unserved_in_some_sampled_scenarios"
+ },
+ "trace": {
+  "baseline": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "departure_ready",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "downstream_reserve",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "ehpad-partenaires",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "transport_start",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "admit",
+      "patient_id": "U-2011",
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "transport_depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "admit",
+      "patient_id": "U-2014",
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "transport_end",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "admit",
+      "patient_id": "U-2019",
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "admit",
+      "patient_id": "U-2026",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "admit",
+      "patient_id": "U-2030",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 1050,
+    "admitted": 5,
+    "waiting_at_end": 1,
+    "violations": [],
+    "arrived": 0,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  },
+  "selected": {
+   "trajectory": {
+    "horizon_minutes": 480,
+    "events": [
+     {
+      "minute": 0,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "departure_ready",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "downstream_reserve",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "ehpad-partenaires",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "transport_start",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "admit",
+      "patient_id": "U-2014",
+      "bed_id": "G17",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "admit",
+      "patient_id": "U-2011",
+      "bed_id": "G15",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "transport_depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "transport_end",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "admit",
+      "patient_id": "U-2019",
+      "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "admit",
+      "patient_id": "U-2026",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "admit",
+      "patient_id": "U-2030",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     }
+    ]
+   },
+   "score": {
+    "waiting_patient_minutes": 1035,
+    "admitted": 5,
+    "waiting_at_end": 1,
+    "violations": [],
+    "arrived": 0,
+    "cancelled_reservations": 0,
+    "pressure": {
+     "staffed_patient_minutes": 0,
+     "cleaning_team_minutes": 0,
+     "transport_team_minutes": 0,
+     "downstream_place_minutes": 0
+    }
+   }
+  }
+ }
+}

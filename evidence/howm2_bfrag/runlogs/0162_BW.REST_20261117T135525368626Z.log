@@ -1,0 +1,61 @@
+{
+ "package": "HOWM2_P2_BW_FINAL.zip",
+ "package_sha256": "40590505c9967c9c3aa7e85c29733b1fb57c0ca66eaff5e3d8be312b0a80592d",
+ "comparison_rule": "run-time measurements ('timing_s', 'seconds', 'maxrss_mb') excluded from scientific comparisons",
+ "1_integrity": {
+  "files": 2163,
+  "bad": [],
+  "ok": true
+ },
+ "2_tests": {
+  "exit": 0,
+  "tail": [
+   "17 passed in 8.12s"
+  ]
+ },
+ "3_reload_and_reproduce_predictions": {
+  "model_hashes_ok": true,
+  "recorded_predictions_reproduced": true,
+  "decisions_checked": 6,
+  "ok": true
+ },
+ "4_refits_executed": {
+  "D_4_configs_predictions_identical": true,
+  "D_selection_identical": true,
+  "W_seed1_retrained_predictions_identical": true,
+  "ok": true
+ },
+ "5_analysis_reproduction": {
+  "identical": {
+   "DECOMPOSITION_F_R1.json": true,
+   "RESULTS_PILOT_W.json": false
+  },
+  "note": "re-timed W re-analysis duration excluded (run-time measurement)",
+  "ok": false
+ },
+ "6_regenerations_executed": {
+  "items": {
+   "eval/s001_e1.json": true,
+   "train/s137_e2.json": true,
+   "train/s137_e2.npz": true
+  },
+  "params": {
+   "eval": {
+    "E": 12,
+    "Md": 32
+   },
+   "train": {
+    "K": 2
+   }
+  },
+  "ok": true
+ },
+ "7_not_reproduced": [
+  "the other 47 evaluation decisions and 199 TRAIN origins (packaged, hash-checked, used by the reproduced analysis)",
+  "W seeds 0 and 2 retraining",
+  "DEV numerical check (packaged output only)",
+  "B-FRAG 2 runs (see the B-FRAG 2 receipt)"
+ ],
+ "seconds": 109.4,
+ "ok": false
+}

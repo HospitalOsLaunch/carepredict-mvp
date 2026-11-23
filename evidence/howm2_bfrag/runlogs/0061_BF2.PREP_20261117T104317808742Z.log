@@ -1,0 +1,54 @@
+.....F..............                                                     [100%]
+=================================== FAILURES ===================================
+__________________ test_t2_6_catalogue_and_capacity_override ___________________
+
+epi = (World(part='BF2_DEV', idx=0, family='SF1_cleaning_window', spec=EstablishmentSpec(partition='BF2_DEV', index=0, popul..._transport': 0, 'n24': 0, ...}, 'B': {'block_clean': 0, 'block_compat': 0, 'block_transport': 0, 'n24': 0, ...}}, ...])
+
+    def test_t2_6_catalogue_and_capacity_override(epi):
+        w, sp, ep, _tr = epi
+        for h in C.DECISION_HOURS:
+            t0 = h * TPH
+            wins = C.windows(t0)
+            assert len(wins) == 4 and all(a >= t0 + 2 * TPH and b - a == 8 * TPH and (a % TPD) // TPH in (6, 14) for a, b in wins)
+            acts = C.catalogue(t0)
+            assert len(acts) == 10 and all(a["staff_hours"] <= C.STAFF_HOURS for a in acts)
+        t0 = C.DECISION_HOURS[0] * TPH
+        eng0 = ep.instants[t0]
+        c0 = (eng0.c_cl, eng0.c_tr)
+        prov = K.bf_provider(sp, 1, w.nominal, regime_anchor=None)
+>       base = C.rollout_sched(eng0, prov, None, w.drop, 24)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/bfrag2/test_bfrag2.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/hospitalos/bfrag2/core2.py:252: in rollout_sched
+    refresh_private(eng, p)
+src/hospitalos/howm/generator.py:567: in refresh_private
+    st.tr_end = prov.transport_end(eng, st)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/howm/generator.py:293: in transport_end
+    med = self.th["tr_min"] * self.slow("transport", start)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/howm/generator.py:243: in slow
+    return self.spec.mech["slow"] if self.regime(team, tick // TPH) else 1.0
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = BFTruthProvider(spec=EstablishmentSpec(partition='BF2_DEV', index=0, population='REF', ekey=81881446589532033, start_u...ult': 1.0444287137965083, 'care_mult': 0.8614392432754749, 'lag_min': 3.4905973945463895}, regime_anchor=None, _reg={})
+team = 'transport', hour = 40
+
+    def regime(self, team: str, hour: int) -> int:
+        m = self.spec.mech
+        if not m["m2"]:
+            return 0
+        team = "common" if m["m2_common"] else team
+        if (team, hour) in self._reg:
+            return self._reg[(team, hour)]
+>       a_hour, a_state = self.regime_anchor.get(team, (0, 0))
+                          ^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'get'
+
+src/hospitalos/howm/generator.py:229: AttributeError
+=========================== short test summary info ============================
+FAILED tests/bfrag2/test_bfrag2.py::test_t2_6_catalogue_and_capacity_override
+1 failed, 19 passed in 17.26s

@@ -1,0 +1,56 @@
+HospitalOS — reprise ciblée après ré-audit indépendant v5, 14 novembre 2026
+
+Entrée : HospitalOS_DS_P0-P4_20261114_v5.zip
+SHA-256 calculé : 37cc8cde64ccc8afcd9b16ad4e9b4001f1f28680bd83b88bb0f17feed84a349d
+Arbre livré : 56ad3cfeda775a20396cb80dfa4554f6a8899321.
+Lire RAPPORT_AUDIT_V5.md, AUDIT_SUMMARY.json, evidence/capacity_consistency_probes.json,
+tests/test_v5_capacity_consistency.py et les extraits de sources.
+
+Acquis à conserver : manifestes conformes ; A01–A10 et B01–B04 exacts et verts ; suite DS +
+86 hybrides 174/174 exécutée indépendamment (vrai contrôle de restauration activé) ; restauration
+88/88 et 11 résultats identiques ; compteur final correctement installé dans la cible.
+Les constats V4-R01/R02/R03/D01 sont corrigés sur leurs cas. Ne pas recommencer ce travail.
+
+Périmètre : seul correctif V5-R01 de cohérence de capacité, puis revalidation technique.
+Aucune modification d’architecture, aucun entraînement, poids ou inférence AJ-H, P5/P6,
+campagne statistique, installation réseau, dépense, push, merge/rebase sans autorisation
+explicite distincte. Ne pas toucher mvp/computer-use. Aucun assouplissement des tests pour
+les rendre verts. Le simple fait de lire ce fichier ne lance rien ni ne réactive de budget.
+
+Budget : partir de la lignée complète de l’audit, 146 enregistrements,
+343.115 s cumulées, reliquat 256.885 /600, plafond 30 s/commande.
+ID audit HospitalOS_DS_v5_independent_20261114 ; elle prolonge exactement les 137 lignes /
+315.676 s du final v5. Les 27.439 s ajoutées incluent les tests de restauration et
+leur enveloppe sans double comptage. Si un historique plus récent existe, le préserver et
+réconcilier. Pas de remise à zéro ni de remplacement d’un registre plus récent par celui-ci.
+
+Défaut V5-R01 : même instantané, U-LOAN/IDE, mêmes créneaux 13–19 h UTC le 17 novembre
+2026 ; R1 déclare effectif4/minimum3, R2 effectif5/minimum3. L’énumération conjointe refuse
+correctement R1+R2 (règle prudente 4-2<3). Pourtant valider R1 puis R2 sur le même registre
+approuve les deux. Inverser l’ordre refuse le second. Ce n’est PAS une hausse documentée
+entre deux instantanés : les capacités sont contradictoires dans les mêmes observations.
+
+Cause : _reservation_requests utilise la capacité de la seule offre choisie et reserve_all
+l’installe comme capacité courante. La règle prudente de lending_violations n’est appliquée
+qu’aux offres réunies dans un même plan. La seconde validation réaugmente donc la capacité.
+
+Correction : une capacité cohérente par prêteur × compétence × créneau × version d’état,
+avec sa provenance, commune à la génération, la revalidation et aux réservations.
+Résoudre les déclarations concurrentes via une politique explicite (refus ou règle prudente
+signalée), jamais par l’ordre d’approbation. Ne pas conserver éternellement le minimum
+historique : une vraie hausse concordante dans un nouvel état doit rester possible.
+Refuser une nouvelle réservation ne doit effacer aucun engagement existant.
+
+Tests : copier C01–C04 et le helper d’audit sans modification. Avant correction v5 : 1 échec,
+4 réussites. C01 couvre les deux ordres ; C02 deux marges concordantes permettent 2 prêts ;
+C03 une hausse concordante dans un nouvel état permet le second prêt ; C04 des fenêtres
+disjointes à capacités différentes ne sont pas confondues. Conserver aussi tous A/B, les
+174 tests existants (avec AUDIT_PACKAGE/AUDIT_RESTORED réels quand pertinent) et les
+11 résultats. Pas de nouvelle campagne d’entraînement. Fournir preuves rouges puis vertes.
+
+Livrer paquet complet restaurable, code/patch, tests exacts, commandes, résultats, rapport
+unique à jour, registre terminal+ancre et reçu du statut exécuté DANS la cible après rejeu.
+Distinguer les tests d’auteur des relectures indépendantes. Python3.11.18 !=3.11.9,
+typecheck autonome !=React ; ne pas annoncer un navigateur testé sans exécution.
+Statuts inchangés : PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO ;
+PARTIAL_WITH_CHECKPOINT tant que V5-R01 et les portes requises restent ouvertes.

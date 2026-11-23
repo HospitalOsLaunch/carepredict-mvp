@@ -1,0 +1,18 @@
+{
+ "rule": "s_c = std of the target over TRAIN establishments x hours 24..167 (TRAIN only); s_c == 0 -> excluded and reported",
+ "s_c": {
+  "A:occupancy": 4.733570106530708,
+  "A:free_beds": 1.4748451793249964,
+  "A:transport_queue": 0.5658831611173633,
+  "A:cleaning_queue": 0.7539740872137548,
+  "A:care_IDE": 99.42674920472724,
+  "A:care_AS": 110.157167165927,
+  "B:occupancy": 4.802769315940529,
+  "B:free_beds": 1.3948349928379762,
+  "B:transport_queue": 0.5016639974114295,
+  "B:cleaning_queue": 0.6778381333135999,
+  "B:care_IDE": 97.3615655351217,
+  "B:care_AS": 108.46901947636906
+ },
+ "excluded": []
+}

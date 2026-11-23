@@ -1,0 +1,3 @@
+error: Could not read bb155bca2bd5c8868b7c1e44cd0cdcefbf59a920
+fatal: Failed to traverse parents of commit 258d7f0b94aa7d8f6f7ccc9f8ebda29bf9ce436d
+fatal: remote did not send all necessary objects

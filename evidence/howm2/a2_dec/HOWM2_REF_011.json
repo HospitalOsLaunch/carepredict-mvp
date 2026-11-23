@@ -1,0 +1,146 @@
+[
+ {
+  "part": "HOWM2_REF",
+  "index": 11,
+  "tau": 508,
+  "U_habitual": 7834.5625,
+  "U_rule": 7785.75,
+  "U_L4": 7905.5625,
+  "U_L4N": 7905.5625,
+  "U_C_full": 7769.0,
+  "U_C_param": 7834.5625,
+  "U_C_pub_snap": 7834.5625,
+  "U_oracle": 7749.25,
+  "choice": {
+   "L4": 3,
+   "L4N": 3,
+   "rule": 14,
+   "C_full": 9
+  },
+  "pure_min": {
+   "L4": 7905.5625,
+   "L4N": 7905.5625,
+   "C_full": 7785.75
+  },
+  "pending_applied_per_draw": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   0,
+   0
+  ],
+  "nowcast_fallbacks": 0,
+  "nowcast_rejected": 0
+ },
+ {
+  "part": "HOWM2_REF",
+  "index": 11,
+  "tau": 524,
+  "U_habitual": 6643.125,
+  "U_rule": 6095.8125,
+  "U_L4": 6188.5625,
+  "U_L4N": 6188.5625,
+  "U_C_full": 6115.5625,
+  "U_C_param": 6188.5625,
+  "U_C_pub_snap": 6188.5625,
+  "U_oracle": 6080.8125,
+  "choice": {
+   "L4": 11,
+   "L4N": 11,
+   "rule": 14,
+   "C_full": 9
+  },
+  "pure_min": {
+   "L4": 6188.5625,
+   "L4N": 6188.5625,
+   "C_full": 6115.5625
+  },
+  "pending_applied_per_draw": [
+   3,
+   3,
+   2,
+   1,
+   0,
+   2,
+   3,
+   2
+  ],
+  "nowcast_fallbacks": 0,
+  "nowcast_rejected": 0
+ },
+ {
+  "part": "HOWM2_REF",
+  "index": 11,
+  "tau": 540,
+  "U_habitual": 6404.1875,
+  "U_rule": 5516.75,
+  "U_L4": 6445.9375,
+  "U_L4N": 6445.9375,
+  "U_C_full": 5483.75,
+  "U_C_param": 6445.9375,
+  "U_C_pub_snap": 6359.1875,
+  "U_oracle": 5483.75,
+  "choice": {
+   "L4": 3,
+   "L4N": 3,
+   "rule": 14,
+   "C_full": 9
+  },
+  "pure_min": {
+   "L4": 6445.9375,
+   "L4N": 5572.25,
+   "C_full": 5483.75
+  },
+  "pending_applied_per_draw": [
+   0,
+   1,
+   4,
+   2,
+   3,
+   2,
+   2,
+   0
+  ],
+  "nowcast_fallbacks": 0,
+  "nowcast_rejected": 0
+ },
+ {
+  "part": "HOWM2_REF",
+  "index": 11,
+  "tau": 556,
+  "U_habitual": 5637.25,
+  "U_rule": 5573.0625,
+  "U_L4": 5637.25,
+  "U_L4N": 5637.25,
+  "U_C_full": 5568.5625,
+  "U_C_param": 5637.25,
+  "U_C_pub_snap": 5637.25,
+  "U_oracle": 5562.5625,
+  "choice": {
+   "L4": 0,
+   "L4N": 0,
+   "rule": 14,
+   "C_full": 9
+  },
+  "pure_min": {
+   "L4": 5637.25,
+   "L4N": 5637.25,
+   "C_full": 5568.5625
+  },
+  "pending_applied_per_draw": [
+   1,
+   2,
+   2,
+   2,
+   4,
+   1,
+   3,
+   3
+  ],
+  "nowcast_fallbacks": 0,
+  "nowcast_rejected": 0
+ }
+]

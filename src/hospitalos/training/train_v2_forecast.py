@@ -9,7 +9,7 @@ import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import lightning as L
 import numpy as np
@@ -563,7 +563,7 @@ def save_conformal_quantiles(
     lower_residuals: list[list[float]] = [[] for _ in range(horizon)]
     upper_residuals: list[list[float]] = [[] for _ in range(horizon)]
     signed_residuals: list[list[float]] = [[] for _ in range(horizon)]
-    patch_len = int(forecaster.model.patcher.patch_len)
+    patch_len = int(cast(Any, forecaster.model).patcher.patch_len)
     for batch in dataloader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()

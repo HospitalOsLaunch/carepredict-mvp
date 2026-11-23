@@ -1,0 +1,242 @@
+{
+ "decision_stability": {
+  "F": {
+   "8": {
+    "choice_agreement": 0.75,
+    "rel_regret_mean": 0.0030567081604426,
+    "rel_regret_max": 0.0122268326417704,
+    "tolerance_0.005_met": false
+   },
+   "16": {
+    "choice_agreement": 0.75,
+    "rel_regret_mean": 0.0,
+    "rel_regret_max": 0.0,
+    "tolerance_0.005_met": true
+   },
+   "32": {
+    "choice_agreement": 1.0,
+    "rel_regret_mean": 0.0,
+    "rel_regret_max": 0.0,
+    "tolerance_0.005_met": true
+   }
+  },
+  "R1": {
+   "8": {
+    "choice_agreement": 0.25,
+    "rel_regret_mean": 0.014957366389526088,
+    "rel_regret_max": 0.024493086128852235,
+    "tolerance_0.005_met": false
+   },
+   "16": {
+    "choice_agreement": 0.25,
+    "rel_regret_mean": 0.009900726696474649,
+    "rel_regret_max": 0.024803125193774415,
+    "tolerance_0.005_met": false
+   },
+   "32": {
+    "choice_agreement": 0.75,
+    "rel_regret_mean": 0.0030567081604426,
+    "rel_regret_max": 0.0122268326417704,
+    "tolerance_0.005_met": false
+   }
+  }
+ },
+ "evaluation_stability": [
+  {
+   "structure": 0,
+   "gain_F_vs_R1_A": 2071.875,
+   "gain_F_vs_R1_B": -830.625,
+   "best_A": 5,
+   "best_B": 3,
+   "gain_bestA_vs_none_A": 6420.0,
+   "gain_bestA_vs_none_B": 8463.75,
+   "spearman_A_B": 0.9030303030303028,
+   "none_A": 169453.125,
+   "none_B": 160792.5
+  },
+  {
+   "structure": 1,
+   "gain_F_vs_R1_A": 0.0,
+   "gain_F_vs_R1_B": -7.5,
+   "best_A": 0,
+   "best_B": 8,
+   "gain_bestA_vs_none_A": 0.0,
+   "gain_bestA_vs_none_B": 0.0,
+   "spearman_A_B": 0.1111111111111111,
+   "none_A": 3502.5,
+   "none_B": 13734.375
+  },
+  {
+   "structure": 2,
+   "gain_F_vs_R1_A": 82.5,
+   "gain_F_vs_R1_B": 646.875,
+   "best_A": 3,
+   "best_B": 3,
+   "gain_bestA_vs_none_A": 744.375,
+   "gain_bestA_vs_none_B": 2130.0,
+   "spearman_A_B": 0.445130226322946,
+   "none_A": 32064.375,
+   "none_B": 38791.875
+  },
+  {
+   "structure": 4,
+   "gain_F_vs_R1_A": 0.0,
+   "gain_F_vs_R1_B": 0.0,
+   "best_A": 1,
+   "best_B": 1,
+   "gain_bestA_vs_none_A": 793.125,
+   "gain_bestA_vs_none_B": 646.875,
+   "spearman_A_B": 0.9437684331572233,
+   "none_A": 30238.125,
+   "none_B": 37083.75
+  }
+ ],
+ "rule_outcome": {
+  "keep_Md_32": true,
+  "tolerance_met_at_32": false,
+  "F_R1_exact_decision_reference": false
+ },
+ "seconds": [
+  176,
+  84,
+  161,
+  162
+ ]
+}
+{
+"DEVF/BF2_DEV": [
+{
+"mode": "features",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 18,
+"used": {
+"risk": false,
+"R1_planner": false,
+"F_O_planners": false,
+"eval": false
+}
+}
+],
+"DEVF2/BF2_DEV": [
+{
+"mode": "features",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 18,
+"used": {
+"risk": false,
+"R1_planner": false,
+"F_O_planners": false,
+"eval": false
+}
+}
+],
+"DEVM/BF2_DEV": [
+{
+"mode": "full",
+"Mr_risk": 32,
+"Md_decision": 32,
+"E_eval": 8,
+"files": 3,
+"used": {
+"risk": true,
+"R1_planner": true,
+"F_O_planners": true,
+"eval": true
+}
+}
+],
+"F/BF2_CONF": [
+{
+"mode": "features",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 528,
+"used": {
+"risk": false,
+"R1_planner": false,
+"F_O_planners": false,
+"eval": false
+}
+}
+],
+"F/BF2_TRAIN": [
+{
+"mode": "features",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 600,
+"used": {
+"risk": false,
+"R1_planner": false,
+"F_O_planners": false,
+"eval": false
+}
+}
+],
+"F/BF2_VAL": [
+{
+"mode": "features",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 300,
+"used": {
+"risk": false,
+"R1_planner": false,
+"F_O_planners": false,
+"eval": false
+}
+}
+],
+"S/BF2_CONF": [
+{
+"mode": "full",
+"Mr_risk": 32,
+"Md_decision": 32,
+"E_eval": 8,
+"files": 72,
+"used": {
+"risk": true,
+"R1_planner": true,
+"F_O_planners": true,
+"eval": true
+}
+}
+],
+"S/BF2_VAL": [
+{
+"mode": "val",
+"Mr_risk": 32,
+"Md_decision": 32,
+"E_eval": 8,
+"files": 54,
+"used": {
+"risk": true,
+"R1_planner": true,
+"F_O_planners": false,
+"eval": true
+}
+}
+],
+"SMOKE/BF2_DEV": [
+{
+"mode": "full",
+"Mr_risk": 32,
+"Md_decision": 8,
+"E_eval": 8,
+"files": 1,
+"used": {
+"risk": true,
+"R1_planner": true,
+"F_O_planners": true,
+"eval": true
+}
+}
+]
+}

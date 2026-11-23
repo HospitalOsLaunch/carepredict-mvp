@@ -1,0 +1,14 @@
+{
+ "rule": "NORME_C1_PALIER1 s.6 (CVAL only)",
+ "retained_point": {
+  "C.1": 1000,
+  "C.2a": 100,
+  "C.2b": 1000
+ },
+ "cval_mean_best_total_at_1000": {
+  "C.1": 7.952589876760964,
+  "C.2b": 7.882924968234875
+ },
+ "leading_system": "C.2b",
+ "c2a_note": "C.2a N=1000 not executed (budget, ledger note c1_lot_reallocation): no verdict, no substitution; C.2a N=100 descriptive"
+}

@@ -1,0 +1,31 @@
+HospitalOS — correctif ciblé après audit indépendant DS P0–P4 (14 novembre 2026)
+
+Lis RAPPORT_AUDIT.md, AUDIT_SUMMARY.json et tests/test_independent_acceptance.py du dossier HospitalOS_Audit_DS_20261114. La livraison d’origine est HospitalOS_DS_P0-P4_20261114.zip, SHA-256 431e2e446def7f244603d4541eb68dc42a4adbd7fbc39055f931c9c1704cda4e. Arbre livré d7844ea ; le commit probatoire 282ee85 est annoncé mais n’est pas dans le paquet.
+
+La nouvelle mission est une correction P2/P3bis, puis P4bis, pas une réécriture ni une expérience scientifique. Lire ce message ne réactive aucun budget expiré. Lorsqu’il est transmis par l’utilisateur comme ordre de reprise, agir uniquement dans le périmètre local P0–P4 déjà accepté et dans son reliquat traçable. Sans compteur fiable, consigner le blocage au lieu de le remettre à zéro. L’audit joint a réservé conservativement 43,6 s historiques et consommé 21,102 s supplémentaires : plancher prudent de reprise 64,702 s avant toute autre exécution postérieure, à réconcilier avec les registres disponibles. Maximum total inchangé : 600 s, 30 s par commande.
+
+Conserver : mode automatique principal, manuel secondaire sur le même moteur ; PROTOTYPE_UNVALIDATED, clinical_validation=false, G2=NO-GO. Aucun entraînement, chargement de poids, inférence AJ-H, P5/P6, dépense, installation réseau, push, merge ou rebase sans autorisation distincte. Ne pas toucher mvp/computer-use. Pas de nouvelle branche distante.
+
+Avant modification, vérifier les empreintes et reproduire les 44 tests DS, les 86 tests hybrides ciblés et les nouveaux tests A01–A10. Sur d7844ea, 9 nouveaux contrôles échouent, le contrôle positif A10 réussit. Garder tous les échecs dans les preuves. Ne pas « corriger » les tests en affaiblissant leurs invariants.
+
+Priorité 1 — sécurité logique :
+1. F01 : les verrous manuels doivent respecter les préconditions du plan ou rester HYPOTHETICAL_ONLY / INFEASIBLE et non approuvables. Un obstacle logistique actif ne disparaît pas sous basis=validated_instruction. Revalidation commune au moment d’approuver, sans modifier silencieusement les verrous.
+2. F02 : contrôler les renforts cumulés par unité prêteuse, compétence et créneau. Deux prêts permis seuls peuvent être interdits ensemble. Tester aussi les créneaux disjoints permis.
+3. F03 : réservations atomiques. Un plan refusé ne laisse aucun nouvel engagement ; préserver ceux des autres demandes.
+4. F05 : refuser explicitement les heures non entières tant que le moteur reste horaire, ou implémenter un calendrier précis. Aucune conversion silencieuse de 10 h 30 à 10 h.
+
+Priorité 2 — contrats et preuves :
+5. F04 : une clé d’idempotence doit être liée à l’empreinte de la requête. Même clé + autre contenu -> conflit ; pas de retour d’une ancienne approbation pour un refus. Séparer reçu historique et validité courante.
+6. F06/F07 : aucune durée de nettoyage inventée implicitement, aucun planning de compétence inconnu assimilé à zéro. Une hypothèse de remplacement doit être configurée, versionnée et signalée, ou entraîner l’abstention adéquate.
+7. F08 : les identifiants des sorties doivent couvrir les configurations complètes et les entrées de calcul pertinentes ; ne pas laisser le serveur remplacer une sortie par une autre sous le même identifiant.
+8. Conserver A10 : le besoin IDE est calculé indépendamment des offres. Ajouter une fixture à seuil de besoin en personnel calculable à la main pour T19. Ajouter le contrôle de comptabilité des admissions sans imposer artificiellement que toute admission améliore chaque score.
+
+Livraison :
+- P4 reste partiel tant que la vue autonome n’est pas intégrée au cockpit. L’accord npm ci n’est PAS inclus dans ce prompt : poursuivre les correctifs hors ligne, puis signaler précisément cette dépendance d’autorisation.
+- Tester Python 3.11.9 lorsque disponible ; sinon déclarer le blocage. Ne pas lancer test_decision_guard.py sans examiner son fit_benchmark et le périmètre d’autorisation.
+- Fournir code/patchs, nouvelles fixtures, tests rouges puis verts, résultats régénérés, et rapport des changements.
+- Livrer le registre complet jusqu’à l’ultime commande et son empreinte terminale ; préciser le commit code et le commit preuves. Le compteur restauré doit correspondre au reçu final. Vérifier SHA256SUMS et SHA256SUMS.post ; ne pas prétendre à l’anti-remise-à-zéro sans vérifier l’existence et la complétude du registre.
+- Réexécuter la restauration dans un dossier neuf. Ne pas déclarer les tests navigateur indépendamment validés à partir d’anciennes captures.
+- Tant qu’une porte reste ouverte : PARTIAL_WITH_CHECKPOINT. Aucun changement du statut scientifique.
+
+Les chiffres nominaux ont été reproduits : 1040 minutes non couvertes en référence ; 905 coordination seule ; 640 renforts seuls ; 435 combinaison ; 795 combinaison sans R1 non confirmé. Les conserver comme sorties de fixture, jamais comme objectifs codés en dur ni preuve de bénéfice réel.

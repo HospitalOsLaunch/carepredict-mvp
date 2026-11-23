@@ -1,0 +1,43 @@
+{
+ "schema": "HOSPITALOS_P5_DECISIONS_5",
+ "date": "2026-11-14",
+ "adoption": "user answered 'Oui, j'adopte la reprise' to the explicit question whether PROPOSITION_REPRISE_ISOLATION50.txt (review HospitalOS_Revue_Isolation50_20261114.zip) is adopted as an order",
+ "review_zip_sha256": "91d69cd17dbac76423476c19ab79f76d699eaf08745a6143c2d6bce934d96bfc",
+ "adopted_text_file": "evidence/decision_support/p5/ACCORD_REPRISE_ISOLATION50_TEXT_ADOPTED.txt",
+ "adopted_text_sha256": "538cd25a67cdca0b86766b4c605aab6e3830664dc73aa9a97ec75c6d2c90d655",
+ "scope": "seal a new procedure/code with a new resume identity (old 50-selection d4522515... and old directory/failure kept); T03-a/T03-b and T04-b/c/d not conditioned on HABITUAL-1; T04-a witness search over the existing public universe with the fixed order of 5 B truths and the exact check_isolation projection, else NON_INFORMATIF; stop on real failures; fix clean refusal of a missing/unrecorded procedure; tests; resume ranks 48-50 only (selection indices 47-49) in Python 3.11.18 / post-D14 freeze; lots P5.0/P5.1/P5.3 existing caps; 47+3 summary without silent mixing of methods; F_a/RESULTS/reserved records unchanged; stop after delivery",
+ "episodes": [
+  [
+   "7f0869e7430c81ce",
+   5
+  ],
+  [
+   "a1e973184bf456ee",
+   1
+  ],
+  [
+   "e9b01fb227dd3d3a",
+   8
+  ]
+ ],
+ "not_authorised": [
+  "v6 engine change",
+  "generator/data/seeds/plans/thresholds change",
+  "new efficacy computation or CI recompute",
+  "P5b/(iii)",
+  "D16",
+  "P6",
+  "AJ-H",
+  "training",
+  "spend",
+  "installation",
+  "remote writes",
+  "automatic change of the P5A-D02 closure criterion"
+ ],
+ "received_state": {
+  "ledger_records": 74,
+  "ledger_used_s": 119.95,
+  "terminal": "9436389d89978b2f42df5efb172d0f1bbf8a545314eb04bb4279f94a4fcfccd4",
+  "verified_identical_locally": true
+ }
+}

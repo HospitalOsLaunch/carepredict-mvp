@@ -1,0 +1,8 @@
+{"run": "W_t1_S_s0_nomsg", "already_stopped": "patience"}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:70: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  return loss, {"st": float(l_st), "co": float(l_co), "cum": float(l_cum), "eff": float(l_eff), "rup": float(l_rup), "T": T}
+/home/user/carepredict-mvp/scripts/int1/train_w.py:92: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  rr = spearmanr(pred, true).statistic
+{"run": "W_t1_S_s0_nohist", "upd": 12366, "stopped": null, "best": 10000, "params": 317460, "last": {"upd": 12350, "loss": 2.1927313804626465, "st": 0.6134012937545776, "co": 0.6149938106536865, "cum": 0.49493271112442017, "eff": 0.08404199033975601, "rup": 0.09838703274726868, "T": 36}}
+{'runs': ['W_t1_S_s0_nohist', 'W_t1_S_s0_nomsg'], 'exit_codes': [0, 0]}

@@ -1,0 +1,22 @@
+.F...                                                                    [100%]
+=================================== FAILURES ===================================
+________________ test_t29_budget_stop_is_clean_and_never_resets ________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_t29_budget_stop_is_clean_0')
+
+    def test_t29_budget_stop_is_clean_and_never_resets(tmp_path):
+        b = _budget()
+        ledger, logs = tmp_path / "ledger.jsonl", tmp_path / "logs"
+        quick = [sys.executable, "-c", "import time; time.sleep(0.25)"]
+>       assert b.run(quick, lot="T", label="1", ledger=ledger, logs=logs, limit=0.2) == 0
+E       AssertionError: assert 124 == 0
+E        +  where 124 = <function run at 0x7ff533dd4680>(['/usr/local/bin/python3', '-c', 'import time; time.sleep(0.25)'], lot='T', label='1', ledger=PosixPath('/tmp/pytest-of-root/pytest-0/test_t29_budget_stop_is_clean_0/ledger.jsonl'), logs=PosixPath('/tmp/pytest-of-root/pytest-0/test_t29_budget_stop_is_clean_0/logs'), limit=0.2)
+E        +    where <function run at 0x7ff533dd4680> = <module 'ds_budget_run' from '/home/user/carepredict-mvp/scripts/ds_budget_run.py'>.run
+
+tests/decision_support/test_audit.py:55: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+[budget] #1 T '1': 0.20s exit=-9 TIMEOUT | used 0.202s / 0.2s, remaining 0.0s
+=========================== short test summary info ============================
+FAILED tests/decision_support/test_audit.py::test_t29_budget_stop_is_clean_and_never_resets
+1 failed, 4 passed in 0.26s

@@ -1,0 +1,6 @@
+...........................................................F             [100%]
+=================================== FAILURES ===================================
+/home/user/carepredict-mvp/src/hospitalos/p5/integrity.py:67: hospitalos.p5.integrity.IntegrityError: code_differs_from_commitment:scripts/p5_budget_run.py; code_differs_from_commitment:scripts/p5_commit.py
+=========================== short test summary info ============================
+FAILED tests/p5/test_p5_resume_controls.py::test_real_effective_commitment_verifies_against_disk
+1 failed, 59 passed in 2.68s

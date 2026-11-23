@@ -1,0 +1,133 @@
+{
+ "F1_public_planners": {
+  "L4": 5002.846354166667,
+  "C_param": 5007.018229166667,
+  "C_pub_snap": 4999.455729166667,
+  "claimed": {
+   "L4": 5002.8,
+   "C_param": 5007.0,
+   "C_pub_snap": 4999.5
+  }
+ },
+ "F2_C_full_rule": {
+  "C_full": 4945.220052083333,
+  "L4_minus_C_full": 57.62630208333394,
+  "rule": 4974.134114583333,
+  "claimed": {
+   "C_full": 4945.2,
+   "gap": 58,
+   "rule": 4974.1
+  }
+ },
+ "F3_V_latent": {
+  "V_latent": 61.798177083333336,
+  "V_param": -7.5625,
+  "recomputed_mean_C_param_minus_C_full": 61.79770833333336,
+  "definition_note": "C_param = PUBLIC engine + true theta + stationary regime; C_full = TRUE engine + true current regime: V_latent mixes regime, pending events and every other public-vs-true state difference",
+  "claimed": 61.8
+ },
+ "F4_pi": {
+  "transport": {
+   "1": -0.826694054213018,
+   "6": -0.7451092529092673,
+   "24": -0.745938379866705
+  },
+  "cleaning": {
+   "1": -0.214650660972825,
+   "6": -0.21889997999461902,
+   "24": -0.21889975590796723
+  }
+ },
+ "F5_coverage_H1": {
+  "public": 0.5729166666666666,
+  "true": 0.8767361111111112,
+  "claimed": [
+   0.573,
+   0.877
+  ]
+ },
+ "F6_lag": {
+  "draw": "lag_min ~ U(0, 60) REF, U(0, 120) DIAG (theta, per establishment)",
+  "per_event_law": "lag = floor(-lag_min * log(1 - 0.999999 u)) minutes: exponential with MEAN lag_min, unbounded (not a 0-60 lag)",
+  "zero_lag_kinds": [
+   "offer_requested",
+   "plan",
+   "static",
+   "transport_requested"
+  ]
+ },
+ "F7_M_pub_families_H24": {
+  "by_family": {
+   "ready": {
+    "L2": 3.3603011126160824,
+    "L4": 3.1179724336137236,
+    "L2_minus_L4": 0.24232867900235888
+   },
+   "confirmation": {
+    "L2": 3.0004664450256144,
+    "L4": 2.7015707004382445,
+    "L2_minus_L4": 0.2988957445873699
+   },
+   "care": {
+    "L2": 1.5459316544709905,
+    "L4": 1.5252375566279341,
+    "L2_minus_L4": 0.020694097843056314
+   },
+   "arrivals": {
+    "L2": 0.44288839363596755,
+    "L4": 0.44177241138583284,
+    "L2_minus_L4": 0.001115982250134706
+   },
+   "presence_in_table": true
+  },
+  "claimed": {
+   "ready": 0.242,
+   "confirmation": 0.299,
+   "care": 0.021,
+   "arrivals": 0.001
+  }
+ },
+ "F8_objlex_coordination": {
+  "L4_choices_with_coordination": 13,
+  "L4_choices_total": 48,
+  "rule_choices_with_coordination": 48
+ },
+ "S6_H1_no_window_stats": {
+  "nets_has_window_only_b2": true,
+  "note": "H1 inputs are the hourly entity graph; B2 uses b2_window; neither uses B0 window statistics"
+ },
+ "S2_window_confirmation_transport_only": {
+  "starts_has_transport_requested": true,
+  "offer_in_window": false
+ },
+ "S2_pending_census_96_instants": {
+  "instants": 96,
+  "pending_per_instant_by_kind": {
+   "care_due": 4.958333333333333,
+   "authorised": 0.22916666666666666,
+   "cleaning_start": 0.1875,
+   "ready": 0.17708333333333334,
+   "cleaning_done": 0.17708333333333334,
+   "placed": 0.125,
+   "departure": 0.11458333333333333,
+   "transport_done": 0.10416666666666667,
+   "bed_dirty": 0.09375,
+   "request_arrival": 0.07291666666666667,
+   "transport_start": 0.03125,
+   "transport_accepted": 0.03125,
+   "offer_present": 0.010416666666666666
+  },
+  "published_at_t_not_in_true_state_per_instant": {
+   "care_due": 1.625,
+   "transport_requested": 0.9375,
+   "plan": 0.5208333333333334,
+   "offer_requested": 0.375,
+   "request_arrival": 0.03125,
+   "cleaning_done": 0.010416666666666666,
+   "departure": 0.010416666666666666,
+   "ready": 0.010416666666666666,
+   "cleaning_start": 0.010416666666666666
+  },
+  "note": "true engines at an instant are cloned BEFORE step(t0): events at ev_min == t with lag 0 are public but not yet true"
+ }
+}

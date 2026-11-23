@@ -1,0 +1,2 @@
+build 0.28 SF1_cleaning_window 1 1 {'A': 14, 'B': 20}
+rollout 0.116 169590.0 7041.0 {'6': True, '24': True, '72': True, '168': True} {'A': {'queue': 10, 'max_wait_min': 3660, 'dirty_or_cleaning': 1, 'ready_not_departed': 1}, 'B': {'queue': 11, 'max_wait_min': 6660, 'dirty_or_cleaning': 0, 'ready_not_departed': 1}}

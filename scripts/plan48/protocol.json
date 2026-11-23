@@ -1,0 +1,16 @@
+{
+  "version":"PLAN48_A",
+  "structures":{"DEV":6,"TRAIN":24,"TEST":16},
+  "futures":[1,2],
+  "origin_hours":56,
+  "revision_hours":4,
+  "followup_hours":48,
+  "units":4,
+  "report_lag_minutes":180,
+  "budget":"Exactly 16 staff-hour equivalents; shared immutable commitments. If aval purchased, pair with a nurse shift in first downstream ward. Alternative: 8h two-agent cleaning/transport reinforcement.",
+  "objective":"External admission patient-minutes, used as boarding proxy. Internal transfer patient-minutes and uncovered staff minutes are co-primary guards. Saturation event: >=4 external requests concurrently waiting for >=4 consecutive 15min ticks.",
+  "references":["public simulation rolling over same plan catalogue","fixed sequence selected on DEV","direct trajectory regression rolling over same plans"],
+  "target":"At least 10 percent less external waiting relative to strongest aggregate TEST reference with positive lower bound on paired improvement, upper CI on care and transfer increases <=0 and equal actual resource use. 2000 bootstrap samples over hospitals. No TEST tuning.",
+  "learning":"Multi-output ExtraTrees 80 trees min_samples_leaf=2 seed=20261120; regress paired sequence effects at 08h and paired continuation effects at noon, baseline trajectory learned separately. Select guard penalty from 0,1,4 on DEV. 90% absolute residual quantiles calibrated on DEV are descriptive.",
+  "seed":20261120
+}

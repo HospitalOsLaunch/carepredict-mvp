@@ -1,0 +1,6 @@
+/home/user/carepredict-mvp/scripts/int1/train_d.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  r = spearmanr(p, t).statistic
+/home/user/carepredict-mvp/scripts/int1/train_d.py:198: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:820.)
+  state["curve"].append({"upd": state["upd"], "loss": float(loss), "val": ev})
+{"dset": {"upd": 13000, "stopped": "patience", "best": {"upd": 9000, "key": [0.03407670184969902, 398.9127502441406], "val": {"2": {"situations": 519, "rel_regret": 0.03407670184969902, "effect_rmse": 398.9127502441406, "spearman": 0.5426334635450776}, "4": {"situations": 183, "rel_regret": 0.0028223509434610605, "effect_rmse": 154.57876586914062, "spearman": 0.37190404098028057}, "8": {"situations": 198, "rel_regret": 0.0029249449726194143, "effect_rmse": 242.0826416015625, "spearman": 0.3351803961382179}}}, "params": 248802}}

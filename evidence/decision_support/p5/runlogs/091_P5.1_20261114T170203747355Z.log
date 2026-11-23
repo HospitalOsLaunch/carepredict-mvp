@@ -1,0 +1,31 @@
+.....................................................F.F.............F.. [ 82%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+___________ test_unauthorised_lot_refusal_is_logged_at_zero_seconds ____________
+tests/p5/test_p5_resume_controls.py:107: in test_unauthorised_lot_refusal_is_logged_at_zero_seconds
+    assert runner.run([VENV_PY, "-c", "1"], "P5.4", "t") == 4
+E   AssertionError: assert 5 == 4
+E    +  where 5 = <function run at 0x7f27b47c7880>(['/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/bin/python', '-c', '1'], 'P5.4', 't')
+E    +    where <function run at 0x7f27b47c7880> = runner.run
+----------------------------- Captured stderr call -----------------------------
+[p5-budget] refused before launch: environment_not_approved:python=3.11.18:freeze=bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22
+_________________ test_unauthorised_lot_refused_without_launch _________________
+tests/p5/test_p5_resume_controls.py:127: in test_unauthorised_lot_refused_without_launch
+    assert runner.run([VENV_PY, "-c", "1"], "P5.4", "t") == 4
+E   AssertionError: assert 5 == 4
+E    +  where 5 = <function run at 0x7f27b47c7880>(['/tmp/claude-0/-home-user-carepredict-mvp/766fa6b7-33a5-533f-a444-71f97217a53a/scratchpad/venv311/bin/python', '-c', '1'], 'P5.4', 't')
+E    +    where <function run at 0x7f27b47c7880> = runner.run
+----------------------------- Captured stderr call -----------------------------
+[p5-budget] refused before launch: environment_not_approved:python=3.11.18:freeze=bd5bc53713dc13e226b47fd7596ef70844f7c473900b9170b14d5ed46997ca22
+_____________ test_real_effective_commitment_verifies_against_disk _____________
+tests/p5/test_p5_resume_controls.py:304: in test_real_effective_commitment_verifies_against_disk
+    out = integrity.verify(eff)
+          ^^^^^^^^^^^^^^^^^^^^^
+src/hospitalos/p5/integrity.py:67: in verify
+    raise IntegrityError("; ".join(problems))
+E   hospitalos.p5.integrity.IntegrityError: code_differs_from_commitment:scripts/p5_budget_run.py; code_differs_from_commitment:scripts/p5_commit.py
+=========================== short test summary info ============================
+FAILED tests/p5/test_p5_resume_controls.py::test_unauthorised_lot_refusal_is_logged_at_zero_seconds
+FAILED tests/p5/test_p5_resume_controls.py::test_unauthorised_lot_refused_without_launch
+FAILED tests/p5/test_p5_resume_controls.py::test_real_effective_commitment_verifies_against_disk
+3 failed, 84 passed in 7.00s

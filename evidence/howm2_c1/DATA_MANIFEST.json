@@ -1,0 +1,159 @@
+{
+ "shards": {
+  "HOWM2_CVAL/000": {
+   "part": "HOWM2_CVAL",
+   "shard": 0,
+   "indices": [
+    0,
+    47
+   ],
+   "n": 48,
+   "file": "HOWM2_CVAL/000.pkl.gz",
+   "sha256": "0d93a82cdcc3c858a13aadff3a97054080fefe60fa6862bbfd21330b325bef26",
+   "bytes": 14386932,
+   "ekeys_sha256": "3025d9748e59f1b7fe097ce3999082c808da180f62e04297bb8ce7a2b7bb2ef0",
+   "seconds": 44.9
+  },
+  "HOWM2_CTRAIN/003": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 3,
+   "indices": [
+    300,
+    399
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/003.pkl.gz",
+   "sha256": "f651cd0054fcf92221fd456af6772ab36bf387a29a5ae247c906873393120196",
+   "bytes": 26257310,
+   "ekeys_sha256": "eeeec5b535d0756e2c9eaa436e8d2b019a4f40a2341e732ac68c02c4dfb5bbda",
+   "seconds": 86.3
+  },
+  "HOWM2_CTRAIN/002": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 2,
+   "indices": [
+    200,
+    299
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/002.pkl.gz",
+   "sha256": "fd5af9c1b8c0e638b9b8e92face7a6c83afbad6d8c6f630a4121a1503cf5c841",
+   "bytes": 27247145,
+   "ekeys_sha256": "9428c2bdc438d5fa9983b8a7a35e69ae0516ab0b3453a6f5837e3cf7efa363ac",
+   "seconds": 87.3
+  },
+  "HOWM2_CTRAIN/000": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 0,
+   "indices": [
+    0,
+    99
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/000.pkl.gz",
+   "sha256": "af3d83478bb18ab39bb33ca4f760bd62db04eeff6d32a72f30498b56863e6c09",
+   "bytes": 27359888,
+   "ekeys_sha256": "3f5f7c62b78560950859e40d3203d2f7219c36a78b29fc9ffb314c6750fb6aa3",
+   "seconds": 88.8
+  },
+  "HOWM2_CTRAIN/001": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 1,
+   "indices": [
+    100,
+    199
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/001.pkl.gz",
+   "sha256": "52304bb9fe54a5efdd59b90fd8f1afa0da9b8b43391c9f950722cbfa779755a1",
+   "bytes": 25213971,
+   "ekeys_sha256": "35e0107acceb43f398e053222bdf85dcd4b8171863a7a633fa9cae9fe7464766",
+   "seconds": 89.6
+  },
+  "HOWM2_CTRAIN/005": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 5,
+   "indices": [
+    500,
+    599
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/005.pkl.gz",
+   "sha256": "8d535e299d9a02e9f25577d564d61865e14ac1f9598ef4b799062f49ed150bb9",
+   "bytes": 26720197,
+   "ekeys_sha256": "ecaa9a5eb5be1af140c6ab7f25d1036ac6b5eb945363dceb811a41a7567ee2b7",
+   "seconds": 79.4
+  },
+  "HOWM2_CTRAIN/004": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 4,
+   "indices": [
+    400,
+    499
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/004.pkl.gz",
+   "sha256": "81b4aabcc883adf9369b0c4718397612173054a945eaf882cd16eaa080359230",
+   "bytes": 27098528,
+   "ekeys_sha256": "18c58a0a243155799c815e3d55ac4ed3b3771cc96334b7f77ba363121158d53f",
+   "seconds": 80.5
+  },
+  "HOWM2_CTRAIN/007": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 7,
+   "indices": [
+    700,
+    799
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/007.pkl.gz",
+   "sha256": "b00dcf8217171376a0201886d707d2e388e7277e7c4e52261f75e77e21e19eeb",
+   "bytes": 27177815,
+   "ekeys_sha256": "7cd84c80ba3590d50a0c8d22b11a2d73ecd62fe431d720fbaf9d445002ade73a",
+   "seconds": 80.9
+  },
+  "HOWM2_CTRAIN/006": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 6,
+   "indices": [
+    600,
+    699
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/006.pkl.gz",
+   "sha256": "1eee07b739424ef32f5190be92db796ef695d866a6581da7cb65d5086b5a6888",
+   "bytes": 26380295,
+   "ekeys_sha256": "a8818ac5f224f20b50dd27d51b2c850d8b9d6cb96aadcf6ec8489867a3fe6239",
+   "seconds": 82.7
+  },
+  "HOWM2_CTRAIN/008": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 8,
+   "indices": [
+    800,
+    899
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/008.pkl.gz",
+   "sha256": "eb6d670b2cdf66f6d363baca8f1a086021d1b661ff817953e478618e5569db24",
+   "bytes": 26462095,
+   "ekeys_sha256": "6d0dc1dde401cc44d2266cde5b64736191203de43a8bb7dd465bf9940563614b",
+   "seconds": 85.4
+  },
+  "HOWM2_CTRAIN/009": {
+   "part": "HOWM2_CTRAIN",
+   "shard": 9,
+   "indices": [
+    900,
+    999
+   ],
+   "n": 100,
+   "file": "HOWM2_CTRAIN/009.pkl.gz",
+   "sha256": "ed2481df047b4f9f086b4fb255d0a64557515a10e03f212fd1d9f25021d72e96",
+   "bytes": 27066672,
+   "ekeys_sha256": "1ee3de280b4953cdb4400ea981d214cf9c4d020b45e8eaa93cc59c73018d9aa2",
+   "seconds": 85.5
+  }
+ },
+ "rule": "NORME_C1_PALIER1 s.3"
+}

@@ -1,0 +1,20 @@
+{
+ "partition": "P5a_dev",
+ "run_id": "0108da5768b4c2023181",
+ "parents": 100,
+ "projection": {
+  "dev_structures": 10,
+  "sd_between_structure_means": 94.80656883268774,
+  "projected_half_width": 33.92547154827249,
+  "threshold": 7.5,
+  "precision_sufficient": false,
+  "declared_reading": "exploratory"
+ },
+ "dev_exclusions": {
+  "candidates": 103,
+  "excluded": 3
+ },
+ "dev_abstentions": 0,
+ "analysis_code_smoke_on_dev": "ok (outputs discarded, not read)",
+ "note": "development: only the precision projection and sanity counts are read; no gain is reported"
+}

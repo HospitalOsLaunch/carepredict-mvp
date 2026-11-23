@@ -1,0 +1,183 @@
+{
+  "F01_known_readiness_bypassed": {
+    "snapshot_issues": [],
+    "ready_earliest": "2026-11-17 17:00:00+00:00",
+    "status": "NO_ACTION_PREFERRED",
+    "approvable": true,
+    "warnings": [
+      "lock_precondition_unmet:S01:ready_after_locked_hour"
+    ],
+    "violations": [],
+    "departures": {
+      "S01": 14,
+      "S02": 16
+    },
+    "review_outcome": "APPROVED_IN_DEMO",
+    "expected": "Not approvable as an executable plan when an explicit precondition is unsatisfied"
+  },
+  "F01b_known_obstacle_bypassed": {
+    "obstacles": [
+      "destination_unavailable"
+    ],
+    "status": "NO_ACTION_PREFERRED",
+    "approvable": true,
+    "warnings": [],
+    "violations": [],
+    "review_outcome": "APPROVED_IN_DEMO"
+  },
+  "F02_shared_unit_double_loan": {
+    "individual_checks": {
+      "R1": [
+        true,
+        "external_cost:U-LOAN:remaining_margin=0"
+      ],
+      "R2": [
+        true,
+        "external_cost:U-LOAN:remaining_margin=0"
+      ]
+    },
+    "scheduled": 4,
+    "minimum": 3,
+    "after_two_loans": 2,
+    "primary_actions": [
+      "coord:S01:20261117T0900Z",
+      "renfort:R1",
+      "renfort:R2"
+    ],
+    "primary_admissible": true,
+    "pair_evaluations": [
+      {
+        "actions": [
+          "renfort:R1",
+          "renfort:R2"
+        ],
+        "admissible": true,
+        "violations": []
+      },
+      {
+        "actions": [
+          "coord:S01:20261117T0900Z",
+          "renfort:R1",
+          "renfort:R2"
+        ],
+        "admissible": true,
+        "violations": []
+      },
+      {
+        "actions": [
+          "coord:S01:20261117T1200Z",
+          "renfort:R1",
+          "renfort:R2"
+        ],
+        "admissible": true,
+        "violations": []
+      }
+    ],
+    "review_outcome": "APPROVED_IN_DEMO"
+  },
+  "F03_rejected_plan_keeps_reservations": {
+    "outcome": "REFUSED",
+    "reasons": [
+      "reservation_refused:renfort:R1:capacity_exhausted"
+    ],
+    "before": {
+      "other-request": [
+        "R1",
+        "2026-11-17T13:00:00+00:00"
+      ]
+    },
+    "after": {
+      "other-request": [
+        "R1",
+        "2026-11-17T13:00:00+00:00"
+      ],
+      "59d8ba7cd69ff005aa66c4bc": [
+        "transport",
+        "2026-11-17T09:00:00+00:00"
+      ],
+      "4493035ed154eff2aa6dbbd3": [
+        "R2",
+        "2026-11-17T06:00:00+00:00"
+      ]
+    },
+    "unexpected_new_keys": [
+      "4493035ed154eff2aa6dbbd3",
+      "59d8ba7cd69ff005aa66c4bc"
+    ],
+    "reservations": [
+      "coord:S01:20261117T0900Z:reserved",
+      "renfort:R1:capacity_exhausted",
+      "renfort:R2:reserved"
+    ]
+  },
+  "F04_idempotency_key_payload_conflict": {
+    "first_decision": "approve",
+    "requested_second_decision": "reject",
+    "second_decision_returned": "approve",
+    "second_outcome": "APPROVED_IN_DEMO",
+    "same_result": true
+  },
+  "F05_non_hourly_lock_rounded_down": {
+    "locked_at": "2026-11-17 09:30:00+00:00",
+    "actual_departure_from_events": "2026-11-17 09:00:00+00:00",
+    "status": "NO_ACTION_PREFERRED",
+    "approvable": true,
+    "violations": [],
+    "warnings": []
+  },
+  "F06_unknown_cleaning_defaults_one_hour": {
+    "snapshot_issues": [],
+    "L01_cleaning": null,
+    "status": "RECOMMENDATION_READY",
+    "approvable": true,
+    "warnings": [],
+    "cleaning_jobs_L01": [
+      [
+        "L01",
+        "S01",
+        15,
+        1
+      ]
+    ]
+  },
+  "F07_AS_roster_missing": {
+    "declared_coverage_skills": [
+      "IDE"
+    ],
+    "care_skills": [
+      "AS",
+      "IDE",
+      "IDE",
+      "IDE",
+      "IDE",
+      "IDE",
+      "IDE",
+      "IDE"
+    ],
+    "status": "RECOMMENDATION_READY",
+    "approvable": true,
+    "diagnostics": []
+  },
+  "F08_config_identity_collision": {
+    "same_recommendation_id": true,
+    "same_bundle_id": true,
+    "different_score_fingerprint": true,
+    "same_metrics": false,
+    "example_first_different_scores": [
+      0,
+      9.0,
+      4.0
+    ]
+  },
+  "POSITIVE_required_staff_independent_of_offers": {
+    "same_required_trajectory": true,
+    "peak_required_first": {
+      "IDE": 5.0,
+      "AS": 0.0
+    },
+    "peak_required_without_offers": {
+      "IDE": 5.0,
+      "AS": 0.0
+    }
+  }
+}

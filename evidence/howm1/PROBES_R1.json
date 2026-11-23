@@ -1,0 +1,15 @@
+{
+ "B2": {
+  "auc_leave_one_establishment_out": 0.47029928686450423,
+  "folds": 5,
+  "positives": 44,
+  "n": 180
+ },
+ "H1": {
+  "auc_leave_one_establishment_out": 0.43292063492063493,
+  "folds": 5,
+  "positives": 44,
+  "n": 180
+ },
+ "note": "privileged label (true regime) used only for this post-freeze diagnostic; never an input"
+}
