@@ -56,8 +56,14 @@ def generate_episode(part,index,month,models,enabled,probe_only=False):
  sp=structure(part,index,180);sp.ekey=key('PIPE_MONTH',sp.skey,month)
  sp.theta['arr_mult']*=1+.1*np.sin(2*np.pi*month/12)
  sp.start_utc=(dt.date(year,mo,1)-dt.timedelta(days=7)).isoformat()+'T00:00:00+01:00'
- W.ROSTER_HOURS=40*24+24
- prov=W.ProvN(sp,0);eng=W.initial_engine(sp,prov);eng.emit_log=False
+ # Month-long rosters for this engine only; the module default is restored so that later INT-1 engines in the
+ # same process keep their configured roster length (review of 981c414).
+ roster_default=W.ROSTER_HOURS;W.ROSTER_HOURS=40*24+24
+ try:
+  prov=W.ProvN(sp,0);eng=W.initial_engine(sp,prov)
+ finally:
+  W.ROSTER_HOURS=roster_default
+ eng.emit_log=False
  freeze_rosters(eng)
  ps=W.PublicStreamN(W.static_obs(eng,sp));ps.advance(0)
  rec=W.Recorder(sp,0);eng.on_event=rec;pending=[];serial=0

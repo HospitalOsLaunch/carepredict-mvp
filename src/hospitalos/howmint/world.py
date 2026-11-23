@@ -386,8 +386,11 @@ class PublicStreamN(PublicStream):
     def _bed(self, bed: str, ev: int, state: str, **extra: Any) -> None:
         """Resolve same-tick lifecycle events in physical, not delivery, order.
 
-        The simulator departs, starts/completes cleaning, then places patients.
-        A delayed cleaning_done must never erase a known same-tick placement.
+        Within a tick, Engine.step departs, then completes cleanings, then starts cleanings, then places patients.
+        The phase table ranks dirty < cleaning < free < occ: a bed cannot both start and complete a cleaning in
+        the same tick (clean_end >= clean_start + 1), so that pair never collides on one bed and the table
+        orders every same-tick pair that can occur. A delayed cleaning_done must never erase a known same-tick
+        placement.
         Event time still takes precedence across distinct ticks.
         """
         phase = {"dirty": 0, "cleaning": 1, "free": 2, "occ": 3}
@@ -405,6 +408,17 @@ class PublicStreamN(PublicStream):
         if kind == "request_arrival" and v.get("from_sid"):
             self.transfer_from[subj] = v["from_sid"]
         super()._apply(o)
+
+    @staticmethod
+    def _implied_departure(eng: EngineN, s: Any, tick: int) -> None:
+        """Apply a departure implied by a later public stage: the stay leaves at ``tick`` and its bed becomes dirty
+        then, unless the public bed record already shows a later state for that bed."""
+        s.departed = tick
+        if s.sid in eng.tr_service:
+            eng.tr_service.remove(s.sid)
+        bed = eng.beds.get(s.bed)
+        if bed is not None and bed.state == "occ" and bed.stay == s.sid:
+            bed.state, bed.stay, bed.dirty_tick = "dirty", None, tick
 
     def to_engine_n(self, t_tick: int) -> EngineN:
         base = self.to_engine(t_tick * 15 - 1)  # observations available strictly before the decision tick
@@ -432,6 +446,12 @@ class PublicStreamN(PublicStream):
             if transport_time is not None:
                 s.ready, s.tr_accepted = True, True
                 s.ready_tick = s.ready_tick if s.ready_tick is not None else transport_time // 15
+                # the request and its acceptance precede the start: without them the engine would issue a second
+                # habitual request for a patient already in transport
+                s.tr_req = s.tr_req if s.tr_req is not None else transport_time // 15
+                s.tr_conf = s.tr_conf if s.tr_conf is not None else transport_time // 15
+                # set even when only the completion is known, so that the engine does not start the transport
+                # again; its end time is the known completion (below), and the stay is not in tr_service
                 s.tr_start = transport_time // 15
             if "transport_done" in pub:  # completion may arrive before start
                 if sid in eng.tr_service:
@@ -439,6 +459,12 @@ class PublicStreamN(PublicStream):
                 s.tr_end = pub["transport_done"] // 15
             if s.ready and s.aval and s.departed is None and not s.dest and (not s.transport or "transport_done" in pub):
                 eng.aval_blocked.append(sid)  # ready and still present: waiting for an external downstream slot
+            elif s.departed is None and not s.dest and not s.aval:
+                # the engine departs such a stay at the tick it becomes ready (no transport) or its transport ends;
+                # a departure report still in flight must not keep the bed occupied for the whole rollout
+                implied = pub.get("transport_done") if s.transport else pub.get("ready")
+                if implied is not None:
+                    self._implied_departure(eng, s, implied // 15)
         day = t_tick // TPD
         eng.aval_used[day] = sum(1 for sid, s in self.stays.items() if s.get("departure") is not None and s["departure"] // 15 // TPD == day
                                  and self.routes.get(sid, {}).get("aval"))

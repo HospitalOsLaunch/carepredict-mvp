@@ -15,7 +15,7 @@ PROTOCOL = json.loads(Path(__file__).with_name("correction_protocol.json").read_
 
 
 class LegacyPublicStream(W.PublicStreamN):
-    """The exact pre-correction same-tick behavior, solely for paired ablation."""
+    """The exact pre-correction replay (same-tick bed logic AND transport reconstruction), solely for paired ablation."""
     _bed = PublicStream._bed
 
     def _apply(self, o):
@@ -28,6 +28,40 @@ class LegacyPublicStream(W.PublicStreamN):
                 es.data = keep
             return
         super()._apply(o)
+
+    def to_engine_n(self, t_tick):
+        """Pre-correction reconstruction (world.py at 50228ee): no inference of authorised/ready/accepted/start from
+        later transport reports, no implied departures. Without this override the legacy arm inherited the corrected
+        transport handling and the legacy-minus-public gaps left out part of the correction (review of 63af109)."""
+        base = self.to_engine(t_tick * 15 - 1)
+        base.tick = t_tick
+        eng = W.EngineN.__new__(W.EngineN)
+        eng.__dict__.update(base.__dict__)
+        st = self.static or {}
+        eng.spec_meta = {"aval_slots": st.get("aval_slots", 0), "drop": dict(st.get("drop") or {}), "lend_pairs": st.get("lend_pairs", [])}
+        eng.base_c_cl, eng.base_c_tr = eng.c_cl, eng.c_tr
+        eng.aval_used, eng.aval_blocked, eng.commitments, eng.coord_ticks = {}, [], [], []
+        eng.transfer_pending = {rid: sid for rid, sid in self.transfer_from.items()
+                                if rid not in self.placed_rids and sid in eng.stays}
+        for sid, s in eng.stays.items():
+            r = self.routes.get(sid, {"dest": None, "aval": False})
+            s.dest, s.aval = r["dest"], r["aval"]
+            s.transfer_requested = any(v == sid for v in self.transfer_from.values())
+            pub = self.stays.get(sid, {})
+            if "transport_done" in pub and sid in eng.tr_service:
+                eng.tr_service.remove(sid)
+                s.tr_end = pub["transport_done"] // 15
+            if s.ready and s.aval and s.departed is None and not s.dest and (not s.transport or "transport_done" in pub):
+                eng.aval_blocked.append(sid)
+        day = t_tick // W.TPD
+        eng.aval_used[day] = sum(1 for sid, s in self.stays.items() if s.get("departure") is not None and s["departure"] // 15 // W.TPD == day
+                                 and self.routes.get(sid, {}).get("aval"))
+        for t_plan, p in self.plans:
+            if "commit" in p:
+                eng.commitments.append(dict(p["commit"]))
+            if p.get("coordinate"):
+                eng.coord_ticks.append(t_plan // 15)
+        return eng
 
 
 def view(pre, rec, tick, legacy=False):

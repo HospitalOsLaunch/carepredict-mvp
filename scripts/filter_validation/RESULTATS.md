@@ -65,3 +65,8 @@ La connaissance des paramètres structurels par les planificateurs donne un cadr
 ## 5. Reproductibilité
 
 Le protocole, la procédure de reproduction et les tests figurent dans scripts/filter_validation. Les paramètres ajustés, classes de calibration et résultats résumés sont dans evidence/filter_validation/run. L’archive de campagne contient les 24 fichiers détaillés, les tables de prédictions, les décisions et les empreintes. Huit tests de régression ont passé, dont quatre dédiés à cette campagne. Vingt états échantillonnés ont été vérifiés pour la conservation des lits et la cohérence des transports actifs.
+
+> **Note du 23 novembre 2026.** La reconstruction publique et le bras « legacy » de la campagne de
+> correction ont été corrigés après cette campagne ; les résultats ci-dessus et ceux de
+> `evidence/filter_correction` ont été obtenus avec le code antérieur. Voir
+> `docs/research/CORRECTIFS_2026-11-23.md`.

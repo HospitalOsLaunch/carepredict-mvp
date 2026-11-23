@@ -164,3 +164,71 @@ def test_i10_propagation_control_releases_bed_without_rejection():
                 assert eng.stays[sid].departed is not None  # origin bed already released
     assert eng.rejections.get("departure_precondition", 0) == 0
     assert any(s.sid.startswith("SS") for s in eng.stays.values())
+
+
+# ------------------------------------------------------------------ public replay: implied stages (review of 63af109)
+def _stay(eng, transport, aval):
+    return next(s for s in sorted(eng.stays.values(), key=lambda s: s.sid)
+                if s.transport is transport and s.dest is None and bool(s.aval) is aval)
+
+
+def _public(extra, t_min=89, tick=6):
+    sp = W.n_unit_structure("CORRECTION_TEST", 0, 4)
+    eng = W.initial_engine(sp, W.ProvN(sp, 0))
+    obs = W.static_obs(eng, sp) + extra(eng)
+    ps = W.PublicStreamN(obs)
+    ps.advance(t_min)
+    return sp, eng, ps.to_engine_n(tick)
+
+
+def test_i11_transport_done_without_departure_report_frees_the_bed():
+    st = {}
+
+    def extra(eng):
+        st["s"] = _stay(eng, True, False)
+        return [(60, 60, "transport_done", st["s"].sid, st["s"].unit, {})]
+    _sp, _eng, pe = _public(extra)
+    s = pe.stays[st["s"].sid]
+    assert s.departed == 4 and st["s"].sid not in pe.tr_service
+    bed = pe.beds[s.bed]
+    assert bed.state == "dirty" and bed.stay is None and bed.dirty_tick == 4
+
+
+def test_i12_ready_without_transport_and_without_departure_report_frees_the_bed():
+    st = {}
+
+    def extra(eng):
+        st["s"] = _stay(eng, False, False)
+        return [(60, 60, "ready", st["s"].sid, st["s"].unit, {})]
+    _sp, _eng, pe = _public(extra)
+    s = pe.stays[st["s"].sid]
+    assert s.departed == 4 and pe.beds[s.bed].stay is None
+
+
+def test_i13_external_downstream_stay_keeps_its_bed_and_waits_for_a_slot():
+    st = {}
+
+    def extra(eng):
+        st["s"] = _stay(eng, True, True)
+        return [(60, 60, "transport_done", st["s"].sid, st["s"].unit, {})]
+    _sp, _eng, pe = _public(extra)
+    s = pe.stays[st["s"].sid]
+    assert s.departed is None and st["s"].sid in pe.aval_blocked and pe.beds[s.bed].stay == s.sid
+
+
+def test_i14_inferred_transport_is_not_requested_twice():
+    st = {}
+
+    def extra(eng):
+        st["s"] = _stay(eng, True, False)
+        return [(60, 60, "transport_start", st["s"].sid, st["s"].unit, {})]
+    sp, _eng, pe = _public(extra)
+    s = pe.stays[st["s"].sid]
+    assert s.tr_req == 4 and s.tr_accepted and st["s"].sid in pe.tr_service
+    prov = W.ProvN(sp, 1)
+    W.refresh_private(pe, W._Cal(prov, sp.drop))
+    log = []
+    pe.emit_log, pe.on_event = False, lambda *a: log.append(a)
+    for _ in range(24 * TPH):
+        pe.step(prov)
+    assert not any(a[1] == "transport_requested" and a[2] == s.sid for a in log)

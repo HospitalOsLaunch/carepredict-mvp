@@ -99,6 +99,20 @@ class CorrectionTests(unittest.TestCase):
         self.assertEqual(result.tr_service, pe.tr_service)
         self.assertEqual(DeclaredService().unfinished(10**9), 1.)
 
+    def test_legacy_arm_does_not_infer_transport_prerequisites(self):
+        from correction import LegacyPublicStream
+        sp = W.n_unit_structure("CORRECTION_TEST", 0, 4)
+        eng = W.initial_engine(sp, W.ProvN(sp, 0))
+        st = next(s for s in sorted(eng.stays.values(), key=lambda s: s.sid) if s.transport and s.dest is None and not s.aval)
+        obs = W.static_obs(eng, sp) + [(60, 60, "transport_start", st.sid, st.unit, {})]
+        out = {}
+        for cls in (LegacyPublicStream, W.PublicStreamN):
+            ps = cls(obs)
+            ps.advance(89)
+            out[cls] = ps.to_engine_n(6).stays[st.sid]
+        self.assertFalse(out[LegacyPublicStream].ready or out[LegacyPublicStream].tr_accepted)
+        self.assertTrue(out[W.PublicStreamN].ready and out[W.PublicStreamN].tr_accepted)
+
 
 if __name__ == "__main__":
     unittest.main()

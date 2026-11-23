@@ -99,7 +99,9 @@ def public_forecast(spec, pe, draw):
     # Fixed independent structural template; only public static fields are copied.
     prior=W.n_unit_structure('PLAN48_PUBLIC_PRIOR',0,4,regime='fragile',
                              bottlenecks=('cleaning','transport','aval','transfer'))
-    prior.ekey=key('PLAN48_PROJECTION', pe.tick,draw)
+    # Keyed by hospital as well: without spec.part/spec.idx every hospital drew the same projection innovations,
+    # which correlated forecast errors across the bootstrap units (amendment PLAN48_A1).
+    prior.ekey=key('PLAN48_PROJECTION', spec.part, spec.idx, pe.tick,draw)
     prior.beds={u:len(v.beds) for u,v in pe.units.items()}
     prior.nominal=dict(spec.nominal)  # static public observation
     prior.aval_slots_per_day=pe.spec_meta['aval_slots']
