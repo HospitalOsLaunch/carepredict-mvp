@@ -15,8 +15,13 @@ PROTOCOL = json.loads(Path(__file__).with_name("correction_protocol.json").read_
 
 
 class LegacyPublicStream(W.PublicStreamN):
-    """The exact pre-correction same-tick behavior, solely for paired ablation."""
+    """Public replay before 63af109, as recorded at fc850b7."""
     _bed = PublicStream._bed
+
+    def _restore_stay_lifecycle(self, eng, stay, public):
+        if "transport_done" in public and stay.sid in eng.tr_service:
+            eng.tr_service.remove(stay.sid)
+            stay.tr_end = public["transport_done"] // 15
 
     def _apply(self, o):
         ev, _, kind, _, _, v = o

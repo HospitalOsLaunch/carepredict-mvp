@@ -317,13 +317,15 @@ class _Cal:
         return self._p.cleaning_capacity_drop(eng, tick) + K.drop_at(self._drop, tick)
 
 
-def initial_engine(spec: IntSpec, prov: ProvN) -> EngineN:
+def initial_engine(spec: IntSpec, prov: ProvN, *, roster_hours: int | None = None) -> EngineN:
+    if roster_hours is None:
+        roster_hours = ROSTER_HOURS
     units, beds = {}, {}
     for un in spec.units:
         ids = [f"B{un}{i:02d}" for i in range(spec.beds[un])]
         for i, b in enumerate(ids):
             beds[b] = Bed(b, un, iso=i < spec.iso_beds[un])
-        roster = {sk: G.roster_for(spec.beds[un], sk, ROSTER_HOURS) for sk in SKILLS}
+        roster = {sk: G.roster_for(spec.beds[un], sk, roster_hours) for sk in SKILLS}
         units[un] = Unit(un, ids, roster, {sk: min(roster[sk]) for sk in SKILLS})
     eng = EngineN(units, beds, spec.c_tr, spec.c_cl).setup(spec)
     for un in spec.units:
@@ -381,12 +383,14 @@ class PublicStreamN(PublicStream):
     def __init__(self, observations: list):
         super().__init__(observations)
         self.routes: dict[str, dict] = {}
+        self.confirmed_home_routes: set[str] = set()
         self.transfer_from: dict[str, str] = {}
 
     def _bed(self, bed: str, ev: int, state: str, **extra: Any) -> None:
         """Resolve same-tick lifecycle events in physical, not delivery, order.
 
-        The simulator departs, starts/completes cleaning, then places patients.
+        The simulator processes departures, cleaning completions, cleaning starts,
+        then placements. A bed cannot start and finish one cleaning in one tick.
         A delayed cleaning_done must never erase a known same-tick placement.
         Event time still takes precedence across distinct ticks.
         """
@@ -401,6 +405,10 @@ class PublicStreamN(PublicStream):
         ev, _avail, kind, subj, unit, v = o
         if kind == "route":
             self.routes[subj] = {"dest": v.get("dest") or None, "aval": bool(v.get("aval"))}
+            if "dest" in v and v["dest"] in ("", None) and v.get("aval") is False:
+                self.confirmed_home_routes.add(subj)
+            else:
+                self.confirmed_home_routes.discard(subj)
             return
         if kind == "request_arrival" and v.get("from_sid"):
             self.transfer_from[subj] = v["from_sid"]
@@ -422,21 +430,7 @@ class PublicStreamN(PublicStream):
             s.dest, s.aval = r["dest"], r["aval"]
             s.transfer_requested = any(v == sid for v in self.transfer_from.values())
             pub = self.stays.get(sid, {})
-            # A later public stage implies its prerequisites, even if their
-            # individual notifications have not arrived yet.
-            transport_time = pub.get("transport_start", pub.get("transport_done"))
-            ready_time = pub.get("ready", transport_time)
-            if ready_time is not None:
-                s.authorised = True
-                s.auth_tick = s.auth_tick if s.auth_tick is not None else ready_time // 15
-            if transport_time is not None:
-                s.ready, s.tr_accepted = True, True
-                s.ready_tick = s.ready_tick if s.ready_tick is not None else transport_time // 15
-                s.tr_start = transport_time // 15
-            if "transport_done" in pub:  # completion may arrive before start
-                if sid in eng.tr_service:
-                    eng.tr_service.remove(sid)
-                s.tr_end = pub["transport_done"] // 15
+            self._restore_stay_lifecycle(eng, s, pub)
             if s.ready and s.aval and s.departed is None and not s.dest and (not s.transport or "transport_done" in pub):
                 eng.aval_blocked.append(sid)  # ready and still present: waiting for an external downstream slot
         day = t_tick // TPD
@@ -448,6 +442,33 @@ class PublicStreamN(PublicStream):
             if p.get("coordinate"):
                 eng.coord_ticks.append(t_plan // 15)
         return eng
+
+    def _restore_stay_lifecycle(self, eng: EngineN, stay: Stay, public: dict) -> None:
+        transport = public.get("transport_start", public.get("transport_done"))
+        ready = public.get("ready", transport)
+        if ready is not None:
+            stay.authorised = True
+            if stay.auth_tick is None:
+                stay.auth_tick = ready // 15
+        if transport is not None:
+            stay.ready, stay.tr_accepted = True, True
+            if stay.ready_tick is None:
+                stay.ready_tick = transport // 15
+        if "transport_done" not in public:
+            return
+
+        # A public finish proves completion even if the request/start timestamps
+        # are missing. Keep these timestamps as received by the base replay.
+        stay.public_transport_done = True
+        stay.tr_end = public["transport_done"] // 15
+        if stay.sid in eng.tr_service:
+            eng.tr_service.remove(stay.sid)
+        if stay.sid in self.confirmed_home_routes and not stay.transfer_requested:
+            # present_stays() already verified ownership. Reflect the historical
+            # departure without charging work or emitting events at this origin.
+            stay.departed = stay.tr_end
+            bed = eng.beds[stay.bed]
+            bed.state, bed.stay, bed.dirty_tick = "dirty", None, stay.tr_end
 
 
 def regime_anchor(prov: ProvN, tick: int) -> dict:

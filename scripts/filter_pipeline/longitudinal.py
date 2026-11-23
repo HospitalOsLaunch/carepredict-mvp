@@ -40,7 +40,7 @@ def graph_inputs(eng,sp,month):
   unit[i,14]=sum(x.ready and x.departed is None for x in eng.stays.values() if x.unit==un)/b
   unit[i,22]=eng.units[un].roster['IDE'][eng.tick//4]/16
  res[0,:3]=[eng.base_c_cl/8,sum(b.state=='cleaning' for b in eng.beds.values())/8,sum(b.state=='dirty' for b in eng.beds.values())/64]
- res[1,:3]=[eng.base_c_tr/8,len(eng.tr_service)/8,sum(s.ready and s.transport and s.tr_start is None and s.departed is None for s in eng.stays.values())/64]
+ res[1,:3]=[eng.base_c_tr/8,len(eng.tr_service)/8,sum(s.ready and s.transport and not s.transport_started and s.departed is None for s in eng.stays.values())/64]
  res[2,8:10]=[eng.aval_cap(eng.tick)/8,eng.aval_used.get(eng.tick//96,0)/8]
  hr=local_hour(eng.tick)
  glob=np.array([np.sin(2*np.pi*hr/24),np.cos(2*np.pi*hr/24),np.sin(2*np.pi*(month%12)/12),np.cos(2*np.pi*(month%12)/12),1,1,0,n/12],np.float32)
@@ -56,8 +56,7 @@ def generate_episode(part,index,month,models,enabled,probe_only=False):
  sp=structure(part,index,180);sp.ekey=key('PIPE_MONTH',sp.skey,month)
  sp.theta['arr_mult']*=1+.1*np.sin(2*np.pi*month/12)
  sp.start_utc=(dt.date(year,mo,1)-dt.timedelta(days=7)).isoformat()+'T00:00:00+01:00'
- W.ROSTER_HOURS=40*24+24
- prov=W.ProvN(sp,0);eng=W.initial_engine(sp,prov);eng.emit_log=False
+ prov=W.ProvN(sp,0);eng=W.initial_engine(sp,prov,roster_hours=41*24);eng.emit_log=False
  freeze_rosters(eng)
  ps=W.PublicStreamN(W.static_obs(eng,sp));ps.advance(0)
  rec=W.Recorder(sp,0);eng.on_event=rec;pending=[];serial=0
