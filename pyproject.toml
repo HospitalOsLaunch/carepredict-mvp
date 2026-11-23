@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "carepredict-mvp"
 version = "0.1.0"
-description = "CarePredict v0 pass 1: sovereign data ingestion, feature engineering, and feature store."
+description = "HospitalOS: observation-mode decision support for bed and discharge management (hybrid cockpit, 24-hour planner), synthetic foundation and research."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
