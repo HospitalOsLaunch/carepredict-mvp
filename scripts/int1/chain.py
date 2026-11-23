@@ -66,7 +66,7 @@ def main() -> int:
                 break
             script, label = "scripts/int1/corpus.py", f"corpus {opts['--part']} -> {opts['--target']} (cmd {k + 1})"
             args = rest
-        r = subprocess.run(["python3", "scripts/howm_int1_run.py", "--lot", opts["--lot"], "--label", label, "--", PY, script, *args],
+        r = subprocess.run(["python3", "scripts/int1/ledger_run.py", "--lot", opts["--lot"], "--label", label, "--", PY, script, *args],
                            cwd=ROOT, capture_output=True, text=True)
         line = [x for x in r.stdout.splitlines() if "howm2-budget]" in x]
         print(line[-1] if line else r.stdout[-500:] + r.stderr[-500:], flush=True)

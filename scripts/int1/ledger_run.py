@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Budgeted runner for HOWM-INT-1 (decision n.9). NEW ledger evidence/howm_int1/LEDGER_INT1.jsonl.
+"""Budgeted runner for HOWM-INT-1 (moved from scripts/howm_int1_run.py on 2026-11-23: that name matched the
+HOWM-1 frozen-code glob scripts/howm_*.py and broke the historical freeze tests; content otherwise unchanged) (decision n.9). NEW ledger evidence/howm_int1/LEDGER_INT1.jsonl.
 
 Derived from the frozen B runner (scripts/howm2_b_budget_run.py, not modified): its run() is re-compiled
 with the decision check replaced (decision_9 required) and its globals re-pointed to the new ledger.
@@ -8,10 +9,10 @@ command counts once in wall, the CPU of all its descendants is summed), 288 CPU-
 checked before launch), 540 s per command, 0 EUR, local CPU only. The B ledger and its remainder are
 neither consumed nor reset.
 
-    python3 scripts/howm_int1_run.py --genesis
-    python3 scripts/howm_int1_run.py --note <kind> --lot <lot> --label L --json f.json
-    python3 scripts/howm_int1_run.py --lot INT.X --label L -- <venv>/bin/python script.py ...
-    python3 scripts/howm_int1_run.py --status
+    python3 scripts/int1/ledger_run.py --genesis
+    python3 scripts/int1/ledger_run.py --note <kind> --lot <lot> --label L --json f.json
+    python3 scripts/int1/ledger_run.py --lot INT.X --label L -- <venv>/bin/python script.py ...
+    python3 scripts/int1/ledger_run.py --status
 """
 
 import inspect
@@ -20,10 +21,10 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import howm2_b_budget_run as R  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 CEILING_WALL_S = 259200.0
 CEILING_CPU_S = 288 * 3600.0
 H = 3600.0

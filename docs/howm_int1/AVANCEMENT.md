@@ -8,8 +8,8 @@
 
 **Registre :** `evidence/howm_int1/LEDGER_INT1.jsonl`.
 
-- Runner : `scripts/howm_int1_run.py` (verrou fcntl depuis l'incident #38).
-- Statut : `python3 scripts/howm_int1_run.py --status`.
+- Runner : `scripts/int1/ledger_run.py` (verrou fcntl depuis l'incident #38 ; nommé `scripts/howm_int1_run.py` pendant la campagne, déplacé le 23 novembre pour ne plus entrer dans le motif gelé `scripts/howm_*.py` des tests HOWM-1).
+- Statut : `python3 scripts/int1/ledger_run.py --status`.
 - 540 s par commande ; lots `INT.L0`, `INT.DATA`, `INT.LEARN`, `INT.EVAL`, `INT.REST`, `INT.RESERVE`.
 
 **Chemins.** Venv, corpus, runs et évaluation sont dans le scratchpad :

@@ -589,7 +589,7 @@ ordonnées, comparaison d'actions candidates. Aucun usage décisionnel. `G2=NO-G
 | Tests | `tests/howm_int1/` |
 | Moteur et modèles | `src/hospitalos/howmint/` |
 | Scripts | `scripts/int1/` |
-| Registre | `scripts/howm_int1_run.py` |
+| Registre | `scripts/int1/ledger_run.py` (nommé `scripts/howm_int1_run.py` pendant la campagne et dans l'archive `HOWM_INT1_FINAL`) |
 | Analyse gelée | `python scripts/int1/analyse.py` (à partir de `int1_eval/`) |
 | Démonstration | `python scripts/int1/demo.py` → `docs/howm_int1/DEMO.md` (illustrations, pas des résultats agrégés) |
 | Archive et reçu en environnement neuf | § 17, `ARCHIVE_INT1` et `RECU_INT1` |
