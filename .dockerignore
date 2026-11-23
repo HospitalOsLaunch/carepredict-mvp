@@ -9,3 +9,11 @@ services/dashboard/node_modules
 services/dashboard/dist
 data/generated
 reports
+web/node_modules
+web/dist
+web/dist-demo
+evidence
+delivery
+runs
+artifacts/*.pt
+deploy/nantes/.env.release

@@ -205,10 +205,16 @@ def main() -> None:
     global STATE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="bind address; loopback by default. The release container binds 0.0.0.0 on an "
+        "internal Docker network only (deploy/nantes/docker-compose.release.yml).",
+    )
     args = parser.parse_args()
     STATE = State()
-    httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"READY http://127.0.0.1:{httpd.server_address[1]}/", flush=True)
+    httpd = ThreadingHTTPServer((args.host, args.port), Handler)
+    print(f"READY http://{args.host}:{httpd.server_address[1]}/", flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

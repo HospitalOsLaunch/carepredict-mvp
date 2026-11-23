@@ -1,0 +1,249 @@
+# HospitalOS — compose de RELEASE pour l'enclave (hors ligne). Le docker-compose.yml de la racine reste le
+# compose de DÉVELOPPEMENT. Contrôlé par scripts/deploy/check_release.py (CI) :
+#   - images tierces épinglées par digest (deploy/nantes/images.lock.json) ; images construites à partir de
+#     bases épinglées et nommées par RELEASE_TAG ; aucun `pull` au runtime (images préchargées) ;
+#   - ports publiés sur 127.0.0.1 uniquement ; aucun datastore exposé à l'hôte ;
+#   - secrets obligatoires sans valeur par défaut (fichier .env.release fourni par l'exploitant, non versionné) ;
+#   - aucun montage du code de l'hôte (code cuit dans les images) ; configuration en lecture seule ;
+#   - no-new-privileges partout ; capacités retirées et système de fichiers en lecture seule pour les services
+#     applicatifs ; datastores sur un réseau interne sans sortie.
+#
+#   docker compose -f deploy/nantes/docker-compose.release.yml --env-file deploy/nantes/.env.release config
+#   docker compose -f deploy/nantes/docker-compose.release.yml --env-file deploy/nantes/.env.release up -d
+
+name: hospitalos_release
+
+x-hardened: &hardened
+  restart: unless-stopped
+  pull_policy: never
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options: {max-size: "20m", max-file: "5"}
+
+x-app: &app
+  <<: *hardened
+  read_only: true
+  cap_drop: [ALL]
+  tmpfs:
+    - /tmp:size=64m
+
+services:
+  # ---------------------------------------------------------------- produit : cockpit + planificateurs
+  cockpit:
+    <<: *hardened
+    build:
+      context: ../..
+      dockerfile: infrastructure/cockpit/Dockerfile
+    image: hospitalos/cockpit:${RELEASE_TAG:?RELEASE_TAG must be set}
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID]  # nginx master starts workers as the nginx user
+    tmpfs:
+      - /tmp:size=32m
+      - /var/cache/nginx:size=32m
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on: [hybrid-api, decision-api]
+    networks: [edge, app]
+
+  hybrid-api:
+    <<: *app
+    build:
+      context: ../..
+      dockerfile: infrastructure/product/Dockerfile
+    image: hospitalos/product:${RELEASE_TAG:?RELEASE_TAG must be set}
+    command: ["uvicorn", "services.api.hybrid_app:app", "--host", "0.0.0.0", "--port", "8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks: [app]
+
+  decision-api:
+    <<: *app
+    image: hospitalos/product:${RELEASE_TAG:?RELEASE_TAG must be set}
+    command: ["python", "web/decision/serve.py", "--host", "0.0.0.0", "--port", "8765"]
+    depends_on: [hybrid-api]  # same image, built by hybrid-api
+    networks: [app]
+
+  # ---------------------------------------------------------------- pile de données CarePredict (agrégats Nantes)
+  redpanda:
+    <<: *hardened
+    image: redpandadata/redpanda:v24.1.9@sha256:85a30e0084f3d479098c327575e3eb27b729ec31f7d72cd1b2ef1098dc1e3b85
+    command:
+      - redpanda
+      - start
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --overprovisioned
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=PLAINTEXT://0.0.0.0:9092
+      - --advertise-kafka-addr=PLAINTEXT://redpanda:9092
+      - --rpc-addr=0.0.0.0:33145
+      - --advertise-rpc-addr=redpanda:33145
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster info --brokers=localhost:9092 >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    networks: [data]
+
+  redpanda-init:
+    <<: *hardened
+    restart: "no"
+    image: redpandadata/redpanda:v24.1.9@sha256:85a30e0084f3d479098c327575e3eb27b729ec31f7d72cd1b2ef1098dc1e3b85
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    volumes:
+      - ../../infrastructure/redpanda/topics.yaml:/topics.yaml:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "rpk topic create sih.raw fhir.raw csv.raw canonical.events
+      --brokers redpanda:9092 --partitions 3 --replicas 1 || true"
+    networks: [data]
+
+  timescaledb:
+    <<: *hardened
+    image: timescale/timescaledb:2.14.2-pg15@sha256:0698d9bf8cfd81e042f653ff3be767682b376bf0e95b431b2922e2d8a72195d1
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB must be set}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+      - ../../infrastructure/timescaledb/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    networks: [data]
+
+  redis:
+    <<: *hardened
+    image: redis:7.2.5-alpine@sha256:6aaf3f5e6bc8a592fbfe2cccf19eb36d27c39d12dab4f4b01556b7449e7b1f44
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}"]
+    read_only: true
+    tmpfs:
+      - /data:size=64m
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    networks: [data]
+
+  dagster-postgres:
+    <<: *hardened
+    image: postgres:15.7-alpine@sha256:468d34fefd6338031787c7b8e94078975b3aaf4d66c7ead25c39cd3ba46a15c6
+    environment:
+      POSTGRES_DB: ${DAGSTER_POSTGRES_DB:?DAGSTER_POSTGRES_DB must be set}
+      POSTGRES_USER: ${DAGSTER_POSTGRES_USER:?DAGSTER_POSTGRES_USER must be set}
+      POSTGRES_PASSWORD: ${DAGSTER_POSTGRES_PASSWORD:?DAGSTER_POSTGRES_PASSWORD must be set}
+    volumes:
+      - dagster-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+    networks: [data]
+
+  dagster-webserver:
+    <<: *hardened
+    build:
+      context: ../..
+      dockerfile: infrastructure/dagster/Dockerfile
+    image: hospitalos/dagster:${RELEASE_TAG:?RELEASE_TAG must be set}
+    env_file: [.env.release]
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      PYTHONPATH: /app
+    command: >
+      sh -c "cd /app/orchestration/dagster
+      && dagster-webserver -h 0.0.0.0 -p 3000 -w workspace.yaml"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ../../infrastructure/dagster/dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
+      - carepredict-artifacts:/app/reports
+    depends_on:
+      dagster-postgres: {condition: service_healthy}
+      timescaledb: {condition: service_healthy}
+      redpanda-init: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    networks: [edge, data]
+
+  dagster-daemon:
+    <<: *hardened
+    image: hospitalos/dagster:${RELEASE_TAG:?RELEASE_TAG must be set}
+    env_file: [.env.release]
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      PYTHONPATH: /app
+    command: >
+      sh -c "cd /app/orchestration/dagster
+      && dagster-daemon run -w workspace.yaml"
+    volumes:
+      - ../../infrastructure/dagster/dagster.yaml:/opt/dagster/dagster_home/dagster.yaml:ro
+      - carepredict-artifacts:/app/reports
+    depends_on:
+      dagster-webserver: {condition: service_started}
+    networks: [data]
+
+  mlflow:
+    <<: *hardened
+    build:
+      context: ../..
+      dockerfile: infrastructure/mlflow/Dockerfile
+    image: hospitalos/mlflow:${RELEASE_TAG:?RELEASE_TAG must be set}
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000",
+              "--backend-store-uri", "sqlite:////mlflow/mlflow.db", "--default-artifact-root", "/mlflow/artifacts"]
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    networks: [edge, data]
+
+  api:
+    <<: *app
+    build:
+      context: ../..
+      dockerfile: infrastructure/api/Dockerfile
+    image: hospitalos/api:${RELEASE_TAG:?RELEASE_TAG must be set}
+    env_file: [.env.release]
+    environment:
+      PYTHONPATH: /app
+    command: ["uvicorn", "services.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - carepredict-artifacts:/app/reports
+    depends_on:
+      redis: {condition: service_healthy}
+      mlflow: {condition: service_started}
+    networks: [edge, data]
+
+volumes:
+  redpanda-data:
+  timescaledb-data:
+  dagster-postgres-data:
+  mlflow-data:
+  carepredict-artifacts:
+
+networks:
+  edge:        # published ports (127.0.0.1 only)
+  app:         # product services behind the cockpit proxy
+    internal: true
+  data:        # datastores and pipeline: no egress
+    internal: true

@@ -64,3 +64,6 @@ artifacts/
 pyproject.toml.backup
 pyproject.toml.before_*
 runs/
+
+# Release secrets (operator-provided)
+deploy/nantes/.env.release

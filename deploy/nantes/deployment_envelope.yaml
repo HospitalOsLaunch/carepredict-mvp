@@ -5,7 +5,7 @@
 # compose de DÉVELOPPEMENT ; la section `release_hardening` liste les écarts à
 # appliquer pour la release pilote (gates de release), vérifiés vs le compose réel.
 
-envelope_version: 1.0.1
+envelope_version: 1.1.0   # 2026-11-23: release compose deploy/nantes/docker-compose.release.yml
 target: nantes-v0.1
 runtime: docker-compose            # docker compose v2 (ou podman-compose compatible)
 os_supported: [Ubuntu 22.04 LTS, Ubuntu 24.04 LTS, RHEL 9]
@@ -81,3 +81,26 @@ release_hardening:
   - "Binder les ports host en 127.0.0.1 ; retirer les mappings host des datastores (timescaledb/redis/redpanda/dagster-postgres)."
   - "Ajouter un volume nommé dédié aux artefacts pipeline (ex. carepredict-artifacts)."
   - "Overrider tous les secrets par défaut de .env.example ; interdire les mots de passe dev."
+
+# 2026-11-23 — état des gates (vérifié en CI par scripts/deploy/check_release.py, règles R1-R7).
+release_compose: deploy/nantes/docker-compose.release.yml
+release_env_template: deploy/nantes/env.release.template   # copie opérateur : deploy/nantes/.env.release (non versionnée)
+release_hardening_status:
+  digests: "appliqué (images tierces et bases des Dockerfiles ; deploy/nantes/images.lock.json) ; images construites : digest produit au build de release"
+  code_bind_mounts: "appliqué (code cuit dans les images ; configuration montée en lecture seule)"
+  ports: "appliqué (127.0.0.1 ; aucun port de datastore ; réseaux internal pour données et produit)"
+  artifacts_volume: "appliqué (carepredict-artifacts -> /app/reports)"
+  secrets: "appliqué (${VAR:?} obligatoires, Redis protégé, contrôle --env)"
+  privileges: "ajouté (no-new-privileges ; read_only + cap_drop ALL + utilisateur non root pour les services applicatifs)"
+product_services:
+  - {service: cockpit,      image: "hospitalos/cockpit:${RELEASE_TAG}", build: infrastructure/cockpit/Dockerfile, port: "127.0.0.1:8080"}
+  - {service: hybrid-api,   image: "hospitalos/product:${RELEASE_TAG}", build: infrastructure/product/Dockerfile, port: "interne"}
+  - {service: decision-api, image: "hospitalos/product:${RELEASE_TAG}", build: infrastructure/product/Dockerfile, port: "interne"}
+pinned_images:
+  - "redpandadata/redpanda:v24.1.9@sha256:85a30e0084f3d479098c327575e3eb27b729ec31f7d72cd1b2ef1098dc1e3b85"
+  - "timescale/timescaledb:2.14.2-pg15@sha256:0698d9bf8cfd81e042f653ff3be767682b376bf0e95b431b2922e2d8a72195d1"
+  - "redis:7.2.5-alpine@sha256:6aaf3f5e6bc8a592fbfe2cccf19eb36d27c39d12dab4f4b01556b7449e7b1f44"
+  - "postgres:15.7-alpine@sha256:468d34fefd6338031787c7b8e94078975b3aaf4d66c7ead25c39cd3ba46a15c6"
+  - "python:3.11.9-slim-bookworm@sha256:8fb099199b9f2d70342674bd9dbccd3ed03a258f26bbd1d556822c6dfc60c317"
+  - "node:22.12.0-bookworm-slim@sha256:35531c52ce27b6575d69755c73e65d4468dba93a25644eed56dc12879cae9213"
+  - "nginx:1.27.3-alpine@sha256:814a8e88df978ade80e584cc5b333144b9372a8e3c98872d07137dbf3b44d0e4"
