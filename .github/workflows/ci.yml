@@ -33,7 +33,11 @@ jobs:
         run: mypy --strict services data tests/unit tests/integration tests/e2e tests/hybrid tests/operational tests/test_*.py
 
       - name: Tests
-        run: pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=xml
+        # The P5 runner tests need an approved-interpreter venv to exist (runner reads its pyvenv.cfg); P5_VENV
+        # points the runner at a throwaway one, as scripts/p5_budget_run.py allows.
+        run: |
+          python -m venv "$RUNNER_TEMP/p5venv"
+          P5_VENV="$RUNNER_TEMP/p5venv" pytest --cov=services/connectors --cov=services/feature_pipeline --cov=services/ml --cov=services/api --cov-report=xml
 
       - name: Docker compose config
         run: docker compose config
