@@ -202,7 +202,7 @@ def fit(
     torch.use_deterministic_algorithms(True)
     rng = np.random.default_rng(seed)
     model = TopologyForecaster(inputs[0].x.shape[-1])
-    optimizer = torch.optim.AdamW(  # type: ignore[attr-defined]
+    optimizer = torch.optim.AdamW(
         model.parameters(), lr=learning_rate, weight_decay=0.001
     )
     tensors = []

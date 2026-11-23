@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Any
+from typing import Any, cast
 
 import pytest
 import torch
@@ -114,9 +114,10 @@ def test_ema_update_math_known_tensors() -> None:
     ema = EMATargetEncoder(online)
     with torch.no_grad():
         online.weight.fill_(3.0)
-        ema.target.weight.fill_(1.0)
+        cast(torch.Tensor, ema.target.weight).fill_(1.0)
     ema.update_from(online, tau=0.9)
-    assert torch.allclose(ema.target.weight, torch.full_like(ema.target.weight, 1.2))
+    target_weight = cast(torch.Tensor, ema.target.weight)
+    assert torch.allclose(target_weight, torch.full_like(target_weight, 1.2))
 
 
 def test_ema_update_moves_target_toward_online() -> None:
@@ -125,8 +126,8 @@ def test_ema_update_moves_target_toward_online() -> None:
     with torch.no_grad():
         online.weight.fill_(2.0)
         online.bias.fill_(2.0)
-        ema.target.weight.zero_()
-        ema.target.bias.zero_()
+        cast(torch.Tensor, ema.target.weight).zero_()
+        cast(torch.Tensor, ema.target.bias).zero_()
 
     def distance() -> torch.Tensor:
         total = torch.tensor(0.0)

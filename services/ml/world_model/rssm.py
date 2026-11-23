@@ -76,7 +76,7 @@ class HospitalRSSM(nn.Module):
         """Build a diagonal Gaussian from concatenated mean and log-std parameters."""
         mean, raw_std = torch.chunk(params, chunks=2, dim=-1)
         std = torch.nn.functional.softplus(raw_std) + self.config.min_std
-        return Normal(mean, std)  # type: ignore[no-untyped-call]
+        return Normal(mean, std)
 
     def prior(self, h: Tensor) -> Normal:
         """Return the prior distribution p(z_t | h_t)."""
@@ -100,7 +100,7 @@ class HospitalRSSM(nn.Module):
         encoded_obs = self.obs_encoder(obs)
         posterior_dist = self.posterior(h, encoded_obs)
         z = (
-            posterior_dist.rsample()  # type: ignore[no-untyped-call]
+            posterior_dist.rsample()
             if self.training
             else posterior_dist.mean
         )
@@ -112,7 +112,7 @@ class HospitalRSSM(nn.Module):
         h = self.rnn(recurrent_input, prev_state["h"])
         prior_dist = self.prior(h)
         z = (
-            prior_dist.rsample()  # type: ignore[no-untyped-call]
+            prior_dist.rsample()
             if self.training
             else prior_dist.mean
         )

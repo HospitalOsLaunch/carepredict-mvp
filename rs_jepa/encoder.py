@@ -52,11 +52,12 @@ class SinusoidalPositionEncoding(nn.Module):
         if x.ndim != 3:
             raise ValueError("L'entrée positionnelle doit être [B, T, D].")
         steps = x.shape[1]
-        if steps > self.pe.shape[1]:
+        pe = cast(torch.Tensor, self.pe)
+        if steps > pe.shape[1]:
             raise ValueError(
-                f"Fenêtre T={steps} supérieure au maximum configuré {self.pe.shape[1]}."
+                f"Fenêtre T={steps} supérieure au maximum configuré {pe.shape[1]}."
             )
-        return cast(torch.Tensor, x + self.pe[:, :steps].to(dtype=x.dtype, device=x.device))
+        return x + pe[:, :steps].to(dtype=x.dtype, device=x.device)
 
 
 class ObservableEncoder(nn.Module):

@@ -316,19 +316,20 @@ def recompute_calibration_diagnostics(artifacts: V2Artifacts) -> dict[str, Any]:
     loader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=0)
     residuals: list[list[float]] = [[] for _ in range(48)]
     forecaster = FrozenForecastModel(cast(JepaRSSM, artifacts.model.eval()))
-    patch_len = int(artifacts.model.patcher.patch_len)
+    model_any = cast(Any, artifacts.model)
+    patch_len = int(model_any.patcher.patch_len)
     for batch in loader:
         pred = forecaster.predict_window(batch).numpy()
         truth = batch["siips"].numpy()
         origin_slice = forecast_origin_slice(
             steps=int(truth.shape[1] // patch_len),
             patch_len=patch_len,
-            forecast_horizon=int(artifacts.model.cfg.forecast_horizon),
+            forecast_horizon=int(model_any.cfg.forecast_horizon),
         )
         for origin_offset in range(pred.shape[1]):
             origin = origin_slice.start + origin_offset
             target_start = (origin + 1) * patch_len
-            for step in range(artifacts.model.cfg.forecast_horizon):
+            for step in range(model_any.cfg.forecast_horizon):
                 for batch_index in range(truth.shape[0]):
                     target = float(truth[batch_index, target_start + step])
                     predicted = float(pred[batch_index, origin_offset, step])
