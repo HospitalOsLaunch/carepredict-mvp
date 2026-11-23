@@ -6,7 +6,6 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts/filter_validation"))
 from correction import LegacyPublicStream, W, assert_consistent
-from hospitalos.howm.generator import refresh_private
 from hospitalos.howm.world import Plan
 
 
@@ -103,7 +102,7 @@ def test_downstream_wait_never_redraws_or_restarts_finished_service(start):
     provider = W.ProvN(W.two_unit_structure("REPLAY_FIXTURE", 0), 1)
     events = []
     eng.on_event = lambda t, kind, sid, data: events.append((kind, sid))
-    refresh_private(eng, provider)
+    W.refresh_private(eng, provider)
     eng.apply_plan(Plan(coordinate=True), provider)
     eng.step(provider)  # tick 44 is an habitual transport request at 11:00
     assert stay.tr_end == 4 and stay.tr_req is None and stay.departed is None

@@ -563,7 +563,7 @@ def refresh_private(eng: Engine, prov: Any) -> None:
             st.ready_tick = prov.ready_tick(eng, st)
         if st.tr_req is not None and not st.tr_accepted:
             st.tr_conf = prov.confirm_tick(eng, "transport", st.sid, st.tr_req)
-        if st.tr_start is not None and st.tr_end is not None and not st.public_transport_done:
+        if st.tr_start is not None and st.tr_end is not None:
             st.tr_end = prov.transport_end(eng, st)
     for bed in eng.beds.values():
         if bed.state == "cleaning":

@@ -5,10 +5,10 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'filter_validation'))
 from correction import W,L,A,P,C,counts,assert_consistent,reconcile_placements
 from guarded_filter import posterior as guarded
 from hospitalos.howm.keys import u,key
-from hospitalos.howm.generator import refresh_private
 from hospitalos.howm.world import local_hour,uncovered
 from service_filter import ServiceLaw
 import json,copy
+refresh_private=W.refresh_private  # derived: keeps the end of a transport whose completion is public
 import numpy as np
 
 ROOT=Path('evidence/filter_pipeline')
@@ -38,7 +38,7 @@ def candidates(ps,pe):
     min(24,(now*15-pub.get('ready',now*15))/60),min(24,(now*15-pub.get('transport_accepted',now*15))/60)]
   if s.ready and not getattr(s,'dest',None) and not getattr(s,'aval',False) and (not s.transport or 'transport_done' in pub):
    out.append(('departure',sid,features))
-  if s.ready and s.tr_accepted and not s.transport_started:
+  if s.ready and s.tr_accepted and not W.transport_started(s):
    out.append(('transport_start',sid,features))
  for bid,b in pe.beds.items():
   if b.state=='dirty':
@@ -67,7 +67,7 @@ def extended(pe,ps,law,draw,prov,models,enabled):
     b.state='cleaning';b.clean_start=eng.tick-1;b.clean_end=10**9
   else:
    s=eng.stays.get(ref)
-   if s is not None and s.departed is None and not s.transport_started and len(eng.tr_service)<eng.base_c_tr+eng.active_extra('tr',eng.tick):
+   if s is not None and s.departed is None and not W.transport_started(s) and len(eng.tr_service)<eng.base_c_tr+eng.active_extra('tr',eng.tick):
     s.tr_start=eng.tick-1;s.tr_end=10**9;eng.tr_service.append(ref)
  assert_consistent(eng)
  return eng

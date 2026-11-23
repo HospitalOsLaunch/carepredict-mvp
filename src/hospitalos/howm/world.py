@@ -66,15 +66,6 @@ class Stay:
     tr_start: int | None = None
     tr_end: int | None = None
     departed: int | None = None
-    public_transport_done: bool = False  # completion can be observed before the request or start
-
-    @property
-    def transport_requested(self) -> bool:
-        return self.tr_req is not None or self.public_transport_done
-
-    @property
-    def transport_started(self) -> bool:
-        return self.tr_start is not None or self.public_transport_done
 
 
 @dataclass
@@ -195,7 +186,7 @@ class Engine:
         """Planner actions at the current tick (never medical decisions)."""
         if plan.coordinate:
             for st in sorted(self.stays.values(), key=lambda s: s.sid):
-                if st.departed is None and st.authorised and st.transport and not st.transport_requested:
+                if st.departed is None and st.authorised and st.transport and st.tr_req is None:
                     self.request_transport(st, prov)
         if plan.cleaning == "compat":
             self.cleaning_mode, self.cleaning_mode_until = "compat", self.tick + 24 * TPH
@@ -205,7 +196,7 @@ class Engine:
     def request_transport(self, st: Stay, prov: Provider) -> bool:
         if (
             st.departed is not None
-            or st.transport_requested
+            or st.tr_req is not None
             or not st.authorised
             or not st.transport
         ):
@@ -331,7 +322,7 @@ class Engine:
         # habitual transport requests
         if t % TPH == 0 and local_hour(t) in HABITUAL_TRANSPORT_HOURS:
             for st in sorted(self.stays.values(), key=lambda s: s.sid):
-                if st.departed is None and st.ready and st.transport and not st.transport_requested:
+                if st.departed is None and st.ready and st.transport and st.tr_req is None:
                     self.request_transport(st, prov)
         # confirmations
         for st in self.stays.values():
@@ -354,7 +345,7 @@ class Engine:
             (
                 s
                 for s in self.stays.values()
-                if s.departed is None and s.ready and s.tr_accepted and not s.transport_started
+                if s.departed is None and s.ready and s.tr_accepted and s.tr_start is None
             ),
             key=lambda s: (max(s.ready_tick or 0, s.tr_conf or 0), s.sid),
         )

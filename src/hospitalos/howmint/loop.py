@@ -14,7 +14,6 @@ from typing import Any, Callable
 import numpy as np
 
 from hospitalos.bfrag import core as K
-from hospitalos.howm.generator import refresh_private
 from hospitalos.howm.world import TPD, TPH
 
 from . import actions as A
@@ -41,7 +40,7 @@ def prefix(spec_e: W.IntSpec, h0: int) -> dict:
 def start_future(pre: dict, spec_e: W.IntSpec, r: int) -> tuple[Any, Any, W.Recorder]:
     prov = W.ProvN(spec_e, r, regime_anchor=pre["anchor"])
     eng = pre["eng"].clone()
-    refresh_private(eng, W._Cal(prov, spec_e.drop))
+    W.refresh_private(eng, W._Cal(prov, spec_e.drop))
     rec = W.Recorder(spec_e, r)
     eng.on_event = rec
     eng.emit_log = False
@@ -140,7 +139,7 @@ def branch(pre_like: dict, spec_e: W.IntSpec, eng0: Any, seq: list[dict | None],
     eng.on_event = None
     eng.emit_log = False
     cal = W._Cal(prov, spec_e.drop)
-    refresh_private(eng, cal)
+    W.refresh_private(eng, cal)
     t0 = eng.tick
     tr = Tracker(eng)
     states, costs, n24 = [], [], []

@@ -123,15 +123,13 @@ def dset_scorer(net: Any, norm: dict) -> Callable:
 # ------------------------------------------------------------------------------ F and R1 (2-unit mode), adapted
 def sim_rollout(eng_m: Any, prov_m: Any, seq: list, hours: int, interval_h: int, n: int, t_start: int) -> float:
     """Simulated lookahead cost of a sequence from a simulator draw: same commitment/admissibility rules as truth."""
-    from hospitalos.howm.generator import refresh_private
-
     from . import world as W
 
     eng = eng_m.clone()
     eng.on_event = None
     eng.emit_log = False
     cal = W._Cal(prov_m, eng.spec_meta.get("drop", {}))
-    refresh_private(eng, cal)
+    W.refresh_private(eng, cal)
     t0 = eng.tick
     w0 = sum(eng.waiting_ticks.values())
     for i in range(hours * TPH):

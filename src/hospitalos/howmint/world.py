@@ -22,12 +22,57 @@ from typing import Any
 
 from hospitalos.bfrag import core as K
 from hospitalos.howm import generator as G
-from hospitalos.howm.generator import refresh_private
+from hospitalos.howm.generator import refresh_private as _refresh_private_frozen
 from hospitalos.howm.history import PublicStream
 from hospitalos.howm.keys import key, u
 from hospitalos.howm.world import SKILLS, TPD, TPH, Bed, Engine, Offer, Request, Stay, Unit
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+# ----------------------------------------------------------------------------------------- completed public transports
+# A transport completion can become public before its request or start (delivery delays). The frozen HOWM-1 engine
+# only knows tr_req / tr_start; the derived engine carries the extra fact as a plain attribute on the stay and
+# guarantees, without touching the frozen sources, that such a transport is neither requested, started nor
+# redrawn again.
+def public_transport_done(st: Any) -> bool:
+    return bool(getattr(st, "public_transport_done", False))
+
+
+def transport_requested(st: Any) -> bool:
+    return st.tr_req is not None or public_transport_done(st)
+
+
+def transport_started(st: Any) -> bool:
+    return st.tr_start is not None or public_transport_done(st)
+
+
+class _FinishedTransportsMasked:
+    """Within a frozen-engine call, give finished-but-unrequested/unstarted transports a request and start tick
+    (their completion tick) so the frozen conditions `tr_req is None` / `tr_start is None` exclude them; the
+    received values are restored afterwards."""
+
+    def __init__(self, eng: Any) -> None:
+        self.eng, self.saved = eng, []
+
+    def __enter__(self) -> None:
+        for st in self.eng.stays.values():
+            if public_transport_done(st) and (st.tr_req is None or st.tr_start is None):
+                self.saved.append((st, st.tr_req, st.tr_start))
+                st.tr_req = st.tr_end if st.tr_req is None else st.tr_req
+                st.tr_start = st.tr_end if st.tr_start is None else st.tr_start
+
+    def __exit__(self, *exc: Any) -> None:
+        for st, req, start in self.saved:
+            st.tr_req, st.tr_start = req, start
+
+
+def refresh_private(eng: Any, prov: Any) -> None:
+    """Frozen refresh_private, except that a transport whose completion is public keeps its known end."""
+    known = {sid: st.tr_end for sid, st in eng.stays.items() if public_transport_done(st)}
+    _refresh_private_frozen(eng, prov)
+    for sid, end in known.items():
+        eng.stays[sid].tr_end = end
 D2 = json.loads((ROOT / "docs/howm2/bfrag/DESIGN_D2.json").read_text())
 HORIZON_TICKS = (72 + 168 + 48) * TPH  # latest origin 72 h + 168 h + margin -> rosters long enough
 ROSTER_HOURS = HORIZON_TICKS // TPH + 24
@@ -269,7 +314,20 @@ class EngineN(Engine):
     def active_extra(self, res: str, t: int) -> int:
         return sum(c["k"] for c in self.commitments if c["res"] == res and c["start"] <= t < c["end"])
 
+    def request_transport(self, st: Stay, prov: Any) -> bool:
+        if public_transport_done(st):
+            return False
+        return super().request_transport(st, prov)
+
+    def apply_plan(self, plan: Any, prov: Any) -> None:
+        with _FinishedTransportsMasked(self):
+            super().apply_plan(plan, prov)
+
     def step(self, prov: Any) -> None:
+        with _FinishedTransportsMasked(self):
+            self._step_n(prov)
+
+    def _step_n(self, prov: Any) -> None:
         t = self.tick
         if t % TPH == 0 and self.aval_blocked:
             for sid in list(self.aval_blocked):

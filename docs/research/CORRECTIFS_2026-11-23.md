@@ -16,3 +16,20 @@ antérieur.
 **Résultats INT-1** (campagne du 18 novembre) : produits avec le code du commit `7af2e10` (archive
 `HOWM_INT1_FINAL`), avant les changements du 20 novembre ; ils ne sont pas modifiés. Pour les rejouer,
 se placer sur ce commit.
+
+## Fusion avec aeaa110 (23 novembre, soir)
+
+Le commit `aeaa110` (rejeu du transport retardé, rosters mensuels par moteur) a été fusionné. Sa
+logique de « transport public terminé » modifiait le moteur HOWM-1 gelé (`src/hospitalos/howm/world.py`,
+`generator.py`), ce qui faisait échouer 6 tests de gel. Sur décision du 23 novembre, ces deux fichiers
+sont revenus à leur état gelé et la même logique vit dans le moteur dérivé INT-1
+(`src/hospitalos/howmint/world.py`) :
+
+- `public_transport_done`, `transport_requested(st)`, `transport_started(st)` : fonctions du module dérivé ;
+- `EngineN.request_transport`, `apply_plan` et `step` : un transport dont la fin est publique n'est ni
+  redemandé ni redémarré (masquage temporaire des horodatages pendant l'appel au moteur gelé) ;
+- `howmint.world.refresh_private` : conserve la fin connue d'un tel transport ; les appelants dérivés
+  (`loop`, `planners`, `scripts/filter_pipeline/common.py`) l'utilisent.
+
+Les 18 tests de `tests/howm_int1/test_public_replay.py` et `test_roster_scope.py` passent, ainsi que tous
+les tests de gel.

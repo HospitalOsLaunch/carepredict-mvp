@@ -54,8 +54,14 @@ def used_hours(eng: Any) -> tuple[dict[int, float], float]:
     return per_day, sum(per_day.values())
 
 
+def _world() -> Any:
+    from . import world  # lazy: world imports this module
+
+    return world
+
+
 def eligible_coord(eng: Any) -> bool:
-    if any(st.departed is None and st.authorised and st.transport and not st.transport_requested for st in eng.stays.values()):
+    if any(st.departed is None and st.authorised and st.transport and not _world().transport_requested(st) for st in eng.stays.values()):
         return True
     return eng.cleaning_mode_until < eng.tick
 
