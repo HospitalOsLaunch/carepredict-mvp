@@ -15,6 +15,7 @@ import json
 import re
 import sys
 import threading
+from collections import OrderedDict
 from datetime import timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -83,7 +84,33 @@ class State:
         return body
 
 
-STATE: State | None = None
+STATE: State | None = None  # the local (unauthenticated) space
+USER_HEADER = "X-HospitalOS-User"
+MAX_SPACES = 500
+_SPACES: OrderedDict[str, State] = OrderedDict()
+_SPACES_LOCK = threading.Lock()
+
+
+def state_for(user: str | None) -> State:
+    """One isolated space per pilot account. The platform gateway (the only client on the internal
+    network)
+    sets X-HospitalOS-User; without it (local use) the single local space is used. Least recently
+    used spaces
+    beyond MAX_SPACES are dropped (demonstration state only, nothing clinical)."""
+    global STATE
+    if not user:
+        if STATE is None:
+            STATE = State()
+        return STATE
+    key = user[:64]
+    with _SPACES_LOCK:
+        space = _SPACES.get(key)
+        if space is None:
+            space = _SPACES[key] = State()
+            while len(_SPACES) > MAX_SPACES:
+                _SPACES.popitem(last=False)
+        _SPACES.move_to_end(key)
+        return space
 
 
 def _tokens_css() -> bytes:
@@ -110,7 +137,7 @@ class Handler(BaseHTTPRequestHandler):
         self._send(code, json.dumps(value, ensure_ascii=False).encode(), "application/json")
 
     def do_GET(self) -> None:  # noqa: N802
-        assert STATE is not None
+        STATE = state_for(self.headers.get(USER_HEADER))  # noqa: N806 (per-account space)
         url = urlparse(self.path)
         q = {k: v[0] for k, v in parse_qs(url.query).items()}
         if url.path in STATIC:
@@ -149,7 +176,7 @@ class Handler(BaseHTTPRequestHandler):
         return self._json({"error": "not found"}, 404)
 
     def do_POST(self) -> None:  # noqa: N802
-        assert STATE is not None
+        STATE = state_for(self.headers.get(USER_HEADER))  # noqa: N806 (per-account space)
         length = int(self.headers.get("Content-Length", "0"))
         payload = json.loads(self.rfile.read(length) or b"{}")
         url = urlparse(self.path)
