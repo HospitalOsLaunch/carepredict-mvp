@@ -13,10 +13,7 @@ const DECISION: Record<UnitSummary["decision"], { label: string; tone: string }>
 function Status({ s }: { s: UnitSummary }) {
   return (
     <span className="unit-status">
-      <span
-        className={`unit-status__dot unit-status__dot--${DECISION[s.decision].tone}`}
-        aria-hidden="true"
-      />
+      <span className={`unit-status__dot unit-status__dot--${DECISION[s.decision].tone}`} aria-hidden="true" />
       {DECISION[s.decision].label}
     </span>
   );
@@ -146,13 +143,7 @@ export function UnitSwitcher({
         </span>
         {single ? null : (
           <svg className="switcher__chevron" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-            <path
-              d="M3 4.5 6 7.5 9 4.5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-            />
+            <path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
           </svg>
         )}
         {single ? null : <kbd className="kbd switcher__kbd">U</kbd>}

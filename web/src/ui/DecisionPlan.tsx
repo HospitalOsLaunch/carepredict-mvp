@@ -90,7 +90,8 @@ function Status({ reco }: { reco: DsRecommendation }) {
 /** One action: what, when, from where; then why it may be done (basis) and what it waits for. */
 function ActionLine({ a, snapshot, example }: { a: DsAction; snapshot: DsSnapshot | null; example?: boolean }) {
   const basis = BASIS[a.basis];
-  const option = a.type === "reinforcement" ? snapshot?.reinforcements.find((r) => r.option_id === a.target) : undefined;
+  const option =
+    a.type === "reinforcement" ? snapshot?.reinforcements.find((r) => r.option_id === a.target) : undefined;
   const loan = option?.source === "shared_unit" ? option : undefined;
   return (
     <li className="ds-action" data-testid="ds-action" data-basis={a.basis}>
@@ -108,9 +109,13 @@ function ActionLine({ a, snapshot, example }: { a: DsAction; snapshot: DsSnapsho
         )}
         {/* Every reinforcement says whether it is confirmed, not only the doubtful ones. */}
         {a.conditional || option?.confirmation === "requested" ? (
-          <span className="ds-tag ds-tag--cond" data-testid="ds-confirmation">demandé, non confirmé</span>
+          <span className="ds-tag ds-tag--cond" data-testid="ds-confirmation">
+            demandé, non confirmé
+          </span>
         ) : option?.confirmation === "confirmed" ? (
-          <span className="ds-tag ds-tag--fact" data-testid="ds-confirmation">confirmé</span>
+          <span className="ds-tag ds-tag--fact" data-testid="ds-confirmation">
+            confirmé
+          </span>
         ) : option ? (
           <span className="ds-tag ds-tag--cond" data-testid="ds-confirmation">
             {CONFIRMATION[option.confirmation] ?? option.confirmation}
@@ -170,7 +175,10 @@ function Effect({ doc, i, base }: { doc: DsDoc; i: number; base: number }) {
   const max = Math.max(value(doc, `${b}/uncovered_care_minutes`), value(doc, `${p}/uncovered_care_minutes`), 1);
   const bar = (ptr: string, on?: boolean) => (
     <span className="pair__track">
-      <span className={`pair__bar${on ? " pair__bar--on" : ""}`} style={{ width: `${(value(doc, ptr) / max) * 100}%` }} />
+      <span
+        className={`pair__bar${on ? " pair__bar--on" : ""}`}
+        style={{ width: `${(value(doc, ptr) / max) * 100}%` }}
+      />
     </span>
   );
   const item = (label: string, v: ReactNode) => (
@@ -181,9 +189,7 @@ function Effect({ doc, i, base }: { doc: DsDoc; i: number; base: number }) {
   );
   return (
     <div className="ds-effect" aria-label="Effet simulé du plan">
-      <p className="ds-effect__lead">
-        Soins non couverts{end ? ` d'ici ${local(end, true)}` : ""}, en minutes
-      </p>
+      <p className="ds-effect__lead">Soins non couverts{end ? ` d'ici ${local(end, true)}` : ""}, en minutes</p>
       <div className="pair">
         <div className="pair__row">
           <span className="pair__label">Pratique habituelle</span>
@@ -201,19 +207,47 @@ function Effect({ doc, i, base }: { doc: DsDoc; i: number; base: number }) {
         </div>
       </div>
       <div className="ds-figs ds-figs--key">
-        {item("Attente de lit (patients·h)", <><Fig doc={doc} ptr={`${b}/waiting_patient_hours`} /> → <Fig doc={doc} ptr={`${p}/waiting_patient_hours`} /></>)}
+        {item(
+          "Attente de lit (patients·h)",
+          <>
+            <Fig doc={doc} ptr={`${b}/waiting_patient_hours`} /> → <Fig doc={doc} ptr={`${p}/waiting_patient_hours`} />
+          </>,
+        )}
         {item("Heures de renfort", <Fig doc={doc} ptr={`${p}/reinforcement_hours`} />)}
         {item("Lits remis à disposition", <Fig doc={doc} ptr={`${p}/beds_returned`} />)}
       </div>
       <Details title="Tous les indicateurs">
         <div className="ds-figs" data-testid="ds-figures">
-          {item("Minutes de soins non couvertes", <><Fig doc={doc} ptr={`${b}/uncovered_care_minutes`} /> → <Fig doc={doc} ptr={`${p}/uncovered_care_minutes`} /></>)}
-          {item("Attente de lit (patients·h)", <><Fig doc={doc} ptr={`${b}/waiting_patient_hours`} /> → <Fig doc={doc} ptr={`${p}/waiting_patient_hours`} /></>)}
+          {item(
+            "Minutes de soins non couvertes",
+            <>
+              <Fig doc={doc} ptr={`${b}/uncovered_care_minutes`} /> →{" "}
+              <Fig doc={doc} ptr={`${p}/uncovered_care_minutes`} />
+            </>,
+          )}
+          {item(
+            "Attente de lit (patients·h)",
+            <>
+              <Fig doc={doc} ptr={`${b}/waiting_patient_hours`} /> →{" "}
+              <Fig doc={doc} ptr={`${p}/waiting_patient_hours`} />
+            </>,
+          )}
           {item("IDE requis au pic", <Fig doc={doc} ptr={`${p}/max_total_staff_required/IDE`} />)}
           {item("IDE en plus du planning au pic", <Fig doc={doc} ptr={`${p}/max_additional_staff_required/IDE`} />)}
           {item("Heures de renfort", <Fig doc={doc} ptr={`${p}/reinforcement_hours`} />)}
-          {item("Tension maximale (score expérimental)", <><Fig doc={doc} ptr={`${b}/peak_pressure`} /> → <Fig doc={doc} ptr={`${p}/peak_pressure`} /></>)}
-          {item("Heures au-dessus du seuil", <><Fig doc={doc} ptr={`${b}/hours_above_threshold`} /> → <Fig doc={doc} ptr={`${p}/hours_above_threshold`} /></>)}
+          {item(
+            "Tension maximale (score expérimental)",
+            <>
+              <Fig doc={doc} ptr={`${b}/peak_pressure`} /> → <Fig doc={doc} ptr={`${p}/peak_pressure`} />
+            </>,
+          )}
+          {item(
+            "Heures au-dessus du seuil",
+            <>
+              <Fig doc={doc} ptr={`${b}/hours_above_threshold`} /> →{" "}
+              <Fig doc={doc} ptr={`${p}/hours_above_threshold`} />
+            </>,
+          )}
           {item("Lits remis à disposition", <Fig doc={doc} ptr={`${p}/beds_returned`} />)}
         </div>
       </Details>
@@ -231,7 +265,9 @@ function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: num
   if (!n || series.some((s) => s.pts.some((p) => p.pressure_score === null))) {
     return <p className="mute">Score de tension non configuré : seules les composantes sont affichées.</p>;
   }
-  const W = 640, H = 180, pad = 28;
+  const W = 640,
+    H = 180,
+    pad = 28;
   const top = 10;
   const x = (h: number) => pad + (h * (W - 2 * pad)) / Math.max(1, n - 1);
   const y = (v: number) => H - pad - (v * (H - 2 * pad)) / top;
@@ -244,12 +280,27 @@ function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: num
         </h2>
       </header>
       <div className="panel__body ds-chart">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Score de tension expérimental heure par heure, pratique habituelle et plan">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          role="img"
+          aria-label="Score de tension expérimental heure par heure, pratique habituelle et plan"
+        >
           <line x1={pad} y1={y(0)} x2={W - pad} y2={y(0)} stroke="var(--line-strong)" />
-          <text x={pad - 6} y={y(0) + 4} fontSize={11} fill="var(--ink-3)" textAnchor="end">0</text>
-          <text x={pad - 6} y={y(top) + 4} fontSize={11} fill="var(--ink-3)" textAnchor="end">{top}</text>
+          <text x={pad - 6} y={y(0) + 4} fontSize={11} fill="var(--ink-3)" textAnchor="end">
+            0
+          </text>
+          <text x={pad - 6} y={y(top) + 4} fontSize={11} fill="var(--ink-3)" textAnchor="end">
+            {top}
+          </text>
           {typeof threshold === "number" ? (
-            <line x1={pad} y1={y(threshold)} x2={W - pad} y2={y(threshold)} stroke="var(--alerte)" strokeDasharray="4 4" />
+            <line
+              x1={pad}
+              y1={y(threshold)}
+              x2={W - pad}
+              y2={y(threshold)}
+              stroke="var(--alerte)"
+              strokeDasharray="4 4"
+            />
           ) : null}
           {series.map((s) => (
             <polyline
@@ -260,11 +311,20 @@ function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: num
               points={s.pts.map((p, h) => `${x(h)},${y(p.pressure_score ?? 0)}`).join(" ")}
             />
           ))}
-          {series[0]!.pts.filter((_, h) => h % 4 === 0).map((p) => (
-            <text key={p.hour_index} x={x(p.hour_index)} y={H - 8} fontSize={11} fill="var(--ink-3)" textAnchor="middle">
-              {p.local_label}
-            </text>
-          ))}
+          {series[0]!.pts
+            .filter((_, h) => h % 4 === 0)
+            .map((p) => (
+              <text
+                key={p.hour_index}
+                x={x(p.hour_index)}
+                y={H - 8}
+                fontSize={11}
+                fill="var(--ink-3)"
+                textAnchor="middle"
+              >
+                {p.local_label}
+              </text>
+            ))}
         </svg>
         <div className="ds-legend">
           {series.map((s) => (
@@ -306,7 +366,8 @@ function planRecord(
   const base = reco.bundle?.evaluations[evalIndex(reco, reco.baseline_plan_id)];
   const actions = shown?.plan.actions ?? [];
   const at = (iso: string) => local(iso);
-  const kind = planId && planId !== reco.primary_plan_id ? " (autre plan)" : reco.mode === "manual" ? " (variante)" : "";
+  const kind =
+    planId && planId !== reco.primary_plan_id ? " (autre plan)" : reco.mode === "manual" ? " (variante)" : "";
   const shortList = actions.map((a) => actionShort(a, snapshot, at)).join(", ") || "pratique habituelle";
   const origin = source === "api" ? "decision-api" : "decision-fixture";
   // Figures and conditions are frozen in the record: the decision can be justified later
@@ -390,8 +451,7 @@ function ReviewButtons(props: {
   const unitKey = `plan:${props.unit.id}`;
   // A plan decided earlier (this page, a reload, a colleague's screen on this post) stays decided.
   const mainId = `${origin}:${doc.reco.recommendation_id}`;
-  const earlier =
-    records.find((r) => r.id === mainId) ?? records.find((r) => r.id.startsWith(`${mainId}:`));
+  const earlier = records.find((r) => r.id === mainId) ?? records.find((r) => r.id.startsWith(`${mainId}:`));
   const active = records.find(
     (r) => r.unitId === unitKey && r.origin === origin && statusOf(r) === "validated" && r.id !== recordId,
   );
@@ -464,7 +524,9 @@ function ReviewButtons(props: {
                   ? "Plan appliqué"
                   : "Plan validé"}
           {step ? ` par ${who(step.by, me)} · ${local(step.at, true)}` : ""}
-          {step?.reason && step.reason !== "preferred_option" ? ` · motif : ${reasonLabel(step.reason)?.toLowerCase()}` : ""}
+          {step?.reason && step.reason !== "preferred_option"
+            ? ` · motif : ${reasonLabel(step.reason)?.toLowerCase()}`
+            : ""}
         </p>
         <div className="ds-outcome__actions">
           <a className="btn btn--quiet" href={`#/journal/${encodeURIComponent(earlier.id)}`}>
@@ -478,58 +540,58 @@ function ReviewButtons(props: {
   return (
     <>
       <div className="ds-answer">
-      {recheck.length && !noted && doc.reco.approvable ? (
-        <fieldset className="ds-recheck" data-testid="ds-recheck">
-          <legend>Avant de valider</legend>
-          {recheck.map((id) => (
-            <label key={id} className="ds-check">
-              <input
-                type="checkbox"
-                checked={checked.includes(id)}
-                onChange={(e) => setChecked((c) => (e.target.checked ? [...c, id] : c.filter((x) => x !== id)))}
-              />{" "}
-              J'ai revérifié l'autorisation médicale de sortie de {id}
-            </label>
-          ))}
-        </fieldset>
-      ) : null}
-      {noted ? null : (
-        <div className="proposal__actions">
-          <button
-            type="button"
-            className="btn btn--primary"
-            data-testid="ds-approve"
-            disabled={!doc.reco.approvable || !ready}
-            title={
-              !doc.reco.approvable
-                ? "Non applicable : hypothèse, abstention ou impossibilité"
-                : !ready
-                  ? "Cochez d'abord la vérification de l'autorisation médicale"
-                  : undefined
-            }
-            onClick={approve}
-          >
-            <Check /> Valider le plan {props.keys ? <kbd className="kbd">O</kbd> : null}
-          </button>
-          <button
-            type="button"
-            className="btn"
-            data-testid="ds-reject"
-            aria-expanded={asking}
-            onClick={() => setAsking((v) => !v)}
-          >
-            Refuser {props.keys ? <kbd className="kbd">N</kbd> : null}
-          </button>
-          {props.onModify ? (
-            <>
-              <span className="spacer" />
-              <button type="button" className="btn btn--quiet" data-testid="ds-modify" onClick={props.onModify}>
-                Simuler une variante
-              </button>
-            </>
-          ) : null}
-        </div>
-      )}
+        {recheck.length && !noted && doc.reco.approvable ? (
+          <fieldset className="ds-recheck" data-testid="ds-recheck">
+            <legend>Avant de valider</legend>
+            {recheck.map((id) => (
+              <label key={id} className="ds-check">
+                <input
+                  type="checkbox"
+                  checked={checked.includes(id)}
+                  onChange={(e) => setChecked((c) => (e.target.checked ? [...c, id] : c.filter((x) => x !== id)))}
+                />{" "}
+                J'ai revérifié l'autorisation médicale de sortie de {id}
+              </label>
+            ))}
+          </fieldset>
+        ) : null}
+        {noted ? null : (
+          <div className="proposal__actions">
+            <button
+              type="button"
+              className="btn btn--primary"
+              data-testid="ds-approve"
+              disabled={!doc.reco.approvable || !ready}
+              title={
+                !doc.reco.approvable
+                  ? "Non applicable : hypothèse, abstention ou impossibilité"
+                  : !ready
+                    ? "Cochez d'abord la vérification de l'autorisation médicale"
+                    : undefined
+              }
+              onClick={approve}
+            >
+              <Check /> Valider le plan {props.keys ? <kbd className="kbd">O</kbd> : null}
+            </button>
+            <button
+              type="button"
+              className="btn"
+              data-testid="ds-reject"
+              aria-expanded={asking}
+              onClick={() => setAsking((v) => !v)}
+            >
+              Refuser {props.keys ? <kbd className="kbd">N</kbd> : null}
+            </button>
+            {props.onModify ? (
+              <>
+                <span className="spacer" />
+                <button type="button" className="btn btn--quiet" data-testid="ds-modify" onClick={props.onModify}>
+                  Simuler une variante
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
       </div>
       {confirmReplace && active ? (
         <div className="feedback" role="group" data-testid="ds-confirm-replace">
@@ -583,7 +645,9 @@ function ReviewButtons(props: {
             {reason && reason !== "preferred_option"
               ? ` Motif : ${PLAN_REASONS.find((r) => r.id === reason)?.label.toLowerCase() ?? reason}.`
               : null}
-            {reason === "preferred_option" ? " Vous avez choisi l'autre plan : il est inscrit au journal, à faire." : null}
+            {reason === "preferred_option"
+              ? " Vous avez choisi l'autre plan : il est inscrit au journal, à faire."
+              : null}
             {result.reasons.length ? ` (${result.reasons.join(", ")})` : null}
           </p>
           {result.replayed ? (
@@ -761,8 +825,8 @@ function AutoPlan({
           {primary.conditional_on.length ? (
             <p className="ds-warn" data-testid="ds-conditional">
               Le résultat suppose la venue de {primary.conditional_on.join(", ")}, demandé mais non confirmé. Sans ce
-              renfort : <Fig doc={doc} ptr={`/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`} />{" "}
-              minutes de soins non couvertes.
+              renfort : <Fig doc={doc} ptr={`/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`} /> minutes
+              de soins non couvertes.
             </p>
           ) : null}
           <Effect doc={doc} i={i} base={base} />
@@ -819,15 +883,20 @@ function ManualForm({ store, prefill }: { store: DecisionStore; prefill: DsActio
   const snap = store.snapshot!;
   const hours = hourOptions(snap);
   const x1Default =
-    prefill?.target ?? snap.stays.find((s) => s.medical_authorization === "authorized")?.stay_id ?? snap.stays[0]?.stay_id;
+    prefill?.target ??
+    snap.stays.find((s) => s.medical_authorization === "authorized")?.stay_id ??
+    snap.stays[0]?.stay_id;
   const x2 = snap.stays.find((s) => s.planned_departure);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const stay = (s: DsSnapshot["stays"][number]) => `${s.stay_id} — ${AUTHORIZATION[s.medical_authorization] ?? s.medical_authorization}`;
+  const stay = (s: DsSnapshot["stays"][number]) =>
+    `${s.stay_id} — ${AUTHORIZATION[s.medical_authorization] ?? s.medical_authorization}`;
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const locks: unknown[] = [{ kind: "discharge_at", stay_id: f.get("x1"), at: f.get("x1_at"), basis: f.get("x1_basis") }];
+    const locks: unknown[] = [
+      { kind: "discharge_at", stay_id: f.get("x1"), at: f.get("x1_at"), basis: f.get("x1_basis") },
+    ];
     if (f.get("x2"))
       locks.push({
         kind: "extend_presence",
@@ -1020,9 +1089,15 @@ function ManualResult({ store, unit }: { store: DecisionStore; unit: { id: strin
                 return (
                   <tr key={label}>
                     <td>{label}</td>
-                    <td className="r"><Fig doc={doc} ptr={`${m}/uncovered_care_minutes`} /></td>
-                    <td className="r"><Fig doc={doc} ptr={`${m}/waiting_patient_hours`} /></td>
-                    <td className="r"><Fig doc={doc} ptr={`${m}/reinforcement_hours`} /></td>
+                    <td className="r">
+                      <Fig doc={doc} ptr={`${m}/uncovered_care_minutes`} />
+                    </td>
+                    <td className="r">
+                      <Fig doc={doc} ptr={`${m}/waiting_patient_hours`} />
+                    </td>
+                    <td className="r">
+                      <Fig doc={doc} ptr={`${m}/reinforcement_hours`} />
+                    </td>
                   </tr>
                 );
               })}
@@ -1063,7 +1138,9 @@ function HowFound({ doc, snapshot }: { doc: DsDoc; snapshot: DsSnapshot | null }
               doc={doc}
               ptr="/bundle/search/complete"
               format={(v: boolean) =>
-                v ? "complète dans ce périmètre" : "incomplète : meilleur parmi les plans simulés, sans optimum revendiqué"
+                v
+                  ? "complète dans ce périmètre"
+                  : "incomplète : meilleur parmi les plans simulés, sans optimum revendiqué"
               }
             />
             .

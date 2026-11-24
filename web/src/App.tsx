@@ -23,8 +23,7 @@ interface Location {
 
 function readRoute(): Location {
   const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
-  const route =
-    head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
+  const route = head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
   return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
@@ -83,11 +82,7 @@ const SHORTCUTS: Array<[string, string]> = [
 ];
 
 /** Single-key shortcuts, ignored while typing or with a modifier held. */
-function useShortcuts(
-  store: Store,
-  openSwitcher: () => void,
-  openHelp: () => void,
-) {
+function useShortcuts(store: Store, openSwitcher: () => void, openHelp: () => void) {
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
