@@ -50,6 +50,8 @@ const REASONS: Record<string, string> = {
 const WARNINGS: Record<string, string> = {
   simulated_resource_pressure_requires_review:
     "La simulation sollicite une ressource sous tension : à vérifier.",
+  synthetic_residence_projection: "Entrées et sorties projetées avec les durées de séjour synthétiques. À la relève du lendemain, la persistance est plus précise en moyenne sur le banc.",
+  residence_sources_incomplete: "Sources de flux incomplètes. Les nouvelles sorties ne sont pas projetées par séjour.",
   synthetic_learned_preparation_requires_real_validation:
     "Les délais de préparation viennent d'un modèle entraîné sur du synthétique.",
 };

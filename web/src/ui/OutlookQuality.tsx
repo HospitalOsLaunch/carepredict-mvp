@@ -18,6 +18,8 @@ const reasons: Record<string, string> = {
   coverage: "Période incomplète",
   duplicate_booking: "Entrée en double",
   future_record: "Horodatage postérieur à la publication",
+  future_admission: "Admission postérieure à la revue du séjour",
+  admission_clock_missing: "Heure d’admission manquante pour un séjour présent",
   duplicate_stay: "Séjour en double",
   discharge_coverage: "Couverture des séjours insuffisante",
   census_incomplete: "Recensement incomplet pour calculer la couverture",

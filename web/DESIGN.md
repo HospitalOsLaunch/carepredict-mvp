@@ -310,3 +310,17 @@ La requête du cockpit demande jusqu’à sept jours. Le serveur retourne la dur
 effectivement autorisée, ses fenêtres calculées et les motifs par horizon. La
 qualification appartient à la version du prédicteur et au profil synthétique
 évalué. Les créneaux du plan conservent leurs dates absolues entre les journées.
+
+### Interprétation des effets et continuité des flux
+
+Le bloc Action précise que le gain réel peut sortir de la fourchette de
+sensibilité aux pratiques d'équipe. Les bornes restent calculées par le moteur
+et rattachées au reçu avec `data-src`. En gériatrie, les dates d'admission
+synthétiques explicites permettent d'utiliser la même trajectoire pour
+Maintenant, 12 h et 24 h. Le reçu distingue ce profil et le repli lorsque ses
+sources sont incomplètes. La perspective à plusieurs jours reste visible avec
+les motifs du refus de qualification. Le scénario nominal de la PR 51 garde
+son témoin et ses chiffres d'origine.
+
+Le rapport et les contre-exemples figurent dans
+[la validation des flux et des décisions](../docs/operational/unit-flow-v2/README.md).
