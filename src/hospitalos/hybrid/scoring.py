@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import timedelta
 
 from .models import Action, Patient, State, compatible
 from .scenarios import (
@@ -55,10 +56,15 @@ def score(
     late: Mapping[str, int] | None = None,
 ) -> Score:
     expected_future = expected_future or FutureTape(state.at, ())
+    if expected_future.cohort:
+        expected_future.cohort.validate(state, trajectory.horizon_minutes)
     state, expected_future = staffing_tape(state, expected_future, actions)
     setup = booking_setup(state, actions, expected_future)
     validate_tape(state, expected_future)
     expected = {e.id: e for e in expected_future.events if e.minute <= trajectory.horizon_minutes}
+    cohort = expected_future.cohort
+    projected = {pid: cohort.departure(pid, at) for pid, at in cohort.residents} if cohort else {}
+    future_patients = {e.patient.id for e in expected.values() if isinstance(e, FutureArrival)}
     seen: set[str] = set()
     beds = {b.id: b for b in state.beds}
     patients = {p.id: p for p in state.patients}
@@ -359,6 +365,20 @@ def score(
             if unit.staffed_beds is None or commitments >= unit.staffed_beds:
                 violations.append("reservation_capacity")
             reservations[bed_id] = p.id
+        elif event.kind == "forecast_depart":
+            pid = event.patient_id
+            if (
+                pid is None
+                or occupants[bed_id] != pid
+                or projected.get(pid) != event.minute
+                or pid in departed
+            ):
+                violations.append("invalid_forecast_departure")
+                continue
+            del projected[pid]
+            departed.add(pid)
+            occupants[bed_id] = None
+            status[bed_id] = "dirty"
         elif event.kind == "depart":
             p = patients.get(event.patient_id or "")
             if (
@@ -420,6 +440,8 @@ def score(
             occupants[bed_id] = p.id
             reservations[bed_id] = None
             status[bed_id] = "occupied"
+            if cohort and p.id in future_patients:
+                projected[p.id] = cohort.departure(p.id, state.at + timedelta(minutes=event.minute))
             admitted += 1
         else:
             violations.append("unknown_event")
@@ -433,6 +455,8 @@ def score(
             violations.append("patient_conservation")
     area += len(waiting) * (trajectory.horizon_minutes - clock)
     integrate_pressure(trajectory.horizon_minutes - clock)
+    if any(t is not None and t <= trajectory.horizon_minutes for t in projected.values()):
+        violations.append("missing_forecast_departure")
     if seen != expected.keys():
         violations.append("missing_external_event")
     return Score(

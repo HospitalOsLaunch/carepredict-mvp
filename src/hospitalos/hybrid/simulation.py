@@ -11,6 +11,7 @@ import math
 from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import Annotated, Literal
 
 from pydantic import Field, StrictInt
@@ -109,6 +110,8 @@ def simulate(
     if not 1 <= horizon_minutes <= (10080 if multiday else 1440):
         raise ValueError("Horizon must be between one minute and 24 hours")
     future = future or sample_future(state, None, seed, scenario)
+    if future.cohort:
+        future.cohort.validate(state, horizon_minutes)
     state, future = staffing_tape(state, future, actions)
     setup = booking_setup(state, actions, future)
     validate_tape(state, future)
@@ -170,7 +173,7 @@ def simulate(
             assert bed_id is not None
             heapq.heappush(pending, (from_minute, "_team_clean", bed_id, ""))
     estimates = {}
-    if multiday:
+    if multiday or future.cohort:
         feed, _ = latest(state, state.units[0].id, "departures")
         if isinstance(feed, Departures):
             estimates = {
@@ -180,7 +183,15 @@ def simulate(
                 and r.reviewed_at <= state.at
                 and (state.at - r.reviewed_at).total_seconds() <= 86400
             }
+    cohort = future.cohort
+    clocks = dict(cohort.residents) if cohort else {}
+    projected_arrivals = {e.patient.id for e in future.events if isinstance(e, FutureArrival)}
     for p in state.patients:
+        if cohort and p.id in clocks and p.bed_id:
+            projected = cohort.departure(p.id, clocks[p.id])
+            if projected is not None:
+                heapq.heappush(pending, (projected, "forecast_depart", p.bed_id, p.id))
+                continue
         new_request = p.id in transports
         if not discharge_blockers(
             state, p, include_request=not new_request, require_capacity=False
@@ -211,13 +222,13 @@ def simulate(
                 minute = max(minute, floor)
                 heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
 
-    def depart(minute: int, bed_id: str, patient_id: str) -> None:
+    def depart(minute: int, bed_id: str, patient_id: str, kind: str = "depart") -> None:
         if occupants[bed_id] != patient_id:
             raise ValueError("Departure identity mismatch")
         occupants[bed_id] = None
         statuses[bed_id] = "dirty"
         dirty_since[bed_id] = minute
-        trace.append(Transition(minute, "depart", patient_id, bed_id))
+        trace.append(Transition(minute, kind, patient_id, bed_id))
 
     def start_departures(minute: int) -> None:
         # A place is reserved only when all other resources can start serving the patient.
@@ -293,6 +304,10 @@ def simulate(
                 reservations[bed_id] = None
                 waiting.remove(patient_id)
                 trace.append(Transition(minute, "admit", patient_id, bed_id))
+                if cohort and patient_id in projected_arrivals:
+                    projected = cohort.departure(patient_id, state.at + timedelta(minutes=minute))
+                    if projected is not None:
+                        heapq.heappush(pending, (projected, "forecast_depart", bed_id, patient_id))
                 break
 
     def start_cleaning(minute: int) -> None:
@@ -449,6 +464,8 @@ def simulate(
                 heapq.heappush(
                     pending, (minute + return_delay, "transport_end", bed_id, patient_id)
                 )
+            elif kind == "forecast_depart":
+                depart(minute, bed_id, patient_id, kind)
             elif kind == "transport_end":
                 resource_id = logistics[patient_id].transport_pool_id
                 assert resource_id is not None

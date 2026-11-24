@@ -348,7 +348,7 @@ function PracticeEffect({ plan, p, title }: { plan: Plan; p: Practice; title: (a
       ))}
       <p className="effect__note">
         {p.supported && p.rows.length
-          ? "La fourchette va d'une préparation déjà en cours à une préparation lancée par la demande. Ces délais sont des hypothèses, pas des observations : le délai habituel de l'unité est à mesurer. "
+          ? "La fourchette compare deux scénarios de préparation. Le gain réel peut sortir de ces bornes. Le délai habituel de l’équipe reste à mesurer dans l’unité. "
           : ""}
         Attente cumulée : somme des
         attentes des patients à placer sur les <span {...at("/window_minutes")}>{duration(p.windowMinutes)}</span> à

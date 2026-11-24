@@ -1,0 +1,12 @@
+{
+  "forecast_version": "synthetic-residence-v2",
+  "profile": "direct-to-beneficiary-v1",
+  "synthetic_only": true,
+  "qualified_days": {
+    "medecine-polyvalente": [],
+    "court-sejour-geriatrique": [],
+    "medecine-interne": [],
+    "pneumologie": []
+  },
+  "source_protocol": "docs/operational/unit-flow-v2/PROTOCOL.md"
+}

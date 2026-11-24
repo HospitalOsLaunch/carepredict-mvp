@@ -1014,74 +1014,89 @@
         {
          "stay_id": "P-0503",
          "estimate": "2026-10-25T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-15T02:30:00Z"
         },
         {
          "stay_id": "P-0511",
          "estimate": "2026-10-26T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-16T08:30:00Z"
         },
         {
          "stay_id": "P-0517",
          "estimate": "2026-10-27T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-17T14:30:00Z"
         },
         {
          "stay_id": "P-0522",
          "estimate": "2026-10-25T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-18T10:30:00Z"
         },
         {
          "stay_id": "P-0531",
          "estimate": "2026-10-26T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-19T06:30:00Z"
         },
         {
          "stay_id": "P-0536",
          "estimate": "2026-10-27T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-20T06:30:00Z"
         },
         {
          "stay_id": "P-0540",
          "estimate": "2026-10-25T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-20T22:30:00Z"
         },
         {
          "stay_id": "P-0544",
          "estimate": "2026-10-26T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-20T06:30:00Z"
         },
         {
          "stay_id": "P-0548",
          "estimate": "2026-10-27T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-19T21:30:00Z"
         },
         {
          "stay_id": "P-0552",
          "estimate": "2026-10-25T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-19T12:30:00Z"
         },
         {
          "stay_id": "P-0556",
          "estimate": "2026-10-26T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-19T03:30:00Z"
         },
         {
          "stay_id": "P-0561",
          "estimate": "2026-10-27T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-18T18:30:00Z"
         },
         {
          "stay_id": "P-0565",
          "estimate": "2026-10-25T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-18T09:30:00Z"
         },
         {
          "stay_id": "P-0569",
          "estimate": "2026-10-26T06:30:00Z",
-         "reviewed_at": "2026-10-24T06:30:00Z"
+         "reviewed_at": "2026-10-24T06:30:00Z",
+         "admitted_at": "2026-10-18T00:30:00Z"
         }
-       ]
+       ],
+       "cohort_profile": "synthetic-residence-v2"
       },
       {
        "schema_version": "UNIT_OUTLOOK_1",
@@ -1337,7 +1352,7 @@
  "state": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
-  "fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
+  "fingerprint": "f69f0d569474660257e2902787db6cca44823eb469a4a05f626a0c0fdaaa54f8",
   "units": [
    {
     "kind": "unit",
@@ -1904,74 +1919,89 @@
        {
         "stay_id": "P-0503",
         "estimate": "2026-10-25T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-15T02:30:00Z"
        },
        {
         "stay_id": "P-0511",
         "estimate": "2026-10-26T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-16T08:30:00Z"
        },
        {
         "stay_id": "P-0517",
         "estimate": "2026-10-27T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-17T14:30:00Z"
        },
        {
         "stay_id": "P-0522",
         "estimate": "2026-10-25T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-18T10:30:00Z"
        },
        {
         "stay_id": "P-0531",
         "estimate": "2026-10-26T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-19T06:30:00Z"
        },
        {
         "stay_id": "P-0536",
         "estimate": "2026-10-27T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-20T06:30:00Z"
        },
        {
         "stay_id": "P-0540",
         "estimate": "2026-10-25T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-20T22:30:00Z"
        },
        {
         "stay_id": "P-0544",
         "estimate": "2026-10-26T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-20T06:30:00Z"
        },
        {
         "stay_id": "P-0548",
         "estimate": "2026-10-27T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-19T21:30:00Z"
        },
        {
         "stay_id": "P-0552",
         "estimate": "2026-10-25T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-19T12:30:00Z"
        },
        {
         "stay_id": "P-0556",
         "estimate": "2026-10-26T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-19T03:30:00Z"
        },
        {
         "stay_id": "P-0561",
         "estimate": "2026-10-27T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-18T18:30:00Z"
        },
        {
         "stay_id": "P-0565",
         "estimate": "2026-10-25T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-18T09:30:00Z"
        },
        {
         "stay_id": "P-0569",
         "estimate": "2026-10-26T06:30:00Z",
-        "reviewed_at": "2026-10-24T06:30:00Z"
+        "reviewed_at": "2026-10-24T06:30:00Z",
+        "admitted_at": "2026-10-18T00:30:00Z"
        }
-      ]
+      ],
+      "cohort_profile": "synthetic-residence-v2"
      },
      {
       "schema_version": "UNIT_OUTLOOK_1",
@@ -2198,6 +2228,22 @@
    }
   ],
   "unit_id": "court-sejour-geriatrique",
+  "shadow_flow": [
+   {
+    "profile": "synthetic-residence-v2",
+    "minutes": 720,
+    "mean_admissions": 3.0,
+    "mean_departures": 0.0,
+    "mean_occupied": 17.0
+   },
+   {
+    "profile": "synthetic-residence-v2",
+    "minutes": 1440,
+    "mean_admissions": 3.0,
+    "mean_departures": 0.0,
+    "mean_occupied": 17.0
+   }
+  ],
   "windows": [
    {
     "minutes": 720,
@@ -2425,7 +2471,8 @@
     "data_ready": true,
     "qualified": false,
     "reasons": [
-     "accuracy_gate"
+     "accuracy_gate",
+     "cohort_ranking_unqualified"
     ]
    },
    {
@@ -2550,7 +2597,8 @@
     "qualified": false,
     "reasons": [
      "source_gate",
-     "accuracy_gate"
+     "qualification_missing",
+     "cohort_ranking_unqualified"
     ]
    }
   ],
@@ -2558,9 +2606,9 @@
   "schema_version": "HYBRID_UNIT_PLAN_1",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "a3d48285dfd03a7944062c7d7d68b71366be41e629b7ae0e7b39861ba5ae5590",
+  "plan_id": "3d95cd950eaa4c50ee355bc237153666e51ac4c731d368707c8d7ec8f9ff3d31",
   "hospital_id": "ch-fictif",
-  "state_fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
+  "state_fingerprint": "f69f0d569474660257e2902787db6cca44823eb469a4a05f626a0c0fdaaa54f8",
   "created_at": "2026-10-24T06:30:00Z",
   "expires_at": "2026-10-24T06:45:00Z",
   "selected": {
@@ -2572,7 +2620,9 @@
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
   ],
-  "warnings": [],
+  "warnings": [
+   "synthetic_residence_projection"
+  ],
   "candidates": [
    {
     "action": {

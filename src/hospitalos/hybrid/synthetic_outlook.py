@@ -1,6 +1,7 @@
 """Deterministic synthetic source exports. No observations or labels are read from after D."""
 
-from datetime import timedelta
+from collections.abc import Mapping
+from datetime import datetime, timedelta
 
 from hospitalos.decision_support.contracts import StaffShift
 
@@ -18,7 +19,9 @@ from .outlook import (
 )
 
 
-def synthetic_outlook(state: State, unit: str, days: int = 7) -> UnitOutlook:
+def synthetic_outlook(
+    state: State, unit: str, days: int = 7, *, admission_times: Mapping[str, datetime] | None = None
+) -> UnitOutlook:
     at, end = state.at, state.at + timedelta(days=days)
     common = {
         "hospital_id": state.hospital_id,
@@ -45,9 +48,13 @@ def synthetic_outlook(state: State, unit: str, days: int = 7) -> UnitOutlook:
         {
             **common,
             "source": "syn-departures",
+            "cohort_profile": "synthetic-residence-v2" if admission_times is not None else None,
             "records": [
                 DepartureEstimate(
-                    stay_id=pid, reviewed_at=at, estimate=at + timedelta(days=1 + i % days)
+                    stay_id=pid,
+                    reviewed_at=at,
+                    admitted_at=admission_times.get(pid) if admission_times is not None else None,
+                    estimate=at + timedelta(days=1 + i % days),
                 )
                 for i, pid in enumerate(occupied)
             ],

@@ -31,6 +31,7 @@ from demo_unit import (  # noqa: E402
     perturbations,
 )
 
+from hospitalos.hybrid.flow_clock import reference_state  # noqa: E402
 from hospitalos.hybrid.live_models import PlanningOptions  # noqa: E402
 from hospitalos.hybrid.live_store import LiveStore  # noqa: E402
 from hospitalos.hybrid.models import Action, FactEvent  # noqa: E402
@@ -62,7 +63,13 @@ def scenario(
         outlook = synthetic_outlook(request.state(), unit)
         # Three-day coverage only in geriatrics. A stale booking source in internal medicine.
         if name == "geriatrie":
-            outlook = synthetic_outlook(request.state(), unit, days=3)
+            # Spec.admitted assigns this synthetic timestamp at admission. Production
+            # adapters must supply a real admission event, not the start of a queue.
+            public = request.state()
+            admission_times = {
+                p.id: p.waiting_since for p in public.patients if p.status == "admitted"
+            }
+            outlook = synthetic_outlook(public, unit, days=3, admission_times=admission_times)
         if name == "interne":
             old = request.at - timedelta(hours=3)
             outlook = outlook.model_copy(
@@ -96,7 +103,7 @@ def scenario(
     traces: dict[str, Any] = {}
     if proposal.decision != "abstain":
         future = paired_future(
-            state,
+            reference_state(state),
             request.future,
             request.seed,
             0,

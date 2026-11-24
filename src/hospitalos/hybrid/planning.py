@@ -19,6 +19,7 @@ from pydantic import Field, StrictInt, field_validator, model_validator
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
+from . import flow_clock
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors, bundle_errors
 from .multiday import assess_horizon, paired_future
@@ -97,6 +98,14 @@ class Candidate(Closed):
     mean_transport_pressure: float = 0
     mean_downstream_pressure: float = 0
     pressure_regression_scenarios: int = 0
+
+
+class ShadowFlowWindow(Closed):
+    profile: Literal["synthetic-residence-v2"] = "synthetic-residence-v2"
+    minutes: int
+    mean_admissions: float
+    mean_departures: float
+    mean_occupied: float
 
 
 class PlanWindow(Closed):
@@ -178,6 +187,9 @@ def timing(state: State, action: Action) -> ActionTiming:
 class Plan(Closed):
     action_timing: tuple[ActionTiming, ...] = ()
     unit_id: Identifier | None = None
+    shadow_flow: tuple[ShadowFlowWindow, ...] = Field(
+        default=(), exclude_if=lambda values: not values
+    )
     windows: tuple[PlanWindow, ...] = ()
     team_practice: TeamPractice | None = None
     horizons: tuple[HorizonCheck, ...] = ()
@@ -551,7 +563,45 @@ def team_practice(
     )
 
 
-def plan(request: PlanRequest) -> Plan:
+def shadow_windows(state: State, request: PlanRequest) -> tuple[ShadowFlowWindow, ...]:
+    limit = min(1440, request.horizon_minutes)
+    cuts = sorted({limit, min(720, limit)})
+    admissions: dict[int, list[int]] = {h: [] for h in cuts}
+    exits: dict[int, list[int]] = {h: [] for h in cuts}
+    occupied = sum(b.occupant is not None for b in state.beds)
+    for scenario in range(request.scenarios):
+        tape = paired_future(state, request.future, request.seed, scenario, limit, multiday=False)
+        if tape.cohort is None:
+            raise ValueError("Missing shadow flow sources")
+        path = simulate(
+            state,
+            Action(kind="no_op"),
+            request.assumptions,
+            seed=request.seed,
+            scenario=scenario,
+            horizon_minutes=limit,
+            future=tape,
+            preparation=request.preparation,
+        )
+        if score(state, path, expected_future=tape).violations:
+            raise ValueError("Invalid shadow trajectory")
+        for h in cuts:
+            admissions[h].append(sum(e.kind == "admit" and e.minute <= h for e in path.events))
+            exits[h].append(
+                sum(e.kind in {"depart", "forecast_depart"} and e.minute <= h for e in path.events)
+            )
+    return tuple(
+        ShadowFlowWindow(
+            minutes=h,
+            mean_admissions=statistics.mean(admissions[h]),
+            mean_departures=statistics.mean(exits[h]),
+            mean_occupied=occupied + statistics.mean(admissions[h]) - statistics.mean(exits[h]),
+        )
+        for h in cuts
+    )
+
+
+def plan(request: PlanRequest, *, research_cohort_ranking: bool = False) -> Plan:
     state = request.state()
     if request.preparation is not None:
         validate_preparation(state, request.preparation)
@@ -567,6 +617,8 @@ def plan(request: PlanRequest) -> Plan:
     )
     if unified:
         parameters["profile"] = "HYBRID_UNIT_PLAN_1"
+    if research_cohort_ranking and flow_clock.declared(state):
+        parameters["research_ranking"] = flow_clock.VERSION
     parameters["fingerprint"] = state.fingerprint
     plan_id = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
     requested = request.horizon_minutes
@@ -593,6 +645,21 @@ def plan(request: PlanRequest) -> Plan:
     if request.unit_id and not any(u.id == request.unit_id for u in state.units):
         reasons = (*reasons, "selected_unit_missing")
     warnings = state.warnings
+    shadow: tuple[ShadowFlowWindow, ...] = ()
+    if flow_clock.declared(state):
+        if flow_clock.available(state, min(request.horizon_minutes, 1440)):
+            if research_cohort_ranking:
+                warnings = (*warnings, "research_cohort_ranking")
+            else:
+                try:
+                    shadow = shadow_windows(state, request)
+                    warnings = (*warnings, "synthetic_residence_projection")
+                except ValueError:
+                    warnings = (*warnings, "shadow_flow_unavailable")
+        else:
+            warnings = (*warnings, "residence_sources_incomplete")
+        if not research_cohort_ranking:
+            state = flow_clock.reference_state(state)
     if request.preparation is not None:
         warnings = (*warnings, "synthetic_learned_preparation_requires_real_validation")
     service_status: Literal[
@@ -705,6 +772,7 @@ def plan(request: PlanRequest) -> Plan:
     return Plan(
         unit_id=request.unit_id or (state.units[0].id if len(state.units) == 1 else None),
         windows=tuple(windows),
+        shadow_flow=shadow,
         team_practice=practice,
         horizons=horizons,
         action_timing=tuple(timing(state, a) for a in bundle or (selected,) if a.kind != "no_op"),

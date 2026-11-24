@@ -271,7 +271,7 @@ describe("action block, all units, plan focales", () => {
     // Nominal: the review's numbers, on the 12-hour window (sensitivity, not a measurement).
     expect(rows[0]!.textContent).toMatch(/−7\sh\s27/);
     expect(rows[2]!.textContent).toMatch(/−1\smin à −33\smin/);
-    expect(effect).toMatch(/hypothèses, pas des observations/);
+    expect(effect).toMatch(/gain réel peut sortir de ces bornes/);
     // A near tie is said, and the contender is marked in the alternatives.
     expect(screen.getByTestId("near-tie").textContent).toMatch(/prioriser le bionettoyage du lit L11/);
     expect(within(screen.getByTestId("others")).getByTestId("others-tie")).toBeTruthy();

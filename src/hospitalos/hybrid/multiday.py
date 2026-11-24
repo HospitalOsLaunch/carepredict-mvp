@@ -8,6 +8,7 @@ from functools import lru_cache
 from importlib.resources import files
 from zoneinfo import ZoneInfo
 
+from . import flow_clock
 from .innovations import draw, uniform
 from .models import Patient, State
 from .outlook import (
@@ -27,13 +28,18 @@ PROFILE = "direct-to-beneficiary-v1"
 
 
 @lru_cache(maxsize=1)
-def qualified_units() -> dict[str, list[int]]:
+def qualified_units(version: str = FORECAST_VERSION) -> dict[str, list[int]]:
     import json
 
     try:
-        receipt = json.loads(files(__package__).joinpath("unit_horizon_receipt.json").read_text())
+        filename = (
+            "unit_flow_v2_receipt.json"
+            if version == flow_clock.VERSION
+            else "unit_horizon_receipt.json"
+        )
+        receipt = json.loads(files(__package__).joinpath(filename).read_text())
         if (
-            receipt["forecast_version"] != FORECAST_VERSION
+            receipt["forecast_version"] != version
             or receipt["profile"] != PROFILE
             or receipt["synthetic_only"] is not True
         ):
@@ -60,12 +66,18 @@ def assess_horizon(state: State, unit: str, days: int) -> HorizonCheck:
             for feed, _ in [latest(state, unit, kind)]
         )
     )
-    evidence = qualified_units()
+    cohort = flow_clock.declared(state)
+    evidence = qualified_units(flow_clock.VERSION) if cohort else qualified_units()
+    if cohort:
+        same_profile = same_profile and flow_clock.available(state, days * 1440)
     known = same_profile and unit in evidence
     qualified = bool(known and days in evidence[unit])
     reasons = ([] if result.data_ready else ["source_gate"]) + (
         [] if qualified else ["accuracy_gate" if known else "qualification_missing"]
     )
+    if cohort:
+        qualified = False
+        reasons.append("cohort_ranking_unqualified")
     return result.model_copy(
         update={
             "qualified": qualified,
@@ -103,7 +115,8 @@ def paired_future(
     *,
     multiday: bool,
 ) -> FutureTape:
-    if not multiday:
+    use_cohort = flow_clock.available(state, horizon)
+    if not multiday and not use_cohort:
         return sample_future(state, spec, seed, scenario)
     unit = state.units[0].id
     ed, _ = latest(state, unit, "emergency")
@@ -143,6 +156,10 @@ def paired_future(
         stop = datetime.combine(row.day + timedelta(days=1), time.min, zone).astimezone(
             state.at.tzinfo
         )
+        if use_cohort:
+            # Published daily totals, with the synthetic generator's daytime arrival window.
+            start = datetime.combine(row.day, time(7), zone).astimezone(state.at.tzinfo)
+            stop = datetime.combine(row.day, time(22), zone).astimezone(state.at.tzinfo)
         key = f"{state.hospital_id}:{unit}:{row.day.isoformat()}"
         count = draw(row.counts, seed, scenario, "ed-count", key)
         for index in range(count):
@@ -163,4 +180,6 @@ def paired_future(
                         ),
                     )
                 )
-    return FutureTape(state.at, tuple(sorted(events, key=lambda e: (e.minute, e.id))))
+    feed = flow_clock.declared(state) if use_cohort else None
+    clock = flow_clock.CohortClock.from_feed(state, feed, seed, scenario) if feed else None
+    return FutureTape(state.at, tuple(sorted(events, key=lambda e: (e.minute, e.id))), clock)

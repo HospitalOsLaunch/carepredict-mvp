@@ -17,6 +17,7 @@ from pydantic import Field, StrictBool, StrictInt, field_validator, model_valida
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
+from .flow_clock import CohortClock
 from .innovations import draw, uniform
 from .models import Action, Patient, State
 from .outlook import Roster, latest
@@ -100,6 +101,7 @@ ExternalEvent = FutureArrival | ResourceChange | BedAdmissions
 class FutureTape:
     declared_at: datetime
     events: tuple[ExternalEvent, ...]
+    cohort: CohortClock | None = None
 
 
 def validate_tape(state: State, tape: FutureTape) -> None:
@@ -288,7 +290,7 @@ def staffing_tape(
                 )
             )
     return state.model_copy(update={"units": tuple(units.values())}), FutureTape(
-        tape.declared_at, tuple(sorted(events, key=lambda e: (e.minute, e.id)))
+        tape.declared_at, tuple(sorted(events, key=lambda e: (e.minute, e.id))), tape.cohort
     )
 
 

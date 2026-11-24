@@ -1,0 +1,4659 @@
+{
+  "summary": [
+    {
+      "family": "transport_cleaning",
+      "budget": 1,
+      "n": 24,
+      "regret": 8.0625,
+      "rule_regret": 13.927083333333334,
+      "relative": 0.4210919970082274,
+      "ci95": [
+        0.07247315136233004,
+        0.8931726729409323
+      ],
+      "near": 0.7916666666666666,
+      "harmful": 0,
+      "active_gain": 31.208333333333332,
+      "passive_prediction": 336.0625,
+      "selections": {
+        "no_op": 4,
+        "prioritize_cleaning:B:": 5,
+        "request_transport:C:out": 15
+      },
+      "passed": false
+    },
+    {
+      "family": "compatible_beds",
+      "budget": 1,
+      "n": 24,
+      "regret": 0.375,
+      "rule_regret": 326.875,
+      "relative": 0.9988527724665393,
+      "ci95": [
+        0.9960425695293329,
+        1.0
+      ],
+      "near": 0.9583333333333334,
+      "harmful": 0.041666666666666664,
+      "active_gain": 326.5,
+      "passive_prediction": 327.1875,
+      "selections": {
+        "no_op": 9,
+        "prioritize_cleaning:C:": 3,
+        "reserve_bed:A:w1": 12
+      },
+      "passed": true
+    },
+    {
+      "family": "staff_booking",
+      "budget": 1,
+      "n": 24,
+      "regret": 12.010416666666666,
+      "rule_regret": 39.65625,
+      "relative": 0.697136853165222,
+      "ci95": [
+        0.48349320824942565,
+        0.8744010346418399
+      ],
+      "near": 0.6666666666666666,
+      "harmful": 0,
+      "active_gain": 29.083333333333332,
+      "passive_prediction": 14.53125,
+      "selections": {
+        "no_op": 3,
+        "prepare_admission:booking:A": 15,
+        "reinforce:loan:": 6
+      },
+      "passed": false
+    },
+    {
+      "family": "all",
+      "budget": 1,
+      "n": 72,
+      "regret": 6.815972222222222,
+      "rule_regret": 126.81944444444444,
+      "relative": 0.9462545175774832,
+      "ci95": [
+        0.9004797158010414,
+        0.9760371845472283
+      ],
+      "near": 0.8055555555555556,
+      "harmful": 0.013888888888888888,
+      "active_gain": 128.93055555555554,
+      "passive_prediction": 225.92708333333334,
+      "selections": {
+        "no_op": 16,
+        "prepare_admission:booking:A": 15,
+        "prioritize_cleaning:B:": 5,
+        "prioritize_cleaning:C:": 3,
+        "reinforce:loan:": 6,
+        "request_transport:C:out": 15,
+        "reserve_bed:A:w1": 12
+      },
+      "passed": true
+    },
+    {
+      "family": "transport_cleaning",
+      "budget": 2,
+      "n": 24,
+      "regret": 1.0208333333333333,
+      "rule_regret": 29.78125,
+      "relative": 0.9657222805176635,
+      "ci95": [
+        0.9055570188719169,
+        0.9974458459840352
+      ],
+      "near": 0.9166666666666666,
+      "harmful": 0,
+      "active_gain": 54.104166666666664,
+      "passive_prediction": 358.25,
+      "selections": {
+        "no_op": 4,
+        "prioritize_cleaning:B:": 5,
+        "prioritize_cleaning:B:+request_transport:C:out": 10,
+        "request_transport:C:out": 5
+      },
+      "passed": true
+    },
+    {
+      "family": "compatible_beds",
+      "budget": 2,
+      "n": 24,
+      "regret": 0.71875,
+      "rule_regret": 327.21875,
+      "relative": 0.9978034571674148,
+      "ci95": [
+        0.9944905219874695,
+        0.9998283440567862
+      ],
+      "near": 0.9166666666666666,
+      "harmful": 0.041666666666666664,
+      "active_gain": 326.5,
+      "passive_prediction": 327.1875,
+      "selections": {
+        "no_op": 9,
+        "prioritize_cleaning:C:": 3,
+        "reserve_bed:A:w1": 12
+      },
+      "passed": true
+    },
+    {
+      "family": "staff_booking",
+      "budget": 2,
+      "n": 24,
+      "regret": 4.90625,
+      "rule_regret": 0.0,
+      "relative": null,
+      "ci95": null,
+      "near": 0.875,
+      "harmful": 0,
+      "active_gain": 42.28125,
+      "passive_prediction": 29.552083333333332,
+      "selections": {
+        "no_op": 3,
+        "prepare_admission:booking:A": 6,
+        "prepare_admission:booking:A+reinforce:loan:": 15
+      },
+      "passed": false
+    },
+    {
+      "family": "all",
+      "budget": 2,
+      "n": 72,
+      "regret": 2.2152777777777777,
+      "rule_regret": 119.0,
+      "relative": 0.9813842203548085,
+      "ci95": [
+        0.9578469749580164,
+        0.9948984280659836
+      ],
+      "near": 0.9027777777777778,
+      "harmful": 0.013888888888888888,
+      "active_gain": 140.96180555555554,
+      "passive_prediction": 238.32986111111111,
+      "selections": {
+        "no_op": 16,
+        "prepare_admission:booking:A": 6,
+        "prepare_admission:booking:A+reinforce:loan:": 15,
+        "prioritize_cleaning:B:": 5,
+        "prioritize_cleaning:B:+request_transport:C:out": 10,
+        "prioritize_cleaning:C:": 3,
+        "request_transport:C:out": 5,
+        "reserve_bed:A:w1": 12
+      },
+      "passed": true
+    }
+  ],
+  "contexts": [
+    {
+      "family": "transport_cleaning",
+      "index": 0,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 773.75,
+      "selected": 751,
+      "rule": 773.75,
+      "optimal": 751,
+      "regret": 0,
+      "rule_regret": 22.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 22.75,
+      "predicted_gain": 30.5,
+      "choices": 4,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 0,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 773.75,
+      "selected": 751,
+      "rule": 773.75,
+      "optimal": 751,
+      "regret": 0,
+      "rule_regret": 22.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 22.75,
+      "predicted_gain": 30.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 1,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 423.75,
+      "selected": 423.75,
+      "rule": 423.75,
+      "optimal": 423.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 502.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 1,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 423.75,
+      "selected": 423.75,
+      "rule": 423.75,
+      "optimal": 423.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 502.0,
+      "choices": 7,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 2,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 352.5,
+      "selected": 232.5,
+      "rule": 232.5,
+      "optimal": 232.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 120.0,
+      "predicted_gain": 572.25,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 2,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 352.5,
+      "selected": 188.25,
+      "rule": 232.5,
+      "optimal": 188.25,
+      "regret": 0.0,
+      "rule_regret": 44.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 164.25,
+      "predicted_gain": 614.25,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 3,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 470.25,
+      "selected": 470.25,
+      "rule": 470.25,
+      "optimal": 461.25,
+      "regret": 9.0,
+      "rule_regret": 9.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 497.5,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 3,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 470.25,
+      "selected": 470.25,
+      "rule": 470.25,
+      "optimal": 461.25,
+      "regret": 9.0,
+      "rule_regret": 9.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 497.5,
+      "choices": 7,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 4,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 255.5,
+      "selected": 195.5,
+      "rule": 195.5,
+      "optimal": 195.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 60.0,
+      "predicted_gain": 596.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 4,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 255.5,
+      "selected": 171.5,
+      "rule": 195.5,
+      "optimal": 171.5,
+      "regret": 0.0,
+      "rule_regret": 24.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 84.0,
+      "predicted_gain": 624.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 5,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 414,
+      "selected": 395.75,
+      "rule": 395.75,
+      "optimal": 395.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 18.25,
+      "predicted_gain": 542.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 5,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 414,
+      "selected": 395.75,
+      "rule": 395.75,
+      "optimal": 390.75,
+      "regret": 5.0,
+      "rule_regret": 5.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 18.25,
+      "predicted_gain": 542.0,
+      "choices": 7,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 6,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 219,
+      "selected": 219,
+      "rule": 219,
+      "optimal": 219,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 6,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 219,
+      "selected": 219,
+      "rule": 219,
+      "optimal": 219,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 7,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 904.75,
+      "selected": 889.25,
+      "rule": 889.25,
+      "optimal": 876.75,
+      "regret": 12.5,
+      "rule_regret": 12.5,
+      "near": false,
+      "harmful": false,
+      "active_gain": 15.5,
+      "predicted_gain": 595.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 7,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 904.75,
+      "selected": 861.25,
+      "rule": 889.25,
+      "optimal": 861.25,
+      "regret": 0.0,
+      "rule_regret": 28.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 43.5,
+      "predicted_gain": 624.0,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 8,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 164.75,
+      "selected": 164.75,
+      "rule": 164.75,
+      "optimal": 164.5,
+      "regret": 0.25,
+      "rule_regret": 0.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 8,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 164.75,
+      "selected": 164.75,
+      "rule": 164.75,
+      "optimal": 164.5,
+      "regret": 0.25,
+      "rule_regret": 0.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 9,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 840.25,
+      "selected": 840.25,
+      "rule": 840.25,
+      "optimal": 840.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 9,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 840.25,
+      "selected": 840.25,
+      "rule": 840.25,
+      "optimal": 840.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 10,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 340.75,
+      "selected": 280.75,
+      "rule": 280.75,
+      "optimal": 280.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 60.0,
+      "predicted_gain": 545.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 10,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 340.75,
+      "selected": 240,
+      "rule": 280.75,
+      "optimal": 240,
+      "regret": 0,
+      "rule_regret": 40.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 100.75,
+      "predicted_gain": 590.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 11,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 476.25,
+      "selected": 425,
+      "rule": 425,
+      "optimal": 425,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 51.25,
+      "predicted_gain": 499.5,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 11,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 476.25,
+      "selected": 425,
+      "rule": 425,
+      "optimal": 425,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 51.25,
+      "predicted_gain": 499.5,
+      "choices": 7,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 12,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 169.25,
+      "selected": 169.25,
+      "rule": 169.25,
+      "optimal": 160.75,
+      "regret": 8.5,
+      "rule_regret": 8.5,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 12,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 169.25,
+      "selected": 169.25,
+      "rule": 169.25,
+      "optimal": 160.75,
+      "regret": 8.5,
+      "rule_regret": 8.5,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 13,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 1103.5,
+      "selected": 1103.5,
+      "rule": 1103.5,
+      "optimal": 1028.5,
+      "regret": 75.0,
+      "rule_regret": 75.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 493.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 13,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 1103.5,
+      "selected": 1010,
+      "rule": 1103.5,
+      "optimal": 1010,
+      "regret": 0,
+      "rule_regret": 93.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 93.5,
+      "predicted_gain": 567.0,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 14,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 253,
+      "selected": 254.75,
+      "rule": 253,
+      "optimal": 253,
+      "regret": 1.75,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": -1.75,
+      "predicted_gain": 2.5,
+      "choices": 4,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 14,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 253,
+      "selected": 254.75,
+      "rule": 253,
+      "optimal": 253,
+      "regret": 1.75,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": -1.75,
+      "predicted_gain": 2.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [],
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 15,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 1496,
+      "selected": 1471,
+      "rule": 1496,
+      "optimal": 1471,
+      "regret": 0,
+      "rule_regret": 25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 25,
+      "predicted_gain": 25.0,
+      "choices": 4,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 15,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 1496,
+      "selected": 1471,
+      "rule": 1496,
+      "optimal": 1471,
+      "regret": 0,
+      "rule_regret": 25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 25,
+      "predicted_gain": 25.0,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 16,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 330.75,
+      "selected": 278,
+      "rule": 278,
+      "optimal": 278,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 52.75,
+      "predicted_gain": 540.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 16,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 330.75,
+      "selected": 225.25,
+      "rule": 278,
+      "optimal": 225.25,
+      "regret": 0.0,
+      "rule_regret": 52.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 105.5,
+      "predicted_gain": 594.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 17,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 500.5,
+      "selected": 490,
+      "rule": 490,
+      "optimal": 490,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 10.5,
+      "predicted_gain": 482.5,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 17,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 500.5,
+      "selected": 490,
+      "rule": 490,
+      "optimal": 490,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 10.5,
+      "predicted_gain": 482.5,
+      "choices": 7,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ],
+        [
+          "prioritize_cleaning:A:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 18,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 862,
+      "selected": 791.75,
+      "rule": 862,
+      "optimal": 791.75,
+      "regret": 0.0,
+      "rule_regret": 70.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 70.25,
+      "predicted_gain": 72.5,
+      "choices": 4,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 18,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 862,
+      "selected": 791.75,
+      "rule": 862,
+      "optimal": 791.75,
+      "regret": 0.0,
+      "rule_regret": 70.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 70.25,
+      "predicted_gain": 72.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 19,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 1119.75,
+      "selected": 1119.75,
+      "rule": 1119.75,
+      "optimal": 1034.75,
+      "regret": 85.0,
+      "rule_regret": 85.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 482.5,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 19,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 1119.75,
+      "selected": 1034.75,
+      "rule": 1119.75,
+      "optimal": 1034.75,
+      "regret": 0.0,
+      "rule_regret": 85.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 85.0,
+      "predicted_gain": 562.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 20,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 473.75,
+      "selected": 368.75,
+      "rule": 368.75,
+      "optimal": 368.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 105.0,
+      "predicted_gain": 504.0,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 20,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 473.75,
+      "selected": 295.75,
+      "rule": 368.75,
+      "optimal": 295.75,
+      "regret": 0.0,
+      "rule_regret": 73.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 178.0,
+      "predicted_gain": 574.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 21,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 1493.25,
+      "selected": 1468.75,
+      "rule": 1493.25,
+      "optimal": 1468.75,
+      "regret": 0.0,
+      "rule_regret": 24.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 24.5,
+      "predicted_gain": 29.5,
+      "choices": 4,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 21,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 1493.25,
+      "selected": 1468.75,
+      "rule": 1493.25,
+      "optimal": 1468.75,
+      "regret": 0.0,
+      "rule_regret": 24.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 24.5,
+      "predicted_gain": 29.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 22,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 369,
+      "selected": 309,
+      "rule": 309,
+      "optimal": 309,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 60,
+      "predicted_gain": 528.75,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 22,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 369,
+      "selected": 257.25,
+      "rule": 309,
+      "optimal": 257.25,
+      "regret": 0.0,
+      "rule_regret": 51.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 111.75,
+      "predicted_gain": 580.25,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 23,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 1064.25,
+      "selected": 1009.25,
+      "rule": 1009.25,
+      "optimal": 1007.75,
+      "regret": 1.5,
+      "rule_regret": 1.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 55.0,
+      "predicted_gain": 525.5,
+      "choices": 4,
+      "chosen": [
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "transport_cleaning",
+      "index": 23,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 1064.25,
+      "selected": 952.75,
+      "rule": 1009.25,
+      "optimal": 952.75,
+      "regret": 0.0,
+      "rule_regret": 56.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 111.5,
+      "predicted_gain": 582.5,
+      "choices": 7,
+      "chosen": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:B:",
+          "request_transport:C:out"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 0,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 777.25,
+      "selected": 170.5,
+      "rule": 777.25,
+      "optimal": 170.5,
+      "regret": 0.0,
+      "rule_regret": 606.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 606.75,
+      "predicted_gain": 616.5,
+      "choices": 6,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 0,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 777.25,
+      "selected": 170.5,
+      "rule": 777.25,
+      "optimal": 169.25,
+      "regret": 1.25,
+      "rule_regret": 608.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 606.75,
+      "predicted_gain": 616.5,
+      "choices": 13,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 1,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 73,
+      "selected": 73,
+      "rule": 73,
+      "optimal": 73,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 6,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 1,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 73,
+      "selected": 73,
+      "rule": 73,
+      "optimal": 73,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 12,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 2,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 51.25,
+      "rule": 720,
+      "optimal": 51.25,
+      "regret": 0.0,
+      "rule_regret": 668.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 668.75,
+      "predicted_gain": 670.0,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 2,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 51.25,
+      "rule": 720,
+      "optimal": 51.25,
+      "regret": 0.0,
+      "rule_regret": 668.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 668.75,
+      "predicted_gain": 670.0,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 3,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 112.75,
+      "selected": 105.5,
+      "rule": 112.75,
+      "optimal": 105.5,
+      "regret": 0.0,
+      "rule_regret": 7.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 7.25,
+      "predicted_gain": 2.5,
+      "choices": 6,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 3,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 112.75,
+      "selected": 105.5,
+      "rule": 112.75,
+      "optimal": 105.5,
+      "regret": 0.0,
+      "rule_regret": 7.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 7.25,
+      "predicted_gain": 2.5,
+      "choices": 13,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 4,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 34.75,
+      "rule": 720,
+      "optimal": 34.75,
+      "regret": 0.0,
+      "rule_regret": 685.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 685.25,
+      "predicted_gain": 680.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 4,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 34.75,
+      "rule": 720,
+      "optimal": 34.75,
+      "regret": 0.0,
+      "rule_regret": 685.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 685.25,
+      "predicted_gain": 680.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 5,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 30.25,
+      "selected": 30.25,
+      "rule": 30.25,
+      "optimal": 30.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 6,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 5,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 30.25,
+      "selected": 30.25,
+      "rule": 30.25,
+      "optimal": 30.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 12,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 6,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 748.75,
+      "selected": 93,
+      "rule": 748.75,
+      "optimal": 93,
+      "regret": 0,
+      "rule_regret": 655.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 655.75,
+      "predicted_gain": 658.5,
+      "choices": 6,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 6,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 748.75,
+      "selected": 93,
+      "rule": 748.75,
+      "optimal": 93,
+      "regret": 0,
+      "rule_regret": 655.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 655.75,
+      "predicted_gain": 658.5,
+      "choices": 13,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 7,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 33.5,
+      "selected": 33.5,
+      "rule": 33.5,
+      "optimal": 33.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 7,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 33.5,
+      "selected": 33.5,
+      "rule": 33.5,
+      "optimal": 33.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 16,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 8,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 72.75,
+      "rule": 720,
+      "optimal": 72.75,
+      "regret": 0.0,
+      "rule_regret": 647.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 647.25,
+      "predicted_gain": 642.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 8,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 72.75,
+      "rule": 720,
+      "optimal": 72.75,
+      "regret": 0.0,
+      "rule_regret": 647.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 647.25,
+      "predicted_gain": 642.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 9,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 237.75,
+      "selected": 240,
+      "rule": 237.75,
+      "optimal": 237.75,
+      "regret": 2.25,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": -2.25,
+      "predicted_gain": 7.5,
+      "choices": 6,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 9,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 237.75,
+      "selected": 240,
+      "rule": 237.75,
+      "optimal": 237.75,
+      "regret": 2.25,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": -2.25,
+      "predicted_gain": 7.5,
+      "choices": 13,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 10,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 52.5,
+      "rule": 720,
+      "optimal": 52.5,
+      "regret": 0.0,
+      "rule_regret": 667.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 667.5,
+      "predicted_gain": 664.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 10,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 52.5,
+      "rule": 720,
+      "optimal": 52.5,
+      "regret": 0.0,
+      "rule_regret": 667.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 667.5,
+      "predicted_gain": 664.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 11,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 70.5,
+      "selected": 70.5,
+      "rule": 70.5,
+      "optimal": 70.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 11,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 70.5,
+      "selected": 70.5,
+      "rule": 70.5,
+      "optimal": 70.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 16,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 12,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 764,
+      "selected": 125,
+      "rule": 764,
+      "optimal": 125,
+      "regret": 0,
+      "rule_regret": 639,
+      "near": true,
+      "harmful": false,
+      "active_gain": 639,
+      "predicted_gain": 624.0,
+      "choices": 6,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 12,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 764,
+      "selected": 125,
+      "rule": 764,
+      "optimal": 118,
+      "regret": 7,
+      "rule_regret": 646,
+      "near": false,
+      "harmful": false,
+      "active_gain": 639,
+      "predicted_gain": 624.0,
+      "choices": 13,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 13,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 56,
+      "selected": 56,
+      "rule": 56,
+      "optimal": 56,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 6,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 13,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 56,
+      "selected": 56,
+      "rule": 56,
+      "optimal": 56,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 12,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 14,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 45.25,
+      "rule": 720,
+      "optimal": 45.25,
+      "regret": 0.0,
+      "rule_regret": 674.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 674.75,
+      "predicted_gain": 673.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 14,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 45.25,
+      "rule": 720,
+      "optimal": 45.25,
+      "regret": 0.0,
+      "rule_regret": 674.75,
+      "near": true,
+      "harmful": false,
+      "active_gain": 674.75,
+      "predicted_gain": 673.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 15,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 232.5,
+      "selected": 239.25,
+      "rule": 232.5,
+      "optimal": 232.5,
+      "regret": 6.75,
+      "rule_regret": 0.0,
+      "near": false,
+      "harmful": true,
+      "active_gain": -6.75,
+      "predicted_gain": 2.5,
+      "choices": 6,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 15,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 232.5,
+      "selected": 239.25,
+      "rule": 232.5,
+      "optimal": 232.5,
+      "regret": 6.75,
+      "rule_regret": 0.0,
+      "near": false,
+      "harmful": true,
+      "active_gain": -6.75,
+      "predicted_gain": 2.5,
+      "choices": 13,
+      "chosen": [
+        "prioritize_cleaning:C:"
+      ],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 16,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 52,
+      "rule": 720,
+      "optimal": 52,
+      "regret": 0,
+      "rule_regret": 668,
+      "near": true,
+      "harmful": false,
+      "active_gain": 668,
+      "predicted_gain": 665.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 16,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 52,
+      "rule": 720,
+      "optimal": 52,
+      "regret": 0,
+      "rule_regret": 668,
+      "near": true,
+      "harmful": false,
+      "active_gain": 668,
+      "predicted_gain": 665.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 17,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 72,
+      "selected": 72,
+      "rule": 72,
+      "optimal": 72,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 6,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 17,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 72,
+      "selected": 72,
+      "rule": 72,
+      "optimal": 72,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 12,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 18,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 775,
+      "selected": 170.75,
+      "rule": 775,
+      "optimal": 170.75,
+      "regret": 0.0,
+      "rule_regret": 604.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 604.25,
+      "predicted_gain": 605.0,
+      "choices": 6,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 18,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 775,
+      "selected": 170.75,
+      "rule": 775,
+      "optimal": 170.75,
+      "regret": 0.0,
+      "rule_regret": 604.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 604.25,
+      "predicted_gain": 605.0,
+      "choices": 13,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w1"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 19,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 60.75,
+      "selected": 60.75,
+      "rule": 60.75,
+      "optimal": 60.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 19,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 60.75,
+      "selected": 60.75,
+      "rule": 60.75,
+      "optimal": 60.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 16,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 20,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 84.75,
+      "rule": 720,
+      "optimal": 84.75,
+      "regret": 0.0,
+      "rule_regret": 635.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 635.25,
+      "predicted_gain": 649.5,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 20,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 720,
+      "selected": 84.75,
+      "rule": 720,
+      "optimal": 84.75,
+      "regret": 0.0,
+      "rule_regret": 635.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 635.25,
+      "predicted_gain": 649.5,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 21,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 197.75,
+      "selected": 197.75,
+      "rule": 197.75,
+      "optimal": 197.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 6,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 21,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 197.75,
+      "selected": 197.75,
+      "rule": 197.75,
+      "optimal": 197.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 13,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:B:",
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 22,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 34.75,
+      "rule": 720,
+      "optimal": 34.75,
+      "regret": 0.0,
+      "rule_regret": 685.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 685.25,
+      "predicted_gain": 690.0,
+      "choices": 7,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 22,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 720,
+      "selected": 34.75,
+      "rule": 720,
+      "optimal": 34.75,
+      "regret": 0.0,
+      "rule_regret": 685.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 685.25,
+      "predicted_gain": 690.0,
+      "choices": 16,
+      "chosen": [
+        "reserve_bed:A:w1"
+      ],
+      "best": [
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 23,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 60.75,
+      "selected": 60.75,
+      "rule": 60.75,
+      "optimal": 60.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 7,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ]
+      ]
+    },
+    {
+      "family": "compatible_beds",
+      "index": 23,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 60.75,
+      "selected": 60.75,
+      "rule": 60.75,
+      "optimal": 60.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 16,
+      "chosen": [],
+      "best": [
+        [],
+        [
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2"
+        ],
+        [
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:"
+        ],
+        [
+          "reserve_bed:A:w0",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "reserve_bed:A:w1",
+          "reserve_bed:B:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w1"
+        ],
+        [
+          "reserve_bed:A:w2",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:A:w2"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w0"
+        ],
+        [
+          "prioritize_cleaning:C:",
+          "reserve_bed:B:w2"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 0,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 67,
+      "selected": 37,
+      "rule": 67,
+      "optimal": 37,
+      "regret": 0,
+      "rule_regret": 30,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30,
+      "predicted_gain": 50.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 0,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 67,
+      "selected": 37,
+      "rule": 37,
+      "optimal": 37,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30,
+      "predicted_gain": 50.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 1,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 59.25,
+      "selected": 5,
+      "rule": 59.25,
+      "optimal": 5,
+      "regret": 0,
+      "rule_regret": 54.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 54.25,
+      "predicted_gain": 11.5,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 1,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 59.25,
+      "selected": 5,
+      "rule": 5,
+      "optimal": 5,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 54.25,
+      "predicted_gain": 32.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 2,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 52.25,
+      "selected": 51.5,
+      "rule": 51.5,
+      "optimal": 41.5,
+      "regret": 10.0,
+      "rule_regret": 10.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.75,
+      "predicted_gain": 4.0,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 2,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 52.25,
+      "selected": 6.25,
+      "rule": 6.25,
+      "optimal": 6.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 46.0,
+      "predicted_gain": 27.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 3,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 69.75,
+      "selected": 39.75,
+      "rule": 69.75,
+      "optimal": 39.75,
+      "regret": 0.0,
+      "rule_regret": 30.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30.0,
+      "predicted_gain": 2.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 3,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 69.75,
+      "selected": 39.75,
+      "rule": 39.75,
+      "optimal": 39.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30.0,
+      "predicted_gain": 19.25,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 4,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 77.5,
+      "selected": 32,
+      "rule": 77.5,
+      "optimal": 32,
+      "regret": 0,
+      "rule_regret": 45.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 45.5,
+      "predicted_gain": 18.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 4,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 77.5,
+      "selected": 32,
+      "rule": 32,
+      "optimal": 32,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 45.5,
+      "predicted_gain": 18.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 5,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 80.5,
+      "selected": 80.5,
+      "rule": 80.5,
+      "optimal": 48,
+      "regret": 32.5,
+      "rule_regret": 32.5,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 3.5,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 5,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 80.5,
+      "selected": 8.5,
+      "rule": 8.5,
+      "optimal": 8.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 72.0,
+      "predicted_gain": 23.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 6,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 74.5,
+      "selected": 74.5,
+      "rule": 74.5,
+      "optimal": 44.5,
+      "regret": 30.0,
+      "rule_regret": 30.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 3,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 6,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 74.5,
+      "selected": 74.5,
+      "rule": 44.5,
+      "optimal": 44.5,
+      "regret": 30.0,
+      "rule_regret": 0.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 7,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 61.75,
+      "selected": 7.5,
+      "rule": 61.75,
+      "optimal": 7.5,
+      "regret": 0.0,
+      "rule_regret": 54.25,
+      "near": true,
+      "harmful": false,
+      "active_gain": 54.25,
+      "predicted_gain": 1.5,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 7,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 61.75,
+      "selected": 7.5,
+      "rule": 7.5,
+      "optimal": 7.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 54.25,
+      "predicted_gain": 28.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 8,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 48.25,
+      "selected": 0.25,
+      "rule": 48.25,
+      "optimal": 0.25,
+      "regret": 0.0,
+      "rule_regret": 48.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 48.0,
+      "predicted_gain": 25.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 8,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 48.25,
+      "selected": 0.25,
+      "rule": 0.25,
+      "optimal": 0.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 48.0,
+      "predicted_gain": 25.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 9,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 40.5,
+      "selected": 10.5,
+      "rule": 40.5,
+      "optimal": 10.5,
+      "regret": 0.0,
+      "rule_regret": 30.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30.0,
+      "predicted_gain": 19.5,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 9,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 40.5,
+      "selected": 10.5,
+      "rule": 10.5,
+      "optimal": 10.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30.0,
+      "predicted_gain": 51.75,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 10,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 42.5,
+      "selected": 0,
+      "rule": 42.5,
+      "optimal": 0,
+      "regret": 0,
+      "rule_regret": 42.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 42.5,
+      "predicted_gain": 2.25,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 10,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 42.5,
+      "selected": 0,
+      "rule": 0,
+      "optimal": 0,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 42.5,
+      "predicted_gain": 15.25,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 11,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 105.75,
+      "selected": 49.25,
+      "rule": 105.75,
+      "optimal": 49.25,
+      "regret": 0.0,
+      "rule_regret": 56.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 56.5,
+      "predicted_gain": 30.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 11,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 105.75,
+      "selected": 49.25,
+      "rule": 49.25,
+      "optimal": 49.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 56.5,
+      "predicted_gain": 52.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 12,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 15.75,
+      "selected": 0.25,
+      "rule": 15.75,
+      "optimal": 0.25,
+      "regret": 0.0,
+      "rule_regret": 15.5,
+      "near": true,
+      "harmful": false,
+      "active_gain": 15.5,
+      "predicted_gain": 22.5,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 12,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 15.75,
+      "selected": 0.25,
+      "rule": 0.25,
+      "optimal": 0.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 15.5,
+      "predicted_gain": 22.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 13,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 64.75,
+      "selected": 64.75,
+      "rule": 64.75,
+      "optimal": 18.5,
+      "regret": 46.25,
+      "rule_regret": 46.25,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 19.5,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 13,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 64.75,
+      "selected": 18.5,
+      "rule": 18.5,
+      "optimal": 18.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 46.25,
+      "predicted_gain": 47.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 14,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 95.5,
+      "selected": 48.5,
+      "rule": 95.5,
+      "optimal": 48.5,
+      "regret": 0.0,
+      "rule_regret": 47.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 47.0,
+      "predicted_gain": 8.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 14,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 95.5,
+      "selected": 39,
+      "rule": 39,
+      "optimal": 39,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 56.5,
+      "predicted_gain": 24.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 15,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 59,
+      "selected": 59,
+      "rule": 59,
+      "optimal": 29,
+      "regret": 30,
+      "rule_regret": 30,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 3,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 15,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 59,
+      "selected": 59,
+      "rule": 29,
+      "optimal": 29,
+      "regret": 30,
+      "rule_regret": 0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 16,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 55.5,
+      "selected": 9.5,
+      "rule": 55.5,
+      "optimal": 9.5,
+      "regret": 0.0,
+      "rule_regret": 46.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 46.0,
+      "predicted_gain": 28.5,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 16,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 55.5,
+      "selected": 9.5,
+      "rule": 9.5,
+      "optimal": 9.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 46.0,
+      "predicted_gain": 28.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 17,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 80,
+      "selected": 46.25,
+      "rule": 46.25,
+      "optimal": 46.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 33.75,
+      "predicted_gain": 29.0,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 17,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 80,
+      "selected": 6.75,
+      "rule": 6.75,
+      "optimal": 6.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 73.25,
+      "predicted_gain": 53.5,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 18,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 37,
+      "selected": 7,
+      "rule": 37,
+      "optimal": 7,
+      "regret": 0,
+      "rule_regret": 30,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30,
+      "predicted_gain": 12.0,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 18,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 37,
+      "selected": 7,
+      "rule": 7,
+      "optimal": 7,
+      "regret": 0,
+      "rule_regret": 0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30,
+      "predicted_gain": 40.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 19,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 64,
+      "selected": 64,
+      "rule": 64,
+      "optimal": 12.25,
+      "regret": 51.75,
+      "rule_regret": 51.75,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0,
+      "predicted_gain": 17.5,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 19,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 64,
+      "selected": 10.5,
+      "rule": 10.5,
+      "optimal": 10.5,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 53.5,
+      "predicted_gain": 49.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 20,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 90.75,
+      "selected": 17.75,
+      "rule": 90.75,
+      "optimal": 17.75,
+      "regret": 0.0,
+      "rule_regret": 73.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 73.0,
+      "predicted_gain": 20.75,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 20,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 90.75,
+      "selected": 17.75,
+      "rule": 17.75,
+      "optimal": 17.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 73.0,
+      "predicted_gain": 20.75,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 21,
+      "budget": 1,
+      "delay": 30,
+      "ordinary": 54.25,
+      "selected": 54.25,
+      "rule": 54.25,
+      "optimal": 24.25,
+      "regret": 30.0,
+      "rule_regret": 30.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 20.0,
+      "choices": 3,
+      "chosen": [
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 21,
+      "budget": 2,
+      "delay": 30,
+      "ordinary": 54.25,
+      "selected": 24.25,
+      "rule": 24.25,
+      "optimal": 24.25,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 30.0,
+      "predicted_gain": 57.0,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 22,
+      "budget": 1,
+      "delay": 60,
+      "ordinary": 65.25,
+      "selected": 65.25,
+      "rule": 65.25,
+      "optimal": 7.5,
+      "regret": 57.75,
+      "rule_regret": 57.75,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 3,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 22,
+      "budget": 2,
+      "delay": 60,
+      "ordinary": 65.25,
+      "selected": 65.25,
+      "rule": 7.5,
+      "optimal": 7.5,
+      "regret": 57.75,
+      "rule_regret": 0.0,
+      "near": false,
+      "harmful": false,
+      "active_gain": 0.0,
+      "predicted_gain": 0.0,
+      "choices": 4,
+      "chosen": [],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ],
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 23,
+      "budget": 1,
+      "delay": 120,
+      "ordinary": 98.5,
+      "selected": 37.5,
+      "rule": 98.5,
+      "optimal": 37.5,
+      "regret": 0.0,
+      "rule_regret": 61.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 61.0,
+      "predicted_gain": 3.75,
+      "choices": 3,
+      "chosen": [
+        "prepare_admission:booking:A"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A"
+        ]
+      ]
+    },
+    {
+      "family": "staff_booking",
+      "index": 23,
+      "budget": 2,
+      "delay": 120,
+      "ordinary": 98.5,
+      "selected": 16.75,
+      "rule": 16.75,
+      "optimal": 16.75,
+      "regret": 0.0,
+      "rule_regret": 0.0,
+      "near": true,
+      "harmful": false,
+      "active_gain": 81.75,
+      "predicted_gain": 23.75,
+      "choices": 4,
+      "chosen": [
+        "prepare_admission:booking:A",
+        "reinforce:loan:"
+      ],
+      "best": [
+        [
+          "prepare_admission:booking:A",
+          "reinforce:loan:"
+        ]
+      ]
+    }
+  ]
+}

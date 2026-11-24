@@ -50,6 +50,9 @@ const REASONS: Record<string, string> = {
 const WARNINGS: Record<string, string> = {
   simulated_resource_pressure_requires_review:
     "La simulation sollicite une ressource sous tension : à vérifier.",
+  shadow_flow_unavailable: "Projection de flux suspendue après le contrôle de cohérence.",
+  synthetic_residence_projection: "Projection synthétique des flux disponible dans Données. Les conseils utilisent le classement de référence.",
+  residence_sources_incomplete: "Sources de flux incomplètes. Les nouvelles sorties ne sont pas projetées par séjour.",
   synthetic_learned_preparation_requires_real_validation:
     "Les délais de préparation viennent d'un modèle entraîné sur du synthétique.",
 };

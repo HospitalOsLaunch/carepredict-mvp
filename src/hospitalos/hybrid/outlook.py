@@ -4,10 +4,17 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
 from statistics import mean
-from typing import TYPE_CHECKING, Annotated, Literal, Self
+from typing import TYPE_CHECKING, Annotated, Any, Literal, Self
 from zoneinfo import ZoneInfo
 
-from pydantic import Field, StrictInt, field_validator, model_validator
+from pydantic import (
+    Field,
+    SerializerFunctionWrapHandler,
+    StrictInt,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 from hospitalos.decision_support.contracts import Skill, StaffShift
 from hospitalos.operational.contract import Closed, Identifier, instant
@@ -61,8 +68,16 @@ class DepartureEstimate(Closed):
     stay_id: Identifier
     estimate: datetime | None
     reviewed_at: datetime
+    admitted_at: datetime | None = None
 
-    @field_validator("estimate", "reviewed_at")
+    @model_serializer(mode="wrap")
+    def write_public(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        fields: dict[str, Any] = handler(self)
+        if self.admitted_at is None:
+            fields.pop("admitted_at", None)
+        return fields
+
+    @field_validator("estimate", "reviewed_at", "admitted_at")
     @classmethod
     def clock(cls, value: datetime | None) -> datetime | None:
         return instant(value) if value else None
@@ -71,6 +86,14 @@ class DepartureEstimate(Closed):
 class Departures(Receipt):
     kind: Literal["departures"] = "departures"
     records: tuple[DepartureEstimate, ...]
+    cohort_profile: Literal["synthetic-residence-v2"] | None = None
+
+    @model_serializer(mode="wrap")
+    def write_public(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        fields: dict[str, Any] = handler(self)
+        if self.cohort_profile is None:
+            fields.pop("cohort_profile", None)
+        return fields
 
 
 class StaffCapacity(Closed):
@@ -260,6 +283,12 @@ def check_feed(state: State, unit: str, kind: Kind, end: datetime) -> FeedCheck:
             problems.append("duplicate_stay")
         if any(r.reviewed_at > feed.issued_at for r in feed.records):
             problems.append("future_record")
+        if any(r.admitted_at is not None and r.admitted_at > r.reviewed_at for r in feed.records):
+            problems.append("future_admission")
+        if feed.cohort_profile and current - {
+            r.stay_id for r in feed.records if r.admitted_at is not None
+        }:
+            problems.append("admission_clock_missing")
         valid = {
             r.stay_id
             for r in feed.records
