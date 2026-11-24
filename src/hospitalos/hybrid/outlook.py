@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
+from statistics import mean
 from typing import TYPE_CHECKING, Annotated, Literal, Self
 from zoneinfo import ZoneInfo
 
@@ -11,7 +12,7 @@ from pydantic import Field, StrictInt, field_validator, model_validator
 from hospitalos.decision_support.contracts import Skill, StaffShift
 from hospitalos.operational.contract import Closed, Identifier, instant
 
-from .unit_schedule import Booking
+from .unit_schedule import Booking, StaffOffer
 
 if TYPE_CHECKING:
     from .models import State
@@ -92,10 +93,15 @@ class StaffCapacity(Closed):
         return self
 
 
+class ExternalShift(StaffShift):
+    unit_id: Identifier
+
+
 class Roster(Receipt):
     kind: Literal["roster"] = "roster"
     validated: bool
     shifts: tuple[StaffShift, ...]
+    external_shifts: tuple[ExternalShift, ...] | None = None
     capacity: tuple[StaffCapacity, ...]
 
 
@@ -135,7 +141,16 @@ class FeedCheck(Closed):
     reasons: tuple[str, ...]
 
 
+class PublicDay(Closed):
+    day: date
+    bookings: int | None
+    estimated_departures: int | None
+    min_staffed_beds: int | None
+    expected_ed_full_day: float | None
+
+
 class HorizonCheck(Closed):
+    perspective: tuple[PublicDay, ...] = ()
     days: int
     feeds: tuple[FeedCheck, ...]
     data_ready: bool
@@ -178,17 +193,25 @@ def latest(state: State, unit: str, kind: Kind) -> tuple[Feed | None, tuple[str,
 
 
 def roster_valid(feed: Roster, start: datetime, end: datetime) -> bool:
-    if not feed.validated or any(s.end <= s.start for s in feed.shifts):
+    if (
+        not feed.validated
+        or feed.external_shifts is None
+        or any(s.end <= s.start for s in (*feed.shifts, *feed.external_shifts))
+    ):
         return False
     shifts = [s for s in feed.shifts if s.start < end and start < s.end]
+    outside = [x for x in feed.external_shifts if x.start < end and start < x.end]
+    if any(x.unit_id == feed.unit_id for x in outside):
+        return False
     for i, s in enumerate(shifts):
         if s.status != "confirmed" or any(
-            t.staff_id == s.staff_id and s.start < t.end and t.start < s.end for t in shifts[:i]
+            t.staff_id == s.staff_id and s.start < t.end and t.start < s.end
+            for t in (*shifts[:i], *outside)
         ):
             return False
+    intervals: tuple[StaffShift | StaffCapacity, ...] = (*shifts, *feed.capacity)
     boundaries = sorted(
-        {start, end}
-        | {v for x in (*shifts, *feed.capacity) for v in (x.start, x.end) if start < v < end}
+        {start, end} | {v for x in intervals for v in (x.start, x.end) if start < v < end}
     )
     for cut in boundaries[:-1]:
         bands = [b for b in feed.capacity if b.start <= cut < b.end]
@@ -205,7 +228,7 @@ def check_feed(state: State, unit: str, kind: Kind, end: datetime) -> FeedCheck:
     if feed is None:
         return FeedCheck(kind=kind, reasons=reasons)
     at = state.at
-    problems = []
+    problems: list[str] = []
     if feed.status != "complete":
         problems.append(feed.status)
     age = at - (feed.issued_at if isinstance(feed, Emergency) else feed.synced_at)
@@ -235,7 +258,7 @@ def check_feed(state: State, unit: str, kind: Kind, end: datetime) -> FeedCheck:
         ids = [r.stay_id for r in feed.records]
         if len(set(ids)) != len(ids):
             problems.append("duplicate_stay")
-        if any(r.reviewed_at > feed.available_at for r in feed.records):
+        if any(r.reviewed_at > feed.issued_at for r in feed.records):
             problems.append("future_record")
         valid = {
             r.stay_id
@@ -243,12 +266,18 @@ def check_feed(state: State, unit: str, kind: Kind, end: datetime) -> FeedCheck:
             if r.stay_id in current
             and r.estimate
             and r.estimate >= at
-            and at - timedelta(hours=24) <= r.reviewed_at <= feed.available_at
+            and at - timedelta(hours=24) <= r.reviewed_at <= feed.issued_at
         }
         covered, expected = len(valid), len(current)
-        if 10 * covered < 9 * expected:
+        if state.issues:
+            covered = expected = None
+            problems.append("census_incomplete")
+        elif 10 * covered < 9 * expected:
             problems.append("discharge_coverage")
     elif isinstance(feed, Roster):
+        current_capacity = next((u.staffed_beds for u in state.units if u.id == unit), None)
+        if any(b.start <= at < b.end and b.staffed_beds != current_capacity for b in feed.capacity):
+            problems.append("capacity_conflict")
         if not roster_valid(feed, at, end):
             problems.append("shift_or_skill_gap")
     else:
@@ -303,3 +332,71 @@ def apply_bookings(state: State) -> State:
         if rows or u.id in schedules:
             schedules[u.id] = schedule.model_copy(update={"admissions": tuple(rows)})
     return state.model_copy(update={"schedules": tuple(schedules.values())})
+
+
+def public_days(state: State, unit: str, days: int) -> tuple[PublicDay, ...]:
+    """Known milestones even when model accuracy blocks the plan. Unknowns remain nullable."""
+    start = state.at
+    end = start + timedelta(days=days)
+    zone = ZoneInfo("Europe/Paris")
+    occupied = {b.occupant for b in state.beds if b.unit_id == unit and b.occupant}
+    result = []
+    for day in civil_days(start, end, "Europe/Paris"):
+        first = max(start, datetime.combine(day, time.min, zone))
+        stop = min(end, datetime.combine(day + timedelta(days=1), time.min, zone))
+        bk, dep, capacity, em = None, None, None, None
+        for kind in KINDS:
+            status = check_feed(state, unit, kind, stop)
+            if status.reasons:
+                continue
+            feed, _ = latest(state, unit, kind)
+            if isinstance(feed, Bookings):
+                bk = sum(
+                    b.status == "booked"
+                    and b.request.request_id not in occupied
+                    and first <= b.request.expected_arrival < stop
+                    for b in feed.records
+                )
+            elif isinstance(feed, Departures) and not state.issues:
+                dep = sum(
+                    r.stay_id in occupied
+                    and r.estimate is not None
+                    and first <= r.estimate < stop
+                    and start - timedelta(hours=24) <= r.reviewed_at <= start
+                    for r in feed.records
+                )
+            elif isinstance(feed, Roster):
+                capacity = min(
+                    (b.staffed_beds for b in feed.capacity if b.start < stop and first < b.end),
+                    default=None,
+                )
+            elif isinstance(feed, Emergency):
+                em = next((mean(d.counts) for d in feed.records if d.day == day), None)
+        result.append(
+            PublicDay(
+                day=day,
+                bookings=bk,
+                estimated_departures=dep,
+                min_staffed_beds=capacity,
+                expected_ed_full_day=em,
+            )
+        )
+    return tuple(result)
+
+
+def staff_conflict(state: State, unit: str, offer: StaffOffer) -> bool:
+    roster, _ = latest(state, unit, "roster")
+    if not isinstance(roster, Roster):
+        return False
+    o = offer.option
+
+    def overlapping(shift: StaffShift) -> bool:
+        return shift.staff_id == offer.staff_id and shift.start < o.end and o.start < shift.end
+
+    if any(overlapping(s) for s in roster.shifts):
+        return True
+    return any(
+        overlapping(s)
+        and not (o.source == "shared_unit" and o.lending_unit == s.unit_id and o.skill == s.skill)
+        for s in roster.external_shifts or ()
+    )

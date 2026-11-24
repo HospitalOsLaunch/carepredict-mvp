@@ -59,6 +59,7 @@ export interface Discharge {
 }
 
 export interface UnitSchedule {
+  schema_version: "UNIT_SCHEDULE_1";
   kind: "unit_schedule";
   id: string;
   budget_minutes: number;
@@ -173,15 +174,19 @@ export type FeedKind = "bookings" | "departures" | "roster" | "emergency";
 export interface FeedCheck { kind: FeedKind; source: string | null; revision: number | null;
   issued_at: string | null; received_at: string | null; synced_at: string | null; covers_until: string | null;
   covered: number | null; expected: number | null; reasons: string[]; }
-export interface HorizonCheck { days: number; data_ready: boolean; qualified: boolean; feeds: FeedCheck[]; reasons: string[]; }
+export interface PublicDay { day: string; bookings: number | null; estimated_departures: number | null;
+  min_staffed_beds: number | null; expected_ed_full_day: number | null; }
+export interface HorizonCheck { perspective: PublicDay[]; days: number; data_ready: boolean; qualified: boolean; feeds: FeedCheck[]; reasons: string[]; }
 export interface PlanWindow {
-  minutes: number; baseline_wait: number; selected_wait: number; saved_wait: number; until: string;
+  unserved_scenarios: number; change_ratio: number | null; minutes: number; baseline_wait: number; selected_wait: number; saved_wait: number; until: string;
 }
 export interface Plan {
   unit_id?: string | null;
   windows?: PlanWindow[];
+  action_timing?: { starts_at: string; ends_at: string | null; skill: string | null; lender: string | null }[];
+  requested_horizon_minutes?: number | null;
   horizons?: HorizonCheck[];
-  schema_version: "HYBRID_PLAN_4" | "HYBRID_PLAN_5";
+  schema_version: "HYBRID_PLAN_4" | "HYBRID_PLAN_5" | "HYBRID_UNIT_PLAN_1";
   evidence: "simulation_under_declared_assumptions";
   decision: Decision;
   plan_id: string;
@@ -251,6 +256,7 @@ export interface ResourceBudget {
 }
 
 export interface LiveSnapshot {
+  horizons?: HorizonCheck[];
   schema_version: "LIVE_UNIT_SNAPSHOT_1";
   mode: "shadow" | "sandbox";
   state: State;

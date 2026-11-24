@@ -138,11 +138,9 @@ def reconstruct(
             issues.append(f"invalid_schedule:{schedule.id}")
         for booking in schedule.admissions:
             r = booking.request
-            if (
-                instant(r.provenance.available_at) > at
-                or instant(r.provenance.event_time) > instant(r.provenance.available_at)
-                or r.request_id in patient_map
-            ):
+            if instant(r.provenance.available_at) > at or instant(
+                r.provenance.event_time
+            ) > instant(r.provenance.available_at):
                 issues.append(f"invalid_booking:{r.request_id}")
         ids = {o.option.option_id for o in schedule.offers} | {
             b.request.request_id for b in schedule.admissions

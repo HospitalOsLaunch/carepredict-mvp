@@ -40,7 +40,7 @@ export function DataQuality({
           et ce qui empêche une évaluation.
         </p>
       </header>
-      <OutlookQuality plan={a.plan} />
+      <OutlookQuality plan={a.plan ?? a.sourceSnapshot ?? null} />
       <div className="grid-2">
         <div className="stack">
           <section className="panel" aria-labelledby="state-title">

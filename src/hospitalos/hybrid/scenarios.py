@@ -19,6 +19,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .innovations import draw, uniform
 from .models import Action, Patient, State
+from .outlook import Roster, latest
 
 Minute = Annotated[StrictInt, Field(ge=1, le=10080)]
 Capacity = Annotated[StrictInt, Field(ge=0, le=1000)]
@@ -181,7 +182,11 @@ def sample_future(
     for schedule in state.schedules:
         for booking in schedule.admissions:
             req = booking.request
-            if booking.status != "booked" or req.expected_arrival <= state.at:
+            if (
+                booking.status != "booked"
+                or req.expected_arrival <= state.at
+                or any(p.id == req.request_id for p in state.patients)
+            ):
                 continue
             dist = req.arrival_delay
             u = uniform(seed, scenario, "booked_arrival", req.request_id) * sum(dist.weights)
@@ -218,7 +223,11 @@ def staffing_tape(
     events = list(tape.events)
     units = {u.id: u for u in state.units}
     for schedule in state.schedules:
-        offers = [o for o in schedule.offers if o.committed or o.option.option_id in selected]
+        offers = [
+            o
+            for o in schedule.offers
+            if not o.included_in_baseline and (o.committed or o.option.option_id in selected)
+        ]
         if not offers:
             continue
         unit = units[schedule.id]
@@ -233,14 +242,33 @@ def staffing_tape(
             and e.target_id == unit.id
         }
         events = [e for e in events if e not in changes.values()]
-        intervals = [
-            (
-                math.ceil((o.option.start - state.at).total_seconds() / 60),
-                math.floor((o.option.end - state.at).total_seconds() / 60),
-                o.staffed_places,
+        intervals: list[tuple[int, int, int]] = []
+        roster, _ = latest(state, unit.id, "roster")
+        for offer in offers:
+            start = math.ceil((offer.option.start - state.at).total_seconds() / 60)
+            stop = math.floor((offer.option.end - state.at).total_seconds() / 60)
+            # A committed person already on the roster adds no second place.
+            included = (
+                [
+                    (
+                        max(start, math.floor((s.start - state.at).total_seconds() / 60)),
+                        min(stop, math.ceil((s.end - state.at).total_seconds() / 60)),
+                    )
+                    for s in roster.shifts
+                    if offer.committed
+                    and s.staff_id == offer.staff_id
+                    and s.start < offer.option.end
+                    and offer.option.start < s.end
+                ]
+                if isinstance(roster, Roster)
+                else []
             )
-            for o in offers
-        ]
+            cuts = sorted({start, stop} | {v for lo, hi in included for v in (lo, hi)})
+            intervals.extend(
+                (lo, hi, offer.staffed_places)
+                for lo, hi in zip(cuts, cuts[1:], strict=False)
+                if not any(a <= lo < b for a, b in included)
+            )
         boundaries = set(changes) | {t for start, stop, _ in intervals for t in (start, stop)}
 
         def extra(minute: int, periods: list[tuple[int, int, int]] = intervals) -> int:

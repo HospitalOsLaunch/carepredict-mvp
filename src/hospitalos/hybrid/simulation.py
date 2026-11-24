@@ -7,6 +7,7 @@ the sampled service duration. The state supplied here is the observed state.
 from __future__ import annotations
 
 import heapq
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Annotated, Literal
@@ -17,6 +18,7 @@ from hospitalos.operational.contract import Closed
 
 from .innovations import draw as draw
 from .models import Action, State, bundle_errors, compatible, discharge_blockers
+from .outlook import Departures, latest
 from .preparation import PreparationForecasts, preparation_draw, validate_preparation
 from .scenarios import (
     BedAdmissions,
@@ -70,6 +72,7 @@ def simulate(
     horizon_minutes: int = 1440,
     future: FutureTape | None = None,
     preparation: PreparationForecasts | None = None,
+    multiday: bool = False,
 ) -> Trajectory:
     # One action or several applied together at D (a bundle: e.g. a transport request and a
     # cleaning priority). Each must be valid alone and compatible with the others.
@@ -82,7 +85,7 @@ def simulate(
     reserve = {a.bed_id: a.patient_id for a in actions if a.kind == "reserve_bed"}
     transports = {a.patient_id: a for a in actions if a.kind == "request_transport"}
     cleaning_first = {a.bed_id for a in actions if a.kind == "prioritize_cleaning"}
-    if not 1 <= horizon_minutes <= 1440:
+    if not 1 <= horizon_minutes <= (10080 if multiday else 1440):
         raise ValueError("Horizon must be between one minute and 24 hours")
     future = future or sample_future(state, None, seed, scenario)
     state, future = staffing_tape(state, future, actions)
@@ -132,6 +135,17 @@ def simulate(
                 logistics[patient_id].transport_pool_id,
             )
         )
+    estimates = {}
+    if multiday:
+        feed, _ = latest(state, state.units[0].id, "departures")
+        if isinstance(feed, Departures):
+            estimates = {
+                r.stay_id: r.estimate
+                for r in feed.records
+                if r.estimate
+                and r.reviewed_at <= state.at
+                and (state.at - r.reviewed_at).total_seconds() <= 86400
+            }
     for p in state.patients:
         new_request = p.id in transports
         if not discharge_blockers(
@@ -150,6 +164,11 @@ def simulate(
                 else multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
             )
             if minute is not None:
+                if p.id in estimates:
+                    # Conditional logistics only: an EDD cannot grant medical clearance.
+                    minute = max(
+                        minute, math.ceil((estimates[p.id] - state.at).total_seconds() / 60)
+                    )
                 heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
 
     def depart(minute: int, bed_id: str, patient_id: str) -> None:

@@ -21,10 +21,11 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors, bundle_errors
-from .outlook import HorizonCheck, horizon_check
+from .multiday import assess_horizon, paired_future
+from .outlook import HorizonCheck
 from .pathway import DischargeReadiness, readiness
 from .preparation import PreparationForecasts, validate_preparation
-from .scenarios import FutureAssumptions, sample_future
+from .scenarios import FutureAssumptions
 from .scoring import ResourcePressure, score
 from .simulation import Assumptions, simulate
 
@@ -39,7 +40,7 @@ class PlanRequest(Closed):
     future: FutureAssumptions | None = None
     preparation: PreparationForecasts | None = None
     max_age_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 60
-    horizon_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 1440
+    horizon_minutes: Annotated[StrictInt, Field(gt=0, le=10080)] = 1440
     # Up to this many immediate actions applied together (1 = the historical one-action
     # decision). Steps are added greedily, each evaluated jointly with the steps before it.
     max_bundle: Annotated[StrictInt, Field(ge=1, le=4)] = 1
@@ -47,6 +48,13 @@ class PlanRequest(Closed):
     max_candidates: Annotated[StrictInt, Field(ge=2, le=32)] = 32
     seed: Annotated[StrictInt, Field(ge=0)] = 7
     tail_weight: Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)] = 0.25
+
+    @field_validator("horizon_minutes")
+    @classmethod
+    def supported_horizon(cls, value: int) -> int:
+        if value > 1440 and value not in {4320, 10080}:
+            raise ValueError("Extended horizons are 3 or 7 days")
+        return value
 
     @field_validator("at")
     @classmethod
@@ -95,16 +103,45 @@ class PlanWindow(Closed):
     minutes: int
     baseline_wait: float
     selected_wait: float
+    unserved_scenarios: int
+    change_ratio: float | None
     saved_wait: float
     until: datetime
 
 
+class ActionTiming(Closed):
+    starts_at: datetime
+    ends_at: datetime | None = None
+    skill: str | None = None
+    lender: str | None = None
+
+
+def timing(state: State, action: Action) -> ActionTiming:
+    for schedule in state.schedules:
+        if action.kind == "reinforce":
+            for offer in schedule.offers:
+                o = offer.option
+                if o.option_id == action.slot_id:
+                    return ActionTiming(
+                        starts_at=o.start, ends_at=o.end, skill=o.skill, lender=o.lending_unit
+                    )
+        if action.kind == "prepare_admission":
+            for b in schedule.admissions:
+                if b.request.request_id == action.slot_id:
+                    return ActionTiming(starts_at=b.window_start, ends_at=b.window_end)
+    return ActionTiming(starts_at=state.at)
+
+
 class Plan(Closed):
+    action_timing: tuple[ActionTiming, ...] = ()
     unit_id: Identifier | None = None
     windows: tuple[PlanWindow, ...] = ()
     horizons: tuple[HorizonCheck, ...] = ()
+    requested_horizon_minutes: int | None = None
 
-    schema_version: Literal["HYBRID_PLAN_4", "HYBRID_PLAN_5"] = "HYBRID_PLAN_4"
+    schema_version: Literal["HYBRID_PLAN_4", "HYBRID_PLAN_5", "HYBRID_UNIT_PLAN_1"] = (
+        "HYBRID_PLAN_4"
+    )
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
     )
@@ -143,7 +180,10 @@ class Plan(Closed):
             self.preparation is not None
             and self.preparation.schema_version == "PREPARATION_FORECAST_2"
         )
-        if (self.schema_version == "HYBRID_PLAN_5") != continuous:
+        if (
+            self.schema_version != "HYBRID_UNIT_PLAN_1"
+            and (self.schema_version == "HYBRID_PLAN_5") != continuous
+        ):
             raise ValueError("Plan/forecast version mismatch")
         return self
 
@@ -201,14 +241,28 @@ class Evaluation:
     pressure: tuple[ResourcePressure, ...]
 
 
-def evaluate(state: State, action: Action | tuple[Action, ...], request: PlanRequest) -> Evaluation:
+def evaluate(
+    state: State,
+    action: Action | tuple[Action, ...],
+    request: PlanRequest,
+    *,
+    multiday: bool | None = None,
+) -> Evaluation:
+    multiday = request.horizon_minutes > 1440 if multiday is None else multiday
     losses = []
     waiting_at_end = []
     arrivals = []
     pressure = []
     violations: set[str] = set()
     for scenario in range(request.scenarios):
-        future = sample_future(state, request.future, request.seed, scenario)
+        future = paired_future(
+            state,
+            request.future,
+            request.seed,
+            scenario,
+            request.horizon_minutes,
+            multiday=multiday,
+        )
         trajectory = simulate(
             state,
             action,
@@ -218,6 +272,7 @@ def evaluate(state: State, action: Action | tuple[Action, ...], request: PlanReq
             horizon_minutes=request.horizon_minutes,
             future=future,
             preparation=request.preparation,
+            multiday=multiday,
         )
         result = score(
             state,
@@ -343,8 +398,26 @@ def plan(request: PlanRequest) -> Plan:
     )
     if request.unit_id is None:
         parameters.pop("unit_id")
+    unified = bool(
+        request.unit_id or state.schedules or state.outlooks or request.horizon_minutes > 1440
+    )
+    if unified:
+        parameters["profile"] = "HYBRID_UNIT_PLAN_1"
     parameters["fingerprint"] = state.fingerprint
     plan_id = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
+    requested = request.horizon_minutes
+    unit = request.unit_id or (state.units[0].id if len(state.units) == 1 else None)
+    horizons = tuple(assess_horizon(state, unit, d) for d in (3, 7)) if unit else ()
+    if requested > 1440:
+        eligible = [
+            h.days * 1440
+            for h in horizons
+            if h.data_ready and h.qualified and h.days * 1440 <= requested
+        ]
+        request = request.model_copy(update={"horizon_minutes": max([1440, *eligible])})
+        # The same data can acquire a new qualification in a later deployment.
+        parameters["horizon_policy"] = {str(h.days): [h.data_ready, h.qualified] for h in horizons}
+        plan_id = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
     candidates: tuple[Candidate, ...] = ()
     truncated = False
     selected = no_op
@@ -431,17 +504,27 @@ def plan(request: PlanRequest) -> Plan:
     windows = []
     if decision != "abstain":
         for minutes in sorted(
-            {m for m in (720, 1440, request.horizon_minutes) if m <= request.horizon_minutes}
+            {m for m in (720, 1440, 4320, request.horizon_minutes) if m <= request.horizon_minutes}
         ):
             if minutes == request.horizon_minutes:
                 before = baseline.candidate
                 after = bundle_evaluation or best
             else:
                 clipped = request.model_copy(update={"horizon_minutes": minutes})
-                before = evaluate(state, no_op, clipped).candidate
-                after = evaluate(state, bundle or (selected,), clipped).candidate
+                before = evaluate(
+                    state, no_op, clipped, multiday=request.horizon_minutes > 1440
+                ).candidate
+                after = evaluate(
+                    state, bundle or (selected,), clipped, multiday=request.horizon_minutes > 1440
+                ).candidate
             windows.append(
                 PlanWindow(
+                    unserved_scenarios=after.scenarios_with_unserved_demand,
+                    change_ratio=(
+                        after.mean_waiting_patient_minutes / before.mean_waiting_patient_minutes - 1
+                    )
+                    if before.mean_waiting_patient_minutes
+                    else None,
                     minutes=minutes,
                     baseline_wait=before.mean_waiting_patient_minutes,
                     selected_wait=after.mean_waiting_patient_minutes,
@@ -453,12 +536,12 @@ def plan(request: PlanRequest) -> Plan:
     return Plan(
         unit_id=request.unit_id or (state.units[0].id if len(state.units) == 1 else None),
         windows=tuple(windows),
-        horizons=tuple(
-            horizon_check(state, request.unit_id or state.units[0].id, d) for d in (3, 7)
-        )
-        if request.unit_id or len(state.units) == 1
-        else (),
-        schema_version="HYBRID_PLAN_5"
+        horizons=horizons,
+        action_timing=tuple(timing(state, a) for a in bundle or (selected,) if a.kind != "no_op"),
+        requested_horizon_minutes=requested,
+        schema_version="HYBRID_UNIT_PLAN_1"
+        if unified
+        else "HYBRID_PLAN_5"
         if request.preparation is not None
         and request.preparation.schema_version == "PREPARATION_FORECAST_2"
         else "HYBRID_PLAN_4",

@@ -32,6 +32,7 @@ from .live_models import (
     ShadowEpisode,
 )
 from .models import Bed, FactEvent, Patient, ResourcePool, Unit
+from .multiday import assess_horizon
 from .outlook import UnitOutlook
 from .planning import PlanRequest, plan
 from .unit_schedule import UnitSchedule
@@ -369,6 +370,7 @@ class LiveStore:
             "available": {r.key: r.observed_available for r in resources},
         }
         return LiveSnapshot(
+            horizons=tuple(assess_horizon(state, self.policy.unit_id, d) for d in (3, 7)),
             mode=self.policy.mode,
             state=state,
             manifest_version=last.manifest_version,
@@ -422,6 +424,7 @@ class LiveStore:
             result = plan(
                 PlanRequest(
                     hospital_id=self.policy.hospital_id,
+                    unit_id=self.policy.unit_id if options.horizon_minutes > 1440 else None,
                     at=now,
                     expected_entities=snapshot.expected_entities,
                     events=self.planning_events(snapshot),

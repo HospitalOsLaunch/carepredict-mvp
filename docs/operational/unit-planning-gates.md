@@ -25,3 +25,12 @@ est indémontrable. Publier toutes les cellules, unités et échecs.
 Les seuils portent sur le synthétique et sur la version de prévision évaluée.
 Une preuve absente, un périmètre différent ou un flux dégradé ferme l’horizon
 concerné. Les engagements déjà observés sont conservés entre les journées.
+
+Le banc utilise huit univers, quatre unités, 35 origines par unité et univers
+(jours 21 à 55, après une période initiale de 21 jours), quatre scénarios
+par projection et 2 000 rééchantillonnages appariés par blocs de sept jours.
+Les cibles sont disponibles uniquement pour le score. Pour l’ouverture d’une
+unité, le panel équipondéré et la ligne de cette unité doivent satisfaire les
+critères. Pour J+7, la référence hebdomadaire des urgences prend le dernier
+jour de même phase dont le bilan est complet à D. La cohorte est entièrement
+synthétique, sans réglage sur ces 35 dates.

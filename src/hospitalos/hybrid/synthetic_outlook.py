@@ -20,18 +20,18 @@ from .outlook import (
 
 def synthetic_outlook(state: State, unit: str, days: int = 7) -> UnitOutlook:
     at, end = state.at, state.at + timedelta(days=days)
-    common = dict(
-        hospital_id=state.hospital_id,
-        unit_id=unit,
-        revision=1,
-        provenance="synthetic",
-        issued_at=at,
-        available_at=at,
-        synced_at=at,
-        covers_from=at,
-        covers_until=end,
-        status="complete",
-    )
+    common = {
+        "hospital_id": state.hospital_id,
+        "unit_id": unit,
+        "revision": 1,
+        "provenance": "synthetic",
+        "issued_at": at,
+        "available_at": at,
+        "synced_at": at,
+        "covers_from": at,
+        "covers_until": end,
+        "status": "complete",
+    }
     schedules = [s for s in state.schedules if s.id == unit]
     bookings = Bookings.model_validate(
         {
@@ -67,17 +67,24 @@ def synthetic_outlook(state: State, unit: str, days: int = 7) -> UnitOutlook:
         for skill in ("IDE", "AS"):
             shifts.append(
                 StaffShift.model_validate(
-                    dict(
-                        staff_id=f"{unit}-{skill}-{block % 4}",
-                        skill=skill,
-                        start=start,
-                        end=stop,
-                        status="confirmed",
-                    )
+                    {
+                        "staff_id": f"{unit}-{skill}-{block % 4}",
+                        "skill": skill,
+                        "start": start,
+                        "end": stop,
+                        "status": "confirmed",
+                    }
                 )
             )
     roster = Roster.model_validate(
-        {**common, "source": "syn-roster", "validated": True, "shifts": shifts, "capacity": bands}
+        {
+            **common,
+            "source": "syn-roster",
+            "validated": True,
+            "shifts": shifts,
+            "external_shifts": (),
+            "capacity": bands,
+        }
     )
     emergency = Emergency.model_validate(
         {

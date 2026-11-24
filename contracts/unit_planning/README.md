@@ -20,3 +20,8 @@ figurent dans un flux distinct.
 Les seuils sont fixés dans docs/operational/unit-planning-gates.md. Lors d’une
 panne, publier un reçu outage, avec une révision supérieure, dans la même série.
 Le calcul sert des projections en observation seule.
+
+Le planning déclare aussi les affectations externes des professionnels proposés
+(external_shifts, liste vide si le contrôle confirme leur absence). Un prêt
+confirmé peut provenir du donneur déclaré dans les limites de sa réserve.
+Une personne déjà comptée dans la capacité de référence n’ajoute aucun lit.

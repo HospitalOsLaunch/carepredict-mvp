@@ -13,7 +13,7 @@ from pydantic import Field, StrictBool, StrictInt, field_validator, model_valida
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
-from .outlook import UnitOutlook
+from .outlook import UnitOutlook, staff_conflict
 from .unit_schedule import UnitSchedule
 
 Count = Annotated[StrictInt, Field(ge=0)]
@@ -132,6 +132,10 @@ class FactEvent(Closed):
     def clocks(self) -> Self:
         if self.available_at < self.event_time:
             raise ValueError("A fact cannot be available before its event time")
+        if isinstance(self.fact, UnitOutlook) and any(
+            f.synced_at > self.available_at for f in self.fact.feeds
+        ):
+            raise ValueError("Source receipt unavailable at delivery")
         if isinstance(self.fact, Patient) and self.fact.waiting_since > self.event_time:
             raise ValueError("Patient history cannot start after the observed fact")
         return self
@@ -255,6 +259,8 @@ def action_errors(state: State, action: Action) -> tuple[str, ...]:
                 if option.option_id == action.slot_id:
                     if offer.committed or option.start < state.at:
                         return ("reinforcement_unavailable",)
+                    if staff_conflict(state, schedule.id, offer):
+                        return ("staff_already_assigned",)
                     return schedule.staff_errors({option.option_id})
         return ("reinforcement_missing",)
     beds = {b.id: b for b in state.beds}
@@ -273,6 +279,7 @@ def action_errors(state: State, action: Action) -> tuple[str, ...]:
                     schedule.id != bed.unit_id
                     or booking.status != "booked"
                     or booking.prepared_bed
+                    or any(p.id == booking.request.request_id for p in state.patients)
                     or booking.request.expected_arrival <= state.at
                     or bed.state in {"closed", "unknown"}
                     or bed.reserved_for
@@ -328,18 +335,12 @@ def bundle_errors(state: State, actions: tuple[Action, ...]) -> tuple[str, ...]:
             errors = schedule.staff_errors(chosen)
             if errors:
                 return errors
-            slots = [
-                (b.window_start, b.window_end, b.prepared_bed or a.bed_id)
-                for b in schedule.admissions
-                if b.status == "booked"
-                for a in (
-                    next(
-                        (x for x in prepared if x.slot_id == b.request.request_id),
-                        Action(kind="no_op"),
-                    ),
-                )
-                if b.prepared_bed or a.bed_id
-            ]
+            assigned = {action.slot_id: action.bed_id for action in prepared}
+            slots = []
+            for booking in schedule.admissions:
+                bed = booking.prepared_bed or assigned.get(booking.request.request_id)
+                if booking.status == "booked" and bed:
+                    slots.append((booking.window_start, booking.window_end, bed))
             if any(
                 bed == other and start < stop and begin < end
                 for i, (start, end, bed) in enumerate(slots)

@@ -18,6 +18,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 from .live_models import Assessment, LiveSnapshot, PlanningOptions, SandboxCommand
 from .live_store import LiveStore
 from .models import Action, bundle_errors
+from .multiday import recheck_horizon
 
 
 class Reconciliation(Closed):
@@ -128,6 +129,7 @@ class LiveWorkflow:
             current.state, proposal.bundle or (proposal.selected,)
         ):
             raise ValueError("Action preconditions no longer hold")
+        recheck_horizon(current.state, proposal.unit_id, proposal.horizon_minutes)
         budgets = {r.key: r for r in current.resources}
         for resource, quantity in plan_claims(assessment, current).items():
             if resource in budgets:

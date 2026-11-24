@@ -1,5 +1,56 @@
 {
   "$defs": {
+    "ExternalShift": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "skill": {
+          "enum": [
+            "IDE",
+            "AS"
+          ],
+          "title": "Skill",
+          "type": "string"
+        },
+        "staff_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+          "title": "Staff Id",
+          "type": "string"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "scheduled",
+            "confirmed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "unit_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+          "title": "Unit Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "staff_id",
+        "skill",
+        "start",
+        "end",
+        "status",
+        "unit_id"
+      ],
+      "title": "ExternalShift",
+      "type": "object"
+    },
     "StaffCapacity": {
       "additionalProperties": false,
       "properties": {
@@ -111,6 +162,21 @@
       "format": "date-time",
       "title": "Covers Until",
       "type": "string"
+    },
+    "external_shifts": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/ExternalShift"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Shifts"
     },
     "hospital_id": {
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",

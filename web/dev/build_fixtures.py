@@ -34,8 +34,8 @@ from demo_unit import (  # noqa: E402
 from hospitalos.hybrid.live_models import PlanningOptions  # noqa: E402
 from hospitalos.hybrid.live_store import LiveStore  # noqa: E402
 from hospitalos.hybrid.models import Action, FactEvent  # noqa: E402
+from hospitalos.hybrid.multiday import paired_future  # noqa: E402
 from hospitalos.hybrid.planning import PlanRequest, plan  # noqa: E402
-from hospitalos.hybrid.scenarios import sample_future  # noqa: E402
 from hospitalos.hybrid.scoring import score  # noqa: E402
 from hospitalos.hybrid.shadow import summarize  # noqa: E402
 from hospitalos.hybrid.simulation import simulate  # noqa: E402
@@ -56,7 +56,7 @@ def scenario(
     name: str, label: str, request: PlanRequest, unit: str = UNIT, unit_name: str = UNIT_NAME
 ) -> dict[str, Any]:
     request = request.model_copy(
-        update={"unit_id": unit, "max_bundle": MAX_BUNDLE, "horizon_minutes": 1440}
+        update={"unit_id": unit, "max_bundle": MAX_BUNDLE, "horizon_minutes": 10080}
     )
     if not request.state().issues:
         outlook = synthetic_outlook(request.state(), unit)
@@ -95,7 +95,14 @@ def scenario(
     state = request.state()
     traces: dict[str, Any] = {}
     if proposal.decision != "abstain":
-        future = sample_future(state, request.future, request.seed, 0)
+        future = paired_future(
+            state,
+            request.future,
+            request.seed,
+            0,
+            proposal.horizon_minutes,
+            multiday=proposal.horizon_minutes > 1440,
+        )
         chosen = proposal.bundle or (proposal.selected,)
         for key, action in (("baseline", (Action(kind="no_op"),)), ("selected", chosen)):
             trajectory = simulate(
@@ -104,7 +111,8 @@ def scenario(
                 request.assumptions,
                 seed=request.seed,
                 scenario=0,
-                horizon_minutes=request.horizon_minutes,
+                horizon_minutes=proposal.horizon_minutes,
+                multiday=proposal.horizon_minutes > 1440,
                 future=future,
                 preparation=request.preparation,
             )
@@ -134,7 +142,7 @@ def live() -> dict[str, Any]:
         options = PlanningOptions(
             assumptions=nominal().assumptions,
             scenarios=16,
-            horizon_minutes=1440,
+            horizon_minutes=10080,
             max_bundle=MAX_BUNDLE,
         )
         episode = store.record_shadow(now, options)

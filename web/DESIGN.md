@@ -108,6 +108,7 @@ contrôle humain et la traçabilité des usages. Le motif rend les refus lisible
 
 ## Plan à 24 h
 
+Le profil versionné `HYBRID_UNIT_PLAN_1` identifie ce contrat API.
 Le sélecteur d’unité reste actif dans toutes les focales. Action et Plan lisent le même
 `plan_id` de `hybrid.plan`, la même relève et la même empreinte. Une demande déjà
 programmée figure aussi dans le témoin. Le renfort mobilise une personne confirmée,
@@ -275,3 +276,8 @@ la version, la réception, la synchronisation, la fin de couverture et les motif
 de rejet. Pour les séjours et les jours d’urgences, le numérateur et le dénominateur
 remontent du contrôle backend. Un export complet vide, une panne et un reçu
 absent ont des états distincts.
+
+La requête du cockpit demande jusqu’à sept jours. Le serveur retourne la durée
+effectivement autorisée, ses fenêtres calculées et les motifs par horizon. La
+qualification appartient à la version du prédicteur et au profil synthétique
+évalué. Les créneaux du plan conservent leurs dates absolues entre les journées.

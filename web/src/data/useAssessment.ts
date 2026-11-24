@@ -233,7 +233,7 @@ export function useAssessment(): Store {
     setBusy(true);
     setError(null);
     api
-      .shadow({ horizon_minutes: 1440, scenarios: 32, max_bundle: 3 })
+      .shadow({ horizon_minutes: 10080, scenarios: 32, max_bundle: 3 })
       .then((episode) => {
         if (token !== request.current) return;
         const a = episode.assessment;

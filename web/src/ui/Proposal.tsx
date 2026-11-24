@@ -241,7 +241,7 @@ function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: nu
         <span className="effect__delta num" {...planSource(plan,atWindow+"/saved_wait")}>{helps ? `−${waitText(gain.saved)}` : "≈ 0"}</span>
         <span className="effect__unit">
           d'attente en moins pour les patients à placer
-          {gain.ratio != null && helps ? ` (${pct(gain.ratio).replace("-", "−")})` : ""}
+          {gain.ratio != null && helps ? <span {...planSource(plan,atWindow+"/change_ratio")}> ({pct(gain.ratio).replace("-", "−")})</span> : null}
         </span>
       </div>
       <div
@@ -254,13 +254,15 @@ function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: nu
       </div>
       <p className="effect__note">
         Attente cumulée : somme des temps d'attente de tous les patients à placer sur les{" "}
-        {<span {...planSource(plan,atWindow+"/minutes")}>{duration(gain.windowMinutes)}</span>} à venir, moyenne de <span {...planSource(plan,"/scenarios")}>{plan.scenarios}</span> scénarios simulés.
+        <span {...planSource(plan, atWindow + "/minutes")}>{duration(gain.windowMinutes)}</span> à venir, moyenne de <span {...planSource(plan,"/scenarios")}>{plan.scenarios}</span> scénarios simulés.
       </p>
       {plan.service_status === "served_in_all_sampled_scenarios" ? (
-        <p className="effect__note">Tous les patients sont placés avant {gain.until}.</p>
+        <p className="effect__note">Tous les patients sont placés avant <time {...planSource(plan, atWindow + "/until")}>{gain.until}</time>.</p>
       ) : plan.service_status === "unserved_in_some_sampled_scenarios" ? (
         <p className="effect__note">
-          Un patient attend encore à {gain.until} dans {unserved} scénarios sur {plan.scenarios}.
+          Un patient attend encore à <time {...planSource(plan, atWindow + "/until")}>{gain.until}</time> dans{" "}
+          <span {...planSource(plan, atWindow + "/unserved_scenarios")}>{unserved}</span> scénarios sur{" "}
+          <span {...planSource(plan, "/scenarios")}>{plan.scenarios}</span>.
         </p>
       ) : null}
     </div>

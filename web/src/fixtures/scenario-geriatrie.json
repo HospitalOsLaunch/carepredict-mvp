@@ -1185,6 +1185,7 @@
          "status": "confirmed"
         }
        ],
+       "external_shifts": [],
        "capacity": [
         {
          "start": "2026-10-24T06:30:00Z",
@@ -1326,7 +1327,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 1440,
+  "horizon_minutes": 10080,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1336,7 +1337,7 @@
  "state": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
-  "fingerprint": "0b1f62eef6a34743370208dbb6d55d62c99f283e802601c7b629f3b035d47148",
+  "fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
   "units": [
    {
     "kind": "unit",
@@ -2074,6 +2075,7 @@
         "status": "confirmed"
        }
       ],
+      "external_shifts": [],
       "capacity": [
        {
         "start": "2026-10-24T06:30:00Z",
@@ -2187,12 +2189,22 @@
   "warnings": []
  },
  "plan": {
+  "action_timing": [
+   {
+    "starts_at": "2026-10-24T06:30:00Z",
+    "ends_at": null,
+    "skill": null,
+    "lender": null
+   }
+  ],
   "unit_id": "court-sejour-geriatrique",
   "windows": [
    {
     "minutes": 720,
     "baseline_wait": 1728.28125,
     "selected_wait": 1720.78125,
+    "unserved_scenarios": 32,
+    "change_ratio": -0.00433957146731756,
     "saved_wait": 7.5,
     "until": "2026-10-24T18:30:00Z"
    },
@@ -2200,12 +2212,44 @@
     "minutes": 1440,
     "baseline_wait": 2448.28125,
     "selected_wait": 2440.78125,
+    "unserved_scenarios": 32,
+    "change_ratio": -0.003063373540110992,
     "saved_wait": 7.5,
     "until": "2026-10-25T06:30:00Z"
    }
   ],
   "horizons": [
    {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     }
+    ],
     "days": 3,
     "feeds": [
      {
@@ -2259,9 +2303,69 @@
     ],
     "data_ready": true,
     "qualified": false,
-    "reasons": []
+    "reasons": [
+     "accuracy_gate"
+    ]
    },
    {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": 4,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-28",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-29",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-30",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-31",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
     "days": 7,
     "feeds": [
      {
@@ -2323,15 +2427,19 @@
     ],
     "data_ready": false,
     "qualified": false,
-    "reasons": []
+    "reasons": [
+     "source_gate",
+     "accuracy_gate"
+    ]
    }
   ],
-  "schema_version": "HYBRID_PLAN_4",
+  "requested_horizon_minutes": 10080,
+  "schema_version": "HYBRID_UNIT_PLAN_1",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "fdf277365ae14f086b41e28501c6b6b8d02dea80f87f33d27f3e2d2662b19e22",
+  "plan_id": "a3d48285dfd03a7944062c7d7d68b71366be41e629b7ae0e7b39861ba5ae5590",
   "hospital_id": "ch-fictif",
-  "state_fingerprint": "0b1f62eef6a34743370208dbb6d55d62c99f283e802601c7b629f3b035d47148",
+  "state_fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
   "created_at": "2026-10-24T06:30:00Z",
   "expires_at": "2026-10-24T06:45:00Z",
   "selected": {

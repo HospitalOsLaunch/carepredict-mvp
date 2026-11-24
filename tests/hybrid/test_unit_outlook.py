@@ -89,7 +89,8 @@ def test_late_revisions_staleness_and_future_coverage_are_separate() -> None:
         "stale"
         in check_feed(
             replace_feed(
-                state, feed.model_copy(update=dict(issued_at=old, available_at=old, synced_at=old))
+                state,
+                feed.model_copy(update={"issued_at": old, "available_at": old, "synced_at": old}),
             ),
             unit,
             "bookings",
@@ -113,3 +114,66 @@ def test_double_booked_people_and_incomplete_civil_days() -> None:
     assert not horizon_check(
         replace_feed(state, ed.model_copy(update={"records": ed.records[:-1]})), roster.unit_id, 7
     ).data_ready
+
+
+def test_unknown_census_has_no_percentage_and_edd_never_grants_clearance() -> None:
+    from hospitalos.hybrid.models import Action, Bed, Discharge, Patient
+    from hospitalos.hybrid.multiday import paired_future
+    from hospitalos.hybrid.outlook import DepartureEstimate, Departures
+    from hospitalos.hybrid.simulation import Assumptions, simulate
+
+    state = source_state()
+    unit = state.units[0].id
+    patient = Patient(
+        id="current",
+        status="admitted",
+        bed_id="observed",
+        compatible_units=(unit,),
+        waiting_since=state.at,
+        medically_cleared=False,
+    )
+    bed = Bed(id="observed", unit_id=unit, state="occupied", occupant=patient.id)
+    logistics = Discharge(
+        id=patient.id,
+        documents_ready=True,
+        transport_required=False,
+        downstream_required=False,
+        escort_required=False,
+    )
+    state = state.model_copy(
+        update={"beds": (bed,), "patients": (patient,), "discharges": (logistics,)}
+    )
+    departure = next(f for f in state.outlooks[0].feeds if isinstance(f, Departures))
+    state = replace_feed(
+        state,
+        departure.model_copy(
+            update={
+                "records": (
+                    DepartureEstimate(
+                        stay_id=patient.id,
+                        reviewed_at=state.at,
+                        estimate=state.at + timedelta(minutes=5),
+                    ),
+                )
+            }
+        ),
+    )
+    tape = paired_future(state, None, 7, 1, 4320, multiday=True)
+    log = simulate(
+        state,
+        Action(kind="no_op"),
+        Assumptions(),
+        seed=7,
+        scenario=1,
+        horizon_minutes=4320,
+        future=tape,
+        multiday=True,
+    )
+    assert not any(e.kind == "depart" and e.patient_id == patient.id for e in log.events)
+    partial = state.model_copy(update={"issues": ("missing:bed:other",)})
+    quality = check_feed(partial, unit, "departures", state.at + timedelta(days=3))
+    assert (
+        "census_incomplete" in quality.reasons
+        and quality.expected is None
+        and quality.covered is None
+    )

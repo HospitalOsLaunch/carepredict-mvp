@@ -17,11 +17,14 @@ class StaffOffer(Closed):
     # Explicit locally validated capacity difference for this skill and shift.
     staffed_places: Annotated[StrictInt, Field(ge=1, le=100)]
     committed: bool = False
+    included_in_baseline: bool = False
 
     @model_validator(mode="after")
     def interval(self) -> Self:
         if self.option.end <= self.option.start:
             raise ValueError("Empty staff interval")
+        if self.included_in_baseline and not self.committed:
+            raise ValueError("An uncommitted offer cannot be included in baseline capacity")
         if self.committed and self.option.confirmation != "confirmed":
             raise ValueError("A committed shift requires confirmation")
         return self
@@ -50,6 +53,7 @@ class Booking(Closed):
 
 
 class UnitSchedule(Closed):
+    schema_version: Literal["UNIT_SCHEDULE_1"] = "UNIT_SCHEDULE_1"
     kind: Literal["unit_schedule"] = "unit_schedule"
     id: Identifier  # beneficiary unit
     # Total authorised staff-minutes across all offers including recorded commitments.

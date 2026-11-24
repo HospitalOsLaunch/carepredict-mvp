@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 import { journal } from "./data/journal";
 
@@ -306,6 +306,24 @@ describe("action block, all units, plan focales", () => {
     await ready();
     fireEvent.click(screen.getByRole("button", { name: /Médecine polyvalente/ }));
     expect((await screen.findByTestId("switcher-all")).getAttribute("href")).toBe("#/unites");
+  });
+
+  it("shows the real scheduled pair, its shared identity and the source gate", async () => {
+    window.history.replaceState(null, "", "/?situation=garde");
+    render(<App />);
+    const card = await screen.findByTestId("proposal");
+    expect(card.textContent).toMatch(/IDE-garde/);
+    expect(card.textContent).toMatch(/ADM-garde/);
+    const id = card.dataset.planId;
+    window.location.hash = "/plan/24h";
+    const pane = await screen.findByTestId("unit-plan");
+    await waitFor(() => expect(pane.dataset.planId).toBe(id));
+    expect(within(pane).getByText(/prêt de medecine-interne/)).toBeTruthy();
+    window.location.hash = "/donnees";
+    const data = await screen.findByTestId("outlook-quality");
+    expect(data.textContent).toMatch(/précision|prédictive/i);
+    expect(data.textContent).toContain("Dates de sortie prévisionnelles");
+    expect(data.querySelectorAll("[data-src]").length).toBeGreaterThan(8);
   });
 
   it("reads the plan through focal lengths, never planning beyond 24 h", async () => {
