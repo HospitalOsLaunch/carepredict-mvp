@@ -1,0 +1,7 @@
+# Vérification de bout en bout, après les deux bancs
+
+Les premiers contextes de classement exercent le planificateur sur des relèves dépourvues de profil de séjour. Avant de publier, vérifier la jonction en activant réellement les quatre sources sur une unité de médecine polyvalente.
+
+Lot descriptif inédit. Utiliser les indices 48 à 71 de la famille transport et bionettoyage, deux budgets de gestes, quatre réalisations cachées par contexte. Relève à 05 h 30 à Paris. Ajouter un lit oxygéné occupé par un séjour sans blocage logistique, admis un à trois jours civils auparavant, ainsi que zéro, une ou deux arrivées des urgences publiées par jour. Dans la référence indépendante, tirer localement l'heure d'arrivée en journée et la sortie conditionnelle du résident à partir d'aléas distincts des scénarios du moteur. Le compte journalier est connu par construction. Conserver les départs, la file, le nettoyage et la pratique d'équipe dans la référence pour toutes les branches, même lorsque le moteur les prévoit mal.
+
+Comparer sur le même état publié le planificateur de la PR 51 (sans activation du profil) et le planificateur avec flux. Énumérer tous les gestes et toutes les paires admissibles de ce contexte. Mesurer le regret et le nombre de choix modifiés, améliorés et dégradés face à la pratique active. Ni seuil de promotion ni réglage sur ces cas. Publier les résultats nuls et négatifs. Ce contrôle de jonction n'étend pas la qualification du classement à d'autres unités ou familles.
