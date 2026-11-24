@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 from .models import Action, Patient, State, compatible
@@ -51,6 +52,7 @@ def score(
     *,
     expected_future: FutureTape | None = None,
     actions: tuple[Action, ...] = (),
+    late: Mapping[str, int] | None = None,
 ) -> Score:
     expected_future = expected_future or FutureTape(state.at, ())
     state, expected_future = staffing_tape(state, expected_future, actions)
@@ -70,6 +72,10 @@ def score(
     discharges = {d.id: d for d in state.discharges}
     pools = {p.id: p for p in state.pools}
     requested = {d.id for d in state.discharges if d.transport_requested is True}
+    # A transport request is made at D, or at the declared minute when the team makes it later.
+    request_minute = {
+        a.patient_id: (late or {}).get(a.key, 0) for a in actions if a.kind == "request_transport"
+    }
     ready: set[str] = set()
     downstream_reserved: set[str] = set()
     downstream_limits = {r.id: r.available or 0 for r in state.pools if r.resource == "downstream"}
@@ -232,7 +238,12 @@ def score(
             d = discharges[p.id]
             if event.kind == "request_transport":
                 if (
-                    event.minute != 0
+                    # Now: at D. By the team: not before the declared delay (it may retry later).
+                    (
+                        event.minute != 0
+                        if not request_minute.get(p.id)
+                        else event.minute < request_minute[p.id]
+                    )
                     or d.transport_required is not True
                     or d.transport_requested is not False
                     or p.id in requested

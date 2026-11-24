@@ -511,6 +511,9 @@ export interface UnitSummary {
   /** For the all-units view: the priority action in words, its gain, departures, doubts. */
   action?: string | null;
   saved?: number | null;
+  /** Gain hypothesis: nobody makes the gesture before this time. */
+  savedUntil?: string | null;
+  nearTie?: boolean;
   departures?: { ready: number; total: number };
   checks?: number;
   doubtful?: boolean;
@@ -528,6 +531,7 @@ export function unitSummary(
   const q = queueEntries(a.state);
   const chains = releaseChains(a.state, a.plan);
   const gain = a.plan && a.plan.decision === "recommend" ? gainOf(a.plan) : null;
+  const practice = a.plan ? practiceOf(a.plan) : null;
   return {
     id,
     name,
@@ -537,7 +541,9 @@ export function unitSummary(
     dirty: s.dirty,
     longestWaitMinutes: q.length ? Math.max(...q.map((e) => e.waitedMinutes)) : null,
     action: a.plan && a.plan.decision === "recommend" && title ? title(a.plan, a) : null,
-    saved: gain ? gain.saved : null,
+    saved: practice ? practice.never : gain ? gain.saved : null,
+    savedUntil: practice ? practice.until : null,
+    nearTie: practice ? practice.contenders.length > 0 : false,
     departures: { ready: chains.filter((c) => nextStep(c.links).tone === "ok").length, total: chains.length },
     checks: new Set([...a.state.issues, ...a.gateReasons]).size,
     doubtful: doubtful(a),
@@ -676,6 +682,87 @@ export function gainOf(plan: Plan): Gain | null {
     windowMinutes: plan.horizon_minutes,
   };
 }
+
+/**
+ * The gain against an explicit team practice (review of PR #50): « nobody makes the gesture
+ * within the window » is one hypothesis among others. Rows: the same gesture made by the team
+ * after a delay, low/high over the two preparation conventions. Contenders: another first
+ * gesture that does as well or better under some practice (a near tie to show, not to hide).
+ */
+export interface PracticeRow {
+  delay: number;
+  low: number;
+  high: number;
+  lowIndex: number;
+  highIndex: number;
+}
+export interface Contender {
+  action: Action;
+  /** Delays (minutes) under which it does as well or better, ascending. */
+  delays: number[];
+  preparations: Array<"after_request" | "already_started">;
+  /** Largest lead, and the case where it is reached. */
+  margin: number;
+  index: number;
+}
+export interface Practice {
+  never: number;
+  until: string;
+  windowMinutes: number;
+  supported: boolean;
+  rows: PracticeRow[];
+  contenders: Contender[];
+}
+
+const actionKey = (a: Action) =>
+  a.slot_id ? `${a.kind}:${a.slot_id}:${a.bed_id ?? ""}` : `${a.kind}:${a.bed_id ?? ""}:${a.patient_id ?? ""}`;
+
+export function practiceOf(plan: Plan): Practice | null {
+  const tp = plan.team_practice;
+  if (!tp || plan.decision !== "recommend") return null;
+  const first = actionKey(steps(plan)[0] ?? plan.selected);
+  const delays = [...new Set(tp.cases.map((c) => c.delay_minutes))].sort((a, b) => b - a);
+  const rows = delays.map((delay) => {
+    const idx = tp.cases.map((c, i) => [c, i] as const).filter(([c]) => c.delay_minutes === delay);
+    const [lo] = idx.reduce((m, x) => (x[0].saved_wait < m[0].saved_wait ? x : m));
+    const [hi] = idx.reduce((m, x) => (x[0].saved_wait > m[0].saved_wait ? x : m));
+    return {
+      delay,
+      low: lo.saved_wait,
+      high: hi.saved_wait,
+      lowIndex: tp.cases.indexOf(lo),
+      highIndex: tp.cases.indexOf(hi),
+    };
+  });
+  const byKey = new Map<string, Contender>();
+  tp.cases.forEach((c, index) => {
+    const key = actionKey(c.leader);
+    if (key === first || c.leader.kind === "no_op") return;
+    const k = byKey.get(key) ?? { action: c.leader, delays: [], preparations: [], margin: -1, index };
+    if (!k.delays.includes(c.delay_minutes)) k.delays.push(c.delay_minutes);
+    if (!k.preparations.includes(c.preparation)) k.preparations.push(c.preparation);
+    if (c.leader_margin > k.margin) Object.assign(k, { margin: c.leader_margin, index });
+    byKey.set(key, k);
+  });
+  const contenders = [...byKey.values()].map((k) => ({ ...k, delays: k.delays.sort((a, b) => a - b) }));
+  return {
+    never: tp.never_saved_wait,
+    until: clock(tp.until),
+    windowMinutes: tp.window_minutes,
+    supported: tp.supported,
+    rows,
+    contenders,
+  };
+}
+
+/** « dans 30 min ou dans l'heure ». */
+export const delaysText = (delays: number[]) => delays.map(delayText).join(" ou ");
+
+export const delayText = (minutes: number) =>
+  minutes === 60 ? "dans l'heure" : minutes % 60 === 0 ? `dans ${minutes / 60} h` : `dans ${minutes} min`;
+
+/** « −1 h 27 », or « ≈ 0 » under half a minute. */
+export const savedText = (minutes: number) => (minutes < 0.5 ? "≈ 0" : `−${waitText(minutes)}`);
 
 /** « 4 h 44 » of waiting, never a bare number. */
 export const waitText = (minutes: number): string => duration(Math.abs(minutes));

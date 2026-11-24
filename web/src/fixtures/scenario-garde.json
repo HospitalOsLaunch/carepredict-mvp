@@ -1293,6 +1293,40 @@
     "until": "2026-10-25T06:30:00Z"
    }
   ],
+  "team_practice": {
+   "window_minutes": 720,
+   "until": "2026-10-24T18:30:00Z",
+   "selected_wait": 0.0,
+   "never_wait": 90.0,
+   "never_saved_wait": 90.0,
+   "cases": [],
+   "material_minutes": 1.0,
+   "supported": false,
+   "step_saved_wait": [
+    0.0,
+    90.0
+   ],
+   "alternatives": [
+    {
+     "action": {
+      "kind": "reinforce",
+      "bed_id": null,
+      "patient_id": null,
+      "slot_id": "IDE-garde"
+     },
+     "saved_wait": 0.0
+    },
+    {
+     "action": {
+      "kind": "prepare_admission",
+      "bed_id": "L-garde",
+      "patient_id": null,
+      "slot_id": "ADM-garde"
+     },
+     "saved_wait": 0.0
+    }
+   ]
+  },
   "horizons": [
    {
     "perspective": [

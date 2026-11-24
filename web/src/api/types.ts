@@ -180,9 +180,31 @@ export interface HorizonCheck { perspective: PublicDay[]; days: number; data_rea
 export interface PlanWindow {
   unserved_scenarios: number; change_ratio: number | null; minutes: number; baseline_wait: number; selected_wait: number; saved_wait: number; until: string;
 }
+/** What the team would have done without HospitalOS: the same gestures, later (sensitivity). */
+export interface PracticeCase {
+  delay_minutes: number;
+  preparation: "after_request" | "already_started";
+  baseline_wait: number;
+  saved_wait: number;
+  leader: Action;
+  leader_margin: number;
+}
+export interface TeamPractice {
+  window_minutes: number;
+  until: string;
+  selected_wait: number;
+  never_wait: number;
+  never_saved_wait: number;
+  cases: PracticeCase[];
+  material_minutes: number;
+  supported: boolean;
+  step_saved_wait?: number[];
+  alternatives?: { action: Action; saved_wait: number }[];
+}
 export interface Plan {
   unit_id?: string | null;
   windows?: PlanWindow[];
+  team_practice?: TeamPractice | null;
   action_timing?: { starts_at: string; ends_at: string | null; skill: string | null; lender: string | null }[];
   requested_horizon_minutes?: number | null;
   horizons?: HorizonCheck[];

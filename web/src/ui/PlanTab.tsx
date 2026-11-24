@@ -170,9 +170,9 @@ export function PlanTab({ focal, a, unitName }: { focal: Focal; a: Assessment | 
                 <dl className="kv-strip">
                   {(
                     [
-                      ["Sans action", "baseline_wait"],
+                      ["Si personne ne fait ces gestes", "baseline_wait"],
                       ["Avec le plan", "selected_wait"],
-                      ["Attente évitée", "saved_wait"],
+                      ["Attente évitée, au plus", "saved_wait"],
                     ] as const
                   ).map(([label, key]) => (
                     <div className="kv" key={key}>
@@ -184,6 +184,11 @@ export function PlanTab({ focal, a, unitName }: { focal: Focal; a: Assessment | 
                     </div>
                   ))}
                 </dl>
+                <p className="mute" data-testid="window-hypothesis">
+                  Comparé à une équipe qui ne ferait aucun de ces gestes d'ici là : c'est un maximum. Plus la
+                  fenêtre est longue, plus ce chiffre grandit. La page unité donne le gain selon ce que l'équipe
+                  aurait fait elle-même.
+                </p>
                 <a className="btn btn--primary" href="#/">
                   Examiner la décision sur la page unité
                 </a>

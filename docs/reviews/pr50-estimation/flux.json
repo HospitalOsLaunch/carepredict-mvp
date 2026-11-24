@@ -1,0 +1,394 @@
+{
+  "revision": "85a8ee794ac8952c134cd01e21d691103eb23d3e",
+  "univers": 8,
+  "scenarios": 4,
+  "resultats": [
+    {
+      "mode": "court",
+      "jours": 1,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 0.47232142857142856,
+      "admissions_cible": 2.4160714285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 2.4107142857142856,
+      "sorties_nouveaux_cible": 0.19196428571428573,
+      "sorties_init_sans_accord_a_D_cible": 1.2642857142857142,
+      "sorties_init_avec_accord_a_D_cible": 0.9544642857142858,
+      "lits_biais": -1.2160714285714285,
+      "lits_mae": 1.7089285714285714,
+      "persistance_mae": 1.2267857142857144,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "court_dates",
+      "jours": 1,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 0.4591517857142857,
+      "admissions_cible": 2.4160714285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 2.4107142857142856,
+      "sorties_nouveaux_cible": 0.19196428571428573,
+      "sorties_init_sans_accord_a_D_cible": 1.2642857142857142,
+      "sorties_init_avec_accord_a_D_cible": 0.9544642857142858,
+      "lits_biais": -1.2292410714285715,
+      "lits_mae": 1.714955357142857,
+      "persistance_mae": 1.2267857142857144,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "court_urgences",
+      "jours": 1,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 2.329017857142857,
+      "admissions_cible": 2.4160714285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 2.4107142857142856,
+      "sorties_nouveaux_cible": 0.19196428571428573,
+      "sorties_init_sans_accord_a_D_cible": 1.2642857142857142,
+      "sorties_init_avec_accord_a_D_cible": 0.9544642857142858,
+      "lits_biais": 0.640625,
+      "lits_mae": 1.3294642857142858,
+      "persistance_mae": 1.2267857142857144,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "court_urgences_dates",
+      "jours": 1,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 2.0013392857142858,
+      "admissions_cible": 2.4160714285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 2.4107142857142856,
+      "sorties_nouveaux_cible": 0.19196428571428573,
+      "sorties_init_sans_accord_a_D_cible": 1.2642857142857142,
+      "sorties_init_avec_accord_a_D_cible": 0.9544642857142858,
+      "lits_biais": 0.31294642857142857,
+      "lits_mae": 1.4517857142857142,
+      "persistance_mae": 1.2267857142857144,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "long",
+      "jours": 1,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 2.0013392857142858,
+      "admissions_cible": 2.4160714285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 2.4107142857142856,
+      "sorties_nouveaux_cible": 0.19196428571428573,
+      "sorties_init_sans_accord_a_D_cible": 1.2642857142857142,
+      "sorties_init_avec_accord_a_D_cible": 0.9544642857142858,
+      "lits_biais": 0.31294642857142857,
+      "lits_mae": 1.4517857142857142,
+      "persistance_mae": 1.2267857142857144,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "long",
+      "jours": 3,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 4.583482142857143,
+      "admissions_cible": 7.2508928571428575,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 7.25625,
+      "sorties_nouveaux_cible": 2.257142857142857,
+      "sorties_init_sans_accord_a_D_cible": 3.3160714285714286,
+      "sorties_init_avec_accord_a_D_cible": 1.6830357142857142,
+      "lits_biais": 2.9058035714285713,
+      "lits_mae": 2.9174107142857144,
+      "persistance_mae": 1.5303571428571427,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    },
+    {
+      "mode": "long",
+      "jours": 7,
+      "releves": 1120,
+      "lits_a_origine": 5.954464285714286,
+      "admissions_prevues": 5.103571428571429,
+      "admissions_cible": 16.87589285714286,
+      "sorties_prevues": 1.6830357142857142,
+      "sorties_cible": 16.92142857142857,
+      "sorties_nouveaux_cible": 10.966964285714285,
+      "sorties_init_sans_accord_a_D_cible": 4.271428571428571,
+      "sorties_init_avec_accord_a_D_cible": 1.6830357142857142,
+      "lits_biais": 3.4660714285714285,
+      "lits_mae": 3.4660714285714285,
+      "persistance_mae": 1.55625,
+      "attente_a_D": 0,
+      "besoin_transport_a_D": 0
+    }
+  ],
+  "resultats_par_unite": [
+    {
+      "mode": "court",
+      "jours": 1,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 2.1214285714285714,
+      "lits_biais": -2.0428571428571427,
+      "persistance_mae": 0.7571428571428571
+    },
+    {
+      "mode": "court",
+      "jours": 1,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.6,
+      "lits_biais": -1.2285714285714286,
+      "persistance_mae": 1.0571428571428572
+    },
+    {
+      "mode": "court",
+      "jours": 1,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 1.6107142857142858,
+      "lits_biais": -0.9678571428571429,
+      "persistance_mae": 1.5285714285714285
+    },
+    {
+      "mode": "court",
+      "jours": 1,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 1.5035714285714286,
+      "lits_biais": -0.625,
+      "persistance_mae": 1.5642857142857143
+    },
+    {
+      "mode": "court_dates",
+      "jours": 1,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 2.138392857142857,
+      "lits_biais": -2.0741071428571427,
+      "persistance_mae": 0.7571428571428571
+    },
+    {
+      "mode": "court_dates",
+      "jours": 1,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.6044642857142857,
+      "lits_biais": -1.2473214285714285,
+      "persistance_mae": 1.0571428571428572
+    },
+    {
+      "mode": "court_dates",
+      "jours": 1,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 1.613392857142857,
+      "lits_biais": -0.9705357142857143,
+      "persistance_mae": 1.5285714285714285
+    },
+    {
+      "mode": "court_dates",
+      "jours": 1,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 1.5035714285714286,
+      "lits_biais": -0.625,
+      "persistance_mae": 1.5642857142857143
+    },
+    {
+      "mode": "court_urgences",
+      "jours": 1,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 0.8517857142857143,
+      "lits_biais": 0.06964285714285715,
+      "persistance_mae": 0.7571428571428571
+    },
+    {
+      "mode": "court_urgences",
+      "jours": 1,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.01875,
+      "lits_biais": 0.2044642857142857,
+      "persistance_mae": 1.0571428571428572
+    },
+    {
+      "mode": "court_urgences",
+      "jours": 1,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 1.6517857142857142,
+      "lits_biais": 0.9571428571428572,
+      "persistance_mae": 1.5285714285714285
+    },
+    {
+      "mode": "court_urgences",
+      "jours": 1,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 1.7955357142857142,
+      "lits_biais": 1.33125,
+      "persistance_mae": 1.5642857142857143
+    },
+    {
+      "mode": "court_urgences_dates",
+      "jours": 1,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 1.2401785714285714,
+      "lits_biais": -0.8508928571428571,
+      "persistance_mae": 0.7571428571428571
+    },
+    {
+      "mode": "court_urgences_dates",
+      "jours": 1,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.1214285714285714,
+      "lits_biais": -0.1392857142857143,
+      "persistance_mae": 1.0571428571428572
+    },
+    {
+      "mode": "court_urgences_dates",
+      "jours": 1,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 1.6517857142857142,
+      "lits_biais": 0.9125,
+      "persistance_mae": 1.5285714285714285
+    },
+    {
+      "mode": "court_urgences_dates",
+      "jours": 1,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 1.79375,
+      "lits_biais": 1.3294642857142858,
+      "persistance_mae": 1.5642857142857143
+    },
+    {
+      "mode": "long",
+      "jours": 1,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 1.2401785714285714,
+      "lits_biais": -0.8508928571428571,
+      "persistance_mae": 0.7571428571428571
+    },
+    {
+      "mode": "long",
+      "jours": 1,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.1214285714285714,
+      "lits_biais": -0.1392857142857143,
+      "persistance_mae": 1.0571428571428572
+    },
+    {
+      "mode": "long",
+      "jours": 1,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 1.6517857142857142,
+      "lits_biais": 0.9125,
+      "persistance_mae": 1.5285714285714285
+    },
+    {
+      "mode": "long",
+      "jours": 1,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 1.79375,
+      "lits_biais": 1.3294642857142858,
+      "persistance_mae": 1.5642857142857143
+    },
+    {
+      "mode": "long",
+      "jours": 3,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 0.5535714285714286,
+      "lits_biais": 0.5535714285714286,
+      "persistance_mae": 0.7392857142857143
+    },
+    {
+      "mode": "long",
+      "jours": 3,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.31875,
+      "lits_biais": 1.2973214285714285,
+      "persistance_mae": 1.2321428571428572
+    },
+    {
+      "mode": "long",
+      "jours": 3,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 4.299107142857143,
+      "lits_biais": 4.274107142857143,
+      "persistance_mae": 2.1357142857142857
+    },
+    {
+      "mode": "long",
+      "jours": 3,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 5.498214285714286,
+      "lits_biais": 5.498214285714286,
+      "persistance_mae": 2.0142857142857142
+    },
+    {
+      "mode": "long",
+      "jours": 7,
+      "unite": "medecine-polyvalente",
+      "releves": 280,
+      "lits_mae": 0.5535714285714286,
+      "lits_biais": 0.5535714285714286,
+      "persistance_mae": 0.6678571428571428
+    },
+    {
+      "mode": "long",
+      "jours": 7,
+      "unite": "court-sejour-geriatrique",
+      "releves": 280,
+      "lits_mae": 1.35,
+      "lits_biais": 1.35,
+      "persistance_mae": 1.2464285714285714
+    },
+    {
+      "mode": "long",
+      "jours": 7,
+      "unite": "medecine-interne",
+      "releves": 280,
+      "lits_mae": 5.1571428571428575,
+      "lits_biais": 5.1571428571428575,
+      "persistance_mae": 2.2714285714285714
+    },
+    {
+      "mode": "long",
+      "jours": 7,
+      "unite": "pneumologie",
+      "releves": 280,
+      "lits_mae": 6.803571428571429,
+      "lits_biais": 6.803571428571429,
+      "persistance_mae": 2.039285714285714
+    }
+  ],
+  "ajout_urgences_sur_le_panel": {
+    "baisse_mae_lits": 0.3794642857142857,
+    "intervalle_95": [
+      0.24240513392857144,
+      0.5245758928571427
+    ]
+  }
+}

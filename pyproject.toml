@@ -98,6 +98,8 @@ extend-exclude = [
   "scripts/action_effects", "scripts/plan48", "scripts/dev",
   "scripts/howm*.py", "scripts/bfrag*.py", "scripts/bf2w*.py", "scripts/p5*.py", "scripts/ds_*.py",
   "scripts/restore_receipt_howm1.py", "evidence",
+  # External review artefacts, kept verbatim (docs/reviews/*/README in each folder).
+  "docs/reviews",
 ]
 
 [tool.ruff.lint]

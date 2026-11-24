@@ -3400,3 +3400,16 @@ textarea.input {
   .far-day { grid-template-columns: 1fr auto; }
   .far-day__list { grid-column: 1 / -1; }
 }
+
+/* ---------- gain against the team's practice (review of PR #50) ---------- */
+.practice { width: 100%; border-collapse: collapse; margin: var(--s2) 0 0; font-size: var(--t-sm); }
+.practice th, .practice td { padding: 6px 0; border-bottom: 1px solid var(--line-soft); text-align: left; font-weight: 500; }
+.practice thead th { font-size: var(--t-xs); font-weight: 700; color: var(--ink-3); letter-spacing: 0.02em; }
+.practice td.r, .practice th.r { text-align: right; font-weight: 700; white-space: nowrap; }
+.practice tbody tr:first-child th, .practice tbody tr:first-child td { color: var(--ink-3); }
+.effect__tie { margin: var(--s2) 0 0; padding: var(--s2) var(--s3); border-radius: var(--r-md, 8px); background: var(--sac-wash); border: 1px solid color-mix(in srgb, var(--sac-mark) 50%, transparent); font-size: var(--t-sm); }
+.others__tie { margin: 2px 0 0; font-size: var(--t-xs); font-weight: 650; color: var(--sac); }
+.allunits__tie { display: block; font-size: 12px; font-weight: 650; color: var(--sac); }
+/* Long bed names (« L-garde ») must not run under the capability badge. */
+.magnet:has(.magnet__cap) .magnet__id { padding-right: 26px; overflow-wrap: anywhere; }
+.magnet__cap { opacity: 1; }

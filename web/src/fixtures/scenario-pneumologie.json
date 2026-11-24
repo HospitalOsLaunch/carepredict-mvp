@@ -839,6 +839,7 @@
   "action_timing": [],
   "unit_id": "pneumologie",
   "windows": [],
+  "team_practice": null,
   "horizons": [
    {
     "perspective": [
