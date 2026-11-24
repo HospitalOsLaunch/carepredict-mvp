@@ -1,0 +1,780 @@
+{
+  "summary": [
+    {
+      "budget": 1,
+      "contexts": 24,
+      "changed": 14,
+      "improved": 7,
+      "degraded": 7,
+      "historical_regret": 8.895833333333334,
+      "cohort_regret": 11.3125,
+      "historical_gain": 26.020833333333332,
+      "cohort_gain": 23.604166666666668
+    },
+    {
+      "budget": 2,
+      "contexts": 24,
+      "changed": 14,
+      "improved": 2,
+      "degraded": 11,
+      "historical_regret": 2.7916666666666665,
+      "cohort_regret": 19.979166666666668,
+      "historical_gain": 40.791666666666664,
+      "cohort_gain": 23.604166666666668
+    }
+  ],
+  "contexts": [
+    {
+      "index": 48,
+      "budget": 1,
+      "ordinary": 784.5,
+      "optimum": 752.25,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 32.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 32.25
+    },
+    {
+      "index": 48,
+      "budget": 2,
+      "ordinary": 784.5,
+      "optimum": 752.25,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 32.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 32.25
+    },
+    {
+      "index": 49,
+      "budget": 1,
+      "ordinary": 541.5,
+      "optimum": 539.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 2.25,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 2.25
+    },
+    {
+      "index": 49,
+      "budget": 2,
+      "ordinary": 541.5,
+      "optimum": 539.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 2.25,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 2.25
+    },
+    {
+      "index": 50,
+      "budget": 1,
+      "ordinary": 143.75,
+      "optimum": 142,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 1.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0,
+      "cohort_gain": 1.75
+    },
+    {
+      "index": 50,
+      "budget": 2,
+      "ordinary": 143.75,
+      "optimum": 142,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 1.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0,
+      "cohort_gain": 1.75
+    },
+    {
+      "index": 51,
+      "budget": 1,
+      "ordinary": 767.75,
+      "optimum": 754.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 13.5,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 13.5
+    },
+    {
+      "index": 51,
+      "budget": 2,
+      "ordinary": 767.75,
+      "optimum": 754.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 13.5,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 13.5
+    },
+    {
+      "index": 52,
+      "budget": 1,
+      "ordinary": 348.5,
+      "optimum": 333.75,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 19.0,
+      "historical_gain": -4.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 19.0,
+      "cohort_gain": -4.25
+    },
+    {
+      "index": 52,
+      "budget": 2,
+      "ordinary": 348.5,
+      "optimum": 333.75,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 19.0,
+      "historical_gain": -4.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 19.0,
+      "cohort_gain": -4.25
+    },
+    {
+      "index": 53,
+      "budget": 1,
+      "ordinary": 1065.5,
+      "optimum": 1014.75,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 15.0,
+      "historical_gain": 35.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 50.75
+    },
+    {
+      "index": 53,
+      "budget": 2,
+      "ordinary": 1065.5,
+      "optimum": 979,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 86.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 35.75,
+      "cohort_gain": 50.75
+    },
+    {
+      "index": 54,
+      "budget": 1,
+      "ordinary": 766.25,
+      "optimum": 741.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 24.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 24.75
+    },
+    {
+      "index": 54,
+      "budget": 2,
+      "ordinary": 766.25,
+      "optimum": 741.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 24.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 24.75
+    },
+    {
+      "index": 55,
+      "budget": 1,
+      "ordinary": 868,
+      "optimum": 817,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 51,
+      "historical_gain": 0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0,
+      "cohort_gain": 51
+    },
+    {
+      "index": 55,
+      "budget": 2,
+      "ordinary": 868,
+      "optimum": 817,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 51,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0,
+      "cohort_gain": 51
+    },
+    {
+      "index": 56,
+      "budget": 1,
+      "ordinary": 143.5,
+      "optimum": 143.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.25,
+      "historical_gain": -0.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.25,
+      "cohort_gain": -0.25
+    },
+    {
+      "index": 56,
+      "budget": 2,
+      "ordinary": 143.5,
+      "optimum": 143.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.25,
+      "historical_gain": -0.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.25,
+      "cohort_gain": -0.25
+    },
+    {
+      "index": 57,
+      "budget": 1,
+      "ordinary": 1539.25,
+      "optimum": 1495.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 43.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 43.75
+    },
+    {
+      "index": 57,
+      "budget": 2,
+      "ordinary": 1539.25,
+      "optimum": 1495.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 43.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 43.75
+    },
+    {
+      "index": 58,
+      "budget": 1,
+      "ordinary": 285.25,
+      "optimum": 238.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 17.0,
+      "historical_gain": 30.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 47.0
+    },
+    {
+      "index": 58,
+      "budget": 2,
+      "ordinary": 285.25,
+      "optimum": 208.25,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 77.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 30.0,
+      "cohort_gain": 47.0
+    },
+    {
+      "index": 59,
+      "budget": 1,
+      "ordinary": 987.5,
+      "optimum": 950.75,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 20.75,
+      "historical_gain": 16.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 36.75
+    },
+    {
+      "index": 59,
+      "budget": 2,
+      "ordinary": 987.5,
+      "optimum": 934.75,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 52.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 16.0,
+      "cohort_gain": 36.75
+    },
+    {
+      "index": 60,
+      "budget": 1,
+      "ordinary": 379.5,
+      "optimum": 374.5,
+      "historical": [],
+      "historical_regret": 5.0,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 12.25,
+      "cohort_gain": -7.25
+    },
+    {
+      "index": 60,
+      "budget": 2,
+      "ordinary": 379.5,
+      "optimum": 374.5,
+      "historical": [],
+      "historical_regret": 5.0,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 12.25,
+      "cohort_gain": -7.25
+    },
+    {
+      "index": 61,
+      "budget": 1,
+      "ordinary": 809.5,
+      "optimum": 797.5,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 11.75,
+      "historical_gain": 0.25,
+      "cohort": [],
+      "cohort_regret": 12.0,
+      "cohort_gain": 0.0
+    },
+    {
+      "index": 61,
+      "budget": 2,
+      "ordinary": 809.5,
+      "optimum": 797.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 12.0,
+      "historical_gain": 0.25,
+      "cohort": [],
+      "cohort_regret": 12.25,
+      "cohort_gain": 0.0
+    },
+    {
+      "index": 62,
+      "budget": 1,
+      "ordinary": 425.75,
+      "optimum": 306.25,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 119.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 85.5,
+      "cohort_gain": 34.0
+    },
+    {
+      "index": 62,
+      "budget": 2,
+      "ordinary": 425.75,
+      "optimum": 272.25,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 153.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 119.5,
+      "cohort_gain": 34.0
+    },
+    {
+      "index": 63,
+      "budget": 1,
+      "ordinary": 1267.25,
+      "optimum": 1219.75,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 47.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 47.5
+    },
+    {
+      "index": 63,
+      "budget": 2,
+      "ordinary": 1267.25,
+      "optimum": 1219.75,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 47.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 47.5
+    },
+    {
+      "index": 64,
+      "budget": 1,
+      "ordinary": 199,
+      "optimum": 199,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 3.25,
+      "historical_gain": -3.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 3.25,
+      "cohort_gain": -3.25
+    },
+    {
+      "index": 64,
+      "budget": 2,
+      "ordinary": 199,
+      "optimum": 199,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 3.25,
+      "historical_gain": -3.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 3.25,
+      "cohort_gain": -3.25
+    },
+    {
+      "index": 65,
+      "budget": 1,
+      "ordinary": 899.75,
+      "optimum": 827.75,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 72.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 21.0,
+      "cohort_gain": 51.0
+    },
+    {
+      "index": 65,
+      "budget": 2,
+      "ordinary": 899.75,
+      "optimum": 776.75,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 123.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 72.0,
+      "cohort_gain": 51.0
+    },
+    {
+      "index": 66,
+      "budget": 1,
+      "ordinary": 610.25,
+      "optimum": 544.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 65.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 65.75
+    },
+    {
+      "index": 66,
+      "budget": 2,
+      "ordinary": 610.25,
+      "optimum": 544.5,
+      "historical": [
+        "prioritize_cleaning:B:"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 65.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 65.75
+    },
+    {
+      "index": 67,
+      "budget": 1,
+      "ordinary": 970.25,
+      "optimum": 926.5,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 43.0,
+      "historical_gain": 0.75,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.0,
+      "cohort_gain": 43.75
+    },
+    {
+      "index": 67,
+      "budget": 2,
+      "ordinary": 970.25,
+      "optimum": 925.75,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 44.5,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 0.75,
+      "cohort_gain": 43.75
+    },
+    {
+      "index": 68,
+      "budget": 1,
+      "ordinary": 390,
+      "optimum": 270,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 120,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 79.75,
+      "cohort_gain": 40.25
+    },
+    {
+      "index": 68,
+      "budget": 2,
+      "ordinary": 390,
+      "optimum": 229.75,
+      "historical": [
+        "prioritize_cleaning:B:",
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0.0,
+      "historical_gain": 160.25,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 120.0,
+      "cohort_gain": 40.25
+    },
+    {
+      "index": 69,
+      "budget": 1,
+      "ordinary": 965.75,
+      "optimum": 962,
+      "historical": [],
+      "historical_regret": 3.75,
+      "historical_gain": 0.0,
+      "cohort": [],
+      "cohort_regret": 3.75,
+      "cohort_gain": 0.0
+    },
+    {
+      "index": 69,
+      "budget": 2,
+      "ordinary": 965.75,
+      "optimum": 962,
+      "historical": [],
+      "historical_regret": 3.75,
+      "historical_gain": 0.0,
+      "cohort": [],
+      "cohort_regret": 3.75,
+      "cohort_gain": 0.0
+    },
+    {
+      "index": 70,
+      "budget": 1,
+      "ordinary": 232.25,
+      "optimum": 224.25,
+      "historical": [],
+      "historical_regret": 8.0,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 12.5,
+      "cohort_gain": -4.5
+    },
+    {
+      "index": 70,
+      "budget": 2,
+      "ordinary": 232.25,
+      "optimum": 224.25,
+      "historical": [],
+      "historical_regret": 8.0,
+      "historical_gain": 0.0,
+      "cohort": [
+        "prioritize_cleaning:B:"
+      ],
+      "cohort_regret": 12.5,
+      "cohort_gain": -4.5
+    },
+    {
+      "index": 71,
+      "budget": 1,
+      "ordinary": 798.25,
+      "optimum": 776,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 22.25,
+      "cohort": [],
+      "cohort_regret": 22.25,
+      "cohort_gain": 0.0
+    },
+    {
+      "index": 71,
+      "budget": 2,
+      "ordinary": 798.25,
+      "optimum": 776,
+      "historical": [
+        "request_transport:C:out"
+      ],
+      "historical_regret": 0,
+      "historical_gain": 22.25,
+      "cohort": [],
+      "cohort_regret": 22.25,
+      "cohort_gain": 0.0
+    }
+  ]
+}
