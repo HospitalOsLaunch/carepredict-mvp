@@ -144,6 +144,39 @@ def study(index, *, factorial=False):
     return samples, outcomes, coverage
 
 
+def saturation_diagnostic(samples):
+    """Post hoc J+1 attribution using only the census at the origin to define each group."""
+    groups = defaultdict(list)
+    for (
+        world,
+        unit,
+        _,
+        h,
+        mode,
+        projected,
+        target,
+        entries,
+        actual_entries,
+        exits,
+        actual_exits,
+    ) in samples:
+        if h == 1 and mode == "cohort_v2":
+            start = projected - entries + exits
+            cap = 7 + bank.UNITS.index(unit) + world % 3
+            groups["full" if start == cap else "spare"].append(
+                (projected - target, entries - actual_entries, exits - actual_exits)
+            )
+    return {
+        name: {
+            "origins": len(rows),
+            "occupancy_bias": mean(r[0] for r in rows),
+            "admissions_bias": mean(r[1] for r in rows),
+            "departures_bias": mean(r[2] for r in rows),
+        }
+        for name, rows in groups.items()
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workers", type=int, default=4)
@@ -177,8 +210,9 @@ def main():
         u: sum(r[1] for r in coverage if r[0] == u) / sum(r[2] for r in coverage if r[0] == u)
         for u in bank.UNITS
     }
+    panel_coverage = mean(date_coverage.values())
     for u in bank.UNITS:
-        if date_coverage[u] < 0.90:
+        if min(date_coverage[u], panel_coverage) < 0.90:
             qualified[u] = []
     comparisons = []
     for scope in (*bank.UNITS, "all_units"):
@@ -235,6 +269,7 @@ def main():
                 "coverage": date_coverage,
                 "comparisons": comparisons,
                 "gates": gates,
+                "posthoc_full_census_j1": saturation_diagnostic(samples),
             },
         ),
     ):

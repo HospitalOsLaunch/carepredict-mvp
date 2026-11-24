@@ -316,9 +316,10 @@ qualification appartient à la version du prédicteur et au profil synthétique
 Le bloc Action précise que le gain réel peut sortir de la fourchette de
 sensibilité aux pratiques d'équipe. Les bornes restent calculées par le moteur
 et rattachées au reçu avec `data-src`. En gériatrie, les dates d'admission
-synthétiques explicites permettent d'utiliser la même trajectoire pour
-Maintenant, 12 h et 24 h. Le reçu distingue ce profil et le repli lorsque ses
-sources sont incomplètes. La perspective à plusieurs jours reste visible avec
+synthétiques explicites alimentent une trajectoire de flux commune à 12 h et
+24 h, affichée dans Données. Le bloc Action et les gains du plan gardent le
+classement de référence de la PR 51. Les résultats de la comparaison à la
+relève de 05 h 30 motivent ce choix. Le reçu indique les sources incomplètes. La perspective à plusieurs jours reste visible avec
 les motifs du refus de qualification. Le scénario nominal de la PR 51 garde
 son témoin et ses chiffres d'origine.
 

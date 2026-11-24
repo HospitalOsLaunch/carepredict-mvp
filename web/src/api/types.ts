@@ -202,6 +202,13 @@ export interface TeamPractice {
   alternatives?: { action: Action; saved_wait: number }[];
 }
 export interface Plan {
+  shadow_flow?: {
+    profile: "synthetic-residence-v2";
+    minutes: number;
+    mean_admissions: number;
+    mean_departures: number;
+    mean_occupied: number;
+  }[];
   unit_id?: string | null;
   windows?: PlanWindow[];
   team_practice?: TeamPractice | null;

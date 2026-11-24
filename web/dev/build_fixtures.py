@@ -31,6 +31,7 @@ from demo_unit import (  # noqa: E402
     perturbations,
 )
 
+from hospitalos.hybrid.flow_clock import reference_state  # noqa: E402
 from hospitalos.hybrid.live_models import PlanningOptions  # noqa: E402
 from hospitalos.hybrid.live_store import LiveStore  # noqa: E402
 from hospitalos.hybrid.models import Action, FactEvent  # noqa: E402
@@ -102,7 +103,7 @@ def scenario(
     traces: dict[str, Any] = {}
     if proposal.decision != "abstain":
         future = paired_future(
-            state,
+            reference_state(state),
             request.future,
             request.seed,
             0,

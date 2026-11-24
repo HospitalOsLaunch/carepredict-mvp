@@ -2228,22 +2228,38 @@
    }
   ],
   "unit_id": "court-sejour-geriatrique",
+  "shadow_flow": [
+   {
+    "profile": "synthetic-residence-v2",
+    "minutes": 720,
+    "mean_admissions": 3.0,
+    "mean_departures": 0.0,
+    "mean_occupied": 17.0
+   },
+   {
+    "profile": "synthetic-residence-v2",
+    "minutes": 1440,
+    "mean_admissions": 3.0,
+    "mean_departures": 0.0,
+    "mean_occupied": 17.0
+   }
+  ],
   "windows": [
    {
     "minutes": 720,
-    "baseline_wait": 2730.0625,
-    "selected_wait": 2722.5625,
+    "baseline_wait": 1728.28125,
+    "selected_wait": 1720.78125,
     "unserved_scenarios": 32,
-    "change_ratio": -0.0027471898537121398,
+    "change_ratio": -0.00433957146731756,
     "saved_wait": 7.5,
     "until": "2026-10-24T18:30:00Z"
    },
    {
     "minutes": 1440,
-    "baseline_wait": 5247.8125,
-    "selected_wait": 5240.3125,
+    "baseline_wait": 2448.28125,
+    "selected_wait": 2440.78125,
     "unserved_scenarios": 32,
-    "change_ratio": -0.0014291669147858954,
+    "change_ratio": -0.003063373540110992,
     "saved_wait": 7.5,
     "until": "2026-10-25T06:30:00Z"
    }
@@ -2251,66 +2267,66 @@
   "team_practice": {
    "window_minutes": 720,
    "until": "2026-10-24T18:30:00Z",
-   "selected_wait": 2722.5625,
-   "never_wait": 2730.0625,
+   "selected_wait": 1720.78125,
+   "never_wait": 1728.28125,
    "never_saved_wait": 7.5,
    "cases": [
     {
      "delay_minutes": 30,
      "preparation": "after_request",
-     "baseline_wait": 2728.65625,
+     "baseline_wait": 1726.875,
      "saved_wait": 6.09375,
      "leader": {
       "kind": "prioritize_cleaning",
-      "bed_id": "G17",
+      "bed_id": "G16",
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 4.5703125
+     "leader_margin": 0.5859375
     },
     {
      "delay_minutes": 30,
      "preparation": "already_started",
-     "baseline_wait": 2728.65625,
+     "baseline_wait": 1726.875,
      "saved_wait": 6.09375,
      "leader": {
       "kind": "prioritize_cleaning",
-      "bed_id": "G17",
+      "bed_id": "G16",
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 4.5703125
+     "leader_margin": 0.5859375
     },
     {
      "delay_minutes": 60,
      "preparation": "after_request",
-     "baseline_wait": 2731.0,
+     "baseline_wait": 1729.21875,
      "saved_wait": 8.4375,
      "leader": {
       "kind": "prioritize_cleaning",
-      "bed_id": "G17",
+      "bed_id": "G16",
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 5.0390625
+     "leader_margin": 0.5859375
     },
     {
      "delay_minutes": 60,
      "preparation": "already_started",
-     "baseline_wait": 2731.0,
+     "baseline_wait": 1729.21875,
      "saved_wait": 8.4375,
      "leader": {
       "kind": "prioritize_cleaning",
-      "bed_id": "G17",
+      "bed_id": "G16",
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 5.0390625
+     "leader_margin": 0.5859375
     },
     {
      "delay_minutes": 120,
      "preparation": "after_request",
-     "baseline_wait": 2730.0625,
+     "baseline_wait": 1728.28125,
      "saved_wait": 7.5,
      "leader": {
       "kind": "prioritize_cleaning",
@@ -2318,12 +2334,12 @@
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 7.5
+     "leader_margin": 1.875
     },
     {
      "delay_minutes": 120,
      "preparation": "already_started",
-     "baseline_wait": 2730.0625,
+     "baseline_wait": 1728.28125,
      "saved_wait": 7.5,
      "leader": {
       "kind": "prioritize_cleaning",
@@ -2331,10 +2347,10 @@
       "patient_id": null,
       "slot_id": null
      },
-     "leader_margin": 7.5
+     "leader_margin": 1.875
     }
    ],
-   "material_minutes": 28.46109375,
+   "material_minutes": 18.774609375,
    "supported": true,
    "step_saved_wait": [
     7.5
@@ -2455,7 +2471,8 @@
     "data_ready": true,
     "qualified": false,
     "reasons": [
-     "accuracy_gate"
+     "accuracy_gate",
+     "cohort_ranking_unqualified"
     ]
    },
    {
@@ -2580,7 +2597,8 @@
     "qualified": false,
     "reasons": [
      "source_gate",
-     "qualification_missing"
+     "qualification_missing",
+     "cohort_ranking_unqualified"
     ]
    }
   ],
@@ -2613,13 +2631,13 @@
      "patient_id": null,
      "slot_id": null
     },
-    "mean_waiting_patient_minutes": 5247.8125,
-    "worst_decile_waiting_patient_minutes": 6074.25,
-    "objective": 5454.421875,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 4,
-    "max_arrived": 1,
+    "max_waiting_at_end": 1,
+    "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
     "mean_transport_pressure": 0.0,
@@ -2633,13 +2651,13 @@
      "patient_id": null,
      "slot_id": null
     },
-    "mean_waiting_patient_minutes": 5247.8125,
-    "worst_decile_waiting_patient_minutes": 6074.25,
-    "objective": 5454.421875,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 4,
-    "max_arrived": 1,
+    "max_waiting_at_end": 1,
+    "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
     "mean_transport_pressure": 0.0,
@@ -2653,13 +2671,13 @@
      "patient_id": null,
      "slot_id": null
     },
-    "mean_waiting_patient_minutes": 5243.125,
-    "worst_decile_waiting_patient_minutes": 6089.25,
-    "objective": 5454.65625,
+    "mean_waiting_patient_minutes": 2443.59375,
+    "worst_decile_waiting_patient_minutes": 3037.5,
+    "objective": 2592.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 4,
-    "max_arrived": 1,
+    "max_waiting_at_end": 1,
+    "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
     "mean_transport_pressure": 0.0,
@@ -2673,13 +2691,13 @@
      "patient_id": null,
      "slot_id": null
     },
-    "mean_waiting_patient_minutes": 5240.3125,
-    "worst_decile_waiting_patient_minutes": 6059.25,
-    "objective": 5445.046875,
+    "mean_waiting_patient_minutes": 2440.78125,
+    "worst_decile_waiting_patient_minutes": 3022.5,
+    "objective": 2586.2109375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 4,
-    "max_arrived": 1,
+    "max_waiting_at_end": 1,
+    "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
     "mean_transport_pressure": 0.0,
@@ -2861,6 +2879,30 @@
      },
      {
       "minute": 30,
+      "kind": "departure_ready",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "downstream_reserve",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "ehpad-partenaires",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "transport_start",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 30,
       "kind": "admit",
       "patient_id": "U-2011",
       "bed_id": "G15",
@@ -2876,10 +2918,42 @@
       "external_id": null
      },
      {
+      "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
       "minute": 75,
       "kind": "clean_end",
       "patient_id": null,
       "bed_id": "G16",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "transport_depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
       "resource_id": null,
       "external_id": null
      },
@@ -2909,6 +2983,14 @@
      },
      {
       "minute": 105,
+      "kind": "transport_end",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 105,
       "kind": "admit",
       "patient_id": "U-2019",
       "bed_id": "G17",
@@ -2916,27 +2998,59 @@
       "external_id": null
      },
      {
-      "minute": 720,
-      "kind": "resource_change",
+      "minute": 105,
+      "kind": "clean_start",
       "patient_id": null,
-      "bed_id": "",
-      "resource_id": "court-sejour-geriatrique",
-      "external_id": "roster:720"
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
      },
      {
-      "minute": 1440,
-      "kind": "resource_change",
+      "minute": 150,
+      "kind": "clean_end",
       "patient_id": null,
-      "bed_id": "",
-      "resource_id": "court-sejour-geriatrique",
-      "external_id": "roster:1440"
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "admit",
+      "patient_id": "U-2026",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "admit",
+      "patient_id": "U-2030",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
      }
     ]
    },
    "score": {
-    "waiting_patient_minutes": 4530,
-    "admitted": 3,
-    "waiting_at_end": 3,
+    "waiting_patient_minutes": 2010,
+    "admitted": 5,
+    "waiting_at_end": 1,
     "violations": [],
     "arrived": 0,
     "cancelled_reservations": 0,
@@ -2970,6 +3084,30 @@
      },
      {
       "minute": 30,
+      "kind": "departure_ready",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "downstream_reserve",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "ehpad-partenaires",
+      "external_id": null
+     },
+     {
+      "minute": 30,
+      "kind": "transport_start",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 30,
       "kind": "admit",
       "patient_id": "U-2014",
       "bed_id": "G17",
@@ -2994,6 +3132,22 @@
      },
      {
       "minute": 60,
+      "kind": "departure_ready",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
+      "kind": "depart",
+      "patient_id": "P-0536",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 60,
       "kind": "admit",
       "patient_id": "U-2011",
       "bed_id": "G15",
@@ -3009,11 +3163,35 @@
       "external_id": null
      },
      {
+      "minute": 75,
+      "kind": "transport_depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
+      "external_id": null
+     },
+     {
+      "minute": 75,
+      "kind": "depart",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
       "minute": 105,
       "kind": "clean_end",
       "patient_id": null,
       "bed_id": "G16",
       "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 105,
+      "kind": "transport_end",
+      "patient_id": "P-0531",
+      "bed_id": "G05",
+      "resource_id": "transport-sanitaire",
       "external_id": null
      },
      {
@@ -3025,27 +3203,59 @@
       "external_id": null
      },
      {
-      "minute": 720,
-      "kind": "resource_change",
+      "minute": 105,
+      "kind": "clean_start",
       "patient_id": null,
-      "bed_id": "",
-      "resource_id": "court-sejour-geriatrique",
-      "external_id": "roster:720"
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
      },
      {
-      "minute": 1440,
-      "kind": "resource_change",
+      "minute": 150,
+      "kind": "clean_end",
       "patient_id": null,
-      "bed_id": "",
-      "resource_id": "court-sejour-geriatrique",
-      "external_id": "roster:1440"
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "admit",
+      "patient_id": "U-2026",
+      "bed_id": "G06",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 150,
+      "kind": "clean_start",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "clean_end",
+      "patient_id": null,
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
+     },
+     {
+      "minute": 210,
+      "kind": "admit",
+      "patient_id": "U-2030",
+      "bed_id": "G05",
+      "resource_id": null,
+      "external_id": null
      }
     ]
    },
    "score": {
-    "waiting_patient_minutes": 4515,
-    "admitted": 3,
-    "waiting_at_end": 3,
+    "waiting_patient_minutes": 1995,
+    "admitted": 5,
+    "waiting_at_end": 1,
     "violations": [],
     "arrived": 0,
     "cancelled_reservations": 0,

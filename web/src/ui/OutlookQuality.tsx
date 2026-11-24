@@ -27,6 +27,7 @@ const reasons: Record<string, string> = {
   shift_or_skill_gap: "Créneau, validation ou compétence manquante, ou double affectation",
   daily_coverage: "Jours manquants ou en double",
   qualification_missing: "Prévisions non qualifiées",
+  cohort_ranking_unqualified: "Classement des gestes avec les nouveaux flux non qualifié",
   accuracy_gate: "Précision prédictive insuffisante",
   source_gate: "Sources à vérifier",
 };
@@ -34,6 +35,23 @@ export function OutlookQuality({ plan }: { plan: Plan | LiveSnapshot | null }) {
   return (
     <section className="panel" aria-labelledby="outlook-title" data-testid="outlook-quality">
       <h2 id="outlook-title">Sources du plan à plusieurs jours</h2>
+      {plan && "shadow_flow" in plan && !!plan.shadow_flow?.length && (
+        <div data-testid="flow-shadow">
+          <h3>Projection des flux en observation</h3>
+          <p>Moyennes simulées sans geste ajouté. Le classement des actions utilise le moteur de référence.</p>
+          <table>
+            <thead><tr><th>Horizon</th><th>Admissions</th><th>Sorties</th><th>Lits occupés</th></tr></thead>
+            <tbody>{plan.shadow_flow.map((w, i) => (
+              <tr key={w.minutes}>
+                <th {...source(plan, `/shadow_flow/${i}/minutes`)}>{w.minutes / 60} h</th>
+                {(["mean_admissions", "mean_departures", "mean_occupied"] as const).map((k) => (
+                  <td key={k} {...source(plan, `/shadow_flow/${i}/${k}`)}>{w[k].toLocaleString("fr-FR", { maximumFractionDigits: 1 })}</td>
+                ))}
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+      )}
       {!plan?.horizons?.length ? (
         <ul>
           {Object.entries(labels).map(([k, v]) => (

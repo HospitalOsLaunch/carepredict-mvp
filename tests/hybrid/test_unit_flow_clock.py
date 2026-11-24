@@ -177,6 +177,27 @@ def test_normal_planner_uses_facts_at_origin_and_old_receipts_keep_their_shape()
     )
     p = plan(request)
     assert p.horizon_minutes == 1440 and "synthetic_residence_projection" in p.warnings
+    assert [w.minutes for w in p.shadow_flow] == [720, 1440]
+    assert all(w.mean_occupied == 1 + w.mean_admissions - w.mean_departures for w in p.shadow_flow)
+    legacy_outlook = flow_clock.reference_state(state).outlooks[0]
+    reference = plan(
+        request.model_copy(
+            update={
+                "events": (*events[:-1], events[-1].model_copy(update={"fact": legacy_outlook}))
+            }
+        )
+    )
+    assert (p.selected, p.bundle, p.windows, p.team_practice, p.candidates) == (
+        reference.selected,
+        reference.bundle,
+        reference.windows,
+        reference.team_practice,
+        reference.candidates,
+    )
+    assert not reference.shadow_flow
+    experimental = plan(request, research_cohort_ranking=True)
+    assert p.plan_id != experimental.plan_id and "research_cohort_ranking" in experimental.warnings
+    assert "cohort_ranking_unqualified" in p.horizons[0].reasons
     late = events[-1].model_copy(update={"available_at": D + timedelta(minutes=1)})
     delayed = request.model_copy(update={"events": (*events[:-1], late)})
     assert not flow_clock.available(delayed.state(), 720)

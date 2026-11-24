@@ -75,6 +75,9 @@ def assess_horizon(state: State, unit: str, days: int) -> HorizonCheck:
     reasons = ([] if result.data_ready else ["source_gate"]) + (
         [] if qualified else ["accuracy_gate" if known else "qualification_missing"]
     )
+    if cohort:
+        qualified = False
+        reasons.append("cohort_ranking_unqualified")
     return result.model_copy(
         update={
             "qualified": qualified,

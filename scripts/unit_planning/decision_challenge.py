@@ -34,13 +34,13 @@ class Case:
     prep: int
     travel: int
 
-    def request(self, budget: int) -> PlanRequest:
-        facts = [Unit(id="unit", staffed_beds=self.initial_capacity, cleaning_teams=1)]
+    def request(self, budget: int, *, unit: str = "unit", origin: datetime = D) -> PlanRequest:
+        facts = [Unit(id=unit, staffed_beds=self.initial_capacity, cleaning_teams=1)]
         for bid, status, o2 in self.beds:
             facts.append(
                 Bed(
                     id=bid,
-                    unit_id="unit",
+                    unit_id=unit,
                     state=status,
                     capabilities=("oxygen",) if o2 else (),
                     occupant="out" if status == "occupied" else None,
@@ -52,9 +52,9 @@ class Case:
                         Patient(
                             id="out",
                             status="admitted",
-                            compatible_units=("unit",),
+                            compatible_units=(unit,),
                             bed_id=bid,
-                            waiting_since=D - timedelta(days=2),
+                            waiting_since=origin - timedelta(days=2),
                             medically_cleared=True,
                         ),
                         Discharge(
@@ -67,7 +67,7 @@ class Case:
                             downstream_required=False,
                         ),
                         ResourcePool(
-                            id="pool", resource="transport", unit_ids=("unit",), available=1
+                            id="pool", resource="transport", unit_ids=(unit,), available=1
                         ),
                     ]
                 )
@@ -76,9 +76,9 @@ class Case:
                 Patient(
                     id=pid,
                     status="waiting",
-                    compatible_units=("unit",),
+                    compatible_units=(unit,),
                     priority=5 - i,
-                    waiting_since=D - timedelta(minutes=60 - i),
+                    waiting_since=origin - timedelta(minutes=60 - i),
                     requirements=("oxygen",) if o2 else (),
                 )
             )
@@ -86,12 +86,12 @@ class Case:
         if self.family == "staff_booking":
 
             def at(m):
-                return D + timedelta(minutes=m)
+                return origin + timedelta(minutes=m)
 
             facts.append(
                 UnitSchedule.model_validate(
                     {
-                        "id": "unit",
+                        "id": unit,
                         "budget_minutes": 240,
                         "offers": [
                             {
@@ -122,8 +122,8 @@ class Case:
                                     "provenance": {
                                         "source": "appointment",
                                         "obs_id": "appointment",
-                                        "event_time": D,
-                                        "available_at": D,
+                                        "event_time": origin,
+                                        "available_at": origin,
                                     },
                                 },
                                 "window_start": at(15),
@@ -134,12 +134,12 @@ class Case:
                 )
             )
             future = FutureAssumptions(
-                declared_at=D,
+                declared_at=origin,
                 changes=(
                     ResourceChange(
                         id="new_shift",
                         minute=self.schedule_capacity,
-                        target_id="unit",
+                        target_id=unit,
                         resource="staffed_beds",
                         capacity=1,
                     ),
@@ -150,18 +150,18 @@ class Case:
                 hospital_id="challenge",
                 event_id=f"{f.kind}:{f.id}",
                 source="synthetic_public",
-                event_time=D,
-                available_at=D,
+                event_time=origin,
+                available_at=origin,
                 fact=f,
             )
             for f in facts
         )
         return PlanRequest(
             hospital_id="challenge",
-            unit_id="unit",
+            unit_id=unit,
             events=events,
             expected_entities=tuple(e.event_id for e in events),
-            at=D,
+            at=origin,
             horizon_minutes=HORIZON,
             max_bundle=budget,
             scenarios=4,
@@ -283,7 +283,17 @@ def booking_outcome(c, kinds, latent, *, active=True, gesture_at=0, shock=False)
     return min(HORIZON, admit) - latent.arrival, over
 
 
-def waiting_cost(c, program, latent, *, active=True, gesture_at=0, preparing=None):
+def waiting_cost(
+    c,
+    program,
+    latent,
+    *,
+    active=True,
+    gesture_at=0,
+    preparing=None,
+    resident_exit=None,
+    emergency=(),
+):
     """Physical opportunities under current practice. Every arm shares the same latent future."""
     kinds = {a.kind for a in program}
     if c.family == "staff_booking":
@@ -305,7 +315,17 @@ def waiting_cost(c, program, latent, *, active=True, gesture_at=0, preparing=Non
     cleaning = None
     dirty_at = {bid: 0 for bid in status if status[bid] == "dirty"}
     area = 0
+    incident = {}
+    for index, minute in enumerate(emergency):
+        if 0 <= minute < HORIZON:
+            incident.setdefault(minute, []).append(f"ed-{index}")
+    last_arrival = max(incident, default=-1)
     for m in range(HORIZON):
+        for pid in incident.get(m, ()):
+            waiting[pid] = False
+        if m == resident_exit:
+            status["D"] = "dirty"
+            dirty_at["D"] = m
         if m == release:
             status["C"] = "dirty"
             dirty_at["C"] = m
@@ -353,6 +373,6 @@ def waiting_cost(c, program, latent, *, active=True, gesture_at=0, preparing=Non
                 cleaning = (bid, m + latent.clean[bid])
                 status[bid] = "cleaning"
         area += len(waiting)
-        if not waiting:
+        if not waiting and m >= last_arrival:
             break
     return area

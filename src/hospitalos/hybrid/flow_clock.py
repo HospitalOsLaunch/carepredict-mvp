@@ -29,6 +29,26 @@ def declared(state: State) -> Departures | None:
     return None
 
 
+def reference_state(state: State) -> State:
+    """Keep all four public sources while ranking gestures with the PR 51 dynamics."""
+    if not declared(state):
+        return state
+    outlooks = tuple(
+        o.model_copy(
+            update={
+                "feeds": tuple(
+                    f.model_copy(update={"cohort_profile": None})
+                    if isinstance(f, Departures) and f.cohort_profile == VERSION
+                    else f
+                    for f in o.feeds
+                )
+            }
+        )
+        for o in state.outlooks
+    )
+    return state.model_copy(update={"outlooks": outlooks})
+
+
 def available(state: State, horizon: int) -> bool:
     feed = declared(state)
     if feed is None or state.issues or feed.unit_id not in UNITS:
