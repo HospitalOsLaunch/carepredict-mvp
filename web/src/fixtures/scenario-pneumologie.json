@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "pneumologie",
   "expected_entities": [
    "unit:pneumologie",
    "bed:R01",
@@ -742,7 +743,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -798,6 +799,7 @@
   ],
   "pools": [],
   "discharges": [],
+  "schedules": [],
   "issues": [
    "missing_perimeter",
    "stale:bed:R01",
@@ -833,10 +835,12 @@
   "warnings": []
  },
  "plan": {
+  "unit_id": "pneumologie",
+  "windows": [],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "abstain",
-  "plan_id": "d82b21a068839db1e344c4cbd3ad7053686cfe51be6430d458043753b2d53fa2",
+  "plan_id": "4d0f314a58452d33c9bd8c1b411cdcb75342e335901d9d6c9e10d46e69969537",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "0b0cf84cebe416800100e6432a0341c9629350e2888d9742b13e291f3f96a70c",
   "created_at": "2026-10-24T06:30:00Z",
@@ -844,7 +848,8 @@
   "selected": {
    "kind": "no_op",
    "bed_id": null,
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "missing_perimeter",
@@ -916,7 +921,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [],
   "service_status": "not_assessed"

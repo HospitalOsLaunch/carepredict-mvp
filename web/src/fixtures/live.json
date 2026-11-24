@@ -432,6 +432,7 @@
      "transport_requested": null
     }
    ],
+   "schedules": [],
    "issues": [],
    "warnings": []
   },
@@ -1289,7 +1290,7 @@
   "received_at_by_source": {
    "flux-fictif": "2026-10-24T06:30:00+00:00"
   },
-  "semantic_fingerprint": "5c8b8431f71a2069a34f13e65dbeca7cb6d194b1cbb89bf80334d50a25275025",
+  "semantic_fingerprint": "7c38137d0740dff315ad2c4ca334e7638e40b51e5a8b0bf124ad236b20d43469",
   "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
   "issues": [],
   "warnings": []
@@ -1733,6 +1734,7 @@
        "transport_requested": null
       }
      ],
+     "schedules": [],
      "issues": [],
      "warnings": []
     },
@@ -2590,16 +2592,33 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:30:00+00:00"
     },
-    "semantic_fingerprint": "5c8b8431f71a2069a34f13e65dbeca7cb6d194b1cbb89bf80334d50a25275025",
+    "semantic_fingerprint": "7c38137d0740dff315ad2c4ca334e7638e40b51e5a8b0bf124ad236b20d43469",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [],
     "warnings": []
    },
    "plan": {
+    "unit_id": "medecine-polyvalente",
+    "windows": [
+     {
+      "minutes": 720,
+      "baseline_wait": 918.75,
+      "selected_wait": 474.375,
+      "saved_wait": 444.375,
+      "until": "2026-10-24T18:30:45Z"
+     },
+     {
+      "minutes": 1440,
+      "baseline_wait": 1638.75,
+      "selected_wait": 474.375,
+      "saved_wait": 1164.375,
+      "until": "2026-10-25T06:30:45Z"
+     }
+    ],
     "schema_version": "HYBRID_PLAN_4",
     "evidence": "simulation_under_declared_assumptions",
     "decision": "recommend",
-    "plan_id": "a4d20c2d910c7cbb444b318fc0b498ef7502b5088f2c264e8887bb550ec1e6dc",
+    "plan_id": "49d89b6db7f23407becffc5bb1deab0824070b07208647167542cd358723ab9a",
     "hospital_id": "ch-fictif",
     "state_fingerprint": "38959fbca425a003d1d685603bbb553781552efeb9aaf7238e767ab02dfa698f",
     "created_at": "2026-10-24T06:30:45Z",
@@ -2607,7 +2626,8 @@
     "selected": {
      "kind": "request_transport",
      "bed_id": "L02",
-     "patient_id": "P-0412"
+     "patient_id": "P-0412",
+     "slot_id": null
     },
     "reasons": [
      "lower_simulated_waiting_cost_requires_human_approval"
@@ -2618,11 +2638,12 @@
       "action": {
        "kind": "no_op",
        "bed_id": null,
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2637,7 +2658,8 @@
       "action": {
        "kind": "request_transport",
        "bed_id": "L02",
-       "patient_id": "P-0412"
+       "patient_id": "P-0412",
+       "slot_id": null
       },
       "mean_waiting_patient_minutes": 474.375,
       "worst_decile_waiting_patient_minutes": 720.0,
@@ -2656,11 +2678,12 @@
       "action": {
        "kind": "prioritize_cleaning",
        "bed_id": "L05",
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2675,11 +2698,12 @@
       "action": {
        "kind": "reserve_bed",
        "bed_id": "L08",
-       "patient_id": "U-1043"
+       "patient_id": "U-1043",
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2694,11 +2718,12 @@
       "action": {
        "kind": "reserve_bed",
        "bed_id": "L08",
-       "patient_id": "U-1047"
+       "patient_id": "U-1047",
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2713,11 +2738,12 @@
       "action": {
        "kind": "prioritize_cleaning",
        "bed_id": "L11",
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 675.0,
-      "worst_decile_waiting_patient_minutes": 825.0,
-      "objective": 712.5,
+      "mean_waiting_patient_minutes": 1635.0,
+      "worst_decile_waiting_patient_minutes": 1785.0,
+      "objective": 1672.5,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2765,7 +2791,7 @@
     "bundle_marginal_minutes": [],
     "seed": 7,
     "scenarios": 16,
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "tail_weight": 0.25,
     "discharge_readiness": [
      {
@@ -2873,6 +2899,7 @@
      "patients": [],
      "pools": [],
      "discharges": [],
+     "schedules": [],
      "issues": [
       "missing_perimeter",
       "stale:bed:L01",
@@ -3776,7 +3803,7 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:34:00+00:00"
     },
-    "semantic_fingerprint": "24171e74bfdf4aadbb2ee05ef03d83feaf22a078b8345e612d57e1652a30d32f",
+    "semantic_fingerprint": "0d0b021ae64943be9aa80d05903bb35c9b7d7f29e5d5185d8da1ee886f05562f",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [
      "missing_perimeter",

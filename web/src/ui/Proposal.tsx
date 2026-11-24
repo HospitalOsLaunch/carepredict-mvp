@@ -36,6 +36,7 @@ import {
   steps,
   waitText,
 } from "../domain/view";
+import { source as planSource } from "./unitSource";
 import { Ban, Check, Clock, Refresh } from "./icons";
 import { Illu, proposalIllu } from "./illustrations";
 
@@ -156,7 +157,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
 
   const pending = current && statusOf(current, now) === "pending";
   return (
-    <section className="panel proposal" aria-labelledby="proposal-title" data-testid="proposal">
+    <section className="panel proposal" aria-labelledby="proposal-title" data-testid="proposal" data-plan-id={plan.plan_id} data-unit={plan.unit_id}>
       <Band
         label={
           pending && lowGain
@@ -179,10 +180,10 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             {combined ? (
               <ol className="steps" data-testid="proposal-steps">
                 {todo.map((x, i) => (
-                  <li key={`${x.kind}:${x.bed_id}:${x.patient_id}`} className="steps__item">
+                  <li key={`${x.kind}:${x.bed_id}:${x.patient_id}:${x.slot_id}`} className="steps__item">
                     <span className="steps__text">{actionTitle(x, where(x))}</span>
                     {plan.bundle_marginal_minutes?.[i] != null ? (
-                      <span className="steps__gain num">
+                      <span className="steps__gain num" {...planSource(plan,`/bundle_marginal_minutes/${i}`)}>
                         −{waitText(plan.bundle_marginal_minutes[i]!)}
                       </span>
                     ) : null}
@@ -230,13 +231,14 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
  * two totals with their unit. The percentage is secondary.
  */
 function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: number }) {
+  const atWindow = `/windows/${plan.windows?.findIndex(w=>w.minutes===plan.horizon_minutes)}`;
   const max = Math.max(gain.before, gain.after, 1);
   const helps = gain.saved > 0.5;
   return (
     <div className="effect" aria-label="Ce que vous gagnez" data-testid="effect">
-      <p className="effect__kicker">Ce que vous gagnez d'ici {gain.until}</p>
+      <p className="effect__kicker">Ce que vous gagnez d'ici <span {...planSource(plan,atWindow+"/until")}>{gain.until}</span></p>
       <div className="effect__figure">
-        <span className="effect__delta num">{helps ? `−${waitText(gain.saved)}` : "≈ 0"}</span>
+        <span className="effect__delta num" {...planSource(plan,atWindow+"/saved_wait")}>{helps ? `−${waitText(gain.saved)}` : "≈ 0"}</span>
         <span className="effect__unit">
           d'attente en moins pour les patients à placer
           {gain.ratio != null && helps ? ` (${pct(gain.ratio).replace("-", "−")})` : ""}
@@ -247,12 +249,12 @@ function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: nu
         role="img"
         aria-label={`Attente cumulée des patients à placer d'ici ${gain.until} : ${waitText(gain.before)} sans action, ${waitText(gain.after)} avec la proposition.`}
       >
-        <PairRow label="Sans rien faire" value={gain.before} max={max} />
-        <PairRow label="Avec la proposition" value={gain.after} max={max} on />
+        <PairRow label="Sans rien faire" provenance={planSource(plan,atWindow+"/baseline_wait")} value={gain.before} max={max} />
+        <PairRow label="Avec la proposition" provenance={planSource(plan,atWindow+"/selected_wait")} value={gain.after} max={max} on />
       </div>
       <p className="effect__note">
         Attente cumulée : somme des temps d'attente de tous les patients à placer sur les{" "}
-        {duration(gain.windowMinutes)} à venir, moyenne de {plan.scenarios} scénarios simulés.
+        {<span {...planSource(plan,atWindow+"/minutes")}>{duration(gain.windowMinutes)}</span>} à venir, moyenne de <span {...planSource(plan,"/scenarios")}>{plan.scenarios}</span> scénarios simulés.
       </p>
       {plan.service_status === "served_in_all_sampled_scenarios" ? (
         <p className="effect__note">Tous les patients sont placés avant {gain.until}.</p>
@@ -265,14 +267,14 @@ function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: nu
   );
 }
 
-function PairRow({ label, value, max, on }: { label: string; value: number; max: number; on?: boolean }) {
+function PairRow({ label, value, max, on, provenance }: { provenance: ReturnType<typeof planSource>; label: string; value: number; max: number; on?: boolean }) {
   return (
     <div className="pair__row">
       <span className="pair__label">{label}</span>
       <span className="pair__track">
         <span className={`pair__bar${on ? " pair__bar--on" : ""}`} style={{ width: `${(value / max) * 100}%` }} />
       </span>
-      <span className="pair__value num">{waitText(value)}</span>
+      <span className="pair__value num" {...provenance}>{waitText(value)}</span>
     </div>
   );
 }

@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-polyvalente",
   "expected_entities": [
    "unit:medecine-polyvalente",
    "pool:transport-sanitaire",
@@ -818,7 +819,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1255,14 +1256,32 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
   "issues": [],
   "warnings": []
  },
  "plan": {
+  "unit_id": "medecine-polyvalente",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 925.3125,
+    "selected_wait": 478.59375,
+    "saved_wait": 446.71875,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 1645.3125,
+    "selected_wait": 478.59375,
+    "saved_wait": 1166.71875,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "f7d292703cbdbf9af4519976562388975cbcfb77c73746257f44ba35fbe51836",
+  "plan_id": "a58e141fbcd4e70d16b8f6b09650c01420738d526360d61a439f374b8dbde47f",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "b590b82f61d1fc735f27a1d305ff777fe001e9b7a1fc157cac6ab160dfaade85",
   "created_at": "2026-10-24T06:30:00Z",
@@ -1270,7 +1289,8 @@
   "selected": {
    "kind": "request_transport",
    "bed_id": "L02",
-   "patient_id": "P-0412"
+   "patient_id": "P-0412",
+   "slot_id": null
   },
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
@@ -1281,11 +1301,12 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 685.3125,
-    "worst_decile_waiting_patient_minutes": 825.0,
-    "objective": 720.234375,
+    "mean_waiting_patient_minutes": 1645.3125,
+    "worst_decile_waiting_patient_minutes": 1785.0,
+    "objective": 1680.234375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1300,7 +1321,8 @@
     "action": {
      "kind": "request_transport",
      "bed_id": "L02",
-     "patient_id": "P-0412"
+     "patient_id": "P-0412",
+     "slot_id": null
     },
     "mean_waiting_patient_minutes": 478.59375,
     "worst_decile_waiting_patient_minutes": 772.5,
@@ -1319,11 +1341,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L05",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 685.3125,
-    "worst_decile_waiting_patient_minutes": 825.0,
-    "objective": 720.234375,
+    "mean_waiting_patient_minutes": 1645.3125,
+    "worst_decile_waiting_patient_minutes": 1785.0,
+    "objective": 1680.234375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1338,11 +1361,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1043"
+     "patient_id": "U-1043",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 685.3125,
-    "worst_decile_waiting_patient_minutes": 825.0,
-    "objective": 720.234375,
+    "mean_waiting_patient_minutes": 1645.3125,
+    "worst_decile_waiting_patient_minutes": 1785.0,
+    "objective": 1680.234375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1357,11 +1381,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1047"
+     "patient_id": "U-1047",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 685.3125,
-    "worst_decile_waiting_patient_minutes": 825.0,
-    "objective": 720.234375,
+    "mean_waiting_patient_minutes": 1645.3125,
+    "worst_decile_waiting_patient_minutes": 1785.0,
+    "objective": 1680.234375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1376,11 +1401,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L11",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 682.5,
-    "worst_decile_waiting_patient_minutes": 825.0,
-    "objective": 718.125,
+    "mean_waiting_patient_minutes": 1642.5,
+    "worst_decile_waiting_patient_minutes": 1785.0,
+    "objective": 1678.125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1428,7 +1454,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1515,7 +1541,7 @@
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1608,7 +1634,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 615,
+    "waiting_patient_minutes": 1575,
     "admitted": 3,
     "waiting_at_end": 1,
     "violations": [],
@@ -1624,7 +1650,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,

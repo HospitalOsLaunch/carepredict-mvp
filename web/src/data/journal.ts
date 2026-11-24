@@ -193,6 +193,8 @@ export function todoHint(action: Action | null, record?: Pick<DecisionRecord, "t
   if (record?.todo) return record.todo;
   if (!action) return "";
   switch (action.kind) {
+    case "reinforce": return `Confirmez le créneau de ${action.slot_id} avec le cadre.`;
+    case "prepare_admission": return `Préparez l’accueil de ${action.slot_id} dans le lit ${action.bed_id}.`;
     case "request_transport":
       return `Appelez le transport pour ${action.patient_id}.`;
     case "prioritize_cleaning":
@@ -506,7 +508,7 @@ export function bundleTitle(actions: Action[], where: (a: Action) => string | nu
 const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 
 const actionKey = (a: Action | null) =>
-  a ? `${a.kind}:${a.bed_id ?? "-"}:${a.patient_id ?? "-"}` : "abstain";
+  a ? `${a.kind}:${a.bed_id ?? "-"}:${a.patient_id ?? "-"}${a.slot_id ? ":" + a.slot_id : ""}` : "abstain";
 
 /** The record of HospitalOS' first choice (rank 0) or another useful option (rank ≥ 1). */
 export function recordFor(

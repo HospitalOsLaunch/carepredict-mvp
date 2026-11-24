@@ -428,6 +428,8 @@ export function proposalIllu(plan: Plan | null): IlluName {
       return "transport";
     case "prioritize_cleaning":
       return "spray";
+    case "reinforce":
+    case "prepare_admission":
     case "reserve_bed":
       return "key";
     default:

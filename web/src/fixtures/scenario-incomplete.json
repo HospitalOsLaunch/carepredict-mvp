@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-polyvalente",
   "expected_entities": [
    "unit:medecine-polyvalente",
    "pool:transport-sanitaire",
@@ -797,7 +798,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1211,6 +1212,7 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
   "issues": [
    "missing:discharge:P-0397",
    "stale:bed:L11"
@@ -1218,10 +1220,12 @@
   "warnings": []
  },
  "plan": {
+  "unit_id": "medecine-polyvalente",
+  "windows": [],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "abstain",
-  "plan_id": "b95770161f1b9cb35f402de269ec965ebaf52c0ff86071b52cffd2dc31e49a6e",
+  "plan_id": "088eb28af8759c2f37dc92a204e995a6029439233a70a9f8556d91f8249ea82b",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "b6829ac617ba4f376a352e100204b128933be84d535f837fa256819b6afe4595",
   "created_at": "2026-10-24T06:30:00Z",
@@ -1229,7 +1233,8 @@
   "selected": {
    "kind": "no_op",
    "bed_id": null,
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "missing:discharge:P-0397",
@@ -1273,7 +1278,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {

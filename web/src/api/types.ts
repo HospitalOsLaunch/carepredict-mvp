@@ -58,7 +58,17 @@ export interface Discharge {
   transport_requested: boolean | null;
 }
 
-export type Fact = Unit | Bed | Patient | ResourcePool | Discharge;
+export interface UnitSchedule {
+  kind: "unit_schedule";
+  id: string;
+  budget_minutes: number;
+  offers: { staff_id: string; staffed_places: number; committed: boolean; option: {
+    option_id: string; skill: string; start: string; end: string; confirmation: string; lending_unit: string | null;
+  } }[];
+  admissions: { request: { request_id: string; expected_arrival: string }; window_start: string;
+    window_end: string; status: string; prepared_bed: string | null }[];
+}
+export type Fact = Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule;
 
 export interface FactEvent {
   schema_version: "HYBRID_MVP_2";
@@ -78,16 +88,18 @@ export interface State {
   units: Unit[];
   beds: Bed[];
   patients: Patient[];
+  schedules?: UnitSchedule[];
   pools: ResourcePool[];
   discharges: Discharge[];
   issues: string[];
   warnings: string[];
 }
 
-export type ActionKind = "no_op" | "prioritize_cleaning" | "reserve_bed" | "request_transport";
+export type ActionKind = "no_op" | "prioritize_cleaning" | "reserve_bed" | "request_transport" | "reinforce" | "prepare_admission";
 
 export interface Action {
   kind: ActionKind;
+  slot_id?: string | null;
   bed_id: string | null;
   patient_id: string | null;
 }
@@ -157,7 +169,12 @@ export interface DischargeReadiness {
 
 export type Decision = "recommend" | "no_change" | "abstain";
 
+export interface PlanWindow {
+  minutes: number; baseline_wait: number; selected_wait: number; saved_wait: number; until: string;
+}
 export interface Plan {
+  unit_id?: string | null;
+  windows?: PlanWindow[];
   schema_version: "HYBRID_PLAN_4" | "HYBRID_PLAN_5";
   evidence: "simulation_under_declared_assumptions";
   decision: Decision;
@@ -189,6 +206,7 @@ export interface Plan {
 }
 
 export interface PlanRequest {
+  unit_id?: string | null;
   hospital_id: string;
   at: ISODate;
   expected_entities: string[];
@@ -242,6 +260,7 @@ export interface LiveSnapshot {
 }
 
 export interface PlanningOptions {
+  max_bundle?: number;
   assumptions?: Assumptions;
   horizon_minutes?: number;
   scenarios?: number;

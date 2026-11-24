@@ -361,7 +361,7 @@ export interface Comparison {
 }
 
 const sameAction = (a: Action, b: Action) =>
-  a.kind === b.kind && a.bed_id === b.bed_id && a.patient_id === b.patient_id;
+  a.kind === b.kind && a.bed_id === b.bed_id && a.patient_id === b.patient_id && (a.slot_id ?? null) === (b.slot_id ?? null);
 
 /** The steps of the proposal: the planner's combination, or its single action. */
 export function steps(plan: Plan): Action[] {

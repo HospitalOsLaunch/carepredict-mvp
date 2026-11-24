@@ -18,6 +18,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import demo_pole  # noqa: E402
+import demo_schedule  # noqa: E402
 from demo_unit import (  # noqa: E402
     AT,
     SOURCE,
@@ -53,7 +54,9 @@ MAX_BUNDLE = 3
 def scenario(
     name: str, label: str, request: PlanRequest, unit: str = UNIT, unit_name: str = UNIT_NAME
 ) -> dict[str, Any]:
-    request = request.model_copy(update={"max_bundle": MAX_BUNDLE})
+    request = request.model_copy(
+        update={"unit_id": unit, "max_bundle": MAX_BUNDLE, "horizon_minutes": 1440}
+    )
     proposal = plan(request)
     state = request.state()
     traces: dict[str, Any] = {}
@@ -73,7 +76,7 @@ def scenario(
             )
             traces[key] = {
                 "trajectory": asdict(trajectory),
-                "score": asdict(score(state, trajectory, expected_future=future)),
+                "score": asdict(score(state, trajectory, expected_future=future, actions=action)),
             }
     return {
         "id": name,
@@ -97,7 +100,7 @@ def live() -> dict[str, Any]:
         options = PlanningOptions(
             assumptions=nominal().assumptions,
             scenarios=16,
-            horizon_minutes=480,
+            horizon_minutes=1440,
             max_bundle=MAX_BUNDLE,
         )
         episode = store.record_shadow(now, options)
@@ -210,6 +213,7 @@ def main() -> None:
         scenario("nominal", "Matinée ordinaire", nominal()),
         scenario("perturbations", "Transport coupé, vague des urgences", perturbations()),
         scenario("peak", "Deux sorties prêtes, afflux des urgences", peak()),
+        scenario("garde", "Renfort et accueil programmé", demo_schedule.handover()),
         scenario("incomplete", "Données incomplètes", incomplete()),
         scenario(
             "geriatrie",

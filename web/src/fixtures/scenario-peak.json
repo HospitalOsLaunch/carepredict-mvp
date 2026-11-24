@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-polyvalente",
   "expected_entities": [
    "unit:medecine-polyvalente",
    "pool:transport-sanitaire",
@@ -866,7 +867,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1331,14 +1332,32 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
   "issues": [],
   "warnings": []
  },
  "plan": {
+  "unit_id": "medecine-polyvalente",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 1851.09375,
+    "selected_wait": 1014.84375,
+    "saved_wait": 836.25,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 3291.09375,
+    "selected_wait": 1014.84375,
+    "saved_wait": 2276.25,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "f2a13b64c078be8e75bffef50a026d1b9fb8edfe41d4820b71063df6b979726f",
+  "plan_id": "452351f7c53c7d3657bbdf2aac1703247f2806c8864f0477157321eafeebf822",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "4d62328498161af82285d8f361870a6660854809f1c587f2f409f7092273b61e",
   "created_at": "2026-10-24T06:30:00Z",
@@ -1346,7 +1365,8 @@
   "selected": {
    "kind": "request_transport",
    "bed_id": "L02",
-   "patient_id": "P-0412"
+   "patient_id": "P-0412",
+   "slot_id": null
   },
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
@@ -1357,11 +1377,12 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1376,11 +1397,12 @@
     "action": {
      "kind": "request_transport",
      "bed_id": "L02",
-     "patient_id": "P-0412"
+     "patient_id": "P-0412",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1169.53125,
-    "worst_decile_waiting_patient_minutes": 1590.0,
-    "objective": 1274.6484375,
+    "mean_waiting_patient_minutes": 2129.53125,
+    "worst_decile_waiting_patient_minutes": 2550.0,
+    "objective": 2234.6484375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1395,11 +1417,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L05",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1414,11 +1437,12 @@
     "action": {
      "kind": "request_transport",
      "bed_id": "L06",
-     "patient_id": "P-0388"
+     "patient_id": "P-0388",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1162.96875,
-    "worst_decile_waiting_patient_minutes": 1612.5,
-    "objective": 1275.3515625,
+    "mean_waiting_patient_minutes": 2122.96875,
+    "worst_decile_waiting_patient_minutes": 2572.5,
+    "objective": 2235.3515625,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1433,11 +1457,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1052"
+     "patient_id": "U-1052",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1452,11 +1477,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1043"
+     "patient_id": "U-1043",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1471,11 +1497,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1055"
+     "patient_id": "U-1055",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1490,11 +1517,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1047"
+     "patient_id": "U-1047",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1509,11 +1537,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L11",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1368.28125,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1434.9609375,
+    "mean_waiting_patient_minutes": 3288.28125,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3354.9609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1560,26 +1589,29 @@
    {
     "kind": "request_transport",
     "bed_id": "L02",
-    "patient_id": "P-0412"
+    "patient_id": "P-0412",
+    "slot_id": null
    },
    {
     "kind": "request_transport",
     "bed_id": "L06",
-    "patient_id": "P-0388"
+    "patient_id": "P-0388",
+    "slot_id": null
    }
   ],
   "bundle_evaluation": {
    "action": {
     "kind": "request_transport",
     "bed_id": "L02",
-    "patient_id": "P-0412"
+    "patient_id": "P-0412",
+    "slot_id": null
    },
-   "mean_waiting_patient_minutes": 1005.46875,
-   "worst_decile_waiting_patient_minutes": 1597.5,
-   "objective": 1153.4765625,
+   "mean_waiting_patient_minutes": 1014.84375,
+   "worst_decile_waiting_patient_minutes": 1672.5,
+   "objective": 1179.2578125,
    "violations": [],
-   "scenarios_with_unserved_demand": 4,
-   "max_waiting_at_end": 1,
+   "scenarios_with_unserved_demand": 0,
+   "max_waiting_at_end": 0,
    "max_arrived": 0,
    "mean_staffed_pressure": 0.0,
    "mean_cleaning_pressure": 0.0,
@@ -1588,12 +1620,12 @@
    "pressure_regression_scenarios": 0
   },
   "bundle_marginal_minutes": [
-   201.5625,
-   164.0625
+   1161.5625,
+   1114.6875
   ],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1674,12 +1706,12 @@
     ]
    }
   ],
-  "service_status": "unserved_in_some_sampled_scenarios"
+  "service_status": "served_in_all_sampled_scenarios"
  },
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1780,7 +1812,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1245,
+    "waiting_patient_minutes": 3165,
     "admitted": 4,
     "waiting_at_end": 2,
     "violations": [],
@@ -1796,7 +1828,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,

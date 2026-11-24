@@ -137,9 +137,7 @@ function useShortcuts(store: Store, openSwitcher: () => void, openHelp: () => vo
       const k = e.key.toLowerCase();
       const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
       const digit = Number(e.key);
-      // On the 24-hour plan, the cockpit's units are not on screen: no silent unit change.
-      const onPlan = readRoute().route === "plan";
-      if (onPlan && k === "u") return;
+
       if (digit >= 1 && digit <= 9) {
         // Digits only answer « why not » when the reasons are on screen. A digit never moves
         // to another unit on its own: that took testers to another unit mid-refusal. To
@@ -228,21 +226,13 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          {route === "plan" && readFocal(param) !== "maintenant" ? (
-            // The 24-hour plan runs on its own fictitious units (chosen in the page): the
-            // cockpit's unit switcher would suggest the plan concerns that unit.
-            <span className="unitchip" data-testid="plan-unitchip">
-              <span className="unitchip__name">Plan</span>
-              <span className="unitchip__sub">Unité fictive, choisie dans la page</span>
-            </span>
-          ) : (
-            <UnitSwitcher
+          <UnitSwitcher
               summaries={store.summaries}
               unitId={store.unitId}
               onSelect={selectUnit}
               openSignal={switcherSignal}
             />
-          )}
+
           <nav className="nav" aria-label="Sections">
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
@@ -252,7 +242,7 @@ export function App() {
             ))}
           </nav>
           <div className="topbar__end">
-            {a && route !== "plan" ? (
+            {a ? (
               <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
                 <span className="stateclock__label">État du {day(a.state.at)}</span>
                 <span className="stateclock__time num">{clock(a.state.at)}</span>
@@ -283,7 +273,7 @@ export function App() {
             <span>{store.error}</span>
           </div>
         ) : null}
-        {route !== "plan" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -307,7 +297,7 @@ export function App() {
           </div>
         ) : null}
         {route === "plan" ? (
-          // One tab, several focal lengths; 12 h / 24 h / 3 j / 7 j read the 24-hour engine.
+          // Every focal uses the selected unit assessment.
           <PlanTab focal={readFocal(param)} a={a} unitName={store.unitName} />
         ) : !a || !now ? (
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />

@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "court-sejour-geriatrique",
   "expected_entities": [
    "unit:court-sejour-geriatrique",
    "pool:transport-sanitaire",
@@ -996,7 +997,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1531,14 +1532,32 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
   "issues": [],
   "warnings": []
  },
  "plan": {
+  "unit_id": "court-sejour-geriatrique",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 1728.28125,
+    "selected_wait": 1720.78125,
+    "saved_wait": 7.5,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 2448.28125,
+    "selected_wait": 2440.78125,
+    "saved_wait": 7.5,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "dadd8e1f204e1ee24d5707ad3ba0534d5c6eb6b4c043fdd383b094ea908c6e41",
+  "plan_id": "5b1c3792b5972b0278bd96b5a9a7da52b7bc845c7a8a28f2754e0786a7b0e3a5",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "b203eddb08cd487ea94007b663e3643c41df39fa7c8747a43c90bfd280c8227b",
   "created_at": "2026-10-24T06:30:00Z",
@@ -1546,7 +1565,8 @@
   "selected": {
    "kind": "prioritize_cleaning",
    "bed_id": "G17",
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
@@ -1557,14 +1577,15 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1480.78125,
-    "worst_decile_waiting_patient_minutes": 2047.5,
-    "objective": 1622.4609375,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1576,14 +1597,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G15",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1480.78125,
-    "worst_decile_waiting_patient_minutes": 2047.5,
-    "objective": 1622.4609375,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1595,14 +1617,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G16",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1476.09375,
-    "worst_decile_waiting_patient_minutes": 2040.0,
-    "objective": 1617.0703125,
+    "mean_waiting_patient_minutes": 2443.59375,
+    "worst_decile_waiting_patient_minutes": 3037.5,
+    "objective": 2592.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1614,14 +1637,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G17",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1473.28125,
-    "worst_decile_waiting_patient_minutes": 2025.0,
-    "objective": 1611.2109375,
+    "mean_waiting_patient_minutes": 2440.78125,
+    "worst_decile_waiting_patient_minutes": 3022.5,
+    "objective": 2586.2109375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1666,7 +1690,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1784,7 +1808,7 @@
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1973,7 +1997,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1050,
+    "waiting_patient_minutes": 2010,
     "admitted": 5,
     "waiting_at_end": 1,
     "violations": [],
@@ -1989,7 +2013,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -2178,7 +2202,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1035,
+    "waiting_patient_minutes": 1995,
     "admitted": 5,
     "waiting_at_end": 1,
     "violations": [],

@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-interne",
   "expected_entities": [
    "unit:medecine-interne",
    "pool:transport-sanitaire",
@@ -591,7 +592,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -901,14 +902,32 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
   "issues": [],
   "warnings": []
  },
  "plan": {
+  "unit_id": "medecine-interne",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 0.0,
+    "selected_wait": 0.0,
+    "saved_wait": 0.0,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 0.0,
+    "selected_wait": 0.0,
+    "saved_wait": 0.0,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "no_change",
-  "plan_id": "ccb97884795ef6d3e81ec7c9935b30952fd2d2b07cc52a6fb14f05265abdb7ed",
+  "plan_id": "86400c69e3b6ab1681f2d5ae09f75bd40960d930102c16c1368ba00f39ea47b3",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "cb4ea3adb737c76731e5b99a60f3941018f7fa4f40dff5b80621d5d0b4dddb7f",
   "created_at": "2026-10-24T06:30:00Z",
@@ -916,7 +935,8 @@
   "selected": {
    "kind": "no_op",
    "bed_id": null,
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "no_admissible_simulated_improvement"
@@ -927,7 +947,8 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
     "mean_waiting_patient_minutes": 0.0,
     "worst_decile_waiting_patient_minutes": 0.0,
@@ -946,7 +967,8 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "I11",
-     "patient_id": "U-3004"
+     "patient_id": "U-3004",
+     "slot_id": null
     },
     "mean_waiting_patient_minutes": 0.0,
     "worst_decile_waiting_patient_minutes": 0.0,
@@ -965,7 +987,8 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "I12",
-     "patient_id": "U-3004"
+     "patient_id": "U-3004",
+     "slot_id": null
     },
     "mean_waiting_patient_minutes": 0.0,
     "worst_decile_waiting_patient_minutes": 0.0,
@@ -1017,7 +1040,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1105,7 +1128,7 @@
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1134,7 +1157,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,

@@ -311,17 +311,17 @@ describe("action block, all units, plan focales", () => {
   it("reads the plan through focal lengths, never planning beyond 24 h", async () => {
     window.location.hash = "/plan/12h";
     render(<App />);
-    expect(await screen.findByRole("heading", { name: "Plan de la garde (12 h)" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: /12 h · Médecine polyvalente/ })).toBeTruthy();
     expect(screen.getByTestId("focal-12h").getAttribute("aria-current")).toBe("true");
-    await screen.findByTestId("ds-auto");
-    expect(screen.getByTestId("ds-window-note").textContent).toMatch(/calculé sur 24 h/);
-    expect(screen.getByTestId("ds-actions-later")).toBeTruthy();
+    const panel = await screen.findByTestId("unit-evaluation");
+    expect(panel.querySelectorAll("[data-src]").length).toBeGreaterThanOrEqual(4);
+    expect(screen.getByTestId("unit-plan").dataset.unit).toBe("medecine-polyvalente");
 
     window.location.hash = "/plan/7j";
     const far = await screen.findByTestId("ds-perspective");
     expect(far.textContent).toMatch(/Perspective, non planifiée/);
     expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
-    expect(screen.getByTestId("ds-far-empty").textContent).toMatch(/Ce n'est pas « zéro sortie »/);
+    expect(within(far).getByRole("link").getAttribute("href")).toBe("#/donnees");
 
     window.location.hash = "/plan/maintenant";
     const now = await screen.findByTestId("focal-now");
