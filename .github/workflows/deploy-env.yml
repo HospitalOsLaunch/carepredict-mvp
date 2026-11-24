@@ -1,0 +1,104 @@
+# Déploie une image déjà publiée (GHCR) sur un environnement : staging ou production.
+# Appelé par deploy.yml (jamais directement). La protection de l'environnement GitHub « production »
+# (relecteurs obligatoires) s'applique ici : le job attend l'approbation avant toute action.
+#
+# Configuration par environnement GitHub (Settings > Environments > staging | production) :
+#   variables : DEPLOY_HOST, DEPLOY_USER, PUBLIC_URL
+#   secrets   : DEPLOY_SSH_KEY (clé privée dédiée au déploiement), DEPLOY_KNOWN_HOSTS (empreinte
+#               du serveur, `ssh-keyscan -t ed25519 <hôte>` vérifiée hors bande)
+# Tant qu'ils ne sont pas renseignés, le job s'arrête proprement avec un avertissement.
+name: deploy-env
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      ref:
+        description: commit dont proviennent docker-compose.yml, Caddyfile et les scripts
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.PUBLIC_URL }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      ENV_NAME: ${{ inputs.environment }}
+      TAG: ${{ inputs.tag }}
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      PUBLIC_URL: ${{ vars.PUBLIC_URL }}
+    steps:
+      - name: Configuration présente ?
+        id: cfg
+        env:
+          HAS_KEY: ${{ secrets.DEPLOY_SSH_KEY != '' && secrets.DEPLOY_KNOWN_HOSTS != '' }}
+        run: |
+          # The tag reaches a remote shell: accept only the two image tag shapes.
+          if ! [[ "$TAG" =~ ^(sha-[0-9a-f]{7,40}|v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?)$ ]]; then
+            echo "::error::tag d'image invalide : $TAG"; exit 1
+          fi
+          if [[ "$ENV_NAME" == production && "$TAG" != v* ]]; then
+            echo "::error::la production ne déploie que des versions étiquetées (vX.Y.Z)"; exit 1
+          fi
+          if [[ -n "$DEPLOY_HOST" && -n "$DEPLOY_USER" && -n "$PUBLIC_URL" && "$HAS_KEY" == true ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Environnement $ENV_NAME non configuré (DEPLOY_HOST, DEPLOY_USER, PUBLIC_URL, DEPLOY_SSH_KEY, DEPLOY_KNOWN_HOSTS) : déploiement ignoré. Voir docs/operations/MISE_EN_PROD.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.ready == 'true'
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Accès SSH (empreinte du serveur épinglée)
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+          printf 'Host target\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/deploy\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n' \
+            "$DEPLOY_HOST" "$DEPLOY_USER" > ~/.ssh/config
+
+      - name: Copier la définition de l'environnement
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          scp deploy/cloud/docker-compose.yml deploy/cloud/Caddyfile deploy/cloud/deploy.sh \
+            "target:/opt/hospitalos/$ENV_NAME/"
+
+      - name: Déployer (sauvegarde, pull, up, santé, retour arrière automatique)
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | ssh target \
+            "REGISTRY_USER='${GITHUB_ACTOR}' bash /opt/hospitalos/$ENV_NAME/deploy.sh '$ENV_NAME' '$TAG'"
+
+      - name: Vérifications publiques
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          bash deploy/cloud/smoke.sh "$PUBLIC_URL" "$ENV_NAME" "$TAG"
+
+      - name: Résumé
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          echo "### $ENV_NAME : \`$TAG\` déployé sur $PUBLIC_URL" >> "$GITHUB_STEP_SUMMARY"

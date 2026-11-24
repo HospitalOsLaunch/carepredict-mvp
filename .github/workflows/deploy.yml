@@ -1,0 +1,150 @@
+# Chaîne de mise en production (voir docs/operations/MISE_EN_PROD.md).
+#
+#   main vert (workflow « ci » réussi) -> images construites une fois, taguées sha-<commit>
+#                                       -> déploiement automatique en staging (recette)
+#   tag vX.Y.Z sur un commit de main    -> même image re-taguée vX.Y.Z (aucune reconstruction)
+#                                       -> production, après approbation (environnement GitHub)
+#   lancement manuel                    -> redéployer un tag existant (retour arrière)
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environnement
+        type: choice
+        options: [staging, production]
+        required: true
+      tag:
+        description: Tag d'image existant (sha-<commit> ou vX.Y.Z ; production = vX.Y.Z)
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      ref: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - id: meta
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          echo "tag=sha-${SHA:0:12}" >> "$GITHUB_OUTPUT"
+          echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image produit (plateforme + moteurs)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/product/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/hospitalos-product:${{ steps.meta.outputs.tag }}
+          labels: org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=product
+          cache-to: type=gha,scope=product,mode=max
+      - name: Image cockpit
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/cockpit/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/hospitalos-cockpit:${{ steps.meta.outputs.tag }}
+          labels: org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha,scope=cockpit
+          cache-to: type=gha,scope=cockpit,mode=max
+
+  staging:
+    needs: build
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/deploy-env.yml
+    with:
+      environment: staging
+      tag: ${{ needs.build.outputs.tag }}
+      ref: ${{ needs.build.outputs.ref }}
+    secrets: inherit
+
+  promote:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Le tag désigne un commit de main déjà construit
+        run: |
+          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]] \
+            || { echo "::error::tag de version invalide : $GITHUB_REF_NAME"; exit 1; }
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "::error::$GITHUB_REF_NAME ne pointe pas sur un commit de main"; exit 1; }
+          echo "REGISTRY=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+          echo "SOURCE=sha-${GITHUB_SHA:0:12}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Promotion sans reconstruction (même digest qu'en recette)
+        run: |
+          for image in hospitalos-product hospitalos-cockpit; do
+            docker buildx imagetools inspect "$REGISTRY/$image:$SOURCE" >/dev/null \
+              || { echo "::error::$image:$SOURCE absent : ce commit n'a pas été construit sur main"; exit 1; }
+            docker buildx imagetools create -t "$REGISTRY/$image:$GITHUB_REF_NAME" "$REGISTRY/$image:$SOURCE"
+          done
+
+  production:
+    needs: promote
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/deploy-env.yml
+    with:
+      environment: production
+      tag: ${{ needs.promote.outputs.tag }}
+      ref: ${{ github.sha }}
+    secrets: inherit
+
+  manual:
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/deploy-env.yml
+    with:
+      environment: ${{ inputs.environment }}
+      tag: ${{ inputs.tag }}
+      ref: ${{ github.sha }}
+    secrets: inherit

@@ -4,23 +4,21 @@ Everything under ``/api`` goes through this service:
 
 * ``/api/auth/*``      login, logout, current account, invitation acceptance, password reset
 * ``/api/settings*``   the account's own profile, preferences, password and sessions
-* ``/api/admin/*``     account administration (role ``admin``): invite, resend, role/status, audit
-trail
+* ``/api/admin/*``     account administration (role ``admin``): invite, resend, role/status,
+  audit trail
 * ``/api/journal``     the account's decision journal (one document per account, optimistic
-revisions)
+  revisions)
 * ``/api/config``      public runtime configuration (environment, release, analytics id in
-production only)
+  production only)
 * ``/api/platform/health``  liveness for deployment smoke tests
 * ``/api/decision/*``  -> 24-hour planner engine, ``/api/*`` (other) -> hybrid engine;
-authenticated, with the
-  account's opaque id in ``X-HospitalOS-User`` so that each pilot works in an isolated space.
+  authenticated, with the account's opaque id in ``X-HospitalOS-User`` so that each pilot
+  works in an isolated space.
 
 Sessions: random token in an HttpOnly, SameSite=Strict cookie (``__Host-`` prefixed and Secure
-outside
-development), stored hashed, idle and absolute expiry. Every state-changing request must carry
-``X-Requested-With: HospitalOS`` (not sendable cross-site without CORS, which is not enabled) and,
-when the
-browser sends an Origin, a trusted one.
+outside development), stored hashed, idle and absolute expiry. Every state-changing request must
+carry ``X-Requested-With: HospitalOS`` (not sendable cross-site without CORS, which is not
+enabled) and, when the browser sends an Origin, a trusted one.
 """
 
 import json

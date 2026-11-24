@@ -1,0 +1,17 @@
+# HTTPS automatique (Let's Encrypt) pour le domaine de l'environnement ; tout part vers le cockpit
+# (nginx), qui sert l'interface et relaie /api vers la plateforme.
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Robots-Tag "{$ROBOTS_TAG}"
+		-Server
+	}
+	# Caddy ne fait pas confiance aux X-Forwarded-For entrants : il pose l'adresse réelle du client,
+	# que le cockpit transmet à la plateforme (limitation des tentatives de connexion).
+	reverse_proxy cockpit:8080
+}

@@ -45,8 +45,31 @@ services:
       - /var/cache/nginx:size=32m
     ports:
       - "127.0.0.1:8080:8080"
-    depends_on: [hybrid-api, decision-api]
+    depends_on: [platform]
     networks: [edge, app]
+
+  platform:
+    <<: *app
+    image: hospitalos/product:${RELEASE_TAG:?RELEASE_TAG must be set}
+    command: ["uvicorn", "--factory", "hospitalos.platform.app:app_from_env", "--host", "0.0.0.0", "--port", "8100"]
+    environment:
+      APP_ENV: production
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:?PUBLIC_BASE_URL must be set}
+      PLATFORM_DB: /data/platform.sqlite3
+      HYBRID_URL: http://hybrid-api:8000
+      DECISION_URL: http://decision-api:8765
+      RELEASE: ${RELEASE_TAG:?RELEASE_TAG must be set}
+      EMAIL_BACKEND: smtp
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM must be set}
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST must be set}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:?SMTP_USERNAME must be set}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD must be set}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+    volumes:
+      - platform-data:/data
+    depends_on: [hybrid-api, decision-api]
+    networks: [app, edge]  # edge: CHU SMTP relay; no Internet in the enclave (no analytics)
 
   hybrid-api:
     <<: *app
@@ -235,6 +258,7 @@ services:
     networks: [edge, data]
 
 volumes:
+  platform-data:
   redpanda-data:
   timescaledb-data:
   dagster-postgres-data:

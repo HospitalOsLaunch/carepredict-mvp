@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
-"""Release gate for the enclave deployment (deploy/nantes/docker-compose.release.yml).
+"""Release gate for the deployments (enclave: deploy/nantes, cloud: deploy/cloud).
 
     python scripts/deploy/check_release.py                  # compose + Dockerfiles
     python scripts/deploy/check_release.py --env FILE       # also the operator secrets file
     python scripts/deploy/check_release.py --compose FILE   # audit another file (the dev one fails)
+    python scripts/deploy/check_release.py --profile cloud  # deploy/cloud/docker-compose.yml
+
+Profiles: ``enclave`` (offline CHU, default) and ``cloud`` (Internet-facing VM, staging and
+production). In the cloud profile only the ``edge`` service (Caddy, HTTPS) publishes ports, and
+only 80/443; product images come from the registry as ``${REGISTRY}/hospitalos-*:${IMAGE_TAG}``
+and are pulled at deployment (no pull_policy rule); read-only configuration files may sit next to
+the compose file.
 
 Rules (exit 1 and one line per violation):
   R1 third-party images pinned by digest, and the digest equals deploy/nantes/images.lock.json;
@@ -31,6 +38,10 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = ROOT / "deploy/nantes/docker-compose.release.yml"
+CLOUD_COMPOSE = ROOT / "deploy/cloud/docker-compose.yml"
+CLOUD_IMAGE = re.compile(
+    r"^\$\{REGISTRY(:\?[^}]*)?\}/hospitalos-[a-z]+:\$\{IMAGE_TAG(:\?[^}]*)?\}$"
+)
 LOCK = ROOT / "deploy/nantes/images.lock.json"
 DATASTORES = {"timescaledb", "redis", "redpanda", "dagster-postgres"}
 SECRET_KEY = re.compile(r"(PASSWORD|SECRET|TOKEN)", re.I)
@@ -54,7 +65,8 @@ def _strings(x: Any) -> list[str]:
     return []
 
 
-def check_compose(path: Path) -> list[str]:
+def check_compose(path: Path, profile: str = "enclave") -> list[str]:
+    cloud = profile == "cloud"
     doc = yaml.safe_load(path.read_text())
     pins = json.loads(LOCK.read_text())["images"]
     nets = doc.get("networks") or {}
@@ -78,6 +90,11 @@ def check_compose(path: Path) -> list[str]:
                         f"R1 {name}: base image not pinned by digest in "
                         f"{dockerfile.relative_to(ROOT)}: {line.strip()}"
                     )
+        elif cloud and img.startswith("${REGISTRY"):
+            if not CLOUD_IMAGE.match(img):
+                out.append(
+                    f"R1 {name}: registry image must be ${{REGISTRY}}/hospitalos-*:${{IMAGE_TAG}}"
+                )
         elif img.startswith("hospitalos/"):
             if not re.search(r":\$\{RELEASE_TAG(:\?[^}]*)?\}$", img):
                 out.append(
@@ -98,6 +115,9 @@ def check_compose(path: Path) -> list[str]:
             )
             if name in DATASTORES:
                 out.append(f"R2 {name}: datastore publishes a host port ({spec})")
+            elif cloud:
+                if name != "edge" or str(spec).split("/")[0] not in ("80:80", "443:443"):
+                    out.append(f"R2 {name}: only edge may publish, and only 80/443 ({spec})")
             elif not str(spec).startswith("127.0.0.1:"):
                 out.append(f"R2 {name}: port not bound to 127.0.0.1 ({spec})")
         # R3
@@ -108,7 +128,7 @@ def check_compose(path: Path) -> list[str]:
                 rel = (path.parent / src).resolve()
                 allowed = any(
                     str(rel).startswith(str(ROOT / d)) for d in ("infrastructure", "deploy")
-                )
+                ) or (cloud and rel.parent == path.parent.resolve())  # config next to the compose
                 if not (ro and allowed):
                     out.append(
                         f"R3 {name}: host bind-mount {v!r} "
@@ -133,7 +153,7 @@ def check_compose(path: Path) -> list[str]:
             out.append(f"R5 {name}: missing security_opt no-new-privileges:true")
         if not svc.get("restart"):
             out.append(f"R5 {name}: missing restart policy")
-        if svc.get("pull_policy") != "never":
+        if not cloud and svc.get("pull_policy") != "never":
             out.append(f"R5 {name}: pull_policy must be never (images preloaded offline)")
         # R6
         if name in DATASTORES:
@@ -151,6 +171,8 @@ def check_env(path: Path) -> list[str]:
         k, v = (s.strip() for s in line.split("=", 1))
         if k == "RELEASE_TAG" and (not v or v.upper() == "REPLACE_ME"):
             out.append("R7 RELEASE_TAG is not set")
+        elif "replace_me" in v.lower() and not SECRET_KEY.search(k):
+            out.append(f"R7 {k} still holds a template value")
         if SECRET_KEY.search(k):
             if (
                 not v
@@ -166,10 +188,12 @@ def check_env(path: Path) -> list[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--compose", type=Path, default=COMPOSE)
+    ap.add_argument("--compose", type=Path)
+    ap.add_argument("--profile", choices=("enclave", "cloud"), default="enclave")
     ap.add_argument("--env", type=Path)
     a = ap.parse_args()
-    problems = check_compose(a.compose) + (check_env(a.env) if a.env else [])
+    a.compose = a.compose or (CLOUD_COMPOSE if a.profile == "cloud" else COMPOSE)
+    problems = check_compose(a.compose, a.profile) + (check_env(a.env) if a.env else [])
     for p in problems:
         print(p)
     print(json.dumps({"compose": str(a.compose), "violations": len(problems)}))

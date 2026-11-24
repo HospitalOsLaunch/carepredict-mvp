@@ -38,6 +38,7 @@ IMAGES = [  # (reference used in compose files / Dockerfiles, registry, reposito
     ),
     ("node:22.12.0-bookworm-slim", "registry-1.docker.io", "library/node", "22.12.0-bookworm-slim"),
     ("nginx:1.27.3-alpine", "registry-1.docker.io", "library/nginx", "1.27.3-alpine"),
+    ("caddy:2.8.4-alpine", "registry-1.docker.io", "library/caddy", "2.8.4-alpine"),
 ]
 ACCEPT = ", ".join(
     [

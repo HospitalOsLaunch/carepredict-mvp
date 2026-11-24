@@ -2,9 +2,8 @@
 
 Passwords: scrypt (n=2^15, r=8, p=1, 64-byte key, 16-byte random salt), stored as
 ``scrypt$n$r$p$salt_b64$hash_b64``; verification is constant-time. Session, invitation and reset
-tokens are
-random 32-byte URL-safe strings; only their SHA-256 is stored, so a database leak does not reveal
-usable tokens.
+tokens are random 32-byte URL-safe strings; only their SHA-256 is stored, so a database leak does
+not reveal usable tokens.
 """
 
 from __future__ import annotations

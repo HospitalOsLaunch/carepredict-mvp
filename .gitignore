@@ -67,3 +67,8 @@ runs/
 
 # Release secrets (operator-provided)
 deploy/nantes/.env.release
+
+# Cloud environment files (secrets; live only on the servers)
+deploy/cloud/.env*
+# Platform accounts database (development)
+var/

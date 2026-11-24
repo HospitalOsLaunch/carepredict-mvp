@@ -51,6 +51,19 @@ jobs:
           docker compose -f deploy/nantes/docker-compose.release.yml --env-file deploy/nantes/.env.release config -q
           rm deploy/nantes/.env.release
 
+      - name: Cloud gate (staging and production; only edge on 80/443, registry images)
+        run: |
+          python scripts/deploy/check_release.py --profile cloud
+          for s in deploy/cloud/deploy.sh deploy/cloud/smoke.sh; do bash -n "$s"; done
+          for env in staging production; do
+            sed -e "s/IMAGE_TAG=REPLACE_ME/IMAGE_TAG=sha-${GITHUB_SHA:0:12}/" \
+                -e "s/REPLACE_ME/ci$(python -c 'import secrets; print(secrets.token_hex(12))')/" \
+                "deploy/cloud/env/$env.env.example" > "deploy/cloud/.env.$env"
+            python scripts/deploy/check_release.py --profile cloud --env "deploy/cloud/.env.$env"
+            docker compose -f deploy/cloud/docker-compose.yml --env-file "deploy/cloud/.env.$env" config -q
+            rm "deploy/cloud/.env.$env"
+          done
+
       - name: Docker build
         run: docker compose build
 

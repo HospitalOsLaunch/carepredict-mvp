@@ -1,8 +1,8 @@
 """Operator commands (run inside the platform container: ``docker compose exec platform python -m
 hospitalos.platform``).
 
-invite-admin EMAIL [--name NAME]   first administrator (or a new link for a pending one); prints the
-link
+invite-admin EMAIL [--name NAME]   first administrator (or a new link for a pending one);
+                                   prints the link
 migrate                            apply pending schema migrations
 backup PATH                        consistent online copy of the database
 users                              list accounts (no secrets)

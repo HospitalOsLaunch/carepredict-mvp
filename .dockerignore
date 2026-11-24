@@ -17,3 +17,4 @@ delivery
 runs
 artifacts/*.pt
 deploy/nantes/.env.release
+deploy/cloud/.env*

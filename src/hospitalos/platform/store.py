@@ -1,8 +1,8 @@
 """SQLite storage for accounts, sessions, one-time tokens, audit trail and per-account journals.
 
 One file per environment (a Docker volume in staging/production). Schema changes are applied at
-start-up by
-ordered migrations recorded in ``schema_version``; a migration never rewrites history silently.
+start-up by ordered migrations recorded in ``schema_version``; a migration never rewrites history
+silently.
 """
 
 from __future__ import annotations

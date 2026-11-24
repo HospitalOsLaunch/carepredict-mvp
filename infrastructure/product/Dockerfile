@@ -18,7 +18,9 @@ COPY web/decision /app/web/decision
 COPY tests/decision_support/fixtures /app/tests/decision_support/fixtures
 COPY configs /app/configs
 
-RUN useradd --system --uid 10001 --home-dir /nonexistent --shell /usr/sbin/nologin hospitalos
+RUN useradd --system --uid 10001 --home-dir /nonexistent --shell /usr/sbin/nologin hospitalos \
+    && mkdir -p /data/backups && chown -R 10001:10001 /data
+# /data: platform accounts database (named volume, initialised from this owner at first start).
 USER 10001
 
 EXPOSE 8000 8765

@@ -1,0 +1,113 @@
+# HospitalOS — environnements cloud (staging et production), une VM par environnement.
+# Même fichier pour les deux ; seul le fichier d'environnement change (deploy/cloud/env/*.env.example).
+# Images construites une fois par la CI (GHCR), promues de staging à production sans reconstruction.
+#
+#   docker compose --env-file .env up -d          (sur le serveur, via deploy/cloud/deploy.sh)
+#
+# Seul `edge` (Caddy, HTTPS automatique) est exposé, en 80/443. Les moteurs sont sur un réseau interne
+# sans sortie ; la plateforme a une sortie pour l'envoi des emails (SMTP).
+
+name: hospitalos
+
+x-hardened: &hardened
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options: {max-size: "20m", max-file: "5"}
+
+x-app: &app
+  <<: *hardened
+  read_only: true
+  cap_drop: [ALL]
+  tmpfs:
+    - /tmp:size=64m
+
+services:
+  edge:
+    <<: *hardened
+    image: caddy:2.8.4-alpine@sha256:af32e97399febea808609119bb21544d0265c58a02836576e32a2d082c262c17
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN must be set}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL must be set}
+      ROBOTS_TAG: ${ROBOTS_TAG:?ROBOTS_TAG must be set}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    tmpfs:
+      - /tmp:size=16m
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [cockpit]
+    networks: [edge]
+
+  cockpit:
+    <<: *hardened
+    image: ${REGISTRY:?REGISTRY must be set}/hospitalos-cockpit:${IMAGE_TAG:?IMAGE_TAG must be set}
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID]
+    tmpfs:
+      - /tmp:size=32m
+      - /var/cache/nginx:size=32m
+    depends_on: [platform]
+    networks: [edge, app]
+
+  platform:
+    <<: *app
+    image: ${REGISTRY:?REGISTRY must be set}/hospitalos-product:${IMAGE_TAG:?IMAGE_TAG must be set}
+    command: ["uvicorn", "--factory", "hospitalos.platform.app:app_from_env", "--host", "0.0.0.0", "--port", "8100"]
+    environment:
+      APP_ENV: ${APP_ENV:?APP_ENV must be set}
+      PUBLIC_BASE_URL: https://${DOMAIN:?DOMAIN must be set}
+      PLATFORM_DB: /data/platform.sqlite3
+      HYBRID_URL: http://hybrid-api:8000
+      DECISION_URL: http://decision-api:8765
+      RELEASE: ${IMAGE_TAG:?IMAGE_TAG must be set}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:?EMAIL_BACKEND must be set}
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM must be set}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD must be set}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      GA_MEASUREMENT_ID: ${GA_MEASUREMENT_ID:-}
+    volumes:
+      - platform-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/api/platform/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    depends_on: [hybrid-api, decision-api]
+    networks: [app, egress]
+
+  hybrid-api:
+    <<: *app
+    image: ${REGISTRY:?REGISTRY must be set}/hospitalos-product:${IMAGE_TAG:?IMAGE_TAG must be set}
+    command: ["uvicorn", "services.api.hybrid_app:app", "--host", "0.0.0.0", "--port", "8000"]
+    networks: [app]
+
+  decision-api:
+    <<: *app
+    image: ${REGISTRY:?REGISTRY must be set}/hospitalos-product:${IMAGE_TAG:?IMAGE_TAG must be set}
+    command: ["python", "web/decision/serve.py", "--host", "0.0.0.0", "--port", "8765"]
+    networks: [app]
+
+volumes:
+  caddy-data:
+  caddy-config:
+  platform-data:
+
+networks:
+  edge:            # Internet <-> Caddy <-> cockpit
+  app:             # cockpit <-> platform <-> engines; no egress
+    internal: true
+  egress:          # platform -> SMTP provider only
