@@ -103,10 +103,15 @@ Système visuel : `DESIGN.md`.
    suppose 5 min pour l'indice visuel « vieillissant »).
 4. Authentification opérateur et périmètre par unité avant tout usage hors poste local.
 
-## Plan à 24 h (moteur d'aide à la décision)
+## Plan de l’unité
 
-Route `#/plan` (« Plan 24 h », touche `P`) : proposition calculée automatiquement par
-`src/hospitalos/decision_support` sur une unité fictive distincte, puis mode manuel X1/X2 sur le
-même moteur. Vite relaie `/api/decision/*` vers `web/decision/serve.py` (127.0.0.1:8765) ; sans ce
-serveur, l'écran affiche les sorties embarquées (`src/fixtures/decision.json`, générées par
-`web/dev/build_decision_fixtures.py`). Voir `docs/decision_support/README_REPRISE.md`.
+`#/plan` (touche `P`) affiche les fenêtres Maintenant, 12 h et 24 h du même plan que
+le bloc Action. Changer d’unité change la relève, le plan et les données affichées.
+La réponse de `hybrid.plan` contient les gestes évalués ensemble et l’attente cumulée
+à chaque échéance. Les scénarios embarqués rejouent les résultats de ce moteur.
+
+Les focales 3 et 7 jours affichent les éléments connus tant que la précision mesurée ou
+les quatre sources de l’unité ne permettent pas d’ouvrir l’horizon. L’onglet Données
+indique la fraîcheur et les motifs de blocage. Le démonstrateur historique X1/X2 est
+accessible séparément. [Résultats par horizon](../docs/operational/unit-planning-results/README.md) ·
+[Démonstrateur X1/X2](../docs/decision_support/README_REPRISE.md)

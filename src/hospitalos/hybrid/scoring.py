@@ -4,8 +4,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .models import Patient, State, compatible
-from .scenarios import BedAdmissions, FutureArrival, FutureTape, ResourceChange, validate_tape
+from .models import Action, Patient, State, compatible
+from .scenarios import (
+    BedAdmissions,
+    FutureArrival,
+    FutureTape,
+    ResourceChange,
+    booking_setup,
+    slot_ready,
+    staffing_tape,
+    validate_tape,
+)
 from .simulation import Trajectory, Transition
 
 
@@ -37,9 +46,15 @@ class Score:
 
 
 def score(
-    state: State, trajectory: Trajectory, *, expected_future: FutureTape | None = None
+    state: State,
+    trajectory: Trajectory,
+    *,
+    expected_future: FutureTape | None = None,
+    actions: tuple[Action, ...] = (),
 ) -> Score:
     expected_future = expected_future or FutureTape(state.at, ())
+    state, expected_future = staffing_tape(state, expected_future, actions)
+    setup = booking_setup(state, actions, expected_future)
     validate_tape(state, expected_future)
     expected = {e.id: e for e in expected_future.events if e.minute <= trajectory.horizon_minutes}
     seen: set[str] = set()
@@ -370,6 +385,7 @@ def score(
             if (
                 p is None
                 or p.id not in waiting
+                or not slot_ready(setup, p.id, bed_id, event.minute)
                 or status[bed_id] != "clean"
                 or bed_id in blocked_beds
                 or occupants[bed_id] is not None

@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-polyvalente",
   "expected_entities": [
    "unit:medecine-polyvalente",
    "pool:transport-sanitaire",
@@ -797,7 +798,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 10080,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1211,6 +1212,8 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
+  "outlooks": [],
   "issues": [
    "missing:discharge:P-0397",
    "stale:bed:L11"
@@ -1218,10 +1221,238 @@
   "warnings": []
  },
  "plan": {
-  "schema_version": "HYBRID_PLAN_4",
+  "action_timing": [],
+  "unit_id": "medecine-polyvalente",
+  "windows": [],
+  "horizons": [
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
+    "days": 3,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": [
+     "source_gate",
+     "qualification_missing"
+    ]
+   },
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-28",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-29",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-30",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-31",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
+    "days": 7,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": [
+     "source_gate",
+     "qualification_missing"
+    ]
+   }
+  ],
+  "requested_horizon_minutes": 10080,
+  "schema_version": "HYBRID_UNIT_PLAN_1",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "abstain",
-  "plan_id": "b95770161f1b9cb35f402de269ec965ebaf52c0ff86071b52cffd2dc31e49a6e",
+  "plan_id": "98a54004a16be53d0e144ff4115728a701b1ff6bdc8e055d7edea2325586bbf2",
   "hospital_id": "ch-fictif",
   "state_fingerprint": "b6829ac617ba4f376a352e100204b128933be84d535f837fa256819b6afe4595",
   "created_at": "2026-10-24T06:30:00Z",
@@ -1229,7 +1460,8 @@
   "selected": {
    "kind": "no_op",
    "bed_id": null,
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "missing:discharge:P-0397",
@@ -1273,7 +1505,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {

@@ -3,6 +3,7 @@ import { entityLabel, explain } from "../domain/labels";
 import { type Assessment, age, duration, freshnessIndex, longClock, minutesBetween } from "../domain/view";
 import { Fresh } from "./common";
 import { Back, Ban, Check } from "./icons";
+import { OutlookQuality } from "./OutlookQuality";
 import { Illu } from "./illustrations";
 
 const RESOURCE_NAME: Record<string, string> = {
@@ -39,6 +40,7 @@ export function DataQuality({
           et ce qui empêche une évaluation.
         </p>
       </header>
+      <OutlookQuality plan={a.plan ?? a.sourceSnapshot ?? null} />
       <div className="grid-2">
         <div className="stack">
           <section className="panel" aria-labelledby="state-title">

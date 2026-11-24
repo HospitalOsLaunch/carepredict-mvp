@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "medecine-polyvalente",
   "expected_entities": [
    "unit:medecine-polyvalente",
    "pool:transport-sanitaire",
@@ -45,7 +46,8 @@
    "discharge:P-0397",
    "discharge:P-0431",
    "patient:U-1052",
-   "patient:U-1055"
+   "patient:U-1055",
+   "unit_outlook:medecine-polyvalente"
   ],
   "events": [
    {
@@ -833,6 +835,530 @@
      "medically_cleared": null,
      "downstream_confirmed": null
     }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "outlook:medecine-polyvalente",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:30:00Z",
+    "available_at": "2026-10-24T06:30:00Z",
+    "fact": {
+     "kind": "unit_outlook",
+     "id": "medecine-polyvalente",
+     "feeds": [
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "medecine-polyvalente",
+       "source": "syn-bookings",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-31T06:30:00Z",
+       "status": "complete",
+       "kind": "bookings",
+       "records": []
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "medecine-polyvalente",
+       "source": "syn-departures",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-31T06:30:00Z",
+       "status": "complete",
+       "kind": "departures",
+       "records": [
+        {
+         "stay_id": "P-0371",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0388",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0397",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0402",
+         "estimate": "2026-10-28T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0409",
+         "estimate": "2026-10-29T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0412",
+         "estimate": "2026-10-30T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0415",
+         "estimate": "2026-10-31T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0420",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0425",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0431",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        }
+       ]
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "medecine-polyvalente",
+       "source": "syn-roster",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-31T06:30:00Z",
+       "status": "complete",
+       "kind": "roster",
+       "validated": true,
+       "shifts": [
+        {
+         "staff_id": "medecine-polyvalente-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-0",
+         "skill": "AS",
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-1",
+         "skill": "AS",
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-2",
+         "skill": "IDE",
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-2",
+         "skill": "AS",
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-3",
+         "skill": "IDE",
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-3",
+         "skill": "AS",
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-0",
+         "skill": "AS",
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-1",
+         "skill": "AS",
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-2",
+         "skill": "IDE",
+         "start": "2026-10-27T06:30:00Z",
+         "end": "2026-10-27T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-2",
+         "skill": "AS",
+         "start": "2026-10-27T06:30:00Z",
+         "end": "2026-10-27T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-3",
+         "skill": "IDE",
+         "start": "2026-10-27T18:30:00Z",
+         "end": "2026-10-28T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-3",
+         "skill": "AS",
+         "start": "2026-10-27T18:30:00Z",
+         "end": "2026-10-28T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-28T06:30:00Z",
+         "end": "2026-10-28T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-0",
+         "skill": "AS",
+         "start": "2026-10-28T06:30:00Z",
+         "end": "2026-10-28T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-28T18:30:00Z",
+         "end": "2026-10-29T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-1",
+         "skill": "AS",
+         "start": "2026-10-28T18:30:00Z",
+         "end": "2026-10-29T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-2",
+         "skill": "IDE",
+         "start": "2026-10-29T06:30:00Z",
+         "end": "2026-10-29T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-2",
+         "skill": "AS",
+         "start": "2026-10-29T06:30:00Z",
+         "end": "2026-10-29T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-3",
+         "skill": "IDE",
+         "start": "2026-10-29T18:30:00Z",
+         "end": "2026-10-30T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-3",
+         "skill": "AS",
+         "start": "2026-10-29T18:30:00Z",
+         "end": "2026-10-30T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-30T06:30:00Z",
+         "end": "2026-10-30T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-0",
+         "skill": "AS",
+         "start": "2026-10-30T06:30:00Z",
+         "end": "2026-10-30T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-30T18:30:00Z",
+         "end": "2026-10-31T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "medecine-polyvalente-AS-1",
+         "skill": "AS",
+         "start": "2026-10-30T18:30:00Z",
+         "end": "2026-10-31T06:30:00Z",
+         "status": "confirmed"
+        }
+       ],
+       "external_shifts": [],
+       "capacity": [
+        {
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-27T06:30:00Z",
+         "end": "2026-10-27T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-27T18:30:00Z",
+         "end": "2026-10-28T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-28T06:30:00Z",
+         "end": "2026-10-28T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-28T18:30:00Z",
+         "end": "2026-10-29T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-29T06:30:00Z",
+         "end": "2026-10-29T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-29T18:30:00Z",
+         "end": "2026-10-30T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-30T06:30:00Z",
+         "end": "2026-10-30T18:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-30T18:30:00Z",
+         "end": "2026-10-31T06:30:00Z",
+         "staffed_beds": 14,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        }
+       ]
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "medecine-polyvalente",
+       "source": "syn-ed",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-31T06:30:00Z",
+       "status": "complete",
+       "kind": "emergency",
+       "allocation_rule": "direct-to-beneficiary-v1",
+       "records": [
+        {
+         "day": "2026-10-24",
+         "counts": [
+          0,
+          1
+         ]
+        },
+        {
+         "day": "2026-10-25",
+         "counts": [
+          0,
+          1
+         ]
+        },
+        {
+         "day": "2026-10-26",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-27",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-28",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-29",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-30",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-31",
+         "counts": [
+          0,
+          1
+         ]
+        }
+       ]
+      }
+     ]
+    }
    }
   ],
   "assumptions": {
@@ -866,7 +1392,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 10080,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -876,7 +1402,7 @@
  "state": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
-  "fingerprint": "4d62328498161af82285d8f361870a6660854809f1c587f2f409f7092273b61e",
+  "fingerprint": "f436e54672c4cc32aed316379c818f22c008c2f41939ce8591327fc910b2bb7a",
   "units": [
    {
     "kind": "unit",
@@ -1331,22 +1857,783 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
+  "outlooks": [
+   {
+    "kind": "unit_outlook",
+    "id": "medecine-polyvalente",
+    "feeds": [
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "medecine-polyvalente",
+      "source": "syn-bookings",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "status": "complete",
+      "kind": "bookings",
+      "records": []
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "medecine-polyvalente",
+      "source": "syn-departures",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "status": "complete",
+      "kind": "departures",
+      "records": [
+       {
+        "stay_id": "P-0371",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0388",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0397",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0402",
+        "estimate": "2026-10-28T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0409",
+        "estimate": "2026-10-29T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0412",
+        "estimate": "2026-10-30T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0415",
+        "estimate": "2026-10-31T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0420",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0425",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0431",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       }
+      ]
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "medecine-polyvalente",
+      "source": "syn-roster",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "status": "complete",
+      "kind": "roster",
+      "validated": true,
+      "shifts": [
+       {
+        "staff_id": "medecine-polyvalente-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-0",
+        "skill": "AS",
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-1",
+        "skill": "AS",
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-2",
+        "skill": "IDE",
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-2",
+        "skill": "AS",
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-3",
+        "skill": "IDE",
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-3",
+        "skill": "AS",
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-0",
+        "skill": "AS",
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-1",
+        "skill": "AS",
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-2",
+        "skill": "IDE",
+        "start": "2026-10-27T06:30:00Z",
+        "end": "2026-10-27T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-2",
+        "skill": "AS",
+        "start": "2026-10-27T06:30:00Z",
+        "end": "2026-10-27T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-3",
+        "skill": "IDE",
+        "start": "2026-10-27T18:30:00Z",
+        "end": "2026-10-28T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-3",
+        "skill": "AS",
+        "start": "2026-10-27T18:30:00Z",
+        "end": "2026-10-28T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-28T06:30:00Z",
+        "end": "2026-10-28T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-0",
+        "skill": "AS",
+        "start": "2026-10-28T06:30:00Z",
+        "end": "2026-10-28T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-28T18:30:00Z",
+        "end": "2026-10-29T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-1",
+        "skill": "AS",
+        "start": "2026-10-28T18:30:00Z",
+        "end": "2026-10-29T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-2",
+        "skill": "IDE",
+        "start": "2026-10-29T06:30:00Z",
+        "end": "2026-10-29T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-2",
+        "skill": "AS",
+        "start": "2026-10-29T06:30:00Z",
+        "end": "2026-10-29T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-3",
+        "skill": "IDE",
+        "start": "2026-10-29T18:30:00Z",
+        "end": "2026-10-30T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-3",
+        "skill": "AS",
+        "start": "2026-10-29T18:30:00Z",
+        "end": "2026-10-30T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-30T06:30:00Z",
+        "end": "2026-10-30T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-0",
+        "skill": "AS",
+        "start": "2026-10-30T06:30:00Z",
+        "end": "2026-10-30T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-30T18:30:00Z",
+        "end": "2026-10-31T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "medecine-polyvalente-AS-1",
+        "skill": "AS",
+        "start": "2026-10-30T18:30:00Z",
+        "end": "2026-10-31T06:30:00Z",
+        "status": "confirmed"
+       }
+      ],
+      "external_shifts": [],
+      "capacity": [
+       {
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-27T06:30:00Z",
+        "end": "2026-10-27T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-27T18:30:00Z",
+        "end": "2026-10-28T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-28T06:30:00Z",
+        "end": "2026-10-28T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-28T18:30:00Z",
+        "end": "2026-10-29T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-29T06:30:00Z",
+        "end": "2026-10-29T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-29T18:30:00Z",
+        "end": "2026-10-30T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-30T06:30:00Z",
+        "end": "2026-10-30T18:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-30T18:30:00Z",
+        "end": "2026-10-31T06:30:00Z",
+        "staffed_beds": 14,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       }
+      ]
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "medecine-polyvalente",
+      "source": "syn-ed",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "status": "complete",
+      "kind": "emergency",
+      "allocation_rule": "direct-to-beneficiary-v1",
+      "records": [
+       {
+        "day": "2026-10-24",
+        "counts": [
+         0,
+         1
+        ]
+       },
+       {
+        "day": "2026-10-25",
+        "counts": [
+         0,
+         1
+        ]
+       },
+       {
+        "day": "2026-10-26",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-27",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-28",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-29",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-30",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-31",
+        "counts": [
+         0,
+         1
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ],
   "issues": [],
   "warnings": []
  },
  "plan": {
-  "schema_version": "HYBRID_PLAN_4",
+  "action_timing": [
+   {
+    "starts_at": "2026-10-24T06:30:00Z",
+    "ends_at": null,
+    "skill": null,
+    "lender": null
+   },
+   {
+    "starts_at": "2026-10-24T06:30:00Z",
+    "ends_at": null,
+    "skill": null,
+    "lender": null
+   }
+  ],
+  "unit_id": "medecine-polyvalente",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 1851.09375,
+    "selected_wait": 1014.84375,
+    "unserved_scenarios": 0,
+    "change_ratio": -0.45175993922512026,
+    "saved_wait": 836.25,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 3291.09375,
+    "selected_wait": 1014.84375,
+    "unserved_scenarios": 0,
+    "change_ratio": -0.6916393676114514,
+    "saved_wait": 2276.25,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
+  "horizons": [
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 2,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 2,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     }
+    ],
+    "days": 3,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": "syn-bookings",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "departures",
+      "source": "syn-departures",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": 10,
+      "expected": 10,
+      "reasons": []
+     },
+     {
+      "kind": "roster",
+      "source": "syn-roster",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "emergency",
+      "source": "syn-ed",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": 4,
+      "expected": 4,
+      "reasons": []
+     }
+    ],
+    "data_ready": true,
+    "qualified": false,
+    "reasons": [
+     "accuracy_gate"
+    ]
+   },
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 2,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 2,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": 0,
+      "estimated_departures": 2,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-28",
+      "bookings": 0,
+      "estimated_departures": 1,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-29",
+      "bookings": 0,
+      "estimated_departures": 1,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-30",
+      "bookings": 0,
+      "estimated_departures": 1,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-31",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 14,
+      "expected_ed_full_day": 0.5
+     }
+    ],
+    "days": 7,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": "syn-bookings",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "departures",
+      "source": "syn-departures",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": 10,
+      "expected": 10,
+      "reasons": []
+     },
+     {
+      "kind": "roster",
+      "source": "syn-roster",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "emergency",
+      "source": "syn-ed",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-31T06:30:00Z",
+      "covered": 8,
+      "expected": 8,
+      "reasons": []
+     }
+    ],
+    "data_ready": true,
+    "qualified": false,
+    "reasons": [
+     "accuracy_gate"
+    ]
+   }
+  ],
+  "requested_horizon_minutes": 10080,
+  "schema_version": "HYBRID_UNIT_PLAN_1",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "f2a13b64c078be8e75bffef50a026d1b9fb8edfe41d4820b71063df6b979726f",
+  "plan_id": "e06d5da5348162c06c3ee8308faefcb1eabd440b633f7165d09f6b5c4c6df4e0",
   "hospital_id": "ch-fictif",
-  "state_fingerprint": "4d62328498161af82285d8f361870a6660854809f1c587f2f409f7092273b61e",
+  "state_fingerprint": "f436e54672c4cc32aed316379c818f22c008c2f41939ce8591327fc910b2bb7a",
   "created_at": "2026-10-24T06:30:00Z",
   "expires_at": "2026-10-24T06:45:00Z",
   "selected": {
    "kind": "request_transport",
    "bed_id": "L02",
-   "patient_id": "P-0412"
+   "patient_id": "P-0412",
+   "slot_id": null
   },
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
@@ -1357,11 +2644,12 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1376,11 +2664,12 @@
     "action": {
      "kind": "request_transport",
      "bed_id": "L02",
-     "patient_id": "P-0412"
+     "patient_id": "P-0412",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1169.53125,
-    "worst_decile_waiting_patient_minutes": 1590.0,
-    "objective": 1274.6484375,
+    "mean_waiting_patient_minutes": 2129.53125,
+    "worst_decile_waiting_patient_minutes": 2550.0,
+    "objective": 2234.6484375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1395,11 +2684,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L05",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1414,11 +2704,12 @@
     "action": {
      "kind": "request_transport",
      "bed_id": "L06",
-     "patient_id": "P-0388"
+     "patient_id": "P-0388",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1162.96875,
-    "worst_decile_waiting_patient_minutes": 1612.5,
-    "objective": 1275.3515625,
+    "mean_waiting_patient_minutes": 2122.96875,
+    "worst_decile_waiting_patient_minutes": 2572.5,
+    "objective": 2235.3515625,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 1,
@@ -1433,11 +2724,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1052"
+     "patient_id": "U-1052",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1452,11 +2744,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1043"
+     "patient_id": "U-1043",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1471,11 +2764,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1055"
+     "patient_id": "U-1055",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1490,11 +2784,12 @@
     "action": {
      "kind": "reserve_bed",
      "bed_id": "L08",
-     "patient_id": "U-1047"
+     "patient_id": "U-1047",
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1371.09375,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1437.0703125,
+    "mean_waiting_patient_minutes": 3291.09375,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3357.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1509,11 +2804,12 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "L11",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1368.28125,
-    "worst_decile_waiting_patient_minutes": 1635.0,
-    "objective": 1434.9609375,
+    "mean_waiting_patient_minutes": 3288.28125,
+    "worst_decile_waiting_patient_minutes": 3555.0,
+    "objective": 3354.9609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
     "max_waiting_at_end": 2,
@@ -1560,26 +2856,29 @@
    {
     "kind": "request_transport",
     "bed_id": "L02",
-    "patient_id": "P-0412"
+    "patient_id": "P-0412",
+    "slot_id": null
    },
    {
     "kind": "request_transport",
     "bed_id": "L06",
-    "patient_id": "P-0388"
+    "patient_id": "P-0388",
+    "slot_id": null
    }
   ],
   "bundle_evaluation": {
    "action": {
     "kind": "request_transport",
     "bed_id": "L02",
-    "patient_id": "P-0412"
+    "patient_id": "P-0412",
+    "slot_id": null
    },
-   "mean_waiting_patient_minutes": 1005.46875,
-   "worst_decile_waiting_patient_minutes": 1597.5,
-   "objective": 1153.4765625,
+   "mean_waiting_patient_minutes": 1014.84375,
+   "worst_decile_waiting_patient_minutes": 1672.5,
+   "objective": 1179.2578125,
    "violations": [],
-   "scenarios_with_unserved_demand": 4,
-   "max_waiting_at_end": 1,
+   "scenarios_with_unserved_demand": 0,
+   "max_waiting_at_end": 0,
    "max_arrived": 0,
    "mean_staffed_pressure": 0.0,
    "mean_cleaning_pressure": 0.0,
@@ -1588,12 +2887,12 @@
    "pressure_regression_scenarios": 0
   },
   "bundle_marginal_minutes": [
-   201.5625,
-   164.0625
+   1161.5625,
+   1114.6875
   ],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1674,12 +2973,12 @@
     ]
    }
   ],
-  "service_status": "unserved_in_some_sampled_scenarios"
+  "service_status": "served_in_all_sampled_scenarios"
  },
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1780,7 +3079,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1245,
+    "waiting_patient_minutes": 3165,
     "admitted": 4,
     "waiting_at_end": 2,
     "violations": [],
@@ -1796,7 +3095,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,

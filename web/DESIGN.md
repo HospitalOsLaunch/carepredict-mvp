@@ -93,12 +93,9 @@ Une décision dit toujours d'où elle vient et sur quoi elle porte.
 
 ## Horloge de démonstration
 
-Les sorties précalculées du planificateur datent d'un matin d'octobre (unité) et d'un soir de
-novembre (plan 24 h). Au chargement, chaque jeu de démonstration est décalé d'un seul bloc vers
-maintenant (à 5 min près pour l'unité, à l'heure près pour le plan) : écarts, ordres et chiffres
-du moteur inchangés, libellés horaires recalculés (« Matinée ordinaire » devient
-« Après-midi ordinaire » l'après-midi). Jamais appliqué à une API. `?horloge=fixe` garde les
-instants enregistrés (captures reproductibles). La barre haute affiche la date de l'état.
+Chaque plan d’unité conserve son heure de relève, son empreinte et les dates civiles des
+créneaux. Les situations de démonstration se rejouent à cette origine. Les calculs API
+utilisent les dates d’observation reçues.
 
 ## Motif de refus
 
@@ -111,23 +108,23 @@ contrôle humain et la traçabilité des usages. Le motif rend les refus lisible
 
 ## Plan à 24 h
 
-Même grammaire que « Action suivante » : bandeau d'état, titre, actions avec leur base, l'effet
-(soins non couverts, pratique habituelle contre plan), deux réponses. Le reste à un clic : tous les
-indicateurs, conditions et incertitudes, options écartées, détail du calcul (codes moteur). Pas
-d'accent violet : Outremer agit partout. Le sélecteur d'unité du cockpit cède la place à
-« Plan 24 h · unité fictive » : l'unité fictive se choisit dans le bandeau de démonstration de la
-page. Valider ou refuser un plan l'inscrit au journal de démonstration. Le plan à 24 h est
-désormais la focale par défaut de l'onglet Plan (voir « Plan : focales »).
+Le profil versionné `HYBRID_UNIT_PLAN_1` identifie ce contrat API.
+Le sélecteur d’unité reste actif dans toutes les focales. Action et Plan lisent le même
+`plan_id` de `hybrid.plan`, la même relève et la même empreinte. Une demande déjà
+programmée figure aussi dans le témoin. Le renfort mobilise une personne confirmée,
+pour une compétence, une unité et une fenêtre identifiées. Les deux gestes sont
+combinables avec le transport, le nettoyage et la réservation. Les réponses humaines
+sont enregistrées au même endroit, sur la page de l’unité.
 
 ## Bloc Action (retours du 24 novembre au soir)
 
 - **Juste sous « Bonsoir »**, avant la bande de tension : c'est la première chose à faire.
-- **Un seul moteur, filtré sur l'action prioritaire.** Le planificateur de l'unité évalue désormais
-  des combinaisons (transport + bionettoyage + réservation, jusqu'à 3 gestes ici) : un geste n'est
-  ajouté que s'il fait baisser l'objectif commun d'au moins 1 % (et 1 patient·min). Le bloc montre
-  la combinaison, chaque geste avec ce qu'il ajoute aux précédents ; le premier geste seul reste
-  une option (« Seulement : … »). Renforts et entrées programmées restent dans le plan 24 h (autre
-  moteur) : leur fusion est un chantier à part.
+- **Actions évaluées ensemble.** Le planificateur peut combiner transport, bionettoyage,
+  réservation de lit, renfort et préparation d’une entrée programmée. Lorsque chaque geste
+  isolé laisse l’attente inchangée, il teste les paires admissibles. Une paire initiale ou un
+  geste ajouté doit améliorer l’objectif d’au moins 1 % de sa valeur témoin et d’au moins
+  une minute d’attente cumulée, en respectant la garde sur les ressources dans chaque scénario.
+  Le bloc affiche le gain total et la contribution de chaque geste dans l’ordre évalué.
 - **Le gain en heures, avec son unité** : « Ce que vous gagnez d'ici 03:10 — −6 h 06 d'attente en
   moins pour les patients à placer (−27 %) », puis « Sans rien faire 22 h 51 / Avec la proposition
   16 h 45 », et une ligne qui dit ce qu'est l'attente cumulée (somme des attentes, moyenne de
@@ -152,23 +149,23 @@ Un seul onglet **Plan**, cinq focales : **Maintenant · 12 h · 24 h · 3 jours 
 (`#/plan/<focale>`, 24 h par défaut).
 
 - **Maintenant** : l'action prioritaire du planificateur de l'unité (le même que le bloc Action).
-- **12 h** (la garde) et **24 h** : le plan 24 h lu à travers une fenêtre. Ce qui commence après la
-  garde n'est pas masqué : « Ensuite, après 08:00 : 2 actions du même plan ». Les effets restent
-  ceux du plan entier, et c'est écrit.
-- **3 et 7 jours** : **perspective, non planifiée**. Les moteurs ne planifient que sur 24 h ; au-delà
-  la page montre ce qui est connu (sorties prévues par bloc de 24 h, renforts et leur confirmation)
-  et ce qu'il faudrait pour planifier (entrées programmées, dates de sortie prévisionnelles,
-  planning validé, prévision des urgences). « Aucune sortie prévue connue » n'est jamais un zéro.
+- **12 h et 24 h** affichent l’attente réellement simulée dans chaque fenêtre pour les mêmes gestes.
+  Chaque valeur du plan est traçable au reçu moteur par un pointeur JSON `data-src` et sa valeur
+  brute `data-raw`. Une nouvelle sélection d’unité invalide le rendu précédent.
+- **3 et 7 jours** affichent la perspective non planifiée lorsque la qualification de l’horizon
+  ou d’une source manque. L’onglet Données détaille les contrôles.
+- Les données de démonstration du moteur d’unité sont rejouées à l’heure d’origine pour préserver
+  les identités et les jours civils du planning.
 
 Options explorées pour la flexibilité d'horizon :
 
 | Option | Pour | Contre | Verdict |
 | --- | --- | --- | --- |
-| Un onglet, des focales (retenu) | un seul endroit ; on passe de l'action au plan au même geste ; l'horizon réellement calculé reste visible | 3 j / 7 j ne sont qu'une perspective tant que les données manquent | retenu |
+| Un onglet, des focales (retenu) | les effets d’une même proposition se lisent à plusieurs échéances | les focales longues exigent des sources à jour et une prévision qualifiée | retenu |
 | Curseur d'horizon continu (1 h → 7 j) | très flexible | laisse croire qu'un plan existe à chaque heure ; trop fin pour une relève | écarté |
 | Un onglet par horizon | lisible séparément | multiplie la navigation ; les plans se contredisent d'un onglet à l'autre | écarté |
 | Frise zoomable (type Gantt) | vue d'ensemble des actions dans le temps | lourde au téléphone ; une frise vide au-delà de 24 h trompe | à reconsidérer quand un moteur planifiera sur plusieurs jours |
-| Moteur étendu à 72 h / 7 j | vrais plans à plusieurs jours | exige entrées programmées, sorties prévisionnelles et planning validé, absents des données | chantier moteur, pas d'interface |
+| Moteur étendu à 3 et 7 jours | projection de l’unité à plusieurs jours | exige quatre sources à jour et les seuils de précision du protocole | implémenté sous conditions, fermé dans les quatre unités du [banc synthétique](../docs/operational/unit-planning-results/README.md) |
 
 ## Tests d'usage du 24 novembre 2026
 
@@ -203,7 +200,7 @@ au téléphone. Retours appliqués :
   (« C'est noté. L'état se mettra à jour à la prochaine réception des données. »).
 
 Non traités ici (données ou back-end) : critères de placement au-delà de l'oxygène (sexe,
-isolement, chambre seule), unité commune entre le plan 24 h et le cockpit, journal partagé entre
+isolement, chambre seule), journal partagé entre
 postes, motif enregistré par le moteur dans son reçu de revue.
 
 ## Illustrations
@@ -272,3 +269,16 @@ jamais de texte sur fond clair. Audit axe-core : 0 violation.
 - **Rayons** : 6 (aimants) · 14 (cartes) · 20 (dialogues) · pilules (étiquettes, toasts) ; boutons 12.
 - **Mouvement** : le soleil se lève au chargement (une fois) ; ailleurs < 200 ms,
   `cubic-bezier(0.23, 1, 0.32, 1)`, transform/opacité, coupé sous `prefers-reduced-motion`.
+
+### Contrôles des quatre sources
+
+Dans Données, chaque horizon a son propre bilan. Le cockpit donne le logiciel,
+la version, la réception, la synchronisation, la fin de couverture et les motifs
+de rejet. Pour les séjours et les jours d’urgences, le numérateur et le dénominateur
+remontent du contrôle backend. Un export complet vide, une panne et un reçu
+absent ont des états distincts.
+
+La requête du cockpit demande jusqu’à sept jours. Le serveur retourne la durée
+effectivement autorisée, ses fenêtres calculées et les motifs par horizon. La
+qualification appartient à la version du prédicteur et au profil synthétique
+évalué. Les créneaux du plan conservent leurs dates absolues entre les journées.

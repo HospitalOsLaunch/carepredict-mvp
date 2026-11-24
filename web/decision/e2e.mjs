@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 let playwright;
 try { playwright = require("playwright"); } catch { playwright = require("/opt/node22/lib/node_modules/playwright"); }
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const OUT = resolve(ROOT, "evidence/decision_support");
+const OUT = process.env.E2E_OUTPUT_DIR || resolve(ROOT, "evidence/decision_support");
 mkdirSync(resolve(OUT, "captures"), { recursive: true });
 
 const checks = [];
@@ -51,7 +51,7 @@ let browser;
 const recheck = async (page, scope) => { for (const box of await page.locator(`${scope} [data-testid^=recheck-]`).all()) await box.check(); };
 const status = (page, scope) => page.locator(`${scope} [data-testid=status]`).first().getAttribute("data-status");
 try {
-  browser = await playwright.chromium.launch();
+  browser = await playwright.chromium.launch({executablePath: process.env.CHROMIUM_PATH || undefined});
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 2 });
   await page.goto(url);
   await page.waitForSelector("#auto-body [data-testid=status]");

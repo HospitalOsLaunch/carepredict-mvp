@@ -1,0 +1,43 @@
+{
+  "forecast_version": "unit-flow-v1",
+  "profile": "direct-to-beneficiary-v1",
+  "qualified_days": {
+    "medecine-polyvalente": [],
+    "court-sejour-geriatrique": [],
+    "medecine-interne": [],
+    "pneumologie": []
+  },
+  "discharge_estimates_by_unit": {
+    "medecine-polyvalente": {
+      "covered": 2037,
+      "eligible": 2037
+    },
+    "court-sejour-geriatrique": {
+      "covered": 2134,
+      "eligible": 2134
+    },
+    "medecine-interne": {
+      "covered": 1361,
+      "eligible": 1361
+    },
+    "pneumologie": {
+      "covered": 1137,
+      "eligible": 1137
+    }
+  },
+  "universes": 8,
+  "origins_per_universe_unit": 35,
+  "synthetic_only": true,
+  "horizon_days": [
+    1,
+    3,
+    7
+  ],
+  "raw_target_pairs": 6720,
+  "scenarios": 4,
+  "paired_bootstrap": {
+    "block_days": 7,
+    "replications": 2000,
+    "seed": 7731
+  }
+}

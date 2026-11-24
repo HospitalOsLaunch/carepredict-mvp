@@ -32,6 +32,7 @@ export interface Assessment {
   receivedAtBySource: Record<string, string> | null;
   trace: PairedTrace | null;
   episodeId: string | null;
+  sourceSnapshot?: LiveSnapshot;
   /** Freshness budget used by the backend for facts, in minutes. */
   factBudgetMinutes: number;
   /** When the proposal stops being actionable (live proposal TTL, else plan expiry). */
@@ -361,7 +362,7 @@ export interface Comparison {
 }
 
 const sameAction = (a: Action, b: Action) =>
-  a.kind === b.kind && a.bed_id === b.bed_id && a.patient_id === b.patient_id;
+  a.kind === b.kind && a.bed_id === b.bed_id && a.patient_id === b.patient_id && (a.slot_id ?? null) === (b.slot_id ?? null);
 
 /** The steps of the proposal: the planner's combination, or its single action. */
 export function steps(plan: Plan): Action[] {
@@ -465,6 +466,7 @@ export function fromLive(
     // A replayed observation on fictitious patients never reads as the unit in observation.
     scenarioLabel: origin === "api-live" ? "Unité en observation" : "Observation rejouée (patients fictifs)",
     state: snapshot.state,
+    sourceSnapshot: snapshot,
     plan,
     gateReasons,
     events: snapshot.events,

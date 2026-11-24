@@ -81,6 +81,7 @@ include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
 [tool.setuptools.package-data]
 hospitalos = ["py.typed"]
+"hospitalos.hybrid" = ["unit_horizon_receipt.json"]
 
 [tool.ruff]
 target-version = "py311"
@@ -114,6 +115,13 @@ disallow_subclassing_any = true
 [[tool.mypy.overrides]]
 module = ["hospitalos.synthetic.v041.*"]
 ignore_errors = true
+
+# The HOWM reproducibility test pins these sources to 856a57c. Check their typed
+# interfaces in the unit planner without adding their historical internal errors
+# to its dependency checks. An explicit mypy run on either file still checks it.
+[[tool.mypy.overrides]]
+module = ["hospitalos.decision_support.contracts", "hospitalos.decision_support.resources"]
+follow_imports = "silent"
 
 # Optional extras that are not in requirements.lock (platform image, legacy foundation models).
 [[tool.mypy.overrides]]

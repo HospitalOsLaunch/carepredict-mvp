@@ -7,6 +7,7 @@ the sampled service duration. The state supplied here is the observed state.
 from __future__ import annotations
 
 import heapq
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Annotated, Literal
@@ -17,8 +18,19 @@ from hospitalos.operational.contract import Closed
 
 from .innovations import draw as draw
 from .models import Action, State, bundle_errors, compatible, discharge_blockers
+from .outlook import Departures, latest
 from .preparation import PreparationForecasts, preparation_draw, validate_preparation
-from .scenarios import BedAdmissions, FutureArrival, FutureTape, ResourceChange, validate_tape
+from .scenarios import (
+    BedAdmissions,
+    FutureArrival,
+    FutureTape,
+    ResourceChange,
+    booking_setup,
+    sample_future,
+    slot_ready,
+    staffing_tape,
+    validate_tape,
+)
 
 PositiveMinutes = Annotated[StrictInt, Field(gt=0, le=1440)]
 
@@ -60,6 +72,7 @@ def simulate(
     horizon_minutes: int = 1440,
     future: FutureTape | None = None,
     preparation: PreparationForecasts | None = None,
+    multiday: bool = False,
 ) -> Trajectory:
     # One action or several applied together at D (a bundle: e.g. a transport request and a
     # cleaning priority). Each must be valid alone and compatible with the others.
@@ -72,9 +85,11 @@ def simulate(
     reserve = {a.bed_id: a.patient_id for a in actions if a.kind == "reserve_bed"}
     transports = {a.patient_id: a for a in actions if a.kind == "request_transport"}
     cleaning_first = {a.bed_id for a in actions if a.kind == "prioritize_cleaning"}
-    if not 1 <= horizon_minutes <= 1440:
+    if not 1 <= horizon_minutes <= (10080 if multiday else 1440):
         raise ValueError("Horizon must be between one minute and 24 hours")
-    future = future or FutureTape(state.at, ())
+    future = future or sample_future(state, None, seed, scenario)
+    state, future = staffing_tape(state, future, actions)
+    setup = booking_setup(state, actions, future)
     validate_tape(state, future)
     if preparation is not None:
         validate_preparation(state, preparation)
@@ -100,6 +115,10 @@ def simulate(
     future_events = {e.id: e for e in future.events}
     for e in future.events:
         heapq.heappush(pending, (e.minute, "__future", e.id, ""))
+    for ready, _, start, _end in setup.values():
+        for wake in {ready, start}:
+            if wake > 0:
+                heapq.heappush(pending, (wake, "booking_ready", "", ""))
     multiplier = draw(assumptions.load_multipliers, seed, scenario, "load", state.hospital_id)
     for bed_id, patient_id in sorted(reserve.items()):
         assert bed_id is not None
@@ -116,6 +135,17 @@ def simulate(
                 logistics[patient_id].transport_pool_id,
             )
         )
+    estimates = {}
+    if multiday:
+        feed, _ = latest(state, state.units[0].id, "departures")
+        if isinstance(feed, Departures):
+            estimates = {
+                r.stay_id: r.estimate
+                for r in feed.records
+                if r.estimate
+                and r.reviewed_at <= state.at
+                and (state.at - r.reviewed_at).total_seconds() <= 86400
+            }
     for p in state.patients:
         new_request = p.id in transports
         if not discharge_blockers(
@@ -134,6 +164,11 @@ def simulate(
                 else multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
             )
             if minute is not None:
+                if p.id in estimates:
+                    # Conditional logistics only: an EDD cannot grant medical clearance.
+                    minute = max(
+                        minute, math.ceil((estimates[p.id] - state.at).total_seconds() / 60)
+                    )
                 heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
 
     def depart(minute: int, bed_id: str, patient_id: str) -> None:
@@ -195,6 +230,8 @@ def simulate(
             p = patients[patient_id]
             for bed_id, bed in sorted(beds.items()):
                 if bed_id in blocked_beds or statuses[bed_id] != "clean" or not compatible(p, bed):
+                    continue
+                if not slot_ready(setup, patient_id, bed_id, minute):
                     continue
                 if reservations[bed_id] not in (None, patient_id):
                     continue
@@ -310,7 +347,7 @@ def simulate(
                     blocked_beds.add(e.bed_id)
                 trace.append(Transition(minute, "bed_admissions", None, e.bed_id, external_id=e.id))
         for _time, kind, bed_id, patient_id in batch:
-            if kind == "__future":
+            if kind in {"__future", "booking_ready"}:
                 continue
             if kind == "departure_ready":
                 departure_ready[patient_id] = minute

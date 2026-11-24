@@ -1,5 +1,229 @@
 {
  "snapshot": {
+  "horizons": [
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
+    "days": 3,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": [
+     "source_gate",
+     "qualification_missing"
+    ]
+   },
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-28",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-29",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-30",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-31",
+      "bookings": null,
+      "estimated_departures": null,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
+    "days": 7,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": [
+     "source_gate",
+     "qualification_missing"
+    ]
+   }
+  ],
   "schema_version": "LIVE_UNIT_SNAPSHOT_1",
   "mode": "shadow",
   "state": {
@@ -432,6 +656,8 @@
      "transport_requested": null
     }
    ],
+   "schedules": [],
+   "outlooks": [],
    "issues": [],
    "warnings": []
   },
@@ -1289,7 +1515,7 @@
   "received_at_by_source": {
    "flux-fictif": "2026-10-24T06:30:00+00:00"
   },
-  "semantic_fingerprint": "5c8b8431f71a2069a34f13e65dbeca7cb6d194b1cbb89bf80334d50a25275025",
+  "semantic_fingerprint": "d2a1596cbaf55ff031b6d5518a7585959a41beb01da0c4eb255f1d1cf58716d8",
   "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
   "issues": [],
   "warnings": []
@@ -1301,6 +1527,230 @@
   "assessment": {
    "schema_version": "LIVE_ASSESSMENT_1",
    "snapshot": {
+    "horizons": [
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 3,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     },
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-28",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-29",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-30",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-31",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 7,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     }
+    ],
     "schema_version": "LIVE_UNIT_SNAPSHOT_1",
     "mode": "shadow",
     "state": {
@@ -1733,6 +2183,8 @@
        "transport_requested": null
       }
      ],
+     "schedules": [],
+     "outlooks": [],
      "issues": [],
      "warnings": []
     },
@@ -2590,16 +3042,270 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:30:00+00:00"
     },
-    "semantic_fingerprint": "5c8b8431f71a2069a34f13e65dbeca7cb6d194b1cbb89bf80334d50a25275025",
+    "semantic_fingerprint": "d2a1596cbaf55ff031b6d5518a7585959a41beb01da0c4eb255f1d1cf58716d8",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [],
     "warnings": []
    },
    "plan": {
-    "schema_version": "HYBRID_PLAN_4",
+    "action_timing": [
+     {
+      "starts_at": "2026-10-24T06:30:45Z",
+      "ends_at": null,
+      "skill": null,
+      "lender": null
+     }
+    ],
+    "unit_id": "medecine-polyvalente",
+    "windows": [
+     {
+      "minutes": 720,
+      "baseline_wait": 918.75,
+      "selected_wait": 474.375,
+      "unserved_scenarios": 0,
+      "change_ratio": -0.48367346938775513,
+      "saved_wait": 444.375,
+      "until": "2026-10-24T18:30:45Z"
+     },
+     {
+      "minutes": 1440,
+      "baseline_wait": 1638.75,
+      "selected_wait": 474.375,
+      "unserved_scenarios": 0,
+      "change_ratio": -0.7105263157894737,
+      "saved_wait": 1164.375,
+      "until": "2026-10-25T06:30:45Z"
+     }
+    ],
+    "horizons": [
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 3,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     },
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-28",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-29",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-30",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-31",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 7,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     }
+    ],
+    "requested_horizon_minutes": 10080,
+    "schema_version": "HYBRID_UNIT_PLAN_1",
     "evidence": "simulation_under_declared_assumptions",
     "decision": "recommend",
-    "plan_id": "a4d20c2d910c7cbb444b318fc0b498ef7502b5088f2c264e8887bb550ec1e6dc",
+    "plan_id": "417edef5cce889a4b1d8fbf5a021c1371dcff106ea0b2dfe7675ee145fb56580",
     "hospital_id": "ch-fictif",
     "state_fingerprint": "38959fbca425a003d1d685603bbb553781552efeb9aaf7238e767ab02dfa698f",
     "created_at": "2026-10-24T06:30:45Z",
@@ -2607,7 +3313,8 @@
     "selected": {
      "kind": "request_transport",
      "bed_id": "L02",
-     "patient_id": "P-0412"
+     "patient_id": "P-0412",
+     "slot_id": null
     },
     "reasons": [
      "lower_simulated_waiting_cost_requires_human_approval"
@@ -2618,11 +3325,12 @@
       "action": {
        "kind": "no_op",
        "bed_id": null,
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2637,7 +3345,8 @@
       "action": {
        "kind": "request_transport",
        "bed_id": "L02",
-       "patient_id": "P-0412"
+       "patient_id": "P-0412",
+       "slot_id": null
       },
       "mean_waiting_patient_minutes": 474.375,
       "worst_decile_waiting_patient_minutes": 720.0,
@@ -2656,11 +3365,12 @@
       "action": {
        "kind": "prioritize_cleaning",
        "bed_id": "L05",
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2675,11 +3385,12 @@
       "action": {
        "kind": "reserve_bed",
        "bed_id": "L08",
-       "patient_id": "U-1043"
+       "patient_id": "U-1043",
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2694,11 +3405,12 @@
       "action": {
        "kind": "reserve_bed",
        "bed_id": "L08",
-       "patient_id": "U-1047"
+       "patient_id": "U-1047",
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 678.75,
-      "worst_decile_waiting_patient_minutes": 810.0,
-      "objective": 711.5625,
+      "mean_waiting_patient_minutes": 1638.75,
+      "worst_decile_waiting_patient_minutes": 1770.0,
+      "objective": 1671.5625,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2713,11 +3425,12 @@
       "action": {
        "kind": "prioritize_cleaning",
        "bed_id": "L11",
-       "patient_id": null
+       "patient_id": null,
+       "slot_id": null
       },
-      "mean_waiting_patient_minutes": 675.0,
-      "worst_decile_waiting_patient_minutes": 825.0,
-      "objective": 712.5,
+      "mean_waiting_patient_minutes": 1635.0,
+      "worst_decile_waiting_patient_minutes": 1785.0,
+      "objective": 1672.5,
       "violations": [],
       "scenarios_with_unserved_demand": 16,
       "max_waiting_at_end": 1,
@@ -2765,7 +3478,7 @@
     "bundle_marginal_minutes": [],
     "seed": 7,
     "scenarios": 16,
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "tail_weight": 0.25,
     "discharge_readiness": [
      {
@@ -2862,6 +3575,230 @@
   "assessment": {
    "schema_version": "LIVE_ASSESSMENT_1",
    "snapshot": {
+    "horizons": [
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 3,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     },
+     {
+      "perspective": [
+       {
+        "day": "2026-10-24",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-25",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-26",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-27",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-28",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-29",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-30",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       },
+       {
+        "day": "2026-10-31",
+        "bookings": null,
+        "estimated_departures": null,
+        "min_staffed_beds": null,
+        "expected_ed_full_day": null
+       }
+      ],
+      "days": 7,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": [
+       "source_gate",
+       "qualification_missing"
+      ]
+     }
+    ],
     "schema_version": "LIVE_UNIT_SNAPSHOT_1",
     "mode": "shadow",
     "state": {
@@ -2873,6 +3810,8 @@
      "patients": [],
      "pools": [],
      "discharges": [],
+     "schedules": [],
+     "outlooks": [],
      "issues": [
       "missing_perimeter",
       "stale:bed:L01",
@@ -3776,7 +4715,7 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:34:00+00:00"
     },
-    "semantic_fingerprint": "24171e74bfdf4aadbb2ee05ef03d83feaf22a078b8345e612d57e1652a30d32f",
+    "semantic_fingerprint": "5e325db4a8d5af8ac7ec077aee9ec622651235ecfacfaabdd47a7a8d293b61da",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [
      "missing_perimeter",

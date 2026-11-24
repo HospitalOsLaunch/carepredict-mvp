@@ -154,6 +154,10 @@ export function capability(code: string): string {
 export function actionTitle(action: Action, bedUnit: string | null = null): string {
   const bed = bedUnit ? `${action.bed_id} (unité ${bedUnit})` : action.bed_id;
   switch (action.kind) {
+    case "reinforce":
+      return `Mobiliser le renfort ${action.slot_id}`;
+    case "prepare_admission":
+      return `Préparer le lit ${bed} pour l’entrée ${action.slot_id}`;
     case "no_op":
       return "Ne rien changer pour l'instant";
     case "prioritize_cleaning":
@@ -168,6 +172,10 @@ export function actionTitle(action: Action, bedUnit: string | null = null): stri
 export function actionShort(action: Action, bedUnit: string | null = null): string {
   const bed = bedUnit ? `${action.bed_id} (${bedUnit})` : action.bed_id;
   switch (action.kind) {
+    case "reinforce":
+      return `Mobiliser le renfort ${action.slot_id}`;
+    case "prepare_admission":
+      return `Préparer le lit ${bed} pour l’entrée ${action.slot_id}`;
     case "no_op":
       return "Sans action";
     case "prioritize_cleaning":

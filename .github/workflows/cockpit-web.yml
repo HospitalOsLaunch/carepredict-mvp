@@ -48,3 +48,8 @@ jobs:
           npm test
           npm run build
           npm run build:demo
+      - name: Browser acceptance on both unit and standalone planner
+        working-directory: web
+        run: |
+          npx playwright install --with-deps --only-shell chromium
+          npm run test:e2e

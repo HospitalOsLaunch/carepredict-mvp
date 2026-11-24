@@ -14,7 +14,8 @@ from typing import Literal
 
 from hospitalos.operational.contract import instant
 
-from .models import State, action_errors
+from .models import State, bundle_errors
+from .multiday import recheck_horizon
 from .planning import Plan
 
 
@@ -82,7 +83,8 @@ class Workflow:
             or state.fingerprint != proposal.state_fingerprint
         ):
             raise ValueError("Observed state changed; replan")
-        errors = action_errors(state, proposal.selected)
+        recheck_horizon(state, proposal.unit_id, proposal.horizon_minutes)
+        errors = bundle_errors(state, proposal.bundle or (proposal.selected,))
         if errors:
             raise ValueError(f"Preconditions failed: {errors}")
 
@@ -119,6 +121,7 @@ class Workflow:
                 "command_id": key,
                 "hospital_id": proposal.hospital_id,
                 "action": proposal.selected.model_dump(),
+                "actions": [a.model_dump() for a in proposal.bundle or (proposal.selected,)],
                 "external_execution": False,
             }
         )

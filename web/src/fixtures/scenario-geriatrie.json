@@ -7,6 +7,7 @@
  "request": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
+  "unit_id": "court-sejour-geriatrique",
   "expected_entities": [
    "unit:court-sejour-geriatrique",
    "pool:transport-sanitaire",
@@ -51,7 +52,8 @@
    "patient:U-2019",
    "patient:U-2023",
    "patient:U-2026",
-   "patient:U-2030"
+   "patient:U-2030",
+   "unit_outlook:court-sejour-geriatrique"
   ],
   "events": [
    {
@@ -963,6 +965,335 @@
      "medically_cleared": null,
      "downstream_confirmed": null
     }
+   },
+   {
+    "schema_version": "HYBRID_MVP_2",
+    "hospital_id": "ch-fictif",
+    "event_id": "outlook:court-sejour-geriatrique",
+    "version": 1,
+    "source": "flux-fictif",
+    "event_time": "2026-10-24T06:30:00Z",
+    "available_at": "2026-10-24T06:30:00Z",
+    "fact": {
+     "kind": "unit_outlook",
+     "id": "court-sejour-geriatrique",
+     "feeds": [
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "court-sejour-geriatrique",
+       "source": "syn-bookings",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-27T06:30:00Z",
+       "status": "complete",
+       "kind": "bookings",
+       "records": []
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "court-sejour-geriatrique",
+       "source": "syn-departures",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-27T06:30:00Z",
+       "status": "complete",
+       "kind": "departures",
+       "records": [
+        {
+         "stay_id": "P-0503",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0511",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0517",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0522",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0531",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0536",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0540",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0544",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0548",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0552",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0556",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0561",
+         "estimate": "2026-10-27T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0565",
+         "estimate": "2026-10-25T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        },
+        {
+         "stay_id": "P-0569",
+         "estimate": "2026-10-26T06:30:00Z",
+         "reviewed_at": "2026-10-24T06:30:00Z"
+        }
+       ]
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "court-sejour-geriatrique",
+       "source": "syn-roster",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-27T06:30:00Z",
+       "status": "complete",
+       "kind": "roster",
+       "validated": true,
+       "shifts": [
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-0",
+         "skill": "AS",
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-1",
+         "skill": "AS",
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-2",
+         "skill": "IDE",
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-2",
+         "skill": "AS",
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-3",
+         "skill": "IDE",
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-3",
+         "skill": "AS",
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-0",
+         "skill": "IDE",
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-0",
+         "skill": "AS",
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-IDE-1",
+         "skill": "IDE",
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "status": "confirmed"
+        },
+        {
+         "staff_id": "court-sejour-geriatrique-AS-1",
+         "skill": "AS",
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "status": "confirmed"
+        }
+       ],
+       "external_shifts": [],
+       "capacity": [
+        {
+         "start": "2026-10-24T06:30:00Z",
+         "end": "2026-10-24T18:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-24T18:30:00Z",
+         "end": "2026-10-25T06:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-25T06:30:00Z",
+         "end": "2026-10-25T18:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-25T18:30:00Z",
+         "end": "2026-10-26T06:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-26T06:30:00Z",
+         "end": "2026-10-26T18:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        },
+        {
+         "start": "2026-10-26T18:30:00Z",
+         "end": "2026-10-27T06:30:00Z",
+         "staffed_beds": 18,
+         "required": {
+          "IDE": 1,
+          "AS": 1
+         }
+        }
+       ]
+      },
+      {
+       "schema_version": "UNIT_OUTLOOK_1",
+       "hospital_id": "ch-fictif",
+       "unit_id": "court-sejour-geriatrique",
+       "source": "syn-ed",
+       "provenance": "synthetic",
+       "revision": 1,
+       "timezone": "Europe/Paris",
+       "issued_at": "2026-10-24T06:30:00Z",
+       "available_at": "2026-10-24T06:30:00Z",
+       "synced_at": "2026-10-24T06:30:00Z",
+       "covers_from": "2026-10-24T06:30:00Z",
+       "covers_until": "2026-10-27T06:30:00Z",
+       "status": "complete",
+       "kind": "emergency",
+       "allocation_rule": "direct-to-beneficiary-v1",
+       "records": [
+        {
+         "day": "2026-10-24",
+         "counts": [
+          0,
+          1
+         ]
+        },
+        {
+         "day": "2026-10-25",
+         "counts": [
+          0,
+          1
+         ]
+        },
+        {
+         "day": "2026-10-26",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        },
+        {
+         "day": "2026-10-27",
+         "counts": [
+          0,
+          1,
+          2
+         ]
+        }
+       ]
+      }
+     ]
+    }
    }
   ],
   "assumptions": {
@@ -996,7 +1327,7 @@
   "future": null,
   "preparation": null,
   "max_age_minutes": 60,
-  "horizon_minutes": 480,
+  "horizon_minutes": 10080,
   "max_bundle": 3,
   "scenarios": 32,
   "max_candidates": 32,
@@ -1006,7 +1337,7 @@
  "state": {
   "hospital_id": "ch-fictif",
   "at": "2026-10-24T06:30:00Z",
-  "fingerprint": "b203eddb08cd487ea94007b663e3643c41df39fa7c8747a43c90bfd280c8227b",
+  "fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
   "units": [
    {
     "kind": "unit",
@@ -1531,22 +1862,591 @@
     "transport_requested": null
    }
   ],
+  "schedules": [],
+  "outlooks": [
+   {
+    "kind": "unit_outlook",
+    "id": "court-sejour-geriatrique",
+    "feeds": [
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "court-sejour-geriatrique",
+      "source": "syn-bookings",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "status": "complete",
+      "kind": "bookings",
+      "records": []
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "court-sejour-geriatrique",
+      "source": "syn-departures",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "status": "complete",
+      "kind": "departures",
+      "records": [
+       {
+        "stay_id": "P-0503",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0511",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0517",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0522",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0531",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0536",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0540",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0544",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0548",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0552",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0556",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0561",
+        "estimate": "2026-10-27T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0565",
+        "estimate": "2026-10-25T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       },
+       {
+        "stay_id": "P-0569",
+        "estimate": "2026-10-26T06:30:00Z",
+        "reviewed_at": "2026-10-24T06:30:00Z"
+       }
+      ]
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "court-sejour-geriatrique",
+      "source": "syn-roster",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "status": "complete",
+      "kind": "roster",
+      "validated": true,
+      "shifts": [
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-0",
+        "skill": "AS",
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-1",
+        "skill": "AS",
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-2",
+        "skill": "IDE",
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-2",
+        "skill": "AS",
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-3",
+        "skill": "IDE",
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-3",
+        "skill": "AS",
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-0",
+        "skill": "IDE",
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-0",
+        "skill": "AS",
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-IDE-1",
+        "skill": "IDE",
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "status": "confirmed"
+       },
+       {
+        "staff_id": "court-sejour-geriatrique-AS-1",
+        "skill": "AS",
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "status": "confirmed"
+       }
+      ],
+      "external_shifts": [],
+      "capacity": [
+       {
+        "start": "2026-10-24T06:30:00Z",
+        "end": "2026-10-24T18:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-24T18:30:00Z",
+        "end": "2026-10-25T06:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-25T06:30:00Z",
+        "end": "2026-10-25T18:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-25T18:30:00Z",
+        "end": "2026-10-26T06:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-26T06:30:00Z",
+        "end": "2026-10-26T18:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       },
+       {
+        "start": "2026-10-26T18:30:00Z",
+        "end": "2026-10-27T06:30:00Z",
+        "staffed_beds": 18,
+        "required": {
+         "IDE": 1,
+         "AS": 1
+        }
+       }
+      ]
+     },
+     {
+      "schema_version": "UNIT_OUTLOOK_1",
+      "hospital_id": "ch-fictif",
+      "unit_id": "court-sejour-geriatrique",
+      "source": "syn-ed",
+      "provenance": "synthetic",
+      "revision": 1,
+      "timezone": "Europe/Paris",
+      "issued_at": "2026-10-24T06:30:00Z",
+      "available_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_from": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "status": "complete",
+      "kind": "emergency",
+      "allocation_rule": "direct-to-beneficiary-v1",
+      "records": [
+       {
+        "day": "2026-10-24",
+        "counts": [
+         0,
+         1
+        ]
+       },
+       {
+        "day": "2026-10-25",
+        "counts": [
+         0,
+         1
+        ]
+       },
+       {
+        "day": "2026-10-26",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       },
+       {
+        "day": "2026-10-27",
+        "counts": [
+         0,
+         1,
+         2
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ],
   "issues": [],
   "warnings": []
  },
  "plan": {
-  "schema_version": "HYBRID_PLAN_4",
+  "action_timing": [
+   {
+    "starts_at": "2026-10-24T06:30:00Z",
+    "ends_at": null,
+    "skill": null,
+    "lender": null
+   }
+  ],
+  "unit_id": "court-sejour-geriatrique",
+  "windows": [
+   {
+    "minutes": 720,
+    "baseline_wait": 1728.28125,
+    "selected_wait": 1720.78125,
+    "unserved_scenarios": 32,
+    "change_ratio": -0.00433957146731756,
+    "saved_wait": 7.5,
+    "until": "2026-10-24T18:30:00Z"
+   },
+   {
+    "minutes": 1440,
+    "baseline_wait": 2448.28125,
+    "selected_wait": 2440.78125,
+    "unserved_scenarios": 32,
+    "change_ratio": -0.003063373540110992,
+    "saved_wait": 7.5,
+    "until": "2026-10-25T06:30:00Z"
+   }
+  ],
+  "horizons": [
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     }
+    ],
+    "days": 3,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": "syn-bookings",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "departures",
+      "source": "syn-departures",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": 14,
+      "expected": 14,
+      "reasons": []
+     },
+     {
+      "kind": "roster",
+      "source": "syn-roster",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": []
+     },
+     {
+      "kind": "emergency",
+      "source": "syn-ed",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": 4,
+      "expected": 4,
+      "reasons": []
+     }
+    ],
+    "data_ready": true,
+    "qualified": false,
+    "reasons": [
+     "accuracy_gate"
+    ]
+   },
+   {
+    "perspective": [
+     {
+      "day": "2026-10-24",
+      "bookings": 0,
+      "estimated_departures": 0,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-25",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 0.5
+     },
+     {
+      "day": "2026-10-26",
+      "bookings": 0,
+      "estimated_departures": 5,
+      "min_staffed_beds": 18,
+      "expected_ed_full_day": 1.0
+     },
+     {
+      "day": "2026-10-27",
+      "bookings": null,
+      "estimated_departures": 4,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-28",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-29",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-30",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     },
+     {
+      "day": "2026-10-31",
+      "bookings": null,
+      "estimated_departures": 0,
+      "min_staffed_beds": null,
+      "expected_ed_full_day": null
+     }
+    ],
+    "days": 7,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": "syn-bookings",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "coverage"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": "syn-departures",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": 14,
+      "expected": 14,
+      "reasons": []
+     },
+     {
+      "kind": "roster",
+      "source": "syn-roster",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "coverage",
+       "shift_or_skill_gap"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": "syn-ed",
+      "revision": 1,
+      "issued_at": "2026-10-24T06:30:00Z",
+      "received_at": "2026-10-24T06:30:00Z",
+      "synced_at": "2026-10-24T06:30:00Z",
+      "covers_until": "2026-10-27T06:30:00Z",
+      "covered": 4,
+      "expected": 8,
+      "reasons": [
+       "coverage",
+       "daily_coverage"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": [
+     "source_gate",
+     "accuracy_gate"
+    ]
+   }
+  ],
+  "requested_horizon_minutes": 10080,
+  "schema_version": "HYBRID_UNIT_PLAN_1",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "recommend",
-  "plan_id": "dadd8e1f204e1ee24d5707ad3ba0534d5c6eb6b4c043fdd383b094ea908c6e41",
+  "plan_id": "a3d48285dfd03a7944062c7d7d68b71366be41e629b7ae0e7b39861ba5ae5590",
   "hospital_id": "ch-fictif",
-  "state_fingerprint": "b203eddb08cd487ea94007b663e3643c41df39fa7c8747a43c90bfd280c8227b",
+  "state_fingerprint": "f1ed670d241ac16c9fec848a4fdf1243686eaeb192451d3464aa4d9f00b15229",
   "created_at": "2026-10-24T06:30:00Z",
   "expires_at": "2026-10-24T06:45:00Z",
   "selected": {
    "kind": "prioritize_cleaning",
    "bed_id": "G17",
-   "patient_id": null
+   "patient_id": null,
+   "slot_id": null
   },
   "reasons": [
    "lower_simulated_waiting_cost_requires_human_approval"
@@ -1557,14 +2457,15 @@
     "action": {
      "kind": "no_op",
      "bed_id": null,
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1480.78125,
-    "worst_decile_waiting_patient_minutes": 2047.5,
-    "objective": 1622.4609375,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1576,14 +2477,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G15",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1480.78125,
-    "worst_decile_waiting_patient_minutes": 2047.5,
-    "objective": 1622.4609375,
+    "mean_waiting_patient_minutes": 2448.28125,
+    "worst_decile_waiting_patient_minutes": 3045.0,
+    "objective": 2597.4609375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1595,14 +2497,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G16",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1476.09375,
-    "worst_decile_waiting_patient_minutes": 2040.0,
-    "objective": 1617.0703125,
+    "mean_waiting_patient_minutes": 2443.59375,
+    "worst_decile_waiting_patient_minutes": 3037.5,
+    "objective": 2592.0703125,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1614,14 +2517,15 @@
     "action": {
      "kind": "prioritize_cleaning",
      "bed_id": "G17",
-     "patient_id": null
+     "patient_id": null,
+     "slot_id": null
     },
-    "mean_waiting_patient_minutes": 1473.28125,
-    "worst_decile_waiting_patient_minutes": 2025.0,
-    "objective": 1611.2109375,
+    "mean_waiting_patient_minutes": 2440.78125,
+    "worst_decile_waiting_patient_minutes": 3022.5,
+    "objective": 2586.2109375,
     "violations": [],
     "scenarios_with_unserved_demand": 32,
-    "max_waiting_at_end": 2,
+    "max_waiting_at_end": 1,
     "max_arrived": 0,
     "mean_staffed_pressure": 0.0,
     "mean_cleaning_pressure": 0.0,
@@ -1666,7 +2570,7 @@
   "bundle_marginal_minutes": [],
   "seed": 7,
   "scenarios": 32,
-  "horizon_minutes": 480,
+  "horizon_minutes": 1440,
   "tail_weight": 0.25,
   "discharge_readiness": [
    {
@@ -1784,7 +2688,7 @@
  "trace": {
   "baseline": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -1973,7 +2877,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1050,
+    "waiting_patient_minutes": 2010,
     "admitted": 5,
     "waiting_at_end": 1,
     "violations": [],
@@ -1989,7 +2893,7 @@
   },
   "selected": {
    "trajectory": {
-    "horizon_minutes": 480,
+    "horizon_minutes": 1440,
     "events": [
      {
       "minute": 0,
@@ -2178,7 +3082,7 @@
     ]
    },
    "score": {
-    "waiting_patient_minutes": 1035,
+    "waiting_patient_minutes": 1995,
     "admitted": 5,
     "waiting_at_end": 1,
     "violations": [],

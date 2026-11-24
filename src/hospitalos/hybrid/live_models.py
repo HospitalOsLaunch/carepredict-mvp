@@ -10,7 +10,8 @@ from pydantic import Field, StrictInt, field_validator, model_validator
 from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .models import FactEvent, State
-from .planning import Plan
+from .outlook import HorizonCheck
+from .planning import Plan, PlanRequest
 from .simulation import Assumptions
 
 Resource = Literal["staffed", "cleaning", "transport", "downstream"]
@@ -86,6 +87,7 @@ class ResourceBudget(Closed):
 
 
 class LiveSnapshot(Closed):
+    horizons: tuple[HorizonCheck, ...] = ()
     schema_version: Literal["LIVE_UNIT_SNAPSHOT_1"] = "LIVE_UNIT_SNAPSHOT_1"
     mode: Literal["shadow", "sandbox"]
     state: State
@@ -102,9 +104,15 @@ class LiveSnapshot(Closed):
 
 class PlanningOptions(Closed):
     assumptions: Assumptions = Assumptions()
-    horizon_minutes: Annotated[StrictInt, Field(ge=1, le=1440)] = 360
+    horizon_minutes: Annotated[StrictInt, Field(ge=1, le=10080)] = 360
     scenarios: Annotated[StrictInt, Field(ge=1, le=128)] = 32
     seed: Annotated[StrictInt, Field(ge=0)] = 7
+
+    @field_validator("horizon_minutes")
+    @classmethod
+    def supported_horizon(cls, value: int) -> int:
+        return PlanRequest.supported_horizon(value)
+
     # Immediate actions evaluated together (see planning.PlanRequest.max_bundle).
     max_bundle: Annotated[StrictInt, Field(ge=1, le=4)] = 1
 
@@ -131,5 +139,6 @@ class SandboxCommand(Closed):
     proposal_id: str
     hospital_id: Identifier
     action: dict[str, str | None]
+    actions: tuple[dict[str, str | None], ...] = ()
     mode: Literal["local_sandbox_only"] = "local_sandbox_only"
     external_execution: Literal[False] = False

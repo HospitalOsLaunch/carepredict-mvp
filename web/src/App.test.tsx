@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { App } from "./App";
 import { journal } from "./data/journal";
 
@@ -308,20 +308,38 @@ describe("action block, all units, plan focales", () => {
     expect((await screen.findByTestId("switcher-all")).getAttribute("href")).toBe("#/unites");
   });
 
+  it("shows the real scheduled pair, its shared identity and the source gate", async () => {
+    window.history.replaceState(null, "", "/?situation=garde");
+    render(<App />);
+    const card = await screen.findByTestId("proposal");
+    expect(card.textContent).toMatch(/IDE-garde/);
+    expect(card.textContent).toMatch(/ADM-garde/);
+    const id = card.dataset.planId;
+    window.location.hash = "/plan/24h";
+    const pane = await screen.findByTestId("unit-plan");
+    await waitFor(() => expect(pane.dataset.planId).toBe(id));
+    expect(within(pane).getByText(/prêt de medecine-interne/)).toBeTruthy();
+    window.location.hash = "/donnees";
+    const data = await screen.findByTestId("outlook-quality");
+    expect(data.textContent).toMatch(/précision|prédictive/i);
+    expect(data.textContent).toContain("Dates de sortie prévisionnelles");
+    expect(data.querySelectorAll("[data-src]").length).toBeGreaterThan(8);
+  });
+
   it("reads the plan through focal lengths, never planning beyond 24 h", async () => {
     window.location.hash = "/plan/12h";
     render(<App />);
-    expect(await screen.findByRole("heading", { name: "Plan de la garde (12 h)" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: /12 h · Médecine polyvalente/ })).toBeTruthy();
     expect(screen.getByTestId("focal-12h").getAttribute("aria-current")).toBe("true");
-    await screen.findByTestId("ds-auto");
-    expect(screen.getByTestId("ds-window-note").textContent).toMatch(/calculé sur 24 h/);
-    expect(screen.getByTestId("ds-actions-later")).toBeTruthy();
+    const panel = await screen.findByTestId("unit-evaluation");
+    expect(panel.querySelectorAll("[data-src]").length).toBeGreaterThanOrEqual(4);
+    expect(screen.getByTestId("unit-plan").dataset.unit).toBe("medecine-polyvalente");
 
     window.location.hash = "/plan/7j";
     const far = await screen.findByTestId("ds-perspective");
     expect(far.textContent).toMatch(/Perspective, non planifiée/);
     expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
-    expect(screen.getByTestId("ds-far-empty").textContent).toMatch(/Ce n'est pas « zéro sortie »/);
+    expect(within(far).getByRole("link").getAttribute("href")).toBe("#/donnees");
 
     window.location.hash = "/plan/maintenant";
     const now = await screen.findByTestId("focal-now");

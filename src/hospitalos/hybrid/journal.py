@@ -12,6 +12,8 @@ from datetime import datetime
 from hospitalos.operational.contract import instant
 
 from .models import Bed, Discharge, FactEvent, Patient, ResourcePool, State, Unit, compatible
+from .outlook import UnitOutlook, apply_bookings
+from .unit_schedule import UnitSchedule
 
 
 def canonical(event: FactEvent) -> str:
@@ -113,7 +115,9 @@ def reconstruct(
             issues.append(f"conflicting_sources:{kind}:{entity}")
             continue
         # Agreement is usable only if each contributing report is fresh.
-        if any((at - e.event_time).total_seconds() > max_age_minutes * 60 for e in reports):
+        if kind != "unit_outlook" and any(
+            (at - e.event_time).total_seconds() > max_age_minutes * 60 for e in reports
+        ):
             issues.append(f"stale:{kind}:{entity}")
             continue
         selected.append(sorted(reports, key=lambda e: (e.event_id, e.version))[0])
@@ -127,6 +131,23 @@ def reconstruct(
         {b.id: b for b in beds},
         {p.id: p for p in patients},
     )
+    schedules = tuple(e.fact for e in selected if isinstance(e.fact, UnitSchedule))
+    slot_ids: set[str] = set()
+    for schedule in schedules:
+        if schedule.id not in unit_map or schedule.staff_errors(set()):
+            issues.append(f"invalid_schedule:{schedule.id}")
+        for booking in schedule.admissions:
+            r = booking.request
+            if instant(r.provenance.available_at) > at or instant(
+                r.provenance.event_time
+            ) > instant(r.provenance.available_at):
+                issues.append(f"invalid_booking:{r.request_id}")
+        ids = {o.option.option_id for o in schedule.offers} | {
+            b.request.request_id for b in schedule.admissions
+        }
+        if ids & slot_ids:
+            issues.append("ambiguous_schedule_identity")
+        slot_ids.update(ids)
     warnings: list[str] = []
     pool_map = {pool.id: pool for pool in pools}
     for pool in pools:
@@ -195,15 +216,19 @@ def reconstruct(
             + "\n".join(sorted(canonical(e) for e in visible.values()))
         ).encode()
     ).hexdigest()
-    return State(
-        hospital_id=hospital_id,
-        at=at,
-        fingerprint=digest,
-        units=units,
-        beds=beds,
-        patients=patients,
-        pools=pools,
-        discharges=discharges,
-        issues=tuple(sorted(set(issues))),
-        warnings=tuple(sorted(warnings)),
+    return apply_bookings(
+        State(
+            hospital_id=hospital_id,
+            at=at,
+            fingerprint=digest,
+            units=units,
+            beds=beds,
+            patients=patients,
+            outlooks=tuple(e.fact for e in selected if isinstance(e.fact, UnitOutlook)),
+            schedules=schedules,
+            pools=pools,
+            discharges=discharges,
+            issues=tuple(sorted(set(issues))),
+            warnings=tuple(sorted(warnings)),
+        )
     )

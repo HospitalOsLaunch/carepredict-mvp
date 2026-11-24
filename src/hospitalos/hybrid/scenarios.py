@@ -7,18 +7,21 @@ immutable and shared between decisions; the scorer receives it independently.
 from __future__ import annotations
 
 import hashlib
+import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from itertools import accumulate
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, StrictBool, StrictInt, field_validator, model_validator
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
-from .innovations import draw
-from .models import Patient, State
+from .innovations import draw, uniform
+from .models import Action, Patient, State
+from .outlook import Roster, latest
 
-Minute = Annotated[StrictInt, Field(ge=1, le=1440)]
+Minute = Annotated[StrictInt, Field(ge=1, le=10080)]
 Capacity = Annotated[StrictInt, Field(ge=0, le=1000)]
 
 
@@ -149,7 +152,7 @@ def sample_future(
     state: State, specification: FutureAssumptions | None, seed: int, scenario: int
 ) -> FutureTape:
     if specification is None:
-        return FutureTape(state.at, ())
+        specification = FutureAssumptions(declared_at=state.at)
     if specification.declared_at > state.at:
         raise ValueError("Future assumptions cannot be learned after the decision origin")
     units = {u.id for u in state.units}
@@ -176,8 +179,141 @@ def sample_future(
                     ),
                 )
             )
+    for schedule in state.schedules:
+        for booking in schedule.admissions:
+            req = booking.request
+            if (
+                booking.status != "booked"
+                or req.expected_arrival <= state.at
+                or any(p.id == req.request_id for p in state.patients)
+            ):
+                continue
+            dist = req.arrival_delay
+            u = uniform(seed, scenario, "booked_arrival", req.request_id) * sum(dist.weights)
+            delay = next(
+                v for v, cut in zip(dist.support, accumulate(dist.weights), strict=True) if u < cut
+            )
+            minute = math.ceil((req.expected_arrival - state.at).total_seconds() / 60) + 60 * delay
+            if minute <= 10080:
+                events.append(
+                    FutureArrival(
+                        id=f"booked:{req.request_id}",
+                        minute=minute,
+                        patient=Patient(
+                            id=req.request_id,
+                            status="waiting",
+                            compatible_units=(schedule.id,),
+                            requirements=req.requirements,
+                            waiting_since=state.at + timedelta(minutes=minute),
+                        ),
+                    )
+                )
     tape = FutureTape(
         specification.declared_at, tuple(sorted(events, key=lambda e: (e.minute, e.id)))
     )
     validate_tape(state, tape)
     return tape
+
+
+def staffing_tape(
+    state: State, tape: FutureTape, actions: tuple[Action, ...]
+) -> tuple[State, FutureTape]:
+    """Overlay observable commitments and the proposed staff on the paired capacity tape."""
+    selected = {a.slot_id for a in actions if a.kind == "reinforce"}
+    events = list(tape.events)
+    units = {u.id: u for u in state.units}
+    for schedule in state.schedules:
+        offers = [
+            o
+            for o in schedule.offers
+            if not o.included_in_baseline and (o.committed or o.option.option_id in selected)
+        ]
+        if not offers:
+            continue
+        unit = units[schedule.id]
+        base = unit.staffed_beds
+        if base is None:
+            raise ValueError("Unobserved staff capacity")
+        changes = {
+            e.minute: e
+            for e in events
+            if isinstance(e, ResourceChange)
+            and e.resource == "staffed_beds"
+            and e.target_id == unit.id
+        }
+        events = [e for e in events if e not in changes.values()]
+        intervals: list[tuple[int, int, int]] = []
+        roster, _ = latest(state, unit.id, "roster")
+        for offer in offers:
+            start = math.ceil((offer.option.start - state.at).total_seconds() / 60)
+            stop = math.floor((offer.option.end - state.at).total_seconds() / 60)
+            # A committed person already on the roster adds no second place.
+            included = (
+                [
+                    (
+                        max(start, math.floor((s.start - state.at).total_seconds() / 60)),
+                        min(stop, math.ceil((s.end - state.at).total_seconds() / 60)),
+                    )
+                    for s in roster.shifts
+                    if offer.committed
+                    and s.staff_id == offer.staff_id
+                    and s.start < offer.option.end
+                    and offer.option.start < s.end
+                ]
+                if isinstance(roster, Roster)
+                else []
+            )
+            cuts = sorted({start, stop} | {v for lo, hi in included for v in (lo, hi)})
+            intervals.extend(
+                (lo, hi, offer.staffed_places)
+                for lo, hi in zip(cuts, cuts[1:], strict=False)
+                if not any(a <= lo < b for a, b in included)
+            )
+        boundaries = set(changes) | {t for start, stop, _ in intervals for t in (start, stop)}
+
+        def extra(minute: int, periods: list[tuple[int, int, int]] = intervals) -> int:
+            return sum(n for start, end, n in periods if start <= minute < end)
+
+        units[unit.id] = unit.model_copy(update={"staffed_beds": base + extra(0)})
+        for minute in sorted(t for t in boundaries if 0 < t <= 10080):
+            if minute in changes:
+                base = changes[minute].capacity
+            events.append(
+                ResourceChange(
+                    id=f"staff:{unit.id}:{minute}",
+                    minute=minute,
+                    target_id=unit.id,
+                    resource="staffed_beds",
+                    capacity=base + extra(minute),
+                )
+            )
+    return state.model_copy(update={"units": tuple(units.values())}), FutureTape(
+        tape.declared_at, tuple(sorted(events, key=lambda e: (e.minute, e.id)))
+    )
+
+
+def booking_setup(
+    state: State, actions: tuple[Action, ...], tape: FutureTape
+) -> dict[str, tuple[int, str | None, int, int]]:
+    """Arrived demand stays in the queue during setup; preparation only speeds a compatible slot."""
+    prepared = {a.slot_id: a.bed_id for a in actions if a.kind == "prepare_admission"}
+    arrivals = {e.patient.id: e.minute for e in tape.events if isinstance(e, FutureArrival)}
+    setup: dict[str, tuple[int, str | None, int, int]] = {}
+    for schedule in state.schedules:
+        for booking in schedule.admissions:
+            req = booking.request
+            if req.request_id in arrivals:
+                setup[req.request_id] = (
+                    arrivals[req.request_id] + req.admission_task_minutes,
+                    booking.prepared_bed or prepared.get(req.request_id),
+                    math.ceil((booking.window_start - state.at).total_seconds() / 60),
+                    math.ceil((booking.window_end - state.at).total_seconds() / 60),
+                )
+    return setup
+
+
+def slot_ready(
+    setup: dict[str, tuple[int, str | None, int, int]], patient: str, bed: str, minute: int
+) -> bool:
+    hold = setup.get(patient)
+    return not hold or minute >= hold[0] or (bed == hold[1] and hold[2] <= minute < hold[3])

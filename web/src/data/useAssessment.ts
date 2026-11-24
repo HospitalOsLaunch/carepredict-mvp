@@ -83,7 +83,7 @@ function fixtureAssessment(bundle: FixtureBundle, id: string): Assessment {
   if (id === "live" || id === "live-stale") {
     const episode = id === "live" ? bundle.live.episode : bundle.live.stale_episode;
     const a = episode.assessment;
-    return fromLive(a.snapshot, a.plan, a.gate_reasons, "fixture", episode.episode_id, a.expires_at);
+    return { ...fromLive(a.snapshot, a.plan, a.gate_reasons, "fixture", episode.episode_id, a.expires_at), scenarioId: id };
   }
   const s = bundle.scenarios.find((x) => x.id === id) ?? bundle.scenarios[0]!;
   return fromScenario(s, "fixture");
@@ -233,7 +233,7 @@ export function useAssessment(): Store {
     setBusy(true);
     setError(null);
     api
-      .shadow({ horizon_minutes: 480, scenarios: 32 })
+      .shadow({ horizon_minutes: 10080, scenarios: 32, max_bundle: 3 })
       .then((episode) => {
         if (token !== request.current) return;
         const a = episode.assessment;
@@ -247,10 +247,11 @@ export function useAssessment(): Store {
       .finally(() => token === request.current && setBusy(false));
   }, [bundle, connection, scenarioId]);
 
+  const observedUnit = snapshot?.state.units[0]?.id ?? LIVE_UNIT;
   const units: UnitOption[] = useMemo(() => {
     if (connection === "api-live") {
       return [
-        { id: LIVE_UNIT, name: "Médecine polyvalente", situations: [{ id: "live", label: "En direct" }] },
+        { id: observedUnit, name: bundle?.scenarios.find(s => s.unit === observedUnit)?.unit_name ?? observedUnit, situations: [{ id: "live", label: "En direct" }] },
       ];
     }
     const map = new Map<string, UnitOption>();
@@ -261,12 +262,12 @@ export function useAssessment(): Store {
     }
     if (connection === "fixture") map.get(LIVE_UNIT)?.situations.push(...LIVE_SITUATIONS);
     return [...map.values()];
-  }, [bundle, connection]);
+  }, [bundle, connection, observedUnit]);
 
   const unitOf = useCallback(
     (sid: string) =>
-      sid.startsWith("live") ? LIVE_UNIT : (bundle?.scenarios.find((s) => s.id === sid)?.unit ?? LIVE_UNIT),
-    [bundle],
+      sid.startsWith("live") ? (connection === "api-live" ? observedUnit : LIVE_UNIT) : (bundle?.scenarios.find((s) => s.id === sid)?.unit ?? LIVE_UNIT),
+    [bundle, connection, observedUnit],
   );
   const unitId = unitOf(scenarioId);
   const unit = units.find((u) => u.id === unitId);
@@ -316,7 +317,7 @@ export function useAssessment(): Store {
     situations: unit?.situations ?? [],
     situationId: scenarioId,
     setSituation,
-    assessment,
+    assessment: assessment?.scenarioId === scenarioId || connection === "api-live" ? assessment : null,
     awaitingEvaluation: connection === "api-live" && !!assessment && !assessment.episodeId,
     busy,
     error,

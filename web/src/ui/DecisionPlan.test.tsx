@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { App } from "../App";
+import { DecisionPlan } from "./DecisionPlan";
 import { type DsFixture, pointer } from "../api/decision";
 import { journal } from "../data/journal";
 import fixtureData from "../fixtures/decision.json";
@@ -46,7 +46,7 @@ beforeEach(() => {
 
 describe("plan à 24 h (moteur d'aide à la décision)", () => {
   it("opens on the automatic recommendation, without any scenario typed", async () => {
-    const { container } = render(<App />);
+    const { container } = render(<DecisionPlan focal="24h" />);
     const auto = await screen.findByTestId("ds-auto");
     await status(auto, "RECOMMENDATION_READY");
     expect(screen.queryByTestId("ds-manual-form")).toBeNull();
@@ -58,7 +58,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("approves in demonstration only and sends nothing", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
@@ -68,7 +68,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("keeps the plan decision in the demonstration journal, with its origin", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
@@ -89,7 +89,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("asks to re-check the medical authorization before a plan with a discharge can be validated", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     const approve = screen.getByTestId("ds-approve") as HTMLButtonElement;
     expect(approve.disabled).toBe(true);
@@ -99,14 +99,14 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("keeps a decided plan decided, and one validated plan per unit", async () => {
-    const { unmount } = render(<App />);
+    const { unmount } = render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
     await screen.findByTestId("ds-feedback");
     unmount();
     // Reload: the same plan is not offered for validation again.
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     expect((await screen.findByTestId("ds-decided")).textContent).toMatch(/^Plan validé par vous/);
     expect(screen.queryByTestId("ds-approve")).toBeNull();
     // Validating a variant asks before replacing the validated plan.
@@ -129,7 +129,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("lets the team choose the other plan instead", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     fireEvent.click(within(screen.getByTestId("ds-alternative")).getByTestId("ds-choose-alternative"));
     expect((await screen.findByTestId("ds-decided")).textContent).toMatch(/L'autre plan a été choisi/);
@@ -144,7 +144,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("refuses a plan with a one-tap reason, kept in the journal with an optional note", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     fireEvent.click(screen.getByTestId("ds-reject"));
     const reasons = await screen.findByTestId("ds-reasons");
@@ -188,7 +188,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
         throw new Error(`unexpected ${url}`);
       }),
     );
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     const auto = await screen.findByTestId("ds-auto");
     await status(auto, "RECOMMENDATION_READY");
     const actions = within(auto).getAllByTestId("ds-action");
@@ -210,7 +210,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("offline manual mode shows engine-computed scenarios; a hypothesis is never approvable", async () => {
-    const { container } = render(<App />);
+    const { container } = render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     fireEvent.click(screen.getByTestId("ds-modify"));
     const examples = await screen.findByTestId("ds-examples");
@@ -232,7 +232,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   });
 
   it("abstains with explicit diagnostics, and keeps habitual practice when nothing helps", async () => {
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     fireEvent.change(screen.getByTestId("ds-unit"), { target: { value: "insufficient_data" } });
     await status(await screen.findByTestId("ds-auto"), "INSUFFICIENT_DATA");
@@ -260,7 +260,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
         throw new Error(`unexpected ${url}`);
       }),
     );
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     expect(screen.queryByTestId("ds-source")).toBeNull();
     fireEvent.click(screen.getByTestId("ds-modify"));
@@ -287,7 +287,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
         throw new Error(`unexpected ${url}`);
       }),
     );
-    render(<App />);
+    render(<DecisionPlan focal="24h" />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
     recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
