@@ -250,3 +250,35 @@ def action_errors(state: State, action: Action) -> tuple[str, ...]:
     if unit.staffed_beds is None or committed >= unit.staffed_beds:
         return ("staffed_capacity_unavailable",)
     return ()
+
+
+def bundle_errors(state: State, actions: tuple[Action, ...]) -> tuple[str, ...]:
+    """Errors of actions applied together at D: each must be valid alone, and none may
+    contradict another (one bed reserved twice, one patient given two beds, the unit's
+    staffed capacity exceeded by the reservations together, one step repeated)."""
+    if state.issues:
+        return state.issues
+    real = tuple(a for a in actions if a.kind != "no_op")
+    for action in real:
+        errors = action_errors(state, action)
+        if errors:
+            return errors
+    if len({a.key for a in real}) != len(real):
+        return ("bundle_duplicate_action",)
+    reserved = [a for a in real if a.kind == "reserve_bed"]
+    if len({a.bed_id for a in reserved}) != len(reserved):
+        return ("bundle_bed_reserved_twice",)
+    if len({a.patient_id for a in reserved}) != len(reserved):
+        return ("bundle_patient_reserved_twice",)
+    beds = {b.id: b for b in state.beds}
+    for unit in state.units:
+        extra = sum(beds[a.bed_id].unit_id == unit.id for a in reserved if a.bed_id in beds)
+        if not extra:
+            continue
+        committed = sum(
+            b.unit_id == unit.id and (b.state == "occupied" or b.reserved_for is not None)
+            for b in state.beds
+        )
+        if unit.staffed_beds is None or committed + extra > unit.staffed_beds:
+            return ("bundle_staffed_capacity_exceeded",)
+    return ()

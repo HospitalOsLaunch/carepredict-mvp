@@ -19,7 +19,7 @@ from pydantic import Field, StrictInt, field_validator, model_validator
 from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .journal import reconstruct
-from .models import Action, FactEvent, State, action_errors
+from .models import Action, FactEvent, State, action_errors, bundle_errors
 from .pathway import DischargeReadiness, readiness
 from .preparation import PreparationForecasts, validate_preparation
 from .scenarios import FutureAssumptions, sample_future
@@ -37,6 +37,9 @@ class PlanRequest(Closed):
     preparation: PreparationForecasts | None = None
     max_age_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 60
     horizon_minutes: Annotated[StrictInt, Field(gt=0, le=1440)] = 1440
+    # Up to this many immediate actions applied together (1 = the historical one-action
+    # decision). Steps are added greedily, each evaluated jointly with the steps before it.
+    max_bundle: Annotated[StrictInt, Field(ge=1, le=4)] = 1
     scenarios: Annotated[StrictInt, Field(ge=1, le=128)] = 32
     max_candidates: Annotated[StrictInt, Field(ge=2, le=32)] = 32
     seed: Annotated[StrictInt, Field(ge=0)] = 7
@@ -96,6 +99,12 @@ class Plan(Closed):
     assumptions: Assumptions
     future: FutureAssumptions | None = None
     preparation: PreparationForecasts | None = None
+    # Combination of immediate actions evaluated together (first step = selected). Empty when
+    # the decision is a single action. Marginal gains: decrease of the mean waiting
+    # (patient-minutes) brought by each step, in order, the first one relative to doing nothing.
+    bundle: tuple[Action, ...] = ()
+    bundle_evaluation: Candidate | None = None
+    bundle_marginal_minutes: tuple[float, ...] = ()
     seed: int
     scenarios: int
     horizon_minutes: int
@@ -139,7 +148,7 @@ class Evaluation:
     pressure: tuple[ResourcePressure, ...]
 
 
-def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
+def evaluate(state: State, action: Action | tuple[Action, ...], request: PlanRequest) -> Evaluation:
     losses = []
     waiting_at_end = []
     arrivals = []
@@ -166,7 +175,7 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
     mean = statistics.mean(losses)
     tail = statistics.mean(sorted(losses, reverse=True)[: max(1, math.ceil(len(losses) / 10))])
     candidate = Candidate(
-        action=action,
+        action=action if isinstance(action, Action) else action[0],
         mean_waiting_patient_minutes=mean,
         worst_decile_waiting_patient_minutes=tail,
         objective=(1 - request.tail_weight) * mean + request.tail_weight * tail,
@@ -182,17 +191,83 @@ def evaluate(state: State, action: Action, request: PlanRequest) -> Evaluation:
     return Evaluation(candidate, tuple(pressure))
 
 
+def _regressions(evaluation: Evaluation, baseline: Evaluation) -> int:
+    return sum(
+        any(a > b for a, b in zip(actual.components(), reference.components(), strict=True))
+        for actual, reference in zip(evaluation.pressure, baseline.pressure, strict=True)
+    )
+
+
+def _bundle(
+    state: State,
+    request: PlanRequest,
+    best: Candidate,
+    baseline: Evaluation,
+    candidates: tuple[Candidate, ...],
+) -> tuple[tuple[Action, ...], Candidate | None, tuple[float, ...]]:
+    """Greedy combination of immediate actions, each step evaluated jointly with the steps
+    before it on the same paired scenarios. A step is kept only if it lowers the objective by
+    a material amount (1 % of doing nothing, at least one patient-minute) without any
+    resource-pressure regression against doing nothing. Not an optimality claim: a bounded,
+    explainable search over the admissible immediate actions."""
+    material = max(1.0, 0.01 * baseline.candidate.objective)
+    # Complements need not help alone: a cleaning can matter only once a departure is
+    # requested. Their worth is judged jointly, step by step.
+    useful = [
+        c.action
+        for c in sorted(candidates, key=lambda c: (c.objective, c.action.key))
+        if c.action.kind != "no_op"
+        and c.pressure_regression_scenarios == 0
+        and c.action != best.action
+    ]
+    steps: tuple[Action, ...] = (best.action,)
+    current = best
+    # Shown to people: mean waiting removed by each step (the selection itself uses the
+    # objective, which also weighs the worst scenarios).
+    marginals = [
+        baseline.candidate.mean_waiting_patient_minutes - best.mean_waiting_patient_minutes
+    ]
+    while len(steps) < request.max_bundle:
+        trials: list[tuple[float, str, Action, Evaluation]] = []
+        for action in useful:
+            if action in steps or bundle_errors(state, (*steps, action)):
+                continue
+            evaluation = evaluate(state, (*steps, action), request)
+            if evaluation.candidate.violations or _regressions(evaluation, baseline):
+                continue
+            trials.append((evaluation.candidate.objective, action.key, action, evaluation))
+        if not trials:
+            break
+        objective, _, action, evaluation = min(trials, key=lambda t: (t[0], t[1]))
+        if current.objective - objective < material:
+            break
+        marginals.append(
+            current.mean_waiting_patient_minutes - evaluation.candidate.mean_waiting_patient_minutes
+        )
+        steps = (*steps, action)
+        current = evaluation.candidate
+    if len(steps) == 1:
+        return (), None, ()
+    return steps, current, tuple(marginals)
+
+
 def plan(request: PlanRequest) -> Plan:
     state = request.state()
     if request.preparation is not None:
         validate_preparation(state, request.preparation)
     no_op = Action(kind="no_op")
-    parameters = request.model_dump(mode="json", exclude={"events"})
+    # max_bundle at its default is left out: one-action plans keep their historical ids.
+    parameters = request.model_dump(
+        mode="json", exclude={"events", "max_bundle"} if request.max_bundle == 1 else {"events"}
+    )
     parameters["fingerprint"] = state.fingerprint
     plan_id = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
     candidates: tuple[Candidate, ...] = ()
     truncated = False
     selected = no_op
+    bundle: tuple[Action, ...] = ()
+    bundle_evaluation: Candidate | None = None
+    marginals: tuple[float, ...] = ()
     decision: Literal["recommend", "no_change", "abstain"] = "abstain"
     reasons = state.issues
     warnings = state.warnings
@@ -244,6 +319,10 @@ def plan(request: PlanRequest) -> Plan:
                 if best.scenarios_with_unserved_demand
                 else "served_in_all_sampled_scenarios"
             )
+            if selected.kind != "no_op" and request.max_bundle > 1:
+                bundle, bundle_evaluation, marginals = _bundle(
+                    state, request, best, baseline, candidates
+                )
             decision = "no_change" if selected.kind == "no_op" else "recommend"
             reasons = (
                 "no_admissible_simulated_improvement"
@@ -278,6 +357,9 @@ def plan(request: PlanRequest) -> Plan:
         scenarios=request.scenarios,
         horizon_minutes=request.horizon_minutes,
         tail_weight=request.tail_weight,
+        bundle=bundle,
+        bundle_evaluation=bundle_evaluation,
+        bundle_marginal_minutes=marginals,
         discharge_readiness=readiness(state),
         service_status=service_status,
     )

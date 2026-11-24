@@ -105,6 +105,8 @@ class PlanningOptions(Closed):
     horizon_minutes: Annotated[StrictInt, Field(ge=1, le=1440)] = 360
     scenarios: Annotated[StrictInt, Field(ge=1, le=128)] = 32
     seed: Annotated[StrictInt, Field(ge=0)] = 7
+    # Immediate actions evaluated together (see planning.PlanRequest.max_bundle).
+    max_bundle: Annotated[StrictInt, Field(ge=1, le=4)] = 1
 
 
 class Assessment(Closed):

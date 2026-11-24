@@ -26,6 +26,7 @@ from demo_unit import (  # noqa: E402
     live_batch,
     live_policy,
     nominal,
+    peak,
     perturbations,
 )
 
@@ -44,15 +45,22 @@ OUT = Path(__file__).resolve().parents[1] / "src" / "fixtures"
 UNIT_NAME = "Médecine polyvalente"
 
 
+# The cockpit's action is the planner's combination of immediate actions (up to three steps
+# evaluated together), never a single action picked by the screen.
+MAX_BUNDLE = 3
+
+
 def scenario(
     name: str, label: str, request: PlanRequest, unit: str = UNIT, unit_name: str = UNIT_NAME
 ) -> dict[str, Any]:
+    request = request.model_copy(update={"max_bundle": MAX_BUNDLE})
     proposal = plan(request)
     state = request.state()
     traces: dict[str, Any] = {}
     if proposal.decision != "abstain":
         future = sample_future(state, request.future, request.seed, 0)
-        for key, action in (("baseline", Action(kind="no_op")), ("selected", proposal.selected)):
+        chosen = proposal.bundle or (proposal.selected,)
+        for key, action in (("baseline", (Action(kind="no_op"),)), ("selected", chosen)):
             trajectory = simulate(
                 state,
                 action,
@@ -87,7 +95,10 @@ def live() -> dict[str, Any]:
         now = AT + timedelta(seconds=45)
         snapshot = store.snapshot(now)
         options = PlanningOptions(
-            assumptions=nominal().assumptions, scenarios=16, horizon_minutes=480
+            assumptions=nominal().assumptions,
+            scenarios=16,
+            horizon_minutes=480,
+            max_bundle=MAX_BUNDLE,
         )
         episode = store.record_shadow(now, options)
         # A heartbeat without fresh confirmations: the next assessment must be gated.
@@ -198,6 +209,7 @@ def main() -> None:
     scenarios = (
         scenario("nominal", "Matinée ordinaire", nominal()),
         scenario("perturbations", "Transport coupé, vague des urgences", perturbations()),
+        scenario("peak", "Deux sorties prêtes, afflux des urgences", peak()),
         scenario("incomplete", "Données incomplètes", incomplete()),
         scenario(
             "geriatrie",

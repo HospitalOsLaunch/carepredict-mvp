@@ -16,7 +16,7 @@ from pydantic import Field, StrictInt
 from hospitalos.operational.contract import Closed
 
 from .innovations import draw as draw
-from .models import Action, State, action_errors, compatible, discharge_blockers
+from .models import Action, State, bundle_errors, compatible, discharge_blockers
 from .preparation import PreparationForecasts, preparation_draw, validate_preparation
 from .scenarios import BedAdmissions, FutureArrival, FutureTape, ResourceChange, validate_tape
 
@@ -52,7 +52,7 @@ class Trajectory:
 
 def simulate(
     state: State,
-    action: Action,
+    action: Action | tuple[Action, ...],
     assumptions: Assumptions,
     *,
     seed: int,
@@ -61,9 +61,17 @@ def simulate(
     future: FutureTape | None = None,
     preparation: PreparationForecasts | None = None,
 ) -> Trajectory:
-    errors = action_errors(state, action)
+    # One action or several applied together at D (a bundle: e.g. a transport request and a
+    # cleaning priority). Each must be valid alone and compatible with the others.
+    actions = tuple(
+        a for a in ((action,) if isinstance(action, Action) else action) if a.kind != "no_op"
+    )
+    errors = bundle_errors(state, actions)
     if errors:
         raise ValueError(f"Invalid simulation input: {errors}")
+    reserve = {a.bed_id: a.patient_id for a in actions if a.kind == "reserve_bed"}
+    transports = {a.patient_id: a for a in actions if a.kind == "request_transport"}
+    cleaning_first = {a.bed_id for a in actions if a.kind == "prioritize_cleaning"}
     if not 1 <= horizon_minutes <= 1440:
         raise ValueError("Horizon must be between one minute and 24 hours")
     future = future or FutureTape(state.at, ())
@@ -93,23 +101,23 @@ def simulate(
     for e in future.events:
         heapq.heappush(pending, (e.minute, "__future", e.id, ""))
     multiplier = draw(assumptions.load_multipliers, seed, scenario, "load", state.hospital_id)
-    if action.kind == "reserve_bed":
-        assert action.bed_id is not None
-        reservations[action.bed_id] = action.patient_id
-        trace.append(Transition(0, "reserve", action.patient_id, action.bed_id))
-    if action.kind == "request_transport":
-        assert action.patient_id is not None and action.bed_id is not None
+    for bed_id, patient_id in sorted(reserve.items()):
+        assert bed_id is not None
+        reservations[bed_id] = patient_id
+        trace.append(Transition(0, "reserve", patient_id, bed_id))
+    for patient_id, request in sorted(transports.items()):
+        assert patient_id is not None and request.bed_id is not None
         trace.append(
             Transition(
                 0,
                 "request_transport",
-                action.patient_id,
-                action.bed_id,
-                logistics[action.patient_id].transport_pool_id,
+                patient_id,
+                request.bed_id,
+                logistics[patient_id].transport_pool_id,
             )
         )
     for p in state.patients:
-        new_request = action.kind == "request_transport" and action.patient_id == p.id
+        new_request = p.id in transports
         if not discharge_blockers(
             state, p, include_request=not new_request, require_capacity=False
         ):
@@ -219,7 +227,7 @@ def simulate(
             ]
             dirty.sort(
                 key=lambda b: (
-                    0 if action.kind == "prioritize_cleaning" and action.bed_id == b else 1,
+                    0 if b in cleaning_first else 1,
                     dirty_since[b],
                     b,
                 )

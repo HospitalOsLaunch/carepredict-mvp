@@ -185,6 +185,35 @@ def nominal() -> PlanRequest:
     )
 
 
+def peak() -> PlanRequest:
+    """Two departures ready at once (P-0412 and P-0388) while the emergency department sends
+    more patients: requesting both transports together matters more than either alone. Shows
+    a combined action decided by the planner, not a scripted one."""
+    selected: list[tuple[Fact, int]] = []
+    for fact, age in facts():
+        if fact.kind == "discharge" and fact.id == "P-0388":
+            fact = fact.model_copy(update={"documents_ready": True})
+        if fact.kind == "pool" and fact.id == "transport-sanitaire":
+            fact = fact.model_copy(update={"available": 2})
+        if fact.kind == "unit":
+            fact = fact.model_copy(update={"staffed_beds": 14})
+        selected.append((fact, age))
+    selected += [
+        (_waiting("U-1052", minutes=240, priority=3), 5),
+        (_waiting("U-1055", minutes=150, priority=2), 5),
+    ]
+    events = tuple(selected)
+    return PlanRequest(
+        hospital_id=HOSPITAL,
+        at=AT,
+        expected_entities=entities(events),
+        events=_events(events, AT),
+        assumptions=ASSUMPTIONS,
+        horizon_minutes=480,
+        scenarios=32,
+    )
+
+
 def perturbations() -> PlanRequest:
     request = nominal()
     return request.model_copy(
