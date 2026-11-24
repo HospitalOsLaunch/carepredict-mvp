@@ -12,13 +12,9 @@ export default defineConfig(({ mode }) => ({
   server: {
     port: 5173,
     proxy: {
-      // 24-hour decision-support engine (web/decision/serve.py), loopback only. Must precede "/api".
-      "/api/decision": {
-        target: "http://127.0.0.1:8765",
-        rewrite: (p) => p.replace(/^\/api\/decision/, "/api"),
-      },
-      // FastAPI hybrid app (services/api/hybrid_app.py), loopback only.
-      "/api": { target: "http://127.0.0.1:8000", rewrite: (p) => p.replace(/^\/api/, "") },
+      // Platform gateway (src/hospitalos/platform): accounts, settings, journal, and the authenticated
+      // routes to the hybrid engine (:8000) and the 24-hour planner (:8765). Same paths as production.
+      "/api": { target: "http://127.0.0.1:8100" },
     },
   },
   test: { environment: "jsdom", globals: true },

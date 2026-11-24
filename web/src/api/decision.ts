@@ -1,6 +1,8 @@
 // 24-hour decision-support engine (src/hospitalos/decision_support), served locally by
 // web/decision/serve.py and proxied by Vite under /api/decision. Types mirror the Python
 // contracts (contracts/decision_support/*.schema.json); only the fields the screen reads.
+import { SECURITY_HEADER, UNAUTHORIZED_EVENT } from "./http";
+
 
 export type DecisionStatus =
   | "RECOMMENDATION_READY"
@@ -129,11 +131,17 @@ async function call<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(
     `/api/decision${path}`,
     body === undefined
-      ? {}
-      : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) },
+      ? { credentials: "same-origin", headers: { ...SECURITY_HEADER } }
+      : {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", ...SECURITY_HEADER },
+          body: JSON.stringify(body),
+        },
   );
-  const data = (await res.json()) as T & { error?: string };
-  if (!res.ok) throw new Error(data.error ?? res.statusText);
+  if (res.status === 401) window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
+  const data = (await res.json()) as T & { error?: string; detail?: string };
+  if (!res.ok) throw new Error(data.error ?? data.detail ?? res.statusText);
   return data;
 }
 

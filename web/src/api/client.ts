@@ -1,7 +1,8 @@
+import { SECURITY_HEADER, UNAUTHORIZED_EVENT } from "./http";
 import type { LiveSnapshot, Plan, PlanRequest, PlanningOptions, ShadowEpisode } from "./types";
 
 // Local FastAPI hybrid app, proxied by Vite under /api (see vite.config.ts).
-// The API has no authentication and no execution endpoint by design.
+// Behind the platform gateway: session cookie + anti-CSRF header; no execution endpoint by design.
 const BASE = (import.meta.env.VITE_HOSPITALOS_API as string | undefined) ?? "/api";
 
 export class ApiError extends Error {
@@ -20,9 +21,11 @@ async function call<T>(path: string, init?: RequestInit, timeoutMs = 20000): Pro
     const response = await fetch(`${BASE}${path}`, {
       ...init,
       signal: controller.signal,
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json", Accept: "application/json", ...SECURITY_HEADER },
     });
     if (!response.ok) {
+      if (response.status === 401) window.dispatchEvent(new CustomEvent(UNAUTHORIZED_EVENT));
       let detail = response.statusText;
       try {
         const body = (await response.json()) as { detail?: unknown };

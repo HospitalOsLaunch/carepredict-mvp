@@ -119,6 +119,12 @@ export const LinkIcon = (p: { size?: number }) => (
     <path d="M7 9a3 3 0 0 0 4.2 0l2-2A3 3 0 0 0 9 2.8l-1 1M9 7a3 3 0 0 0-4.2 0l-2 2A3 3 0 0 0 7 13.2l1-1" />
   </Svg>
 );
+export const UserIcon = (p: { size?: number }) => (
+  <Svg {...p}>
+    <circle cx="8" cy="5.5" r="2.75" />
+    <path d="M2.75 13.75c.6-2.6 2.7-4.25 5.25-4.25s4.65 1.65 5.25 4.25" />
+  </Svg>
+);
 export const PulseIcon = (p: { size?: number }) => (
   <Svg {...p}>
     <path d="M1.5 8.5h3l1.5-4 3 7 1.5-3h4" />

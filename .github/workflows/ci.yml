@@ -30,7 +30,7 @@ jobs:
       - name: Type-check
         # Research tests (frozen campaigns) and tests/decision_support (open strict-typing gate, see
         # docs/ENVIRONMENT.md) are outside this scope; tests/synthetic is type-checked by its own workflow.
-        run: mypy --strict services data tests/unit tests/integration tests/e2e tests/hybrid tests/operational tests/test_*.py
+        run: mypy --strict services data src/hospitalos/platform tests/platform tests/unit tests/integration tests/e2e tests/hybrid tests/operational tests/test_*.py
 
       - name: Tests
         # The P5 runner tests need an approved-interpreter venv to exist (runner reads its pyvenv.cfg); P5_VENV

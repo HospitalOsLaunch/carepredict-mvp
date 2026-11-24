@@ -16,9 +16,9 @@ import { type Assessment, clockPlus, comparison, minutesBetween } from "../domai
   An evaluation that abstains is kept too, so a colleague can see why nothing was proposed.
 
   Validating never sends anything: HospitalOS only keeps the trace, people act.
-  Storage: this browser (localStorage) until the API exposes a shared journal
-  (web/README.md, « Suite côté API »). Demonstration history is generated, read-only
-  and flagged `sample`.
+  Storage: the signed-in account's server journal (/api/journal, data/journalSync.ts);
+  this browser's localStorage only without an account (offline demonstration).
+  Demonstration history is generated, read-only and flagged `sample`.
 */
 
 export type EventType =
@@ -157,9 +157,12 @@ let samples: DecisionRecord[] = [];
 let snapshot: DecisionRecord[] = [];
 let me: Person | null = null;
 let storageOk = true;
+/** Signed-in account: the journal lives on the server (one per account) instead of this browser. */
+let account: { persist: (records: DecisionRecord[]) => void } | null = null;
 
 function load(): DecisionRecord[] {
   if (cache) return cache;
+  if (account) return (cache = []);
   try {
     const raw = window.localStorage.getItem(KEY);
     cache = raw ? (JSON.parse(raw) as DecisionRecord[]) : [];
@@ -175,12 +178,14 @@ function rebuild() {
 
 function commit(next: DecisionRecord[]) {
   cache = next.slice(-CAP);
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(cache));
-    storageOk = true;
-  } catch {
-    storageOk = false;
-  }
+  if (account) account.persist(cache);
+  else
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(cache));
+      storageOk = true;
+    } catch {
+      storageOk = false;
+    }
   rebuild();
   listeners.forEach((l) => l());
 }
@@ -188,7 +193,7 @@ function commit(next: DecisionRecord[]) {
 function subscribe(l: Listener) {
   listeners.add(l);
   const onStorage = (e: StorageEvent) => {
-    if (e.key !== KEY && e.key !== ME) return;
+    if (account || (e.key !== KEY && e.key !== ME)) return;
     cache = null;
     me = null;
     rebuild();
@@ -203,6 +208,7 @@ function subscribe(l: Listener) {
 
 export function getMe(): Person {
   if (me) return me;
+  if (account) return (me = { id: "account", name: "", role: "" });
   try {
     const raw = window.localStorage.getItem(ME);
     if (raw) return (me = JSON.parse(raw) as Person);
@@ -324,8 +330,44 @@ export const journal = {
     listeners.forEach((l) => l());
   },
 
+  /**
+   * Signed-in account: its server journal replaces this browser's storage. `persist` receives every new
+   * version (the sync layer debounces and handles concurrent edits).
+   */
+  bindAccount(person: Person, records: DecisionRecord[], persist: (records: DecisionRecord[]) => void) {
+    account = { persist };
+    me = person;
+    cache = records.slice(-CAP);
+    storageOk = true;
+    rebuild();
+    listeners.forEach((l) => l());
+  },
+
+  /** Server copy adopted after a concurrent edit elsewhere (another tab or device). */
+  adoptServer(records: DecisionRecord[]) {
+    if (!account) return;
+    cache = records.slice(-CAP);
+    rebuild();
+    listeners.forEach((l) => l());
+  },
+
+  setSyncOk(ok: boolean) {
+    storageOk = ok;
+    listeners.forEach((l) => l());
+  },
+
+  /** Sign-out: nothing of the account stays in memory. */
+  unbind() {
+    account = null;
+    cache = null;
+    me = null;
+    rebuild();
+    listeners.forEach((l) => l());
+  },
+
   /** Tests only. */
   reset() {
+    account = null;
     cache = null;
     samples = [];
     me = null;

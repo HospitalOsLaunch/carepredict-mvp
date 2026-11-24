@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAccount } from "./auth/AuthGate";
+import { Settings } from "./auth/Settings";
 import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
 import { type Assessment, clock, longClock } from "./domain/view";
@@ -10,10 +12,10 @@ import { ProposalDetail } from "./ui/ProposalDetail";
 import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from "./ui/Unit";
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
-import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon, UserIcon } from "./ui/icons";
 import { Illu, momentIllu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "plan" | "journal" | "donnees";
+type Route = "unite" | "proposition" | "plan" | "journal" | "donnees" | "parametres";
 
 interface Location {
   route: Route;
@@ -24,7 +26,13 @@ interface Location {
 function readRoute(): Location {
   const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
   const route =
-    head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
+    head === "proposition" ||
+    head === "plan" ||
+    head === "donnees" ||
+    head === "journal" ||
+    head === "parametres"
+      ? head
+      : "unite";
   return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
 }
 
@@ -51,6 +59,7 @@ const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon:
   { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
   { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
   { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
+  { id: "parametres", href: "#/parametres", label: "Paramètres", key: "S", Icon: () => <UserIcon /> },
 ];
 
 const ORIGIN: Record<Connection, string> = {
@@ -66,6 +75,7 @@ const TITLES: Record<Route, string> = {
   plan: "Plan à 24 h",
   journal: "Journal des décisions",
   donnees: "Qualité des données",
+  parametres: "Paramètres",
 };
 
 const SHORTCUTS: Array<[string, string]> = [
@@ -80,6 +90,7 @@ const SHORTCUTS: Array<[string, string]> = [
   ["P", "Plan jusqu'à demain (24 h)"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
+  ["S", "Paramètres et compte"],
   ["?", "Afficher cette aide"],
 ];
 
@@ -110,6 +121,7 @@ function useShortcuts(
       else if (k === "d") go("proposition");
       else if (k === "p") go("plan");
       else if (k === "q") go("donnees");
+      else if (k === "s") go("parametres");
       else if (digit >= 1 && digit <= 9) {
         // While the "why not" reasons are open, digits pick a reason instead of a unit.
         if (document.querySelector(".feedback")) emit(e.key);
@@ -127,6 +139,7 @@ function useShortcuts(
 
 export function App() {
   const store = useAssessment();
+  const account = useAccount();
   const { route, param } = useRoute();
   const [toast, setToast] = useState<ToastState | null>(null);
   const [switcherSignal, setSwitcherSignal] = useState(0);
@@ -164,6 +177,15 @@ export function App() {
   );
   useShortcuts(store, selectUnit, openSwitcher, openHelp);
 
+  // The unit chosen in Paramètres opens first, once per session.
+  const defaultUnit = account?.me.default_unit ?? "";
+  const appliedDefault = useRef(false);
+  useEffect(() => {
+    if (appliedDefault.current || !defaultUnit || !store.units.some((u) => u.id === defaultUnit)) return;
+    appliedDefault.current = true;
+    if (store.unitId !== defaultUnit) store.setUnit(defaultUnit);
+  }, [defaultUnit, store]);
+
   return (
     <div className="shell">
       <a className="skip" href="#contenu">
@@ -182,7 +204,7 @@ export function App() {
             openSignal={switcherSignal}
           />
           <nav className="nav" aria-label="Sections">
-            {ROUTES.map((r) => (
+            {ROUTES.filter((r) => r.id !== "parametres").map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
                 {r.label}
                 {r.id === "journal" && todo ? <Badge n={todo} /> : null}
@@ -207,6 +229,17 @@ export function App() {
               </span>
               <span className="visually-hidden">: aucune commande envoyée</span>
             </span>
+            {account ? (
+              <a
+                className="account"
+                href="#/parametres"
+                title={`${account.me.email} · Paramètres`}
+                aria-label={`Paramètres du compte ${account.me.display_name || account.me.email}`}
+              >
+                <UserIcon />
+                <span className="account__name">{account.me.display_name || account.me.email}</span>
+              </a>
+            ) : null}
             <button type="button" className="helpbtn" onClick={openHelp} aria-label="Raccourcis clavier">
               ?
             </button>
@@ -221,7 +254,7 @@ export function App() {
             <span>{store.error}</span>
           </div>
         ) : null}
-        {route !== "plan" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
+        {route !== "plan" && route !== "parametres" && store.connection !== "api-live" && store.connection !== "probing" && a ? (
           <div className="demobar">
             <span className="demobar__tag">Démonstration</span>
             <span className="demobar__text">{ORIGIN[store.connection]}</span>
@@ -244,7 +277,9 @@ export function App() {
             ) : null}
           </div>
         ) : null}
-        {route === "plan" ? (
+        {route === "parametres" ? (
+          <Settings units={store.units} />
+        ) : route === "plan" ? (
           // Independent synthetic unit and engine: computed on arrival, no scenario typed.
           <DecisionPlan />
         ) : !a || !now ? (
