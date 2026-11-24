@@ -99,7 +99,13 @@ def truth(u: int, world: int, cap: int) -> tuple[list[Stay], dict[int, int]]:
 
 
 def public_state(
-    d: int, u: int, world: int, cap: int, present: dict[int, tuple[str, datetime]]
+    d: int,
+    u: int,
+    world: int,
+    cap: int,
+    present: dict[int, tuple[str, datetime]],
+    *,
+    cohort: bool = False,
 ) -> State:
     # No realised departure, future occupancy or emergency count enters this function.
     at = clock(d, 8, 30)
@@ -144,7 +150,10 @@ def public_state(
             )
             estimates.append(
                 DepartureEstimate(
-                    stay_id=pid, reviewed_at=at, estimate=clock(d + max(1, 3 + (u == 1) - age), 7)
+                    stay_id=pid,
+                    reviewed_at=at,
+                    admitted_at=entered if cohort else None,
+                    estimate=clock(d + max(1, 3 + (u == 1) - age), 7),
                 )
             )
     state = State(
@@ -156,7 +165,11 @@ def public_state(
         patients=tuple(patients),
         discharges=tuple(logistics),
     )
-    base = synthetic_outlook(state, uid)
+    base = synthetic_outlook(
+        state,
+        uid,
+        admission_times=dict(present.values()) if cohort else None,
+    )
     dates = civil_days(at, at + timedelta(days=7), "Europe/Paris")
     demand = []
     bookings = []
