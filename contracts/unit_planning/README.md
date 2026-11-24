@@ -25,3 +25,16 @@ Le planning déclare aussi les affectations externes des professionnels proposé
 (external_shifts, liste vide si le contrôle confirme leur absence). Un prêt
 confirmé peut provenir du donneur déclaré dans les limites de sa réserve.
 Une personne déjà comptée dans la capacité de référence n’ajoute aucun lit.
+
+Le reçu de sorties accepte le profil optionnel `synthetic-residence-v2`.
+Chaque séjour présent fournit alors `admitted_at`, instant de l'attribution
+effective du lit, connu lors de la révision de la date de sortie. Un début
+d'attente ne renseigne pas ce champ. Une horloge manquante, un reçu tardif
+ou un export partiel écarte le profil. Les quatre flux doivent être complets
+et synthétiques pour ce générateur. Un export hospitalier ne peut pas en
+obtenir la qualification en renseignant le nom du profil.
+
+Une `forecast_depart` libère un lit uniquement dans la trajectoire simulée.
+Le journal observé, les permissions et le catalogue de gestes conservent
+leurs propres faits de référence. La source de l'hypothèse de séjour et
+son domaine sont décrits dans le rapport du banc de flux.

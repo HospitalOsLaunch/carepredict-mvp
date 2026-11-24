@@ -81,7 +81,7 @@ include = ["services*", "orchestration*", "data*", "rs_jepa*", "hospitalos*"]
 
 [tool.setuptools.package-data]
 hospitalos = ["py.typed"]
-"hospitalos.hybrid" = ["unit_horizon_receipt.json"]
+"hospitalos.hybrid" = ["unit_horizon_receipt.json", "unit_flow_v2_receipt.json"]
 
 [tool.ruff]
 target-version = "py311"

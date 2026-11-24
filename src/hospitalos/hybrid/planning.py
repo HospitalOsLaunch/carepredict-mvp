@@ -19,6 +19,7 @@ from pydantic import Field, StrictInt, field_validator, model_validator
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
+from . import flow_clock
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors, bundle_errors
 from .multiday import assess_horizon, paired_future
@@ -593,6 +594,13 @@ def plan(request: PlanRequest) -> Plan:
     if request.unit_id and not any(u.id == request.unit_id for u in state.units):
         reasons = (*reasons, "selected_unit_missing")
     warnings = state.warnings
+    if flow_clock.declared(state):
+        warnings = (
+            *warnings,
+            "synthetic_residence_projection"
+            if flow_clock.available(state, request.horizon_minutes)
+            else "residence_sources_incomplete",
+        )
     if request.preparation is not None:
         warnings = (*warnings, "synthetic_learned_preparation_requires_real_validation")
     service_status: Literal[

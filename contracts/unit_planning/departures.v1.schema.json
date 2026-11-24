@@ -3,6 +3,19 @@
     "DepartureEstimate": {
       "additionalProperties": false,
       "properties": {
+        "admitted_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Admitted At"
+        },
         "estimate": {
           "anyOf": [
             {
@@ -41,6 +54,19 @@
       "format": "date-time",
       "title": "Available At",
       "type": "string"
+    },
+    "cohort_profile": {
+      "anyOf": [
+        {
+          "const": "synthetic-residence-v2",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cohort Profile"
     },
     "covers_from": {
       "format": "date-time",
