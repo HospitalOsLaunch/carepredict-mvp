@@ -116,6 +116,13 @@ disallow_subclassing_any = true
 module = ["hospitalos.synthetic.v041.*"]
 ignore_errors = true
 
+# The HOWM reproducibility test pins these sources to 856a57c. Check their typed
+# interfaces in the unit planner without adding their historical internal errors
+# to its dependency checks. An explicit mypy run on either file still checks it.
+[[tool.mypy.overrides]]
+module = ["hospitalos.decision_support.contracts", "hospitalos.decision_support.resources"]
+follow_imports = "silent"
+
 # Optional extras that are not in requirements.lock (platform image, legacy foundation models).
 [[tool.mypy.overrides]]
 module = ["feast", "feast.*", "pytorch_forecasting", "pytorch_forecasting.*", "uni2ts", "uni2ts.*"]

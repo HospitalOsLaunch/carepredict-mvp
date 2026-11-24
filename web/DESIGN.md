@@ -119,11 +119,12 @@ sont enregistrées au même endroit, sur la page de l’unité.
 ## Bloc Action (retours du 24 novembre au soir)
 
 - **Juste sous « Bonsoir »**, avant la bande de tension : c'est la première chose à faire.
-- **Un seul moteur, filtré sur l'action prioritaire.** Le planificateur de l'unité évalue désormais
-  des combinaisons (transport + bionettoyage + réservation, jusqu'à 3 gestes ici) : un geste n'est
-  ajouté que s'il fait baisser l'objectif commun d'au moins 1 % (et 1 patient·min). Le bloc montre
-  la combinaison, chaque geste avec ce qu'il ajoute aux précédents ; le premier geste seul reste
-  une option (« Seulement : … »).
+- **Actions évaluées ensemble.** Le planificateur peut combiner transport, bionettoyage,
+  réservation de lit, renfort et préparation d’une entrée programmée. Lorsque chaque geste
+  isolé laisse l’attente inchangée, il teste les paires admissibles. Une paire initiale ou un
+  geste ajouté doit améliorer l’objectif d’au moins 1 % de sa valeur témoin et d’au moins
+  une minute d’attente cumulée, en respectant la garde sur les ressources dans chaque scénario.
+  Le bloc affiche le gain total et la contribution de chaque geste dans l’ordre évalué.
 - **Le gain en heures, avec son unité** : « Ce que vous gagnez d'ici 03:10 — −6 h 06 d'attente en
   moins pour les patients à placer (−27 %) », puis « Sans rien faire 22 h 51 / Avec la proposition
   16 h 45 », et une ligne qui dit ce qu'est l'attente cumulée (somme des attentes, moyenne de
@@ -160,11 +161,11 @@ Options explorées pour la flexibilité d'horizon :
 
 | Option | Pour | Contre | Verdict |
 | --- | --- | --- | --- |
-| Un onglet, des focales (retenu) | un seul endroit ; on passe de l'action au plan au même geste ; l'horizon réellement calculé reste visible | 3 j / 7 j ne sont qu'une perspective tant que les données manquent | retenu |
+| Un onglet, des focales (retenu) | les effets d’une même proposition se lisent à plusieurs échéances | les focales longues exigent des sources à jour et une prévision qualifiée | retenu |
 | Curseur d'horizon continu (1 h → 7 j) | très flexible | laisse croire qu'un plan existe à chaque heure ; trop fin pour une relève | écarté |
 | Un onglet par horizon | lisible séparément | multiplie la navigation ; les plans se contredisent d'un onglet à l'autre | écarté |
 | Frise zoomable (type Gantt) | vue d'ensemble des actions dans le temps | lourde au téléphone ; une frise vide au-delà de 24 h trompe | à reconsidérer quand un moteur planifiera sur plusieurs jours |
-| Moteur étendu à 72 h / 7 j | vrais plans à plusieurs jours | exige entrées programmées, sorties prévisionnelles et planning validé, absents des données | chantier moteur, pas d'interface |
+| Moteur étendu à 3 et 7 jours | projection de l’unité à plusieurs jours | exige quatre sources à jour et les seuils de précision du protocole | implémenté sous conditions, fermé dans les quatre unités du [banc synthétique](../docs/operational/unit-planning-results/README.md) |
 
 ## Tests d'usage du 24 novembre 2026
 

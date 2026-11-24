@@ -9,7 +9,7 @@ private future (realised discharge time, ready_h, dis_h, outcome labels).
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
-from typing import Annotated, Any, Final, Literal, Self
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import Field, StrictBool, StrictInt, field_validator, model_validator
 
@@ -17,11 +17,11 @@ from hospitalos.operational.contract import Closed, Identifier
 
 from .clock import PARIS, resolve_local, utc
 
-SNAPSHOT_SCHEMA: Final = "DS_PUBLIC_SNAPSHOT_1"
-PLAN_SCHEMA: Final = "DS_PLAN_1"
-LOCKS_SCHEMA: Final = "DS_SCENARIO_LOCKS_1"
-FORECAST_SCHEMA: Final = "DS_FORECAST_BUNDLE_1"
-RECOMMENDATION_SCHEMA: Final = "DS_RECOMMENDATION_1"
+SNAPSHOT_SCHEMA = "DS_PUBLIC_SNAPSHOT_1"
+PLAN_SCHEMA = "DS_PLAN_1"
+LOCKS_SCHEMA = "DS_SCENARIO_LOCKS_1"
+FORECAST_SCHEMA = "DS_FORECAST_BUNDLE_1"
+RECOMMENDATION_SCHEMA = "DS_RECOMMENDATION_1"
 
 Count = Annotated[StrictInt, Field(ge=0)]
 Skill = Literal["IDE", "AS"]
