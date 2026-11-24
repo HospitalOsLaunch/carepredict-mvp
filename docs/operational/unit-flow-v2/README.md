@@ -82,3 +82,5 @@ pytest -q tests/hybrid/test_unit_flow_clock.py tests/unit_planning
 ```
 
 Le protocole initial précède les mesures principales. L'addendum a été publié après ce premier passage et avant l'ouverture du second lot. La jonction entre les deux composants a ensuite été spécifiée avant d'ouvrir les indices 48–71. Le seuil de cinq patients·minutes est une convention expérimentale à confronter aux équipes. [Protocole initial](PROTOCOL.md) · [Contrôles supplémentaires](ADDITIONAL_CONTROLS.md) · [Test intégré](INTEGRATED_CHECK.md)
+
+La fiche pilote définit le dénominateur des occasions éligibles, les horodatages, l'exposition au conseil et le traitement des observations interrompues pour chaque unité et garde. [Recueil de la pratique ordinaire](PILOTE.md)
