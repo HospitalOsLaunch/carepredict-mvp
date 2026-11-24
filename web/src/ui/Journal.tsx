@@ -8,6 +8,8 @@ import {
   type Status,
   handover,
   journal,
+  noteRecord,
+  type RecordOrigin,
   reasonLabel,
   statusOf,
   toCsv,
@@ -102,6 +104,8 @@ export function Journal(props: {
   /** Journal shown, and whether the person may look at the other one (live connection only). */
   space: Space;
   canSwitch: boolean;
+  /** Where a free note for the next shift is written, and the unit's state for the handover. */
+  scope: { unitId: string; unitName: string; origin: RecordOrigin; situationId: string; state: string[] };
 }) {
   const { records, me, now, openId } = props;
   // Units of the cockpit plus those met in the journal (e.g. the 24-hour plan's units).
@@ -193,6 +197,7 @@ export function Journal(props: {
         <p>Ce qui a été proposé et décidé : par qui, quand, pourquoi.</p>
         <SpaceNote space={props.space} canSwitch={props.canSwitch} />
         <SignedAs me={me} />
+        <ShiftNote scope={props.scope} now={now} onToast={props.onToast} />
       </header>
 
       <div className={`journal${openId ? " journal--open" : ""}`}>
@@ -328,13 +333,7 @@ export function Journal(props: {
 
         <aside className="journal__side stack">
           {detail ? <div className="journal__detail-desk">{detail}</div> : null}
-          <Handover
-            records={scoped}
-            me={me}
-            now={now}
-            unitName={unit === "all" ? "Toutes unités" : (units.find((u) => u.id === unit)?.name ?? "")}
-            onToast={props.onToast}
-          />
+          <Handover records={records} me={me} now={now} units={units} scope={props.scope} onToast={props.onToast} />
         </aside>
       </div>
     </>
@@ -366,7 +365,14 @@ function Row({
   const note = [...r.events].reverse().find((e) => e.note)?.note;
   const meta = [
     r.unitName,
-    human ? who(human.by, me) : s === "pending" ? `fraîche jusqu'à ${clock(r.expiresAt)}` : null,
+    r.origin !== "api-live" && r.situationId && !r.sample ? r.situation : null,
+    human
+      ? who(human.by, me)
+      : s === "note"
+        ? who(r.events[0]?.by ?? null, me)
+        : s === "pending"
+          ? `fraîche jusqu'à ${clock(r.expiresAt)}`
+          : null,
     reason,
   ].filter(Boolean);
   return (
@@ -396,7 +402,7 @@ function Row({
           className="btn btn--small jrow__quick"
           onClick={() => {
             journal.act(r.id, "done", now);
-            onToast("C'est fait. Merci !", () => journal.undo(r.id));
+            onToast("C'est noté.", () => journal.undo(r.id));
           }}
         >
           <Check /> C'est fait
@@ -523,7 +529,7 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
             className="btn btn--primary"
             onClick={() => {
               journal.act(r.id, "done", now);
-              onToast("C'est fait. Merci !", () => journal.undo(r.id));
+              onToast("C'est noté.", () => journal.undo(r.id));
             }}
           >
             <Check /> C'est fait
@@ -560,18 +566,25 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
 }
 
 function Handover({
-  records,
+  records: all,
   me,
   now,
-  unitName,
+  units,
+  scope,
   onToast,
 }: {
   records: DecisionRecord[];
   me: Person;
   now: string;
-  unitName: string;
+  units: { id: string; name: string }[];
+  scope: { unitId: string; unitName: string; state: string[] };
   onToast: ToastFn;
 }) {
+  // The handover is for one unit by default (the one on screen), with its state: the next
+  // shift needs who waits and what blocks, not only decisions (user testing).
+  const [unitId, setUnitId] = useState(scope.unitId);
+  const records = all.filter((r) => unitId === "all" || r.unitId === unitId);
+  const unitName = unitId === "all" ? "Toutes unités" : (units.find((u) => u.id === unitId)?.name ?? scope.unitName);
   const [fallback, setFallback] = useState<string | null>(null);
   const count = (set: Status[]) => records.filter((r) => set.includes(statusOf(r, now))).length;
   const tiles: Array<[string, number, string]> = [
@@ -581,7 +594,7 @@ function Handover({
     ["Sans réponse", count(["expired", "superseded"]), "quiet"],
   ];
   const title = `Transmission HospitalOS · ${unitName} · ${longClock(now)}`;
-  const text = handover(records, me, now, title);
+  const text = handover(records, me, now, title, unitId === scope.unitId ? scope.state : []);
   const download = () => {
     const blob = new Blob([`﻿${toCsv(records, me, now)}`], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -603,6 +616,17 @@ function Handover({
         </h2>
       </header>
       <div className="panel__body">
+        <label className="jselect hunit">
+          <span className="visually-hidden">Unité de la transmission</span>
+          <select className="select" value={unitId} onChange={(e) => setUnitId(e.target.value)}>
+            {units.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name}
+              </option>
+            ))}
+            <option value="all">Toutes les unités</option>
+          </select>
+        </label>
         <ul className="htiles">
           {tiles.map(([label, n, tone]) => (
             <li key={label} className={`htile htile--${tone}`}>
@@ -671,6 +695,59 @@ function SpaceNote({ space, canSwitch }: { space: Space; canSwitch: boolean }) {
   );
 }
 
+/** A note for the next shift, not tied to a proposal (« le fils de M. X appelle à 18 h »). */
+function ShiftNote({
+  scope,
+  now,
+  onToast,
+}: {
+  scope: { unitId: string; unitName: string; origin: RecordOrigin; situationId: string };
+  now: string;
+  onToast: ToastFn;
+}) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  if (!open) {
+    return (
+      <p className="shiftnote">
+        <button type="button" className="btn btn--small" onClick={() => setOpen(true)} data-testid="shift-note">
+          + Note pour la relève
+        </button>
+      </p>
+    );
+  }
+  return (
+    <form
+      className="shiftnote shiftnote--form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!text.trim()) return setOpen(false);
+        journal.record(noteRecord({ id: scope.unitId, name: scope.unitName }, scope.origin, scope.situationId, now, text.trim()));
+        setText("");
+        setOpen(false);
+        onToast("Note ajoutée à la transmission.");
+      }}
+    >
+      <label className="visually-hidden" htmlFor="shift-note-text">
+        Note pour la relève, {scope.unitName}
+      </label>
+      <input
+        id="shift-note-text"
+        className="input"
+        autoFocus
+        maxLength={280}
+        placeholder={`${scope.unitName} : ex. famille de P-0388 rappelle à 18 h`}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+      />
+      <button className="btn btn--primary" type="submit">
+        Ajouter
+      </button>
+    </form>
+  );
+}
+
 /** Decisions are signed: colleagues see who validated or refused. */
 function SignedAs({ me }: { me: Person }) {
   const [editing, setEditing] = useState(!me.name);
@@ -723,7 +800,7 @@ function SignedAs({ me }: { me: Person }) {
       <label>
         <span className="visually-hidden">Votre rôle</span>
         <select className="select" value={role} onChange={(e) => setRole(e.target.value)}>
-          {["Cadre de santé", "Gestionnaire de lits", "Cadre de nuit", "IDE de coordination", "Médecin"].map(
+          {["Cadre de santé", "Gestionnaire de lits", "Cadre de nuit", "IDE", "IDE de nuit", "IDE de coordination", "AS", "Médecin"].map(
             (r) => (
               <option key={r}>{r}</option>
             ),

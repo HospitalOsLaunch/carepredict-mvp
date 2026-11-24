@@ -47,6 +47,8 @@ async function audit(page, label) {
 }
 
 let browser;
+// A plan with a discharge waits for the medical authorization to be re-checked by a person.
+const recheck = async (page, scope) => { for (const box of await page.locator(`${scope} [data-testid^=recheck-]`).all()) await box.check(); };
 const status = (page, scope) => page.locator(`${scope} [data-testid=status]`).first().getAttribute("data-status");
 try {
   browser = await playwright.chromium.launch();
@@ -84,6 +86,7 @@ try {
 
   // new information -> invalidation -> explicit recomputation
   await page.click("[data-testid=inject-revoke_S01]");
+  await recheck(page, "#auto-body");
   await page.click("#auto-body [data-testid=approve]");
   await page.waitForSelector("#auto-body [data-testid=review-feedback][data-outcome]");
   check("T27:invalidated", (await page.getAttribute("#auto-body [data-testid=review-feedback]", "data-outcome")) === "INVALIDATED");
@@ -91,6 +94,7 @@ try {
   await page.waitForSelector("#auto-body [data-testid=status]");
   const after = await page.locator("#auto-body [data-testid=actions]").innerText().catch(() => "");
   check("T05:revoked_stay_not_proposed", !after.includes("S01"), after);
+  await recheck(page, "#auto-body");
   await page.click("#auto-body [data-testid=approve]");
   await page.waitForSelector("#auto-body [data-testid=review-feedback][data-outcome]");
   const outcome = await page.getAttribute("#auto-body [data-testid=review-feedback]", "data-outcome");

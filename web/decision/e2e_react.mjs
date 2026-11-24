@@ -51,6 +51,8 @@ async function audit(page, label) {
   check(`T32:${label}`, r.total > 0 && r.bad.length === 0, JSON.stringify(r));
 }
 
+// A plan with a discharge waits for the medical authorization to be re-checked by a person.
+const recheck = async (page) => { for (const box of await page.locator("[data-testid=ds-auto] [data-testid=ds-recheck] input").all()) await box.check(); };
 const statusOf = (page, scope) => page.locator(`${scope} [data-testid=ds-status]`).first().getAttribute("data-status");
 let browser;
 try {
@@ -95,6 +97,7 @@ try {
 
   await page.click("[data-testid=ds-inject-revoke_S01]");
   await page.waitForSelector("[data-testid=ds-inject-revoke_S01][disabled]");
+  await recheck(page);
   await page.click("[data-testid=ds-auto] [data-testid=ds-approve]");
   await page.waitForSelector("[data-testid=ds-auto] [data-testid=ds-feedback]");
   check("T27:invalidated", (await page.getAttribute("[data-testid=ds-auto] [data-testid=ds-feedback]", "data-outcome")) === "INVALIDATED");
@@ -102,6 +105,7 @@ try {
   await page.waitForFunction(() => !document.querySelector("[data-testid=ds-auto] [data-testid=ds-feedback]"));
   const actions = await page.locator("[data-testid=ds-auto] [data-testid=ds-actions]").innerText().catch(() => "");
   check("T05:revoked_stay_not_proposed", !actions.includes("S01"), actions);
+  await recheck(page);
   await page.click("[data-testid=ds-auto] [data-testid=ds-approve]");
   await page.waitForSelector("[data-testid=ds-auto] [data-testid=ds-feedback]");
   check("P4:approve_in_demo_no_command", (await page.getAttribute("[data-testid=ds-auto] [data-testid=ds-feedback]", "data-outcome")) === "APPROVED_IN_DEMO");

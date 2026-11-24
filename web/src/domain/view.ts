@@ -54,7 +54,11 @@ const dayHm = new Intl.DateTimeFormat("fr-FR", {
   timeZone: PARIS,
 });
 
+const shortDay = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: PARIS });
+
 export const clock = (iso: string): string => hm.format(new Date(iso));
+/** « mar. 24 nov. » */
+export const day = (iso: string): string => shortDay.format(new Date(iso));
 export const longClock = (iso: string): string => dayHm.format(new Date(iso));
 export const clockPlus = (iso: string, minutes: number): string =>
   hm.format(new Date(Date.parse(iso) + minutes * 60000));
@@ -524,7 +528,89 @@ export function nextStep(links: ChainLink[]): { text: string; tone: "ok" | "todo
   };
   const [todo, blocked] = verbs[pending.id];
   if (pending.status === "blocked") return { text: blocked, tone: "blocked" };
-  if (pending.status === "unknown")
-    return { text: `Renseigner : ${pending.label.toLowerCase()}`, tone: "unknown" };
+  // A medical decision is never « filled in » by the person reading: it is awaited from the doctor.
+  if (pending.status === "unknown" && pending.id === "medical")
+    return { text: "Avis médical attendu : voir avec le médecin", tone: "unknown" };
+  if (pending.status === "unknown") return { text: `À renseigner : ${pending.label.toLowerCase()}`, tone: "unknown" };
   return { text: todo, tone: "todo" };
+}
+
+// ---------------------------------------------------------------- doubt and what is coming
+
+/**
+ * Facts the backend could not trust (stale or missing). When some exist, a count of zero is
+ * not « nobody waits »: it is « unknown ». Caught in user testing on « confirmations périmées ».
+ */
+export function doubtful(a: Assessment): boolean {
+  return [...a.state.issues, ...a.gateReasons].some((c) => /^(stale|missing):/.test(c));
+}
+
+export interface Ahead {
+  tone: "warn" | "info";
+  text: string;
+}
+
+/** Declared hypotheses about the next hours, in one line each (transport cut, arrivals, reopened beds). */
+export function aheadOf(plan: Plan | null): Ahead[] {
+  const f = plan?.future;
+  if (!f) return [];
+  const at = (minute: number) => clockPlus(plan!.created_at, minute);
+  const out: Ahead[] = [];
+  const name: Record<string, string> = {
+    transport: "Transport sanitaire",
+    cleaning_teams: "Bionettoyage",
+    downstream: "Places d'aval",
+    staffed_beds: "Lits armés",
+  };
+  const changes = [...f.changes].sort((x, y) => x.minute - y.minute);
+  for (const c of changes) {
+    if (c.kind === "bed_admissions") {
+      out.push({ tone: "info", text: `Lit ${c.bed_id} ${c.admissions_open ? "rouvert" : "fermé"} aux admissions à ${at(c.minute)}` });
+      continue;
+    }
+    if (c.capacity === 0) {
+      const back = changes.find(
+        (x) => x.kind === "resource_change" && x.resource === c.resource && x.minute > c.minute && (x.capacity ?? 0) > 0,
+      );
+      out.push({
+        tone: "warn",
+        text: `${name[c.resource] ?? c.resource} indisponible ${back ? `de ${at(c.minute)} à ${at(back.minute)}` : `à partir de ${at(c.minute)}`}`,
+      });
+    } else if (!out.some((o) => o.text.startsWith(name[c.resource] ?? c.resource))) {
+      out.push({ tone: "info", text: `${name[c.resource] ?? c.resource} : capacité ${c.capacity} à partir de ${at(c.minute)}` });
+    }
+  }
+  for (const a of f.arrivals) {
+    const first = Math.min(...a.minute_options);
+    const last = Math.max(...a.minute_options);
+    const lo = Math.min(...a.count_options);
+    const hi = Math.max(...a.count_options);
+    out.push({
+      tone: "info",
+      text: `Arrivées attendues des urgences entre ${at(first)} et ${at(last)} : ${lo === hi ? lo : `${lo} à ${hi}`} patient${hi > 1 ? "s" : ""}`,
+    });
+  }
+  return out;
+}
+
+/** The unit's state in a few lines, for the handover (user testing: decisions alone were not enough). */
+export function unitStateLines(a: Assessment): string[] {
+  const s = situation(a.state, a.plan);
+  const q = queueEntries(a.state);
+  const unsure = doubtful(a);
+  const longest = q.length ? Math.max(...q.map((e) => e.waitedMinutes)) : null;
+  const dirty = a.state.beds.filter((b) => b.state === "dirty").map((b) => b.id);
+  const chains = releaseChains(a.state, a.plan);
+  const pending = chains
+    .map((c) => ({ id: c.patient.id, next: nextStep(c.links) }))
+    .filter((x) => x.next.tone !== "ok");
+  const ready = chains.length - pending.length;
+  return [
+    unsure
+      ? "Données à vérifier : liste des patients à placer peut-être incomplète"
+      : `À placer : ${s.waiting}${longest != null ? ` (attente max ${duration(longest)})` : ""}`,
+    `Lits utilisables : ${s.usable}${dirty.length ? `, à nettoyer : ${dirty.join(", ")}` : ""}`,
+    `Sorties prêtes : ${ready}/${chains.length}${pending.length ? ` · ${pending.map((p) => `${p.id} : ${p.next.text.toLowerCase()}`).join(" ; ")}` : ""}`,
+    ...aheadOf(a.plan).map((x) => `À venir : ${x.text} (hypothèse)`),
+  ];
 }

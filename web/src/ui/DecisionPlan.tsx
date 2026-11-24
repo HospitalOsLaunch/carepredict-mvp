@@ -1,6 +1,15 @@
-import { type FormEvent, type ReactNode, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { type DsAction, type DsRecommendation, type DsReview, type DsSnapshot, pointer } from "../api/decision";
-import { type DecisionRecord, getMe, journal } from "../data/journal";
+import {
+  type DecisionRecord,
+  PLAN_REASONS,
+  getMe,
+  journal,
+  reasonLabel,
+  statusOf,
+  useJournal,
+  who,
+} from "../data/journal";
 import { type DecisionStore, type DsDoc, type DsSource, useDecision } from "../data/useDecision";
 import {
   AUTHORIZATION,
@@ -17,6 +26,7 @@ import {
 } from "../domain/planLabels";
 import "../styles/decision.css";
 import { Back, Check } from "./icons";
+import { NoteField } from "./Proposal";
 import { Illu } from "./illustrations";
 
 // 24-hour plan, auto first. Same grammar as the unit's « Action suivante »: one strong card
@@ -78,14 +88,17 @@ function Status({ reco }: { reco: DsRecommendation }) {
 }
 
 /** One action: what, when, from where; then why it may be done (basis) and what it waits for. */
-function ActionLine({ a, snapshot }: { a: DsAction; snapshot: DsSnapshot | null }) {
+function ActionLine({ a, snapshot, example }: { a: DsAction; snapshot: DsSnapshot | null; example?: boolean }) {
   const basis = BASIS[a.basis];
-  const loan = snapshot?.reinforcements.find((r) => r.option_id === a.target && r.source === "shared_unit");
+  const option = a.type === "reinforcement" ? snapshot?.reinforcements.find((r) => r.option_id === a.target) : undefined;
+  const loan = option?.source === "shared_unit" ? option : undefined;
   return (
     <li className="ds-action" data-testid="ds-action" data-basis={a.basis}>
       <span className="ds-action__text">{actionText(a, snapshot, (iso) => local(iso))}</span>
       <span className="ds-action__tags">
-        {a.origin === "manual_lock" ? <span className="ds-tag ds-tag--lock">imposé par vous</span> : null}
+        {a.origin === "manual_lock" ? (
+          <span className="ds-tag ds-tag--lock">{example ? "imposé dans l'exemple" : "imposé par vous"}</span>
+        ) : null}
         {basis ? (
           <span className={`ds-tag ds-tag--${basis.tone}`} title="Sur quoi repose cette action">
             {basis.label}
@@ -93,7 +106,16 @@ function ActionLine({ a, snapshot }: { a: DsAction; snapshot: DsSnapshot | null 
         ) : (
           <span className="ds-tag">{a.basis}</span>
         )}
-        {a.conditional ? <span className="ds-tag ds-tag--cond">demandé, non confirmé</span> : null}
+        {/* Every reinforcement says whether it is confirmed, not only the doubtful ones. */}
+        {a.conditional || option?.confirmation === "requested" ? (
+          <span className="ds-tag ds-tag--cond" data-testid="ds-confirmation">demandé, non confirmé</span>
+        ) : option?.confirmation === "confirmed" ? (
+          <span className="ds-tag ds-tag--fact" data-testid="ds-confirmation">confirmé</span>
+        ) : option ? (
+          <span className="ds-tag ds-tag--cond" data-testid="ds-confirmation">
+            {CONFIRMATION[option.confirmation] ?? option.confirmation}
+          </span>
+        ) : null}
         {loan ? (
           <span className="ds-tag ds-tag--loan" data-testid="ds-lending-unit">
             {provenance(loan)}
@@ -274,20 +296,39 @@ function planRecord(
   snapshot: DsSnapshot | null,
   unit: { id: string; name: string },
   decision: "approve" | "reject",
+  reason?: string,
+  planId?: string | null,
 ): DecisionRecord {
   const reco = doc.reco;
-  const shown = reco.bundle?.evaluations[evalIndex(reco, reco.primary_plan_id ?? reco.locked_plan_id)];
+  const chosen = planId ?? reco.primary_plan_id ?? reco.locked_plan_id;
+  const i = evalIndex(reco, chosen);
+  const shown = reco.bundle?.evaluations[i];
+  const base = reco.bundle?.evaluations[evalIndex(reco, reco.baseline_plan_id)];
   const actions = shown?.plan.actions ?? [];
   const at = (iso: string) => local(iso);
-  const variant = reco.mode === "manual" ? " (variante)" : "";
+  const kind = planId && planId !== reco.primary_plan_id ? " (autre plan)" : reco.mode === "manual" ? " (variante)" : "";
   const shortList = actions.map((a) => actionShort(a, snapshot, at)).join(", ") || "pratique habituelle";
   const origin = source === "api" ? "decision-api" : "decision-fixture";
+  // Figures and conditions are frozen in the record: the decision can be justified later
+  // (user testing: « Pourquoi » said « il attend votre décision » once decided).
+  const why = [
+    ...(shown && base && reco.bundle
+      ? [
+          `Soins non couverts d'ici ${local(reco.bundle.horizon_end, true)} : ${fmt(base.metrics.uncovered_care_minutes)} → ${fmt(shown.metrics.uncovered_care_minutes)} min (pratique habituelle → plan)`,
+          `Renfort : ${fmt(shown.metrics.reinforcement_hours)} h · attente de lit : ${fmt(base.metrics.waiting_patient_hours)} → ${fmt(shown.metrics.waiting_patient_hours)} patients·h`,
+        ]
+      : []),
+    ...(shown?.conditional_on.length
+      ? [`Suppose la venue de ${shown.conditional_on.join(", ")} (demandé, non confirmé)`]
+      : []),
+    ...humanReasons(reco.reasons).filter((r) => !r.includes("attend votre décision")),
+  ];
   return {
-    id: `${origin}:${reco.recommendation_id}`,
+    id: `${origin}:${reco.recommendation_id}${kind === " (autre plan)" ? `:${chosen}` : ""}`,
     origin,
     stateFingerprint: reco.snapshot_fingerprint ?? null,
     answerAt: "plan",
-    planId: reco.primary_plan_id ?? reco.recommendation_id,
+    planId: chosen ?? reco.recommendation_id,
     unitId: `plan:${unit.id}`,
     unitName: unit.name,
     situation: "Plan 24 h, unité fictive",
@@ -295,20 +336,37 @@ function planRecord(
     proposedAt: reco.created_at,
     expiresAt: reco.valid_until,
     action: null,
-    title: `Plan 24 h${variant} : ${shortList}`,
-    short: `plan 24 h${variant} : ${shortList}`,
+    title: `Plan 24 h${kind} : ${shortList}`,
+    short: `plan 24 h${kind} : ${shortList}`,
     todo: actions.length
       ? `Appliquez le plan dans vos outils : ${actions.map((a) => actionText(a, snapshot, at)).join(" ; ")}.`
       : undefined,
-    rank: 0,
+    rank: kind === " (autre plan)" ? 1 : 0,
     deltaRatio: null,
     horizonEnd: reco.bundle ? local(reco.bundle.horizon_end) : "",
-    why: humanReasons(reco.reasons),
+    why,
     events: [
       { at: reco.created_at, type: "proposed", by: null },
-      { at: reco.created_at, type: decision === "approve" ? "validated" : "refused", by: getMe() },
+      {
+        at: reco.created_at,
+        type: decision === "approve" ? "validated" : "refused",
+        by: getMe(),
+        ...(reason ? { reason } : {}),
+      },
     ],
   };
+}
+
+/** Patients whose medical authorization must be checked again by a person before validating. */
+function toRecheck(reco: DsRecommendation): string[] {
+  return [
+    ...new Set(
+      reco.conditions
+        .filter((c) => c.endsWith("revalidate_authorization_before_approval"))
+        .map((c) => c.split(":")[1] ?? "")
+        .filter(Boolean),
+    ),
+  ];
 }
 
 function ReviewButtons(props: {
@@ -316,17 +374,42 @@ function ReviewButtons(props: {
   doc: DsDoc;
   onModify?: () => void;
   unit: { id: string; name: string };
+  /** The main plan answers to O / N / 1–6, like the unit's next action. */
+  keys?: boolean;
 }) {
   const { store, doc } = props;
   const [result, setResult] = useState<DsReview | null>(null);
   const [conflict, setConflict] = useState<string | null>(null);
-  const send = async (decision: "approve" | "reject") => {
+  const [asking, setAsking] = useState(false);
+  const [confirmReplace, setConfirmReplace] = useState(false);
+  const [checked, setChecked] = useState<string[]>([]);
+  const [recordId, setRecordId] = useState<string | null>(null);
+  const firstReason = useRef<HTMLButtonElement>(null);
+  const { records, me } = useJournal();
+  const origin = store.source === "api" ? "decision-api" : "decision-fixture";
+  const unitKey = `plan:${props.unit.id}`;
+  // A plan decided earlier (this page, a reload, a colleague's screen on this post) stays decided.
+  const mainId = `${origin}:${doc.reco.recommendation_id}`;
+  const earlier =
+    records.find((r) => r.id === mainId) ?? records.find((r) => r.id.startsWith(`${mainId}:`));
+  const active = records.find(
+    (r) => r.unitId === unitKey && r.origin === origin && statusOf(r) === "validated" && r.id !== recordId,
+  );
+  const recheck = toRecheck(doc.reco);
+  const ready = recheck.every((id) => checked.includes(id));
+  const send = async (decision: "approve" | "reject", reason?: string, planId?: string | null) => {
     setConflict(null);
+    setAsking(false);
+    setConfirmReplace(false);
     try {
       const review = await store.review(doc, decision);
       setResult(review);
       if (review.outcome === "APPROVED_IN_DEMO" || review.outcome === "REJECTED") {
-        journal.record(planRecord(doc, store.source, store.snapshot, props.unit, decision));
+        // One active plan per unit: the earlier validated one is marked replaced.
+        if (decision === "approve" && active) journal.act(active.id, "superseded", doc.reco.created_at);
+        const record = planRecord(doc, store.source, store.snapshot, props.unit, decision, reason, planId);
+        journal.record(record);
+        setRecordId(record.id);
       }
     } catch (error) {
       // e.g. 409: the same idempotency key was already used for another request
@@ -334,66 +417,209 @@ function ReviewButtons(props: {
       setConflict(String(error));
     }
   };
+  const approve = () => {
+    if (!ready) return;
+    if (active && !confirmReplace) return setConfirmReplace(true);
+    void send("approve");
+  };
+  useEffect(() => {
+    if (asking) firstReason.current?.focus();
+  }, [asking]);
+  useEffect(() => {
+    if (!props.keys) return;
+    const on = (e: Event) => {
+      const key = (e as CustomEvent<string>).detail;
+      if (result || earlier) return;
+      if (key === "yes" && doc.reco.approvable) approve();
+      else if (key === "no") setAsking(true);
+      else if (asking && /^[1-6]$/.test(key)) void send("reject", PLAN_REASONS[Number(key) - 1]!.id);
+    };
+    window.addEventListener("hos:shortcut", on);
+    return () => window.removeEventListener("hos:shortcut", on);
+  });
   const text: Record<DsReview["outcome"], string> = {
     APPROVED_IN_DEMO: "Plan validé. Rien n'a été envoyé : appliquez-le dans vos outils habituels.",
-    REJECTED: "Plan refusé. Merci, c'est noté.",
+    REJECTED: "Refus noté. Il servira à mieux viser les prochains plans.",
     MODIFY_REQUESTED: "Modification demandée.",
     INVALIDATED: "Proposition invalidée : une nouvelle information est arrivée. Un recalcul est nécessaire.",
     REFUSED: "Validation impossible pour cette proposition.",
   };
   const noted = result && (result.outcome === "APPROVED_IN_DEMO" || result.outcome === "REJECTED");
+  const record = recordId ? records.find((r) => r.id === recordId) : undefined;
+  const reason = record?.events.find((e) => e.reason)?.reason;
+
+  if (earlier && !result) {
+    const s = statusOf(earlier);
+    const step = [...earlier.events].reverse().find((e) => e.by && e.type !== "note");
+    return (
+      <div className="ds-outcome ds-outcome--quiet" data-testid="ds-decided" data-status={s}>
+        <p className="ds-outcome__title">
+          {s === "superseded"
+            ? "Remplacé par un autre plan"
+            : s === "refused" && step?.reason === "preferred_option"
+              ? "L'autre plan a été choisi"
+              : s === "refused"
+                ? "Plan refusé"
+                : s === "done"
+                  ? "Plan appliqué"
+                  : "Plan validé"}
+          {step ? ` par ${who(step.by, me)} · ${local(step.at, true)}` : ""}
+          {step?.reason && step.reason !== "preferred_option" ? ` · motif : ${reasonLabel(step.reason)?.toLowerCase()}` : ""}
+        </p>
+        <div className="ds-outcome__actions">
+          <a className="btn btn--quiet" href={`#/journal/${encodeURIComponent(earlier.id)}`}>
+            Voir dans le journal
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="proposal__actions">
-        <button
-          type="button"
-          className="btn btn--primary"
-          data-testid="ds-approve"
-          disabled={!doc.reco.approvable}
-          title={doc.reco.approvable ? undefined : "Non applicable : hypothèse, abstention ou impossibilité"}
-          onClick={() => void send("approve")}
-        >
-          <Check /> Valider le plan
-        </button>
-        <button type="button" className="btn" data-testid="ds-reject" onClick={() => void send("reject")}>
-          Refuser
-        </button>
-        {props.onModify ? (
-          <>
-            <span className="spacer" />
-            <button type="button" className="btn btn--quiet" data-testid="ds-modify" onClick={props.onModify}>
-              Simuler une variante
-            </button>
-          </>
-        ) : null}
-      </div>
-      {result ? (
-        <p className="ds-feedback" role="status" data-testid="ds-feedback" data-outcome={result.outcome}>
-          {text[result.outcome]}
-          {result.reasons.length ? ` (${result.reasons.join(", ")})` : null}
-          {noted ? (
+      <div className="ds-answer">
+      {recheck.length && !noted && doc.reco.approvable ? (
+        <fieldset className="ds-recheck" data-testid="ds-recheck">
+          <legend>Avant de valider</legend>
+          {recheck.map((id) => (
+            <label key={id} className="ds-check">
+              <input
+                type="checkbox"
+                checked={checked.includes(id)}
+                onChange={(e) => setChecked((c) => (e.target.checked ? [...c, id] : c.filter((x) => x !== id)))}
+              />{" "}
+              J'ai revérifié l'autorisation médicale de sortie de {id}
+            </label>
+          ))}
+        </fieldset>
+      ) : null}
+      {noted ? null : (
+        <div className="proposal__actions">
+          <button
+            type="button"
+            className="btn btn--primary"
+            data-testid="ds-approve"
+            disabled={!doc.reco.approvable || !ready}
+            title={
+              !doc.reco.approvable
+                ? "Non applicable : hypothèse, abstention ou impossibilité"
+                : !ready
+                  ? "Cochez d'abord la vérification de l'autorisation médicale"
+                  : undefined
+            }
+            onClick={approve}
+          >
+            <Check /> Valider le plan {props.keys ? <kbd className="kbd">O</kbd> : null}
+          </button>
+          <button
+            type="button"
+            className="btn"
+            data-testid="ds-reject"
+            aria-expanded={asking}
+            onClick={() => setAsking((v) => !v)}
+          >
+            Refuser {props.keys ? <kbd className="kbd">N</kbd> : null}
+          </button>
+          {props.onModify ? (
             <>
-              {" "}
-              <a className="link" href="#/journal">
-                Voir dans le journal
-              </a>
-            </>
-          ) : null}
-          {result.replayed ? (
-            <span className="mute" data-testid="ds-replayed">
-              {" "}
-              Reçu déjà enregistré pour cette même demande ; validité actuelle : {result.current_validity}.
-            </span>
-          ) : null}
-          {result.recompute_required ? (
-            <>
-              {" "}
-              <button type="button" className="btn btn--small" data-testid="ds-recompute" onClick={store.reload}>
-                Recalculer maintenant
+              <span className="spacer" />
+              <button type="button" className="btn btn--quiet" data-testid="ds-modify" onClick={props.onModify}>
+                Simuler une variante
               </button>
             </>
           ) : null}
-        </p>
+        </div>
+      )}
+      </div>
+      {confirmReplace && active ? (
+        <div className="feedback" role="group" data-testid="ds-confirm-replace">
+          <p className="feedback__label">
+            Un plan est déjà validé pour cette unité ({active.short}, {who(lastStepBy(active), me)}). Ce choix le
+            remplace.
+          </p>
+          <div className="chips">
+            <button type="button" className="btn btn--primary" onClick={() => void send("approve")}>
+              Confirmer le remplacement
+            </button>
+            <button type="button" className="btn" onClick={() => setConfirmReplace(false)}>
+              Garder le plan validé
+            </button>
+          </div>
+        </div>
+      ) : null}
+      {asking ? (
+        <div className="feedback" role="group" aria-labelledby={`why-${doc.id}`} data-testid="ds-reasons">
+          <p className="feedback__label" id={`why-${doc.id}`}>
+            Pourquoi ? Un appui suffit.
+          </p>
+          <div className="chips">
+            {PLAN_REASONS.map((r, i) => (
+              <button
+                key={r.id}
+                ref={i === 0 ? firstReason : undefined}
+                type="button"
+                className="chip"
+                data-testid={`ds-reason-${r.id}`}
+                onClick={() => void send("reject", r.id)}
+              >
+                <kbd className="kbd" aria-hidden="true">
+                  {i + 1}
+                </kbd>
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {result ? (
+        <div
+          className={`ds-outcome ds-outcome--${result.outcome === "APPROVED_IN_DEMO" ? "todo" : result.outcome === "REJECTED" ? "quiet" : "bad"}`}
+          role="status"
+          data-testid="ds-feedback"
+          data-outcome={result.outcome}
+        >
+          <p className="ds-outcome__title">
+            {text[result.outcome]}
+            {reason && reason !== "preferred_option"
+              ? ` Motif : ${PLAN_REASONS.find((r) => r.id === reason)?.label.toLowerCase() ?? reason}.`
+              : null}
+            {reason === "preferred_option" ? " Vous avez choisi l'autre plan : il est inscrit au journal, à faire." : null}
+            {result.reasons.length ? ` (${result.reasons.join(", ")})` : null}
+          </p>
+          {result.replayed ? (
+            <p className="mute" data-testid="ds-replayed">
+              Reçu déjà enregistré pour cette même demande ; validité actuelle : {result.current_validity}.
+            </p>
+          ) : null}
+          <div className="ds-outcome__actions">
+            {noted && record ? (
+              <button
+                type="button"
+                className="btn btn--quiet"
+                onClick={() => {
+                  journal.discard(record.id);
+                  for (const r of records) if (r.id.startsWith(`${record.id}:`)) journal.discard(r.id);
+                  if (active && statusOf(active) === "superseded") journal.undo(active.id);
+                  setResult(null);
+                  setRecordId(null);
+                }}
+              >
+                Annuler
+              </button>
+            ) : null}
+            {noted ? (
+              <a className="btn btn--quiet" href={record ? `#/journal/${encodeURIComponent(record.id)}` : "#/journal"}>
+                Voir dans le journal
+              </a>
+            ) : null}
+            {result.recompute_required ? (
+              <button type="button" className="btn btn--small" data-testid="ds-recompute" onClick={store.reload}>
+                Recalculer maintenant
+              </button>
+            ) : null}
+          </div>
+          {record ? <NoteField record={record} now={record.proposedAt} /> : null}
+        </div>
       ) : null}
       {conflict ? (
         <p className="ds-err" role="alert" data-testid="ds-conflict">
@@ -403,6 +629,52 @@ function ReviewButtons(props: {
     </>
   );
 }
+
+/**
+ * « Choisir plutôt ce plan »: the proposal is refused (« autre option préférée ») and the other
+ * plan of the same calculation becomes the team's plan (user testing: all or nothing was a block).
+ */
+function ChooseAlternative({
+  store,
+  doc,
+  unit,
+  planId,
+}: {
+  store: DecisionStore;
+  doc: DsDoc;
+  unit: { id: string; name: string };
+  planId: string;
+}) {
+  const { records } = useJournal();
+  const origin = store.source === "api" ? "decision-api" : "decision-fixture";
+  const decided = records.some((r) => r.id.startsWith(`${origin}:${doc.reco.recommendation_id}`));
+  const [error, setError] = useState<string | null>(null);
+  if (decided) return null;
+  const choose = async () => {
+    try {
+      const review = await store.review(doc, "reject");
+      if (review.outcome !== "REJECTED") return setError("Choix impossible pour cette proposition.");
+      const active = records.find(
+        (r) => r.unitId === `plan:${unit.id}` && r.origin === origin && statusOf(r) === "validated",
+      );
+      if (active) journal.act(active.id, "superseded", doc.reco.created_at);
+      journal.record(planRecord(doc, store.source, store.snapshot, unit, "reject", "preferred_option"));
+      journal.record(planRecord(doc, store.source, store.snapshot, unit, "approve", undefined, planId));
+    } catch (e) {
+      setError(String(e));
+    }
+  };
+  return (
+    <div className="proposal__actions ds-alt-actions">
+      <button type="button" className="btn" data-testid="ds-choose-alternative" onClick={() => void choose()}>
+        Choisir plutôt ce plan
+      </button>
+      {error ? <span className="ds-err">{error}</span> : null}
+    </div>
+  );
+}
+
+const lastStepBy = (r: DecisionRecord) => [...r.events].reverse().find((e) => e.by && e.type !== "note")?.by ?? null;
 
 function Conditions({ reco }: { reco: DsRecommendation }) {
   const groups = groupedConditions(reco.conditions);
@@ -440,8 +712,16 @@ function AutoPlan({
         </div>
         <div className="proposal__main ds-stack">
           <h2 className="proposal__title">Pas de plan pour l'instant</h2>
-          <p>Mieux vaut ne rien proposer qu'inventer des valeurs. Complétez ces informations, puis recalculez :</p>
+          <p>
+            Mieux vaut ne rien proposer qu'inventer des valeurs. Complétez ces informations dans vos outils habituels
+            (planning, dossier), puis recalculez :
+          </p>
           <Diagnostics items={reco.diagnostics} testId="ds-diagnostics" />
+        </div>
+        <div className="proposal__actions">
+          <button type="button" className="btn" onClick={store.reload}>
+            Recalculer
+          </button>
         </div>
       </section>
     );
@@ -493,7 +773,7 @@ function AutoPlan({
             <Diagnostics items={reco.diagnostics} testId="ds-plan-diagnostics" />
           </Details>
         </div>
-        <ReviewButtons store={store} doc={doc} onModify={onModify} unit={unit} />
+        <ReviewButtons store={store} doc={doc} onModify={onModify} unit={unit} keys />
       </section>
       {alt >= 0 ? (
         <section className="panel" data-testid="ds-alternative">
@@ -511,6 +791,9 @@ function AutoPlan({
               min · renfort : <Fig doc={doc} ptr={`/bundle/evaluations/${alt}/metrics/reinforcement_hours`} /> h
             </p>
           </div>
+          {reco.approvable ? (
+            <ChooseAlternative store={store} doc={doc} unit={unit} planId={reco.alternative_plan_id!} />
+          ) : null}
         </section>
       ) : null}
       <Chart reco={reco} i={i} base={base} />
@@ -703,10 +986,15 @@ function ManualResult({ store, unit }: { store: DecisionStore; unit: { id: strin
     <section className="panel" data-testid="ds-manual">
       <div className="panel__body ds-stack">
         <Status reco={reco} />
+        {store.source === "fixture" ? (
+          <p className="note" data-testid="ds-example-note">
+            Exemple calculé à l'avance par le moteur : ces choix ne sont pas les vôtres.
+          </p>
+        ) : null}
         {shown ? (
           <ol className="ds-actions" data-testid="ds-manual-actions">
             {shown.plan.actions.map((a) => (
-              <ActionLine key={a.action_id} a={a} snapshot={store.snapshot} />
+              <ActionLine key={a.action_id} a={a} snapshot={store.snapshot} example={store.source === "fixture"} />
             ))}
           </ol>
         ) : null}
@@ -838,7 +1126,11 @@ export function DecisionPlan() {
         <span className="demobar__text">
           Unité fictive · prototype non validé (G2 NO-GO)
           {store.snapshot ? (
-            <span data-testid="ds-asof"> · situation au {local(store.snapshot.as_of, true)}</span>
+            <span data-testid="ds-asof">
+              {Date.parse(store.snapshot.as_of) > Date.now()
+                ? ` · plan préparé pour la relève de ${local(store.snapshot.as_of, true)}`
+                : ` · situation au ${local(store.snapshot.as_of, true)}`}
+            </span>
           ) : null}
         </span>
         {store.source === "fixture" ? (

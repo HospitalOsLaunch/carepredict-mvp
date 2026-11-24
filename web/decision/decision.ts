@@ -1,4 +1,6 @@
-// HospitalOS decision-support view — auto first, manual scenario second.
+// HospitalOS decision-support view — auto first, manual scenario second. Same grammar and
+// words as the cockpit's « Plan 24 h » (web/src/ui/DecisionPlan.tsx, src/domain/planLabels.ts):
+// band, title, actions with their basis, the effect, two answers; the rest one click away.
 // No figure is typed here: every number shown is read from a versioned engine document and
 // carries data-src="<doc id>#<JSON pointer>" plus data-raw (its exact value) for audit (T32).
 
@@ -11,11 +13,11 @@ const state: { unit: string; snapshot: Json; snapId: string; auto: Json; autoId:
 };
 
 const STATUS: Record<string, string> = {
-  RECOMMENDATION_READY: "Proposition prête",
-  NO_ACTION_PREFERRED: "Rien à changer : la pratique habituelle suffit",
-  INSUFFICIENT_DATA: "Abstention : données insuffisantes",
+  RECOMMENDATION_READY: "Plan proposé",
+  NO_ACTION_PREFERRED: "Rien à changer",
+  INSUFFICIENT_DATA: "Données à vérifier",
   INFEASIBLE: "Impossible en l'état",
-  HYPOTHETICAL_ONLY: "Hypothèse simulée — non exécutable",
+  HYPOTHETICAL_ONLY: "Hypothèse simulée, non applicable",
   INVALIDATED: "Proposition invalidée",
 };
 
@@ -69,13 +71,59 @@ function option(id: string): Json {
   return state.snapshot.reinforcements.find((r: Json) => r.option_id === id);
 }
 
-// Same words as the cockpit (src/domain/planLabels.ts): a loan always names its lending unit.
+// ------------------------------------------------------------------ words (mirror of planLabels.ts)
+
 const SOURCE: Record<string, string> = { internal_pool: "pool interne", interim: "intérim" };
-const BASIS: Record<string, string> = {
-  observed_authorization: "autorisation médicale observée",
-  validated_instruction: "consigne validée",
-  hypothesis_only: "hypothèse",
-  resource_option: "option de renfort",
+const BASIS: Record<string, [string, string]> = {
+  observed_authorization: ["autorisation médicale observée", "fact"],
+  validated_instruction: ["consigne validée", "choice"],
+  hypothesis_only: ["hypothèse", "hypothesis"],
+  resource_option: ["option de renfort", "option"],
+};
+const CONFIRMATION: Record<string, string> = {
+  confirmed: "confirmé", requested: "demandé, non confirmé", not_requested: "non demandé", unknown: "confirmation inconnue",
+};
+const AUTHORIZATION: Record<string, string> = {
+  authorized: "sortie autorisée", not_authorized: "sortie non autorisée", revoked: "autorisation retirée", unknown: "autorisation inconnue",
+};
+/** Same reasons as the cockpit (journal.ts PLAN_REASONS): one habit, comparable refusals. */
+const REASONS: [string, string][] = [
+  ["already_done", "Déjà fait ou déjà prévu"],
+  ["information_missing", "Information manquante ou fausse"],
+  ["clinical_priority", "Autre priorité clinique"],
+  ["resource_unavailable", "Ressource indisponible"],
+  ["plan_unsuitable", "Inadapté à l'unité (effectif, compétences, règles)"],
+  ["other", "Autre raison"],
+];
+const REASON: Record<string, string> = {
+  lexicographic_objective_improvement_requires_human_approval: "Le plan fait mieux que la pratique habituelle : il attend votre décision.",
+  habitual_practice_preferred_no_material_improvement: "Aucun plan ne fait sensiblement mieux que la pratique habituelle.",
+  abstention_data_insufficient: "Données insuffisantes : HospitalOS préfère ne rien proposer.",
+  complements_to_locked_scenario_require_human_approval: "Des compléments sont proposés autour de vos choix : ils attendent votre décision.",
+  conditional_simulation_of_hypothesis_not_executable: "Simulation d'une hypothèse : elle ne peut pas devenir un plan à appliquer.",
+  locked_scenario_violates_constraints: "Vos choix enfreignent une contrainte : ce plan est impossible.",
+};
+const CONDITION: Record<string, string> = {
+  medical_authorization_observed_at_decision: "autorisation médicale observée au moment du calcul",
+  revalidate_authorization_before_approval: "revérifier l'autorisation avant de valider",
+  transport_requested_now_lead_time_respected: "demander le transport maintenant",
+  cleaning_only_after_effective_departure: "bionettoyage seulement après le départ effectif",
+  "fixed departure hour": "heure de départ imposée",
+  "basis:validated_instruction": "consigne validée",
+  "basis:hypothesis_only": "hypothèse seulement",
+  user_lock_not_a_system_clinical_decision: "votre choix, pas une décision clinique du système",
+  "confirmation:requested": "demandé, non confirmé",
+  "confirmation:confirmed": "confirmé",
+  "requested, NOT confirmed -> result conditional on its presence": "le résultat suppose qu'il vienne",
+};
+const REJECT: Record<string, string> = {
+  no_target_hour_before_habitual_plan: "aucune heure utile avant le départ déjà prévu",
+  medical_authorization_not_authorized: "sortie non autorisée",
+  medical_authorization_revoked: "autorisation retirée",
+  destination_unknown: "destination inconnue",
+  transport_need_unknown: "besoin de transport inconnu",
+  readiness_estimate_unknown: "heure de préparation inconnue",
+  "obstacle:aval_non_confirme": "aval non confirmé",
 };
 
 function provenance(o: Json | undefined): string {
@@ -84,199 +132,325 @@ function provenance(o: Json | undefined): string {
   return SOURCE[o.source] ?? String(o.source);
 }
 
-function actionText(a: Json): HTMLElement {
-  const li = el("li", { "data-basis": String(a.basis) });
-  if (a.type === "coordinate_discharge") {
-    li.append(`Coordonner la sortie de ${a.target} : départ visé ${local(a.window_start)} (transport demandé maintenant, nettoyage après départ)`);
-  } else if (a.type === "reinforcement") {
-    const o = option(a.target);
-    li.append(`Renfort ${o?.skill ?? ""} ${local(a.window_start)}–${local(a.window_end)}, ${provenance(o)} (${a.target})`);
-    if (a.conditional) li.append(el("span", { class: "ds-tag ds-tag--cond" }, `demandé, non confirmé`));
-  } else if (a.type === "locked_discharge") {
-    li.append(`Sortie de ${a.target} à ${local(a.window_start)}`);
-  } else if (a.type === "locked_extension") {
-    li.append(`Présence de ${a.target} prolongée jusqu'à ${local(a.window_start)} (${a.preconditions[0]})`);
+function humanReasons(reasons: string[]): string[] {
+  const out: string[] = [];
+  for (const r of reasons) {
+    if (REASON[r]) out.push(REASON[r]);
+    else if (r.startsWith("plan remains insufficient")) out.push("Même avec ce plan, des soins restent non couverts : il réduit le manque sans le combler.");
   }
-  if (a.origin === "manual_lock") li.append(el("span", { class: "ds-tag ds-tag--lock" }, "imposé par vous"));
-  const basis = BASIS[String(a.basis)] ?? String(a.basis);
-  li.append(el("span", { class: a.basis === "hypothesis_only" ? "ds-tag ds-tag--cond" : "ds-tag" }, basis));
-  return li;
+  return out;
 }
 
-function figures(docId: string, reco: Json, i: number, base: number): HTMLElement {
+function subject(prefix: string): string {
+  const [kind, a, b] = prefix.split(":");
+  if (kind === "coord") return `Sortie de ${a}`;
+  if (kind === "renfort") return `Renfort ${a}`;
+  if (kind === "lock" && a === "locked_discharge") return `Sortie imposée de ${b}`;
+  if (kind === "lock" && a === "locked_extension") return `Prolongation de ${b}`;
+  return prefix;
+}
+
+function conditions(list: string[]): HTMLElement | null {
+  const groups = new Map<string, string[]>();
+  for (const c of list) {
+    const cut = c.lastIndexOf(": ");
+    const [head, code] = cut < 0 ? ["", c] : [c.slice(0, cut), c.slice(cut + 2)];
+    if (code.startsWith("skill:")) continue;
+    const about = head ? subject(head) : "Plan";
+    groups.set(about, [...(groups.get(about) ?? []), CONDITION[code] ?? code]);
+  }
+  if (!groups.size) return null;
+  return el("ul", { class: "ds-conds" }, ...[...groups].map(([about, items]) => el("li", {}, el("b", {}, about), ` : ${items.join(" · ")}`)));
+}
+
+function uncertainty(u: string): string {
+  let m = /^(\d+) forecast scenarios/.exec(u);
+  if (m) return `Calculé sur ${m[1]} scénarios, les mêmes que ceux qui ont servi à choisir le plan.`;
+  m = /^uncovered minutes range over scenarios: ([\d.]+)\.\.([\d.]+)/.exec(u);
+  if (m) return `Selon le scénario, de ${Number(m[1])} à ${Number(m[2])} minutes de soins non couvertes.`;
+  if (u.startsWith("pointwise scenario means")) return "Moyennes heure par heure : pas une garantie sur toute la période.";
+  if (u.startsWith("synthetic declared distributions")) return "Durées déclarées pour la démonstration, non calibrées sur un établissement réel.";
+  return u;
+}
+
+function rejection(key: string, codes: string): HTMLElement {
+  const r = option(key);
+  const about = r ? `Renfort ${r.skill} ${key}, ${provenance(r)}` : `Sortie de ${key}`;
+  const why = codes.split(",").map((c) => {
+    const m = /^violates_lending_unit_minimum:([^:]+):(\d+)-(\d+)<(\d+)$/.exec(c);
+    return m ? `le prêt laisserait ${m[1]} sous son minimum (${m[2]} − ${m[3]}, minimum ${m[4]})` : (REJECT[c] ?? c);
+  }).join(", ");
+  return el("li", {}, el("b", {}, about), ` : ${why}`);
+}
+
+function diagnostic(d: string): HTMLElement {
+  let m = /^roster_unknown:([^:]+):(.+)$/.exec(d);
+  let text = d;
+  if (m) text = `Planning ${m[1]} inconnu sur ${m[2]}`;
+  else if ((m = /^locked_transport_unavailable:([^:]+):/.exec(d))) text = `Aucun transport disponible pour la sortie imposée de ${m[1]}`;
+  return el("li", {}, text, " ", el("code", { class: "ds-code" }, d));
+}
+
+function bullets(items: string[]): HTMLElement | null {
+  return items.length ? el("ul", { class: "facts" }, ...items.map((t) => el("li", {}, t))) : null;
+}
+
+function details(title: string, ...kids: (Node | null)[]): HTMLElement | null {
+  const shown = kids.filter((k): k is Node => k !== null);
+  if (!shown.length) return null;
+  return el("details", { class: "ds-details" }, el("summary", {}, title), el("div", { class: "ds-details__body" }, ...shown));
+}
+
+// ------------------------------------------------------------------ pieces
+
+function actionText(a: Json): HTMLElement {
+  let text: string;
+  if (a.type === "coordinate_discharge") text = `Coordonner la sortie de ${a.target} : départ visé à ${local(a.window_start)}, transport demandé maintenant, bionettoyage après le départ`;
+  else if (a.type === "reinforcement") {
+    const o = option(a.target);
+    text = `Renfort ${o?.skill ?? ""} de ${local(a.window_start)} à ${local(a.window_end)}, ${provenance(o)} (${a.target})`;
+  } else if (a.type === "locked_discharge") text = `Sortie de ${a.target} à ${local(a.window_start)}`;
+  else text = `Présence de ${a.target} prolongée jusqu'à ${local(a.window_start)}`;
+  const tags = el("span", { class: "ds-action__tags" });
+  if (a.origin === "manual_lock") tags.append(el("span", { class: "ds-tag ds-tag--lock" }, "imposé par vous"));
+  const [label, tone] = BASIS[String(a.basis)] ?? [String(a.basis), ""];
+  tags.append(el("span", { class: `ds-tag ds-tag--${tone}` }, label));
+  const o = a.type === "reinforcement" ? option(a.target) : null;
+  // Every reinforcement says whether it is confirmed, not only the doubtful ones (user testing).
+  if (a.conditional || o?.confirmation === "requested") tags.append(el("span", { class: "ds-tag ds-tag--cond" }, "demandé, non confirmé"));
+  else if (o?.confirmation === "confirmed") tags.append(el("span", { class: "ds-tag ds-tag--fact" }, "confirmé"));
+  else if (o) tags.append(el("span", { class: "ds-tag ds-tag--cond" }, CONFIRMATION[o.confirmation] ?? o.confirmation));
+  if (o?.source === "shared_unit") tags.append(el("span", { class: "ds-tag ds-tag--loan", "data-testid": "lending-unit" }, provenance(o)));
+  return el("li", { class: "ds-action", "data-basis": String(a.basis) }, el("span", { class: "ds-action__text" }, text), tags);
+}
+
+function value(reco: Json, ptr: string): number {
+  const v = pointer(reco, ptr);
+  return typeof v === "number" ? v : 0;
+}
+
+function effect(docId: string, reco: Json, i: number, base: number): HTMLElement {
   const p = `/bundle/evaluations/${i}/metrics`;
   const b = `/bundle/evaluations/${base}/metrics`;
-  const box = el("div", { class: "ds-figs" });
-  const item = (label: string, ...value: (Node | string)[]) =>
-    box.append(el("div", { class: "ds-fig" }, el("small", {}, label), el("b", {}, ...value)));
-  item("Minutes de soins non couvertes", fig(docId, reco, `${b}/uncovered_care_minutes`), " → ", fig(docId, reco, `${p}/uncovered_care_minutes`));
-  item("Attente de lit (patients·h)", fig(docId, reco, `${b}/waiting_patient_hours`), " → ", fig(docId, reco, `${p}/waiting_patient_hours`));
-  item("IDE requis au pic (total)", fig(docId, reco, `${p}/max_total_staff_required/IDE`));
-  item("IDE en plus du planning (pic)", fig(docId, reco, `${p}/max_additional_staff_required/IDE`));
-  item("Heures de renfort", fig(docId, reco, `${p}/reinforcement_hours`));
-  item("Pression max (score expérimental)", fig(docId, reco, `${b}/peak_pressure`), " → ", fig(docId, reco, `${p}/peak_pressure`));
-  item("Heures au-dessus du seuil", fig(docId, reco, `${b}/hours_above_threshold`), " → ", fig(docId, reco, `${p}/hours_above_threshold`));
-  item("Lits remis à disposition", fig(docId, reco, `${p}/beds_returned`));
-  return box;
+  const max = Math.max(value(reco, `${b}/uncovered_care_minutes`), value(reco, `${p}/uncovered_care_minutes`), 1);
+  const row = (label: string, ptr: string, on: boolean) => el("div", { class: "pair__row" }, el("span", { class: "pair__label" }, label),
+    el("span", { class: "pair__track" }, el("span", { class: `pair__bar${on ? " pair__bar--on" : ""}`, style: `width:${(value(reco, ptr) / max) * 100}%` })),
+    el("span", { class: "pair__value" }, fig(docId, reco, ptr)));
+  const item = (label: string, ...v: (Node | string)[]) => el("div", { class: "ds-fig" }, el("small", {}, label), el("b", {}, ...v));
+  const all = el("div", { class: "ds-figs" },
+    item("Minutes de soins non couvertes", fig(docId, reco, `${b}/uncovered_care_minutes`), " → ", fig(docId, reco, `${p}/uncovered_care_minutes`)),
+    item("Attente de lit (patients·h)", fig(docId, reco, `${b}/waiting_patient_hours`), " → ", fig(docId, reco, `${p}/waiting_patient_hours`)),
+    item("IDE requis au pic", fig(docId, reco, `${p}/max_total_staff_required/IDE`)),
+    item("IDE en plus du planning au pic", fig(docId, reco, `${p}/max_additional_staff_required/IDE`)),
+    item("Heures de renfort", fig(docId, reco, `${p}/reinforcement_hours`)),
+    item("Tension maximale (score expérimental)", fig(docId, reco, `${b}/peak_pressure`), " → ", fig(docId, reco, `${p}/peak_pressure`)),
+    item("Heures au-dessus du seuil", fig(docId, reco, `${b}/hours_above_threshold`), " → ", fig(docId, reco, `${p}/hours_above_threshold`)),
+    item("Lits remis à disposition", fig(docId, reco, `${p}/beds_returned`)));
+  return el("div", { class: "ds-effect", "aria-label": "Effet simulé du plan" },
+    el("p", { class: "ds-effect__lead" }, `Soins non couverts d'ici ${local(reco.bundle.horizon_end, true)}, en minutes`),
+    el("div", { class: "pair" }, row("Pratique habituelle", `${b}/uncovered_care_minutes`, false), row("Avec le plan", `${p}/uncovered_care_minutes`, true)),
+    el("div", { class: "ds-figs ds-figs--key" },
+      item("Attente de lit (patients·h)", fig(docId, reco, `${b}/waiting_patient_hours`), " → ", fig(docId, reco, `${p}/waiting_patient_hours`)),
+      item("Heures de renfort", fig(docId, reco, `${p}/reinforcement_hours`)),
+      item("Lits remis à disposition", fig(docId, reco, `${p}/beds_returned`))),
+    details("Tous les indicateurs", all) ?? "");
 }
 
 function chart(reco: Json, i: number, base: number): HTMLElement {
   const ev = reco.bundle.evaluations;
   const series = [
     { name: "Pratique habituelle", color: "var(--ink-3)", pts: ev[base].trajectory },
-    { name: "Plan", color: "var(--hos-violet)", pts: ev[i].trajectory },
+    { name: "Avec le plan", color: "var(--brand)", pts: ev[i].trajectory },
   ];
-  const W = 640, H = 180, pad = 28, n = series[0].pts.length;
+  const W = 640, H = 180, pad = 28, n = series[0].pts.length, top = 10;
   const x = (h: number) => pad + (h * (W - 2 * pad)) / Math.max(1, n - 1);
+  const y = (v: number) => H - pad - (v * (H - 2 * pad)) / top;
   const threshold = reco.bundle.score.threshold;
-  const yMax = 10;
-  const y = (v: number) => H - pad - (v * (H - 2 * pad)) / yMax;
   const svgNS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(svgNS, "svg");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Trajectoire horaire du score de pression expérimental, pratique habituelle et plan");
-  const line = (x1: number, y1: number, x2: number, y2: number, stroke: string, dash = "") => {
-    const l = document.createElementNS(svgNS, "line");
-    Object.entries({ x1, y1, x2, y2, stroke, "stroke-dasharray": dash, "stroke-width": 1 }).forEach(([k, v]) => l.setAttribute(k, String(v)));
-    svg.append(l);
+  svg.setAttribute("aria-label", "Score de tension expérimental heure par heure, pratique habituelle et plan");
+  const add = (tag: string, attrs: Record<string, string | number>, text?: string) => {
+    const node = document.createElementNS(svgNS, tag);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+    if (text !== undefined) node.textContent = text;
+    svg.append(node);
   };
-  line(pad, y(0), W - pad, y(0), "var(--line-strong)");
-  if (typeof threshold === "number") line(pad, y(threshold), W - pad, y(threshold), "var(--alerte)", "4 4");
+  add("line", { x1: pad, y1: y(0), x2: W - pad, y2: y(0), stroke: "var(--line-strong)" });
+  add("text", { x: pad - 6, y: y(0) + 4, "font-size": 11, fill: "var(--ink-3)", "text-anchor": "end" }, "0");
+  add("text", { x: pad - 6, y: y(top) + 4, "font-size": 11, fill: "var(--ink-3)", "text-anchor": "end" }, String(top));
+  if (typeof threshold === "number") add("line", { x1: pad, y1: y(threshold), x2: W - pad, y2: y(threshold), stroke: "var(--alerte)", "stroke-dasharray": "4 4" });
   for (const s of series) {
     if (s.pts.some((p: Json) => p.pressure_score === null)) continue;
-    const path = document.createElementNS(svgNS, "polyline");
-    path.setAttribute("points", s.pts.map((p: Json, h: number) => `${x(h)},${y(p.pressure_score)}`).join(" "));
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", s.color);
-    path.setAttribute("stroke-width", "2.5");
-    svg.append(path);
+    add("polyline", { points: s.pts.map((p: Json, h: number) => `${x(h)},${y(p.pressure_score)}`).join(" "), fill: "none", stroke: s.color, "stroke-width": 2.5 });
   }
-  for (let h = 0; h < n; h += 4) {
-    const t = document.createElementNS(svgNS, "text");
-    t.setAttribute("x", String(x(h)));
-    t.setAttribute("y", String(H - 8));
-    t.setAttribute("font-size", "11");
-    t.setAttribute("fill", "var(--ink-3)");
-    t.setAttribute("text-anchor", "middle");
-    t.textContent = series[0].pts[h].local_label;
-    svg.append(t);
-  }
+  for (let h = 0; h < n; h += 4) add("text", { x: x(h), y: H - 8, "font-size": 11, fill: "var(--ink-3)", "text-anchor": "middle" }, series[0].pts[h].local_label);
   const legend = el("div", { class: "ds-legend" },
     ...series.map((s) => el("span", {}, el("i", { class: "ds-sw", style: `background:${s.color}` }), s.name)),
-    el("span", {}, el("i", { class: "ds-sw", style: "background:var(--alerte)" }), `seuil (${reco.bundle.score.score_status})`));
-  return el("div", { class: "ds-card ds-chart" }, el("h3", {}, "Trajectoire de pression, heure par heure"), svg, legend,
-    el("p", { class: "ds-muted" }, "Moyennes ponctuelles sur les scénarios de prévision : pas une garantie simultanée sur tout l'horizon. Le pic et le temps au-dessus du seuil comptent autant que la valeur finale."));
+    el("span", {}, el("i", { class: "ds-sw ds-sw--dash" }), "Seuil de tension"));
+  return el("section", { class: "panel" }, el("header", { class: "panel__head" }, el("h2", { class: "panel__title" }, "Tension heure par heure")),
+    el("div", { class: "panel__body ds-chart" }, svg, legend,
+      el("p", { class: "mute" }, "Score expérimental sur 10, moyenne des scénarios heure par heure : pas une garantie sur toute la période. Le pic et le temps passé au-dessus du seuil comptent autant que l'heure finale.")));
 }
 
-function statusChip(reco: Json): HTMLElement {
-  return el("span", { class: `ds-status ds-status--${reco.status}`, "data-testid": "status", "data-status": reco.status }, STATUS[reco.status] ?? reco.status);
+function band(reco: Json, right?: string): HTMLElement {
+  return el("div", { class: "proposal__band" },
+    el("span", { class: "proposal__kind", "data-testid": "status", "data-status": reco.status }, STATUS[reco.status] ?? reco.status),
+    right ? el("span", { class: "expiry" }, right) : null);
 }
 
-function list(title: string, items: string[]): HTMLElement | null {
-  if (!items.length) return null;
-  return el("details", { class: "ds-details" }, el("summary", {}, `${title} (${items.length})`), el("ul", { class: "facts" }, ...items.map((t) => el("li", {}, t))));
+function statusPill(reco: Json): HTMLElement {
+  const tone = reco.status === "RECOMMENDATION_READY" ? "brand" : reco.status === "NO_ACTION_PREFERRED" ? "ok" : reco.status === "HYPOTHETICAL_ONLY" ? "warn" : "bad";
+  return el("span", { class: `pill pill--${tone}`, "data-testid": "status", "data-status": reco.status }, STATUS[reco.status] ?? reco.status);
 }
 
-function reviewButtons(docId: string, reco: Json, target: HTMLElement, onModify?: () => void): HTMLElement {
-  const box = el("div", { class: "ds-buttons" });
-  const feedback = el("p", { class: "ds-feedback", "data-testid": "review-feedback", role: "status" });
-  const send = async (decision: string) => {
+function reviewButtons(reco: Json, target: HTMLElement, onModify?: () => void): void {
+  const box = el("div", { class: "proposal__actions" });
+  const asking = el("div", { class: "feedback", role: "group" });
+  asking.hidden = true;
+  const feedbackSlot = el("div", {});
+  const send = async (decision: string, reason?: string) => {
+    asking.hidden = true;
     let r: Json;
+    const feedback = el("div", { class: "ds-outcome", "data-testid": "review-feedback", role: "status" });
+    feedbackSlot.replaceChildren(feedback);
     try {
       r = await api("/api/review", {
-      unit: state.unit, recommendation_id: reco.recommendation_id, decision,
-      idempotency_key: `${reco.recommendation_id}:${decision}`,
-    });
+        unit: state.unit, recommendation_id: reco.recommendation_id, decision,
+        idempotency_key: `${reco.recommendation_id}:${decision}`,
+      });
     } catch (error) {
       feedback.dataset.outcome = "ERROR";
-      feedback.textContent = `Demande non traitée : ${String(error)}`;
+      feedback.classList.add("ds-outcome--bad");
+      feedback.append(el("p", { class: "ds-outcome__title" }, `Demande non traitée : ${String(error)}`));
       return;
     }
     const outcome = r.review.outcome;
     feedback.dataset.outcome = outcome;
+    feedback.classList.add(outcome === "APPROVED_IN_DEMO" ? "ds-outcome--todo" : outcome === "REJECTED" ? "ds-outcome--quiet" : "ds-outcome--bad");
     const texts: Record<string, string> = {
-      APPROVED_IN_DEMO: "Validée dans la démonstration. Aucune commande n'a été envoyée ; agissez dans vos outils habituels.",
-      REJECTED: "Refusée. Merci, c'est noté.",
+      APPROVED_IN_DEMO: "Plan validé. Rien n'a été envoyé : appliquez-le dans vos outils habituels.",
+      REJECTED: "Refus noté, merci : c'est ce qui aide à mieux viser.",
       MODIFY_REQUESTED: "Modification demandée.",
-      INVALIDATED: `Proposition invalidée (${r.review.reasons.join(", ")}). Un recalcul est nécessaire avant toute validation.`,
+      INVALIDATED: `Proposition invalidée (${r.review.reasons.join(", ")}) : une nouvelle information est arrivée. Recalculez avant de valider.`,
       REFUSED: `Validation impossible : ${r.review.reasons.join(", ")}.`,
     };
-    feedback.textContent = texts[outcome] ?? outcome;
-    if (r.review.replayed) feedback.append(` Reçu déjà enregistré ; validité actuelle : ${r.review.current_validity}.`);
+    const motif = reason ? ` Motif : ${REASONS.find(([id]) => id === reason)?.[1].toLowerCase() ?? reason}.` : "";
+    feedback.append(el("p", { class: "ds-outcome__title" }, (texts[outcome] ?? outcome) + motif));
+    if (r.review.replayed) feedback.append(el("p", { class: "mute" }, `Reçu déjà enregistré ; validité actuelle : ${r.review.current_validity}.`));
+    if (outcome === "APPROVED_IN_DEMO" || outcome === "REJECTED") box.hidden = true;
     if (r.review.recompute_required) {
-      const again = el("button", { class: "btn", type: "button", "data-testid": "recompute" }, "Recalculer maintenant");
+      const again = el("button", { class: "btn btn--small", type: "button", "data-testid": "recompute" }, "Recalculer maintenant");
       again.addEventListener("click", () => void loadAuto());
-      feedback.append(" ", again);
+      feedback.append(el("div", { class: "ds-outcome__actions" }, again));
     }
   };
-  const approve = el("button", { class: "btn btn--primary", type: "button", "data-testid": "approve" }, "Valider (démo)") as HTMLButtonElement;
-  approve.disabled = !reco.approvable;
-  if (!reco.approvable) approve.title = "Non approuvable : hypothèse, abstention ou impossibilité";
+  const approve = el("button", { class: "btn btn--primary", type: "button", "data-testid": "approve" }, "Valider le plan") as HTMLButtonElement;
+  // A discharge in the plan waits for a person to re-check the medical authorization.
+  const recheck = [...new Set((reco.conditions as string[]).filter((c) => c.endsWith("revalidate_authorization_before_approval")).map((c) => c.split(":")[1]))];
+  const boxes = recheck.map((id) => el("input", { type: "checkbox", "data-testid": `recheck-${id}` }) as HTMLInputElement);
+  const refresh = () => {
+    approve.disabled = !reco.approvable || boxes.some((b) => !b.checked);
+    approve.title = !reco.approvable ? "Non applicable : hypothèse, abstention ou impossibilité" : approve.disabled ? "Cochez d'abord la vérification de l'autorisation médicale" : "";
+  };
+  boxes.forEach((b) => b.addEventListener("change", refresh));
+  refresh();
+  if (recheck.length && reco.approvable) {
+    target.append(el("fieldset", { class: "ds-recheck" }, el("legend", {}, "Avant de valider"),
+      ...recheck.map((id, k) => el("label", { class: "ds-check" }, boxes[k]!, ` J'ai revérifié l'autorisation médicale de sortie de ${id}`))));
+  }
   approve.addEventListener("click", () => void send("approve"));
-  const reject = el("button", { class: "btn", type: "button", "data-testid": "reject" }, "Refuser");
-  reject.addEventListener("click", () => void send("reject"));
+  const reject = el("button", { class: "btn", type: "button", "data-testid": "reject", "aria-expanded": "false" }, "Refuser");
+  reject.addEventListener("click", () => {
+    asking.hidden = !asking.hidden;
+    reject.setAttribute("aria-expanded", String(!asking.hidden));
+    if (!asking.hidden) (asking.querySelector("button") as HTMLButtonElement | null)?.focus();
+  });
+  asking.append(el("p", { class: "feedback__label" }, "Pourquoi ? Un appui suffit."),
+    el("div", { class: "chips" }, ...REASONS.map(([id, label], k) => {
+      const chip = el("button", { class: "chip", type: "button", "data-testid": `reason-${id}` }, el("kbd", { class: "kbd", "aria-hidden": "true" }, String(k + 1)), label);
+      chip.addEventListener("click", () => void send("reject", id));
+      return chip;
+    })));
   box.append(approve, reject);
   if (onModify) {
-    const modify = el("button", { class: "btn btn--quiet", type: "button", "data-testid": "modify" }, "Modifier");
+    const modify = el("button", { class: "btn btn--quiet", type: "button", "data-testid": "modify" }, "Simuler une variante");
     modify.addEventListener("click", onModify);
-    box.append(modify);
+    box.append(el("span", { class: "spacer" }), modify);
   }
-  target.append(box, feedback);
-  void docId;
-  return box;
+  target.append(box, asking, feedbackSlot);
 }
+
+// ------------------------------------------------------------------ automatic plan
 
 function renderAuto(): void {
   const { auto: reco, autoId: id } = state;
   const body = $("auto-body");
   body.replaceChildren();
-  const top = el("div", { class: "ds-card ds-card--primary", "data-testid": "auto-card" }, statusChip(reco));
-  body.append(top);
   if (!reco.bundle) {
-    top.append(el("p", {}, "HospitalOS s'abstient plutôt que d'inventer des valeurs."),
-      el("ul", { class: "facts", "data-testid": "diagnostics" }, ...reco.diagnostics.map((d: string) => el("li", { class: "ds-err" }, d))));
-    renderProvenance(reco, id);
+    body.append(el("section", { class: "panel proposal proposal--abstain ds-primary", "data-testid": "auto-card" }, band(reco),
+      el("div", { class: "proposal__main ds-stack" }, el("h2", { class: "proposal__title" }, "Pas de plan pour l'instant"),
+        el("p", {}, "Mieux vaut ne rien proposer qu'inventer des valeurs. Complétez ces informations dans vos outils habituels (planning, dossier), puis recalculez :"),
+        el("ul", { class: "facts ds-err", "data-testid": "diagnostics" }, ...reco.diagnostics.map(diagnostic))),
+      (() => {
+        const again = el("button", { class: "btn", type: "button" }, "Recalculer");
+        again.addEventListener("click", () => void loadAuto());
+        return el("div", { class: "proposal__actions" }, again);
+      })()));
+    renderHow(reco, id);
     return;
   }
   const i = evalIndex(reco, reco.primary_plan_id);
   const base = evalIndex(reco, reco.baseline_plan_id);
   const primary = reco.bundle.evaluations[i];
-  top.append(el("h3", {}, primary.plan.actions.length ? "Plan prioritaire" : "Maintenir la pratique habituelle"));
-  if (primary.plan.actions.length) top.append(el("ol", { class: "ds-actions", "data-testid": "actions" }, ...primary.plan.actions.map(actionText)));
-  else top.append(el("p", {}, "Aucune action n'apporte d'amélioration matérielle selon l'objectif versionné : rien n'est ajouté pour animer l'écran."));
-  top.append(figures(id, reco, i, base));
+  const quiet = !primary.plan.actions.length;
+  const main = el("div", { class: "proposal__main ds-stack" },
+    el("h2", { class: "proposal__title" }, quiet ? "Maintenir la pratique habituelle" : `À organiser d'ici ${local(reco.bundle.horizon_end, true)}`),
+    quiet ? el("p", {}, "Aucune action n'apporte d'amélioration sensible : rien n'est ajouté pour animer l'écran.")
+      : el("ol", { class: "ds-actions", "data-testid": "actions" }, ...primary.plan.actions.map(actionText)));
   if (primary.conditional_on.length) {
-    top.append(el("p", { class: "ds-warn", "data-testid": "conditional" }, `Résultat conditionnel : ${primary.conditional_on.join(", ")} demandé(s) mais non confirmé(s). Sans ce renfort : `,
-      fig(id, reco, `/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`), " minutes non couvertes."));
+    main.append(el("p", { class: "ds-warn", "data-testid": "conditional" }, `Le résultat suppose la venue de ${primary.conditional_on.join(", ")}, demandé mais non confirmé. Sans ce renfort : `,
+      fig(id, reco, `/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`), " minutes de soins non couvertes."));
   }
-  const det = el("div", {});
-  [list("Raisons", reco.reasons), list("Conditions", reco.conditions), list("Incertitudes", reco.uncertainties), list("Hypothèses de remplacement et diagnostics", reco.diagnostics)].forEach((n) => n && det.append(n));
-  top.append(det);
-  reviewButtons(id, reco, top, () => openManual(primary));
+  main.append(effect(id, reco, i, base));
+  const why = bullets(humanReasons(reco.reasons));
+  if (why) main.append(why);
+  const before = details("Avant de valider : conditions et incertitudes", conditions(reco.conditions), bullets(reco.uncertainties.map(uncertainty)),
+    reco.diagnostics.length ? el("ul", { class: "facts" }, ...reco.diagnostics.map(diagnostic)) : null);
+  if (before) main.append(before);
+  const card = el("section", { class: `panel proposal ds-primary${quiet ? " proposal--quiet" : ""}`, "data-testid": "auto-card" },
+    band(reco, `Valable jusqu'à ${local(reco.valid_until)}`), main);
+  reviewButtons(reco, card, () => openManual(primary));
+  body.append(card);
   if (reco.alternative_plan_id) {
     const a = evalIndex(reco, reco.alternative_plan_id);
-    body.append(el("div", { class: "ds-card", "data-testid": "alternative" }, el("h3", {}, "Alternative réellement distincte"),
-      el("ol", { class: "ds-actions" }, ...reco.bundle.evaluations[a].plan.actions.map(actionText)),
-      el("p", {}, "Minutes non couvertes : ", fig(id, reco, `/bundle/evaluations/${a}/metrics/uncovered_care_minutes`),
-        " · heures de renfort : ", fig(id, reco, `/bundle/evaluations/${a}/metrics/reinforcement_hours`))));
+    body.append(el("section", { class: "panel", "data-testid": "alternative" }, el("header", { class: "panel__head" }, el("h2", { class: "panel__title" }, "Autre plan possible")),
+      el("div", { class: "panel__body ds-stack" }, el("ol", { class: "ds-actions" }, ...reco.bundle.evaluations[a].plan.actions.map(actionText)),
+        el("p", { class: "mute" }, "Soins non couverts : ", fig(id, reco, `/bundle/evaluations/${a}/metrics/uncovered_care_minutes`),
+          " min · renfort : ", fig(id, reco, `/bundle/evaluations/${a}/metrics/reinforcement_hours`), " h"))));
   }
   body.append(chart(reco, i, base));
-  const s = reco.bundle.search;
-  const rejected = Object.entries(s.rejected).map(([k, v]) => `${k} : ${v}`);
-  body.append(el("div", { class: "ds-card", "data-testid": "search" }, el("h3", {}, "Recherche"),
-    el("p", {}, fig(id, reco, "/bundle/search/evaluated"), " plans évalués sur ", fig(id, reco, "/bundle/search/enumerated"), " admissibles ; recherche ",
-      fig(id, reco, "/bundle/search/complete", (v) => (v ? "complète sur cet univers borné" : "incomplète : meilleur parmi les évalués, aucun optimum revendiqué"))),
-    list("Écartés et pourquoi", rejected) ?? ""));
-  renderProvenance(reco, id);
+  renderHow(reco, id);
 }
 
-function renderProvenance(reco: Json, id: string): void {
+function renderHow(reco: Json, id: string): void {
   const b = reco.bundle;
-  $("prov").replaceChildren(el("span", {}, `Recommandation ${reco.recommendation_id}`), el("span", {}, `moteur ${reco.engine_version}`),
-    el("span", {}, `objectif ${reco.objective_version}`), el("span", {}, `snapshot ${reco.snapshot_id}`),
-    el("span", {}, b ? `backend ${b.backend.name} ${b.backend.version} (${b.backend.code_sha256.slice(0, 12)})` : "pas de prévision"),
-    el("span", {}, `${reco.scientific_status} · validation clinique : non · G2 ${reco.g2}`), el("span", { class: "hash" }, `doc ${id}`));
+  const panel = el("section", { class: "panel", "data-testid": "search" }, el("header", { class: "panel__head" }, el("h2", { class: "panel__title" }, "Comment ce plan a été trouvé")));
+  const inner = el("div", { class: "panel__body ds-stack" });
+  if (b) {
+    inner.append(el("p", {}, fig(id, reco, "/bundle/search/evaluated"), " plans simulés sur ", fig(id, reco, "/bundle/search/enumerated"), " possibles ; recherche ",
+      fig(id, reco, "/bundle/search/complete", (v) => (v ? "complète dans ce périmètre" : "incomplète : meilleur parmi les plans simulés, sans optimum revendiqué")), "."));
+    const rejected = Object.entries(b.search.rejected as Record<string, string>);
+    if (rejected.length) inner.append(details(`Options écartées (${rejected.length})`, el("ul", { class: "facts" }, ...rejected.map(([k, v]) => rejection(k, v))))!);
+  }
+  inner.append(details("Détail du calcul (moteur)", el("ul", { class: "facts ds-raw" }, ...[...reco.reasons, ...reco.uncertainties].map((t: string) => el("li", {}, el("code", {}, t)))))!);
+  inner.append(el("p", { class: "ds-prov mute", "data-testid": "provenance" },
+    `Recommandation ${reco.recommendation_id} · moteur ${reco.engine_version} · objectif ${reco.objective_version} · état ${reco.snapshot_id}`
+    + (b ? ` · backend ${b.backend.name} ${b.backend.version} (${b.backend.code_sha256.slice(0, 12)})` : "")
+    + ` · ${reco.scientific_status} · validation clinique : non · G2 ${reco.g2} · doc ${id}`));
+  panel.append(inner);
+  $("how").replaceChildren(panel);
 }
 
 // ------------------------------------------------------------------ manual mode (secondary)
@@ -302,30 +476,31 @@ function openManual(fromPlan?: Json): void {
   const x1Default = coord?.target ?? stays.find((s) => s.medical_authorization === "authorized")?.stay_id ?? stays[0].stay_id;
   const x2Default = stays.find((s) => s.planned_departure)?.stay_id ?? "";
   const stayOpt = (s: Json, sel: string) => {
-    const o = el("option", { value: s.stay_id }, `${s.stay_id} — autorisation : ${s.medical_authorization}`);
+    const o = el("option", { value: s.stay_id }, `${s.stay_id} — ${AUTHORIZATION[s.medical_authorization] ?? s.medical_authorization}`);
     if (s.stay_id === sel) o.setAttribute("selected", "");
     return o;
   };
   const x2 = stays.find((s) => s.stay_id === x2Default);
   form.replaceChildren(
-    el("fieldset", {}, el("legend", {}, "X1 — sortie à une heure donnée"),
+    el("fieldset", {}, el("legend", {}, "X1 · Sortie à une heure donnée"),
       el("div", { class: "ds-row" },
-        el("label", {}, "Séjour", el("select", { name: "x1" }, ...stays.map((s) => stayOpt(s, x1Default)))),
-        el("label", {}, "Heure", el("select", { name: "x1_at" }, ...hourOptions(coord?.window_start ?? null))),
-        el("label", {}, "Statut", el("select", { name: "x1_basis" }, el("option", { value: "validated_instruction" }, "instruction validée"), el("option", { value: "hypothesis_only" }, "hypothèse seulement"))))),
-    el("fieldset", {}, el("legend", {}, "X2 — présence prolongée de t heures"),
+        el("label", {}, "Patient", el("select", { name: "x1", class: "select" }, ...stays.map((s) => stayOpt(s, x1Default)))),
+        el("label", {}, "Heure", el("select", { name: "x1_at", class: "select" }, ...hourOptions(coord?.window_start ?? null))),
+        el("label", {}, "Statut", el("select", { name: "x1_basis", class: "select" }, el("option", { value: "validated_instruction" }, "consigne validée"), el("option", { value: "hypothesis_only" }, "hypothèse seulement"))))),
+    el("fieldset", {}, el("legend", {}, "X2 · Présence prolongée"),
       el("div", { class: "ds-row" },
-        el("label", {}, "Séjour", el("select", { name: "x2" }, el("option", { value: "" }, "aucun"), ...stays.map((s) => stayOpt(s, x2Default)))),
-        el("label", {}, "Heure de référence", el("select", { name: "x2_ref" }, ...hourOptions(x2?.planned_departure ?? null))),
-        el("label", {}, "t (heures)", el("input", { name: "x2_t", type: "number", min: "0", max: "12", value: "4", "data-testid": "x2-t" })))),
+        el("label", {}, "Patient", el("select", { name: "x2", class: "select" }, el("option", { value: "" }, "aucun"), ...stays.map((s) => stayOpt(s, x2Default)))),
+        el("label", {}, "À partir de", el("select", { name: "x2_ref", class: "select" }, ...hourOptions(x2?.planned_departure ?? null))),
+        el("label", {}, "Durée (heures)", el("input", { name: "x2_t", type: "number", min: "0", max: "12", value: "4", "data-testid": "x2-t" })))),
     el("fieldset", {}, el("legend", {}, "Renforts et échéance"),
       el("div", { class: "ds-row" }, ...state.snapshot.reinforcements.map((r: Json) =>
-        el("label", {}, `${r.option_id} (${r.skill}, ${provenance(r)}, ${r.confirmation})`, el("select", { name: `r_${r.option_id}` },
-          el("option", { value: "free" }, "laisser chercher"), el("option", { value: "include" }, "imposer"), el("option", { value: "exclude" }, "exclure")))),
+        el("label", {}, `${r.option_id} · ${r.skill} · ${provenance(r)} · ${CONFIRMATION[r.confirmation] ?? r.confirmation}`, el("select", { name: `r_${r.option_id}`, class: "select" },
+          el("option", { value: "free" }, "laisser HospitalOS choisir"), el("option", { value: "include" }, "imposer"), el("option", { value: "exclude" }, "exclure")))),
         el("label", {}, "Jusqu'à demain", el("input", { name: "deadline", type: "time", value: "20:00" }))),
-      el("label", {}, el("span", {}, el("input", { name: "complements", type: "checkbox", checked: "" }), " rechercher des compléments compatibles"))),
-    el("div", { class: "ds-buttons" }, el("button", { class: "btn btn--primary", type: "submit", "data-testid": "run-manual" }, "Calculer avec le même moteur")),
+      el("label", { class: "ds-check" }, el("input", { name: "complements", type: "checkbox", checked: "" }), " compléter avec d'autres actions compatibles")),
+    el("div", { class: "proposal__actions" }, el("button", { class: "btn btn--primary", type: "submit", "data-testid": "run-manual" }, "Calculer la variante")),
   );
+  $("manual-title").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 async function runManual(ev: Event): Promise<void> {
@@ -352,45 +527,56 @@ async function runManual(ev: Event): Promise<void> {
 function renderManual(): void {
   const { manual: reco, manualId: id } = state;
   const body = $("manual-body");
-  const card = el("div", { class: "ds-card", "data-testid": "manual-card" }, statusChip(reco));
+  const card = el("section", { class: "panel", "data-testid": "manual-card" });
+  const inner = el("div", { class: "panel__body ds-stack" }, statusPill(reco));
+  card.append(inner);
   body.replaceChildren(card);
   if (!reco.bundle) {
-    card.append(el("ul", { class: "facts", "data-testid": "manual-diagnostics" }, ...reco.diagnostics.map((d: string) => el("li", { class: "ds-err" }, d))));
+    inner.append(el("ul", { class: "facts ds-err", "data-testid": "manual-diagnostics" }, ...reco.diagnostics.map(diagnostic)));
     return;
   }
-  const rows: [string, string | null][] = [["Pratique habituelle", reco.baseline_plan_id], ["Scénario verrouillé seul", reco.locked_plan_id], ["Verrouillé + compléments", reco.primary_plan_id]];
-  const table = el("table", { class: "ds-table", "data-testid": "branches" }, el("thead", {}, el("tr", {}, el("th", {}, "Branche"), el("th", {}, "Non couvert (min)"), el("th", {}, "Attente (patients·h)"), el("th", {}, "Renfort (h)"))));
+  const rows: [string, string | null][] = [["Pratique habituelle", reco.baseline_plan_id], ["Vos choix seuls", reco.locked_plan_id], ["Vos choix + compléments", reco.primary_plan_id]];
+  const table = el("table", { class: "table", "data-testid": "branches" },
+    el("caption", { class: "ds-caption" }, "Soins non couverts en minutes · attente de lit en patients·h · renfort en heures"),
+    el("thead", {}, el("tr", {}, el("th", {}, "Variante"), el("th", { class: "r" }, "Non couvert"), el("th", { class: "r" }, "Attente"), el("th", { class: "r" }, "Renfort"))));
   const tb = el("tbody");
   for (const [label, pid] of rows) {
-    const i = evalIndex(reco, pid);
-    if (i < 0) continue;
-    const m = `/bundle/evaluations/${i}/metrics`;
-    tb.append(el("tr", {}, el("td", {}, label), el("td", { class: "n" }, fig(id, reco, `${m}/uncovered_care_minutes`)), el("td", { class: "n" }, fig(id, reco, `${m}/waiting_patient_hours`)), el("td", { class: "n" }, fig(id, reco, `${m}/reinforcement_hours`))));
+    const k = evalIndex(reco, pid);
+    if (k < 0) continue;
+    const m = `/bundle/evaluations/${k}/metrics`;
+    tb.append(el("tr", {}, el("td", {}, label), el("td", { class: "r" }, fig(id, reco, `${m}/uncovered_care_minutes`)), el("td", { class: "r" }, fig(id, reco, `${m}/waiting_patient_hours`)), el("td", { class: "r" }, fig(id, reco, `${m}/reinforcement_hours`))));
   }
   table.append(tb);
   const i = evalIndex(reco, reco.primary_plan_id);
-  card.append(el("ol", { class: "ds-actions", "data-testid": "manual-actions" }, ...reco.bundle.evaluations[i].plan.actions.map(actionText)), el("div", { class: "ds-scroll" }, table));
-  if (reco.status === "HYPOTHETICAL_ONLY") card.append(el("p", { class: "ds-warn" }, "Simulation conditionnelle d'une hypothèse : elle ne peut pas devenir un plan exécutable."));
-  const det = el("div", {});
-  [list("Raisons", reco.reasons), list("Diagnostics", reco.diagnostics), list("Conditions", reco.conditions)].forEach((n) => n && det.append(n));
-  card.append(det);
-  reviewButtons(id, reco, card);
+  inner.append(el("ol", { class: "ds-actions", "data-testid": "manual-actions" }, ...reco.bundle.evaluations[i].plan.actions.map(actionText)), el("div", { class: "table-wrap" }, table));
+  if (reco.diagnostics.length) inner.append(el("ul", { class: "facts ds-err" }, ...reco.diagnostics.map(diagnostic)));
+  if (reco.status === "HYPOTHETICAL_ONLY") inner.append(el("p", { class: "ds-warn" }, "Simulation d'une hypothèse : elle ne peut pas devenir un plan à appliquer."));
+  const why = bullets(humanReasons(reco.reasons));
+  if (why) inner.append(why);
+  const cond = details("Conditions", conditions(reco.conditions));
+  if (cond) inner.append(cond);
+  reviewButtons(reco, inner);
 }
 
 // ------------------------------------------------------------------ boot
 
+let request = 0;
+
 async function loadAuto(): Promise<void> {
-  $("auto-body").replaceChildren(el("p", { class: "ds-muted" }, "Calcul en cours…"));
+  // Only the latest request renders: a reset answered after a unit change must not overwrite it.
+  const token = ++request;
+  $("auto-body").replaceChildren(el("div", { class: "skeleton", "aria-busy": "true", "aria-label": "Calcul du plan" }));
   const r = await api(`/api/auto?unit=${encodeURIComponent(state.unit)}`);
+  if (token !== request) return;
   state.snapshot = r.snapshot;
   state.snapId = r.snapshot_doc_id;
   state.auto = r.recommendation;
   state.autoId = r.doc_id;
-  $("asof").replaceChildren("Situation au ", fig(state.snapId, state.snapshot, "/as_of", (v) => local(v, true)), " (Europe/Paris)");
+  $("asof").replaceChildren("situation au ", fig(state.snapId, state.snapshot, "/as_of", (v) => local(v, true)));
   renderAuto();
   const events = state.events.filter((e) => e.unit === state.unit);
   if (events.length) {
-    const bar = el("div", { class: "demobar" }, "Démonstration :");
+    const bar = el("div", { class: "demobar" }, el("span", { class: "demobar__tag" }, "Démonstration"), el("span", { class: "demobar__text" }, "Faire arriver une information :"));
     for (const e of events) {
       const b = el("button", { class: "btn btn--quiet", type: "button", "data-testid": `inject-${e.id}` }, e.label);
       b.addEventListener("click", async () => { await api("/api/inject", { unit: state.unit, event: e.id }); b.setAttribute("disabled", ""); b.textContent = `${e.label} — reçue. Validez pour voir l'invalidation, puis recalculez.`; });

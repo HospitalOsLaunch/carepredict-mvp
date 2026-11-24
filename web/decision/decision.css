@@ -1,86 +1,88 @@
-/* Decision-support view. Reuses web/src/styles/tokens.css and app.css (cockpit "Lumière").
-   The HospitalOS reference violet is a scoped accent for this view only (no global redesign). */
-:root {
-  --hos-violet: #7049d0;
-  --hos-violet-wash: #efe9fb;
+/* Copy of web/src/styles/decision.css (cockpit « Plan 24 h »), served by serve.py next to tokens.css
+   and app.css: same system as the cockpit, Outremer acts, Abricot waits, card grammar of
+   « Action suivante ». Keep both files identical above the standalone block at the end. */
+.ds-page {
+  display: grid;
+  gap: var(--s4);
+  min-width: 0;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --hos-violet: #b39af0;
-    --hos-violet-wash: rgb(179 154 240 / 0.14);
-  }
-}
-:root[data-theme="dark"] {
-  --hos-violet: #b39af0;
-  --hos-violet-wash: rgb(179 154 240 / 0.14);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--board);
-  background-image: var(--glow);
-  background-repeat: no-repeat;
-  color: var(--ink);
-  font-family: var(--font);
-  font-size: var(--t-md);
-  line-height: 1.45;
-}
-.ds-top {
-  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s5);
-  padding: var(--s3) var(--s4); max-width: 1360px; margin: 0 auto;
-}
-.ds-brand { font-family: var(--display); font-weight: 600; font-size: var(--t-lg); display: flex; align-items: center; gap: var(--s2); }
-.ds-sub { font-weight: 400; color: var(--ink-3); font-size: var(--t-sm); }
-.ds-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 4px var(--hos-violet-wash); }
-.ds-unit { display: flex; align-items: center; gap: var(--s2); color: var(--ink-3); font-size: var(--t-sm); }
-.ds-unit select { min-height: 40px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--sheet); color: var(--ink); padding: 0 var(--s2); }
-.ds-flag { margin-left: auto; font-size: var(--t-xs); color: var(--hos-violet); border: 1px solid var(--hos-violet); border-radius: 999px; padding: 2px var(--s3); }
-.ds-main { max-width: 1360px; margin: 0 auto; padding: 0 var(--s4) var(--s6); display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s5); }
-@media (max-width: 900px) { .ds-main { grid-template-columns: minmax(0, 1fr); } .ds-flag { margin-left: 0; } }
-.ds-col { display: grid; gap: var(--s4); align-content: start; min-width: 0; }
-.ds-h1 { font-family: var(--display); font-size: var(--t-2xl); margin: var(--s2) 0 0; }
-.ds-h2 { font-family: var(--display); font-size: var(--t-xl); margin: var(--s2) 0 0; }
-.ds-lead { margin: 0; color: var(--ink-2); }
-.ds-muted { color: var(--ink-3); font-weight: 400; }
-.ds-card { background: var(--sheet); border-radius: var(--r-lg); box-shadow: var(--lift); padding: var(--s5); display: grid; gap: var(--s3); min-width: 0; }
-.ds-card--primary { border-top: 4px solid var(--hos-violet); }
-.ds-card h3 { margin: 0; font-family: var(--display); font-size: var(--t-lg); }
-.ds-status { display: inline-flex; align-items: center; gap: var(--s2); font-weight: 700; font-size: var(--t-sm); padding: 2px var(--s3); border-radius: 999px; width: fit-content; }
-.ds-status--RECOMMENDATION_READY { background: var(--hos-violet-wash); color: var(--hos-violet); }
-.ds-status--NO_ACTION_PREFERRED { background: var(--bloc-wash); color: var(--bloc); }
-.ds-status--INSUFFICIENT_DATA, .ds-status--INFEASIBLE, .ds-status--INVALIDATED { background: var(--alerte-wash); color: var(--alerte); }
-.ds-status--HYPOTHETICAL_ONLY { background: var(--sac-wash); color: var(--sac); }
-.ds-actions { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s2); }
-.ds-tag { font-size: var(--t-xs); border-radius: 999px; padding: 1px var(--s2); margin-left: var(--s2); background: var(--well); color: var(--ink-2); }
-.ds-tag--lock { background: var(--sun-wash); color: var(--on-sun); }
-.ds-tag--cond { background: var(--sac-wash); color: var(--sac); }
+.ds-page .page-head { margin-bottom: 0; }
+.ds-page > .demobar { margin-bottom: 0; }
+.ds-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--s5); align-items: start; }
+@media (max-width: 960px) { .ds-grid { grid-template-columns: minmax(0, 1fr); } }
+.ds-col { display: grid; gap: var(--s4); min-width: 0; align-content: start; }
+.ds-stack { display: grid; gap: var(--s3); }
+.ds-h2 { font-size: var(--t-xl); margin: 0; font-weight: 650; }
+.ds-primary .proposal__main { display: grid; gap: var(--s3); grid-template-columns: minmax(0, 1fr); }
+.ds-actions { margin: 0; padding-left: var(--s5); display: grid; gap: var(--s3); }
+.ds-action { display: grid; gap: 4px; }
+.ds-action__text { font-weight: 600; color: var(--ink); }
+.ds-action__tags { display: flex; flex-wrap: wrap; gap: var(--s1); }
+.ds-tag { font-size: var(--t-xs); border-radius: 999px; padding: 1px var(--s2); background: var(--well); color: var(--ink-2); white-space: nowrap; }
+.ds-tag--fact { background: var(--bloc-wash); color: var(--bloc); }
+.ds-tag--choice, .ds-tag--lock { background: var(--sun-wash); color: var(--on-sun); }
+.ds-tag--hypothesis, .ds-tag--cond { background: var(--sac-wash); color: var(--sac); }
+.ds-tag--option { background: var(--brand-wash); color: var(--brand-strong); }
+.ds-tag--loan { background: var(--brand-wash); color: var(--brand-strong); font-weight: 700; }
+.ds-effect { display: grid; gap: var(--s3); padding: var(--s3) var(--s4); background: var(--well); border-radius: var(--r-md); }
+.ds-effect__lead { margin: 0; font-size: var(--t-sm); color: var(--ink-2); font-weight: 600; }
+.ds-effect .pair__label { min-width: 9.5rem; }
 .ds-figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s3); }
-.ds-fig { background: var(--well); border-radius: var(--r-md); padding: var(--s3); display: grid; gap: 2px; }
-.ds-fig b { font-family: var(--display); font-size: var(--t-xl); font-variant-numeric: tabular-nums; }
+.ds-figs--key { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2); }
+@media (max-width: 560px) {
+  .ds-figs--key .ds-fig { padding: var(--s2); }
+  .ds-figs--key .ds-fig b { font-size: var(--t-lg); }
+}
+.ds-fig { background: var(--sheet); border-radius: var(--r-md); padding: var(--s3); display: grid; gap: 2px; }
+.ds-fig b { font-size: var(--t-xl); font-weight: 650; }
 .ds-fig small { color: var(--ink-3); font-size: var(--t-xs); }
-.ds-buttons { display: flex; flex-wrap: wrap; gap: var(--s2); }
-.ds-buttons .btn--primary { background: var(--hos-violet); border-color: var(--hos-violet); }
-.ds-feedback { font-weight: 600; }
-.ds-table { width: 100%; border-collapse: collapse; font-size: var(--t-sm); }
-.ds-table th, .ds-table td { text-align: left; padding: var(--s2); border-bottom: 1px solid var(--line-soft); vertical-align: top; }
-.ds-table td.n { text-align: right; font-variant-numeric: tabular-nums; }
-.ds-scroll { overflow-x: auto; }
+.ds-page .btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.ds-recheck { margin: 0 var(--s5) var(--s2); border: 1px solid var(--sac-mark); border-radius: var(--r-md); padding: var(--s2) var(--s3); background: var(--sac-wash); }
+.ds-recheck legend { font-weight: 650; padding: 0 var(--s1); color: var(--sac); }
+.ds-check { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+.ds-alt-actions { border-top: 1px solid var(--line-soft); }
+/* clip, not hidden: hidden makes the card a scroll container and breaks the sticky answer. */
+.ds-page .ds-primary { overflow: clip; }
+@media (max-width: 560px) {
+  /* The answer stays at hand on a phone: the card is long, the buttons stick above the tab bar. */
+  .ds-primary .ds-answer { position: sticky; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 5; background: var(--sheet); box-shadow: 0 -6px 12px -10px rgb(18 26 58 / 0.35); padding-top: var(--s2); }
+}
+.ds-outcome { display: grid; gap: var(--s2); margin: 0 var(--s5) var(--s4); padding: var(--s3) var(--s4); border-radius: var(--r-md); }
+.ds-outcome--todo { background: var(--sac-wash); }
+.ds-outcome--quiet { background: var(--well); }
+.ds-outcome--bad { background: color-mix(in srgb, var(--alerte) 10%, transparent); }
+.ds-outcome__title { margin: 0; font-weight: 650; }
+.ds-outcome__actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.ds-warn { color: var(--sac); font-weight: 600; margin: 0; }
+.ds-err { color: var(--alerte); }
+.ds-code { font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
+.ds-raw code { font-size: var(--t-xs); color: var(--ink-3); overflow-wrap: anywhere; }
+.ds-conds { margin: 0; padding-left: var(--s4); display: grid; gap: var(--s1); font-size: var(--t-sm); }
 .ds-chart svg { width: 100%; height: auto; display: block; }
 .ds-legend { display: flex; flex-wrap: wrap; gap: var(--s3); font-size: var(--t-xs); color: var(--ink-3); }
 .ds-sw { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 4px; }
-.ds-form { display: grid; gap: var(--s3); background: var(--sheet); border-radius: var(--r-lg); padding: var(--s4); box-shadow: var(--lift); }
+.ds-sw--dash { background: repeating-linear-gradient(90deg, var(--alerte) 0 4px, transparent 4px 8px); }
+.ds-details summary { cursor: pointer; color: var(--brand-strong); font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.ds-details__body { display: grid; gap: var(--s2); padding-top: var(--s2); }
+.ds-form { display: grid; gap: var(--s3); background: var(--sheet); border-radius: var(--r-lg); padding: var(--s4); box-shadow: var(--lift); min-width: 0; }
 .ds-form fieldset { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s3); display: grid; gap: var(--s2); min-width: 0; }
-.ds-form legend { font-weight: 700; padding: 0 var(--s1); }
-.ds-form label { display: grid; gap: 2px; font-size: var(--t-sm); color: var(--ink-2); }
-.ds-form select, .ds-form input { min-height: 40px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); background: var(--sheet); color: var(--ink); padding: 0 var(--s2); font: inherit; }
+.ds-form legend { font-weight: 650; padding: 0 var(--s1); }
+.ds-form label { display: grid; gap: 2px; font-size: var(--t-sm); color: var(--ink-2); min-width: 0; }
+.ds-form .select, .ds-form input[type="number"], .ds-form input[type="time"] { width: 100%; min-height: 40px; }
+.ds-form .ds-check { display: flex; align-items: center; gap: var(--s2); }
 .ds-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--s2); }
-details.ds-details summary { cursor: pointer; color: var(--ink-2); }
-.ds-warn { color: var(--sac); }
-.ds-err { color: var(--alerte); }
-:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ds-examples { display: grid; gap: var(--s2); }
+.ds-examples .btn { white-space: normal; height: auto; text-align: left; justify-content: flex-start; }
+.ds-page .demobar .btn { white-space: normal; height: auto; text-align: left; }
+.ds-prov { font-size: var(--t-xs); overflow-wrap: anywhere; margin: 0; }
+.ds-page .panel { overflow-wrap: break-word; }
+.ds-page .facts { overflow-wrap: anywhere; }
+.ds-stack > .pill { justify-self: start; }
+.ds-page .table td:first-child { min-width: 9ch; }
+.ds-caption { caption-side: bottom; text-align: left; font-size: var(--t-xs); color: var(--ink-3); padding-top: var(--s2); }
+.ds-page .table { font-size: var(--t-sm); }
+
+/* Standalone page (serve.py): the shell comes from app.css; only the brand mark is local. */
+.ds-mark { width: 18px; height: 18px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 4px var(--brand-wash); }
+.ds-page #how:empty { display: none; }
 [hidden] { display: none !important; }
-.ds-top, .ds-card, .ds-form, .foot { overflow-wrap: anywhere; min-width: 0; }
-.demobar .btn { white-space: normal; text-align: left; height: auto; min-height: 44px; }
-.ds-unit select { max-width: 100%; }
-@media (max-width: 520px) { .ds-unit { flex-wrap: wrap; } .ds-unit select { width: 100%; } }
-.ds-top .ds-unit, .ds-brand { overflow-wrap: normal; white-space: nowrap; }

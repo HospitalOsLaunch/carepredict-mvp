@@ -453,7 +453,7 @@ function change(c: FutureChange, at: string): string {
     transport: "transport",
     downstream: "places d'aval",
   }[c.resource];
-  return `${when} : ${what} (${c.target_id}) ramenés à ${c.capacity}`;
+  return `${when} : ${what} (${c.target_id}), capacité ${c.capacity}${c.capacity === 0 ? " (indisponible)" : ""}`;
 }
 
 function Hypotheses({ plan }: { plan: Plan }) {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { demoHistory, journal, statusOf, useJournal } from "./data/journal";
+import { acknowledged, demoHistory, journal, statusOf, useJournal } from "./data/journal";
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
-import { type Assessment, clock, longClock } from "./domain/view";
+import { type Assessment, clock, day, longClock, unitStateLines } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
 import { DecisionPlan } from "./ui/DecisionPlan";
 import { Journal } from "./ui/Journal";
@@ -69,10 +69,9 @@ const TITLES: Record<Route, string> = {
 };
 
 const SHORTCUTS: Array<[string, string]> = [
-  ["U", "Changer d'unité"],
-  ["1 à 9", "Aller directement à l'unité n"],
+  ["U puis 1 à 9", "Changer d'unité (aller à l'unité n)"],
   ["O", "Valider la proposition"],
-  ["N", "Refuser, puis 1 à 6 pour le motif"],
+  ["N puis 1 à 6", "Refuser, avec le motif"],
   ["F", "C'est fait (proposition validée)"],
   ["R", "Réévaluer l'unité"],
   ["A", "Vue unité"],
@@ -86,7 +85,6 @@ const SHORTCUTS: Array<[string, string]> = [
 /** Single-key shortcuts, ignored while typing or with a modifier held. */
 function useShortcuts(
   store: Store,
-  selectUnit: (id: string) => void,
   openSwitcher: () => void,
   openHelp: () => void,
 ) {
@@ -101,7 +99,17 @@ function useShortcuts(
       const digit = Number(e.key);
       // On the 24-hour plan, the cockpit's units are not on screen: no silent unit change.
       const onPlan = readRoute().route === "plan";
-      if (onPlan && (k === "u" || (digit >= 1 && digit <= 9))) return;
+      if (onPlan && k === "u") return;
+      if (digit >= 1 && digit <= 9) {
+        // Digits only answer « why not » when the reasons are on screen. A digit never moves
+        // to another unit on its own: that took testers to another unit mid-refusal. To
+        // change unit: U, then the digit (handled by the open list).
+        if (!document.querySelector(".feedback")) return;
+        emit(e.key);
+        document.documentElement.dataset.keys = "on";
+        e.preventDefault();
+        return;
+      }
       if (k === "u") openSwitcher();
       else if (k === "?") openHelp();
       else if (k === "o") emit("yes");
@@ -113,19 +121,14 @@ function useShortcuts(
       else if (k === "d") go("proposition");
       else if (k === "p") go("plan");
       else if (k === "q") go("donnees");
-      else if (digit >= 1 && digit <= 9) {
-        // While the "why not" reasons are open, digits pick a reason instead of a unit.
-        if (document.querySelector(".feedback")) emit(e.key);
-        else if (store.units[digit - 1]) selectUnit(store.units[digit - 1]!.id);
-        else return;
-      } else return;
+      else return;
       // Shortcut hints stay hidden until the person actually uses the keyboard.
       document.documentElement.dataset.keys = "on";
       e.preventDefault();
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [store, selectUnit, openSwitcher, openHelp]);
+  }, [store, openSwitcher, openHelp]);
 }
 
 export function App() {
@@ -171,7 +174,7 @@ export function App() {
     },
     [store],
   );
-  useShortcuts(store, selectUnit, openSwitcher, openHelp);
+  useShortcuts(store, openSwitcher, openHelp);
 
   return (
     <div className="shell">
@@ -210,7 +213,7 @@ export function App() {
           <div className="topbar__end">
             {a && route !== "plan" ? (
               <span className="stateclock" title={`État reconstruit pour le ${longClock(a.state.at)}`}>
-                <span className="stateclock__label">État</span>
+                <span className="stateclock__label">État du {day(a.state.at)}</span>
                 <span className="stateclock__time num">{clock(a.state.at)}</span>
               </span>
             ) : null}
@@ -280,6 +283,13 @@ export function App() {
             onToast={notify}
             space={journal.space}
             canSwitch={store.connection === "api-live"}
+            scope={{
+              unitId: store.unitId,
+              unitName: store.unitName,
+              origin: a.origin,
+              situationId: a.scenarioId,
+              state: unitStateLines(a),
+            }}
           />
         ) : route === "donnees" ? (
           <DataQuality a={a} quality={store.quality} summary={store.shadowSummary} />
@@ -290,7 +300,11 @@ export function App() {
             now={now}
             busy={store.busy}
             awaitingEvaluation={store.awaitingEvaluation}
-            onEvaluate={store.evaluate}
+            onEvaluate={() => {
+              store.evaluate();
+              if (store.connection === "fixture")
+                notify("Démonstration : la situation est figée, l'évaluation donne le même résultat.");
+            }}
             unit={{ id: store.unitId, name: store.unitName }}
             onToast={notify}
           />
@@ -380,6 +394,8 @@ function UnitPage(props: {
 }) {
   const { a } = props;
   const hour = parisHour(a.state.at);
+  const { records, me } = useJournal();
+  const ack = acknowledged(records, { unitId: props.unit.id, situationId: a.scenarioId, origin: a.origin }, props.now);
   // Phone: one flow column at a time; the proposal decides which one opens first.
   const [zone, setZone] = useState<Zone>(() =>
     a.plan?.selected.kind === "request_transport"
@@ -409,6 +425,7 @@ function UnitPage(props: {
       <Proposal {...props} />
       <InProgress
         unitId={props.unit.id}
+        situationId={a.scenarioId}
         excludePlan={a.plan?.plan_id ?? null}
         now={props.now}
         onToast={props.onToast}
@@ -429,8 +446,8 @@ function UnitPage(props: {
         ))}
       </div>
       <div className={`flowgrid flowgrid--show-${zone}`}>
-        <ReleaseBoard a={a} />
-        <BedBoard a={a} />
+        <ReleaseBoard a={a} ack={ack} me={me} />
+        <BedBoard a={a} ack={ack} />
         <Queue a={a} />
       </div>
     </>

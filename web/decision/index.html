@@ -3,35 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HospitalOS — Proposition automatique</title>
+  <title>Plan jusqu'à demain · HospitalOS</title>
   <link rel="stylesheet" href="/tokens.css" />
   <link rel="stylesheet" href="/app.css" />
   <link rel="stylesheet" href="/decision.css" />
 </head>
 <body>
-  <header class="ds-top">
-    <div class="ds-brand"><span class="ds-dot" aria-hidden="true"></span>HospitalOS <span class="ds-sub">aide à la décision</span></div>
-    <label class="ds-unit">Unité
-      <select id="unit" class="input" data-testid="unit"></select>
-    </label>
-    <span id="asof" class="hash" data-testid="asof"></span>
-    <span class="ds-flag" data-testid="flags">Données synthétiques · prototype non validé · G2 NO-GO</span>
-  </header>
-  <main class="ds-main">
-    <section id="auto" aria-labelledby="auto-title" class="ds-col">
-      <h1 id="auto-title" class="ds-h1">Proposition calculée automatiquement</h1>
-      <p class="ds-lead">HospitalOS a observé l'unité, prévu la pratique habituelle et cherché lui-même un plan. C'est vous qui décidez.</p>
-      <div id="auto-body" aria-live="polite"><p class="ds-muted">Calcul en cours…</p></div>
-    </section>
-    <section id="manual" aria-labelledby="manual-title" class="ds-col ds-secondary">
-      <h2 id="manual-title" class="ds-h2">Simuler un scénario <span class="ds-muted">(optionnel)</span></h2>
-      <p class="ds-lead">Verrouillez des décisions X1/X2 ; le même moteur calcule les conséquences et cherche des compléments sans modifier vos verrous.</p>
-      <form id="manual-form" class="ds-form" data-testid="manual-form" hidden></form>
-      <button id="open-manual" class="btn" type="button" data-testid="open-manual">Simuler un scénario</button>
-      <div id="manual-body" aria-live="polite"></div>
-    </section>
-  </main>
-  <footer class="foot" id="prov" data-testid="provenance"></footer>
+  <div class="shell">
+    <a class="skip" href="#contenu">Aller au contenu</a>
+    <header class="topbar">
+      <div class="topbar__row">
+        <span class="brand"><span class="ds-mark" aria-hidden="true"></span><span translate="no">HospitalOS</span></span>
+        <span class="unitchip"><span class="unitchip__name">Plan 24 h</span><span class="unitchip__sub">Unité fictive, choisie ci-dessous</span></span>
+        <div class="topbar__end">
+          <span class="mode" title="Mode observation : HospitalOS propose, vous décidez. Rien n'est envoyé ni réservé.">
+            <span class="mode__dot" aria-hidden="true"></span><span class="mode__text">Observation seule</span>
+          </span>
+        </div>
+      </div>
+    </header>
+    <main class="main ds-page" id="contenu" tabindex="-1">
+      <div class="demobar" data-testid="flags">
+        <span class="demobar__tag">Démonstration</span>
+        <span class="demobar__text">Unité fictive · prototype non validé (G2 NO-GO) · <span id="asof" data-testid="asof"></span></span>
+        <label class="demobar__select"><span class="visually-hidden">Unité fictive du plan</span>
+          <select id="unit" class="select" data-testid="unit"></select>
+        </label>
+      </div>
+      <header class="page-head">
+        <h1>Plan jusqu'à demain</h1>
+        <p>HospitalOS a prévu la pratique habituelle sur 24 h et cherché seul un meilleur plan : sorties à coordonner, renforts à demander. C'est vous qui décidez ; rien n'est envoyé.</p>
+      </header>
+      <div class="ds-grid">
+        <div id="auto" class="ds-col">
+          <div id="auto-body" class="ds-col" aria-live="polite"><div class="skeleton" aria-busy="true" aria-label="Calcul du plan"></div></div>
+        </div>
+        <aside id="manual" class="ds-col" aria-labelledby="manual-title">
+          <h2 id="manual-title" class="ds-h2">Simuler une variante <span class="mute">(optionnel)</span></h2>
+          <p class="mute">Imposez une heure de sortie (X1) ou une présence prolongée (X2) : le même moteur recalcule le reste du plan sans toucher à vos choix.</p>
+          <form id="manual-form" class="ds-form" data-testid="manual-form" hidden></form>
+          <button id="open-manual" class="btn" type="button" data-testid="open-manual">Simuler une variante</button>
+          <div id="manual-body" aria-live="polite"></div>
+        </aside>
+      </div>
+      <div id="how"></div>
+    </main>
+    <footer class="foot"><span>HospitalOS propose, vous décidez. Rien n'est envoyé. Identifiants pseudonymes.</span></footer>
+  </div>
   <script type="module" src="/js/decision.js"></script>
 </body>
 </html>

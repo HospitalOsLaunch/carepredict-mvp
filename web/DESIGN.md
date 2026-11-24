@@ -91,6 +91,24 @@ Une décision dit toujours d'où elle vient et sur quoi elle porte.
 - **Base de chaque action du plan 24 h** : autorisation médicale observée, consigne validée,
   hypothèse, option de renfort — chacune son étiquette.
 
+## Horloge de démonstration
+
+Les sorties précalculées du planificateur datent d'un matin d'octobre (unité) et d'un soir de
+novembre (plan 24 h). Au chargement, chaque jeu de démonstration est décalé d'un seul bloc vers
+maintenant (à 5 min près pour l'unité, à l'heure près pour le plan) : écarts, ordres et chiffres
+du moteur inchangés, libellés horaires recalculés (« Matinée ordinaire » devient
+« Après-midi ordinaire » l'après-midi). Jamais appliqué à une API. `?horloge=fixe` garde les
+instants enregistrés (captures reproductibles). La barre haute affiche la date de l'état.
+
+## Motif de refus
+
+Refuser une action ou un plan, c'est un appui et un motif (1 à 6), puis une note facultative.
+Même liste pour les deux, sauf le n° 5 : « Lit inadapté » pour une action, « Inadapté à l'unité
+(effectif, compétences, règles) » pour un plan. Aucun texte n'impose de nomenclature ; l'AI Act
+demande de pouvoir écarter la sortie du système et d'en suivre l'usage (art. 14 §4, art. 26 §5),
+le guide HAS/CNIL sur l'IA en contexte de soins (document de travail, février 2026) demande le
+contrôle humain et la traçabilité des usages. Le motif rend les refus lisibles sans ralentir.
+
 ## Plan à 24 h
 
 Même grammaire que « Action suivante » : bandeau d'état, titre, actions avec leur base, l'effet
@@ -99,6 +117,42 @@ indicateurs, conditions et incertitudes, options écartées, détail du calcul (
 d'accent violet : Outremer agit partout. Le sélecteur d'unité du cockpit cède la place à
 « Plan 24 h · unité fictive » : l'unité fictive se choisit dans le bandeau de démonstration de la
 page. Valider ou refuser un plan l'inscrit au journal de démonstration.
+
+## Tests d'usage du 24 novembre 2026
+
+Trois testeurs simulés (gestionnaire de lits, cadre de santé, IDE), au bureau, sur tablette et
+au téléphone. Retours appliqués :
+
+- **Jamais de faux zéro** : quand des informations sont périmées ou manquantes, « À placer »,
+  « Lits utilisables » et « Sorties » affichent « ? · inconnu » ; plus de « Belle accalmie » sur des
+  données douteuses.
+- **Le geste se voit** : après « C'est fait », la chaîne de sortie affiche « Transport demandé :
+  fait · 16:30 · vous, en attente de confirmation par les données » (et « nettoyage demandé » sur
+  le lit) : pas de second appel au transport.
+- **Priorité explicite** : « 4/5 », légende « 5 = la plus urgente », saisie par l'équipe ; un lit
+  prêt pour un patient plus prioritaire se lit « L08 aussi possible, après U-1043 ».
+- **À venir** : les hypothèses déclarées (transport coupé, arrivées des urgences, lit rouvert)
+  sous la bande de tension et dans la carte quand elles touchent l'action.
+- **Gain faible** dit comme tel ; unité des chiffres sous la comparaison ; « Avis médical attendu :
+  voir avec le médecin » (on ne « renseigne » pas une décision médicale).
+- **Chiffres et clavier** : un chiffre seul ne change plus d'unité (U puis le chiffre) ; il ne sert
+  qu'au motif quand les motifs sont affichés.
+- **Plan 24 h** : une décision par plan, conservée au rechargement ; un seul plan validé par unité
+  (remplacement confirmé) ; « Choisir plutôt ce plan » pour l'autre plan ; case « J'ai revérifié
+  l'autorisation médicale de sortie de … » avant de valider ; statut de confirmation sur chaque
+  renfort ; exemples précalculés marqués « imposé dans l'exemple » ; bouton Valider collant au
+  téléphone ; plan recalé sur la relève de 20:00 du jour (jamais de sortie à 6 h ni de renfort à
+  3 h fabriqués par le recalage).
+- **Journal** : chiffres et conditions figés dans la fiche d'un plan ; signature jamais
+  rétroactive ; note libre « pour la relève » ; transmission par unité avec l'état de l'unité, les
+  notes et les conditions, sans « (vous) » ; rôles IDE et IDE de nuit ; décisions de démonstration
+  rattachées à leur situation.
+- **Mots** : champs de la source et indicateurs de l'onglet Données en français ; ton factuel
+  (« C'est noté. L'état se mettra à jour à la prochaine réception des données. »).
+
+Non traités ici (données ou back-end) : critères de placement au-delà de l'oxygène (sexe,
+isolement, chambre seule), unité commune entre le plan 24 h et le cockpit, journal partagé entre
+postes, motif enregistré par le moteur dans son reçu de revue.
 
 ## Illustrations
 

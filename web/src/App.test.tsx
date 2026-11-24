@@ -49,10 +49,13 @@ describe("cockpit", () => {
     expect(within(list).getAllByRole("option")).toHaveLength(4);
     fireEvent.click(within(list).getByRole("option", { name: /Court séjour gériatrique/ }));
     expect(await screen.findByRole("heading", { name: "Prioriser le bionettoyage du lit G17" })).toBeTruthy();
+    // A digit alone never changes unit (it would move away mid-refusal): U, then the digit.
     fireEvent.keyDown(window, { key: "4" });
+    expect(screen.getByRole("heading", { name: "Prioriser le bionettoyage du lit G17" })).toBeTruthy();
+    fireEvent.keyDown(window, { key: "u" });
+    const again = await screen.findByRole("listbox", { name: "Changer d'unité" });
+    fireEvent.keyDown(again, { key: "4" });
     expect(await screen.findByRole("heading", { name: /Pas de proposition/ })).toBeTruthy();
-    fireEvent.keyDown(window, { key: "3" });
-    expect(await screen.findByRole("heading", { name: "Ne rien changer pour l'instant" })).toBeTruthy();
   });
 
   it("refuses in two keystrokes, keeps the reason and sends nothing", async () => {
@@ -71,14 +74,16 @@ describe("cockpit", () => {
     render(<App />);
     await ready();
     fireEvent.click(screen.getByRole("button", { name: /Valider/ }));
-    expect(await screen.findByText(/^Validée par Vous/)).toBeTruthy();
+    expect(await screen.findByText(/^Validée par vous/)).toBeTruthy();
     expect(screen.getByText(/Appelez le transport pour P-0412/)).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Annuler" })[0]!);
     expect(await screen.findByRole("button", { name: /Valider/ })).toBeTruthy();
     fireEvent.keyDown(window, { key: "o" });
-    await screen.findByText(/^Validée par Vous/);
+    await screen.findByText(/^Validée par vous/);
     fireEvent.keyDown(window, { key: "f" });
-    expect(await screen.findByText("Faite. Merci !")).toBeTruthy();
+    expect(await screen.findByText(/^Faite · vous/)).toBeTruthy();
+    // The chain shows the gesture until the data confirms it: no second call for the transport.
+    expect(screen.getByTestId("ack-P-0412").textContent).toMatch(/^Transport demandé : fait · \d\d:\d\d · vous/);
   });
 
   it("offers the other useful options and lets the team choose one instead", async () => {
@@ -96,7 +101,7 @@ describe("cockpit", () => {
     render(<App />);
     await ready();
     fireEvent.keyDown(window, { key: "o" });
-    await screen.findByText(/^Validée par Vous/);
+    await screen.findByText(/^Validée par vous/);
     window.location.hash = "/journal";
     window.dispatchEvent(new HashChangeEvent("hashchange"));
     expect(await screen.findByRole("heading", { name: "Journal des décisions" })).toBeTruthy();
@@ -119,7 +124,7 @@ describe("cockpit", () => {
     render(<App />);
     await ready();
     fireEvent.keyDown(window, { key: "o" });
-    await screen.findByText(/^Validée par Vous/);
+    await screen.findByText(/^Validée par vous/);
     const demo = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
       id: string;
       origin: string;
@@ -182,7 +187,51 @@ describe("cockpit", () => {
     await ready();
     const queue = screen.getByRole("region", { name: "Attribuer" });
     expect(within(queue).getAllByText(/^Lit prêt : L08$/)).toHaveLength(1);
-    expect(within(queue).getByText("L08 ira d'abord à U-1043")).toBeTruthy();
+    expect(within(queue).getByText("L08 aussi possible, après U-1043 (plus prioritaire)")).toBeTruthy();
+    expect(within(queue).getByText(/5 = la plus urgente/)).toBeTruthy();
+  });
+
+  it("says « unknown », never « nobody waits », when facts are stale", async () => {
+    window.history.replaceState(null, "", "/?situation=live-stale");
+    render(<App />);
+    const strip = await screen.findByRole("navigation", { name: "Situation de l'unité" });
+    const waiting = within(strip).getByRole("button", { name: /À placer/ });
+    expect(waiting.textContent).toMatch(/\?/);
+    expect(waiting.textContent).toMatch(/inconnu/);
+    expect(screen.queryByText(/Belle accalmie/)).toBeNull();
+    expect(screen.getByText("Attente inconnue.")).toBeTruthy();
+  });
+
+  it("shows what is coming (transport cut) on the unit screen and in the proposal", async () => {
+    window.history.replaceState(null, "", "/?situation=perturbations");
+    render(<App />);
+    const ahead = await screen.findByTestId("ahead");
+    expect(ahead.textContent).toMatch(/Transport sanitaire indisponible de \d\d:\d\d à \d\d:\d\d/);
+    expect(ahead.textContent).toMatch(/hypothèses déclarées/);
+  });
+
+  it("puts the unit's state, signed notes and decisions in the handover, names unchanged by later signing", async () => {
+    render(<App />);
+    await ready();
+    fireEvent.keyDown(window, { key: "o" });
+    await screen.findByText(/^Validée par vous/);
+    window.location.hash = "/journal";
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    await screen.findByRole("heading", { name: "Journal des décisions" });
+    fireEvent.click(screen.getByTestId("shift-note"));
+    fireEvent.change(screen.getByPlaceholderText(/famille de P-0388/), { target: { value: "Famille de P-0388 rappelle à 18 h" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    fireEvent.change(screen.getByPlaceholderText("Prénom N."), { target: { value: "Sophie L." } });
+    fireEvent.click(screen.getByRole("button", { name: "Enregistrer" }));
+    let copied = "";
+    Object.assign(navigator, { clipboard: { writeText: async (t: string) => void (copied = t) } });
+    fireEvent.click(screen.getByRole("button", { name: /Copier la transmission/ }));
+    await vi.waitFor(() => expect(copied).not.toBe(""));
+    expect(copied).toMatch(/Transmission HospitalOS · Médecine polyvalente/);
+    expect(copied).toMatch(/État de l'unité\n- À placer : 4/);
+    expect(copied).toMatch(/Notes pour la relève \(1\)\n- Médecine polyvalente : Famille de P-0388 rappelle à 18 h \(non signé\)/);
+    expect(copied).toMatch(/Transport P-0412 \(L02\) \(non signé\)/);
+    expect(copied).not.toMatch(/\(vous\)/);
   });
 
   it("never offers an execution control", async () => {

@@ -18,6 +18,7 @@ import {
 import { actionTitle, explain } from "../domain/labels";
 import {
   type Assessment,
+  aheadOf,
   bedElsewhere,
   clock,
   clockPlus,
@@ -152,11 +153,18 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
   const quiet = plan.decision === "no_change";
   // Two lines at most: the concrete context first, then warnings. Generic planner reasons
   // (« réduit l'attente simulée ») repeat what the effect already shows.
+  // A gain of 1 % is not presented like a gain of 30 % (user testing): same card, honest words.
+  const lowGain = cmp.deltaRatio != null && Math.abs(cmp.deltaRatio) < 0.05;
+  const down = aheadOf(plan).find((x) => x.tone === "warn" && x.text.startsWith("Transport"));
   const facts = [
+    ...(down && plan.selected.kind === "request_transport"
+      ? [`${down.text} (hypothèse déclarée) : la demande sera servie à la reprise.`]
+      : []),
+    ...(lowGain ? ["Gain faible : à faire si le temps le permet, rien d'urgent."] : []),
     ...context,
     ...plan.warnings.map(explain),
     ...plan.reasons.filter((r) => !GENERIC.has(r)).map(explain),
-  ].slice(0, 2);
+  ].slice(0, lowGain || down ? 3 : 2);
   const max = Math.max(
     cmp.baseline?.worst_decile_waiting_patient_minutes ?? 0,
     cmp.selected?.worst_decile_waiting_patient_minutes ?? 0,
@@ -166,7 +174,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
   return (
     <section className={`panel proposal${quiet ? " proposal--quiet" : ""}`} aria-labelledby="proposal-title">
       <Band
-        label={quiet ? "Rien à changer" : bandLabel(current, now)}
+        label={quiet ? "Rien à changer" : lowGain && current && statusOf(current, now) === "pending" ? "Option à faible gain" : bandLabel(current, now)}
         right={
           !quiet && current && statusOf(current, now) === "pending" ? (
             <span className="expiry">Fraîche encore {duration(minutesLeft)}</span>
@@ -214,6 +222,9 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                 on
               />
             </div>
+            <p className="effect__note" data-testid="pair-unit">
+              Attente cumulée des patients à placer, en minutes-patient (moyenne de {plan.scenarios} scénarios).
+            </p>
             {plan.service_status === "served_in_all_sampled_scenarios" ? (
               <p className="effect__note">Tous les patients placés avant {end}.</p>
             ) : plan.service_status === "unserved_in_some_sampled_scenarios" ? (
@@ -318,6 +329,7 @@ const BAND: Record<Status, string> = {
   expired: "Sans réponse",
   superseded: "Remplacée",
   abstained: "Données à vérifier",
+  note: "Note",
 };
 
 function bandLabel(r: DecisionRecord | null, now: string): string {
@@ -369,7 +381,7 @@ function Decision(p: DecisionProps) {
     );
   };
   const validate = () => act("validated", "Validée. À vous de jouer : HospitalOS garde la trace.");
-  const done = () => act("done", "C'est fait. Merci, l'unité respire un peu mieux.");
+  const done = () => act("done", "C'est noté. L'état se mettra à jour à la prochaine réception des données.");
   const answer = (reason: string) =>
     asking === "abandoned"
       ? act("abandoned", "Noté : finalement non.", reason)
@@ -402,7 +414,7 @@ function Decision(p: DecisionProps) {
   ) : null;
   const reevaluate = (primary: boolean) => (
     <button className={`btn${primary ? " btn--primary" : ""}`} onClick={p.onEvaluate} disabled={p.busy}>
-      <Refresh /> {p.busy ? "Évaluation…" : primary ? "Voir la suite" : p.evaluateLabel}
+      <Refresh /> {p.busy ? "Évaluation…" : primary ? "Réévaluer l'unité" : p.evaluateLabel}
     </button>
   );
 
@@ -434,8 +446,8 @@ function Decision(p: DecisionProps) {
       <Outcome
         tone="ok"
         icon={<Check />}
-        title="Faite. Merci !"
-        line={`${stamp}. L'état de l'unité a changé : réévaluez pour la suite.`}
+        title={`Faite · ${stamp}`}
+        line="L'écran garde la trace de votre geste jusqu'à ce que les données le confirment. Réévaluez pour la suite."
       >
         {reevaluate(true)}
         <a className="btn btn--quiet" href="#/journal">
@@ -734,11 +746,14 @@ function Others(props: {
  */
 export function InProgress({
   unitId,
+  situationId,
   excludePlan,
   now,
   onToast,
 }: {
   unitId: string;
+  /** Demonstration situation on screen: decisions from another situation stay there. */
+  situationId: string;
   /** The plan shown in the proposal card: its first choice is handled there. */
   excludePlan: string | null;
   now: string;
@@ -749,6 +764,7 @@ export function InProgress({
     (r) =>
       !r.sample &&
       r.unitId === unitId &&
+      (!r.situationId || r.situationId === situationId) &&
       !(r.planId === excludePlan && r.rank === 0) &&
       statusOf(r, now) === "validated",
   );
@@ -775,7 +791,7 @@ export function InProgress({
                 className="btn btn--small"
                 onClick={() => {
                   journal.act(r.id, "done", now);
-                  onToast("C'est fait. Merci !", () => journal.undo(r.id));
+                  onToast("C'est noté.", () => journal.undo(r.id));
                 }}
               >
                 <Check /> C'est fait

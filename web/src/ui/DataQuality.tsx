@@ -93,7 +93,7 @@ export function DataQuality({
                 <Illu name="hourglass" size={32} />
                 Informations les plus anciennes
               </h2>
-              <span className="panel__aside">l'encre pâlit avec l'âge</span>
+              <span className="panel__aside">plus le texte est pâle, plus l'information est ancienne</span>
             </header>
             <div
               className="table-wrap"
@@ -254,15 +254,15 @@ function Source({ receipt }: { receipt: SourceReceipt }) {
           </b>
         </div>
         <div className="kv">
-          <span>Info la plus ancienne</span>
+          <span>Âge max. à l'export</span>
           <b className="num">{seconds(r.max_fact_age_seconds)}</b>
         </div>
         <div className="kv">
-          <span>Retard source</span>
+          <span>Retard du logiciel source</span>
           <b className="num">{seconds(r.max_source_delay_seconds)}</b>
         </div>
         <div className="kv">
-          <span>Confirmations</span>
+          <span>Âge des confirmations de ressources</span>
           <b className="num">{seconds(r.max_resource_age_seconds)}</b>
         </div>
       </div>
@@ -301,7 +301,7 @@ function Source({ receipt }: { receipt: SourceReceipt }) {
               <tbody>
                 {missing.map(([field, n]) => (
                   <tr key={field}>
-                    <td translate="no">{field.replace(".fact.", " · ")}</td>
+                    <td title={field}>{FIELD[field] ?? field.replace(".fact.", " · ")}</td>
                     <td className="r num">{n}</td>
                   </tr>
                 ))}
@@ -313,6 +313,22 @@ function Source({ receipt }: { receipt: SourceReceipt }) {
     </section>
   );
 }
+
+/** Source fields in the words of the ward (user testing: « discharge · escort_confirmed »). */
+const FIELD: Record<string, string> = {
+  "bed.fact.occupant": "Lit : patient occupant",
+  "bed.fact.reserved_for": "Lit : réservé pour",
+  "discharge.fact.documents_ready": "Sortie : documents prêts",
+  "discharge.fact.downstream_pool_id": "Sortie : structure d'aval",
+  "discharge.fact.escort_confirmed": "Sortie : accompagnant confirmé",
+  "discharge.fact.escort_required": "Sortie : accompagnant nécessaire",
+  "discharge.fact.transport_pool_id": "Sortie : prestataire de transport",
+  "discharge.fact.transport_requested": "Sortie : transport demandé",
+  "discharge.fact.transport_required": "Sortie : transport nécessaire",
+  "patient.fact.bed_id": "Patient : lit",
+  "patient.fact.downstream_confirmed": "Patient : aval confirmé",
+  "patient.fact.medically_cleared": "Patient : sortie autorisée par le médecin",
+};
 
 function Journal({ summary }: { summary: ShadowSummary }) {
   const top = Object.entries(summary.gate_reason_counts)

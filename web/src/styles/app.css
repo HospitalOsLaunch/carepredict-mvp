@@ -3161,3 +3161,76 @@ textarea.input {
 .jrow__end {
   align-self: center;
 }
+
+/* ---------------------------------------------------------------- user-testing fixes (24 nov.) */
+.ahead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s1) var(--s3);
+  margin: calc(-1 * var(--s2)) 0 var(--s4);
+  padding: var(--s2) var(--s4);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+  border: 1px solid var(--line);
+  font-size: var(--t-sm);
+}
+.ahead__title {
+  font-weight: 700;
+}
+.ahead ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ahead__item--warn {
+  color: var(--sac);
+  font-weight: 650;
+}
+.ahead__note {
+  margin-left: auto;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.queue__legend {
+  margin: 0;
+  padding: 0 var(--s5) var(--s2);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+.release__next--acked {
+  color: var(--bloc);
+  font-weight: 600;
+}
+.magnet__ack {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--bloc);
+}
+.shiftnote {
+  margin: 0;
+}
+.shiftnote--form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  max-width: 640px;
+}
+.shiftnote--form .input {
+  flex: 1 1 260px;
+}
+.hunit {
+  display: block;
+  margin-bottom: var(--s3);
+}
+.nav a {
+  white-space: nowrap;
+}
+.switcher__meta {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

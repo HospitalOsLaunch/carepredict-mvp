@@ -37,7 +37,22 @@
 .ds-fig b { font-size: var(--t-xl); font-weight: 650; }
 .ds-fig small { color: var(--ink-3); font-size: var(--t-xs); }
 .ds-page .btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.ds-feedback { font-weight: 600; padding: 0 var(--s5) var(--s4); margin: 0; }
+.ds-recheck { margin: 0 var(--s5) var(--s2); border: 1px solid var(--sac-mark); border-radius: var(--r-md); padding: var(--s2) var(--s3); background: var(--sac-wash); }
+.ds-recheck legend { font-weight: 650; padding: 0 var(--s1); color: var(--sac); }
+.ds-check { display: flex; align-items: center; gap: var(--s2); min-height: 44px; }
+.ds-alt-actions { border-top: 1px solid var(--line-soft); }
+/* clip, not hidden: hidden makes the card a scroll container and breaks the sticky answer. */
+.ds-page .ds-primary { overflow: clip; }
+@media (max-width: 560px) {
+  /* The answer stays at hand on a phone: the card is long, the buttons stick above the tab bar. */
+  .ds-primary .ds-answer { position: sticky; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 5; background: var(--sheet); box-shadow: 0 -6px 12px -10px rgb(18 26 58 / 0.35); padding-top: var(--s2); }
+}
+.ds-outcome { display: grid; gap: var(--s2); margin: 0 var(--s5) var(--s4); padding: var(--s3) var(--s4); border-radius: var(--r-md); }
+.ds-outcome--todo { background: var(--sac-wash); }
+.ds-outcome--quiet { background: var(--well); }
+.ds-outcome--bad { background: color-mix(in srgb, var(--alerte) 10%, transparent); }
+.ds-outcome__title { margin: 0; font-weight: 650; }
+.ds-outcome__actions { display: flex; flex-wrap: wrap; gap: var(--s2); }
 .ds-warn { color: var(--sac); font-weight: 600; margin: 0; }
 .ds-err { color: var(--alerte); }
 .ds-code { font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }

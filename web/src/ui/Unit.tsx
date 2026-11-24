@@ -1,11 +1,14 @@
 import type { Bed } from "../api/types";
+import { type Ack, who } from "../data/journal";
 import { BED_STATE, STAGE, capability, explain } from "../domain/labels";
 import {
   type Assessment,
   type ChainLink,
   type Freshness,
+  aheadOf,
   clock,
   compatibleBed,
+  doubtful,
   duration,
   freshnessIndex,
   nextStep,
@@ -16,6 +19,7 @@ import {
   stayCount,
 } from "../domain/view";
 import { Fresh, plural } from "./common";
+import type { Person } from "../data/journal";
 import { Check, Clock, Cross, Dash, Question } from "./icons";
 import { Empty, Illu } from "./illustrations";
 
@@ -56,7 +60,12 @@ function LinkNode({ link }: { link: ChainLink }) {
   );
 }
 
-export function ReleaseBoard({ a }: { a: Assessment }) {
+/** « Demandé à 16:30 · vous » until the data confirms it. */
+function ackText(ack: Ack, me: Person, what: string): string {
+  return `${what} ${ack.status === "done" ? "fait" : "en cours"} · ${clock(ack.at)} · ${who(ack.by, me)}, en attente de confirmation par les données`;
+}
+
+export function ReleaseBoard({ a, ack, me }: { a: Assessment; ack: Map<string, Ack>; me: Person }) {
   const chains = releaseChains(a.state, a.plan);
   const stays = stayCount(a.state, a.plan);
   const fresh = freshnessIndex(a);
@@ -77,7 +86,11 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
           </span>
         </h2>
       </header>
-      {chains.length === 0 ? (
+      {chains.length === 0 && doubtful(a) ? (
+        <Empty illu="cloud" title="Sorties inconnues.">
+          Les informations de sortie ne sont pas à jour : rien ne dit qu'aucune sortie n'est prévue.
+        </Empty>
+      ) : chains.length === 0 ? (
         <Empty illu="suitcase" title="Aucune sortie en préparation.">
           Elles apparaîtront ici dès qu'une autorisation ou une logistique de sortie sera saisie.
         </Empty>
@@ -114,12 +127,18 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
                       <LinkNode key={l.id} link={l} />
                     ))}
                   </ol>
-                  <p
-                    className={`release__next release__next--${next.tone}`}
-                    title={c.readiness?.blockers.map(explain).join(" ; ")}
-                  >
-                    {next.text}
-                  </p>
+                  {ack.get(`transport:${c.patient.id}`) && next.text === "Demander le transport" ? (
+                    <p className="release__next release__next--acked" data-testid={`ack-${c.patient.id}`}>
+                      {ackText(ack.get(`transport:${c.patient.id}`)!, me, "Transport demandé :")}
+                    </p>
+                  ) : (
+                    <p
+                      className={`release__next release__next--${next.tone}`}
+                      title={c.readiness?.blockers.map(explain).join(" ; ")}
+                    >
+                      {next.text}
+                    </p>
+                  )}
                   {proposed ? (
                     <p className="release__handoff">
                       {c.nextCandidates.length
@@ -149,6 +168,7 @@ export function ReleaseBoard({ a }: { a: Assessment }) {
 
 export function Queue({ a }: { a: Assessment }) {
   const entries = queueEntries(a.state);
+  const unsure = doubtful(a);
   const target = a.plan?.decision === "recommend" ? a.plan.selected : null;
   const targetBed = a.state.beds.find((b) => b.id === target?.bed_id) ?? null;
   return (
@@ -167,11 +187,21 @@ export function Queue({ a }: { a: Assessment }) {
           </span>
         </h2>
       </header>
-      {entries.length === 0 ? (
-        <Empty illu="boat" title="Belle accalmie.">
-          Personne n'attend de lit pour l'instant.
+      {entries.length === 0 && unsure ? (
+        <Empty illu="cloud" title="Attente inconnue.">
+          La liste des patients à placer n'est pas à jour : vérifiez avec les urgences avant de conclure que personne
+          n'attend.
+        </Empty>
+      ) : entries.length === 0 ? (
+        <Empty illu="boat" title="Personne n'attend de lit.">
+          Aucun patient à placer pour l'instant.
         </Empty>
       ) : (
+        <>
+        <p className="queue__legend">
+          Priorité saisie par l'équipe, de 1 à 5 : <b>5 = la plus urgente</b>
+          {unsure ? " · liste incomplète, données à vérifier" : ""}
+        </p>
         <ul className="queue">
           {entries.map((e) => {
             const needs = e.patient.requirements.map(capability);
@@ -183,7 +213,7 @@ export function Queue({ a }: { a: Assessment }) {
                     tone: "ok",
                   }
                 : e.aheadOnBed
-                  ? { text: `${e.aheadOnBed.bed} ira d'abord à ${e.aheadOnBed.patient}`, tone: "wait" }
+                  ? { text: `${e.aheadOnBed.bed} aussi possible, après ${e.aheadOnBed.patient} (plus prioritaire)`, tone: "wait" }
                   : target?.patient_id === e.patient.id
                   ? { text: "Concerné par la proposition", tone: "go" }
                   : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
@@ -197,12 +227,12 @@ export function Queue({ a }: { a: Assessment }) {
                 <span
                   className={`prio${e.patient.priority >= 4 ? " prio--high" : ""}`}
                   role="img"
-                  aria-label={`Priorité ${e.patient.priority} sur 5`}
-                  title="Priorité saisie par un soignant, de 1 à 5"
+                  aria-label={`Priorité ${e.patient.priority} sur 5, 5 étant la plus urgente`}
+                  title="Priorité saisie par un soignant, de 1 à 5 (5 = la plus urgente)"
                 >
                   <span aria-hidden="true">
                     {e.patient.priority}
-                    <small>prio</small>
+                    <small>/5</small>
                   </span>
                 </span>
                 <span className="queue__who">
@@ -221,6 +251,7 @@ export function Queue({ a }: { a: Assessment }) {
             );
           })}
         </ul>
+        </>
       )}
     </section>
   );
@@ -251,6 +282,7 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
     .filter(Boolean)
     .join(", ");
   const checks = [...new Set([...a.state.issues, ...a.gateReasons])].length;
+  const unsure = doubtful(a);
   const oldest = oldestFact(a);
   const cells: Array<{
     zone: StripTarget["zone"];
@@ -262,21 +294,39 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
     {
       zone: "attribuer",
       label: "À placer",
-      value: String(s.waiting),
-      detail: longest != null ? `jusqu'à ${duration(longest)}` : "personne n'attend",
+      // With untrusted facts, zero is « unknown », never « nobody waits » (user testing).
+      value: unsure && s.waiting === 0 ? "?" : String(s.waiting),
+      detail: unsure
+        ? s.waiting
+          ? "au moins, liste à vérifier"
+          : "inconnu : données à vérifier"
+        : longest != null
+          ? `attente max ${duration(longest)}`
+          : "personne n'attend",
+      tone: unsure ? "warn" : undefined,
     },
     {
       zone: "lits",
       label: "Lits utilisables",
-      value: String(s.usable),
-      detail: s.dirty ? `${s.dirty} à nettoyer` : "tous propres",
-      tone: s.usable > 0 ? "go" : undefined,
+      value: unsure && s.usable === 0 ? "?" : String(s.usable),
+      detail: unsure
+        ? "inconnu : données à vérifier"
+        : s.dirty
+          ? `${s.dirty} à nettoyer`
+          : "aucun à nettoyer",
+      tone: unsure ? "warn" : s.usable > 0 ? "go" : undefined,
     },
     {
       zone: "liberer",
       label: "Sorties prêtes",
-      value: `${ready}/${chains.length}`,
-      detail: chains.length ? sortieDetail.replace(/^prêtes(, )?/, "") || "toutes prêtes" : "aucune prévue",
+      value: unsure && !chains.length ? "?" : `${ready}/${chains.length}`,
+      detail:
+        unsure && !chains.length
+          ? "inconnu : données à vérifier"
+          : chains.length
+            ? sortieDetail.replace(/^prêtes(, )?/, "") || "toutes prêtes"
+            : "aucune prévue",
+      tone: unsure && !chains.length ? "warn" : undefined,
     },
     {
       zone: "donnees",
@@ -285,12 +335,14 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
       detail: checks
         ? `point${checks > 1 ? "s" : ""} à vérifier`
         : oldest
-          ? `à jour (${duration(oldest.minutes)} max)`
+          ? `à jour · la plus ancienne il y a ${duration(oldest.minutes)}`
           : "à jour",
       tone: checks ? "warn" : undefined,
     },
   ];
+  const ahead = aheadOf(a.plan);
   return (
+    <>
     <nav className="strip" aria-label="Situation de l'unité">
       {cells.map((c) => (
         <button
@@ -305,6 +357,20 @@ export function TensionStrip({ a, onJump }: { a: Assessment; onJump: (zone: Stri
         </button>
       ))}
     </nav>
+    {ahead.length ? (
+      <section className="ahead" aria-label="À venir (hypothèses déclarées)" data-testid="ahead">
+        <span className="ahead__title">À venir</span>
+        <ul>
+          {ahead.map((x) => (
+            <li key={x.text} className={`ahead__item ahead__item--${x.tone}`}>
+              {x.text}
+            </li>
+          ))}
+        </ul>
+        <span className="ahead__note">hypothèses déclarées</span>
+      </section>
+    ) : null}
+    </>
   );
 }
 
@@ -327,7 +393,7 @@ function bedClass(bed: Bed, leaving: string | undefined, target: boolean, f: Fre
     .join(" ");
 }
 
-export function BedBoard({ a }: { a: Assessment }) {
+export function BedBoard({ a, ack }: { a: Assessment; ack?: Map<string, Ack> }) {
   const fresh = freshnessIndex(a);
   const readiness = new Map((a.plan?.discharge_readiness ?? []).map((r) => [r.patient_id, r.stage]));
   const leavingIds = new Set(releaseChains(a.state, a.plan).map((c) => c.patient.id));
@@ -379,6 +445,11 @@ export function BedBoard({ a }: { a: Assessment }) {
         <span className="magnet__state" aria-hidden="true">
           {label}
         </span>
+        {ack?.get(`cleaning:${bed.id}`) && bed.state === "dirty" ? (
+          <span className="magnet__ack" title="Bionettoyage demandé, en attente de confirmation par les données">
+            nettoyage demandé
+          </span>
+        ) : null}
       </li>
     );
   };

@@ -38,7 +38,7 @@ export type EventType =
   | "note";
 
 export type Status =
-  "pending" | "validated" | "done" | "refused" | "abandoned" | "expired" | "superseded" | "abstained";
+  "pending" | "validated" | "done" | "refused" | "abandoned" | "expired" | "superseded" | "abstained" | "note";
 
 export interface Person {
   id: string;
@@ -80,6 +80,10 @@ export interface DecisionRecord {
   answerAt?: "unite" | "plan";
   /** What to do off-system once validated, when it is not a single cockpit action. */
   todo?: string;
+  /** « note »: a free note for the next shift, not tied to a proposal. */
+  kind?: "decision" | "note";
+  /** Demonstration situation the record was taken in: never shown in another situation. */
+  situationId?: string;
   planId: string;
   unitId: string;
   unitName: string;
@@ -107,7 +111,30 @@ export const REASONS: { id: string; label: string }[] = [
   { id: "wrong_bed", label: "Lit inadapté" },
   { id: "other", label: "Autre raison" },
 ];
-const EXTRA_REASONS: Record<string, string> = { preferred_option: "Autre option préférée" };
+/**
+ * Reasons to refuse a 24-hour plan. Same list, order and keys as for unit actions (one habit,
+ * one muscle memory, comparable statistics), except n° 5: a plan has no bed to get wrong, it
+ * can be wrong for the unit (staffing, skills, house rules).
+ *
+ * Why a reason at all: the AI Act requires that the person overseeing a decision-support
+ * system can disregard or override its output in any situation, stays aware of automation
+ * bias (art. 14 §4 b, d), and that the deployer monitors the system in use (art. 26 §5); the
+ * HAS/CNIL guide on AI in care (working document, February 2026) asks for human control and
+ * traceability of use. No text imposes a taxonomy: a one-tap reason plus an optional note is
+ * what lets refusals be read back, without slowing the person down.
+ */
+export const PLAN_REASONS: { id: string; label: string }[] = [
+  { id: "already_done", label: "Déjà fait ou déjà prévu" },
+  { id: "information_missing", label: "Information manquante ou fausse" },
+  { id: "clinical_priority", label: "Autre priorité clinique" },
+  { id: "resource_unavailable", label: "Ressource indisponible" },
+  { id: "plan_unsuitable", label: "Inadapté à l'unité (effectif, compétences, règles)" },
+  { id: "other", label: "Autre raison" },
+];
+const EXTRA_REASONS: Record<string, string> = {
+  preferred_option: "Autre option préférée",
+  plan_unsuitable: "Inadapté à l'unité",
+};
 
 export const reasonLabel = (id: string | undefined): string | null =>
   id ? (REASONS.find((r) => r.id === id)?.label ?? EXTRA_REASONS[id] ?? id) : null;
@@ -121,6 +148,7 @@ export const STATUS: Record<Status, { label: string; tone: "brand" | "todo" | "o
   expired: { label: "Sans réponse", tone: "quiet" },
   superseded: { label: "Remplacée", tone: "quiet" },
   abstained: { label: "Pas de proposition", tone: "sun" },
+  note: { label: "Note pour la relève", tone: "brand" },
 };
 
 const STATUS_OF: Partial<Record<EventType, Status>> = {
@@ -136,6 +164,7 @@ const STATUS_OF: Partial<Record<EventType, Status>> = {
 
 /** Status from the last step; a pending proposal past its expiry reads as « sans réponse ». */
 export function statusOf(r: DecisionRecord, now?: string): Status {
+  if (r.kind === "note") return "note";
   let s: Status = "pending";
   for (const e of r.events) s = STATUS_OF[e.type] ?? s;
   if (s === "pending" && now && minutesBetween(r.expiresAt, now) > 0) return "expired";
@@ -284,10 +313,20 @@ export function getMe(): Person {
 }
 
 /** How a person is named on screen: « vous » for the current person. */
+/**
+ * How a person is named on screen. The name is the one signed at the time of the step: signing
+ * later never rewrites who decided earlier (user testing). « vous » marks the current person.
+ */
 export function who(p: Person | null, current: Person): string {
   if (!p) return "HospitalOS";
-  if (p.id === current.id) return current.name ? `${current.name} (vous)` : "Vous";
-  return p.name || "Un collègue";
+  if (p.id === current.id) return p.name ? `${p.name} (vous)` : "vous";
+  return p.name || "un collègue";
+}
+
+/** Same, for a text that leaves the screen (handover, export): no « (vous) ». */
+export function signedName(p: Person | null): string {
+  if (!p) return "HospitalOS";
+  return p.name || "non signé";
 }
 
 /** The journal that holds a record: actions on a record never cross into the other space. */
@@ -469,6 +508,7 @@ export function recordFor(
     origin: a.origin,
     stateFingerprint: plan.state_fingerprint,
     answerAt: "unite",
+    situationId: a.scenarioId,
     planId: plan.plan_id,
     unitId: unit.id,
     unitName: unit.name,
@@ -498,6 +538,7 @@ export function abstentionRecord(
     origin: a.origin,
     stateFingerprint: a.plan?.state_fingerprint ?? null,
     answerAt: "unite",
+    situationId: a.scenarioId,
     planId: key,
     unitId: unit.id,
     unitName: unit.name,
@@ -715,15 +756,25 @@ export function toCsv(records: DecisionRecord[], current: Person, now: string): 
 }
 
 /** Plain-text handover for the next shift: what is left to do, done, refused, unanswered. */
-export function handover(records: DecisionRecord[], current: Person, now: string, title: string): string {
+export function handover(
+  records: DecisionRecord[],
+  current: Person,
+  now: string,
+  title: string,
+  state: string[] = [],
+): string {
+  void current;
   const by = (s: Status) => records.filter((r) => statusOf(r, now) === s);
   const line = (r: DecisionRecord) => {
     const human = [...r.events].reverse().find((e) => e.by && e.type !== "note");
     const reason = reasonLabel(human?.reason);
-    const note = [...r.events].reverse().find((e) => e.note)?.note;
     const tag = r.origin === "unknown" ? " [origine non enregistrée]" : "";
-    return `- ${r.unitName} : ${r.short}${tag}${human ? ` (${who(human.by, current)})` : ""}${reason ? `, ${reason.toLowerCase()}` : ""}${note ? `. ${note}` : ""}`;
+    const notes = r.events.filter((e) => e.note).map((e) => `${e.note} (${signedName(e.by)})`);
+    const cond = r.answerAt === "plan" ? r.why.filter((w) => w.startsWith("Suppose")) : [];
+    return `- ${r.unitName} : ${r.short}${tag}${human ? ` (${signedName(human.by)})` : ""}${reason ? `, ${reason.toLowerCase()}` : ""}${[...cond, ...notes].map((n) => `. ${n}`).join("")}`;
   };
+  const free = records.filter((r) => r.kind === "note");
+  const noteLines = free.flatMap((r) => r.events.filter((e) => e.note).map((e) => `- ${r.unitName} : ${e.note} (${signedName(e.by)})`));
   const block = (label: string, list: DecisionRecord[]) =>
     list.length ? [`${label} (${list.length})`, ...list.map(line), ""] : [];
   const space = records.some((r) => spaceOf(r.origin) === "live") ? "live" : "demo";
@@ -733,6 +784,8 @@ export function handover(records: DecisionRecord[], current: Person, now: string
       ? "DÉMONSTRATION : patients fictifs, à ne pas transmettre comme des décisions réelles."
       : "Unité en observation.",
     "",
+    ...(state.length ? ["État de l'unité", ...state.map((l) => `- ${l}`), ""] : []),
+    ...(noteLines.length ? [`Notes pour la relève (${noteLines.length})`, ...noteLines, ""] : []),
     ...block("À faire", by("validated")),
     ...block("En attente de réponse", by("pending")),
     ...block("Faites", by("done")),
@@ -741,4 +794,75 @@ export function handover(records: DecisionRecord[], current: Person, now: string
     ...block("Sans réponse", by("expired")),
     "Propositions HospitalOS en mode observation : rien n'a été envoyé par l'outil.",
   ].join("\n");
+}
+
+// ---------------------------------------------------------------- acknowledged steps
+
+export interface Ack {
+  at: string;
+  by: Person | null;
+  status: "validated" | "done";
+}
+
+/**
+ * Steps people said they did (or are doing) in this situation, until the data shows them.
+ * Without it, the chain kept « Transport : à demander » after « C'est fait » (user testing),
+ * an invitation to call the transport twice. Keys: transport:<patient>, cleaning:<bed>,
+ * reserve:<bed>.
+ */
+export function acknowledged(
+  records: DecisionRecord[],
+  scope: { unitId: string; situationId: string; origin: RecordOrigin },
+  now: string,
+): Map<string, Ack> {
+  const out = new Map<string, Ack>();
+  for (const r of records) {
+    if (r.kind === "note" || !r.action || r.unitId !== scope.unitId || r.origin !== scope.origin) continue;
+    if (r.situationId && r.situationId !== scope.situationId) continue;
+    const s = statusOf(r, now);
+    if (s !== "validated" && s !== "done") continue;
+    const step = [...r.events].reverse().find((e) => e.type === s)!;
+    const key =
+      r.action.kind === "request_transport"
+        ? `transport:${r.action.patient_id}`
+        : r.action.kind === "prioritize_cleaning"
+          ? `cleaning:${r.action.bed_id}`
+          : r.action.kind === "reserve_bed"
+            ? `reserve:${r.action.bed_id}`
+            : null;
+    if (key && !out.has(key)) out.set(key, { at: step.at, by: step.by, status: s });
+  }
+  return out;
+}
+
+/** A free note for the next shift, signed, kept in the journal of the current space. */
+export function noteRecord(
+  unit: { id: string; name: string },
+  origin: RecordOrigin,
+  situationId: string,
+  at: string,
+  text: string,
+): DecisionRecord {
+  return {
+    id: `${origin}:note:${unit.id}:${at}:${Math.random().toString(36).slice(2, 8)}`,
+    origin,
+    stateFingerprint: null,
+    kind: "note",
+    situationId,
+    planId: "note",
+    unitId: unit.id,
+    unitName: unit.name,
+    situation: "Note pour la relève",
+    stateAt: at,
+    proposedAt: at,
+    expiresAt: at,
+    action: null,
+    title: text.slice(0, 120),
+    short: `note : ${text.slice(0, 80)}`,
+    rank: 0,
+    deltaRatio: null,
+    horizonEnd: "",
+    why: [],
+    events: [{ at, type: "note", by: getMe(), note: text.slice(0, 280) }],
+  };
 }

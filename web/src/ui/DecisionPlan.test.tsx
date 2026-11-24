@@ -25,6 +25,12 @@ function auditFigures(container: HTMLElement): number {
   return nodes.length;
 }
 
+/** The plan asks a person to re-check the medical authorization of S01 before validating. */
+const recheck = () => {
+  for (const box of screen.queryAllByRole("checkbox", { name: /J'ai revérifié l'autorisation médicale/ }))
+    fireEvent.click(box);
+};
+
 const status = async (scope: HTMLElement, expected: string) =>
   waitFor(() => expect(within(scope).getAllByTestId("ds-status")[0]!.dataset.status).toBe(expected));
 
@@ -54,6 +60,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   it("approves in demonstration only and sends nothing", async () => {
     render(<App />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
     const feedback = await screen.findByTestId("ds-feedback");
     expect(feedback.dataset.outcome).toBe("APPROVED_IN_DEMO");
@@ -63,6 +70,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
   it("keeps the plan decision in the demonstration journal, with its origin", async () => {
     render(<App />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
     await screen.findByTestId("ds-feedback");
     const stored = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
@@ -78,6 +86,84 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     expect(stored[0]!.events.map((e) => e.type)).toEqual(["proposed", "validated"]);
     expect(stored[0]!.stateFingerprint).toBe(FX.units[0]!.recommendation.snapshot_fingerprint);
     expect(window.localStorage.getItem("hospitalos.journal.v2.live")).toBeNull();
+  });
+
+  it("asks to re-check the medical authorization before a plan with a discharge can be validated", async () => {
+    render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    const approve = screen.getByTestId("ds-approve") as HTMLButtonElement;
+    expect(approve.disabled).toBe(true);
+    expect(screen.getByTestId("ds-recheck").textContent).toMatch(/autorisation médicale de sortie de S01/);
+    recheck();
+    expect(approve.disabled).toBe(false);
+  });
+
+  it("keeps a decided plan decided, and one validated plan per unit", async () => {
+    const { unmount } = render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    recheck();
+    fireEvent.click(screen.getByTestId("ds-approve"));
+    await screen.findByTestId("ds-feedback");
+    unmount();
+    // Reload: the same plan is not offered for validation again.
+    render(<App />);
+    expect((await screen.findByTestId("ds-decided")).textContent).toMatch(/^Plan validé par vous/);
+    expect(screen.queryByTestId("ds-approve")).toBeNull();
+    // Validating a variant asks before replacing the validated plan.
+    fireEvent.click(screen.getByTestId("ds-open-manual"));
+    fireEvent.click(within(await screen.findByTestId("ds-examples")).getByRole("button", { name: /X1 sortie 10:00/ }));
+    const manual = await screen.findByTestId("ds-manual");
+    fireEvent.click(within(manual).getByTestId("ds-approve"));
+    expect(within(manual).getByTestId("ds-confirm-replace").textContent).toMatch(/Ce choix le\s+remplace/);
+    fireEvent.click(within(manual).getByRole("button", { name: "Confirmer le remplacement" }));
+    await within(manual).findByTestId("ds-feedback");
+    const stored = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
+      title: string;
+      events: Array<{ type: string }>;
+    }>;
+    const last = (t: { events: Array<{ type: string }> }) => t.events.at(-1)!.type;
+    expect(stored.map((r) => [r.title.slice(0, 22), last(r)])).toEqual([
+      ["Plan 24 h : sortie S01", "superseded"],
+      ["Plan 24 h (variante) :", "validated"],
+    ]);
+  });
+
+  it("lets the team choose the other plan instead", async () => {
+    render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    fireEvent.click(within(screen.getByTestId("ds-alternative")).getByTestId("ds-choose-alternative"));
+    expect((await screen.findByTestId("ds-decided")).textContent).toMatch(/L'autre plan a été choisi/);
+    const stored = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
+      title: string;
+      rank: number;
+      events: Array<{ type: string; reason?: string }>;
+    }>;
+    expect(stored[0]!.events.at(-1)).toMatchObject({ type: "refused", reason: "preferred_option" });
+    expect(stored[1]).toMatchObject({ rank: 1 });
+    expect(stored[1]!.title).toMatch(/^Plan 24 h \(autre plan\) : renfort IDE R1/);
+  });
+
+  it("refuses a plan with a one-tap reason, kept in the journal with an optional note", async () => {
+    render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    fireEvent.click(screen.getByTestId("ds-reject"));
+    const reasons = await screen.findByTestId("ds-reasons");
+    expect(within(reasons).getAllByRole("button")).toHaveLength(6);
+    fireEvent.click(within(reasons).getByTestId("ds-reason-plan_unsuitable"));
+    const feedback = await screen.findByTestId("ds-feedback");
+    expect(feedback.dataset.outcome).toBe("REJECTED");
+    expect(feedback.textContent).toMatch(/Motif : inadapté à l'unité/);
+    const stored = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
+      events: Array<{ type: string; reason?: string }>;
+    }>;
+    expect(stored[0]!.events.at(-1)).toMatchObject({ type: "refused", reason: "plan_unsuitable" });
+    fireEvent.click(within(feedback).getByRole("button", { name: "+ Ajouter une note" }));
+    fireEvent.change(within(feedback).getByPlaceholderText(/Ex\./), { target: { value: "IDE de nuit déjà renforcée" } });
+    fireEvent.click(within(feedback).getByRole("button", { name: "Ajouter" }));
+    expect(await within(feedback).findByText(/IDE de nuit déjà renforcée/)).toBeTruthy();
+    // Undo removes the trace entirely.
+    fireEvent.click(within(feedback).getByRole("button", { name: "Annuler" }));
+    expect(JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]")).toHaveLength(0);
   });
 
   it("names the basis of every action and the lending unit of a loan", async () => {
@@ -130,7 +216,9 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     const examples = await screen.findByTestId("ds-examples");
     fireEvent.click(within(examples).getByRole("button", { name: /X1 sortie 10:00/ }));
     const manual = await screen.findByTestId("ds-manual");
-    expect(within(manual).getAllByText("imposé par vous")).toHaveLength(2);
+    // Precomputed examples never say « imposé par vous »: the person did not compose them.
+    expect(within(manual).getAllByText("imposé dans l'exemple")).toHaveLength(2);
+    expect(within(manual).getByTestId("ds-example-note")).toBeTruthy();
     expect(within(manual).getAllByText("consigne validée")).toHaveLength(2);
     expect(within(screen.getByTestId("ds-branches")).getAllByRole("row")).toHaveLength(4);
     auditFigures(container);
@@ -201,6 +289,7 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     );
     render(<App />);
     await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    recheck();
     fireEvent.click(screen.getByTestId("ds-approve"));
     expect((await screen.findByTestId("ds-conflict")).textContent).toMatch(/idempotency key already used/);
     expect(screen.queryByTestId("ds-feedback")).toBeNull();
