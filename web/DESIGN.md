@@ -125,16 +125,44 @@ sont enregistrées au même endroit, sur la page de l’unité.
   geste ajouté doit améliorer l’objectif d’au moins 1 % de sa valeur témoin et d’au moins
   une minute d’attente cumulée, en respectant la garde sur les ressources dans chaque scénario.
   Le bloc affiche le gain total et la contribution de chaque geste dans l’ordre évalué.
-- **Le gain en heures, avec son unité** : « Ce que vous gagnez d'ici 03:10 — −6 h 06 d'attente en
-  moins pour les patients à placer (−27 %) », puis « Sans rien faire 22 h 51 / Avec la proposition
-  16 h 45 », et une ligne qui dit ce qu'est l'attente cumulée (somme des attentes, moyenne de
-  32 scénarios).
+- **Le gain, toujours avec son hypothèse** (revue de la PR #50) : « −7 h 27 d'attente en moins
+  pour les patients à placer **si personne ne le fait d'ici 20:30** ». La comparaison historique
+  (« sans rien faire ») suppose une équipe qui n'appelle jamais le transport : le gain grandit
+  alors d'une heure-patient par heure de fenêtre (7 h 27 sur 12 h, 19 h 27 sur 24 h, sans que la
+  décision change). Le chiffre n'est donc jamais montré seul. Voir « Gain et pratique de l'équipe ».
 - **Source et fraîcheur au pied du bloc** : heure du calcul, moteur, état utilisé, dernière
   réception, information la plus ancienne, et **Recalculer**.
 - **Alternatives visibles**, un cran en dessous (fond plus pâle, bouton secondaire), chacune avec
   son gain seule : plus de repli « 1 autre option utile ».
 - **Vide ou en erreur, le bloc rapetisse** : une ligne (« Rien à changer pour l'instant », « Pas
   de proposition pour l'instant ») et « 41 données à vérifier ▾ » replié.
+
+## Gain et pratique de l'équipe
+
+Le bénéfice d'une recommandation dépend de ce que l'équipe aurait fait sans elle. Le moteur
+rejoue donc les mêmes gestes faits par l'équipe elle-même, plus tard (`team_practice` du plan) :
+
+- **Fenêtre bornée à la garde (12 h)**, pas 24 h : tous les chiffres du bloc (gain, gestes d'une
+  combinaison, autres options) portent sur la même fenêtre.
+- **Fourchette** : l'équipe fait le geste dans 30 min, dans l'heure ou dans 2 h ; de la
+  préparation déjà en cours à la préparation lancée par la demande. Sur la situation nominale :
+  « pas d'ici 20:30 » −7 h 27 ; « dans l'heure » −1 min à −33 min ; « dans 30 min » ≈ 0 à −16 min.
+  Ces délais sont des hypothèses de sensibilité, écrites comme telles : le délai habituel de
+  chaque unité est la première mesure à faire en pilote.
+- **Quasi-égalité** : quand, sous une pratique plausible, un autre premier geste fait aussi bien ou
+  mieux, le bandeau devient « à départager selon votre pratique », un encadré le dit, et l'option
+  est marquée dans la liste. Exemple nominal : préparation déjà en cours et équipe qui agit dans
+  l'heure, le bionettoyage de L11 passe devant le transport d'environ 1 patient-minute.
+- **Gestes non rejouables** (renfort, préparation d'une entrée) : pas de fourchette, le bloc le dit
+  et montre « Si personne ne le fait / Avec la proposition ».
+- Les focales 12 h et 24 h de l'onglet Plan gardent la comparaison « si personne ne fait ces
+  gestes », titrée « au plus », avec une phrase qui dit que ce chiffre grandit avec la fenêtre.
+- La vue Toutes les unités écrit « jusqu'à −7 h 27 si personne ne le fait d'ici 20:30 » et signale
+  les unités « à départager ».
+
+Le rejeu est vérifié contre la revue indépendante (`transport.json`) au centième de minute
+(`tests/hybrid/test_team_practice.py`). Une demande tardive impossible (transport coupé) est
+retentée tous les quarts d'heure ; une réservation tardive n'a lieu que si le lit est encore libre.
 
 ## Toutes les unités
 

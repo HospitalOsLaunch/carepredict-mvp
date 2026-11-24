@@ -1,0 +1,421 @@
+{
+  "revision": "85a8ee794ac8952c134cd01e21d691103eb23d3e",
+  "plan": "e790f9a6cf57694b0e3b08c17a357a928d53b5bd2d82de94d15fc437db3ed74d",
+  "scenarios": 32,
+  "cas": {
+    "reference_None": {
+      "temoin": 1645.3125,
+      "transport_immediat": 478.59375,
+      "gain_H24": 1166.71875,
+      "gain_H12": 446.71875,
+      "ajout_gain_entre_12_et_24": 720.0,
+      "premier_geste_isole": "request_transport:L02:P-0412",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 1645.3125,
+          "objectif": 1680.234375,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 1645.3125,
+          "objectif": 1680.234375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 1645.3125,
+          "objectif": 1680.234375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 1645.3125,
+          "objectif": 1680.234375,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 1642.5,
+          "objectif": 1678.125,
+          "veto": false
+        }
+      ]
+    },
+    "successif_0": {
+      "temoin": 478.59375,
+      "transport_immediat": 478.59375,
+      "gain_H24": 0.0,
+      "gain_H12": 0.0,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "prioritize_cleaning:L11:",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 475.78125,
+          "objectif": 549.9609375,
+          "veto": false
+        }
+      ]
+    },
+    "parallele_0": {
+      "temoin": 478.59375,
+      "transport_immediat": 478.59375,
+      "gain_H24": 0.0,
+      "gain_H12": 0.0,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "prioritize_cleaning:L11:",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 475.78125,
+          "objectif": 549.9609375,
+          "veto": false
+        }
+      ]
+    },
+    "successif_30": {
+      "temoin": 494.53125,
+      "transport_immediat": 478.59375,
+      "gain_H24": 15.9375,
+      "gain_H12": 15.9375,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "request_transport:L02:P-0412",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 494.53125,
+          "objectif": 564.0234375,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 494.53125,
+          "objectif": 564.0234375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 494.53125,
+          "objectif": 564.0234375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 494.53125,
+          "objectif": 564.0234375,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 491.71875,
+          "objectif": 561.9140625,
+          "veto": false
+        }
+      ]
+    },
+    "parallele_30": {
+      "temoin": 478.59375,
+      "transport_immediat": 478.59375,
+      "gain_H24": 0.0,
+      "gain_H12": 0.0,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "prioritize_cleaning:L11:",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 475.78125,
+          "objectif": 549.9609375,
+          "veto": false
+        }
+      ]
+    },
+    "successif_60": {
+      "temoin": 511.875,
+      "transport_immediat": 478.59375,
+      "gain_H24": 33.28125,
+      "gain_H12": 33.28125,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "request_transport:L02:P-0412",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 511.875,
+          "objectif": 577.03125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 511.875,
+          "objectif": 577.03125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 511.875,
+          "objectif": 577.03125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 511.875,
+          "objectif": 577.03125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 509.0625,
+          "objectif": 574.921875,
+          "veto": false
+        }
+      ]
+    },
+    "parallele_60": {
+      "temoin": 480,
+      "transport_immediat": 478.59375,
+      "gain_H24": 1.40625,
+      "gain_H12": 1.40625,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "prioritize_cleaning:L11:",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 480,
+          "objectif": 553.125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 480,
+          "objectif": 553.125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 480,
+          "objectif": 553.125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 480,
+          "objectif": 553.125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 477.1875,
+          "objectif": 551.015625,
+          "veto": false
+        }
+      ]
+    },
+    "successif_120": {
+      "temoin": 565.3125,
+      "transport_immediat": 478.59375,
+      "gain_H24": 86.71875,
+      "gain_H12": 86.71875,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "request_transport:L02:P-0412",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 565.3125,
+          "objectif": 626.484375,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 565.3125,
+          "objectif": 626.484375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 565.3125,
+          "objectif": 626.484375,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 565.3125,
+          "objectif": 626.484375,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 562.5,
+          "objectif": 622.5,
+          "veto": false
+        }
+      ]
+    },
+    "parallele_120": {
+      "temoin": 497.34375,
+      "transport_immediat": 478.59375,
+      "gain_H24": 18.75,
+      "gain_H12": 18.75,
+      "ajout_gain_entre_12_et_24": 0.0,
+      "premier_geste_isole": "request_transport:L02:P-0412",
+      "classement_gestes_isoles": [
+        {
+          "id": "no_op::",
+          "attente": 497.34375,
+          "objectif": 566.1328125,
+          "veto": false
+        },
+        {
+          "id": "request_transport:L02:P-0412",
+          "attente": 478.59375,
+          "objectif": 552.0703125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L05:",
+          "attente": 497.34375,
+          "objectif": 566.1328125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1043",
+          "attente": 497.34375,
+          "objectif": 566.1328125,
+          "veto": false
+        },
+        {
+          "id": "reserve_bed:L08:U-1047",
+          "attente": 497.34375,
+          "objectif": 566.1328125,
+          "veto": false
+        },
+        {
+          "id": "prioritize_cleaning:L11:",
+          "attente": 494.53125,
+          "objectif": 564.0234375,
+          "veto": false
+        }
+      ]
+    }
+  }
+}
