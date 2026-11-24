@@ -12,6 +12,7 @@ from datetime import datetime
 from hospitalos.operational.contract import instant
 
 from .models import Bed, Discharge, FactEvent, Patient, ResourcePool, State, Unit, compatible
+from .unit_schedule import UnitSchedule
 
 
 def canonical(event: FactEvent) -> str:
@@ -127,6 +128,25 @@ def reconstruct(
         {b.id: b for b in beds},
         {p.id: p for p in patients},
     )
+    schedules = tuple(e.fact for e in selected if isinstance(e.fact, UnitSchedule))
+    slot_ids: set[str] = set()
+    for schedule in schedules:
+        if schedule.id not in unit_map or schedule.staff_errors(set()):
+            issues.append(f"invalid_schedule:{schedule.id}")
+        for booking in schedule.admissions:
+            r = booking.request
+            if (
+                instant(r.provenance.available_at) > at
+                or instant(r.provenance.event_time) > instant(r.provenance.available_at)
+                or r.request_id in patient_map
+            ):
+                issues.append(f"invalid_booking:{r.request_id}")
+        ids = {o.option.option_id for o in schedule.offers} | {
+            b.request.request_id for b in schedule.admissions
+        }
+        if ids & slot_ids:
+            issues.append("ambiguous_schedule_identity")
+        slot_ids.update(ids)
     warnings: list[str] = []
     pool_map = {pool.id: pool for pool in pools}
     for pool in pools:
@@ -202,6 +222,7 @@ def reconstruct(
         units=units,
         beds=beds,
         patients=patients,
+        schedules=schedules,
         pools=pools,
         discharges=discharges,
         issues=tuple(sorted(set(issues))),

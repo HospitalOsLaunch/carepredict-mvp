@@ -1,0 +1,184 @@
+from datetime import UTC, datetime, timedelta
+
+import pytest
+
+from hospitalos.hybrid.models import Action, Bed, FactEvent, Unit, bundle_errors
+from hospitalos.hybrid.planning import PlanRequest, evaluate, plan
+from hospitalos.hybrid.scenarios import FutureAssumptions, ResourceChange, sample_future
+from hospitalos.hybrid.unit_schedule import UnitSchedule
+
+D = datetime(2026, 11, 24, 8, 30, tzinfo=UTC)
+
+
+def scheduled_request() -> PlanRequest:
+    def at(minutes: int) -> datetime:
+        return D + timedelta(minutes=minutes)
+
+    schedule = UnitSchedule.model_validate(
+        {
+            "id": "med",
+            "budget_minutes": 60,
+            "offers": [
+                {
+                    "option": {
+                        "option_id": "shift",
+                        "skill": "IDE",
+                        "start": at(30),
+                        "end": at(90),
+                        "source": "shared_unit",
+                        "confirmation": "confirmed",
+                        "lending_unit": "donor",
+                        "lending_unit_minimum": 2,
+                        "lending_unit_scheduled": 3,
+                    },
+                    "staff_id": "staff-x",
+                    "staffed_places": 1,
+                }
+            ],
+            "admissions": [
+                {
+                    "request": {
+                        "request_id": "elective",
+                        "requirements": ["oxygen"],
+                        "expected_arrival": at(40),
+                        "arrival_delay": {"support": [0], "weights": [1]},
+                        "care": [],
+                        "admission_task_minutes": 90,
+                        "provenance": {
+                            "source": "appointments",
+                            "obs_id": "booking",
+                            "event_time": D,
+                            "available_at": D,
+                        },
+                    },
+                    "window_start": at(30),
+                    "window_end": at(80),
+                }
+            ],
+        }
+    )
+    facts = (
+        Unit(id="med", staffed_beds=0, cleaning_teams=1),
+        Bed(id="bed", unit_id="med", state="clean", capabilities=("oxygen",)),
+        schedule,
+    )
+    events = tuple(
+        FactEvent(
+            hospital_id="H", event_id=f.kind, source="demo", event_time=D, available_at=D, fact=f
+        )
+        for f in facts
+    )
+    change = ResourceChange(
+        id="roster", minute=90, resource="staffed_beds", target_id="med", capacity=1
+    )
+    return PlanRequest(
+        hospital_id="H",
+        unit_id="med",
+        at=D,
+        expected_entities=tuple(f"{f.kind}:{f.id}" for f in facts),
+        events=events,
+        future=FutureAssumptions(declared_at=D, changes=(change,)),
+        horizon_minutes=1440,
+        max_bundle=2,
+        scenarios=2,
+    )
+
+
+def test_joint_only_gain_preserves_demand_and_timed_coverage() -> None:
+    req = scheduled_request()
+    p = plan(req)
+    assert {s.kind for s in p.bundle} == {"reinforce", "prepare_admission"}
+    assert {c.mean_waiting_patient_minutes for c in p.candidates} == {90}
+    assert p.bundle_evaluation and p.bundle_evaluation.mean_waiting_patient_minutes == 0
+    assert p.bundle_marginal_minutes == (0, 90)
+    assert [w.minutes for w in p.windows] == [720, 1440]
+    assert all(w.saved_wait == 90 for w in p.windows)
+    assert all(c.max_arrived == 1 for c in (*p.candidates, p.bundle_evaluation))
+    assert p.service_status == "served_in_all_sampled_scenarios"
+
+
+def test_end_of_staff_window_can_veto_a_faster_bundle() -> None:
+    req = scheduled_request().model_copy(update={"future": None})
+    p = plan(req)
+    assert p.decision == "no_change"
+    ev = evaluate(
+        req.state(),
+        (
+            Action(kind="reinforce", slot_id="shift"),
+            Action(kind="prepare_admission", slot_id="elective", bed_id="bed"),
+        ),
+        req,
+    )
+    assert ev.candidate.mean_staffed_pressure > 0
+
+
+def test_conditional_staff_and_lender_floor_are_checked() -> None:
+    state = scheduled_request().state()
+    schedule = state.schedules[0]
+    offer = schedule.offers[0]
+    for patch in ({"confirmation": "requested"}, {"lending_unit_scheduled": 2}):
+        changed = offer.model_copy(update={"option": offer.option.model_copy(update=patch)})
+        new = state.model_copy(
+            update={"schedules": (schedule.model_copy(update={"offers": (changed,)}),)}
+        )
+        assert bundle_errors(new, (Action(kind="reinforce", slot_id="shift"),))
+    assert len(sample_future(state, None, 3, 7).events) == 1
+
+
+def test_request_refuses_scope_switch() -> None:
+    with pytest.raises(ValueError, match="single beneficiary"):
+        PlanRequest.model_validate(scheduled_request().model_dump() | {"unit_id": "other"})
+
+
+def test_sandbox_holds_every_step_in_one_transaction() -> None:
+    from hospitalos.hybrid.live_models import (
+        Availability,
+        LivePolicy,
+        ObservationBatch,
+        PlanningOptions,
+    )
+    from hospitalos.hybrid.live_store import LiveStore
+    from hospitalos.hybrid.live_workflow import LiveWorkflow
+
+    req = scheduled_request()
+    store = LiveStore(LivePolicy(hospital_id="H", unit_id="med", sources=("demo",), mode="sandbox"))
+    try:
+        batch = ObservationBatch(
+            batch_id="first",
+            hospital_id="H",
+            source="demo",
+            manifest_version=1,
+            expected_entities=req.expected_entities,
+            events=req.events,
+            availability=(
+                Availability(
+                    resource="staffed",
+                    target_id="med",
+                    available=0,
+                    source="demo",
+                    observed_at=D,
+                    evidence_ref="n",
+                ),
+                Availability(
+                    resource="cleaning",
+                    target_id="med",
+                    available=1,
+                    source="demo",
+                    observed_at=D,
+                    evidence_ref="b",
+                ),
+            ),
+        )
+        store.ingest(batch, D)
+        flow = LiveWorkflow(store)
+        proposal = flow.propose(D, PlanningOptions(horizon_minutes=80, scenarios=1, max_bundle=2))
+        flow.approve(proposal, D, "reviewer")
+        held = dict(store.db.execute("SELECT resource,quantity FROM live_holds"))
+        assert held["booking:elective"] == held["bed:bed"] == held["offer:med:shift"] == 1
+        assert any(k.startswith("staff:staff-x:") for k in held)
+        assert {a["kind"] for a in flow.dispatch(proposal, D).actions} == {
+            "reinforce",
+            "prepare_admission",
+        }
+    finally:
+        store.close()

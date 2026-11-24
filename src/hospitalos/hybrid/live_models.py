@@ -131,5 +131,6 @@ class SandboxCommand(Closed):
     proposal_id: str
     hospital_id: Identifier
     action: dict[str, str | None]
+    actions: tuple[dict[str, str | None], ...] = ()
     mode: Literal["local_sandbox_only"] = "local_sandbox_only"
     external_execution: Literal[False] = False

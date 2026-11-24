@@ -13,6 +13,8 @@ from pydantic import Field, StrictBool, StrictInt, field_validator, model_valida
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
+from .unit_schedule import UnitSchedule
+
 Count = Annotated[StrictInt, Field(ge=0)]
 
 
@@ -104,7 +106,9 @@ class Discharge(Closed):
         return self
 
 
-Fact = Annotated[Unit | Bed | Patient | ResourcePool | Discharge, Field(discriminator="kind")]
+Fact = Annotated[
+    Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule, Field(discriminator="kind")
+]
 
 
 class FactEvent(Closed):
@@ -140,18 +144,37 @@ class State(Closed):
     patients: tuple[Patient, ...]
     pools: tuple[ResourcePool, ...] = ()
     discharges: tuple[Discharge, ...] = ()
+    schedules: tuple[UnitSchedule, ...] = ()
     issues: tuple[str, ...] = ()
     # Observed overload is retained and exposed, not clamped to capacity.
     warnings: tuple[str, ...] = ()
 
 
 class Action(Closed):
-    kind: Literal["no_op", "prioritize_cleaning", "reserve_bed", "request_transport"]
+    kind: Literal[
+        "no_op",
+        "prioritize_cleaning",
+        "reserve_bed",
+        "request_transport",
+        "reinforce",
+        "prepare_admission",
+    ]
     bed_id: Identifier | None = None
     patient_id: Identifier | None = None
 
+    slot_id: Identifier | None = None
+
     @model_validator(mode="after")
     def arguments(self) -> Self:
+        if self.kind in {"reinforce", "prepare_admission"}:
+            if (
+                not self.slot_id
+                or self.patient_id
+                or bool(self.bed_id) != (self.kind == "prepare_admission")
+            ):
+                raise ValueError("Invalid scheduled action arguments")
+        elif self.slot_id is not None:
+            raise ValueError("Unexpected slot")
         if self.kind == "no_op" and (self.bed_id or self.patient_id):
             raise ValueError("no_op has no arguments")
         if self.kind == "prioritize_cleaning" and (not self.bed_id or self.patient_id):
@@ -164,6 +187,8 @@ class Action(Closed):
 
     @property
     def key(self) -> str:
+        if self.slot_id:
+            return f"{self.kind}:{self.slot_id}:{self.bed_id or ''}"
         return f"{self.kind}:{self.bed_id or ''}:{self.patient_id or ''}"
 
 
@@ -220,6 +245,15 @@ def action_errors(state: State, action: Action) -> tuple[str, ...]:
         return state.issues
     if action.kind == "no_op":
         return ()
+    if action.kind == "reinforce":
+        for schedule in state.schedules:
+            for offer in schedule.offers:
+                option = offer.option
+                if option.option_id == action.slot_id:
+                    if offer.committed or option.start < state.at:
+                        return ("reinforcement_unavailable",)
+                    return schedule.staff_errors({option.option_id})
+        return ("reinforcement_missing",)
     beds = {b.id: b for b in state.beds}
     bed = beds.get(action.bed_id or "")
     if bed is None:
@@ -227,6 +261,23 @@ def action_errors(state: State, action: Action) -> tuple[str, ...]:
     unit = next((u for u in state.units if u.id == bed.unit_id), None)
     if unit is None:
         return ("unit_missing",)
+    if action.kind == "prepare_admission":
+        for schedule in state.schedules:
+            for booking in schedule.admissions:
+                if booking.request.request_id != action.slot_id:
+                    continue
+                if (
+                    schedule.id != bed.unit_id
+                    or booking.status != "booked"
+                    or booking.prepared_bed
+                    or booking.request.expected_arrival <= state.at
+                    or bed.state in {"closed", "unknown"}
+                    or bed.reserved_for
+                    or not set(booking.request.requirements) <= set(bed.capabilities)
+                ):
+                    return ("admission_slot_unavailable",)
+                return ()
+        return ("admission_missing",)
     if action.kind == "prioritize_cleaning":
         return () if bed.state == "dirty" and unit.cleaning_teams else ("cleaning_unavailable",)
     patient = next((p for p in state.patients if p.id == action.patient_id), None)
@@ -265,6 +316,33 @@ def bundle_errors(state: State, actions: tuple[Action, ...]) -> tuple[str, ...]:
             return errors
     if len({a.key for a in real}) != len(real):
         return ("bundle_duplicate_action",)
+    if state.schedules:
+        chosen = {a.slot_id for a in real if a.kind == "reinforce" and a.slot_id}
+        prepared = [a for a in real if a.kind == "prepare_admission"]
+        if len({a.slot_id for a in prepared}) != len(prepared):
+            return ("admission_prepared_twice",)
+        for schedule in state.schedules:
+            errors = schedule.staff_errors(chosen)
+            if errors:
+                return errors
+            slots = [
+                (b.window_start, b.window_end, b.prepared_bed or a.bed_id)
+                for b in schedule.admissions
+                if b.status == "booked"
+                for a in (
+                    next(
+                        (x for x in prepared if x.slot_id == b.request.request_id),
+                        Action(kind="no_op"),
+                    ),
+                )
+                if b.prepared_bed or a.bed_id
+            ]
+            if any(
+                bed == other and start < stop and begin < end
+                for i, (start, end, bed) in enumerate(slots)
+                for begin, stop, other in slots[:i]
+            ):
+                return ("admission_bed_window_conflict",)
     reserved = [a for a in real if a.kind == "reserve_bed"]
     if len({a.bed_id for a in reserved}) != len(reserved):
         return ("bundle_bed_reserved_twice",)

@@ -7,6 +7,7 @@ strings and reconciliation attestations are not authenticated by this module.
 from __future__ import annotations
 
 import uuid
+from collections import Counter
 from datetime import datetime, timedelta
 from typing import Literal
 
@@ -16,7 +17,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .live_models import Assessment, LiveSnapshot, PlanningOptions, SandboxCommand
 from .live_store import LiveStore
-from .models import Action, action_errors
+from .models import Action, bundle_errors
 
 
 class Reconciliation(Closed):
@@ -35,10 +36,19 @@ class Reconciliation(Closed):
 
 
 def claims(action: Action, snapshot: LiveSnapshot) -> tuple[str, ...]:
+    if action.kind == "reinforce":
+        schedule = next(
+            s
+            for s in snapshot.state.schedules
+            if any(o.option.option_id == action.slot_id for o in s.offers)
+        )
+        return tuple(schedule.claims_for(action.slot_id or "").elements())
     keys = [f"bed:{action.bed_id}"]
+    if action.kind == "prepare_admission":
+        return (*keys, f"booking:{action.slot_id}")
     if action.patient_id:
         keys.append(f"patient:{action.patient_id}")
-    unit_id = snapshot.state.units[0].id
+    unit_id = next(b.unit_id for b in snapshot.state.beds if b.id == action.bed_id)
     if action.kind == "prioritize_cleaning":
         keys.append(f"cleaning:{unit_id}")
     elif action.kind == "reserve_bed":
@@ -51,6 +61,13 @@ def claims(action: Action, snapshot: LiveSnapshot) -> tuple[str, ...]:
     else:
         raise ValueError("No actionable claim")
     return tuple(sorted(keys))
+
+
+def plan_claims(assessment: Assessment, current: LiveSnapshot) -> Counter[str]:
+    assert assessment.plan is not None
+    return Counter(
+        k for a in assessment.plan.bundle or (assessment.plan.selected,) for k in claims(a, current)
+    )
 
 
 class LiveWorkflow:
@@ -107,13 +124,15 @@ class LiveWorkflow:
         ).fetchone():
             raise ValueError("Another local action is unresolved; replan after reconciliation")
         proposal = assessment.plan
-        if proposal is None or action_errors(current.state, proposal.selected):
+        if proposal is None or bundle_errors(
+            current.state, proposal.bundle or (proposal.selected,)
+        ):
             raise ValueError("Action preconditions no longer hold")
         budgets = {r.key: r for r in current.resources}
-        for resource in claims(proposal.selected, current):
+        for resource, quantity in plan_claims(assessment, current).items():
             if resource in budgets:
                 available = budgets[resource].observed_available
-                if available is None or available < 1:
+                if available is None or available < quantity:
                     raise ValueError(f"Resource unavailable: {resource}")
         return current
 
@@ -127,10 +146,11 @@ class LiveWorkflow:
             expiry = min(
                 assessment.expires_at, now + timedelta(seconds=self.store.policy.hold_ttl_seconds)
             )
-            for resource in claims(assessment.plan.selected, snapshot):
+            for resource, quantity in plan_claims(assessment, snapshot).items():
                 self.store.db.execute(
-                    "INSERT INTO live_holds(proposal, resource, expires) VALUES (?, ?, ?)",
-                    (key, resource, expiry.isoformat()),
+                    "INSERT INTO live_holds(proposal, resource, expires, quantity) "
+                    "VALUES (?, ?, ?, ?)",
+                    (key, resource, expiry.isoformat(), quantity),
                 )
             self._record(key, "approved", now, actor, "local_sandbox_approval")
 
@@ -141,11 +161,11 @@ class LiveWorkflow:
                 raise ValueError("Not approved or already dispatched; do not retry")
             snapshot = self._check(key, assessment, now)
             assert assessment.plan is not None
-            expected = set(claims(assessment.plan.selected, snapshot))
+            expected = plan_claims(assessment, snapshot)
             held = {
-                str(r[0])
+                str(r[0]): r[1]
                 for r in self.store.db.execute(
-                    "SELECT resource FROM live_holds WHERE proposal=?", (key,)
+                    "SELECT resource, quantity FROM live_holds WHERE proposal=?", (key,)
                 )
             }
             if held != expected:
@@ -158,6 +178,9 @@ class LiveWorkflow:
                 proposal_id=key,
                 hospital_id=self.store.policy.hospital_id,
                 action=assessment.plan.selected.model_dump(),
+                actions=tuple(
+                    a.model_dump() for a in assessment.plan.bundle or (assessment.plan.selected,)
+                ),
             )
         return command
 

@@ -12,6 +12,7 @@ import math
 import statistics
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from itertools import combinations, zip_longest
 from typing import Annotated, Literal, Self
 
 from pydantic import Field, StrictInt, field_validator, model_validator
@@ -30,6 +31,7 @@ from .simulation import Assumptions, simulate
 class PlanRequest(Closed):
     hospital_id: Identifier
     at: datetime
+    unit_id: Identifier | None = None
     expected_entities: Annotated[tuple[str, ...], Field(min_length=1, max_length=400)]
     events: Annotated[tuple[FactEvent, ...], Field(max_length=2000)]
     assumptions: Assumptions = Assumptions()
@@ -52,6 +54,14 @@ class PlanRequest(Closed):
 
     @model_validator(mode="after")
     def scenario_availability(self) -> Self:
+        if self.unit_id and {
+            e.fact.id
+            for e in self.events
+            if e.fact.kind == "unit"
+            and e.available_at <= self.at
+            and e.hospital_id == self.hospital_id
+        } - {self.unit_id}:
+            raise ValueError("Unit planning requires a single beneficiary unit")
         if self.future is not None and self.future.declared_at > self.at:
             raise ValueError("Future hypotheses must be declared by the decision origin")
         if self.preparation is not None:
@@ -80,7 +90,18 @@ class Candidate(Closed):
     pressure_regression_scenarios: int = 0
 
 
+class PlanWindow(Closed):
+    minutes: int
+    baseline_wait: float
+    selected_wait: float
+    saved_wait: float
+    until: datetime
+
+
 class Plan(Closed):
+    unit_id: Identifier | None = None
+    windows: tuple[PlanWindow, ...] = ()
+
     schema_version: Literal["HYBRID_PLAN_4", "HYBRID_PLAN_5"] = "HYBRID_PLAN_4"
     evidence: Literal["simulation_under_declared_assumptions"] = (
         "simulation_under_declared_assumptions"
@@ -125,7 +146,9 @@ class Plan(Closed):
         return self
 
 
-def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], bool]:
+def enumerate_actions(
+    state: State, limit: int, horizon_minutes: int = 1440
+) -> tuple[tuple[Action, ...], bool]:
     candidates = [Action(kind="no_op")]
     for bed in sorted(state.beds, key=lambda b: b.id):
         action = Action(kind="prioritize_cleaning", bed_id=bed.id)
@@ -139,6 +162,34 @@ def enumerate_actions(state: State, limit: int) -> tuple[tuple[Action, ...], boo
             action = Action(kind="reserve_bed", bed_id=bed.id, patient_id=patient.id)
             if not action_errors(state, action):
                 candidates.append(action)
+    if state.schedules:
+        end = state.at + timedelta(minutes=horizon_minutes)
+        for schedule in state.schedules:
+            for offer in sorted(schedule.offers, key=lambda o: o.option.option_id):
+                action = Action(kind="reinforce", slot_id=offer.option.option_id)
+                if offer.option.start < end and not action_errors(state, action):
+                    candidates.append(action)
+            for booking in sorted(schedule.admissions, key=lambda b: b.request.request_id):
+                if booking.request.expected_arrival >= end:
+                    continue
+                for bed in sorted(state.beds, key=lambda b: b.id):
+                    action = Action(
+                        kind="prepare_admission", slot_id=booking.request.request_id, bed_id=bed.id
+                    )
+                    if not action_errors(state, action):
+                        candidates.append(action)
+        # Preserve space for each family under the global computation budget.
+        groups = [
+            [a for a in candidates if a.kind == kind]
+            for kind in (
+                "request_transport",
+                "prioritize_cleaning",
+                "reserve_bed",
+                "reinforce",
+                "prepare_admission",
+            )
+        ]
+        candidates = [candidates[0], *(a for row in zip_longest(*groups) for a in row if a)]
     return tuple(candidates[:limit]), len(candidates) > limit
 
 
@@ -166,7 +217,12 @@ def evaluate(state: State, action: Action | tuple[Action, ...], request: PlanReq
             future=future,
             preparation=request.preparation,
         )
-        result = score(state, trajectory, expected_future=future)
+        result = score(
+            state,
+            trajectory,
+            expected_future=future,
+            actions=(action,) if isinstance(action, Action) else action,
+        )
         losses.append(result.waiting_patient_minutes)
         waiting_at_end.append(result.waiting_at_end)
         arrivals.append(result.arrived)
@@ -216,9 +272,7 @@ def _bundle(
     useful = [
         c.action
         for c in sorted(candidates, key=lambda c: (c.objective, c.action.key))
-        if c.action.kind != "no_op"
-        and c.pressure_regression_scenarios == 0
-        and c.action != best.action
+        if c.action.kind != "no_op" and c.action != best.action
     ]
     steps: tuple[Action, ...] = (best.action,)
     current = best
@@ -227,6 +281,31 @@ def _bundle(
     marginals = [
         baseline.candidate.mean_waiting_patient_minutes - best.mean_waiting_patient_minutes
     ]
+    if best.action.kind == "no_op":
+        # Two neutral actions can be useful only together. Evaluate all admissible seed pairs.
+        winners = []
+        singles = {c.action.key: c for c in candidates}
+        for left, right in combinations(useful, 2):
+            if bundle_errors(state, (left, right)):
+                continue
+            ev = evaluate(state, (left, right), request)
+            if (
+                not ev.candidate.violations
+                and not _regressions(ev, baseline)
+                and baseline.candidate.objective - ev.candidate.objective >= material
+            ):
+                winners.append(
+                    (ev.candidate.objective, left.key, right.key, left, right, ev.candidate)
+                )
+        if not winners:
+            return (), None, ()
+        _, _, _, left, right, current = min(winners, key=lambda t: t[:3])
+        steps = (left, right)
+        intermediate = singles[left.key].mean_waiting_patient_minutes
+        marginals = [
+            baseline.candidate.mean_waiting_patient_minutes - intermediate,
+            intermediate - current.mean_waiting_patient_minutes,
+        ]
     while len(steps) < request.max_bundle:
         trials: list[tuple[float, str, Action, Evaluation]] = []
         for action in useful:
@@ -260,6 +339,8 @@ def plan(request: PlanRequest) -> Plan:
     parameters = request.model_dump(
         mode="json", exclude={"events", "max_bundle"} if request.max_bundle == 1 else {"events"}
     )
+    if request.unit_id is None:
+        parameters.pop("unit_id")
     parameters["fingerprint"] = state.fingerprint
     plan_id = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
     candidates: tuple[Candidate, ...] = ()
@@ -270,6 +351,8 @@ def plan(request: PlanRequest) -> Plan:
     marginals: tuple[float, ...] = ()
     decision: Literal["recommend", "no_change", "abstain"] = "abstain"
     reasons = state.issues
+    if request.unit_id and not any(u.id == request.unit_id for u in state.units):
+        reasons = (*reasons, "selected_unit_missing")
     warnings = state.warnings
     if request.preparation is not None:
         warnings = (*warnings, "synthetic_learned_preparation_requires_real_validation")
@@ -277,7 +360,9 @@ def plan(request: PlanRequest) -> Plan:
         "not_assessed", "served_in_all_sampled_scenarios", "unserved_in_some_sampled_scenarios"
     ] = "not_assessed"
     if not reasons:
-        actions, truncated = enumerate_actions(state, request.max_candidates)
+        actions, truncated = enumerate_actions(
+            state, request.max_candidates, request.horizon_minutes
+        )
         evaluations = tuple(evaluate(state, action, request) for action in actions)
         baseline = evaluations[0]
         candidates = tuple(
@@ -319,9 +404,16 @@ def plan(request: PlanRequest) -> Plan:
                 if best.scenarios_with_unserved_demand
                 else "served_in_all_sampled_scenarios"
             )
-            if selected.kind != "no_op" and request.max_bundle > 1:
+            if request.max_bundle > 1 and (state.schedules or selected.kind != "no_op"):
                 bundle, bundle_evaluation, marginals = _bundle(
                     state, request, best, baseline, candidates
+                )
+            if bundle_evaluation:
+                selected = bundle[0]
+                service_status = (
+                    "unserved_in_some_sampled_scenarios"
+                    if bundle_evaluation.scenarios_with_unserved_demand
+                    else "served_in_all_sampled_scenarios"
                 )
             decision = "no_change" if selected.kind == "no_op" else "recommend"
             reasons = (
@@ -334,7 +426,31 @@ def plan(request: PlanRequest) -> Plan:
                 for c in candidates
             ):
                 reasons = ("simulated_improvement_rejected_due_to_resource_pressure",)
+    windows = []
+    if decision != "abstain":
+        for minutes in sorted(
+            {m for m in (720, 1440, request.horizon_minutes) if m <= request.horizon_minutes}
+        ):
+            if minutes == request.horizon_minutes:
+                before = baseline.candidate
+                after = bundle_evaluation or best
+            else:
+                clipped = request.model_copy(update={"horizon_minutes": minutes})
+                before = evaluate(state, no_op, clipped).candidate
+                after = evaluate(state, bundle or (selected,), clipped).candidate
+            windows.append(
+                PlanWindow(
+                    minutes=minutes,
+                    baseline_wait=before.mean_waiting_patient_minutes,
+                    selected_wait=after.mean_waiting_patient_minutes,
+                    saved_wait=before.mean_waiting_patient_minutes
+                    - after.mean_waiting_patient_minutes,
+                    until=state.at + timedelta(minutes=minutes),
+                )
+            )
     return Plan(
+        unit_id=request.unit_id or (state.units[0].id if len(state.units) == 1 else None),
+        windows=tuple(windows),
         schema_version="HYBRID_PLAN_5"
         if request.preparation is not None
         and request.preparation.schema_version == "PREPARATION_FORECAST_2"

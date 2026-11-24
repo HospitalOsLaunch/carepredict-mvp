@@ -33,6 +33,7 @@ from .live_models import (
 )
 from .models import Bed, FactEvent, Patient, ResourcePool, Unit
 from .planning import PlanRequest, plan
+from .unit_schedule import UnitSchedule
 
 
 def digest(value: Any) -> str:
@@ -70,6 +71,12 @@ class LiveStore:
         try:
             with self.lock, self.db:
                 self.db.execute("BEGIN IMMEDIATE")
+                if "quantity" not in {
+                    r[1] for r in self.db.execute("PRAGMA table_info(live_holds)")
+                }:
+                    self.db.execute(
+                        "ALTER TABLE live_holds ADD COLUMN quantity INTEGER NOT NULL DEFAULT 1"
+                    )
                 row = self.db.execute("SELECT value FROM live_meta WHERE key='policy'").fetchone()
                 if row and LivePolicy.model_validate_json(row[0]) != policy:
                     raise ValueError("Stored policy is immutable; use a new database")
@@ -145,7 +152,7 @@ class LiveStore:
             if (
                 not separator
                 or not identifier
-                or kind not in {"unit", "bed", "patient", "pool", "discharge"}
+                or kind not in {"unit", "bed", "patient", "pool", "discharge", "unit_schedule"}
             ):
                 raise ValueError("Malformed manifest entity")
             if kind == "unit" and identifier != policy.unit_id:
@@ -183,7 +190,7 @@ class LiveStore:
         fact = event.fact
         unit = self.policy.unit_id
         if (
-            (isinstance(fact, Unit) and fact.id != unit)
+            (isinstance(fact, (Unit, UnitSchedule)) and fact.id != unit)
             or (isinstance(fact, Bed) and fact.unit_id != unit)
             or (isinstance(fact, ResourcePool) and fact.unit_ids != (unit,))
             or (isinstance(fact, Patient) and unit not in fact.compatible_units)
@@ -284,7 +291,11 @@ class LiveStore:
         for (key, _source), history in histories.items():
             latest = max(o.observed_at for o in history)
             active[key].extend(o for o in history if o.observed_at == latest)
-        held = Counter(str(r[0]) for r in self.db.execute("SELECT resource FROM live_holds"))
+        held = Counter(
+            dict(
+                self.db.execute("SELECT resource, SUM(quantity) FROM live_holds GROUP BY resource")
+            )
+        )
         resources: list[ResourceBudget] = []
         warnings = list(state.warnings)
         for key in sorted(expected):
