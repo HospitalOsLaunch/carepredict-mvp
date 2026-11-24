@@ -21,6 +21,11 @@ import type { Action, Plan } from "../api/types";
 import {
   type Assessment,
   type Gain,
+  type Practice,
+  delayText,
+  delaysText,
+  practiceOf,
+  savedText,
   aheadOf,
   bedElsewhere,
   clock,
@@ -111,6 +116,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
 
   const cmp = comparison(plan);
   const gain = gainOf(plan);
+  const practice = practiceOf(plan);
   const expiresAt = a.expiresAt ?? plan.expires_at;
   const minutesLeft = minutesBetween(now, expiresAt);
   const expired = minutesLeft <= 0;
@@ -160,7 +166,9 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
     <section className="panel proposal" aria-labelledby="proposal-title" data-testid="proposal" data-plan-id={plan.plan_id} data-unit={plan.unit_id}>
       <Band
         label={
-          pending && lowGain
+          pending && practice?.contenders.length
+            ? "Action prioritaire · à départager selon votre pratique"
+            : pending && lowGain
             ? "Option à faible gain"
             : pending
               ? combined
@@ -182,7 +190,11 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                 {todo.map((x, i) => (
                   <li key={`${x.kind}:${x.bed_id}:${x.patient_id}:${x.slot_id}`} className="steps__item">
                     <span className="steps__text">{actionTitle(x, where(x))}</span>
-                    {plan.bundle_marginal_minutes?.[i] != null ? (
+                    {plan.team_practice?.step_saved_wait?.[i] != null ? (
+                      <span className="steps__gain num" {...planSource(plan, `/team_practice/step_saved_wait/${i}`)}>
+                        {savedText(plan.team_practice.step_saved_wait[i]!)}
+                      </span>
+                    ) : plan.bundle_marginal_minutes?.[i] != null ? (
                       <span className="steps__gain num" {...planSource(plan,`/bundle_marginal_minutes/${i}`)}>
                         −{waitText(plan.bundle_marginal_minutes[i]!)}
                       </span>
@@ -205,7 +217,11 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
             ) : null}
           </div>
         </div>
-        {gain ? <Effect plan={plan} gain={gain} unserved={cmp.selected?.scenarios_with_unserved_demand ?? 0} /> : null}
+        {practice ? (
+          <PracticeEffect plan={plan} p={practice} title={(x) => actionTitle(x, where(x))} />
+        ) : gain ? (
+          <Effect plan={plan} gain={gain} unserved={cmp.selected?.scenarios_with_unserved_demand ?? 0} />
+        ) : null}
       </div>
       <Decision
         key={plan.plan_id}
@@ -223,6 +239,122 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
       />
       <Source a={a} plan={plan} busy={busy} onEvaluate={onEvaluate} label={evaluateLabel} />
     </section>
+  );
+}
+
+const lowerFirst = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+
+const PREPARATION = {
+  after_request: "préparation lancée par la demande",
+  already_started: "préparation déjà en cours",
+} as const;
+
+/**
+ * What is gained, against what (review of PR #50). The figure is never shown without its
+ * hypothesis: « if nobody makes the gesture before 08:30 ». The same gesture made by the team
+ * after a delay gives a range, much smaller. Window bounded to the shift (12 h), not 24 h, so
+ * the gain does not grow by one hour per hour of window. A near tie is shown, not hidden.
+ */
+function PracticeEffect({ plan, p, title }: { plan: Plan; p: Practice; title: (a: Action) => string }) {
+  const at = (pointer: string) => planSource(plan, `/team_practice${pointer}`);
+  const until = <time {...at("/until")}>{p.until}</time>;
+  return (
+    <div className="effect" aria-label="Ce que vous gagnez" data-testid="effect">
+      <p className="effect__kicker">
+        Ce que vous gagnez d'ici {until} · selon ce que l'équipe aurait fait sans HospitalOS
+      </p>
+      <div className="effect__figure">
+        <span className="effect__delta num" {...at("/never_saved_wait")}>
+          {savedText(p.never)}
+        </span>
+        <span className="effect__unit">
+          d'attente en moins pour les patients à placer <b>si personne ne le fait d'ici {until}</b>
+        </span>
+      </div>
+      {p.supported && p.rows.length ? (
+        <table className="practice" data-testid="practice">
+          <caption className="visually-hidden">Attente évitée selon ce que l'équipe aurait fait sans HospitalOS</caption>
+          <thead>
+            <tr>
+              <th scope="col">Sans HospitalOS, l'équipe le fait…</th>
+              <th scope="col" className="r">
+                Attente évitée
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">pas d'ici {p.until}</th>
+              <td className="r num" {...at("/never_saved_wait")}>
+                {savedText(p.never)}
+              </td>
+            </tr>
+            {p.rows.map((r) => (
+              <tr key={r.delay}>
+                <th scope="row" {...at(`/cases/${r.highIndex}/delay_minutes`)}>
+                  {delayText(r.delay)}
+                </th>
+                <td className="r num">
+                  {Math.abs(r.high - r.low) < 0.5 ? (
+                    <span {...at(`/cases/${r.highIndex}/saved_wait`)}>{savedText(r.high)}</span>
+                  ) : (
+                    <>
+                      <span {...at(`/cases/${r.lowIndex}/saved_wait`)}>{savedText(r.low)}</span> à{" "}
+                      <span {...at(`/cases/${r.highIndex}/saved_wait`)}>{savedText(r.high)}</span>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <>
+          <div
+            className="pair"
+            role="img"
+            aria-label={`Attente cumulée d'ici ${p.until} : ${waitText(plan.team_practice!.never_wait)} si personne ne le fait, ${waitText(plan.team_practice!.selected_wait)} avec la proposition.`}
+          >
+            <PairRow
+              label="Si personne ne le fait"
+              provenance={at("/never_wait")}
+              value={plan.team_practice!.never_wait}
+              max={Math.max(plan.team_practice!.never_wait, plan.team_practice!.selected_wait, 1)}
+            />
+            <PairRow
+              label="Avec la proposition"
+              provenance={at("/selected_wait")}
+              value={plan.team_practice!.selected_wait}
+              max={Math.max(plan.team_practice!.never_wait, plan.team_practice!.selected_wait, 1)}
+              on
+            />
+          </div>
+          <p className="effect__note" data-testid="practice-unsupported">
+          Pas de fourchette pour ce geste : un renfort ou la préparation d'une entrée ne se rejoue pas encore avec un
+          délai d'équipe. Le gain est donc celui d'une équipe qui ne le ferait pas.
+          </p>
+        </>
+      )}
+      {p.contenders.map((c) => (
+        <p className="effect__tie" role="note" data-testid="near-tie" key={c.index}>
+          <b>Quasi-égalité.</b> Si l'équipe le fait déjà {delaysText(c.delays)} (
+          {c.preparations.map((x) => PREPARATION[x]).join(" ou ")}), <b>{lowerFirst(title(c.action))}</b> fait aussi
+          bien ou mieux (écart jusqu'à{" "}
+          <span className="num" {...at(`/cases/${c.index}/leader_margin`)}>
+            {c.margin < 0.5 ? "< 1 min" : waitText(c.margin)}
+          </span>
+          ). À choisir selon votre pratique.
+        </p>
+      ))}
+      <p className="effect__note">
+        {p.supported && p.rows.length
+          ? "La fourchette va d'une préparation déjà en cours à une préparation lancée par la demande. Ces délais sont des hypothèses, pas des observations : le délai habituel de l'unité est à mesurer. "
+          : ""}
+        Attente cumulée : somme des
+        attentes des patients à placer sur les <span {...at("/window_minutes")}>{duration(p.windowMinutes)}</span> à
+        venir, moyenne de <span {...planSource(plan, "/scenarios")}>{plan.scenarios}</span> scénarios simulés.
+      </p>
+    </div>
   );
 }
 
@@ -725,6 +857,7 @@ function Others(props: {
   const plan = props.a.plan!;
   const canAct = props.mainStatus !== "expired" && props.mainStatus !== "superseded";
   const combined = (plan.bundle?.length ?? 0) > 1;
+  const practice = practiceOf(plan);
   // Visible by default, one step below the proposal: real alternatives, not a hidden link.
   return (
     <div className="others" data-testid="others">
@@ -736,6 +869,22 @@ function Others(props: {
           const rec = recordFor(props.a, props.unit, plan, o.action, i + 1);
           const kept = records.find((r) => r.id === rec.id);
           const st = kept ? statusOf(kept, props.now) : null;
+          const tie = practice?.contenders.find(
+            (c) =>
+              c.action.kind === o.action.kind &&
+              c.action.bed_id === o.action.bed_id &&
+              c.action.patient_id === o.action.patient_id &&
+              c.action.slot_id === o.action.slot_id,
+          );
+          const altIndex =
+            plan.team_practice?.alternatives?.findIndex(
+              (x) =>
+                x.action.kind === o.action.kind &&
+                x.action.bed_id === o.action.bed_id &&
+                x.action.patient_id === o.action.patient_id &&
+                x.action.slot_id === o.action.slot_id,
+            ) ?? -1;
+          const alt = altIndex >= 0 ? { ...plan.team_practice!.alternatives![altIndex]!, index: altIndex } : null;
           const firstOnly =
             combined &&
             o.action.kind === plan.selected.kind &&
@@ -748,10 +897,24 @@ function Others(props: {
                   {firstOnly ? "Seulement : " : ""}
                   {rec.title}
                 </p>
-                <p className="others__effect num">
-                  {o.saved > 0.5 ? `−${waitText(o.saved)} d'attente` : "gain négligeable"} ({deltaText(o.deltaRatio)}) d'ici{" "}
-                  {rec.horizonEnd}
-                </p>
+                {alt ? (
+                  <p className="others__effect num">
+                    <span {...planSource(plan, `/team_practice/alternatives/${alt.index}/saved_wait`)}>
+                      {alt.saved_wait > 0.5 ? `−${waitText(alt.saved_wait)} d'attente` : "gain négligeable"}
+                    </span>{" "}
+                    d'ici {practice!.until}, si personne ne fait rien d'autre
+                  </p>
+                ) : (
+                  <p className="others__effect num">
+                    {o.saved > 0.5 ? `−${waitText(o.saved)} d'attente` : "gain négligeable"} ({deltaText(o.deltaRatio)}) d'ici{" "}
+                    {rec.horizonEnd}, si personne ne fait rien d'autre
+                  </p>
+                )}
+                {tie ? (
+                  <p className="others__tie" data-testid="others-tie">
+                    Aussi bien ou mieux si l'équipe fait déjà le geste principal {delaysText(tie.delays)}
+                  </p>
+                ) : null}
               </div>
               {st ? (
                 <span className={`pill pill--${STATUS[st].tone}`}>{STATUS[st].label}</span>

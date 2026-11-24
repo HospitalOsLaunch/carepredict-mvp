@@ -247,7 +247,7 @@ describe("cockpit", () => {
 });
 
 describe("action block, all units, plan focales", () => {
-  it("puts the priority action right under the greeting, its gain in hours and its source", async () => {
+  it("puts the priority action under the greeting, its gain against a named practice, and its source", async () => {
     render(<App />);
     await ready();
     const hello = document.querySelector("h1.hello")!;
@@ -258,11 +258,36 @@ describe("action block, all units, plan focales", () => {
     const effect = screen.getByTestId("effect").textContent!;
     expect(effect).toMatch(/Ce que vous gagnez d'ici \d\d:\d\d/);
     expect(effect).toMatch(/−(\d+\sh\s\d\d|\d+\smin)\s*d'attente en moins/);
-    expect(effect).toMatch(/Sans rien faire/);
+    // The figure never comes without its hypothesis, and the team's own practice gives a range.
+    expect(effect).toMatch(/si personne ne le fait d'ici \d\d:\d\d/);
+    expect(effect).not.toMatch(/Sans rien faire/);
+    const rows = within(screen.getByTestId("practice")).getAllByRole("row").slice(1);
+    expect(rows.map((r) => r.querySelector("th")!.textContent)).toEqual([
+      "pas d'ici 20:30",
+      "dans 2 h",
+      "dans l'heure",
+      "dans 30 min",
+    ]);
+    // Nominal: the review's numbers, on the 12-hour window (sensitivity, not a measurement).
+    expect(rows[0]!.textContent).toMatch(/−7\sh\s27/);
+    expect(rows[2]!.textContent).toMatch(/−1\smin à −33\smin/);
+    expect(effect).toMatch(/hypothèses, pas des observations/);
+    // A near tie is said, and the contender is marked in the alternatives.
+    expect(screen.getByTestId("near-tie").textContent).toMatch(/prioriser le bionettoyage du lit L11/);
+    expect(within(screen.getByTestId("others")).getByTestId("others-tie")).toBeTruthy();
     const source = screen.getByTestId("proposal-source").textContent!;
     expect(source).toMatch(/Calculé à \d\d:\d\d par le planificateur de l'unité/);
     expect(source).toMatch(/information la plus ancienne/);
     expect(screen.getByRole("button", { name: /Recalculer/ })).toBeTruthy();
+  });
+
+  it("says when a gesture cannot be replayed with a team delay (reinforcement, admission)", async () => {
+    window.history.replaceState(null, "", "/?situation=garde");
+    render(<App />);
+    const effect = await screen.findByTestId("effect");
+    expect(within(effect).getByTestId("practice-unsupported").textContent).toMatch(/Pas de fourchette/);
+    expect(effect.textContent).toMatch(/Si personne ne le fait/);
+    expect(within(effect).queryByTestId("practice")).toBeNull();
   });
 
   it("proposes a combination of gestures when they help together, each step with its own gain", async () => {

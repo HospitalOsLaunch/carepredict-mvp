@@ -72,7 +72,8 @@ try {
       assert.deepEqual(JSON.parse(raw), value);
     }
   }
-  await audit("[data-testid=proposal]", ["saved_wait", "baseline_wait", "selected_wait", "scenarios"]);
+  // The gain is shown against an explicit practice (team_practice), on a 12-hour window.
+  await audit("[data-testid=proposal]", ["never_saved_wait", "never_wait", "selected_wait", "until", "scenarios"]);
   for (const focal of ["maintenant", "12h", "24h"]) {
     await page.evaluate((f) => {
       location.hash = "/plan/" + f;

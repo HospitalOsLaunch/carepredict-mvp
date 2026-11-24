@@ -102,8 +102,12 @@ export function AllUnits(props: {
                       <>
                         <span className="allunits__action">{s.action}</span>
                         {s.saved != null && s.saved > 0.5 ? (
-                          <small className="allunits__gain">−{waitText(s.saved)} d'attente</small>
+                          <small className="allunits__gain">
+                            jusqu'à −{waitText(s.saved)} d'attente
+                            {s.savedUntil ? ` si personne ne le fait d'ici ${s.savedUntil}` : ""}
+                          </small>
                         ) : null}
+                        {s.nearTie ? <small className="allunits__tie">à départager selon la pratique</small> : null}
                       </>
                     ) : s.decision === "abstain" ? (
                       <span className="mute">
