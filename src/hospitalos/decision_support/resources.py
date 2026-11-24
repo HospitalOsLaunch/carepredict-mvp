@@ -57,15 +57,17 @@ def lender_capacities(
             groups.setdefault((o.lending_unit, o.skill, h), []).append(o)
     out = {}
     for (unit, skill, h), offers in groups.items():
-        scheduled = [o.lending_unit_scheduled for o in offers]
-        minimum = [o.lending_unit_minimum for o in offers]
+        scheduled = [
+            o.lending_unit_scheduled for o in offers if o.lending_unit_scheduled is not None
+        ]
+        minimum = [o.lending_unit_minimum for o in offers if o.lending_unit_minimum is not None]
         ids = tuple(sorted(o.option_id for o in offers))
-        if any(v is None for v in scheduled + minimum):
+        if len(scheduled) != len(offers) or len(minimum) != len(offers):
             out[(unit, skill, h)] = LenderCapacity(
                 unit, skill, h, None, None, None, ids, False, "unknown_commitment"
             )
             continue
-        sched, mini = min(scheduled), max(minimum)  # type: ignore[type-var]
+        sched, mini = min(scheduled), max(minimum)
         conflicting = len(set(scheduled)) > 1 or len(set(minimum)) > 1
         out[(unit, skill, h)] = LenderCapacity(
             unit,
@@ -75,7 +77,7 @@ def lender_capacities(
             sched,
             mini,
             ids,
-            conflicting,  # type: ignore[operator]
+            conflicting,
             "prudent:min_scheduled-max_minimum" if conflicting else "concordant",
         )
     return out
