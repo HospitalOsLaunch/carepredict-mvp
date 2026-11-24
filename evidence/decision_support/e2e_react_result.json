@@ -28,7 +28,7 @@
   {
    "id": "T32:auto",
    "ok": true,
-   "detail": "{\"total\":18,\"bad\":[]}"
+   "detail": "{\"total\":24,\"bad\":[]}"
   },
   {
    "id": "P4:manual_prefilled_from_auto",
@@ -53,7 +53,7 @@
   {
    "id": "T32:manual",
    "ok": true,
-   "detail": "{\"total\":27,\"bad\":[]}"
+   "detail": "{\"total\":33,\"bad\":[]}"
   },
   {
    "id": "T06:hypothesis_not_approvable",
@@ -68,7 +68,7 @@
   {
    "id": "T05:revoked_stay_not_proposed",
    "ok": true,
-   "detail": "Renfort IDE 14:00–20:00 (R1, interim)demandé, non confirmé\nRenfort IDE 07:00–11:00 (R2, internal_pool)"
+   "detail": "Renfort IDE de 14:00 à 20:00, intérim (R1)\noption de renfort\ndemandé, non confirmé\nRenfort IDE de 07:00 à 11:00, pool interne (R2)\noption de renfort\nconfirmé"
   },
   {
    "id": "P4:approve_in_demo_no_command",

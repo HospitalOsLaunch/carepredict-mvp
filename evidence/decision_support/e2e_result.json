@@ -24,7 +24,7 @@
   {
    "id": "T32:auto",
    "ok": true,
-   "detail": "{\"total\":19,\"bad\":[],\"loose\":0}"
+   "detail": "{\"total\":25,\"bad\":[],\"loose\":0}"
   },
   {
    "id": "P4:manual_prefilled_from_auto",
@@ -49,7 +49,7 @@
   {
    "id": "T32:manual",
    "ok": true,
-   "detail": "{\"total\":28,\"bad\":[],\"loose\":0}"
+   "detail": "{\"total\":34,\"bad\":[],\"loose\":0}"
   },
   {
    "id": "T06:hypothesis_not_approvable",
@@ -64,7 +64,7 @@
   {
    "id": "T05:revoked_stay_not_proposed",
    "ok": true,
-   "detail": "Renfort IDE 14:00–20:00 (R1, interim)demandé, non confirmé\nRenfort IDE 07:00–11:00 (R2, internal_pool)"
+   "detail": "Renfort IDE de 14:00 à 20:00, intérim (R1)\noption de renfort\ndemandé, non confirmé\nRenfort IDE de 07:00 à 11:00, pool interne (R2)\noption de renfort\nconfirmé"
   },
   {
    "id": "P4:approve_in_demo_no_command",
@@ -89,7 +89,7 @@
   {
    "id": "T32:no_action",
    "ok": true,
-   "detail": "{\"total\":16,\"bad\":[],\"loose\":0}"
+   "detail": "{\"total\":22,\"bad\":[],\"loose\":0}"
   },
   {
    "id": "P4:no_horizontal_scroll_390px",

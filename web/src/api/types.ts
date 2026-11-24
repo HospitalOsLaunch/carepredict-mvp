@@ -180,6 +180,12 @@ export interface Plan {
   tail_weight: number;
   discharge_readiness: DischargeReadiness[];
   service_status: "not_assessed" | "served_in_all_sampled_scenarios" | "unserved_in_some_sampled_scenarios";
+  /** Immediate actions evaluated together (first = selected); empty for a single action. */
+  bundle?: Action[];
+  /** Joint evaluation of the bundle on the same paired scenarios. */
+  bundle_evaluation?: Candidate | null;
+  /** Patient-minutes of waiting removed by each step, in order (first vs doing nothing). */
+  bundle_marginal_minutes?: number[];
 }
 
 export interface PlanRequest {

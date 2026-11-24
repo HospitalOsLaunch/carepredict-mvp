@@ -363,10 +363,18 @@ export interface Comparison {
 const sameAction = (a: Action, b: Action) =>
   a.kind === b.kind && a.bed_id === b.bed_id && a.patient_id === b.patient_id;
 
+/** The steps of the proposal: the planner's combination, or its single action. */
+export function steps(plan: Plan): Action[] {
+  return plan.bundle?.length ? plan.bundle : [plan.selected];
+}
+
 export function comparison(plan: Plan | null): Comparison {
   const candidates = plan?.candidates ?? [];
   const baseline = candidates.find((c) => c.action.kind === "no_op") ?? null;
-  const selected = plan ? (candidates.find((c) => sameAction(c.action, plan.selected)) ?? null) : null;
+  // A combination is judged on its joint evaluation, never on its first step alone.
+  const selected = plan
+    ? (plan.bundle_evaluation ?? candidates.find((c) => sameAction(c.action, plan.selected)) ?? null)
+    : null;
   const deltaMean =
     baseline && selected
       ? selected.mean_waiting_patient_minutes - baseline.mean_waiting_patient_minutes
@@ -498,12 +506,26 @@ export interface UnitSummary {
   usable: number;
   dirty: number;
   longestWaitMinutes: number | null;
+  /** For the all-units view: the priority action in words, its gain, departures, doubts. */
+  action?: string | null;
+  saved?: number | null;
+  departures?: { ready: number; total: number };
+  checks?: number;
+  doubtful?: boolean;
+  stateAt?: string | null;
 }
 
-export function unitSummary(id: string, name: string, a: Assessment | null): UnitSummary {
+export function unitSummary(
+  id: string,
+  name: string,
+  a: Assessment | null,
+  title?: (plan: Plan, a: Assessment) => string,
+): UnitSummary {
   if (!a) return { id, name, decision: "pending", waiting: 0, usable: 0, dirty: 0, longestWaitMinutes: null };
   const s = situation(a.state, a.plan);
   const q = queueEntries(a.state);
+  const chains = releaseChains(a.state, a.plan);
+  const gain = a.plan && a.plan.decision === "recommend" ? gainOf(a.plan) : null;
   return {
     id,
     name,
@@ -512,6 +534,12 @@ export function unitSummary(id: string, name: string, a: Assessment | null): Uni
     usable: s.usable,
     dirty: s.dirty,
     longestWaitMinutes: q.length ? Math.max(...q.map((e) => e.waitedMinutes)) : null,
+    action: a.plan && a.plan.decision === "recommend" && title ? title(a.plan, a) : null,
+    saved: gain ? gain.saved : null,
+    departures: { ready: chains.filter((c) => nextStep(c.links).tone === "ok").length, total: chains.length },
+    checks: new Set([...a.state.issues, ...a.gateReasons]).size,
+    doubtful: doubtful(a),
+    stateAt: a.state.at,
   };
 }
 
@@ -614,3 +642,38 @@ export function unitStateLines(a: Assessment): string[] {
     ...aheadOf(a.plan).map((x) => `À venir : ${x.text} (hypothèse)`),
   ];
 }
+
+// ---------------------------------------------------------------- gain in words
+
+export interface Gain {
+  /** Waiting removed, in minutes of patient waiting (≥ 0 when the proposal helps). */
+  saved: number;
+  before: number;
+  after: number;
+  ratio: number | null;
+  /** End of the simulated window, local clock. */
+  until: string;
+  windowMinutes: number;
+}
+
+/**
+ * What the person gains, in a unit they use: hours of waiting removed for the patients to
+ * place, over the simulated window (user feedback: « 685 / 479 » said nothing).
+ */
+export function gainOf(plan: Plan): Gain | null {
+  const cmp = comparison(plan);
+  if (!cmp.baseline || !cmp.selected) return null;
+  const before = cmp.baseline.mean_waiting_patient_minutes;
+  const after = cmp.selected.mean_waiting_patient_minutes;
+  return {
+    saved: before - after,
+    before,
+    after,
+    ratio: cmp.deltaRatio,
+    until: clockPlus(plan.created_at, plan.horizon_minutes),
+    windowMinutes: plan.horizon_minutes,
+  };
+}
+
+/** « 4 h 44 » of waiting, never a bare number. */
+export const waitText = (minutes: number): string => duration(Math.abs(minutes));

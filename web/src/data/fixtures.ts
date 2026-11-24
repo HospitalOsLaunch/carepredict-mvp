@@ -38,7 +38,7 @@ export interface FixtureBundle {
 }
 
 // Order = unit order in the switcher, then situation order within a unit.
-const ORDER = ["nominal", "perturbations", "incomplete", "geriatrie", "interne", "pneumologie"];
+const ORDER = ["nominal", "perturbations", "peak", "incomplete", "geriatrie", "interne", "pneumologie"];
 
 export async function loadFixtures(): Promise<FixtureBundle> {
   const modules = import.meta.glob<{ default: unknown }>("../fixtures/scenario-*.json");

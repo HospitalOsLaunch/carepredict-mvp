@@ -17,6 +17,7 @@ import {
   releaseChains,
   situation,
   stayCount,
+  steps,
 } from "../domain/view";
 import { Fresh, plural } from "./common";
 import type { Person } from "../data/journal";
@@ -69,7 +70,7 @@ export function ReleaseBoard({ a, ack, me }: { a: Assessment; ack: Map<string, A
   const chains = releaseChains(a.state, a.plan);
   const stays = stayCount(a.state, a.plan);
   const fresh = freshnessIndex(a);
-  const target = a.plan?.decision === "recommend" ? a.plan.selected : null;
+  const targets = a.plan?.decision === "recommend" ? steps(a.plan) : [];
   return (
     <section
       className="panel flow flow--release"
@@ -107,7 +108,7 @@ export function ReleaseBoard({ a, ack, me }: { a: Assessment; ack: Map<string, A
           <ol className="releases">
             {chains.map((c) => {
               const proposed =
-                target?.patient_id === c.patient.id || (target?.bed_id && target.bed_id === c.bed?.id);
+                targets.some((t) => t.patient_id === c.patient.id || (t.bed_id && t.bed_id === c.bed?.id));
               const f = fresh.get(`discharge:${c.patient.id}`) ?? fresh.get(`patient:${c.patient.id}`);
               const next = nextStep(c.links);
               const more = c.nextCandidates.length - 2;
@@ -397,7 +398,7 @@ export function BedBoard({ a, ack }: { a: Assessment; ack?: Map<string, Ack> }) 
   const fresh = freshnessIndex(a);
   const readiness = new Map((a.plan?.discharge_readiness ?? []).map((r) => [r.patient_id, r.stage]));
   const leavingIds = new Set(releaseChains(a.state, a.plan).map((c) => c.patient.id));
-  const target = a.plan?.decision === "recommend" ? a.plan.selected.bed_id : null;
+  const targets = new Set(a.plan?.decision === "recommend" ? steps(a.plan).map((x) => x.bed_id) : []);
   const unit = a.state.units[0];
   const beds = [...a.state.beds].sort((x, y) => x.id.localeCompare(y.id, "fr", { numeric: true }));
   // Beds the backend excluded (stale or missing) stay on the board, explicitly unknown.
@@ -427,12 +428,12 @@ export function BedBoard({ a, ack }: { a: Assessment; ack?: Map<string, Ack> }) 
       leaving ? `sortie : ${STAGE[leaving as keyof typeof STAGE].label.toLowerCase()}` : "",
       bed.capabilities.length ? `équipement : ${bed.capabilities.map(capability).join(", ")}` : "",
       f ? (f.stale ? "information périmée" : `mis à jour il y a ${duration(f.minutes)}`) : "",
-      target === bed.id ? "concerné par la proposition" : "",
+      targets.has(bed.id) ? "concerné par la proposition" : "",
     ]
       .filter(Boolean)
       .join(", ");
     return (
-      <li key={bed.id} className={bedClass(bed, leaving, target === bed.id, f)} title={description}>
+      <li key={bed.id} className={bedClass(bed, leaving, targets.has(bed.id), f)} title={description}>
         <span className="visually-hidden">{description}</span>
         <span className="magnet__id" aria-hidden="true">
           {bed.id}

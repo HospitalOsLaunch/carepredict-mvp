@@ -116,7 +116,59 @@ Même grammaire que « Action suivante » : bandeau d'état, titre, actions avec
 indicateurs, conditions et incertitudes, options écartées, détail du calcul (codes moteur). Pas
 d'accent violet : Outremer agit partout. Le sélecteur d'unité du cockpit cède la place à
 « Plan 24 h · unité fictive » : l'unité fictive se choisit dans le bandeau de démonstration de la
-page. Valider ou refuser un plan l'inscrit au journal de démonstration.
+page. Valider ou refuser un plan l'inscrit au journal de démonstration. Le plan à 24 h est
+désormais la focale par défaut de l'onglet Plan (voir « Plan : focales »).
+
+## Bloc Action (retours du 24 novembre au soir)
+
+- **Juste sous « Bonsoir »**, avant la bande de tension : c'est la première chose à faire.
+- **Un seul moteur, filtré sur l'action prioritaire.** Le planificateur de l'unité évalue désormais
+  des combinaisons (transport + bionettoyage + réservation, jusqu'à 3 gestes ici) : un geste n'est
+  ajouté que s'il fait baisser l'objectif commun d'au moins 1 % (et 1 patient·min). Le bloc montre
+  la combinaison, chaque geste avec ce qu'il ajoute aux précédents ; le premier geste seul reste
+  une option (« Seulement : … »). Renforts et entrées programmées restent dans le plan 24 h (autre
+  moteur) : leur fusion est un chantier à part.
+- **Le gain en heures, avec son unité** : « Ce que vous gagnez d'ici 03:10 — −6 h 06 d'attente en
+  moins pour les patients à placer (−27 %) », puis « Sans rien faire 22 h 51 / Avec la proposition
+  16 h 45 », et une ligne qui dit ce qu'est l'attente cumulée (somme des attentes, moyenne de
+  32 scénarios).
+- **Source et fraîcheur au pied du bloc** : heure du calcul, moteur, état utilisé, dernière
+  réception, information la plus ancienne, et **Recalculer**.
+- **Alternatives visibles**, un cran en dessous (fond plus pâle, bouton secondaire), chacune avec
+  son gain seule : plus de repli « 1 autre option utile ».
+- **Vide ou en erreur, le bloc rapetisse** : une ligne (« Rien à changer pour l'instant », « Pas
+  de proposition pour l'instant ») et « 41 données à vérifier ▾ » replié.
+
+## Toutes les unités
+
+`#/unites` (raccourci T, lien en pied du sélecteur d'unité) : une ligne par unité, la plus tendue
+en premier ; à placer (attente max), lits utilisables (à nettoyer), sorties prêtes, action
+prioritaire et son gain, état et heure. Une unité aux données douteuses affiche « ? », jamais 0.
+Au téléphone, chaque ligne devient une carte.
+
+## Plan : focales
+
+Un seul onglet **Plan**, cinq focales : **Maintenant · 12 h · 24 h · 3 jours · 7 jours**
+(`#/plan/<focale>`, 24 h par défaut).
+
+- **Maintenant** : l'action prioritaire du planificateur de l'unité (le même que le bloc Action).
+- **12 h** (la garde) et **24 h** : le plan 24 h lu à travers une fenêtre. Ce qui commence après la
+  garde n'est pas masqué : « Ensuite, après 08:00 : 2 actions du même plan ». Les effets restent
+  ceux du plan entier, et c'est écrit.
+- **3 et 7 jours** : **perspective, non planifiée**. Les moteurs ne planifient que sur 24 h ; au-delà
+  la page montre ce qui est connu (sorties prévues par bloc de 24 h, renforts et leur confirmation)
+  et ce qu'il faudrait pour planifier (entrées programmées, dates de sortie prévisionnelles,
+  planning validé, prévision des urgences). « Aucune sortie prévue connue » n'est jamais un zéro.
+
+Options explorées pour la flexibilité d'horizon :
+
+| Option | Pour | Contre | Verdict |
+| --- | --- | --- | --- |
+| Un onglet, des focales (retenu) | un seul endroit ; on passe de l'action au plan au même geste ; l'horizon réellement calculé reste visible | 3 j / 7 j ne sont qu'une perspective tant que les données manquent | retenu |
+| Curseur d'horizon continu (1 h → 7 j) | très flexible | laisse croire qu'un plan existe à chaque heure ; trop fin pour une relève | écarté |
+| Un onglet par horizon | lisible séparément | multiplie la navigation ; les plans se contredisent d'un onglet à l'autre | écarté |
+| Frise zoomable (type Gantt) | vue d'ensemble des actions dans le temps | lourde au téléphone ; une frise vide au-delà de 24 h trompe | à reconsidérer quand un moteur planifiera sur plusieurs jours |
+| Moteur étendu à 72 h / 7 j | vrais plans à plusieurs jours | exige entrées programmées, sorties prévisionnelles et planning validé, absents des données | chantier moteur, pas d'interface |
 
 ## Tests d'usage du 24 novembre 2026
 

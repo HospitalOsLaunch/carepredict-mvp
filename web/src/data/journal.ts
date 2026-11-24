@@ -80,6 +80,8 @@ export interface DecisionRecord {
   answerAt?: "unite" | "plan";
   /** What to do off-system once validated, when it is not a single cockpit action. */
   todo?: string;
+  /** Every step of a combined action (the first is `action`); absent for a single action. */
+  actions?: Action[];
   /** « note »: a free note for the next shift, not tied to a proposal. */
   kind?: "decision" | "note";
   /** Demonstration situation the record was taken in: never shown in another situation. */
@@ -484,6 +486,25 @@ export function useJournal(): { records: DecisionRecord[]; me: Person } {
 
 // ---------------------------------------------------------------- records from proposals
 
+/**
+ * One sentence for a combined action: « Demander le transport de P-0412 et de P-0388 »,
+ * or the steps joined when they differ in kind.
+ */
+export function bundleTitle(actions: Action[], where: (a: Action) => string | null = () => null): string {
+  if (actions.length === 1) return actionTitle(actions[0]!, where(actions[0]!));
+  if (actions.every((x) => x.kind === "request_transport")) {
+    const ids = actions.map((x) => x.patient_id);
+    return `Demander le transport de ${ids.slice(0, -1).join(", de ")} et de ${ids.at(-1)}`;
+  }
+  if (actions.every((x) => x.kind === "prioritize_cleaning")) {
+    const ids = actions.map((x) => x.bed_id);
+    return `Faire nettoyer en priorité ${ids.slice(0, -1).join(", ")} puis ${ids.at(-1)}`;
+  }
+  return actions.map((x, i) => (i === 0 ? actionTitle(x, where(x)) : lower(actionTitle(x, where(x))))).join(", puis ");
+}
+
+const lower = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+
 const actionKey = (a: Action | null) =>
   a ? `${a.kind}:${a.bed_id ?? "-"}:${a.patient_id ?? "-"}` : "abstain";
 
@@ -501,10 +522,20 @@ export function recordFor(
   const delta =
     candidate && cmp.baseline && base > 0 ? (candidate.mean_waiting_patient_minutes - base) / base : null;
   const abstain = plan.decision === "abstain";
+  // HospitalOS' first choice is the planner's combination when there is one.
+  const combined = rank === 0 && !abstain && (plan.bundle?.length ?? 0) > 1 ? plan.bundle! : null;
+  const where = (x: Action) => bedElsewhere(a.state, x, unit.id);
+  const joint = combined ? comparison(plan).selected : null;
   return {
     // The origin is part of the identity: the same plan replayed on fictitious patients
     // is never the same decision as one taken on the unit in observation.
-    id: `${a.origin}:${plan.plan_id}:${actionKey(abstain ? null : action)}`,
+    id: `${a.origin}:${plan.plan_id}:${combined ? combined.map(actionKey).join("+") : actionKey(abstain ? null : action)}`,
+    ...(combined
+      ? {
+          actions: combined,
+          todo: combined.map((x) => todoHint(x)).join(" "),
+        }
+      : {}),
     origin: a.origin,
     stateFingerprint: plan.state_fingerprint,
     answerAt: "unite",
@@ -517,10 +548,22 @@ export function recordFor(
     proposedAt: plan.created_at,
     expiresAt: a.expiresAt ?? plan.expires_at,
     action: abstain ? null : action,
-    title: abstain ? "Pas de proposition : données à vérifier" : actionTitle(action, bedElsewhere(a.state, action, unit.id)),
-    short: abstain ? "Pas de proposition" : actionShort(action, bedElsewhere(a.state, action, unit.id)),
+    title: abstain
+      ? "Pas de proposition : données à vérifier"
+      : combined
+        ? bundleTitle(combined, where)
+        : actionTitle(action, where(action)),
+    short: abstain
+      ? "Pas de proposition"
+      : combined
+        ? combined.map((x) => actionShort(x, where(x))).join(" + ")
+        : actionShort(action, where(action)),
     rank,
-    deltaRatio: abstain ? null : delta,
+    deltaRatio: abstain
+      ? null
+      : joint && cmp.baseline && base > 0
+        ? (joint.mean_waiting_patient_minutes - base) / base
+        : delta,
     horizonEnd: clockPlus(plan.created_at, plan.horizon_minutes),
     why: (abstain ? plan.reasons : rank === 0 ? plan.reasons : []).slice(0, 4).map(explain),
     events: [{ at: plan.created_at, type: abstain ? "abstained" : "proposed", by: null }],
@@ -562,7 +605,7 @@ export function abstentionRecord(
  * violation and strictly better than doing nothing. Effects were simulated one by one,
  * never combined.
  */
-export function otherOptions(plan: Plan): { action: Action; deltaRatio: number }[] {
+export function otherOptions(plan: Plan): { action: Action; deltaRatio: number; saved: number }[] {
   if (plan.decision !== "recommend") return [];
   const cmp = comparison(plan);
   const base = cmp.baseline;
@@ -571,13 +614,18 @@ export function otherOptions(plan: Plan): { action: Action; deltaRatio: number }
     .filter(
       (c) =>
         c.action.kind !== "no_op" &&
-        actionKey(c.action) !== actionKey(plan.selected) &&
+        // With a combination, its first step alone stays a lighter alternative; the other
+        // steps alone are already part of the proposal.
+        !((plan.bundle?.length ?? 0) > 1
+          ? plan.bundle!.slice(1).some((x) => actionKey(x) === actionKey(c.action))
+          : actionKey(c.action) === actionKey(plan.selected)) &&
         c.violations.length === 0 &&
         c.objective < base.objective - 1e-9,
     )
     .slice(0, 3)
     .map((c) => ({
       action: c.action,
+      saved: base.mean_waiting_patient_minutes - c.mean_waiting_patient_minutes,
       deltaRatio:
         (c.mean_waiting_patient_minutes - base.mean_waiting_patient_minutes) /
         base.mean_waiting_patient_minutes,
@@ -822,15 +870,17 @@ export function acknowledged(
     const s = statusOf(r, now);
     if (s !== "validated" && s !== "done") continue;
     const step = [...r.events].reverse().find((e) => e.type === s)!;
-    const key =
-      r.action.kind === "request_transport"
-        ? `transport:${r.action.patient_id}`
-        : r.action.kind === "prioritize_cleaning"
-          ? `cleaning:${r.action.bed_id}`
-          : r.action.kind === "reserve_bed"
-            ? `reserve:${r.action.bed_id}`
-            : null;
-    if (key && !out.has(key)) out.set(key, { at: step.at, by: step.by, status: s });
+    for (const x of r.actions ?? [r.action]) {
+      const key =
+        x.kind === "request_transport"
+          ? `transport:${x.patient_id}`
+          : x.kind === "prioritize_cleaning"
+            ? `cleaning:${x.bed_id}`
+            : x.kind === "reserve_bed"
+              ? `reserve:${x.bed_id}`
+              : null;
+      if (key && !out.has(key)) out.set(key, { at: step.at, by: step.by, status: s });
+    }
   }
   return out;
 }

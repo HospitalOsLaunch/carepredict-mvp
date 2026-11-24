@@ -5,6 +5,7 @@ import {
   STATUS,
   type Status,
   abstentionRecord,
+  bundleTitle,
   journal,
   otherOptions,
   reasonLabel,
@@ -16,19 +17,24 @@ import {
   who,
 } from "../data/journal";
 import { actionTitle, explain } from "../domain/labels";
+import type { Action, Plan } from "../api/types";
 import {
   type Assessment,
+  type Gain,
   aheadOf,
   bedElsewhere,
   clock,
   clockPlus,
   comparison,
   duration,
+  gainOf,
   gateGroups,
   minutesBetween,
-  num,
+  oldestFact,
   pct,
   proposalContext,
+  steps,
+  waitText,
 } from "../domain/view";
 import { Ban, Check, Clock, Refresh } from "./icons";
 import { Illu, proposalIllu } from "./illustrations";
@@ -70,24 +76,18 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
   const { records } = useJournal();
   const current = traced ? (records.find((r) => r.id === traced.id) ?? traced) : null;
 
+  // Empty or doubtful: a compact line, not a big card (user feedback).
   if (awaitingEvaluation || (!plan && a.gateReasons.length === 0)) {
     return (
-      <section className="panel proposal proposal--quiet" aria-labelledby="proposal-title">
-        <Band label="À évaluer" />
-        <div className="proposal__main">
-          <div className="proposal__lead">
-            <Illu name="plane" size={56} className="proposal__illu" />
-            <div>
-              <h2 className="proposal__title" id="proposal-title">
-                Prêt à évaluer l'unité
-              </h2>
-              <p className="mute">
-                HospitalOS simule les prochaines heures et vous propose l'action la plus utile.
-              </p>
-            </div>
+      <section className="panel proposal proposal--compact" aria-labelledby="proposal-title">
+        <div className="compact">
+          <Illu name="plane" size={36} className="compact__illu" />
+          <div className="compact__text">
+            <h2 className="compact__title" id="proposal-title">
+              Prêt à évaluer l'unité
+            </h2>
+            <p className="mute">HospitalOS simule les prochaines heures et propose l'action la plus utile.</p>
           </div>
-        </div>
-        <div className="proposal__actions">
           <button className="btn btn--primary" onClick={onEvaluate} disabled={busy}>
             <Refresh /> {busy ? "Évaluation…" : evaluateLabel}
           </button>
@@ -98,96 +98,98 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
 
   if (!plan || plan.decision === "abstain") {
     const codes = a.gateReasons.length ? a.gateReasons : (plan?.reasons ?? []);
-    const groups = gateGroups(codes);
     return (
-      <section className="panel proposal proposal--abstain" aria-labelledby="proposal-title">
-        <Band label="Données à vérifier" />
-        <div className="proposal__main">
-          <div className="proposal__lead">
-            <Illu name="cloud" size={56} className="proposal__illu" />
-            <div>
-              <h2 className="proposal__title" id="proposal-title">
-                Pas de proposition pour l'instant
-              </h2>
-              <p className="mute">
-                Mieux vaut ne rien proposer que se tromper. Mettez ces informations à jour, puis réévaluez.
-              </p>
-            </div>
-          </div>
-          <div className="gates">
-            {groups.map((g) => (
-              <div key={g.title}>
-                <h3>
-                  {g.title} ({g.codes.length})
-                </h3>
-                <ul>
-                  {g.codes.slice(0, 2).map((c) => (
-                    <li key={c} title={c}>
-                      {explain(c)}
-                    </li>
-                  ))}
-                  {g.codes.length > 2 ? <li className="mute">et {g.codes.length - 2} autres</li> : null}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="proposal__actions">
-          <button className="btn" onClick={onEvaluate} disabled={busy}>
-            <Refresh /> {busy ? "Évaluation…" : "Réévaluer"}
-          </button>
-          <a className="btn btn--quiet" href="#/donnees">
-            Voir la qualité des données
-          </a>
-        </div>
-      </section>
+      <Abstention
+        codes={codes}
+        busy={busy}
+        onEvaluate={onEvaluate}
+        source={<Source a={a} plan={plan} busy={busy} onEvaluate={onEvaluate} label={evaluateLabel} />}
+      />
     );
   }
 
   const cmp = comparison(plan);
+  const gain = gainOf(plan);
   const expiresAt = a.expiresAt ?? plan.expires_at;
   const minutesLeft = minutesBetween(now, expiresAt);
   const expired = minutesLeft <= 0;
-  const end = clockPlus(plan.created_at, plan.horizon_minutes);
-  const context = proposalContext(a.state, plan);
   const quiet = plan.decision === "no_change";
-  // Two lines at most: the concrete context first, then warnings. Generic planner reasons
-  // (« réduit l'attente simulée ») repeat what the effect already shows.
+  const todo = steps(plan);
+  const combined = todo.length > 1;
+  const where = (x: Action) => bedElsewhere(a.state, x, unit.id);
+  const context = proposalContext(a.state, plan);
   // A gain of 1 % is not presented like a gain of 30 % (user testing): same card, honest words.
   const lowGain = cmp.deltaRatio != null && Math.abs(cmp.deltaRatio) < 0.05;
   const down = aheadOf(plan).find((x) => x.tone === "warn" && x.text.startsWith("Transport"));
   const facts = [
-    ...(down && plan.selected.kind === "request_transport"
+    ...(down && todo.some((x) => x.kind === "request_transport")
       ? [`${down.text} (hypothèse déclarée) : la demande sera servie à la reprise.`]
       : []),
     ...(lowGain ? ["Gain faible : à faire si le temps le permet, rien d'urgent."] : []),
-    ...context,
+    ...(combined ? [] : context),
     ...plan.warnings.map(explain),
     ...plan.reasons.filter((r) => !GENERIC.has(r)).map(explain),
-  ].slice(0, lowGain || down ? 3 : 2);
-  const max = Math.max(
-    cmp.baseline?.worst_decile_waiting_patient_minutes ?? 0,
-    cmp.selected?.worst_decile_waiting_patient_minutes ?? 0,
-    1,
-  );
+  ].slice(0, 2);
 
+  if (quiet) {
+    return (
+      <section className="panel proposal proposal--compact" aria-labelledby="proposal-title">
+        <div className="compact">
+          <Illu name="boat" size={36} className="compact__illu" />
+          <div className="compact__text">
+            <h2 className="compact__title" id="proposal-title">
+              Rien à changer pour l'instant
+            </h2>
+            <p className="mute">
+              Aucune des {plan.candidates.length - 1} actions simulées ne ferait mieux d'ici{" "}
+              {clockPlus(plan.created_at, plan.horizon_minutes)}.
+            </p>
+          </div>
+          <a className="btn btn--quiet" href="#/proposition">
+            Options comparées
+          </a>
+        </div>
+        <Source a={a} plan={plan} busy={busy} onEvaluate={onEvaluate} label={evaluateLabel} />
+      </section>
+    );
+  }
+
+  const pending = current && statusOf(current, now) === "pending";
   return (
-    <section className={`panel proposal${quiet ? " proposal--quiet" : ""}`} aria-labelledby="proposal-title">
+    <section className="panel proposal" aria-labelledby="proposal-title" data-testid="proposal">
       <Band
-        label={quiet ? "Rien à changer" : lowGain && current && statusOf(current, now) === "pending" ? "Option à faible gain" : bandLabel(current, now)}
-        right={
-          !quiet && current && statusOf(current, now) === "pending" ? (
-            <span className="expiry">Fraîche encore {duration(minutesLeft)}</span>
-          ) : null
+        label={
+          pending && lowGain
+            ? "Option à faible gain"
+            : pending
+              ? combined
+                ? `Action prioritaire · ${todo.length} gestes ensemble`
+                : "Action prioritaire"
+              : bandLabel(current, now)
         }
+        right={pending ? <span className="expiry">Fraîche encore {duration(minutesLeft)}</span> : null}
       />
       <div className="proposal__main">
         <div className="proposal__lead">
           <Illu name={proposalIllu(plan)} size={56} className="proposal__illu" />
           <div>
             <h2 className="proposal__title" id="proposal-title">
-              {actionTitle(plan.selected, bedElsewhere(a.state, plan.selected, unit.id))}
+              {combined ? bundleTitle(todo, where) : actionTitle(plan.selected, where(plan.selected))}
             </h2>
+            {combined ? (
+              <ol className="steps" data-testid="proposal-steps">
+                {todo.map((x, i) => (
+                  <li key={`${x.kind}:${x.bed_id}:${x.patient_id}`} className="steps__item">
+                    <span className="steps__text">{actionTitle(x, where(x))}</span>
+                    {plan.bundle_marginal_minutes?.[i] != null ? (
+                      <span className="steps__gain num">
+                        −{waitText(plan.bundle_marginal_minutes[i]!)}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            ) : null}
             {facts.length ? (
               <ul className="facts">
                 {facts.map((line) => (
@@ -195,117 +197,164 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
                 ))}
               </ul>
             ) : null}
-          </div>
-        </div>
-        {cmp.baseline && cmp.selected && !quiet ? (
-          <div className="effect" aria-label="Effet simulé">
-            <div className="effect__figure">
-              <span className="effect__delta num">
-                {cmp.deltaRatio != null ? pct(cmp.deltaRatio).replace("-", "−") : "—"}
-              </span>
-              <span className="effect__unit">d'attente simulée d'ici {end}</span>
-            </div>
-            <div
-              className="pair"
-              role="img"
-              title={`Attente cumulée en patient-minutes, moyenne de ${plan.scenarios} scénarios simulés sous hypothèses déclarées.`}
-              aria-label={pairLabel(
-                cmp.baseline.mean_waiting_patient_minutes,
-                cmp.selected.mean_waiting_patient_minutes,
-              )}
-            >
-              <PairRow label="Sans action" mean={cmp.baseline.mean_waiting_patient_minutes} max={max} />
-              <PairRow
-                label="Avec la proposition"
-                mean={cmp.selected.mean_waiting_patient_minutes}
-                max={max}
-                on
-              />
-            </div>
-            <p className="effect__note" data-testid="pair-unit">
-              Attente cumulée des patients à placer, en minutes-patient (moyenne de {plan.scenarios} scénarios).
-            </p>
-            {plan.service_status === "served_in_all_sampled_scenarios" ? (
-              <p className="effect__note">Tous les patients placés avant {end}.</p>
-            ) : plan.service_status === "unserved_in_some_sampled_scenarios" ? (
-              <p className="effect__note">
-                Un patient attend encore à {end} dans {cmp.selected.scenarios_with_unserved_demand} scénarios
-                sur {plan.scenarios}.
+            {combined ? (
+              <p className="steps__note">
+                Gestes évalués ensemble : chaque gain est ce que le geste ajoute aux précédents.
               </p>
             ) : null}
           </div>
-        ) : (
-          <div className="effect">
-            <p className="effect__lead">Tout roule.</p>
-            <p className="effect__note">
-              Aucune des {plan.candidates.length - 1} actions simulées ne ferait mieux d'ici{" "}
-              {duration(plan.horizon_minutes)}.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {quiet ? (
-        <div className="proposal__actions">
-          <button className="btn" onClick={onEvaluate} disabled={busy}>
-            <Refresh /> {evaluateLabel}
-          </button>
-          <span className="spacer" />
-          <a className="btn btn--quiet" href="#/proposition">
-            Options comparées
-          </a>
         </div>
-      ) : (
-        <Decision
-          key={plan.plan_id}
-          record={current!}
-          a={a}
-          unit={unit}
-          now={now}
-          expired={expired}
-          expiresAt={expiresAt}
-          minutesLeft={minutesLeft}
-          busy={busy}
-          onEvaluate={onEvaluate}
-          evaluateLabel={evaluateLabel}
-          onToast={onToast}
-        />
-      )}
+        {gain ? <Effect plan={plan} gain={gain} unserved={cmp.selected?.scenarios_with_unserved_demand ?? 0} /> : null}
+      </div>
+      <Decision
+        key={plan.plan_id}
+        record={current!}
+        a={a}
+        unit={unit}
+        now={now}
+        expired={expired}
+        expiresAt={expiresAt}
+        minutesLeft={minutesLeft}
+        busy={busy}
+        onEvaluate={onEvaluate}
+        evaluateLabel={evaluateLabel}
+        onToast={onToast}
+      />
+      <Source a={a} plan={plan} busy={busy} onEvaluate={onEvaluate} label={evaluateLabel} />
     </section>
   );
 }
 
-function pairLabel(base: number, sel: number) {
-  return `Attente simulée moyenne : ${num(base)} patient-minutes sans action, ${num(sel)} avec la proposition.`;
+/**
+ * What is gained, at a glance: hours of waiting removed for the patients to place, then the
+ * two totals with their unit. The percentage is secondary.
+ */
+function Effect({ plan, gain, unserved }: { plan: Plan; gain: Gain; unserved: number }) {
+  const max = Math.max(gain.before, gain.after, 1);
+  const helps = gain.saved > 0.5;
+  return (
+    <div className="effect" aria-label="Ce que vous gagnez" data-testid="effect">
+      <p className="effect__kicker">Ce que vous gagnez d'ici {gain.until}</p>
+      <div className="effect__figure">
+        <span className="effect__delta num">{helps ? `−${waitText(gain.saved)}` : "≈ 0"}</span>
+        <span className="effect__unit">
+          d'attente en moins pour les patients à placer
+          {gain.ratio != null && helps ? ` (${pct(gain.ratio).replace("-", "−")})` : ""}
+        </span>
+      </div>
+      <div
+        className="pair"
+        role="img"
+        aria-label={`Attente cumulée des patients à placer d'ici ${gain.until} : ${waitText(gain.before)} sans action, ${waitText(gain.after)} avec la proposition.`}
+      >
+        <PairRow label="Sans rien faire" value={gain.before} max={max} />
+        <PairRow label="Avec la proposition" value={gain.after} max={max} on />
+      </div>
+      <p className="effect__note">
+        Attente cumulée : somme des temps d'attente de tous les patients à placer sur les{" "}
+        {duration(gain.windowMinutes)} à venir, moyenne de {plan.scenarios} scénarios simulés.
+      </p>
+      {plan.service_status === "served_in_all_sampled_scenarios" ? (
+        <p className="effect__note">Tous les patients sont placés avant {gain.until}.</p>
+      ) : plan.service_status === "unserved_in_some_sampled_scenarios" ? (
+        <p className="effect__note">
+          Un patient attend encore à {gain.until} dans {unserved} scénarios sur {plan.scenarios}.
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
-function PairRow({
-  label,
-  mean,
-  tail,
-  max,
-  on,
-}: {
-  label: string;
-  mean: number;
-  tail?: number;
-  max: number;
-  on?: boolean;
-}) {
+function PairRow({ label, value, max, on }: { label: string; value: number; max: number; on?: boolean }) {
   return (
     <div className="pair__row">
       <span className="pair__label">{label}</span>
       <span className="pair__track">
-        <span
-          className={`pair__bar${on ? " pair__bar--on" : ""}`}
-          style={{ width: `${(mean / max) * 100}%` }}
-        />
-        {tail != null ? (
-          <span className="pair__tail" style={{ left: `calc(${(tail / max) * 100}% - 1px)` }} />
-        ) : null}
+        <span className={`pair__bar${on ? " pair__bar--on" : ""}`} style={{ width: `${(value / max) * 100}%` }} />
       </span>
-      <span className="pair__value num">{num(mean)}</span>
+      <span className="pair__value num">{waitText(value)}</span>
     </div>
+  );
+}
+
+/**
+ * Where the proposal comes from and how fresh it is, with the way to refresh it
+ * (user feedback: « d'où vient-elle, quand a-t-elle été actualisée, comment l'actualiser »).
+ */
+function Source(props: {
+  a: Assessment;
+  plan: Plan | null;
+  busy: boolean;
+  onEvaluate: () => void;
+  label: string;
+}) {
+  const { a, plan } = props;
+  const oldest = oldestFact(a);
+  const received = a.receivedAtBySource ? Object.values(a.receivedAtBySource).sort().at(-1) : null;
+  const parts = [
+    plan ? `Calculé à ${clock(plan.created_at)} par le planificateur de l'unité` : "Pas de calcul",
+    `état de l'unité à ${clock(a.state.at)}`,
+    received ? `dernière réception des données à ${clock(received)}` : null,
+    oldest ? `information la plus ancienne : il y a ${duration(oldest.minutes)}` : null,
+    a.origin === "fixture" ? "démonstration, données figées" : null,
+  ].filter(Boolean);
+  return (
+    <footer className="source" data-testid="proposal-source">
+      <p className="source__text">{parts.join(" · ")}</p>
+      <div className="source__actions">
+        <button type="button" className="btn btn--small" onClick={props.onEvaluate} disabled={props.busy}>
+          <Refresh /> {props.busy ? "Calcul…" : props.label}
+        </button>
+        <a className="linkbtn" href="#/proposition">
+          Comment c'est calculé
+        </a>
+        <a className="linkbtn" href="#/donnees">
+          Données
+        </a>
+      </div>
+    </footer>
+  );
+}
+
+/** No proposal: a short line, the missing data folded away (« 4 données à vérifier ▾ »). */
+function Abstention(props: { codes: string[]; busy: boolean; onEvaluate: () => void; source: ReactNode }) {
+  const groups = gateGroups(props.codes);
+  const total = props.codes.length;
+  return (
+    <section className="panel proposal proposal--compact proposal--abstain" aria-labelledby="proposal-title">
+      <div className="compact">
+        <Illu name="cloud" size={36} className="compact__illu" />
+        <div className="compact__text">
+          <h2 className="compact__title" id="proposal-title">
+            Pas de proposition pour l'instant
+          </h2>
+          <p className="mute">Mieux vaut ne rien proposer que se tromper : des données sont à vérifier.</p>
+        </div>
+      </div>
+      <details className="compact__details" data-testid="abstention-details">
+        <summary>
+          {total} donnée{total > 1 ? "s" : ""} à vérifier
+        </summary>
+        <div className="gates">
+          {groups.map((g) => (
+            <div key={g.title}>
+              <h3>
+                {g.title} ({g.codes.length})
+              </h3>
+              <ul>
+                {g.codes.slice(0, 3).map((c) => (
+                  <li key={c} title={c}>
+                    {explain(c)}
+                  </li>
+                ))}
+                {g.codes.length > 3 ? <li className="mute">et {g.codes.length - 3} autres</li> : null}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
+      {props.source}
+    </section>
   );
 }
 
@@ -670,72 +719,67 @@ function Others(props: {
 }) {
   const { records } = useJournal();
   const plan = props.a.plan!;
-  const [open, setOpen] = useState(false);
-  const show = open || props.mainStatus === "refused";
   const canAct = props.mainStatus !== "expired" && props.mainStatus !== "superseded";
+  const combined = (plan.bundle?.length ?? 0) > 1;
+  // Visible by default, one step below the proposal: real alternatives, not a hidden link.
   return (
-    <div className="others">
-      <button
-        type="button"
-        className="others__toggle"
-        aria-expanded={show}
-        aria-controls="others-list"
-        onClick={() => setOpen(!show)}
-      >
-        <span className="others__chev" aria-hidden="true">
-          ›
-        </span>
-        {props.options.length > 1 ? `${props.options.length} autres options utiles` : "1 autre option utile"}
-      </button>
-      {show ? (
-        <div id="others-list">
-          <ul className="others__list">
-            {props.options.map((o, i) => {
-              const rec = recordFor(props.a, props.unit, plan, o.action, i + 1);
-              const kept = records.find((r) => r.id === rec.id);
-              const st = kept ? statusOf(kept, props.now) : null;
-              return (
-                <li key={rec.id} className="others__item">
-                  <div>
-                    <p className="others__title">{rec.title}</p>
-                    <p className="others__effect num">
-                      {deltaText(o.deltaRatio)} d'attente simulée d'ici {rec.horizonEnd}
-                    </p>
-                  </div>
-                  {st ? (
-                    <span className={`pill pill--${STATUS[st].tone}`}>{STATUS[st].label}</span>
-                  ) : canAct ? (
-                    <button
-                      type="button"
-                      className="btn btn--small"
-                      onClick={() => {
-                        if (props.mainStatus === "pending") {
-                          journal.choose(props.main, rec, props.now);
-                          props.onToast("Option choisie. À vous de jouer.", () => {
-                            journal.discard(rec.id);
-                            journal.undo(props.main.id);
-                          });
-                        } else {
-                          journal.register(rec);
-                          journal.act(rec.id, "validated", props.now);
-                          props.onToast("Option validée. À vous de jouer.", () => journal.discard(rec.id));
-                        }
-                      }}
-                    >
-                      {props.mainStatus === "pending"
-                        ? "Choisir plutôt"
-                        : props.mainStatus === "refused" || props.mainStatus === "abandoned"
-                          ? "Choisir celle-ci"
-                          : "Valider aussi"}
-                    </button>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-          <p className="others__note">Effets simulés séparément : ils ne s'additionnent pas.</p>
-        </div>
-      ) : null}
+    <div className="others" data-testid="others">
+      <p className="others__head">
+        Autres options <span className="mute">· gain de chacune seule</span>
+      </p>
+      <ul className="others__list" id="others-list">
+        {props.options.map((o, i) => {
+          const rec = recordFor(props.a, props.unit, plan, o.action, i + 1);
+          const kept = records.find((r) => r.id === rec.id);
+          const st = kept ? statusOf(kept, props.now) : null;
+          const firstOnly =
+            combined &&
+            o.action.kind === plan.selected.kind &&
+            o.action.bed_id === plan.selected.bed_id &&
+            o.action.patient_id === plan.selected.patient_id;
+          return (
+            <li key={rec.id} className="others__item">
+              <div>
+                <p className="others__title">
+                  {firstOnly ? "Seulement : " : ""}
+                  {rec.title}
+                </p>
+                <p className="others__effect num">
+                  {o.saved > 0.5 ? `−${waitText(o.saved)} d'attente` : "gain négligeable"} ({deltaText(o.deltaRatio)}) d'ici{" "}
+                  {rec.horizonEnd}
+                </p>
+              </div>
+              {st ? (
+                <span className={`pill pill--${STATUS[st].tone}`}>{STATUS[st].label}</span>
+              ) : canAct ? (
+                <button
+                  type="button"
+                  className="btn btn--small"
+                  onClick={() => {
+                    if (props.mainStatus === "pending") {
+                      journal.choose(props.main, rec, props.now);
+                      props.onToast("Option choisie. À vous de jouer.", () => {
+                        journal.discard(rec.id);
+                        journal.undo(props.main.id);
+                      });
+                    } else {
+                      journal.register(rec);
+                      journal.act(rec.id, "validated", props.now);
+                      props.onToast("Option validée. À vous de jouer.", () => journal.discard(rec.id));
+                    }
+                  }}
+                >
+                  {props.mainStatus === "pending"
+                    ? "Choisir plutôt"
+                    : props.mainStatus === "refused" || props.mainStatus === "abandoned"
+                      ? "Choisir celle-ci"
+                      : "Valider aussi"}
+                </button>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

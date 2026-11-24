@@ -3,7 +3,6 @@ import { acknowledged, demoHistory, journal, statusOf, useJournal } from "./data
 import { type Connection, type Store, useAssessment } from "./data/useAssessment";
 import { type Assessment, clock, day, longClock, unitStateLines } from "./domain/view";
 import { DataQuality } from "./ui/DataQuality";
-import { DecisionPlan } from "./ui/DecisionPlan";
 import { Journal } from "./ui/Journal";
 import { InProgress, Proposal, type ToastFn } from "./ui/Proposal";
 import { ProposalDetail } from "./ui/ProposalDetail";
@@ -11,9 +10,11 @@ import { BedBoard, Queue, ReleaseBoard, type StripTarget, TensionStrip } from ".
 import { UnitSwitcher } from "./ui/UnitSwitcher";
 import { Toast, type ToastState, useNow } from "./ui/common";
 import { Alert, BoardIcon, BookIcon, Clock, Mark, PulseIcon, ScalesIcon } from "./ui/icons";
+import { AllUnits } from "./ui/AllUnits";
+import { PlanTab, readFocal } from "./ui/PlanTab";
 import { Illu, momentIllu } from "./ui/illustrations";
 
-type Route = "unite" | "proposition" | "plan" | "journal" | "donnees";
+type Route = "unite" | "unites" | "proposition" | "plan" | "journal" | "donnees";
 
 interface Location {
   route: Route;
@@ -23,8 +24,14 @@ interface Location {
 
 function readRoute(): Location {
   const [head = "", ...rest] = window.location.hash.replace(/^#\/?/, "").split("/");
-  const route = head === "proposition" || head === "plan" || head === "donnees" || head === "journal" ? head : "unite";
-  return { route, param: rest.length ? decodeURIComponent(rest.join("/")) : null };
+  const route =
+    head === "proposition" || head === "plan" || head === "donnees" || head === "journal" || head === "unites"
+      ? head
+      : "unite";
+  return {
+    route,
+    param: rest.length ? decodeURIComponent(rest.join("/")) : null,
+  };
 }
 
 function go(route: Route) {
@@ -44,12 +51,48 @@ function useRoute(): Location {
   return route;
 }
 
-const ROUTES: Array<{ id: Route; href: string; label: string; key: string; Icon: () => JSX.Element }> = [
-  { id: "unite", href: "#/", label: "Unité", key: "A", Icon: () => <BoardIcon /> },
-  { id: "proposition", href: "#/proposition", label: "Proposition", key: "D", Icon: () => <ScalesIcon /> },
-  { id: "plan", href: "#/plan", label: "Plan 24 h", key: "P", Icon: () => <Clock /> },
-  { id: "journal", href: "#/journal", label: "Journal", key: "J", Icon: () => <BookIcon /> },
-  { id: "donnees", href: "#/donnees", label: "Données", key: "Q", Icon: () => <PulseIcon /> },
+const ROUTES: Array<{
+  id: Route;
+  href: string;
+  label: string;
+  key: string;
+  Icon: () => JSX.Element;
+}> = [
+  {
+    id: "unite",
+    href: "#/",
+    label: "Unité",
+    key: "A",
+    Icon: () => <BoardIcon />,
+  },
+  {
+    id: "proposition",
+    href: "#/proposition",
+    label: "Proposition",
+    key: "D",
+    Icon: () => <ScalesIcon />,
+  },
+  {
+    id: "plan",
+    href: "#/plan",
+    label: "Plan",
+    key: "P",
+    Icon: () => <Clock />,
+  },
+  {
+    id: "journal",
+    href: "#/journal",
+    label: "Journal",
+    key: "J",
+    Icon: () => <BookIcon />,
+  },
+  {
+    id: "donnees",
+    href: "#/donnees",
+    label: "Données",
+    key: "Q",
+    Icon: () => <PulseIcon />,
+  },
 ];
 
 const ORIGIN: Record<Connection, string> = {
@@ -61,21 +104,23 @@ const ORIGIN: Record<Connection, string> = {
 
 const TITLES: Record<Route, string> = {
   unite: "Unité",
+  unites: "Toutes les unités",
   proposition: "Proposition",
-  plan: "Plan à 24 h",
+  plan: "Plan",
   journal: "Journal des décisions",
   donnees: "Qualité des données",
 };
 
 const SHORTCUTS: Array<[string, string]> = [
   ["U puis 1 à 9", "Changer d'unité (aller à l'unité n)"],
+  ["T", "Toutes les unités"],
   ["O", "Valider la proposition"],
   ["N puis 1 à 6", "Refuser, avec le motif"],
   ["F", "C'est fait (proposition validée)"],
   ["R", "Réévaluer l'unité"],
   ["A", "Vue unité"],
   ["D", "Détail de la proposition"],
-  ["P", "Plan jusqu'à demain (24 h)"],
+  ["P", "Plan (Maintenant, 12 h, 24 h, 3 j, 7 j)"],
   ["J", "Journal des décisions"],
   ["Q", "Qualité des données"],
   ["?", "Afficher cette aide"],
@@ -113,6 +158,7 @@ function useShortcuts(store: Store, openSwitcher: () => void, openHelp: () => vo
       else if (k === "j") go("journal");
       else if (k === "r") store.evaluate();
       else if (k === "a") go("unite");
+      else if (k === "t") go("unites");
       else if (k === "d") go("proposition");
       else if (k === "p") go("plan");
       else if (k === "q") go("donnees");
@@ -182,11 +228,11 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          {route === "plan" ? (
+          {route === "plan" && readFocal(param) !== "maintenant" ? (
             // The 24-hour plan runs on its own fictitious units (chosen in the page): the
             // cockpit's unit switcher would suggest the plan concerns that unit.
             <span className="unitchip" data-testid="plan-unitchip">
-              <span className="unitchip__name">Plan 24 h</span>
+              <span className="unitchip__name">Plan</span>
               <span className="unitchip__sub">Unité fictive, choisie dans la page</span>
             </span>
           ) : (
@@ -261,10 +307,20 @@ export function App() {
           </div>
         ) : null}
         {route === "plan" ? (
-          // Independent synthetic unit and engine: computed on arrival, no scenario typed.
-          <DecisionPlan />
+          // One tab, several focal lengths; 12 h / 24 h / 3 j / 7 j read the 24-hour engine.
+          <PlanTab focal={readFocal(param)} a={a} unitName={store.unitName} />
         ) : !a || !now ? (
           <div className="skeleton" aria-busy="true" aria-label="Chargement de l'unité" />
+        ) : route === "unites" ? (
+          <AllUnits
+            summaries={store.summaries}
+            current={store.unitId}
+            live={store.connection === "api-live"}
+            onOpen={(id) => {
+              selectUnit(id);
+              go("unite");
+            }}
+          />
         ) : route === "proposition" ? (
           <ProposalDetail a={a} />
         ) : route === "journal" ? (
@@ -416,7 +472,7 @@ function UnitPage(props: {
           {greeting(hour)} <span className="hello__rest">Voici votre unité à {clock(a.state.at)}.</span>
         </span>
       </h1>
-      <TensionStrip a={a} onJump={jump} />
+      {/* The action comes first, right under the greeting (user feedback). */}
       <Proposal {...props} />
       <InProgress
         unitId={props.unit.id}
@@ -425,6 +481,7 @@ function UnitPage(props: {
         now={props.now}
         onToast={props.onToast}
       />
+      <TensionStrip a={a} onJump={jump} />
       <div className="flowtabs" role="tablist" aria-label="Colonne affichée">
         {ZONES.map(([id, label]) => (
           <button

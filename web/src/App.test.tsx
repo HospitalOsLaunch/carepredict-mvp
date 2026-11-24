@@ -89,8 +89,10 @@ describe("cockpit", () => {
   it("offers the other useful options and lets the team choose one instead", async () => {
     render(<App />);
     await ready();
-    fireEvent.click(screen.getByRole("button", { name: "1 autre option utile" }));
-    expect(screen.getByText("Prioriser le bionettoyage du lit L11")).toBeTruthy();
+    // Alternatives are visible at once, secondary to the main proposal, each with its own gain.
+    const others = screen.getByTestId("others");
+    expect(within(others).getByText("Prioriser le bionettoyage du lit L11")).toBeTruthy();
+    expect(others.textContent).toMatch(/d'attente/);
     fireEvent.click(screen.getByRole("button", { name: "Choisir plutôt" }));
     expect(await screen.findByText("Refusée : autre option préférée")).toBeTruthy();
     const tray = screen.getByRole("region", { name: /En cours de votre côté/ });
@@ -241,5 +243,88 @@ describe("cockpit", () => {
     for (const forbidden of [/envoyer/i, /exécuter/i, /réserver/i, /approuver/i]) {
       expect(labels.some((l) => forbidden.test(l))).toBe(false);
     }
+  });
+});
+
+describe("action block, all units, plan focales", () => {
+  it("puts the priority action right under the greeting, its gain in hours and its source", async () => {
+    render(<App />);
+    await ready();
+    const hello = document.querySelector("h1.hello")!;
+    const proposal = screen.getByTestId("effect").closest("section")!;
+    const strip = screen.getByRole("navigation", { name: "Situation de l'unité" });
+    expect(hello.compareDocumentPosition(proposal) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(proposal.compareDocumentPosition(strip) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const effect = screen.getByTestId("effect").textContent!;
+    expect(effect).toMatch(/Ce que vous gagnez d'ici \d\d:\d\d/);
+    expect(effect).toMatch(/−(\d+\sh\s\d\d|\d+\smin)\s*d'attente en moins/);
+    expect(effect).toMatch(/Sans rien faire/);
+    const source = screen.getByTestId("proposal-source").textContent!;
+    expect(source).toMatch(/Calculé à \d\d:\d\d par le planificateur de l'unité/);
+    expect(source).toMatch(/information la plus ancienne/);
+    expect(screen.getByRole("button", { name: /Recalculer/ })).toBeTruthy();
+  });
+
+  it("proposes a combination of gestures when they help together, each step with its own gain", async () => {
+    window.history.replaceState(null, "", "/?situation=peak");
+    render(<App />);
+    expect(
+      await screen.findByRole("heading", { name: "Demander le transport de P-0412 et de P-0388" }),
+    ).toBeTruthy();
+    const steps = screen.getByTestId("proposal-steps");
+    expect(within(steps).getAllByRole("listitem")).toHaveLength(2);
+    expect(steps.textContent).toMatch(/P-0412.*−.*P-0388.*−/);
+    // The first gesture alone stays available as a secondary option.
+    expect(screen.getByTestId("others").textContent).toMatch(/Seulement : Demander le transport de P-0412/);
+  });
+
+  it("keeps an abstention small, the missing data one click away", async () => {
+    window.history.replaceState(null, "", "/?situation=incomplete");
+    render(<App />);
+    await screen.findByRole("heading", { name: /Pas de proposition/ });
+    const details = screen.getByTestId("abstention-details");
+    expect(details.tagName).toBe("DETAILS");
+    expect(details.hasAttribute("open")).toBe(false);
+    expect(details.textContent).toMatch(/\d+ données? à vérifier/);
+  });
+
+  it("shows every unit at once, the most tense first, and opens one", async () => {
+    render(<App />);
+    await ready();
+    window.location.hash = "/unites";
+    const table = await screen.findByTestId("all-units");
+    const rows = within(table).getAllByRole("row").slice(1);
+    expect(rows).toHaveLength(4);
+    expect(table.textContent).toMatch(/Demander le transport de P-0412/);
+    expect(table.textContent).toMatch(/données? à vérifier/);
+    fireEvent.click(within(table).getByRole("button", { name: "Court séjour gériatrique" }));
+    expect(await screen.findByRole("heading", { name: "Prioriser le bionettoyage du lit G17" })).toBeTruthy();
+  });
+
+  it("reaches all units from the unit switcher", async () => {
+    render(<App />);
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: /Médecine polyvalente/ }));
+    expect((await screen.findByTestId("switcher-all")).getAttribute("href")).toBe("#/unites");
+  });
+
+  it("reads the plan through focal lengths, never planning beyond 24 h", async () => {
+    window.location.hash = "/plan/12h";
+    render(<App />);
+    expect(await screen.findByRole("heading", { name: "Plan de la garde (12 h)" })).toBeTruthy();
+    expect(screen.getByTestId("focal-12h").getAttribute("aria-current")).toBe("true");
+    await screen.findByTestId("ds-auto");
+    expect(screen.getByTestId("ds-window-note").textContent).toMatch(/calculé sur 24 h/);
+    expect(screen.getByTestId("ds-actions-later")).toBeTruthy();
+
+    window.location.hash = "/plan/7j";
+    const far = await screen.findByTestId("ds-perspective");
+    expect(far.textContent).toMatch(/Perspective, non planifiée/);
+    expect(screen.queryByRole("button", { name: /Valider/ })).toBeNull();
+    expect(screen.getByTestId("ds-far-empty").textContent).toMatch(/Ce n'est pas « zéro sortie »/);
+
+    window.location.hash = "/plan/maintenant";
+    const now = await screen.findByTestId("focal-now");
+    expect(within(now).getByRole("heading", { name: "Demander le transport de P-0412" })).toBeTruthy();
   });
 });

@@ -1,5 +1,12 @@
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { type DsAction, type DsRecommendation, type DsReview, type DsSnapshot, pointer } from "../api/decision";
+import {
+  type DsAction,
+  type DsHour,
+  type DsRecommendation,
+  type DsReview,
+  type DsSnapshot,
+  pointer,
+} from "../api/decision";
 import {
   type DecisionRecord,
   PLAN_REASONS,
@@ -255,11 +262,12 @@ function Effect({ doc, i, base }: { doc: DsDoc; i: number; base: number }) {
   );
 }
 
-function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: number }) {
+function Chart({ reco, i, base, hours = 24 }: { reco: DsRecommendation; i: number; base: number; hours?: number }) {
   const ev = reco.bundle!.evaluations;
+  const clip = (pts: DsHour[]) => (hours < 24 ? pts.slice(0, hours + 1) : pts);
   const series = [
-    { name: "Pratique habituelle", color: "var(--ink-3)", pts: ev[base]?.trajectory ?? [] },
-    { name: "Avec le plan", color: "var(--brand)", pts: ev[i]?.trajectory ?? [] },
+    { name: "Pratique habituelle", color: "var(--ink-3)", pts: clip(ev[base]?.trajectory ?? []) },
+    { name: "Avec le plan", color: "var(--brand)", pts: clip(ev[i]?.trajectory ?? []) },
   ];
   const n = series[0]!.pts.length;
   if (!n || series.some((s) => s.pts.some((p) => p.pressure_score === null))) {
@@ -276,7 +284,7 @@ function Chart({ reco, i, base }: { reco: DsRecommendation; i: number; base: num
     <section className="panel" aria-labelledby="ds-chart-title">
       <header className="panel__head">
         <h2 className="panel__title" id="ds-chart-title">
-          Tension heure par heure
+          Tension heure par heure{hours < 24 ? ` · ${hours} premières heures` : ""}
         </h2>
       </header>
       <div className="panel__body ds-chart">
@@ -758,10 +766,12 @@ function AutoPlan({
   store,
   onModify,
   unit,
+  windowHours = 24,
 }: {
   store: DecisionStore;
   onModify: () => void;
   unit: { id: string; name: string };
+  windowHours?: number;
 }) {
   const doc = store.auto!;
   const reco = doc.reco;
@@ -795,6 +805,12 @@ function AutoPlan({
   const alt = evalIndex(reco, reco.alternative_plan_id);
   const quiet = !primary.plan.actions.length;
   const reasons = humanReasons(reco.reasons);
+  // A window shorter than the plan: what starts after it is listed apart, never dropped.
+  const cut = Date.parse(reco.bundle.horizon_start) + windowHours * 3600_000;
+  const windowed = windowHours < 24;
+  const inside = primary.plan.actions.filter((a) => !windowed || Date.parse(a.window_start) < cut);
+  const later = primary.plan.actions.filter((a) => windowed && Date.parse(a.window_start) >= cut);
+  const cutLabel = local(new Date(cut).toISOString(), true);
   return (
     <>
       <section
@@ -811,22 +827,50 @@ function AutoPlan({
         </div>
         <div className="proposal__main ds-stack">
           <h2 id="ds-auto-title" className="proposal__title">
-            {quiet ? "Maintenir la pratique habituelle" : `À organiser d'ici ${local(reco.bundle.horizon_end, true)}`}
+            {quiet
+              ? "Maintenir la pratique habituelle"
+              : windowed
+                ? `Pendant la garde, d'ici ${cutLabel}`
+                : `À organiser d'ici ${local(reco.bundle.horizon_end, true)}`}
           </h2>
           {quiet ? (
             <p>Aucune action n'apporte d'amélioration sensible : rien n'est ajouté pour animer l'écran.</p>
           ) : (
-            <ol className="ds-actions" data-testid="ds-actions">
-              {primary.plan.actions.map((a) => (
-                <ActionLine key={a.action_id} a={a} snapshot={store.snapshot} />
-              ))}
-            </ol>
+            <>
+              {inside.length ? (
+                <ol className="ds-actions" data-testid="ds-actions">
+                  {inside.map((a) => (
+                    <ActionLine key={a.action_id} a={a} snapshot={store.snapshot} />
+                  ))}
+                </ol>
+              ) : (
+                <p data-testid="ds-actions-empty">
+                  Rien à lancer pendant la garde : le plan commence après {cutLabel}.
+                </p>
+              )}
+              {later.length ? (
+                <Details
+                  title={`Ensuite, après ${cutLabel} : ${later.length} action${later.length > 1 ? "s" : ""} du même plan`}
+                >
+                  <ol className="ds-actions ds-actions--later" data-testid="ds-actions-later">
+                    {later.map((a) => (
+                      <ActionLine key={a.action_id} a={a} snapshot={store.snapshot} />
+                    ))}
+                  </ol>
+                </Details>
+              ) : null}
+            </>
           )}
           {primary.conditional_on.length ? (
             <p className="ds-warn" data-testid="ds-conditional">
               Le résultat suppose la venue de {primary.conditional_on.join(", ")}, demandé mais non confirmé. Sans ce
               renfort : <Fig doc={doc} ptr={`/bundle/evaluations/${i}/confirmed_only/uncovered_care_minutes`} /> minutes
               de soins non couvertes.
+            </p>
+          ) : null}
+          {windowed ? (
+            <p className="ds-note" data-testid="ds-window-note">
+              Les effets ci-dessous portent sur tout le plan, calculé sur 24 h : le moteur ne sait pas isoler la garde.
             </p>
           ) : null}
           <Effect doc={doc} i={i} base={base} />
@@ -860,7 +904,7 @@ function AutoPlan({
           ) : null}
         </section>
       ) : null}
-      <Chart reco={reco} i={i} base={base} />
+      <Chart reco={reco} i={i} base={base} hours={windowHours} />
     </>
   );
 }
@@ -1183,8 +1227,144 @@ function HowFound({ doc, snapshot }: { doc: DsDoc; snapshot: DsSnapshot | null }
 
 // ---------------------------------------------------------------- page
 
-export function DecisionPlan() {
+// ---------------------------------------------------------------- 3 / 7 days: perspective
+
+const DAY_MS = 86_400_000;
+
+/**
+ * Beyond 24 h nothing is planned: the page shows what is already known (planned departures,
+ * reinforcement options and their confirmation) and what would be needed to plan further. No
+ * figure is extrapolated. Days are 24-hour blocks from the plan start, so block 1 is the plan.
+ */
+function Perspective({ days, store }: { days: number; store: DecisionStore }) {
+  const snap = store.snapshot;
+  if (!snap) return <div className="skeleton" aria-busy="true" aria-label="Chargement" />;
+  const start = Date.parse(snap.as_of);
+  const blockOf = (iso: string) => Math.floor((Date.parse(iso) - start) / DAY_MS);
+  const byDay = Array.from({ length: days }, (_, d) =>
+    snap.stays.filter((st) => st.planned_departure && blockOf(st.planned_departure) === d),
+  );
+  const beyond = snap.stays.filter((st) => st.planned_departure && blockOf(st.planned_departure) >= days);
+  const unknown = snap.stays.filter((st) => !st.planned_departure);
+  const reco = store.auto?.reco;
+  const primary = reco?.bundle?.evaluations[evalIndex(reco, reco.primary_plan_id)];
+  const planned = (primary?.plan.actions ?? []).filter((x) => x.type === "coordinate_discharge");
+  const last = byDay.reduce((n, l, d) => (l.length ? d : n), 0);
+  return (
+    <div className="ds-stack" data-testid="ds-perspective">
+      <div className="notice notice--far" role="note">
+        <b>Perspective, non planifiée.</b> Le plan s'arrête à 24 h (horizon supporté par le moteur). Ce qui suit est la
+        situation connue à {local(snap.as_of, true)} : aucune action n'est proposée au-delà, et aucun chiffre n'est
+        extrapolé.
+      </div>
+      <section className="panel" aria-labelledby="ds-far-days">
+        <header className="panel__head">
+          <h2 className="panel__title" id="ds-far-days">
+            Sorties prévues, jour par jour
+          </h2>
+        </header>
+        <div className="panel__body">
+          <ol className="far-days" data-testid="ds-far-days">
+            {byDay.slice(0, last + 1).map((list, d) => (
+              <li
+                key={d}
+                className={`far-day${d === 0 ? " far-day--planned" : ""}${d > last ? " far-day--empty" : ""}`}
+              >
+                <span className="far-day__head">
+                  <b>{d === 0 ? "Les 24 h du plan" : `Jour ${d + 1}`}</b>
+                  <small>
+                    {d === 0 ? "planifié" : "non planifié"} · jusqu'au{" "}
+                    {local(new Date(start + (d + 1) * DAY_MS).toISOString(), true)}
+                  </small>
+                </span>
+                <span className="far-day__n num">{list.length + (d === 0 ? planned.length : 0)}</span>
+                <span className="far-day__list">
+                  {[
+                    ...(d === 0 ? planned.map((x) => `${x.target} (sortie à coordonner, plan proposé)`) : []),
+                    ...list.map(
+                      (st) => `${st.stay_id} (${AUTHORIZATION[st.medical_authorization] ?? st.medical_authorization})`,
+                    ),
+                  ].join(" · ") ||
+                    (d > last
+                      ? "Aucune sortie prévue connue : le dossier ne renseigne pas si loin."
+                      : "Aucune sortie prévue")}
+                </span>
+              </li>
+            ))}
+            {last + 1 < days ? (
+              <li className="far-day far-day--empty" data-testid="ds-far-empty">
+                <span className="far-day__head">
+                  <b>{last + 2 === days ? `Jour ${days}` : `Jours ${last + 2} à ${days}`}</b>
+                  <small>non planifié · jusqu'au {local(new Date(start + days * DAY_MS).toISOString(), true)}</small>
+                </span>
+                <span className="far-day__n num">?</span>
+                <span className="far-day__list">
+                  Aucune sortie prévue connue : le dossier ne renseigne pas si loin. Ce n'est pas « zéro sortie ».
+                </span>
+              </li>
+            ) : null}
+          </ol>
+          <p className="mute">
+            {unknown.length} séjour{unknown.length > 1 ? "s" : ""} sans date de sortie prévue
+            {beyond.length ? ` · ${beyond.length} prévu${beyond.length > 1 ? "s" : ""} au-delà` : ""}. Source : dates de
+            sortie prévues du dossier, état du {local(snap.as_of, true)} ; plan proposé pour les 24 premières heures.
+          </p>
+        </div>
+      </section>
+      <section className="panel" aria-labelledby="ds-far-reinf">
+        <header className="panel__head">
+          <h2 className="panel__title" id="ds-far-reinf">
+            Renforts mobilisables connus
+          </h2>
+        </header>
+        <div className="panel__body">
+          {snap.reinforcements.length ? (
+            <ul className="far-reinf" data-testid="ds-far-reinf">
+              {snap.reinforcements.map((r) => (
+                <li key={r.option_id}>
+                  <b>{r.skill}</b> · {provenance(r)} · {CONFIRMATION[r.confirmation] ?? r.confirmation}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>Aucune option de renfort connue.</p>
+          )}
+          <p className="mute">
+            Options valables pour les 24 h du plan. Pour les jours suivants, rien n'indique qu'elles resteront
+            disponibles : à anticiper avec le planning.
+          </p>
+        </div>
+      </section>
+      <section className="panel" aria-labelledby="ds-far-need">
+        <header className="panel__head">
+          <h2 className="panel__title" id="ds-far-need">
+            Pour planifier à {days} jours, il faudrait
+          </h2>
+        </header>
+        <div className="panel__body">
+          <ul className="far-need">
+            <li>les entrées programmées (bloc, hôpital de jour, mutations prévues) jour par jour ;</li>
+            <li>une date de sortie prévisionnelle pour chaque séjour, y compris ceux qui n'en ont pas ;</li>
+            <li>le planning soignant validé sur la période, pas seulement la garde en cours ;</li>
+            <li>une prévision des arrivées par les urgences, par jour, avec son incertitude.</li>
+          </ul>
+          <p className="mute">
+            Tant que ces données manquent, un plan à {days} jours serait une extrapolation : HospitalOS préfère
+            l'afficher comme une perspective.
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/** Window on the 24-hour plan (« focale »): 12 or 24 hours, or a 3/7-day perspective. */
+export type PlanFocal = "12h" | "24h" | "3j" | "7j";
+
+export function DecisionPlan({ focal = "24h" }: { focal?: PlanFocal }) {
   const store = useDecision();
+  const windowHours = focal === "12h" ? 12 : 24;
+  const far = focal === "3j" || focal === "7j";
   const [manualOpen, setManualOpen] = useState(false);
   const [prefill, setPrefill] = useState<DsAction | null>(null);
   const auto = store.auto;
@@ -1240,12 +1420,19 @@ export function DecisionPlan() {
           <Back size={14} /> Unité
         </a>
         <h1>
-          <Illu name="path" size={64} />
-          Plan jusqu'à demain
+          <Illu name={far ? "signpost" : "path"} size={64} />
+          {focal === "12h"
+            ? "Plan de la garde (12 h)"
+            : far
+              ? `Perspective à ${focal === "3j" ? "3" : "7"} jours`
+              : "Plan jusqu'à demain"}
         </h1>
         <p>
-          HospitalOS a prévu la pratique habituelle sur 24 h et cherché seul un meilleur plan : sorties à coordonner,
-          renforts à demander. C'est vous qui décidez ; rien n'est envoyé.
+          {far
+            ? "Le moteur ne planifie que sur 24 h. Au-delà, HospitalOS montre ce qui est déjà connu, sans proposer d'action ni inventer de plan."
+            : focal === "12h"
+              ? "Le plan à 24 h, lu sur les 12 prochaines heures : ce qui est à organiser pendant la garde. Les effets restent calculés sur 24 h."
+              : "HospitalOS a prévu la pratique habituelle sur 24 h et cherché seul un meilleur plan : sorties à coordonner, renforts à demander. C'est vous qui décidez ; rien n'est envoyé."}
         </p>
       </header>
       {store.error ? (
@@ -1253,63 +1440,67 @@ export function DecisionPlan() {
           {store.error}
         </div>
       ) : null}
-      <div className="ds-grid">
-        <div className="ds-col">
-          {auto ? (
-            <AutoPlan key={auto.id} store={store} onModify={openManual} unit={unit} />
-          ) : (
-            <div className="skeleton" aria-busy="true" aria-label="Calcul du plan" />
-          )}
-          {store.events.length && store.source === "api" ? (
-            <div className="demobar">
-              <span className="demobar__tag">Démonstration</span>
-              <span className="demobar__text">Faire arriver une information :</span>
-              {store.events.map((ev) => (
-                <button
-                  key={ev.id}
-                  type="button"
-                  className="btn btn--quiet"
-                  data-testid={`ds-inject-${ev.id}`}
-                  disabled={injected.includes(ev.id)}
-                  onClick={() => void store.inject(ev.id).then(() => setInjected((x) => [...x, ev.id]))}
-                >
-                  {injected.includes(ev.id) ? `${ev.label} — reçue` : ev.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
+      {far ? (
+        <Perspective days={focal === "3j" ? 3 : 7} store={store} />
+      ) : (
+        <div className="ds-grid">
+          <div className="ds-col">
+            {auto ? (
+              <AutoPlan key={auto.id} store={store} onModify={openManual} unit={unit} windowHours={windowHours} />
+            ) : (
+              <div className="skeleton" aria-busy="true" aria-label="Calcul du plan" />
+            )}
+            {store.events.length && store.source === "api" ? (
+              <div className="demobar">
+                <span className="demobar__tag">Démonstration</span>
+                <span className="demobar__text">Faire arriver une information :</span>
+                {store.events.map((ev) => (
+                  <button
+                    key={ev.id}
+                    type="button"
+                    className="btn btn--quiet"
+                    data-testid={`ds-inject-${ev.id}`}
+                    disabled={injected.includes(ev.id)}
+                    onClick={() => void store.inject(ev.id).then(() => setInjected((x) => [...x, ev.id]))}
+                  >
+                    {injected.includes(ev.id) ? `${ev.label} — reçue` : ev.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <aside className="ds-col" aria-labelledby="ds-manual-title">
+            <h2 id="ds-manual-title" className="ds-h2">
+              Simuler une variante <span className="mute">(optionnel)</span>
+            </h2>
+            <p className="mute">
+              Imposez une heure de sortie (X1) ou une présence prolongée (X2) : le même moteur recalcule le reste du
+              plan sans toucher à vos choix.
+            </p>
+            {!manualOpen ? (
+              <button type="button" className="btn" data-testid="ds-open-manual" onClick={openManual}>
+                Simuler une variante
+              </button>
+            ) : store.source === "api" && store.snapshot ? (
+              <ManualForm store={store} prefill={prefill} />
+            ) : (
+              <div className="ds-examples" data-testid="ds-examples">
+                <p className="note">
+                  Sans l'API locale du moteur, la saisie libre n'est pas possible : voici des variantes calculées à
+                  l'avance par le même moteur.
+                </p>
+                {store.manualExamples.map((m) => (
+                  <button key={m.id} type="button" className="btn btn--small" onClick={() => store.showExample(m.id)}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {store.manual ? <ManualResult store={store} unit={unit} /> : null}
+          </aside>
         </div>
-        <aside className="ds-col" aria-labelledby="ds-manual-title">
-          <h2 id="ds-manual-title" className="ds-h2">
-            Simuler une variante <span className="mute">(optionnel)</span>
-          </h2>
-          <p className="mute">
-            Imposez une heure de sortie (X1) ou une présence prolongée (X2) : le même moteur recalcule le reste du plan
-            sans toucher à vos choix.
-          </p>
-          {!manualOpen ? (
-            <button type="button" className="btn" data-testid="ds-open-manual" onClick={openManual}>
-              Simuler une variante
-            </button>
-          ) : store.source === "api" && store.snapshot ? (
-            <ManualForm store={store} prefill={prefill} />
-          ) : (
-            <div className="ds-examples" data-testid="ds-examples">
-              <p className="note">
-                Sans l'API locale du moteur, la saisie libre n'est pas possible : voici des variantes calculées à
-                l'avance par le même moteur.
-              </p>
-              {store.manualExamples.map((m) => (
-                <button key={m.id} type="button" className="btn btn--small" onClick={() => store.showExample(m.id)}>
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {store.manual ? <ManualResult store={store} unit={unit} /> : null}
-        </aside>
-      </div>
-      {auto ? <HowFound doc={auto} snapshot={store.snapshot} /> : null}
+      )}
+      {auto && !far ? <HowFound doc={auto} snapshot={store.snapshot} /> : null}
     </div>
   );
 }

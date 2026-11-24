@@ -149,37 +149,42 @@ export function UnitSwitcher({
         {single ? null : <kbd className="kbd switcher__kbd">U</kbd>}
       </button>
       {open ? (
-        <ul
-          ref={list}
-          id={`${id}-list`}
-          className="switcher__list"
-          role="listbox"
-          tabIndex={-1}
-          aria-label="Changer d'unité"
-          aria-activedescendant={`${id}-opt-${active}`}
-          onKeyDown={onKey}
-        >
-          {summaries.map((s, i) => (
-            <li
-              key={s.id}
-              id={`${id}-opt-${i}`}
-              role="option"
-              aria-selected={s.id === unitId}
-              className={`switcher__option${i === active ? " is-active" : ""}`}
-              onPointerEnter={() => setActive(i)}
-              onClick={() => choose(i)}
-            >
-              <kbd className="kbd" aria-hidden="true">
-                {i + 1}
-              </kbd>
-              <span className="switcher__option-main">
-                <span className="switcher__option-name">{s.name}</span>
-                <Line s={s} />
-              </span>
-              <Status s={s} />
-            </li>
-          ))}
-        </ul>
+        <div className="switcher__pop">
+          <ul
+            ref={list}
+            id={`${id}-list`}
+            className="switcher__list"
+            role="listbox"
+            tabIndex={-1}
+            aria-label="Changer d'unité"
+            aria-activedescendant={`${id}-opt-${active}`}
+            onKeyDown={onKey}
+          >
+            {summaries.map((s, i) => (
+              <li
+                key={s.id}
+                id={`${id}-opt-${i}`}
+                role="option"
+                aria-selected={s.id === unitId}
+                className={`switcher__option${i === active ? " is-active" : ""}`}
+                onPointerEnter={() => setActive(i)}
+                onClick={() => choose(i)}
+              >
+                <kbd className="kbd" aria-hidden="true">
+                  {i + 1}
+                </kbd>
+                <span className="switcher__option-main">
+                  <span className="switcher__option-name">{s.name}</span>
+                  <Line s={s} />
+                </span>
+                <Status s={s} />
+              </li>
+            ))}
+          </ul>
+          <a className="switcher__all" href="#/unites" onClick={() => setOpen(false)} data-testid="switcher-all">
+            Voir toutes les unités côte à côte <kbd className="kbd">T</kbd>
+          </a>
+        </div>
       ) : null}
     </div>
   );

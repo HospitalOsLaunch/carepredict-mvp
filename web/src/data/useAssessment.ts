@@ -1,7 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ApiError, api } from "../api/client";
 import type { LiveSnapshot, Plan, ShadowSummary, SourceReceipt } from "../api/types";
-import { type Assessment, type UnitSummary, fromLive, unitSummary } from "../domain/view";
+import { actionTitle } from "../domain/labels";
+import { type Assessment, type UnitSummary, bedElsewhere, fromLive, steps, unitSummary } from "../domain/view";
+import { bundleTitle } from "./journal";
+
+/** The priority action in words, combination included (all-units view). */
+const titleOf = (plan: Assessment["plan"] & object, a: Assessment): string => {
+  const unit = a.state.units[0]?.id ?? "";
+  const todo = steps(plan);
+  const where = (x: (typeof todo)[number]) => bedElsewhere(a.state, x, unit);
+  return todo.length > 1 ? bundleTitle(todo, where) : actionTitle(todo[0]!, where(todo[0]!));
+};
 import { type FixtureBundle, type ScenarioFixture, loadFixtures } from "./fixtures";
 
 /**
@@ -283,15 +293,15 @@ export function useAssessment(): Store {
   const summaries: UnitSummary[] = useMemo(
     () =>
       units.map((u) => {
-        if (u.id === unitId) return unitSummary(u.id, u.name, assessment);
+        if (u.id === unitId) return unitSummary(u.id, u.name, assessment, titleOf);
         if (!bundle || connection === "api-live") return unitSummary(u.id, u.name, null);
         const sid = lastByUnit.current[u.id] ?? u.situations[0]!.id;
         if (connection === "api-plan") {
           const s = bundle.scenarios.find((x) => x.id === sid);
           const plan = apiPlans[sid];
-          return unitSummary(u.id, u.name, s && plan ? fromScenario(s, "api-plan", plan) : null);
+          return unitSummary(u.id, u.name, s && plan ? fromScenario(s, "api-plan", plan) : null, titleOf);
         }
-        return unitSummary(u.id, u.name, fixtureAssessment(bundle, sid));
+        return unitSummary(u.id, u.name, fixtureAssessment(bundle, sid), titleOf);
       }),
     [units, unitId, assessment, bundle, connection, apiPlans],
   );
