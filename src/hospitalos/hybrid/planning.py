@@ -21,6 +21,7 @@ from hospitalos.operational.contract import Closed, Identifier, instant
 
 from .journal import reconstruct
 from .models import Action, FactEvent, State, action_errors, bundle_errors
+from .outlook import HorizonCheck, horizon_check
 from .pathway import DischargeReadiness, readiness
 from .preparation import PreparationForecasts, validate_preparation
 from .scenarios import FutureAssumptions, sample_future
@@ -101,6 +102,7 @@ class PlanWindow(Closed):
 class Plan(Closed):
     unit_id: Identifier | None = None
     windows: tuple[PlanWindow, ...] = ()
+    horizons: tuple[HorizonCheck, ...] = ()
 
     schema_version: Literal["HYBRID_PLAN_4", "HYBRID_PLAN_5"] = "HYBRID_PLAN_4"
     evidence: Literal["simulation_under_declared_assumptions"] = (
@@ -451,6 +453,11 @@ def plan(request: PlanRequest) -> Plan:
     return Plan(
         unit_id=request.unit_id or (state.units[0].id if len(state.units) == 1 else None),
         windows=tuple(windows),
+        horizons=tuple(
+            horizon_check(state, request.unit_id or state.units[0].id, d) for d in (3, 7)
+        )
+        if request.unit_id or len(state.units) == 1
+        else (),
         schema_version="HYBRID_PLAN_5"
         if request.preparation is not None
         and request.preparation.schema_version == "PREPARATION_FORECAST_2"

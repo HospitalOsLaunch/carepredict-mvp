@@ -433,6 +433,7 @@
     }
    ],
    "schedules": [],
+   "outlooks": [],
    "issues": [],
    "warnings": []
   },
@@ -1290,7 +1291,7 @@
   "received_at_by_source": {
    "flux-fictif": "2026-10-24T06:30:00+00:00"
   },
-  "semantic_fingerprint": "7c38137d0740dff315ad2c4ca334e7638e40b51e5a8b0bf124ad236b20d43469",
+  "semantic_fingerprint": "d2a1596cbaf55ff031b6d5518a7585959a41beb01da0c4eb255f1d1cf58716d8",
   "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
   "issues": [],
   "warnings": []
@@ -1735,6 +1736,7 @@
       }
      ],
      "schedules": [],
+     "outlooks": [],
      "issues": [],
      "warnings": []
     },
@@ -2592,7 +2594,7 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:30:00+00:00"
     },
-    "semantic_fingerprint": "7c38137d0740dff315ad2c4ca334e7638e40b51e5a8b0bf124ad236b20d43469",
+    "semantic_fingerprint": "d2a1596cbaf55ff031b6d5518a7585959a41beb01da0c4eb255f1d1cf58716d8",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [],
     "warnings": []
@@ -2613,6 +2615,136 @@
       "selected_wait": 474.375,
       "saved_wait": 1164.375,
       "until": "2026-10-25T06:30:45Z"
+     }
+    ],
+    "horizons": [
+     {
+      "days": 3,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": []
+     },
+     {
+      "days": 7,
+      "feeds": [
+       {
+        "kind": "bookings",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "departures",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "roster",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       },
+       {
+        "kind": "emergency",
+        "source": null,
+        "revision": null,
+        "issued_at": null,
+        "received_at": null,
+        "synced_at": null,
+        "covers_until": null,
+        "covered": null,
+        "expected": null,
+        "reasons": [
+         "missing"
+        ]
+       }
+      ],
+      "data_ready": false,
+      "qualified": false,
+      "reasons": []
      }
     ],
     "schema_version": "HYBRID_PLAN_4",
@@ -2900,6 +3032,7 @@
      "pools": [],
      "discharges": [],
      "schedules": [],
+     "outlooks": [],
      "issues": [
       "missing_perimeter",
       "stale:bed:L01",
@@ -3803,7 +3936,7 @@
     "received_at_by_source": {
      "flux-fictif": "2026-10-24T06:34:00+00:00"
     },
-    "semantic_fingerprint": "0d0b021ae64943be9aa80d05903bb35c9b7d7f29e5d5185d8da1ee886f05562f",
+    "semantic_fingerprint": "5e325db4a8d5af8ac7ec077aee9ec622651235ecfacfaabdd47a7a8d293b61da",
     "policy_fingerprint": "292ebe686697723a6757a748974e74f8c2e8c446b1488c4ff43183b14502350a",
     "issues": [
      "missing_perimeter",

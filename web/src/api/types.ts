@@ -68,7 +68,7 @@ export interface UnitSchedule {
   admissions: { request: { request_id: string; expected_arrival: string }; window_start: string;
     window_end: string; status: string; prepared_bed: string | null }[];
 }
-export type Fact = Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule;
+export type Fact = Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule | { kind: "unit_outlook"; id: string; feeds: unknown[] };
 
 export interface FactEvent {
   schema_version: "HYBRID_MVP_2";
@@ -169,12 +169,18 @@ export interface DischargeReadiness {
 
 export type Decision = "recommend" | "no_change" | "abstain";
 
+export type FeedKind = "bookings" | "departures" | "roster" | "emergency";
+export interface FeedCheck { kind: FeedKind; source: string | null; revision: number | null;
+  issued_at: string | null; received_at: string | null; synced_at: string | null; covers_until: string | null;
+  covered: number | null; expected: number | null; reasons: string[]; }
+export interface HorizonCheck { days: number; data_ready: boolean; qualified: boolean; feeds: FeedCheck[]; reasons: string[]; }
 export interface PlanWindow {
   minutes: number; baseline_wait: number; selected_wait: number; saved_wait: number; until: string;
 }
 export interface Plan {
   unit_id?: string | null;
   windows?: PlanWindow[];
+  horizons?: HorizonCheck[];
   schema_version: "HYBRID_PLAN_4" | "HYBRID_PLAN_5";
   evidence: "simulation_under_declared_assumptions";
   decision: Decision;

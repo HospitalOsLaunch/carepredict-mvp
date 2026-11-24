@@ -33,12 +33,13 @@ from demo_unit import (  # noqa: E402
 
 from hospitalos.hybrid.live_models import PlanningOptions  # noqa: E402
 from hospitalos.hybrid.live_store import LiveStore  # noqa: E402
-from hospitalos.hybrid.models import Action  # noqa: E402
+from hospitalos.hybrid.models import Action, FactEvent  # noqa: E402
 from hospitalos.hybrid.planning import PlanRequest, plan  # noqa: E402
 from hospitalos.hybrid.scenarios import sample_future  # noqa: E402
 from hospitalos.hybrid.scoring import score  # noqa: E402
 from hospitalos.hybrid.shadow import summarize  # noqa: E402
 from hospitalos.hybrid.simulation import simulate  # noqa: E402
+from hospitalos.hybrid.synthetic_outlook import synthetic_outlook  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "src" / "fixtures"
 
@@ -57,6 +58,39 @@ def scenario(
     request = request.model_copy(
         update={"unit_id": unit, "max_bundle": MAX_BUNDLE, "horizon_minutes": 1440}
     )
+    if not request.state().issues:
+        outlook = synthetic_outlook(request.state(), unit)
+        # Three-day coverage only in geriatrics. A stale booking source in internal medicine.
+        if name == "geriatrie":
+            outlook = synthetic_outlook(request.state(), unit, days=3)
+        if name == "interne":
+            old = request.at - timedelta(hours=3)
+            outlook = outlook.model_copy(
+                update={
+                    "feeds": tuple(
+                        f.model_copy(
+                            update={"synced_at": old, "available_at": old, "issued_at": old}
+                        )
+                        if f.kind == "bookings"
+                        else f
+                        for f in outlook.feeds
+                    )
+                }
+            )
+        fact = FactEvent(
+            hospital_id=request.hospital_id,
+            source=SOURCE,
+            event_id=f"outlook:{unit}",
+            event_time=request.at,
+            available_at=request.at,
+            fact=outlook,
+        )
+        request = request.model_copy(
+            update={
+                "events": (*request.events, fact),
+                "expected_entities": (*request.expected_entities, f"unit_outlook:{unit}"),
+            }
+        )
     proposal = plan(request)
     state = request.state()
     traces: dict[str, Any] = {}

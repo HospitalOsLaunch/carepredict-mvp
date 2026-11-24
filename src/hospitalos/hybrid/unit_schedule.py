@@ -41,6 +41,9 @@ class Booking(Closed):
 
     @model_validator(mode="after")
     def window(self) -> Self:
+        source = self.request.provenance
+        if instant(source.available_at) < instant(source.event_time):
+            raise ValueError("Booking published before observed")
         if not self.window_start <= self.request.expected_arrival < self.window_end:
             raise ValueError("Expected arrival outside authorised window")
         return self

@@ -32,6 +32,7 @@ from .live_models import (
     ShadowEpisode,
 )
 from .models import Bed, FactEvent, Patient, ResourcePool, Unit
+from .outlook import UnitOutlook
 from .planning import PlanRequest, plan
 from .unit_schedule import UnitSchedule
 
@@ -152,7 +153,16 @@ class LiveStore:
             if (
                 not separator
                 or not identifier
-                or kind not in {"unit", "bed", "patient", "pool", "discharge", "unit_schedule"}
+                or kind
+                not in {
+                    "unit",
+                    "bed",
+                    "patient",
+                    "pool",
+                    "discharge",
+                    "unit_schedule",
+                    "unit_outlook",
+                }
             ):
                 raise ValueError("Malformed manifest entity")
             if kind == "unit" and identifier != policy.unit_id:
@@ -190,7 +200,7 @@ class LiveStore:
         fact = event.fact
         unit = self.policy.unit_id
         if (
-            (isinstance(fact, (Unit, UnitSchedule)) and fact.id != unit)
+            (isinstance(fact, (Unit, UnitSchedule, UnitOutlook)) and fact.id != unit)
             or (isinstance(fact, Bed) and fact.unit_id != unit)
             or (isinstance(fact, ResourcePool) and fact.unit_ids != (unit,))
             or (isinstance(fact, Patient) and unit not in fact.compatible_units)
@@ -269,7 +279,8 @@ class LiveStore:
         issues.extend(
             f"stale:{e.fact.kind}:{e.fact.id}"
             for e in events
-            if (now - e.event_time).total_seconds() > self.policy.fact_ttl_seconds
+            if e.fact.kind != "unit_outlook"
+            and (now - e.event_time).total_seconds() > self.policy.fact_ttl_seconds
         )
         state = state.model_copy(update={"issues": tuple(sorted(set(issues)))})
         expected = {f"staffed:{self.policy.unit_id}", f"cleaning:{self.policy.unit_id}"}

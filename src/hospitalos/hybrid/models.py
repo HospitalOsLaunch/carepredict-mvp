@@ -13,6 +13,7 @@ from pydantic import Field, StrictBool, StrictInt, field_validator, model_valida
 
 from hospitalos.operational.contract import Closed, Identifier, instant
 
+from .outlook import UnitOutlook
 from .unit_schedule import UnitSchedule
 
 Count = Annotated[StrictInt, Field(ge=0)]
@@ -107,7 +108,8 @@ class Discharge(Closed):
 
 
 Fact = Annotated[
-    Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule, Field(discriminator="kind")
+    Unit | Bed | Patient | ResourcePool | Discharge | UnitSchedule | UnitOutlook,
+    Field(discriminator="kind"),
 ]
 
 
@@ -145,6 +147,7 @@ class State(Closed):
     pools: tuple[ResourcePool, ...] = ()
     discharges: tuple[Discharge, ...] = ()
     schedules: tuple[UnitSchedule, ...] = ()
+    outlooks: tuple[UnitOutlook, ...] = ()
     issues: tuple[str, ...] = ()
     # Observed overload is retained and exposed, not clamped to capacity.
     warnings: tuple[str, ...] = ()

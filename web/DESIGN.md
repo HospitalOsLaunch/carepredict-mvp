@@ -267,3 +267,11 @@ jamais de texte sur fond clair. Audit axe-core : 0 violation.
 - **Rayons** : 6 (aimants) · 14 (cartes) · 20 (dialogues) · pilules (étiquettes, toasts) ; boutons 12.
 - **Mouvement** : le soleil se lève au chargement (une fois) ; ailleurs < 200 ms,
   `cubic-bezier(0.23, 1, 0.32, 1)`, transform/opacité, coupé sous `prefers-reduced-motion`.
+
+### Contrôles des quatre sources
+
+Dans Données, chaque horizon a son propre bilan. Le cockpit donne le logiciel,
+la version, la réception, la synchronisation, la fin de couverture et les motifs
+de rejet. Pour les séjours et les jours d’urgences, le numérateur et le dénominateur
+remontent du contrôle backend. Un export complet vide, une panne et un reçu
+absent ont des états distincts.

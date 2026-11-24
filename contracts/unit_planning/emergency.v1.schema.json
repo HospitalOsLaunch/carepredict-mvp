@@ -1,0 +1,143 @@
+{
+  "$defs": {
+    "DayDemand": {
+      "additionalProperties": false,
+      "properties": {
+        "counts": {
+          "items": {
+            "maximum": 200,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Counts",
+          "type": "array"
+        },
+        "day": {
+          "format": "date",
+          "title": "Day",
+          "type": "string"
+        }
+      },
+      "required": [
+        "day",
+        "counts"
+      ],
+      "title": "DayDemand",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allocation_rule": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Allocation Rule",
+      "type": "string"
+    },
+    "available_at": {
+      "format": "date-time",
+      "title": "Available At",
+      "type": "string"
+    },
+    "covers_from": {
+      "format": "date-time",
+      "title": "Covers From",
+      "type": "string"
+    },
+    "covers_until": {
+      "format": "date-time",
+      "title": "Covers Until",
+      "type": "string"
+    },
+    "hospital_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Hospital Id",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "kind": {
+      "const": "emergency",
+      "default": "emergency",
+      "title": "Kind",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "hospital_export",
+      "enum": [
+        "synthetic",
+        "hospital_export"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/DayDemand"
+      },
+      "title": "Records",
+      "type": "array"
+    },
+    "revision": {
+      "exclusiveMinimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "UNIT_OUTLOOK_1",
+      "default": "UNIT_OUTLOOK_1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "outage",
+        "partial"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synced_at": {
+      "format": "date-time",
+      "title": "Synced At",
+      "type": "string"
+    },
+    "timezone": {
+      "const": "Europe/Paris",
+      "default": "Europe/Paris",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "unit_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Unit Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hospital_id",
+    "unit_id",
+    "source",
+    "revision",
+    "issued_at",
+    "available_at",
+    "synced_at",
+    "covers_from",
+    "covers_until",
+    "status",
+    "allocation_rule",
+    "records"
+  ],
+  "title": "Emergency",
+  "type": "object"
+}

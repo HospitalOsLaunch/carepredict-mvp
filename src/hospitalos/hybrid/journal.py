@@ -12,6 +12,7 @@ from datetime import datetime
 from hospitalos.operational.contract import instant
 
 from .models import Bed, Discharge, FactEvent, Patient, ResourcePool, State, Unit, compatible
+from .outlook import UnitOutlook, apply_bookings
 from .unit_schedule import UnitSchedule
 
 
@@ -114,7 +115,9 @@ def reconstruct(
             issues.append(f"conflicting_sources:{kind}:{entity}")
             continue
         # Agreement is usable only if each contributing report is fresh.
-        if any((at - e.event_time).total_seconds() > max_age_minutes * 60 for e in reports):
+        if kind != "unit_outlook" and any(
+            (at - e.event_time).total_seconds() > max_age_minutes * 60 for e in reports
+        ):
             issues.append(f"stale:{kind}:{entity}")
             continue
         selected.append(sorted(reports, key=lambda e: (e.event_id, e.version))[0])
@@ -215,16 +218,19 @@ def reconstruct(
             + "\n".join(sorted(canonical(e) for e in visible.values()))
         ).encode()
     ).hexdigest()
-    return State(
-        hospital_id=hospital_id,
-        at=at,
-        fingerprint=digest,
-        units=units,
-        beds=beds,
-        patients=patients,
-        schedules=schedules,
-        pools=pools,
-        discharges=discharges,
-        issues=tuple(sorted(set(issues))),
-        warnings=tuple(sorted(warnings)),
+    return apply_bookings(
+        State(
+            hospital_id=hospital_id,
+            at=at,
+            fingerprint=digest,
+            units=units,
+            beds=beds,
+            patients=patients,
+            outlooks=tuple(e.fact for e in selected if isinstance(e.fact, UnitOutlook)),
+            schedules=schedules,
+            pools=pools,
+            discharges=discharges,
+            issues=tuple(sorted(set(issues))),
+            warnings=tuple(sorted(warnings)),
+        )
     )

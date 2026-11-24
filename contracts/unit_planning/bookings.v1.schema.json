@@ -1,0 +1,310 @@
+{
+  "$defs": {
+    "AdmissionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_task_minutes": {
+          "minimum": 0,
+          "title": "Admission Task Minutes",
+          "type": "integer"
+        },
+        "arrival_delay": {
+          "$ref": "#/$defs/Distribution"
+        },
+        "care": {
+          "items": {
+            "$ref": "#/$defs/CareProfile"
+          },
+          "title": "Care",
+          "type": "array"
+        },
+        "expected_arrival": {
+          "format": "date-time",
+          "title": "Expected Arrival",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "request_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "requirements": {
+          "default": [],
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+            "type": "string"
+          },
+          "title": "Requirements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "request_id",
+        "expected_arrival",
+        "arrival_delay",
+        "care",
+        "admission_task_minutes",
+        "provenance"
+      ],
+      "title": "AdmissionRequest",
+      "type": "object"
+    },
+    "Booking": {
+      "additionalProperties": false,
+      "properties": {
+        "prepared_bed": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Prepared Bed"
+        },
+        "request": {
+          "$ref": "#/$defs/AdmissionRequest"
+        },
+        "status": {
+          "default": "booked",
+          "enum": [
+            "booked",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request",
+        "window_start",
+        "window_end"
+      ],
+      "title": "Booking",
+      "type": "object"
+    },
+    "CareProfile": {
+      "additionalProperties": false,
+      "description": "Estimated recurring care in staff-minutes per hour, by skill (synthetic).",
+      "properties": {
+        "day_minutes_per_hour": {
+          "minimum": 0,
+          "title": "Day Minutes Per Hour",
+          "type": "integer"
+        },
+        "night_minutes_per_hour": {
+          "minimum": 0,
+          "title": "Night Minutes Per Hour",
+          "type": "integer"
+        },
+        "skill": {
+          "enum": [
+            "IDE",
+            "AS"
+          ],
+          "title": "Skill",
+          "type": "string"
+        },
+        "status": {
+          "default": "estimated",
+          "enum": [
+            "known",
+            "estimated"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "day_minutes_per_hour",
+        "night_minutes_per_hour"
+      ],
+      "title": "CareProfile",
+      "type": "object"
+    },
+    "Distribution": {
+      "additionalProperties": false,
+      "description": "Finite synthetic distribution over whole hours (integer weights, exact arithmetic).\n\nIt is a declared hypothesis on synthetic data, not a calibration on real data.",
+      "properties": {
+        "support": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "title": "Support",
+          "type": "array"
+        },
+        "weights": {
+          "items": {
+            "exclusiveMinimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Weights",
+          "type": "array"
+        }
+      },
+      "required": [
+        "support",
+        "weights"
+      ],
+      "title": "Distribution",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "available_at": {
+          "format": "date-time",
+          "title": "Available At",
+          "type": "string"
+        },
+        "event_time": {
+          "format": "date-time",
+          "title": "Event Time",
+          "type": "string"
+        },
+        "obs_id": {
+          "title": "Obs Id",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "obs_id",
+        "source",
+        "event_time",
+        "available_at"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "available_at": {
+      "format": "date-time",
+      "title": "Available At",
+      "type": "string"
+    },
+    "covers_from": {
+      "format": "date-time",
+      "title": "Covers From",
+      "type": "string"
+    },
+    "covers_until": {
+      "format": "date-time",
+      "title": "Covers Until",
+      "type": "string"
+    },
+    "hospital_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Hospital Id",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "kind": {
+      "const": "bookings",
+      "default": "bookings",
+      "title": "Kind",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "hospital_export",
+      "enum": [
+        "synthetic",
+        "hospital_export"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/Booking"
+      },
+      "title": "Records",
+      "type": "array"
+    },
+    "revision": {
+      "exclusiveMinimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "UNIT_OUTLOOK_1",
+      "default": "UNIT_OUTLOOK_1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "outage",
+        "partial"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synced_at": {
+      "format": "date-time",
+      "title": "Synced At",
+      "type": "string"
+    },
+    "timezone": {
+      "const": "Europe/Paris",
+      "default": "Europe/Paris",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "unit_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Unit Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hospital_id",
+    "unit_id",
+    "source",
+    "revision",
+    "issued_at",
+    "available_at",
+    "synced_at",
+    "covers_from",
+    "covers_until",
+    "status",
+    "records"
+  ],
+  "title": "Bookings",
+  "type": "object"
+}

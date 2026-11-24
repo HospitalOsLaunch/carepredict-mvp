@@ -800,6 +800,7 @@
   "pools": [],
   "discharges": [],
   "schedules": [],
+  "outlooks": [],
   "issues": [
    "missing_perimeter",
    "stale:bed:R01",
@@ -837,6 +838,136 @@
  "plan": {
   "unit_id": "pneumologie",
   "windows": [],
+  "horizons": [
+   {
+    "days": 3,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": []
+   },
+   {
+    "days": 7,
+    "feeds": [
+     {
+      "kind": "bookings",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "departures",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "roster",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     },
+     {
+      "kind": "emergency",
+      "source": null,
+      "revision": null,
+      "issued_at": null,
+      "received_at": null,
+      "synced_at": null,
+      "covers_until": null,
+      "covered": null,
+      "expected": null,
+      "reasons": [
+       "missing"
+      ]
+     }
+    ],
+    "data_ready": false,
+    "qualified": false,
+    "reasons": []
+   }
+  ],
   "schema_version": "HYBRID_PLAN_4",
   "evidence": "simulation_under_declared_assumptions",
   "decision": "abstain",

@@ -1,0 +1,144 @@
+{
+  "$defs": {
+    "DepartureEstimate": {
+      "additionalProperties": false,
+      "properties": {
+        "estimate": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Estimate"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "stay_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+          "title": "Stay Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stay_id",
+        "estimate",
+        "reviewed_at"
+      ],
+      "title": "DepartureEstimate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "available_at": {
+      "format": "date-time",
+      "title": "Available At",
+      "type": "string"
+    },
+    "covers_from": {
+      "format": "date-time",
+      "title": "Covers From",
+      "type": "string"
+    },
+    "covers_until": {
+      "format": "date-time",
+      "title": "Covers Until",
+      "type": "string"
+    },
+    "hospital_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Hospital Id",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "kind": {
+      "const": "departures",
+      "default": "departures",
+      "title": "Kind",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "hospital_export",
+      "enum": [
+        "synthetic",
+        "hospital_export"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/DepartureEstimate"
+      },
+      "title": "Records",
+      "type": "array"
+    },
+    "revision": {
+      "exclusiveMinimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "UNIT_OUTLOOK_1",
+      "default": "UNIT_OUTLOOK_1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "outage",
+        "partial"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "synced_at": {
+      "format": "date-time",
+      "title": "Synced At",
+      "type": "string"
+    },
+    "timezone": {
+      "const": "Europe/Paris",
+      "default": "Europe/Paris",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "unit_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_:.-]{0,159}$",
+      "title": "Unit Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "hospital_id",
+    "unit_id",
+    "source",
+    "revision",
+    "issued_at",
+    "available_at",
+    "synced_at",
+    "covers_from",
+    "covers_until",
+    "status",
+    "records"
+  ],
+  "title": "Departures",
+  "type": "object"
+}
