@@ -99,6 +99,9 @@ function useShortcuts(
       const k = e.key.toLowerCase();
       const emit = (detail: string) => window.dispatchEvent(new CustomEvent("hos:shortcut", { detail }));
       const digit = Number(e.key);
+      // On the 24-hour plan, the cockpit's units are not on screen: no silent unit change.
+      const onPlan = readRoute().route === "plan";
+      if (onPlan && (k === "u" || (digit >= 1 && digit <= 9))) return;
       if (k === "u") openSwitcher();
       else if (k === "?") openHelp();
       else if (k === "o") emit("yes");
@@ -140,6 +143,12 @@ export function App() {
   const { records, me } = useJournal();
   const todo = now ? records.filter((r) => !r.sample && statusOf(r, now) === "validated").length : 0;
 
+  // One journal per space: decisions on fictitious patients never land in the unit's journal.
+  useEffect(() => {
+    if (store.connection === "probing") return;
+    journal.useSpace(store.connection === "api-live" ? "live" : "demo");
+  }, [store.connection]);
+
   // Demonstration: a plausible shift of earlier decisions, read-only, never stored.
   const stateAt = a?.state.at;
   useEffect(() => {
@@ -175,12 +184,21 @@ export function App() {
             <Mark />
             <span translate="no">HospitalOS</span>
           </a>
-          <UnitSwitcher
-            summaries={store.summaries}
-            unitId={store.unitId}
-            onSelect={selectUnit}
-            openSignal={switcherSignal}
-          />
+          {route === "plan" ? (
+            // The 24-hour plan runs on its own fictitious units (chosen in the page): the
+            // cockpit's unit switcher would suggest the plan concerns that unit.
+            <span className="unitchip" data-testid="plan-unitchip">
+              <span className="unitchip__name">Plan 24 h</span>
+              <span className="unitchip__sub">Unité fictive, choisie dans la page</span>
+            </span>
+          ) : (
+            <UnitSwitcher
+              summaries={store.summaries}
+              unitId={store.unitId}
+              onSelect={selectUnit}
+              openSignal={switcherSignal}
+            />
+          )}
           <nav className="nav" aria-label="Sections">
             {ROUTES.map((r) => (
               <a key={r.id} href={r.href} aria-current={route === r.id ? "page" : undefined}>
@@ -260,6 +278,8 @@ export function App() {
             units={store.units}
             unitId={store.unitId}
             onToast={notify}
+            space={journal.space}
+            canSwitch={store.connection === "api-live"}
           />
         ) : route === "donnees" ? (
           <DataQuality a={a} quality={store.quality} summary={store.shadowSummary} />

@@ -73,6 +73,33 @@ proposée ──Valider (O)──▶ validée, à faire ──C'est fait (F)─�
   sont signées (nom et rôle). Prototype : le journal vit sur le poste ; le partage entre collègues
   passe par l'API (README, « Suite côté API »).
 
+## Provenance des décisions
+
+Une décision dit toujours d'où elle vient et sur quoi elle porte.
+
+- **Deux journaux, jamais mélangés** : celui de l'unité en observation (`hospitalos.journal.v2.live`)
+  et celui de la démonstration (`…v2.demo`). Chaque fiche porte son origine (unité en observation,
+  démonstration, plan 24 h) et l'empreinte de l'état évalué ; l'origine fait partie de
+  l'identifiant. En connexion directe, un sélecteur permet de consulter le journal de démonstration
+  sans le confondre. L'ancien journal sans origine (`v1`) est rangé côté démonstration, marqué
+  « origine non enregistrée ».
+- **Un rejeu n'est pas l'unité** : la situation enregistrée rejouée sur patients fictifs s'appelle
+  « Observation rejouée » et propose « Recalculer », jamais « Évaluer maintenant ».
+- **Destination explicite** : un lit d'une autre unité est nommé avec son unité ; un renfort prêté
+  nomme l'unité qui prête (« prêté par … ») ; un lit n'est « prêt » que pour le premier patient de
+  la file, les suivants lisent « L08 ira d'abord à U-1043 ».
+- **Base de chaque action du plan 24 h** : autorisation médicale observée, consigne validée,
+  hypothèse, option de renfort — chacune son étiquette.
+
+## Plan à 24 h
+
+Même grammaire que « Action suivante » : bandeau d'état, titre, actions avec leur base, l'effet
+(soins non couverts, pratique habituelle contre plan), deux réponses. Le reste à un clic : tous les
+indicateurs, conditions et incertitudes, options écartées, détail du calcul (codes moteur). Pas
+d'accent violet : Outremer agit partout. Le sélecteur d'unité du cockpit cède la place à
+« Plan 24 h · unité fictive » : l'unité fictive se choisit dans le bandeau de démonstration de la
+page. Valider ou refuser un plan l'inscrit au journal de démonstration.
+
 ## Illustrations
 
 Des illustrations « spot » fines et légères donnent un peu de chaleur au cockpit, comme une

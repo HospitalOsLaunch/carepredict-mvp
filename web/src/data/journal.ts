@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import type { Action, Plan } from "../api/types";
 import { actionShort, actionTitle, explain } from "../domain/labels";
-import { type Assessment, clockPlus, comparison, minutesBetween } from "../domain/view";
+import { type Assessment, type Origin, bedElsewhere, clockPlus, comparison, minutesBetween } from "../domain/view";
 
 /*
   Decision journal: every proposal HospitalOS made, and what people did with it.
@@ -19,6 +19,11 @@ import { type Assessment, clockPlus, comparison, minutesBetween } from "../domai
   Storage: this browser (localStorage) until the API exposes a shared journal
   (web/README.md, « Suite côté API »). Demonstration history is generated, read-only
   and flagged `sample`.
+
+  Provenance: every record carries the origin of the evaluation it came from and the
+  fingerprint of the state it was computed on. Decisions taken on the unit in observation
+  and decisions taken on fictitious patients never share storage: two journals, one per
+  space, and the screen only shows the space of the current connection.
 */
 
 export type EventType =
@@ -50,8 +55,31 @@ export interface DecisionEvent {
   note?: string;
 }
 
+/** Where the evaluation behind a record came from. « unknown »: kept from before origins were recorded. */
+export type RecordOrigin = Origin | "decision-fixture" | "decision-api" | "unknown";
+export type Space = "live" | "demo";
+
+export const spaceOf = (origin: RecordOrigin): Space => (origin === "api-live" ? "live" : "demo");
+
+export const ORIGIN_LABEL: Record<RecordOrigin, string> = {
+  "api-live": "Unité en observation",
+  "api-plan": "Démonstration · API locale, patients fictifs",
+  fixture: "Démonstration · patients fictifs",
+  "decision-fixture": "Démonstration · plan 24 h, unité fictive",
+  "decision-api": "Démonstration · plan 24 h, moteur local, unité fictive",
+  unknown: "Origine non enregistrée (journal antérieur)",
+};
+
 export interface DecisionRecord {
   id: string;
+  /** Evaluation the record comes from; decides which journal holds it. */
+  origin: RecordOrigin;
+  /** Fingerprint of the state the proposal was computed on (null: not available). */
+  stateFingerprint: string | null;
+  /** Where to answer it: the unit page or the 24-hour plan. */
+  answerAt?: "unite" | "plan";
+  /** What to do off-system once validated, when it is not a single cockpit action. */
+  todo?: string;
   planId: string;
   unitId: string;
   unitName: string;
@@ -130,7 +158,8 @@ export const lastStep = (r: DecisionRecord): DecisionEvent | undefined =>
   [...r.events].reverse().find((e) => e.type !== "note");
 
 /** What the person does next, off-system, once they validate. */
-export function todoHint(action: Action | null): string {
+export function todoHint(action: Action | null, record?: Pick<DecisionRecord, "todo">): string {
+  if (record?.todo) return record.todo;
   if (!action) return "";
   switch (action.kind) {
     case "request_transport":
@@ -146,37 +175,72 @@ export function todoHint(action: Action | null): string {
 
 // ---------------------------------------------------------------- storage
 
-const KEY = "hospitalos.journal.v1";
+/** One journal per space. v1 had a single journal without origins (see migrate). */
+const KEYS: Record<Space, string> = {
+  live: "hospitalos.journal.v2.live",
+  demo: "hospitalos.journal.v2.demo",
+};
+const LEGACY_KEY = "hospitalos.journal.v1";
 const ME = "hospitalos.me.v1";
 const CAP = 1000;
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
-let cache: DecisionRecord[] | null = null;
+const cache: Record<Space, DecisionRecord[] | null> = { live: null, demo: null };
+let active: Space = "demo";
 let samples: DecisionRecord[] = [];
 let snapshot: DecisionRecord[] = [];
 let me: Person | null = null;
 let storageOk = true;
 
-function load(): DecisionRecord[] {
-  if (cache) return cache;
+/**
+ * v1 records carry no origin: nothing says whether they were taken on real or fictitious
+ * patients. They are kept, read-only in meaning, in the demonstration journal and labelled
+ * « origine non enregistrée », never mixed into the journal of the unit in observation.
+ */
+function migrate(): DecisionRecord[] {
   try {
-    const raw = window.localStorage.getItem(KEY);
-    cache = raw ? (JSON.parse(raw) as DecisionRecord[]) : [];
+    const raw = window.localStorage.getItem(LEGACY_KEY);
+    if (!raw) return [];
+    return (JSON.parse(raw) as DecisionRecord[]).map((r) => ({
+      ...r,
+      id: r.id.startsWith("unknown:") ? r.id : `unknown:${r.id}`,
+      origin: "unknown",
+      stateFingerprint: null,
+    }));
   } catch {
-    cache = [];
+    return [];
   }
-  return cache;
+}
+
+function load(space: Space = active): DecisionRecord[] {
+  const hit = cache[space];
+  if (hit) return hit;
+  let records: DecisionRecord[] = [];
+  try {
+    const raw = window.localStorage.getItem(KEYS[space]);
+    if (raw) records = JSON.parse(raw) as DecisionRecord[];
+    else if (space === "demo") {
+      records = migrate();
+      if (records.length) window.localStorage.setItem(KEYS.demo, JSON.stringify(records));
+    }
+  } catch {
+    records = [];
+  }
+  cache[space] = records;
+  return records;
 }
 
 function rebuild() {
-  snapshot = [...load(), ...samples].sort((a, b) => Date.parse(b.proposedAt) - Date.parse(a.proposedAt));
+  const shown = active === "demo" ? [...load("demo"), ...samples] : load("live");
+  snapshot = shown.sort((a, b) => Date.parse(b.proposedAt) - Date.parse(a.proposedAt));
 }
 
-function commit(next: DecisionRecord[]) {
-  cache = next.slice(-CAP);
+function commit(next: DecisionRecord[], space: Space = active) {
+  const kept = next.slice(-CAP);
+  cache[space] = kept;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(cache));
+    window.localStorage.setItem(KEYS[space], JSON.stringify(kept));
     storageOk = true;
   } catch {
     storageOk = false;
@@ -188,8 +252,9 @@ function commit(next: DecisionRecord[]) {
 function subscribe(l: Listener) {
   listeners.add(l);
   const onStorage = (e: StorageEvent) => {
-    if (e.key !== KEY && e.key !== ME) return;
-    cache = null;
+    if (e.key !== KEYS.live && e.key !== KEYS.demo && e.key !== ME) return;
+    cache.live = null;
+    cache.demo = null;
     me = null;
     rebuild();
     l();
@@ -225,20 +290,40 @@ export function who(p: Person | null, current: Person): string {
   return p.name || "Un collègue";
 }
 
+/** The journal that holds a record: actions on a record never cross into the other space. */
+function spaceHolding(id: string): Space | null {
+  if (load(active).some((r) => r.id === id)) return active;
+  const other: Space = active === "live" ? "demo" : "live";
+  return load(other).some((r) => r.id === id) ? other : null;
+}
+
 function update(id: string, change: (r: DecisionRecord) => DecisionRecord | null) {
-  const all = load();
+  const space = spaceHolding(id);
+  if (!space) return;
+  const all = load(space);
   const i = all.findIndex((r) => r.id === id);
-  if (i < 0) return;
   const next = change(all[i]!);
   if (!next) return;
   const copy = [...all];
   copy[i] = next;
-  commit(copy);
+  commit(copy, space);
 }
 
 export const journal = {
   get storageOk() {
     return storageOk;
+  },
+
+  get space(): Space {
+    return active;
+  },
+
+  /** Which journal the screen shows: the one of the current connection. */
+  useSpace(space: Space) {
+    if (space === active) return;
+    active = space;
+    rebuild();
+    listeners.forEach((l) => l());
   },
 
   setMe(p: Pick<Person, "name" | "role">) {
@@ -257,7 +342,9 @@ export const journal = {
    * unit replaces older ones still waiting for an answer.
    */
   register(record: DecisionRecord) {
-    const all = load();
+    // The record's origin, not the screen, decides where it is kept.
+    const space = spaceOf(record.origin);
+    const all = load(space);
     const existing = all.find((r) => r.id === record.id);
     const last = existing?.events[existing.events.length - 1];
     // Already current: nothing to do. Shown again after being replaced (a demonstration
@@ -266,11 +353,21 @@ export const journal = {
     const next = all.map((r) =>
       r.id === record.id
         ? { ...r, events: r.events.slice(0, -1) }
-        : r.unitId === record.unitId && r.planId !== record.planId && statusOf(r) === "pending"
+        : r.unitId === record.unitId &&
+            r.origin === record.origin &&
+            r.planId !== record.planId &&
+            statusOf(r) === "pending"
           ? { ...r, events: [...r.events, { at: record.proposedAt, type: "superseded" as const, by: null }] }
           : r,
     );
-    commit(existing ? next : [...next, record]);
+    commit(existing ? next : [...next, record], space);
+  },
+
+  /** A decision answered elsewhere (the 24-hour plan): kept with its full step history. */
+  record(record: DecisionRecord) {
+    const space = spaceOf(record.origin);
+    const all = load(space).filter((r) => r.id !== record.id);
+    commit([...all, record], space);
   },
 
   act(id: string, type: EventType, at: string, extra: { reason?: string; note?: string } = {}) {
@@ -279,7 +376,9 @@ export const journal = {
 
   /** Choose another useful option instead of HospitalOS' first choice. */
   choose(main: DecisionRecord, option: DecisionRecord, at: string) {
-    const all = load().map((r) =>
+    if (main.origin !== option.origin) return;
+    const space = spaceOf(main.origin);
+    const all = load(space).map((r) =>
       r.id === main.id
         ? {
             ...r,
@@ -291,7 +390,7 @@ export const journal = {
     const chosen: DecisionRecord = existing
       ? { ...existing, events: [...existing.events, { at, type: "validated", by: getMe() }] }
       : { ...option, events: [...option.events, { at, type: "validated", by: getMe() }] };
-    commit([...all.filter((r) => r.id !== option.id), chosen]);
+    commit([...all.filter((r) => r.id !== option.id), chosen], space);
   },
 
   /** Undo the current person's last step on a record. */
@@ -306,7 +405,8 @@ export const journal = {
 
   /** Forget a record the current person just created (undo of « choisir plutôt »). */
   discard(id: string) {
-    commit(load().filter((r) => r.id !== id));
+    const space = spaceHolding(id);
+    if (space) commit(load(space).filter((r) => r.id !== id), space);
   },
 
   expire(id: string) {
@@ -326,16 +426,18 @@ export const journal = {
 
   /** Tests only. */
   reset() {
-    cache = null;
+    cache.live = null;
+    cache.demo = null;
+    active = "demo";
     samples = [];
     me = null;
-    rebuild();
+    snapshot = []; // read lazily on next use, after the test has seeded storage
   },
 };
 
 export function useJournal(): { records: DecisionRecord[]; me: Person } {
   const records = useSyncExternalStore(subscribe, () => {
-    if (!cache) rebuild();
+    if (!cache[active]) rebuild();
     return snapshot;
   });
   return { records, me: getMe() };
@@ -361,7 +463,12 @@ export function recordFor(
     candidate && cmp.baseline && base > 0 ? (candidate.mean_waiting_patient_minutes - base) / base : null;
   const abstain = plan.decision === "abstain";
   return {
-    id: `${plan.plan_id}:${actionKey(abstain ? null : action)}`,
+    // The origin is part of the identity: the same plan replayed on fictitious patients
+    // is never the same decision as one taken on the unit in observation.
+    id: `${a.origin}:${plan.plan_id}:${actionKey(abstain ? null : action)}`,
+    origin: a.origin,
+    stateFingerprint: plan.state_fingerprint,
+    answerAt: "unite",
     planId: plan.plan_id,
     unitId: unit.id,
     unitName: unit.name,
@@ -370,8 +477,8 @@ export function recordFor(
     proposedAt: plan.created_at,
     expiresAt: a.expiresAt ?? plan.expires_at,
     action: abstain ? null : action,
-    title: abstain ? "Pas de proposition : données à vérifier" : actionTitle(action),
-    short: abstain ? "Pas de proposition" : actionShort(action),
+    title: abstain ? "Pas de proposition : données à vérifier" : actionTitle(action, bedElsewhere(a.state, action, unit.id)),
+    short: abstain ? "Pas de proposition" : actionShort(action, bedElsewhere(a.state, action, unit.id)),
     rank,
     deltaRatio: abstain ? null : delta,
     horizonEnd: clockPlus(plan.created_at, plan.horizon_minutes),
@@ -387,7 +494,10 @@ export function abstentionRecord(
   key: string,
 ): DecisionRecord {
   return {
-    id: `${key}:abstain`,
+    id: `${a.origin}:${key}:abstain`,
+    origin: a.origin,
+    stateFingerprint: a.plan?.state_fingerprint ?? null,
+    answerAt: "unite",
     planId: key,
     unitId: unit.id,
     unitName: unit.name,
@@ -453,6 +563,9 @@ export function demoHistory(stateAt: string, units: { id: string; name: string }
     events: Array<[number, EventType, Person | null, string?, string?]>,
   ): DecisionRecord => ({
     id: `demo-${n}`,
+    origin: "fixture",
+    stateFingerprint: null,
+    answerAt: "unite",
     planId: `demo-plan-${n}`,
     unitId,
     unitName: name(unitId),
@@ -562,6 +675,7 @@ export function toCsv(records: DecisionRecord[], current: Person, now: string): 
         }).format(new Date(iso))
       : "";
   const head = [
+    "Origine",
     "Unité",
     "Proposée le",
     "Proposition",
@@ -573,11 +687,13 @@ export function toCsv(records: DecisionRecord[], current: Person, now: string): 
     "Motif",
     "Notes",
     "Identifiant",
+    "Empreinte de l'état",
   ];
   const rows = records.map((r) => {
     const step = lastStep(r);
     const human = [...r.events].reverse().find((e) => e.by && e.type !== "note");
     return [
+      ORIGIN_LABEL[r.origin] ?? r.origin,
       r.unitName,
       fmt(r.proposedAt),
       r.title,
@@ -592,6 +708,7 @@ export function toCsv(records: DecisionRecord[], current: Person, now: string): 
         .map((e) => e.note)
         .join(" | "),
       r.id,
+      r.stateFingerprint ?? "",
     ];
   });
   return [head, ...rows].map((row) => row.map(csvCell).join(";")).join("\r\n");
@@ -604,12 +721,17 @@ export function handover(records: DecisionRecord[], current: Person, now: string
     const human = [...r.events].reverse().find((e) => e.by && e.type !== "note");
     const reason = reasonLabel(human?.reason);
     const note = [...r.events].reverse().find((e) => e.note)?.note;
-    return `- ${r.unitName} : ${r.short}${human ? ` (${who(human.by, current)})` : ""}${reason ? `, ${reason.toLowerCase()}` : ""}${note ? `. ${note}` : ""}`;
+    const tag = r.origin === "unknown" ? " [origine non enregistrée]" : "";
+    return `- ${r.unitName} : ${r.short}${tag}${human ? ` (${who(human.by, current)})` : ""}${reason ? `, ${reason.toLowerCase()}` : ""}${note ? `. ${note}` : ""}`;
   };
   const block = (label: string, list: DecisionRecord[]) =>
     list.length ? [`${label} (${list.length})`, ...list.map(line), ""] : [];
+  const space = records.some((r) => spaceOf(r.origin) === "live") ? "live" : "demo";
   return [
     title,
+    space === "demo"
+      ? "DÉMONSTRATION : patients fictifs, à ne pas transmettre comme des décisions réelles."
+      : "Unité en observation.",
     "",
     ...block("À faire", by("validated")),
     ...block("En attente de réponse", by("pending")),

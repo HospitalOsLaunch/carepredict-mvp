@@ -4,9 +4,10 @@ import perturbations from "../fixtures/scenario-perturbations.json";
 import live from "../fixtures/live.json";
 import type { ScenarioFixture } from "../data/fixtures";
 import type { ShadowEpisode } from "../api/types";
-import { explain, isKnownCode } from "./labels";
+import { actionTitle, explain, isKnownCode } from "./labels";
 import {
   type Assessment,
+  bedElsewhere,
   comparison,
   freshnessIndex,
   fromLive,
@@ -82,6 +83,20 @@ describe("waiting queue (attribuer)", () => {
     expect(q.map((e) => e.patient.id)).toEqual(["U-1049", "U-1041", "U-1043", "U-1047"]);
     expect(q[0]!.usableNow).toHaveLength(0);
     expect(q[2]!.usableNow.map((b) => b.id)).toEqual(["L08"]);
+    // One bed, one patient: L08 goes to U-1043 first, U-1047 is told so.
+    expect(q[2]!.readyForMe.map((b) => b.id)).toEqual(["L08"]);
+    expect(q[3]!.readyForMe).toHaveLength(0);
+    expect(q[3]!.aheadOnBed).toEqual({ bed: "L08", patient: "U-1043" });
+  });
+
+  it("names the unit of a bed outside the unit on screen", () => {
+    const action = { kind: "reserve_bed" as const, bed_id: "L08", patient_id: "U-1043" };
+    expect(bedElsewhere(a.state, action, "medecine-polyvalente")).toBeNull();
+    expect(bedElsewhere(a.state, action, "pneumologie")).toBe("medecine-polyvalente");
+    expect(actionTitle(action, "medecine-polyvalente")).toBe(
+      "Réserver le lit L08 (unité medecine-polyvalente) pour U-1043",
+    );
+    expect(actionTitle(action)).toBe("Réserver le lit L08 pour U-1043");
   });
 
   it("summarises the unit in the situation line", () => {

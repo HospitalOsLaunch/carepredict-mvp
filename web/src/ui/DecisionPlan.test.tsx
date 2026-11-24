@@ -57,7 +57,70 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     fireEvent.click(screen.getByTestId("ds-approve"));
     const feedback = await screen.findByTestId("ds-feedback");
     expect(feedback.dataset.outcome).toBe("APPROVED_IN_DEMO");
-    expect(feedback.textContent).toMatch(/Aucune commande/);
+    expect(feedback.textContent).toMatch(/Rien n'a été envoyé/);
+  });
+
+  it("keeps the plan decision in the demonstration journal, with its origin", async () => {
+    render(<App />);
+    await status(await screen.findByTestId("ds-auto"), "RECOMMENDATION_READY");
+    fireEvent.click(screen.getByTestId("ds-approve"));
+    await screen.findByTestId("ds-feedback");
+    const stored = JSON.parse(window.localStorage.getItem("hospitalos.journal.v2.demo") ?? "[]") as Array<{
+      origin: string;
+      answerAt: string;
+      title: string;
+      events: Array<{ type: string }>;
+      stateFingerprint: string;
+    }>;
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({ origin: "decision-fixture", answerAt: "plan" });
+    expect(stored[0]!.title).toMatch(/^Plan 24 h : sortie S01/);
+    expect(stored[0]!.events.map((e) => e.type)).toEqual(["proposed", "validated"]);
+    expect(stored[0]!.stateFingerprint).toBe(FX.units[0]!.recommendation.snapshot_fingerprint);
+    expect(window.localStorage.getItem("hospitalos.journal.v2.live")).toBeNull();
+  });
+
+  it("names the basis of every action and the lending unit of a loan", async () => {
+    // Same engine output, with the loan R3 placed in the primary plan to exercise the screen.
+    const unit = structuredClone(FX.units[0]!);
+    const reco = unit.recommendation;
+    const primary = reco.bundle!.evaluations.find((e) => e.plan.plan_id === reco.primary_plan_id)!;
+    primary.plan.actions.push({
+      ...primary.plan.actions.find((a) => a.type === "reinforcement")!,
+      action_id: "renfort:R3",
+      target: "R3",
+      conditional: false,
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (!String(url).startsWith("/api/decision")) throw new TypeError("offline");
+        const json = (body: unknown) => ({ ok: true, json: async () => body });
+        if (url.endsWith("/units")) return json({ units: [{ id: unit.id, name: unit.name }], events: [] });
+        if (url.includes("/auto"))
+          return json({ doc_id: reco.recommendation_id, snapshot: unit.snapshot, recommendation: reco });
+        throw new Error(`unexpected ${url}`);
+      }),
+    );
+    render(<App />);
+    const auto = await screen.findByTestId("ds-auto");
+    await status(auto, "RECOMMENDATION_READY");
+    const actions = within(auto).getAllByTestId("ds-action");
+    expect(actions.map((a) => a.dataset.basis)).toEqual([
+      "observed_authorization",
+      "resource_option",
+      "resource_option",
+      "resource_option",
+    ]);
+    expect(within(actions[0]!).getByText("autorisation médicale observée")).toBeTruthy();
+    expect(within(actions[1]!).getByText("option de renfort")).toBeTruthy();
+    expect(within(auto).getByTestId("ds-lending-unit").textContent).toBe("prêté par U-CARDIO-SYN");
+    expect(actions[3]!.textContent).toMatch(/prêté par U-CARDIO-SYN \(R3\)/);
+    // Interim and internal pool are named too, never a raw source code.
+    expect(actions[1]!.textContent).toMatch(/intérim/);
+    expect(auto.textContent).not.toMatch(/internal_pool|shared_unit|interim\b/);
+    // The rejected loan says which unit would be left short.
+    expect(screen.getByTestId("ds-rejected").textContent).toMatch(/le prêt laisserait U-CARDIO-SYN sous son minimum/);
   });
 
   it("offline manual mode shows engine-computed scenarios; a hypothesis is never approvable", async () => {
@@ -67,11 +130,13 @@ describe("plan à 24 h (moteur d'aide à la décision)", () => {
     const examples = await screen.findByTestId("ds-examples");
     fireEvent.click(within(examples).getByRole("button", { name: /X1 sortie 10:00/ }));
     const manual = await screen.findByTestId("ds-manual");
-    expect(within(manual).getAllByText("verrouillé")).toHaveLength(2);
+    expect(within(manual).getAllByText("imposé par vous")).toHaveLength(2);
+    expect(within(manual).getAllByText("consigne validée")).toHaveLength(2);
     expect(within(screen.getByTestId("ds-branches")).getAllByRole("row")).toHaveLength(4);
     auditFigures(container);
     fireEvent.click(within(examples).getByRole("button", { name: /Hypothèse/ }));
     await status(screen.getByTestId("ds-manual"), "HYPOTHETICAL_ONLY");
+    expect(within(screen.getByTestId("ds-manual")).getAllByText("hypothèse").length).toBeGreaterThan(0);
     expect((within(screen.getByTestId("ds-manual")).getByTestId("ds-approve") as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(within(examples).getByRole("button", { name: /16:00/ }));
     await status(screen.getByTestId("ds-manual"), "INFEASIBLE");

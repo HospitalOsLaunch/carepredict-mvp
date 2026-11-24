@@ -18,7 +18,7 @@ export interface DsAction {
   window_end: string;
   preconditions: string[];
   origin: "auto" | "manual_lock";
-  basis: string;
+  basis: "observed_authorization" | "validated_instruction" | "hypothesis_only" | "resource_option";
   conditional: boolean;
 }
 
@@ -49,6 +49,8 @@ export interface DsEvaluation {
 }
 
 export interface DsBundle {
+  horizon_start: string;
+  horizon_end: string;
   backend: { name: string; version: string; code_sha256: string };
   search: {
     enumerated: number;
@@ -68,7 +70,10 @@ export interface DsRecommendation {
   clinical_validation: boolean;
   g2: string;
   mode: "auto" | "manual";
+  created_at: string;
+  valid_until: string;
   snapshot_id: string;
+  snapshot_fingerprint: string;
   objective_version: string;
   engine_version: string;
   reasons: string[];
@@ -93,7 +98,16 @@ export interface DsSnapshot {
   snapshot_id: string;
   as_of: string;
   stays: DsStay[];
-  reinforcements: Array<{ option_id: string; skill: string; source: string; confirmation: string }>;
+  reinforcements: Array<{
+    option_id: string;
+    skill: string;
+    source: "internal_pool" | "interim" | "shared_unit";
+    confirmation: string;
+    /** For a loan: the unit that gives the staff, and its floor (never left below). */
+    lending_unit: string | null;
+    lending_unit_scheduled: number | null;
+    lending_unit_minimum: number | null;
+  }>;
 }
 
 export interface DsEvent {

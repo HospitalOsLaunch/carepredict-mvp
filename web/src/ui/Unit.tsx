@@ -177,12 +177,14 @@ export function Queue({ a }: { a: Assessment }) {
             const needs = e.patient.requirements.map(capability);
             const bedLine = e.reservedBed
               ? { text: `Lit ${e.reservedBed.id} réservé`, tone: "ok" }
-              : e.usableNow.length
+              : e.readyForMe.length
                 ? {
-                    text: `Lit prêt : ${e.usableNow.map((b) => b.id).join(", ")}`,
+                    text: `Lit prêt : ${e.readyForMe.map((b) => b.id).join(", ")}`,
                     tone: "ok",
                   }
-                : target?.patient_id === e.patient.id
+                : e.aheadOnBed
+                  ? { text: `${e.aheadOnBed.bed} ira d'abord à ${e.aheadOnBed.patient}`, tone: "wait" }
+                  : target?.patient_id === e.patient.id
                   ? { text: "Concerné par la proposition", tone: "go" }
                   : targetBed && target?.kind !== "reserve_bed" && compatibleBed(e.patient, targetBed)
                     ? {
@@ -194,9 +196,14 @@ export function Queue({ a }: { a: Assessment }) {
               <li key={e.patient.id}>
                 <span
                   className={`prio${e.patient.priority >= 4 ? " prio--high" : ""}`}
+                  role="img"
                   aria-label={`Priorité ${e.patient.priority} sur 5`}
+                  title="Priorité saisie par un soignant, de 1 à 5"
                 >
-                  <span>{e.patient.priority}</span>
+                  <span aria-hidden="true">
+                    {e.patient.priority}
+                    <small>prio</small>
+                  </span>
                 </span>
                 <span className="queue__who">
                   <span className="id">{e.patient.id}</span>

@@ -1,8 +1,10 @@
 import { useId, useState } from "react";
 import type { Candidate, FutureChange, PairedTrace, Plan, Transition } from "../api/types";
 import { DECISION, TRACE_EVENT, actionShort, actionTitle, explain } from "../domain/labels";
+import type { Action } from "../api/types";
 import {
   type Assessment,
+  bedElsewhere,
   clock,
   clockPlus,
   comparison,
@@ -11,6 +13,9 @@ import {
   longClock,
   num,
 } from "../domain/view";
+
+/** Bed unit when it is not the unit under evaluation (the first unit of the state). */
+const elsewhere = (a: Assessment, action: Action) => bedElsewhere(a.state, action, a.state.units[0]?.id ?? "");
 import { Back } from "./icons";
 import { Empty, Illu, type IlluName, proposalIllu } from "./illustrations";
 
@@ -35,12 +40,12 @@ export function ProposalDetail({ a }: { a: Assessment }) {
     <>
       <Head
         illu={proposalIllu(plan)}
-        title={plan.decision === "abstain" ? "Abstention" : actionTitle(plan.selected)}
+        title={plan.decision === "abstain" ? "Abstention" : actionTitle(plan.selected, elsewhere(a, plan.selected))}
         subtitle={`${DECISION[plan.decision]} calculée pour l'état de ${longClock(plan.created_at)}. Toutes les actions possibles ont été simulées sur les mêmes ${plan.scenarios} scénarios ; seule la décision humaine engage.`}
       />
       <div className="grid-2">
         <div className="stack">
-          <Options plan={plan} />
+          <Options plan={plan} a={a} />
           {a.trace ? <Trace trace={a.trace} plan={plan} /> : <NoTrace origin={a.origin} />}
         </div>
         <div className="stack">
@@ -80,7 +85,7 @@ function flags(c: Candidate, plan: Plan): string {
   return parts.join(" ; ");
 }
 
-function Options({ plan }: { plan: Plan }) {
+function Options({ plan, a }: { plan: Plan; a: Assessment }) {
   const [asTable, setAsTable] = useState(false);
   const toggleId = useId();
   const cmp = comparison(plan);
@@ -138,9 +143,9 @@ function Options({ plan }: { plan: Plan }) {
               </thead>
               <tbody>
                 {cmp.ranked.map((c) => (
-                  <tr key={actionShort(c.action)} className={isSelected(plan, c) ? "is-selected" : undefined}>
+                  <tr key={actionShort(c.action, elsewhere(a, c.action))} className={isSelected(plan, c) ? "is-selected" : undefined}>
                     <th scope="row" style={{ fontWeight: "inherit", color: "inherit" }}>
-                      {actionShort(c.action)}
+                      {actionShort(c.action, elsewhere(a, c.action))}
                     </th>
                     <td className="r num">{num(c.mean_waiting_patient_minutes)}</td>
                     <td className="r num">{num(c.worst_decile_waiting_patient_minutes)}</td>
@@ -164,13 +169,13 @@ function Options({ plan }: { plan: Plan }) {
               const f = flags(c, plan);
               return (
                 <li
-                  key={actionShort(c.action)}
+                  key={actionShort(c.action, elsewhere(a, c.action))}
                   className={`option${selected ? " option--selected" : ""}${baseline ? " option--baseline" : ""}`}
                   tabIndex={0}
-                  aria-label={`${actionShort(c.action)} : ${num(c.mean_waiting_patient_minutes)} patient-minutes en moyenne, ${num(c.worst_decile_waiting_patient_minutes)} au pire décile${selected ? ", option retenue" : ""}${f ? `, ${f}` : ""}`}
+                  aria-label={`${actionShort(c.action, elsewhere(a, c.action))} : ${num(c.mean_waiting_patient_minutes)} patient-minutes en moyenne, ${num(c.worst_decile_waiting_patient_minutes)} au pire décile${selected ? ", option retenue" : ""}${f ? `, ${f}` : ""}`}
                 >
                   <span className="option__label" aria-hidden="true">
-                    {actionShort(c.action)}
+                    {actionShort(c.action, elsewhere(a, c.action))}
                     {selected ? " · retenue" : baseline ? " · référence" : ""}
                   </span>
                   <span className="option__track" aria-hidden="true">
@@ -192,7 +197,7 @@ function Options({ plan }: { plan: Plan }) {
                     </span>
                   ) : null}
                   <span className="tip" aria-hidden="true">
-                    <b>{actionTitle(c.action)}</b>
+                    <b>{actionTitle(c.action, elsewhere(a, c.action))}</b>
                     <br />
                     Moyenne {num(c.mean_waiting_patient_minutes)} · pire décile{" "}
                     {num(c.worst_decile_waiting_patient_minutes)}

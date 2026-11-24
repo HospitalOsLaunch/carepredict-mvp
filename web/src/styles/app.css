@@ -1156,6 +1156,10 @@ body::before {
   color: var(--bloc);
   font-weight: 600;
 }
+.queue__bed--wait {
+  color: var(--ink-3);
+  font-style: italic;
+}
 
 /* ---------------------------------------------------------------- bed board (magnets) */
 .board {
@@ -1819,7 +1823,8 @@ body::before {
   }
   .tabbar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    /* Five sections since the 24-hour plan: one row, never a wrapped tab over the content. */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     position: fixed;
     left: 0;
     right: 0;
@@ -2629,6 +2634,63 @@ textarea.input {
   font-size: var(--t-sm);
   font-weight: 700;
   color: var(--brand-strong);
+}
+.jtag {
+  display: inline-block;
+  margin-left: var(--s2);
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--well);
+  color: var(--ink-2);
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 2px;
+  white-space: nowrap;
+}
+.jtag--warn {
+  background: var(--sac-wash);
+  color: var(--sac);
+}
+.jspace {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+.jspace--demo {
+  display: block;
+  max-width: 70ch;
+  padding: var(--s2) var(--s3);
+  border-radius: var(--r-md);
+  background: var(--brand-wash);
+  color: var(--brand-strong);
+}
+.jspace__text {
+  color: var(--sac);
+  font-weight: 600;
+}
+.unitchip {
+  display: grid;
+  min-height: 44px;
+  align-content: center;
+  padding: 4px var(--s3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-md);
+  line-height: 1.2;
+  min-width: 0;
+}
+.unitchip__name {
+  font-family: var(--display);
+  font-weight: 700;
+}
+.unitchip__sub {
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .jrow__sample {
   font-size: 11px;

@@ -147,28 +147,33 @@ export function capability(code: string): string {
   return CAPABILITY[code] ?? cap(code.replace(/[_-]/g, " "));
 }
 
-/** Imperative sentence naming exactly what the action does. */
-export function actionTitle(action: Action): string {
+/**
+ * Imperative sentence naming exactly what the action does. `bedUnit`: the bed's unit when
+ * it is not the unit on screen (see bedElsewhere), so the destination is never implicit.
+ */
+export function actionTitle(action: Action, bedUnit: string | null = null): string {
+  const bed = bedUnit ? `${action.bed_id} (unité ${bedUnit})` : action.bed_id;
   switch (action.kind) {
     case "no_op":
       return "Ne rien changer pour l'instant";
     case "prioritize_cleaning":
-      return `Prioriser le bionettoyage du lit ${action.bed_id}`;
+      return `Prioriser le bionettoyage du lit ${bed}`;
     case "reserve_bed":
-      return `Réserver le lit ${action.bed_id} pour ${action.patient_id}`;
+      return `Réserver le lit ${bed} pour ${action.patient_id}`;
     case "request_transport":
       return `Demander le transport de ${action.patient_id}`;
   }
 }
 
-export function actionShort(action: Action): string {
+export function actionShort(action: Action, bedUnit: string | null = null): string {
+  const bed = bedUnit ? `${action.bed_id} (${bedUnit})` : action.bed_id;
   switch (action.kind) {
     case "no_op":
       return "Sans action";
     case "prioritize_cleaning":
-      return `Nettoyer ${action.bed_id} en priorité`;
+      return `Nettoyer ${bed} en priorité`;
     case "reserve_bed":
-      return `Réserver ${action.bed_id} → ${action.patient_id}`;
+      return `Réserver ${bed} → ${action.patient_id}`;
     case "request_transport":
       return `Transport ${action.patient_id} (${action.bed_id})`;
   }

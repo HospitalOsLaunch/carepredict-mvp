@@ -46,8 +46,9 @@ export interface Store {
 
 const LIVE_UNIT = "medecine-polyvalente";
 const LIVE_SITUATIONS: Option[] = [
-  { id: "live", label: "Unité en observation" },
-  { id: "live-stale", label: "Confirmations périmées" },
+  // Replays of a recorded observation, on fictitious patients: never the unit in observation.
+  { id: "live", label: "Observation rejouée" },
+  { id: "live-stale", label: "Observation rejouée, confirmations périmées" },
 ];
 
 function fromScenario(s: ScenarioFixture, origin: Assessment["origin"], plan: Plan = s.plan): Assessment {

@@ -18,6 +18,7 @@ import {
 import { actionTitle, explain } from "../domain/labels";
 import {
   type Assessment,
+  bedElsewhere,
   clock,
   clockPlus,
   comparison,
@@ -50,7 +51,8 @@ interface Props {
 
 export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, onToast }: Props) {
   const plan = a.plan;
-  const live = a.origin === "api-live" || a.scenarioId.startsWith("live");
+  // Only a connection to the unit in observation evaluates « now »; a replay recomputes.
+  const live = a.origin === "api-live";
   const evaluateLabel = live ? "Évaluer maintenant" : "Recalculer";
 
   // Every proposal and every abstention leaves a trace in the decision journal.
@@ -176,7 +178,7 @@ export function Proposal({ a, unit, now, busy, awaitingEvaluation, onEvaluate, o
           <Illu name={proposalIllu(plan)} size={56} className="proposal__illu" />
           <div>
             <h2 className="proposal__title" id="proposal-title">
-              {actionTitle(plan.selected)}
+              {actionTitle(plan.selected, bedElsewhere(a.state, plan.selected, unit.id))}
             </h2>
             {facts.length ? (
               <ul className="facts">

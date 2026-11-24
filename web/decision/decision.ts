@@ -69,21 +69,37 @@ function option(id: string): Json {
   return state.snapshot.reinforcements.find((r: Json) => r.option_id === id);
 }
 
+// Same words as the cockpit (src/domain/planLabels.ts): a loan always names its lending unit.
+const SOURCE: Record<string, string> = { internal_pool: "pool interne", interim: "intérim" };
+const BASIS: Record<string, string> = {
+  observed_authorization: "autorisation médicale observée",
+  validated_instruction: "consigne validée",
+  hypothesis_only: "hypothèse",
+  resource_option: "option de renfort",
+};
+
+function provenance(o: Json | undefined): string {
+  if (!o) return "provenance inconnue";
+  if (o.source === "shared_unit") return o.lending_unit ? `prêté par ${o.lending_unit}` : "prêté par une unité non renseignée";
+  return SOURCE[o.source] ?? String(o.source);
+}
+
 function actionText(a: Json): HTMLElement {
-  const li = el("li");
+  const li = el("li", { "data-basis": String(a.basis) });
   if (a.type === "coordinate_discharge") {
     li.append(`Coordonner la sortie de ${a.target} : départ visé ${local(a.window_start)} (transport demandé maintenant, nettoyage après départ)`);
   } else if (a.type === "reinforcement") {
     const o = option(a.target);
-    li.append(`Renfort ${o?.skill ?? ""} ${local(a.window_start)}–${local(a.window_end)} (${a.target}, ${o?.source ?? ""})`);
+    li.append(`Renfort ${o?.skill ?? ""} ${local(a.window_start)}–${local(a.window_end)}, ${provenance(o)} (${a.target})`);
     if (a.conditional) li.append(el("span", { class: "ds-tag ds-tag--cond" }, `demandé, non confirmé`));
   } else if (a.type === "locked_discharge") {
     li.append(`Sortie de ${a.target} à ${local(a.window_start)}`);
   } else if (a.type === "locked_extension") {
     li.append(`Présence de ${a.target} prolongée jusqu'à ${local(a.window_start)} (${a.preconditions[0]})`);
   }
-  if (a.origin === "manual_lock") li.append(el("span", { class: "ds-tag ds-tag--lock" }, "verrouillé"));
-  if (a.basis === "hypothesis_only") li.append(el("span", { class: "ds-tag ds-tag--cond" }, "hypothèse"));
+  if (a.origin === "manual_lock") li.append(el("span", { class: "ds-tag ds-tag--lock" }, "imposé par vous"));
+  const basis = BASIS[String(a.basis)] ?? String(a.basis);
+  li.append(el("span", { class: a.basis === "hypothesis_only" ? "ds-tag ds-tag--cond" : "ds-tag" }, basis));
   return li;
 }
 
@@ -304,7 +320,7 @@ function openManual(fromPlan?: Json): void {
         el("label", {}, "t (heures)", el("input", { name: "x2_t", type: "number", min: "0", max: "12", value: "4", "data-testid": "x2-t" })))),
     el("fieldset", {}, el("legend", {}, "Renforts et échéance"),
       el("div", { class: "ds-row" }, ...state.snapshot.reinforcements.map((r: Json) =>
-        el("label", {}, `${r.option_id} (${r.skill}, ${r.confirmation})`, el("select", { name: `r_${r.option_id}` },
+        el("label", {}, `${r.option_id} (${r.skill}, ${provenance(r)}, ${r.confirmation})`, el("select", { name: `r_${r.option_id}` },
           el("option", { value: "free" }, "laisser chercher"), el("option", { value: "include" }, "imposer"), el("option", { value: "exclude" }, "exclure")))),
         el("label", {}, "Jusqu'à demain", el("input", { name: "deadline", type: "time", value: "20:00" }))),
       el("label", {}, el("span", {}, el("input", { name: "complements", type: "checkbox", checked: "" }), " rechercher des compléments compatibles"))),

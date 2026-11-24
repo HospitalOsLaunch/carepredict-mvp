@@ -310,7 +310,12 @@ export function waitingQueue(state: State): Patient[] {
 export interface QueueEntry {
   patient: Patient;
   waitedMinutes: number;
+  /** Clean, free, compatible beds, whoever else may also fit them. */
   usableNow: Bed[];
+  /** Of those, the beds still free once the patients ahead in line (priority, then wait) are served. */
+  readyForMe: Bed[];
+  /** When every usable bed goes first to a patient ahead in line: which bed, for whom. */
+  aheadOnBed: { bed: string; patient: string } | null;
   reservedBed: Bed | null;
 }
 
@@ -318,15 +323,25 @@ export function queueEntries(state: State): QueueEntry[] {
   const unit = state.units[0];
   const committed = state.beds.filter((b) => b.state === "occupied" || b.reserved_for).length;
   const capacityLeft = unit?.staffed_beds == null ? 0 : unit.staffed_beds - committed;
-  return waitingQueue(state).map((patient) => ({
-    patient,
-    waitedMinutes: minutesBetween(patient.waiting_since, state.at),
-    usableNow:
+  // One bed, one patient: a bed shown « prêt » to two people reads as two places.
+  const claimed = new Map<string, string>();
+  return waitingQueue(state).map((patient) => {
+    const usableNow =
       capacityLeft > 0
         ? state.beds.filter((b) => b.state === "clean" && !b.reserved_for && compatibleBed(patient, b))
-        : [],
-    reservedBed: state.beds.find((b) => b.reserved_for === patient.id) ?? null,
-  }));
+        : [];
+    const readyForMe = usableNow.filter((b) => !claimed.has(b.id));
+    if (readyForMe[0]) claimed.set(readyForMe[0].id, patient.id);
+    const first = usableNow[0];
+    return {
+      patient,
+      waitedMinutes: minutesBetween(patient.waiting_since, state.at),
+      usableNow,
+      readyForMe,
+      aheadOnBed: !readyForMe.length && first ? { bed: first.id, patient: claimed.get(first.id)! } : null,
+      reservedBed: state.beds.find((b) => b.reserved_for === patient.id) ?? null,
+    };
+  });
 }
 
 // ---------------------------------------------------------------- proposal
@@ -370,6 +385,16 @@ export function comparison(plan: Plan | null): Comparison {
 
 export const isSelected = (plan: Plan | null, c: Candidate): boolean =>
   !!plan && sameAction(plan.selected, c.action);
+
+/**
+ * The unit of the bed an action touches, when it is not the unit on screen (null otherwise).
+ * A reservation in another unit must name that unit: « L08 » alone does not say where.
+ */
+export function bedElsewhere(state: State, action: Action, unitId: string): string | null {
+  if (!action.bed_id) return null;
+  const bed = state.beds.find((b) => b.id === action.bed_id);
+  return bed && bed.unit_id !== unitId ? bed.unit_id : null;
+}
 
 /** Facts (not causes) that make the selected action legible to the person approving it. */
 export function proposalContext(state: State, plan: Plan): string[] {
@@ -425,7 +450,8 @@ export function fromLive(
   return {
     origin,
     scenarioId: "live",
-    scenarioLabel: "Unité en observation",
+    // A replayed observation on fictitious patients never reads as the unit in observation.
+    scenarioLabel: origin === "api-live" ? "Unité en observation" : "Observation rejouée (patients fictifs)",
     state: snapshot.state,
     plan,
     gateReasons,

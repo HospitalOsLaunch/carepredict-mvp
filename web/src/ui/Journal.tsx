@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import {
   type DecisionRecord,
+  ORIGIN_LABEL,
   type Person,
   STATUS,
+  type Space,
   type Status,
   handover,
   journal,
@@ -97,8 +99,17 @@ export function Journal(props: {
   units: { id: string; name: string }[];
   unitId: string;
   onToast: ToastFn;
+  /** Journal shown, and whether the person may look at the other one (live connection only). */
+  space: Space;
+  canSwitch: boolean;
 }) {
   const { records, me, now, openId } = props;
+  // Units of the cockpit plus those met in the journal (e.g. the 24-hour plan's units).
+  const units = useMemo(() => {
+    const map = new Map(props.units.map((u) => [u.id, u.name]));
+    for (const r of records) if (!map.has(r.unitId)) map.set(r.unitId, r.unitName);
+    return [...map].map(([id, name]) => ({ id, name }));
+  }, [props.units, records]);
   const [query, setQuery] = useState("");
   const [unit, setUnit] = useState("all");
   const [period, setPeriod] = useState<Period>("24");
@@ -180,6 +191,7 @@ export function Journal(props: {
           Journal des décisions
         </h1>
         <p>Ce qui a été proposé et décidé : par qui, quand, pourquoi.</p>
+        <SpaceNote space={props.space} canSwitch={props.canSwitch} />
         <SignedAs me={me} />
       </header>
 
@@ -242,7 +254,7 @@ export function Journal(props: {
                 <span className="visually-hidden">Unité</span>
                 <select className="select" value={unit} onChange={(e) => setUnit(e.target.value)}>
                   <option value="all">Toutes les unités</option>
-                  {props.units.map((u) => (
+                  {units.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.name}
                     </option>
@@ -320,7 +332,7 @@ export function Journal(props: {
             records={scoped}
             me={me}
             now={now}
-            unitName={unit === "all" ? "Toutes unités" : (props.units.find((u) => u.id === unit)?.name ?? "")}
+            unitName={unit === "all" ? "Toutes unités" : (units.find((u) => u.id === unit)?.name ?? "")}
             onToast={props.onToast}
           />
         </aside>
@@ -366,7 +378,11 @@ function Row({
       >
         <span className="jrow__time num">{clock(r.proposedAt)}</span>
         <span className="jrow__body">
-          <span className="jrow__title">{r.title}</span>
+          <span className="jrow__title">
+            {r.title}
+            {r.answerAt === "plan" ? <span className="jtag">Plan 24 h</span> : null}
+            {r.origin === "unknown" ? <span className="jtag jtag--warn">origine non enregistrée</span> : null}
+          </span>
           <span className="jrow__meta">{meta.join(" · ")}</span>
           {note ? <span className="jrow__note">« {note} »</span> : null}
         </span>
@@ -441,9 +457,21 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
           <dd>{r.rank === 0 ? "Premier choix de HospitalOS" : "Autre option choisie par l'équipe"}</dd>
         </div>
         <div>
+          <dt>Origine</dt>
+          <dd data-testid="jdetail-origin">{ORIGIN_LABEL[r.origin] ?? r.origin}</dd>
+        </div>
+        <div>
           <dt>Situation</dt>
           <dd>{r.situation}</dd>
         </div>
+        {r.stateFingerprint ? (
+          <div>
+            <dt>État évalué</dt>
+            <dd className="num" title={r.stateFingerprint}>
+              {r.stateFingerprint.slice(0, 12)}
+            </dd>
+          </div>
+        ) : null}
       </dl>
       {r.why.length ? (
         <>
@@ -488,7 +516,7 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
       {s === "validated" && !r.sample ? (
         <div className="jdetail__todo">
           <p>
-            <strong>À faire :</strong> {todoHint(r.action)}
+            <strong>À faire :</strong> {todoHint(r.action, r)}
           </p>
           <button
             type="button"
@@ -504,8 +532,8 @@ function Detail({ r, me, now, onToast }: { r: DecisionRecord; me: Person; now: s
       ) : null}
       {s === "pending" ? (
         <p className="jdetail__hint">
-          Pour répondre, ouvrez l'unité :{" "}
-          <a className="link" href="#/">
+          {r.answerAt === "plan" ? "Pour répondre, ouvrez le plan :" : "Pour répondre, ouvrez l'unité :"}{" "}
+          <a className="link" href={r.answerAt === "plan" ? "#/plan" : "#/"}>
             {r.unitName}
           </a>
           .
@@ -613,6 +641,33 @@ function Handover({
         <p className="note">Prototype : journal gardé sur ce poste.</p>
       </div>
     </section>
+  );
+}
+
+/** Which journal is on screen. Real and fictitious decisions are never listed together. */
+function SpaceNote({ space, canSwitch }: { space: Space; canSwitch: boolean }) {
+  if (!canSwitch) {
+    return space === "demo" ? (
+      <p className="jspace jspace--demo" data-testid="journal-space">
+        <strong>Journal de démonstration.</strong> Décisions prises sur des patients fictifs, gardées à part du
+        journal de l'unité en observation.
+      </p>
+    ) : null;
+  }
+  return (
+    <div className="jspace" data-testid="journal-space">
+      <div className="seg" role="group" aria-label="Journal affiché">
+        <button type="button" aria-pressed={space === "live"} onClick={() => journal.useSpace("live")}>
+          Unité en observation
+        </button>
+        <button type="button" aria-pressed={space === "demo"} onClick={() => journal.useSpace("demo")}>
+          Démonstration
+        </button>
+      </div>
+      {space === "demo" ? (
+        <span className="jspace__text">Patients fictifs : rien de ce qui suit ne concerne l'unité.</span>
+      ) : null}
+    </div>
   );
 }
 
