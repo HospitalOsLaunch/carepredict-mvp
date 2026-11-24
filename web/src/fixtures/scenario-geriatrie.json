@@ -2218,6 +2218,127 @@
     "until": "2026-10-25T06:30:00Z"
    }
   ],
+  "team_practice": {
+   "window_minutes": 720,
+   "until": "2026-10-24T18:30:00Z",
+   "selected_wait": 1720.78125,
+   "never_wait": 1728.28125,
+   "never_saved_wait": 7.5,
+   "cases": [
+    {
+     "delay_minutes": 30,
+     "preparation": "after_request",
+     "baseline_wait": 1726.875,
+     "saved_wait": 6.09375,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G16",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 0.5859375
+    },
+    {
+     "delay_minutes": 30,
+     "preparation": "already_started",
+     "baseline_wait": 1726.875,
+     "saved_wait": 6.09375,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G16",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 0.5859375
+    },
+    {
+     "delay_minutes": 60,
+     "preparation": "after_request",
+     "baseline_wait": 1729.21875,
+     "saved_wait": 8.4375,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G16",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 0.5859375
+    },
+    {
+     "delay_minutes": 60,
+     "preparation": "already_started",
+     "baseline_wait": 1729.21875,
+     "saved_wait": 8.4375,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G16",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 0.5859375
+    },
+    {
+     "delay_minutes": 120,
+     "preparation": "after_request",
+     "baseline_wait": 1728.28125,
+     "saved_wait": 7.5,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G17",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 1.875
+    },
+    {
+     "delay_minutes": 120,
+     "preparation": "already_started",
+     "baseline_wait": 1728.28125,
+     "saved_wait": 7.5,
+     "leader": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G17",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "leader_margin": 1.875
+    }
+   ],
+   "material_minutes": 18.774609375,
+   "supported": true,
+   "step_saved_wait": [
+    7.5
+   ],
+   "alternatives": [
+    {
+     "action": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G15",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "saved_wait": 0.0
+    },
+    {
+     "action": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G16",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "saved_wait": 4.6875
+    },
+    {
+     "action": {
+      "kind": "prioritize_cleaning",
+      "bed_id": "G17",
+      "patient_id": null,
+      "slot_id": null
+     },
+     "saved_wait": 7.5
+    }
+   ]
+  },
   "horizons": [
    {
     "perspective": [

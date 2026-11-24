@@ -27,7 +27,7 @@ from .pathway import DischargeReadiness, readiness
 from .preparation import PreparationForecasts, validate_preparation
 from .scenarios import FutureAssumptions
 from .scoring import ResourcePressure, score
-from .simulation import Assumptions, simulate
+from .simulation import TEAM_GESTURES, Assumptions, simulate
 
 
 class PlanRequest(Closed):
@@ -109,6 +109,49 @@ class PlanWindow(Closed):
     until: datetime
 
 
+class PracticeCase(Closed):
+    """What the team would have done without HospitalOS: the same gestures, later."""
+
+    delay_minutes: int
+    preparation: Literal["after_request", "already_started"]
+    baseline_wait: float
+    saved_wait: float
+    # Best first gesture when the team's own practice runs in the background, and its lead over
+    # the runner-up on the decision objective (patient-minutes).
+    leader: Action
+    leader_margin: float
+
+
+class AlternativeGain(Closed):
+    action: Action
+    saved_wait: float
+
+
+class TeamPractice(Closed):
+    """Gain of acting now, against an explicit counterfactual, over a bounded window.
+
+    ``never_saved_wait`` is the historical comparison (nobody makes the gesture within the
+    window). ``cases`` replay the same gestures made by the team after a delay. The delays are
+    sensitivity values, not measurements: the usual delay of each unit is to be observed."""
+
+    window_minutes: int
+    until: datetime
+    selected_wait: float
+    never_wait: float
+    never_saved_wait: float
+    cases: tuple[PracticeCase, ...]
+    material_minutes: float
+    supported: bool
+    # Same window, against nobody acting: what each step adds to the previous ones, and what each
+    # other single gesture would save alone. Keeps every figure of the card on one window.
+    step_saved_wait: tuple[float, ...] = ()
+    alternatives: tuple[AlternativeGain, ...] = ()
+
+
+PRACTICE_DELAYS = (30, 60, 120)
+PRACTICE_WINDOW = 720
+
+
 class ActionTiming(Closed):
     starts_at: datetime
     ends_at: datetime | None = None
@@ -136,6 +179,7 @@ class Plan(Closed):
     action_timing: tuple[ActionTiming, ...] = ()
     unit_id: Identifier | None = None
     windows: tuple[PlanWindow, ...] = ()
+    team_practice: TeamPractice | None = None
     horizons: tuple[HorizonCheck, ...] = ()
     requested_horizon_minutes: int | None = None
 
@@ -247,6 +291,8 @@ def evaluate(
     request: PlanRequest,
     *,
     multiday: bool | None = None,
+    late: dict[str, int] | None = None,
+    preparation_started: bool = False,
 ) -> Evaluation:
     multiday = request.horizon_minutes > 1440 if multiday is None else multiday
     losses = []
@@ -273,12 +319,15 @@ def evaluate(
             future=future,
             preparation=request.preparation,
             multiday=multiday,
+            late=late,
+            preparation_started=preparation_started,
         )
         result = score(
             state,
             trajectory,
             expected_future=future,
             actions=(action,) if isinstance(action, Action) else action,
+            late=late,
         )
         losses.append(result.waiting_patient_minutes)
         waiting_at_end.append(result.waiting_at_end)
@@ -385,6 +434,121 @@ def _bundle(
     if len(steps) == 1:
         return (), None, ()
     return steps, current, tuple(marginals)
+
+
+def team_practice(
+    state: State,
+    request: PlanRequest,
+    steps: tuple[Action, ...],
+    candidates: tuple[Candidate, ...],
+) -> TeamPractice:
+    """Replay the recommendation against a team that makes the same gestures later.
+
+    For each delay and each preparation convention: the team's own gestures run in the
+    background; the recommendation brings them forward. The leader is the best first gesture
+    under that practice among the recommendation's first step, the four best other single
+    gestures and doing nothing (beyond what the team does anyway)."""
+    minutes = min(PRACTICE_WINDOW, request.horizon_minutes)
+    multi = request.horizon_minutes > 1440
+    clipped = request.model_copy(update={"horizon_minutes": minutes})
+    supported = all(a.kind in TEAM_GESTURES for a in steps)
+    now = evaluate(state, steps, clipped, multiday=multi).candidate
+    never = evaluate(state, Action(kind="no_op"), clipped, multiday=multi).candidate
+    material = max(1.0, 0.01 * never.objective)
+    step_saved: list[float] = []
+    previous = never.mean_waiting_patient_minutes
+    for i in range(len(steps)):
+        reached = (
+            now
+            if i == len(steps) - 1
+            else evaluate(state, steps[: i + 1], clipped, multiday=multi).candidate
+        )
+        step_saved.append(previous - reached.mean_waiting_patient_minutes)
+        previous = reached.mean_waiting_patient_minutes
+    alternatives = tuple(
+        AlternativeGain(
+            action=c.action,
+            saved_wait=never.mean_waiting_patient_minutes
+            - evaluate(
+                state, c.action, clipped, multiday=multi
+            ).candidate.mean_waiting_patient_minutes,
+        )
+        for c in candidates
+        if c.action.kind != "no_op"
+    )
+    cases: list[PracticeCase] = []
+    if supported:
+        others = [
+            c.action
+            for c in sorted(candidates, key=lambda c: (c.objective, c.action.key))
+            if c.action.kind != "no_op" and c.action not in steps
+        ][:4]
+        for delay in PRACTICE_DELAYS:
+            for convention in ("after_request", "already_started"):
+                started = convention == "already_started"
+                late = {a.key: delay for a in steps}
+                base = evaluate(
+                    state, steps, clipped, multiday=multi, late=late, preparation_started=started
+                ).candidate
+                options: list[tuple[float, str, Action]] = [
+                    (base.objective, "", Action(kind="no_op"))
+                ]
+                first = steps[0]
+                options.append(
+                    (
+                        evaluate(
+                            state,
+                            steps,
+                            clipped,
+                            multiday=multi,
+                            late={a.key: delay for a in steps[1:]},
+                            preparation_started=started,
+                        ).candidate.objective,
+                        first.key,
+                        first,
+                    )
+                )
+                for other in others:
+                    if bundle_errors(state, (*steps, other)):
+                        continue
+                    options.append(
+                        (
+                            evaluate(
+                                state,
+                                (*steps, other),
+                                clipped,
+                                multiday=multi,
+                                late=late,
+                                preparation_started=started,
+                            ).candidate.objective,
+                            other.key,
+                            other,
+                        )
+                    )
+                options.sort(key=lambda o: (o[0], o[1] != first.key, o[1]))
+                cases.append(
+                    PracticeCase(
+                        delay_minutes=delay,
+                        preparation=convention,
+                        baseline_wait=base.mean_waiting_patient_minutes,
+                        saved_wait=base.mean_waiting_patient_minutes
+                        - now.mean_waiting_patient_minutes,
+                        leader=options[0][2],
+                        leader_margin=options[1][0] - options[0][0] if len(options) > 1 else 0.0,
+                    )
+                )
+    return TeamPractice(
+        window_minutes=minutes,
+        until=state.at + timedelta(minutes=minutes),
+        selected_wait=now.mean_waiting_patient_minutes,
+        never_wait=never.mean_waiting_patient_minutes,
+        never_saved_wait=never.mean_waiting_patient_minutes - now.mean_waiting_patient_minutes,
+        cases=tuple(cases),
+        material_minutes=material,
+        supported=supported,
+        step_saved_wait=tuple(step_saved),
+        alternatives=alternatives,
+    )
 
 
 def plan(request: PlanRequest) -> Plan:
@@ -533,9 +697,15 @@ def plan(request: PlanRequest) -> Plan:
                     until=state.at + timedelta(minutes=minutes),
                 )
             )
+    practice = (
+        team_practice(state, request, bundle or (selected,), candidates)
+        if decision == "recommend"
+        else None
+    )
     return Plan(
         unit_id=request.unit_id or (state.units[0].id if len(state.units) == 1 else None),
         windows=tuple(windows),
+        team_practice=practice,
         horizons=horizons,
         action_timing=tuple(timing(state, a) for a in bundle or (selected,) if a.kind != "no_op"),
         requested_horizon_minutes=requested,

@@ -9,6 +9,7 @@ from __future__ import annotations
 import heapq
 import math
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Annotated, Literal
 
@@ -33,6 +34,9 @@ from .scenarios import (
 )
 
 PositiveMinutes = Annotated[StrictInt, Field(gt=0, le=1440)]
+
+# Gestures a team can make later by itself (team-practice counterfactual).
+TEAM_GESTURES = frozenset({"request_transport", "prioritize_cleaning", "reserve_bed"})
 
 
 class Assumptions(Closed):
@@ -73,6 +77,8 @@ def simulate(
     future: FutureTape | None = None,
     preparation: PreparationForecasts | None = None,
     multiday: bool = False,
+    late: Mapping[str, int] | None = None,
+    preparation_started: bool = False,
 ) -> Trajectory:
     # One action or several applied together at D (a bundle: e.g. a transport request and a
     # cleaning priority). Each must be valid alone and compatible with the others.
@@ -82,9 +88,24 @@ def simulate(
     errors = bundle_errors(state, actions)
     if errors:
         raise ValueError(f"Invalid simulation input: {errors}")
-    reserve = {a.bed_id: a.patient_id for a in actions if a.kind == "reserve_bed"}
+    # Team-practice counterfactual: the same gesture made by the team ``late[key]`` minutes after
+    # D instead of now. A late transport request starts the preparation then (or, with
+    # ``preparation_started``, the preparation was already under way and only the request waits).
+    # A late reservation happens only if the bed is still free at that time.
+    late = {k: v for k, v in (late or {}).items() if v}
+    when = {a.key: late.get(a.key, 0) for a in actions}
+    if any(m < 0 for m in when.values()) or any(
+        when[a.key] and a.kind not in TEAM_GESTURES for a in actions
+    ):
+        raise ValueError("Only transport, cleaning and reservation gestures can be delayed")
+    reserve = {
+        a.bed_id: a.patient_id for a in actions if a.kind == "reserve_bed" and not when[a.key]
+    }
+    reserve_late = [a for a in actions if a.kind == "reserve_bed" and when[a.key]]
     transports = {a.patient_id: a for a in actions if a.kind == "request_transport"}
-    cleaning_first = {a.bed_id for a in actions if a.kind == "prioritize_cleaning"}
+    transport_at = {a.patient_id: when[a.key] for a in actions if a.kind == "request_transport"}
+    cleaning_from = {a.bed_id: when[a.key] for a in actions if a.kind == "prioritize_cleaning"}
+    late_ready: dict[str, tuple[int, int]] = {}
     if not 1 <= horizon_minutes <= (10080 if multiday else 1440):
         raise ValueError("Horizon must be between one minute and 24 hours")
     future = future or sample_future(state, None, seed, scenario)
@@ -126,6 +147,12 @@ def simulate(
         trace.append(Transition(0, "reserve", patient_id, bed_id))
     for patient_id, request in sorted(transports.items()):
         assert patient_id is not None and request.bed_id is not None
+        if transport_at[patient_id]:
+            heapq.heappush(
+                pending,
+                (transport_at[patient_id], "_team_transport", request.bed_id, patient_id),
+            )
+            continue
         trace.append(
             Transition(
                 0,
@@ -135,6 +162,13 @@ def simulate(
                 logistics[patient_id].transport_pool_id,
             )
         )
+    for a in reserve_late:
+        assert a.bed_id is not None and a.patient_id is not None
+        heapq.heappush(pending, (when[a.key], "_team_reserve", a.bed_id, a.patient_id))
+    for bed_id, from_minute in cleaning_from.items():
+        if from_minute:
+            assert bed_id is not None
+            heapq.heappush(pending, (from_minute, "_team_clean", bed_id, ""))
     estimates = {}
     if multiday:
         feed, _ = latest(state, state.units[0].id, "departures")
@@ -164,11 +198,17 @@ def simulate(
                 else multiplier * draw(assumptions.departure_minutes, seed, scenario, "exit", p.id)
             )
             if minute is not None:
-                if p.id in estimates:
-                    # Conditional logistics only: an EDD cannot grant medical clearance.
-                    minute = max(
-                        minute, math.ceil((estimates[p.id] - state.at).total_seconds() / 60)
-                    )
+                floor = (
+                    math.ceil((estimates[p.id] - state.at).total_seconds() / 60)
+                    if p.id in estimates
+                    else 0
+                )
+                if new_request and transport_at.get(p.id):
+                    # Readiness is scheduled when the team actually makes the request.
+                    late_ready[p.id] = (minute, floor)
+                    continue
+                # Conditional logistics only: an EDD cannot grant medical clearance.
+                minute = max(minute, floor)
                 heapq.heappush(pending, (minute, "departure_ready", p.bed_id, p.id))
 
     def depart(minute: int, bed_id: str, patient_id: str) -> None:
@@ -264,7 +304,7 @@ def simulate(
             ]
             dirty.sort(
                 key=lambda b: (
-                    0 if b in cleaning_first else 1,
+                    0 if b in cleaning_from and minute >= cleaning_from[b] else 1,
                     dirty_since[b],
                     b,
                 )
@@ -347,7 +387,49 @@ def simulate(
                     blocked_beds.add(e.bed_id)
                 trace.append(Transition(minute, "bed_admissions", None, e.bed_id, external_id=e.id))
         for _time, kind, bed_id, patient_id in batch:
-            if kind in {"__future", "booking_ready"}:
+            if kind in {"__future", "booking_ready", "_team_clean"}:
+                continue
+            if kind == "_team_transport":
+                d = logistics[patient_id]
+                if occupants[bed_id] == patient_id and all(
+                    (pools[k].available or 0) > 0
+                    for k in (d.transport_pool_id, d.downstream_pool_id)
+                    if k is not None
+                ):
+                    trace.append(
+                        Transition(
+                            minute, "request_transport", patient_id, bed_id, d.transport_pool_id
+                        )
+                    )
+                    if patient_id in late_ready:
+                        base, floor = late_ready.pop(patient_id)
+                        ready = max(base, minute) if preparation_started else base + minute
+                        heapq.heappush(
+                            pending, (max(ready, floor), "departure_ready", bed_id, patient_id)
+                        )
+                elif occupants[bed_id] == patient_id:
+                    # Transport not available yet: the team tries again a quarter of an hour later.
+                    heapq.heappush(pending, (minute + 15, "_team_transport", bed_id, patient_id))
+                continue
+            if kind == "_team_reserve":
+                p = patients[patient_id]
+                unit_id = beds[bed_id].unit_id
+                commitments = sum(
+                    b.unit_id == unit_id
+                    and (occupants[b.id] is not None or reservations[b.id] is not None)
+                    for b in beds.values()
+                )
+                if (
+                    patient_id in waiting
+                    and statuses[bed_id] == "clean"
+                    and bed_id not in blocked_beds
+                    and reservations[bed_id] is None
+                    and patient_id not in reservations.values()
+                    and compatible(p, beds[bed_id])
+                    and commitments + 1 <= (units[unit_id].staffed_beds or 0)
+                ):
+                    reservations[bed_id] = patient_id
+                    trace.append(Transition(minute, "reserve", patient_id, bed_id))
                 continue
             if kind == "departure_ready":
                 departure_ready[patient_id] = minute

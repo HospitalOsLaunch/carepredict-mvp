@@ -1224,6 +1224,7 @@
   "action_timing": [],
   "unit_id": "medecine-polyvalente",
   "windows": [],
+  "team_practice": null,
   "horizons": [
    {
     "perspective": [
